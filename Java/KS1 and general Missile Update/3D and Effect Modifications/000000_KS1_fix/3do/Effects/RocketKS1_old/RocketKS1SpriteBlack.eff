@@ -1,0 +1,17 @@
+[ClassInfo]
+  ClassName TSmokeTrailParams
+[General]
+  MatName RocketKS1SpriteBlack.mat
+  Color0 0.0 0.0 0.0 1.0 1.0
+  Color1 0.0 0.0 0.0 1.0 1.0
+  nParticles 512
+  FinishTime -1.0
+  LiveTime 33.3
+  TranspTransitionTime 0.0f
+
+  SegmentLen 10
+  MaxObjectVelocity 100
+
+  Wind 0.0
+  Size 2.0 15.0
+  Rnd 0.94

@@ -1,0 +1,105 @@
+# R-5, 1931 (Gunner-Cockpit missing)
+# R-5 (skis), 1931 (Gunner-Cockpit missing)
+# TBD-1, 1937 (Gunner-Cockpit missing)
+
+AvengerMkIII         Avenger Mk.III, 1944
+B-17D                B-17D, 1941
+B-17E                B-17E, 1941
+B-17F                B-17F, 1942
+B-17G                B-17G, 1943
+B-24J-100-CF         B-24J-100CF, 1943
+B-25C-25NA           B-25C-25NA, 1943
+B-25G-1NA            B-25G-1NA, 1943
+B-25H-1NA            B-25H-1NA, 1943
+B-29                 B-29, 1944
+BlenheimMkI          Blenheim Mk.I, 1937
+BlenheimMkIV         Blenheim Mk.IV, 1939
+C-47                 C-47, 1941
+DB-3b                DB-3b, 1936
+DB-3M                DB-3M, 1939
+DB-3T                DB-3T, 1939
+DB-3F                DB-3F, 1941
+FulmarMkI	           Fulmar Mk.I, 1940
+GladiatorMkI         Gladiator Mk.I, 1937
+GladiatorMkII        Gladiator Mk.II, 1938
+Li-2                 Li-2, 1939
+MBR-2-AM-34          MBR-2 AM-34,1937
+MosquitoBMkIV        Mosquito B.Mk.IV, 1941
+P-36A-3              Hawk 75A-3, 1939
+P-36A-4              Hawk 75A-4, 1939
+PBN-1                PBN Nomad, 1943
+R-5                  R-5, 1931
+R-5_skis             R-5 (skis), 1931
+R-10                 R-10, 1940
+SB_2M-100A           SB 2M-100A, 1935
+SB_2M-103            SB 2M-103, 1938
+Su-2                 Su-2, 1941
+SwordfishMkI  	     Swordfish Mk.I, 1936
+TBD-1			           TBD-1, 1937
+TBF-1                TBF-1, 1942
+TBF-1C               TBF-1C, 1943
+TBM-3                TBM-3, 1943
+Tu-2S                Tu-2S
+U-2VS                U-2VS
+A5M4                 A5M4, 1938
+Ar-196A-3            Ar-196A-3, 1938
+B5N2                 B5N2, 1939
+B6N2                 B6N2, 1944
+Bf-110C-4            Bf 110 C-4, 1940
+Bf-110C-4B           Bf 110 C-4/B, 1940
+CantZ-506	  	       Cant Z.506B, 1939
+CantZ1007bis         Cant Z.1007bis, 1940
+DXXI_SARJA4          D.XXI sarja 4, 1941
+Do-217K-1            Do 217 K-1, 1942
+Do-217K-2            Do 217 K-2, 1943
+Fi-156               Fi 156, 1939
+Fw-189A-2            Fw 189 A-2, 1941
+FW-200C-3U4          Fw 200 C-3/U4, 1941
+G4M2E                G4M2E, 1945
+G-55                 G.55 Serie I, 1943
+G-55-Late            G.55 Serie I Late, 1944
+G-55_ss0             G.55 Sottoserie 0, 1943
+G-55_ss0-Late        G.55 Sottoserie 0 Late, 1943
+H8K1                 H8K1, 1942
+He-111Z              He 111 Z Zwilling, 1942
+HS-123A-1	           Hs 123 A-1, 1936
+HS-123B-1            Hs 123 B-1, 1936
+IK-3		     	       IK-3, 1941
+Ju-52/3mg4e          Ju 52/3mg4e, 1937
+Ju-52/3mg5e          Ju 52/3mg5e, 1939
+Ki-21-I              Ki-21-I, 1938
+Ki-21-II             Ki-21-II, 1940
+Ki-45-Hei		         Ki-45 Kai Hei, 1943
+Ki-45-Tei		         Ki-45 Kai Tei, 1944
+Ki-46-Otsu           Ki-46-III Kai, 1944
+Ki-46-Otsu-Hei       Ki-46-III Kai Otsu, 1945
+Ki-46-Recce          Ki-46-III Recce, 1943
+L2D                  L2D, 1941
+MC-200series1        MC.200 Serie 1, 1939
+MC-202               MC.202, 1942
+Me-210Ca-1           Me 210 Ca-1, 1943
+Me-210Ca-1ZSTR       Me 210 Ca-1 Zerstörer
+Me-323               Me 323, 1942
+MS406                M.S. 406, 1936
+MS410                M.S. 410, 1938
+MS-Morko             Mörkö Morane, 1944
+MXY-7-11             MXY7-11, 1945
+N1K1-J               N1K1-J, 1944
+N1K1-Ja              N1K1-Ja, 1944
+RE-2002              Re.2002, 1943
+S-328                S-328-II, 1936
+Durand_Yak-9T        Durand Yak-9T
+Kojedubs_La-7        Kojedub La-7
+Pokryshkins_MiG-3    Pokryshkin MiG-3
+Pokryshkins_P-39N1   Pokryshkin P-39N-1
+Rechkalovs_P-39Q15   Rechkalov P-39Q-15
+Safonovs_I-16_24     Safonov I-16 Type 24
+Graf_Bf-109G-6       Graf Bf 109 G-6
+Hartmann_Bf-109G-6   Hartmann Bf 109 G-6
+Hans_Rudels_Ju-87G-2 Ulrich Rudel Ju 87 G-2
+Nowotnys_Me-262A-1a  Nowotny Me 262 A-1a
+Fabian_Bf-109G-10    Fabian Bf 109 G-10
+Heppes_Bf-109G-6     Heppes Bf 109 G-6
+Kovacs_Bf-109G-6     Kovacs Bf 109 G-6
+Molnar_Bf-109G-6     Molnar Bf 109 G-6
+Sarvanto_DXXI	       Sarvanto D.XXI

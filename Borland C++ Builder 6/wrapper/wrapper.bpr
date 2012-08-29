@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="wrapper.dll"/>
+    <OBJFILES value="wrapper.obj"/>
+    <RESFILES value="wrapper.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="rtl.lib"/>
+    <SPARELIBS value="rtl.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      indy.bpi bcb2kaxserver.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="wrapper.cpp"/>
+    <INCLUDEPATH value="SFS2\wrapper;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents"/>
+    <LIBPATH value="SFS2\wrapper;$(BCB)\Projects\Lib;&quot;c:\program files\borland\cbuilder6\lib\debug&quot;;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-ISFS2\wrapper -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I$(BCB)\source\bmthread -I$(BCB)\source\dxpagecontrol 
+      -I$(BCB)\source\lmdtools -I$(BCB)\source\coolcontrols 
+      -I$(BCB)\source\rxlib -I$(BCB)\source\perlregex 
+      -I$(BCB)\source\shellcontrols -I$(BCB)\source\raizecomponents -src_suffix 
+      cpp -boa"/>
+    <CFLAG1 value="-WD -O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -ff -X- -a8 -6 -b- -d -k- -vi 
+      -tWD -tWM -c"/>
+    <PFLAGS value="-$Y- -$L- -$I- -$D- -$C- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpd -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0d32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="wrapper.cpp" FORMNAME="" UNITNAME="wrapper" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="wrapper.bpf" FORMNAME="" UNITNAME="wrapper" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="wrapper.res" FORMNAME="" UNITNAME="" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="sfs.h" FORMNAME="" UNITNAME="sfs.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=1
+MajorVer=3
+MinorVer=0
+Release=6
+Build=4
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=1
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=SAS - Special Aircraft Service / UP - UltraPack / AMT - Aviator Mod Team
+FileDescription=UP/SAS enhanced wrapper for modded IL-2 Sturmovik 1946
+FileVersion=3.0.6.4
+InternalName=UP/SAS enhanced wrapper
+LegalCopyright=© UP/SAS June 2011
+LegalTrademarks=SAS - Special Aircraft Service / UP - UltraPack / AMT - Aviator Mod Team
+OriginalFilename=wrapper.dll
+ProductName=UP/SAS enhanced wrapper
+ProductVersion=3.0.6
+Comments=thx to QTim for base version of wrapper.dll
+Author=SAS~Storebror
+
+[HistoryLists\hlIncludePath]
+Count=13
+Item0=SFS2\wrapper;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents
+Item1=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents
+Item2=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols
+Item3=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex
+Item4=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib
+Item5=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols
+Item6=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools
+Item7=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol
+Item8=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\bmthread
+Item9=$(BCB)\include;$(BCB)\include\vcl
+Item10=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\embeddedwb
+Item11=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\fibplus
+Item12=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\FIBPlus;$(BCB)\Source\FIBPlus\Editors
+
+[HistoryLists\hlLibraryPath]
+Count=13
+Item0=SFS2\wrapper;$(BCB)\Projects\Lib;c:\program files\borland\cbuilder6\lib\debug;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents
+Item1=$(BCB)\Projects\Lib;c:\program files\borland\cbuilder6\lib\debug;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents
+Item2=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols;$(BCB)\source\raizecomponents
+Item3=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex;$(BCB)\source\shellcontrols
+Item4=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib;$(BCB)\source\perlregex
+Item5=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols;$(BCB)\source\rxlib
+Item6=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools;$(BCB)\source\coolcontrols
+Item7=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol;$(BCB)\source\lmdtools
+Item8=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread;$(BCB)\source\dxpagecontrol
+Item9=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\bmthread
+Item10=$(BCB)\lib\obj;$(BCB)\lib
+Item11=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\fibplus
+Item12=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\FIBPlus;$(BCB)\Source\FIBPlus\Editors
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=/f:files2 /m:mods2
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=C:\TEMP\wrapper project\wrapper\loaddll.exe
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>
