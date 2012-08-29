@@ -8,7 +8,7 @@ public class GUIClient extends GWindow
   public void setPosSize()
   {
     setPos(0.0F, 0.0F);
-    setSize(this.parentWindow.win.dx, this.parentWindow.win.dy);
+    setSize(this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.win.dx, this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.win.dy);
   }
   public void resolutionChanged() {
     setPosSize();

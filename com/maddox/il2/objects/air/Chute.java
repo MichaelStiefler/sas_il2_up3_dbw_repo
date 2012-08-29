@@ -149,23 +149,23 @@ public class Chute extends ActorMesh
       return;
     }
 
-    this.pos.getAbs(p);
-    Engine.land(); float f = Landscape.HQ((float)p.x, (float)p.y);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    Engine.land(); float f = Landscape.HQ((float)p.jdField_x_of_type_Double, (float)p.jdField_y_of_type_Double);
 
     p.z = f;
     this.st = (this.st == 2 ? 3 : 1);
     this.animStartTime = Time.current();
 
-    this.pos.getAbs(o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(o);
 
     Vector3f localVector3f = new Vector3f();
-    Engine.land().N((float)p.x, (float)p.y, localVector3f);
+    Engine.land().N((float)p.jdField_x_of_type_Double, (float)p.jdField_y_of_type_Double, localVector3f);
     o.orient(localVector3f);
 
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
 
     setOwner(null);
-    this.pos.setBase(null, null, true);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, true);
 
     this.disappearTime = (Time.tickNext() + World.Rnd().nextInt(25000, 35000));
   }
@@ -258,8 +258,8 @@ public class Chute extends ActorMesh
 
     setOwner(paramActor);
 
-    this.pos.setBase(paramActor, null, false);
-    this.pos.resetAsBase();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, null, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
     setArmy(0);
 
     this.st = 0;

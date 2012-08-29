@@ -21,11 +21,11 @@ public class GLADIATOR1J8A extends GLADIATOR
 
     Property.set(localClass, "originCountry", PaintScheme.countryFinland);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303sipzl 600", "MGunBrowning303sipzl 600", "MGunBrowning303k 400", "MGunBrowning303k 400" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303sipzl 600", "MGunBrowning303sipzl 600", "MGunBrowning303k 400", "MGunBrowning303k 400" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

@@ -61,8 +61,8 @@ public class SpritesFog extends Actor
 
   public SpritesFog(Actor paramActor, float paramFloat1, float paramFloat2, float paramFloat3) {
     this.draw = new Draw();
-    this.pos = new ActorPosMove(this, new Loc());
-    this.pos.setBase(paramActor, null, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this, new Loc());
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, null, false);
     drawing(false);
 
     setHeight(paramFloat2, paramFloat3);
@@ -109,7 +109,7 @@ public class SpritesFog extends Actor
 
       if (f < 0.01D)
         return;
-      Render.drawSetMaterial(SpritesFog.this.mat, (float)SpritesFog.this.p.x, (float)SpritesFog.this.p.y, (float)SpritesFog.this.p.z, 30.0F);
+      Render.drawSetMaterial(SpritesFog.this.mat, (float)SpritesFog.this.p.jdField_x_of_type_Double, (float)SpritesFog.this.p.jdField_y_of_type_Double, (float)SpritesFog.this.p.jdField_z_of_type_Double, 30.0F);
       Render.drawBeginSprites(0);
       draw(69, 83.0F, 1, f);
       Render.drawEnd();
@@ -117,9 +117,9 @@ public class SpritesFog extends Actor
 
     private void draw(int paramInt1, float paramFloat1, int paramInt2, float paramFloat2) {
       float f1 = paramInt1 * paramInt2 + paramInt1 / 2;
-      float f2 = (int)(SpritesFog.this.p.x / paramInt1 + 0.5D) * paramInt1;
-      float f3 = (int)(SpritesFog.this.p.y / paramInt1 + 0.5D) * paramInt1;
-      float f4 = (int)(SpritesFog.this.p.z / paramInt1 + 0.5D) * paramInt1;
+      float f2 = (int)(SpritesFog.this.p.jdField_x_of_type_Double / paramInt1 + 0.5D) * paramInt1;
+      float f3 = (int)(SpritesFog.this.p.jdField_y_of_type_Double / paramInt1 + 0.5D) * paramInt1;
+      float f4 = (int)(SpritesFog.this.p.jdField_z_of_type_Double / paramInt1 + 0.5D) * paramInt1;
       for (int i = -paramInt2; i <= paramInt2; i++)
         for (int j = -paramInt2; j <= paramInt2; j++)
           for (int k = -paramInt2; k <= paramInt2; k++) {
@@ -129,11 +129,11 @@ public class SpritesFog extends Actor
             SpritesFog.p1.set(f1, 0.0D, 0.0D);
             SpritesFog.this.o.transform(SpritesFog.p1);
             SpritesFog.p1.add(SpritesFog.this.p, SpritesFog.p1);
-            float f8 = (float)(SpritesFog.p1.x - SpritesFog.this.p.x);
-            float f9 = (float)(SpritesFog.p1.y - SpritesFog.this.p.y);
-            float f10 = (float)(SpritesFog.p1.z - SpritesFog.this.p.z);
+            float f8 = (float)(SpritesFog.p1.jdField_x_of_type_Double - SpritesFog.this.p.jdField_x_of_type_Double);
+            float f9 = (float)(SpritesFog.p1.jdField_y_of_type_Double - SpritesFog.this.p.jdField_y_of_type_Double);
+            float f10 = (float)(SpritesFog.p1.jdField_z_of_type_Double - SpritesFog.this.p.jdField_z_of_type_Double);
             float f11 = f8 * f8 + f9 * f9 + f10 * f10;
-            float f12 = ((f5 - (float)SpritesFog.this.p.x) * f8 + (f6 - (float)SpritesFog.this.p.y) * f9 + (f7 - (float)SpritesFog.this.p.z) * f10) / f11;
+            float f12 = ((f5 - (float)SpritesFog.this.p.jdField_x_of_type_Double) * f8 + (f6 - (float)SpritesFog.this.p.jdField_y_of_type_Double) * f9 + (f7 - (float)SpritesFog.this.p.jdField_z_of_type_Double) * f10) / f11;
             if ((f12 >= 0.1F) && (f12 <= 1.0F)) {
               float f13 = paramFloat2;
               if (f12 < 0.2F) f13 *= (f12 - 0.1F) / 0.1F;

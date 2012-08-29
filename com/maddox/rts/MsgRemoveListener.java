@@ -22,8 +22,8 @@ public class MsgRemoveListener extends Message
     MsgRemoveListener localMsgRemoveListener = (MsgRemoveListener)cache.get();
     localMsgRemoveListener._listener = paramObject2;
     localMsgRemoveListener._param = paramObject3;
-    if ((paramInt & 0x40) != 0) localMsgRemoveListener._time = Time.currentReal(); else
-      localMsgRemoveListener._time = Time.current();
+    if ((paramInt & 0x40) != 0) localMsgRemoveListener.jdField__time_of_type_Long = Time.currentReal(); else
+      localMsgRemoveListener.jdField__time_of_type_Long = Time.current();
     localMsgRemoveListener.post(paramInt, paramObject1);
   }
 
@@ -32,7 +32,7 @@ public class MsgRemoveListener extends Message
     MsgRemoveListener localMsgRemoveListener = (MsgRemoveListener)cache.get();
     localMsgRemoveListener._listener = paramObject2;
     localMsgRemoveListener._param = paramObject3;
-    localMsgRemoveListener._time = paramLong;
+    localMsgRemoveListener.jdField__time_of_type_Long = paramLong;
     localMsgRemoveListener.post(paramInt, paramObject1);
   }
 

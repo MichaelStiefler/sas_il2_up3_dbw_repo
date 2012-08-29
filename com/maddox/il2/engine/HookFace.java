@@ -74,7 +74,7 @@ public class HookFace extends Hook
 
   public HookFace(ActorMesh paramActorMesh, Loc paramLoc)
   {
-    Loc localLoc = paramActorMesh.pos.getAbs();
+    Loc localLoc = paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
     l2.sub(paramLoc, localLoc);
     l2.getMatrix(this.mRel);
     this.mesh = paramActorMesh.mesh();
@@ -86,7 +86,7 @@ public class HookFace extends Hook
 
   public HookFace(ActorMesh paramActorMesh, Loc paramLoc, boolean paramBoolean)
   {
-    Loc localLoc = paramActorMesh.pos.getAbs();
+    Loc localLoc = paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
     l2.sub(paramLoc, localLoc);
     l2.getMatrix(this.mRel);
     this.mesh = paramActorMesh.mesh();

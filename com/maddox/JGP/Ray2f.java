@@ -21,8 +21,8 @@ public class Ray2f
 
   public final void set(Point2f paramPoint2f1, Point2f paramPoint2f2)
   {
-    this.LN.N.x = (paramPoint2f2.x - paramPoint2f1.x);
-    this.LN.N.y = (paramPoint2f2.y - paramPoint2f1.y);
+    this.LN.N.jdField_x_of_type_Float = (paramPoint2f2.jdField_x_of_type_Float - paramPoint2f1.jdField_x_of_type_Float);
+    this.LN.N.jdField_y_of_type_Float = (paramPoint2f2.jdField_y_of_type_Float - paramPoint2f1.jdField_y_of_type_Float);
     this.LN.N.normalize();
     this.LN.C = (-this.LN.N.dot(paramPoint2f1));
 
@@ -51,7 +51,7 @@ public class Ray2f
   public final Point2f cross(Ray2f paramRay2f)
     throws JGPException
   {
-    float[] arrayOfFloat = { this.LA.N.x, this.LA.N.y, -this.LA.C, paramRay2f.LA.N.x, paramRay2f.LA.N.y, -paramRay2f.LA.C };
+    float[] arrayOfFloat = { this.LA.N.jdField_x_of_type_Float, this.LA.N.jdField_y_of_type_Float, -this.LA.C, paramRay2f.LA.N.jdField_x_of_type_Float, paramRay2f.LA.N.jdField_y_of_type_Float, -paramRay2f.LA.C };
 
     Point2f localPoint2f = NSolvef.Solve2f(arrayOfFloat);
     if ((deviationFB(localPoint2f) >= 0.0F) && (paramRay2f.deviationFB(localPoint2f) >= 0.0F)) return localPoint2f;
@@ -61,7 +61,7 @@ public class Ray2f
   public final Point2f cross(Line2f paramLine2f)
     throws JGPException
   {
-    float[] arrayOfFloat = { this.LA.N.x, this.LA.N.y, -this.LA.C, paramLine2f.N.x, paramLine2f.N.y, -paramLine2f.C };
+    float[] arrayOfFloat = { this.LA.N.jdField_x_of_type_Float, this.LA.N.jdField_y_of_type_Float, -this.LA.C, paramLine2f.N.jdField_x_of_type_Float, paramLine2f.N.jdField_y_of_type_Float, -paramLine2f.C };
 
     Point2f localPoint2f = NSolvef.Solve2f(arrayOfFloat);
     if (deviationFB(localPoint2f) >= 0.0F) return localPoint2f;
@@ -95,7 +95,7 @@ public class Ray2f
   {
     try
     {
-      return "( " + this.LN.N.x + "," + this.LN.N.y + "," + this.LA.cross(this.LN) + " )"; } catch (Exception localException) {
+      return "( " + this.LN.N.jdField_x_of_type_Float + "," + this.LN.N.jdField_y_of_type_Float + "," + this.LA.cross(this.LN) + " )"; } catch (Exception localException) {
     }
     return localException.toString();
   }

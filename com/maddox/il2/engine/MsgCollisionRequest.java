@@ -9,23 +9,23 @@ public class MsgCollisionRequest extends Message
 
   protected static boolean on(Actor paramActor1, Actor paramActor2)
   {
-    msg._sender = paramActor2;
+    msg.jdField__sender_of_type_JavaLangObject = paramActor2;
     res[0] = true;
     msg.send(paramActor1);
-    msg._sender = null;
+    msg.jdField__sender_of_type_JavaLangObject = null;
     if (res[0] == 0)
       return false;
-    msg._sender = paramActor1;
+    msg.jdField__sender_of_type_JavaLangObject = paramActor1;
     res[0] = true;
     msg.send(paramActor2);
-    msg._sender = null;
+    msg.jdField__sender_of_type_JavaLangObject = null;
     return res[0];
   }
 
   public boolean invokeListener(Object paramObject)
   {
     if ((paramObject instanceof MsgCollisionRequestListener)) {
-      ((MsgCollisionRequestListener)paramObject).msgCollisionRequest((Actor)this._sender, res);
+      ((MsgCollisionRequestListener)paramObject).msgCollisionRequest((Actor)this.jdField__sender_of_type_JavaLangObject, res);
       return true;
     }
     return false;

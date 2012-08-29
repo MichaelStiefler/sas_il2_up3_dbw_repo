@@ -9,7 +9,7 @@ public class MGunVz30syn extends MGunVz30s
     GunProperties localGunProperties = super.createProperties();
     localGunProperties.shotFreq = 13.0F;
     localGunProperties.shotFreqDeviation = 0.04F;
-
+    localGunProperties.emitI = 2.0F;
     return localGunProperties;
   }
 }

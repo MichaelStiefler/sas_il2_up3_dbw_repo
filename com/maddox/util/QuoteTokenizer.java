@@ -8,8 +8,9 @@ public class QuoteTokenizer
   {
     this.buf = new StringBuffer(paramString);
 
-    while ((this.buf.length() > 0) && 
-      (this.buf.charAt(0) == ' ')) this.buf.deleteCharAt(0);
+    while (this.buf.length() > 0) {
+      if (this.buf.charAt(0) != ' ') break; this.buf.deleteCharAt(0);
+    }
 
     while (this.buf.length() > 0) {
       int i = this.buf.length() - 1;
@@ -37,8 +38,9 @@ public class QuoteTokenizer
   }
 
   private String nextWord() {
-    while ((this.buf.length() > 0) && 
-      (this.buf.charAt(0) == ' ')) this.buf.deleteCharAt(0);
+    while (this.buf.length() > 0) {
+      if (this.buf.charAt(0) != ' ') break; this.buf.deleteCharAt(0);
+    }
 
     if (this.buf.length() == 0)
       return "";
@@ -58,18 +60,20 @@ public class QuoteTokenizer
         }
         i++;
       }
-    }
-    int j = this.buf.length();
-    while ((i < j) && 
-      (this.buf.charAt(i) != ' ')) {
-      i++;
+    } else {
+      int j = this.buf.length();
+      while (i < j) {
+        if (this.buf.charAt(i) == ' ') break;
+        i++;
+      }
     }
 
     str = this.buf.substring(0, i);
     this.buf.delete(0, i);
 
-    while ((this.buf.length() > 0) && 
-      (this.buf.charAt(0) == ' ')) this.buf.deleteCharAt(0);
+    while (this.buf.length() > 0) {
+      if (this.buf.charAt(0) != ' ') break; this.buf.deleteCharAt(0);
+    }
 
     return str;
   }

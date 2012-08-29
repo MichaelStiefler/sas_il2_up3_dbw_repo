@@ -12,7 +12,7 @@ class OrderRequest_For_Takeoff extends Order
   }
   public void run() {
     Maneuver localManeuver = (Maneuver)Player().FM;
-    if (localManeuver.canITakeoff()) Voice.speakTakeoffPermited((Aircraft)localManeuver.actor); else
-      Voice.speakTakeoffDenied((Aircraft)localManeuver.actor);
+    if (localManeuver.canITakeoff()) Voice.speakTakeoffPermited((Aircraft)localManeuver.jdField_actor_of_type_ComMaddoxIl2EngineActor); else
+      Voice.speakTakeoffDenied((Aircraft)localManeuver.jdField_actor_of_type_ComMaddoxIl2EngineActor);
   }
 }

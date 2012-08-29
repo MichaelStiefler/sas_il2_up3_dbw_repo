@@ -27,7 +27,6 @@ public class RocketGun extends Interpolate
   private boolean bCassette = false;
 
   protected float timeLife = -1.0F;
-  protected int spread = 0;
 
   private float plusPitch = 0.0F;
   private float plusYaw = 0.0F;
@@ -67,7 +66,7 @@ public class RocketGun extends Interpolate
     if (!this.ready)
       return GunEmpty.get();
     if ((paramInt == -1) || (nameEQ(paramHierMesh, paramInt, this.hook.chunkNum()))) {
-      this.bExecuted = true;
+      this.jdField_bExecuted_of_type_Boolean = true;
       this.ready = false;
       return GunEmpty.get();
     }
@@ -76,8 +75,8 @@ public class RocketGun extends Interpolate
 
   protected int bullets()
   {
-    return this.actor != null ? this.bulletss - this.actor.hashCode() : 0; } 
-  protected void bullets(int paramInt) { if (this.actor != null) this.bulletss = (paramInt + this.actor.hashCode()); else this.bulletss = 0; 
+    return this.jdField_actor_of_type_ComMaddoxIl2EngineActor != null ? this.bulletss - this.jdField_actor_of_type_ComMaddoxIl2EngineActor.hashCode() : 0; } 
+  protected void bullets(int paramInt) { if (this.jdField_actor_of_type_ComMaddoxIl2EngineActor != null) this.bulletss = (paramInt + this.jdField_actor_of_type_ComMaddoxIl2EngineActor.hashCode()); else this.bulletss = 0; 
   }
 
   public boolean isEnablePause()
@@ -141,7 +140,7 @@ public class RocketGun extends Interpolate
 
   public boolean isShots()
   {
-    return this.bExecuted;
+    return this.jdField_bExecuted_of_type_Boolean;
   }
 
   public void shots(int paramInt, float paramFloat) {
@@ -154,19 +153,19 @@ public class RocketGun extends Interpolate
     if ((isCassette()) && (paramInt != 0) && (bullets() != -1)) {
       paramInt = bullets();
     }
-    if ((!this.bExecuted) && (paramInt != 0))
+    if ((!this.jdField_bExecuted_of_type_Boolean) && (paramInt != 0))
     {
       if (bullets() == 0)
         return;
       this.curShotStep = 0;
       this.curShots = paramInt;
-      this.bExecuted = true;
-    } else if ((this.bExecuted) && (paramInt != 0))
+      this.jdField_bExecuted_of_type_Boolean = true;
+    } else if ((this.jdField_bExecuted_of_type_Boolean) && (paramInt != 0))
     {
       this.curShots = paramInt;
-    } else if ((this.bExecuted) && (paramInt == 0))
+    } else if ((this.jdField_bExecuted_of_type_Boolean) && (paramInt == 0))
     {
-      this.bExecuted = false;
+      this.jdField_bExecuted_of_type_Boolean = false;
     }
   }
 
@@ -174,22 +173,21 @@ public class RocketGun extends Interpolate
   {
     this.bTickShot = false;
     if (this.curShotStep == 0) {
-      if ((bullets() == 0) || (this.curShots == 0) || (!Actor.isValid(this.actor))) {
+      if ((bullets() == 0) || (this.curShots == 0) || (!Actor.isValid(this.jdField_actor_of_type_ComMaddoxIl2EngineActor))) {
         shots(0);
         return;
       }
       this.bTickShot = true;
       if (this.rocket != null) {
-        this.rocket.pos.setUpdateEnable(true);
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
         if ((this.plusPitch != 0.0F) || (this.plusYaw != 0.0F)) {
-          this.rocket.pos.getAbs(_tmpOr0);
+          this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(_tmpOr0);
           _tmpOr1.setYPR(this.plusYaw, this.plusPitch, 0.0F);
           _tmpOr1.add(_tmpOr0);
-          this.rocket.pos.setAbs(_tmpOr1);
+          this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_tmpOr1);
         }
-        this.rocket.pos.resetAsBase();
-
-        this.rocket.start(this.timeLife, this.spread);
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
+        this.rocket.start(this.timeLife);
 
         if (Actor.isValid(this.rocket)) {
           String str = Property.stringValue(getClass(), "sound", null);
@@ -216,13 +214,13 @@ public class RocketGun extends Interpolate
   private void newRocket() {
     try {
       this.rocket = ((Rocket)this.bulletClass.newInstance());
-      this.rocket.pos.setBase(this.actor, this.hook, false);
+      this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, this.hook, false);
       if (this.bRocketPosRel)
-        this.rocket.pos.changeHookToRel();
-      this.rocket.pos.resetAsBase();
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
+      this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
       this.rocket.visibilityAsBase(true);
       if (this.bRocketPosRel)
-        this.rocket.pos.setUpdateEnable(false); 
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false); 
     } catch (Exception localException) {
     }
   }
@@ -231,12 +229,12 @@ public class RocketGun extends Interpolate
     if (this.bRocketPosRel == paramBoolean) return;
     if (Actor.isValid(this.rocket)) {
       if (paramBoolean) {
-        this.rocket.pos.changeHookToRel();
-        this.rocket.pos.setUpdateEnable(false);
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
       } else {
-        this.rocket.pos.setRel(nullLoc);
-        this.rocket.pos.setBase(this.rocket.pos.base(), this.hook, false);
-        this.rocket.pos.setUpdateEnable(true);
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(nullLoc);
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base(), this.hook, false);
+        this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
       }
     }
     this.bRocketPosRel = paramBoolean;
@@ -259,7 +257,7 @@ public class RocketGun extends Interpolate
 
   public void set(Actor paramActor, String paramString)
   {
-    this.actor = paramActor;
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor = paramActor;
     Class localClass = getClass();
 
     this.bCassette = Property.containsValue(localClass, "cassette");
@@ -278,7 +276,7 @@ public class RocketGun extends Interpolate
     this.hook = ((HookNamed)paramActor.findHook(paramString));
     newRocket();
 
-    this.actor.interpPut(this, null, -1L, null);
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.interpPut(this, null, -1L, null);
   }
 
   public void setConvDistance(float paramFloat1, float paramFloat2)
@@ -286,15 +284,11 @@ public class RocketGun extends Interpolate
     if (!Actor.isValid(this.rocket)) {
       return;
     }
-    Point3d localPoint3d = this.rocket.pos.getRelPoint();
+    Point3d localPoint3d = this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRelPoint();
     Orient localOrient = new Orient();
-    localOrient.set(this.rocket.pos.getRelOrient());
-    float f = (float)Math.sqrt(localPoint3d.y * localPoint3d.y + paramFloat1 * paramFloat1);
-    this.plusYaw = (float)Math.toDegrees(Math.atan(-localPoint3d.y / paramFloat1));
+    localOrient.set(this.rocket.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRelOrient());
+    float f = (float)Math.sqrt(localPoint3d.jdField_y_of_type_Double * localPoint3d.jdField_y_of_type_Double + paramFloat1 * paramFloat1);
+    this.plusYaw = (float)Math.toDegrees(Math.atan(-localPoint3d.jdField_y_of_type_Double / paramFloat1));
     this.plusPitch = paramFloat2;
-  }
-
-  public void setSpreadRnd(int paramInt) {
-    this.spread = paramInt;
   }
 }

@@ -92,7 +92,7 @@ public class GUICampaignNew extends GameState
     if ((paramGameState != null) && (paramGameState.id() == 58)) {
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt)
           {
@@ -263,34 +263,33 @@ public class GUICampaignNew extends GameState
       return;
     HashMap localHashMap = new HashMap();
     String str5;
-    Object localObject1;
-    Object localObject2;
+    DGenCampaign localDGenCampaign;
     if (str3 != null) {
       for (i = 0; i < arrayOfString.length; i++) {
-        str5 = arrayOfString[i];
-        if ((str5 == null) || 
-          (str5.length() != str2.length() + 1 + str3.length()) || 
-          (!str5.regionMatches(true, 0, str2, 0, str2.length())) || 
-          (!str5.regionMatches(true, str5.length() - str3.length(), str3, 0, str3.length()))) continue;
-        localObject1 = str5.substring(str2.length(), str2.length() + 1);
-        localObject2 = new DGenCampaign();
-        ((DGenCampaign)localObject2).fileName = str5;
-        ((DGenCampaign)localObject2).prefix = ((String)localObject1);
-        localHashMap.put(localObject1, localObject2);
+        localObject = arrayOfString[i];
+        if ((localObject == null) || 
+          (((String)localObject).length() != str2.length() + 1 + str3.length()) || 
+          (!((String)localObject).regionMatches(true, 0, str2, 0, str2.length())) || 
+          (!((String)localObject).regionMatches(true, ((String)localObject).length() - str3.length(), str3, 0, str3.length()))) continue;
+        str5 = ((String)localObject).substring(str2.length(), str2.length() + 1);
+        localDGenCampaign = new DGenCampaign();
+        localDGenCampaign.fileName = ((String)localObject);
+        localDGenCampaign.prefix = str5;
+        localHashMap.put(str5, localDGenCampaign);
       }
     }
     for (int i = 0; i < arrayOfString.length; i++) {
-      str5 = arrayOfString[i];
-      if ((str5 == null) || 
-        (str5.length() != str2.length() + 1 + str4.length()) || 
-        (!str5.regionMatches(true, 0, str2, 0, str2.length())) || 
-        (!str5.regionMatches(true, str5.length() - str4.length(), str4, 0, str4.length()))) continue;
-      localObject1 = str5.substring(str2.length(), str2.length() + 1);
-      if (!localHashMap.containsKey(localObject1)) {
-        localObject2 = new DGenCampaign();
-        ((DGenCampaign)localObject2).fileName = str5;
-        ((DGenCampaign)localObject2).prefix = ((String)localObject1);
-        localHashMap.put(localObject1, localObject2);
+      localObject = arrayOfString[i];
+      if ((localObject == null) || 
+        (((String)localObject).length() != str2.length() + 1 + str4.length()) || 
+        (!((String)localObject).regionMatches(true, 0, str2, 0, str2.length())) || 
+        (!((String)localObject).regionMatches(true, ((String)localObject).length() - str4.length(), str4, 0, str4.length()))) continue;
+      str5 = ((String)localObject).substring(str2.length(), str2.length() + 1);
+      if (!localHashMap.containsKey(str5)) {
+        localDGenCampaign = new DGenCampaign();
+        localDGenCampaign.fileName = ((String)localObject);
+        localDGenCampaign.prefix = str5;
+        localHashMap.put(str5, localDGenCampaign);
       }
 
     }
@@ -299,28 +298,28 @@ public class GUICampaignNew extends GameState
       return;
     }
     this._scanMap.clear();
-    Iterator localIterator = localHashMap.keySet().iterator();
-    while (localIterator.hasNext()) {
-      str5 = (String)localIterator.next();
-      localObject1 = (DGenCampaign)localHashMap.get(str5);
+    Object localObject = localHashMap.keySet().iterator();
+    while (((Iterator)localObject).hasNext()) {
+      str5 = (String)((Iterator)localObject).next();
+      localDGenCampaign = (DGenCampaign)localHashMap.get(str5);
       try {
-        localObject2 = new BufferedReader(new SFSReader("dgen/" + ((DGenCampaign)localObject1).fileName, RTSConf.charEncoding));
-        ((DGenCampaign)localObject1).name = UnicodeTo8bit.load(((BufferedReader)localObject2).readLine(), false);
-        ((DGenCampaign)localObject1).description = UnicodeTo8bit.load(((BufferedReader)localObject2).readLine(), false);
-        ((BufferedReader)localObject2).close();
-        if ((((DGenCampaign)localObject1).name != null) && (((DGenCampaign)localObject1).name.length() > 0) && (((DGenCampaign)localObject1).description != null) && (((DGenCampaign)localObject1).description.length() > 0))
+        BufferedReader localBufferedReader = new BufferedReader(new SFSReader("dgen/" + localDGenCampaign.fileName, RTSConf.charEncoding));
+        localDGenCampaign.name = UnicodeTo8bit.load(localBufferedReader.readLine(), false);
+        localDGenCampaign.description = UnicodeTo8bit.load(localBufferedReader.readLine(), false);
+        localBufferedReader.close();
+        if ((localDGenCampaign.name != null) && (localDGenCampaign.name.length() > 0) && (localDGenCampaign.description != null) && (localDGenCampaign.description.length() > 0))
         {
-          this._scanMap.put(((DGenCampaign)localObject1).name, localObject1);
+          this._scanMap.put(localDGenCampaign.name, localDGenCampaign);
         } } catch (Exception localException) {
       }
     }
     localHashMap.clear();
-    localIterator = this._scanMap.keySet().iterator();
-    while (localIterator.hasNext()) {
-      str5 = (String)localIterator.next();
-      localObject1 = (DGenCampaign)this._scanMap.get(str5);
-      this.campaignLst.add(localObject1);
-      this.wCampaign.add(((DGenCampaign)localObject1).name);
+    localObject = this._scanMap.keySet().iterator();
+    while (((Iterator)localObject).hasNext()) {
+      str5 = (String)((Iterator)localObject).next();
+      localDGenCampaign = (DGenCampaign)this._scanMap.get(str5);
+      this.campaignLst.add(localDGenCampaign);
+      this.wCampaign.add(localDGenCampaign.name);
     }
     this._scanMap.clear();
   }
@@ -391,7 +390,7 @@ public class GUICampaignNew extends GameState
     }
     Main.cur().currentMissionFile = localCampaign.nextMission();
     if (Main.cur().currentMissionFile == null) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+      new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
       {
         public void result(int paramInt)
         {
@@ -459,16 +458,8 @@ public class GUICampaignNew extends GameState
             int i = localSectFile.sectionIndex("list");
             if ((i >= 0) && 
               (localSectFile.varExist(i, str1))) {
-              new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, GUICampaignNew.this.i18n("campnew.Confirm"), GUICampaignNew.this.i18n("campnew.Exist"), 1, 0.0F)
-              {
-                public void result(int paramInt)
-                {
-                  if (paramInt == 3)
-                    GUICampaignNew.this.doStartCampaign();
-                  else
-                    GUICampaignNew.this.client.activateWindow();
-                }
-              };
+              new GUICampaignNew.3(this, Main3D.cur3D().guiManager.root, 20.0F, true, GUICampaignNew.this.i18n("campnew.Confirm"), GUICampaignNew.this.i18n("campnew.Exist"), 1, 0.0F);
+
               return true;
             }
           }
@@ -584,26 +575,26 @@ public class GUICampaignNew extends GameState
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
         setCanvasFont(0);
         setCanvasColorBLACK();
-        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.root.C.font.height);
+        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height);
       }
     }
 
     public void computeSize() {
       String str = GUICampaignNew.this.textDescription;
       if (str != null) {
-        this.win.dx = this.parentWindow.win.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
         setCanvasFont(0);
-        int i = computeLines(str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-        this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
-        if (this.win.dy > this.parentWindow.win.dy) {
-          this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-          i = computeLines(str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-          this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        int i = computeLines(str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) {
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW());
+          i = computeLines(str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
         }
       } else {
-        this.win.dx = this.parentWindow.win.dx;
-        this.win.dy = this.parentWindow.win.dy;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       }
     }
   }
@@ -616,8 +607,8 @@ public class GUICampaignNew extends GameState
 
     public void created()
     {
-      this.fixed = (GUICampaignNew.this.wDescript = (GUICampaignNew.Descript)create(new GUICampaignNew.Descript(GUICampaignNew.this)));
-      this.fixed.bNotify = true;
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = (GUICampaignNew.this.wDescript = (GUICampaignNew.Descript)create(new GUICampaignNew.Descript(GUICampaignNew.this)));
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient.bNotify = true;
       this.bNotify = true;
     }
     public void resized() {
@@ -625,10 +616,10 @@ public class GUICampaignNew extends GameState
         GUICampaignNew.this.wDescript.computeSize();
       }
       super.resized();
-      if (this.vScroll.isVisible()) {
+      if (this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible()) {
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
       }
     }
 
@@ -641,7 +632,7 @@ public class GUICampaignNew extends GameState
     public void render() {
       setCanvasColorWHITE();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
     }
   }
 

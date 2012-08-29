@@ -62,7 +62,7 @@ public class Spawn
     }
 
     int j = paramString.lastIndexOf('$');
-    if (j >= 0) {
+    while (j >= 0) {
       String str = paramString.substring(0, j);
       Class localClass;
       try {
@@ -79,43 +79,41 @@ public class Spawn
       if (!SoftClass.class.isAssignableFrom(localClass))
       {
         j = -1;
+        break;
       }
-      else
+
+      Object localObject2 = null;
+      try {
+        localObject2 = Class.forName(paramString);
+      } catch (Throwable localThrowable3) {
+      }
+      if (localObject2 != null)
       {
-        Object localObject2 = null;
-        try {
-          localObject2 = Class.forName(paramString);
-        } catch (Throwable localThrowable3) {
-        }
-        if (localObject2 != null)
-        {
-          if (paramBoolean) {
-            System.out.println("'" + paramString + "' can't be SoftClass and " + "standard class simultaneously.");
-          }
-
-          return null;
+        if (paramBoolean) {
+          System.out.println("'" + paramString + "' can't be SoftClass and " + "standard class simultaneously.");
         }
 
-        localObject2 = new Class[] { String.class };
-        Object[] arrayOfObject = { paramString.substring(j + 1) };
-        try {
-          Method localMethod = localClass.getMethod("registerSpawner", localObject2);
-          localMethod.invoke(null, arrayOfObject);
-        } catch (NoSuchMethodException localNoSuchMethodException) {
-          if (paramBoolean) {
-            System.out.println("SoftClass '" + str + "' must have method registerSpawner()");
+        return null;
+      }
 
-            localNoSuchMethodException.printStackTrace();
-          }
-          return null;
-        } catch (Exception localException) {
-          if (paramBoolean) {
-            System.out.println(paramString + ".registerSpawner() failed.");
-            localException.printStackTrace();
-          }
-          return null;
+      localObject2 = new Class[] { String.class };
+      Object[] arrayOfObject = { paramString.substring(j + 1) };
+      try {
+        Method localMethod = localClass.getMethod("registerSpawner", localObject2);
+        localMethod.invoke(null, arrayOfObject);
+      } catch (NoSuchMethodException localNoSuchMethodException) {
+        if (paramBoolean) {
+          System.out.println("SoftClass '" + str + "' must have method registerSpawner()");
+
+          localNoSuchMethodException.printStackTrace();
         }
-
+        return null;
+      } catch (Exception localException) {
+        if (paramBoolean) {
+          System.out.println(paramString + ".registerSpawner() failed.");
+          localException.printStackTrace();
+        }
+        return null;
       }
 
     }

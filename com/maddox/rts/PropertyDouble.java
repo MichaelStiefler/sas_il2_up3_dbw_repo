@@ -5,12 +5,12 @@ class PropertyDouble extends Property
   private double value = 0.0D;
 
   public PropertyDouble(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
+    invokeObserver(Property.lastMapInt, Property.lastAction); }
 
   public PropertyDouble(Object paramObject, String paramString, double paramDouble) {
     super(paramObject, paramString);
     this.value = paramDouble;
-    invokeObserver(lastMapInt, lastAction);
+    invokeObserver(Property.lastMapInt, Property.lastAction);
   }
   public Class classValue() { return Double.class; } 
   public int intValue() { return (int)this.value; } 

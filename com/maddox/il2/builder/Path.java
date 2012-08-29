@@ -18,7 +18,7 @@ public class Path extends Actor
 
   public boolean isDrawing()
   {
-    if ((this.flags & 0x1) == 0) return false;
+    if ((this.jdField_flags_of_type_Int & 0x1) == 0) return false;
     int i = getArmy();
     return Plugin.builder.conf.bShowArmy[i];
   }
@@ -27,7 +27,7 @@ public class Path extends Actor
     return this;
   }
   public Path(Pathes paramPathes) {
-    this.flags |= 8192;
+    this.jdField_flags_of_type_Int |= 8192;
     setOwner(paramPathes);
     drawing(true);
   }
@@ -59,11 +59,11 @@ public class Path extends Actor
   }
 
   public int points() {
-    return this.ownerAttached.size();
+    return this.jdField_ownerAttached_of_type_JavaUtilList.size();
   }
 
   public PPoint point(int paramInt) {
-    return (PPoint)this.ownerAttached.get(paramInt);
+    return (PPoint)this.jdField_ownerAttached_of_type_JavaUtilList.get(paramInt);
   }
 
   public void computeTimes() {

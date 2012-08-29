@@ -12,16 +12,16 @@ public class CellTools
   {
     double d1 = 0.0D;
     double d2 = 0.0D;
-    double d3 = (paramPoint3d2.y - paramPoint3d1.y) * (paramPoint3d4.x - paramPoint3d3.x) - (paramPoint3d4.y - paramPoint3d3.y) * (paramPoint3d2.x - paramPoint3d1.x);
-    double d4 = (paramPoint3d3.y - paramPoint3d1.y) * (paramPoint3d2.x - paramPoint3d1.x) - (paramPoint3d2.y - paramPoint3d1.y) * (paramPoint3d3.x - paramPoint3d1.x);
-    double d5 = (paramPoint3d3.y - paramPoint3d1.y) * (paramPoint3d4.x - paramPoint3d3.x) - (paramPoint3d4.y - paramPoint3d3.y) * (paramPoint3d3.x - paramPoint3d1.x);
+    double d3 = (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) - (paramPoint3d4.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) * (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    double d4 = (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) - (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    double d5 = (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) - (paramPoint3d4.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) * (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
     if (d3 != 0.0D) {
       d1 = d4 / d3;
       d2 = d5 / d3;
       if ((d1 <= 1.0D) && (d1 >= 0.0D) && (d2 >= 0.0D) && (d2 <= 1.0D)) {
         if (paramPoint2d != null) {
-          paramPoint2d.x = (paramPoint3d1.x + (paramPoint3d2.x - paramPoint3d1.x) * d2);
-          paramPoint2d.y = (paramPoint3d1.y + (paramPoint3d2.y - paramPoint3d1.y) * d2);
+          paramPoint2d.jdField_x_of_type_Double = (paramPoint3d1.jdField_x_of_type_Double + (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) * d2);
+          paramPoint2d.jdField_y_of_type_Double = (paramPoint3d1.jdField_y_of_type_Double + (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * d2);
         }
         return true;
       }
@@ -34,9 +34,9 @@ public class CellTools
   {
     double d1 = 0.0D;
     double d2 = 0.0D;
-    double d3 = (paramPoint3d2.y - paramPoint3d1.y) * (paramPoint3d4.x - paramPoint3d3.x) - (paramPoint3d4.y - paramPoint3d3.y) * (paramPoint3d2.x - paramPoint3d1.x);
-    double d4 = (paramPoint3d3.y - paramPoint3d1.y) * (paramPoint3d2.x - paramPoint3d1.x) - (paramPoint3d2.y - paramPoint3d1.y) * (paramPoint3d3.x - paramPoint3d1.x);
-    double d5 = (paramPoint3d3.y - paramPoint3d1.y) * (paramPoint3d4.x - paramPoint3d3.x) - (paramPoint3d4.y - paramPoint3d3.y) * (paramPoint3d3.x - paramPoint3d1.x);
+    double d3 = (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) - (paramPoint3d4.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) * (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    double d4 = (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) - (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    double d5 = (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) * (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) - (paramPoint3d4.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) * (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
     if (d3 != 0.0D) {
       d1 = d4 / d3;
       d2 = d5 / d3;
@@ -82,16 +82,16 @@ public class CellTools
   {
     int i = 0; int j = 0; int k = 0;
 
-    double d1 = (paramPoint3d4.x - paramPoint3d1.x) * (paramPoint3d2.y - paramPoint3d1.y) / (paramPoint3d2.x - paramPoint3d1.x) + paramPoint3d1.y - paramPoint3d4.y;
-    double d2 = (paramPoint3d3.x - paramPoint3d1.x) * (paramPoint3d2.y - paramPoint3d1.y) / (paramPoint3d2.x - paramPoint3d1.x) + paramPoint3d1.y - paramPoint3d3.y;
+    double d1 = (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) * (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) / (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) + paramPoint3d1.jdField_y_of_type_Double - paramPoint3d4.jdField_y_of_type_Double;
+    double d2 = (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) * (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) / (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) + paramPoint3d1.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) i = 1;
 
-    d1 = (paramPoint3d4.x - paramPoint3d2.x) * (paramPoint3d3.y - paramPoint3d2.y) / (paramPoint3d3.x - paramPoint3d2.x) + paramPoint3d2.y - paramPoint3d4.y;
-    d2 = (paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d3.y - paramPoint3d2.y) / (paramPoint3d3.x - paramPoint3d2.x) + paramPoint3d2.y - paramPoint3d1.y;
+    d1 = (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) / (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + paramPoint3d2.jdField_y_of_type_Double - paramPoint3d4.jdField_y_of_type_Double;
+    d2 = (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) / (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) j = 1;
 
-    d1 = (paramPoint3d4.x - paramPoint3d3.x) * (paramPoint3d1.y - paramPoint3d3.y) / (paramPoint3d1.x - paramPoint3d3.x) + paramPoint3d3.y - paramPoint3d4.y;
-    d2 = (paramPoint3d2.x - paramPoint3d3.x) * (paramPoint3d1.y - paramPoint3d3.y) / (paramPoint3d1.x - paramPoint3d3.x) + paramPoint3d3.y - paramPoint3d2.y;
+    d1 = (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) / (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) + paramPoint3d3.jdField_y_of_type_Double - paramPoint3d4.jdField_y_of_type_Double;
+    d2 = (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) / (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) + paramPoint3d3.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) k = 1;
 
     return (i == 1) && (j == 1) && (k == 1);
@@ -101,20 +101,20 @@ public class CellTools
   {
     int i = 0; int j = 0; int k = 0; int m = 0;
 
-    double d1 = (paramPoint3d5.x - paramPoint3d1.x) * (paramPoint3d2.y - paramPoint3d1.y) / (paramPoint3d2.x - paramPoint3d1.x) + paramPoint3d1.y - paramPoint3d5.y;
-    double d2 = (paramPoint3d3.x - paramPoint3d1.x) * (paramPoint3d2.y - paramPoint3d1.y) / (paramPoint3d2.x - paramPoint3d1.x) + paramPoint3d1.y - paramPoint3d3.y;
+    double d1 = (paramPoint3d5.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) * (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) / (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) + paramPoint3d1.jdField_y_of_type_Double - paramPoint3d5.jdField_y_of_type_Double;
+    double d2 = (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) * (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) / (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) + paramPoint3d1.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) i = 1;
 
-    d1 = (paramPoint3d5.x - paramPoint3d2.x) * (paramPoint3d3.y - paramPoint3d2.y) / (paramPoint3d3.x - paramPoint3d2.x) + paramPoint3d2.y - paramPoint3d5.y;
-    d2 = (paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d3.y - paramPoint3d2.y) / (paramPoint3d3.x - paramPoint3d2.x) + paramPoint3d2.y - paramPoint3d1.y;
+    d1 = (paramPoint3d5.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) / (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + paramPoint3d2.jdField_y_of_type_Double - paramPoint3d5.jdField_y_of_type_Double;
+    d2 = (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d3.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) / (paramPoint3d3.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) j = 1;
 
-    d1 = (paramPoint3d5.x - paramPoint3d3.x) * (paramPoint3d4.y - paramPoint3d3.y) / (paramPoint3d4.x - paramPoint3d3.x) + paramPoint3d3.y - paramPoint3d5.y;
-    d2 = (paramPoint3d1.x - paramPoint3d3.x) * (paramPoint3d4.y - paramPoint3d3.y) / (paramPoint3d4.x - paramPoint3d3.x) + paramPoint3d3.y - paramPoint3d1.y;
+    d1 = (paramPoint3d5.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) * (paramPoint3d4.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) / (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) + paramPoint3d3.jdField_y_of_type_Double - paramPoint3d5.jdField_y_of_type_Double;
+    d2 = (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) * (paramPoint3d4.jdField_y_of_type_Double - paramPoint3d3.jdField_y_of_type_Double) / (paramPoint3d4.jdField_x_of_type_Double - paramPoint3d3.jdField_x_of_type_Double) + paramPoint3d3.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) k = 1;
 
-    d1 = (paramPoint3d5.x - paramPoint3d4.x) * (paramPoint3d1.y - paramPoint3d4.y) / (paramPoint3d1.x - paramPoint3d4.x) + paramPoint3d4.y - paramPoint3d5.y;
-    d2 = (paramPoint3d2.x - paramPoint3d4.x) * (paramPoint3d1.y - paramPoint3d4.y) / (paramPoint3d1.x - paramPoint3d4.x) + paramPoint3d4.y - paramPoint3d2.y;
+    d1 = (paramPoint3d5.jdField_x_of_type_Double - paramPoint3d4.jdField_x_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d4.jdField_y_of_type_Double) / (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d4.jdField_x_of_type_Double) + paramPoint3d4.jdField_y_of_type_Double - paramPoint3d5.jdField_y_of_type_Double;
+    d2 = (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d4.jdField_x_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d4.jdField_y_of_type_Double) / (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d4.jdField_x_of_type_Double) + paramPoint3d4.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double;
     if (d1 * d2 >= 0.0D) m = 1;
 
     return (i == 1) && (j == 1) && (k == 1) && (m == 1);
@@ -133,13 +133,13 @@ public class CellTools
       Point3d localPoint3d2 = (Point3d)paramArrayList.get(j);
       Point3d localPoint3d3 = (Point3d)paramArrayList.get(k);
 
-      double d1 = (paramPoint3d.x - localPoint3d1.x) * (localPoint3d2.y - localPoint3d1.y) / (localPoint3d2.x - localPoint3d1.x) + localPoint3d1.y - paramPoint3d.y;
-      double d2 = (localPoint3d3.x - localPoint3d1.x) * (localPoint3d2.y - localPoint3d1.y) / (localPoint3d2.x - localPoint3d1.x) + localPoint3d1.y - localPoint3d3.y;
+      double d1 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) * (localPoint3d2.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double) / (localPoint3d2.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) + localPoint3d1.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double;
+      double d2 = (localPoint3d3.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) * (localPoint3d2.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double) / (localPoint3d2.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) + localPoint3d1.jdField_y_of_type_Double - localPoint3d3.jdField_y_of_type_Double;
       arrayOfChar[m] = (char)(d1 * d2 >= 0.0D ? 1 : 0);
     }
 
-    for (m = 0; m < paramArrayList.size(); m++) {
-      if (arrayOfChar[m] == 0) return false;
+    for (int n = 0; n < paramArrayList.size(); n++) {
+      if (arrayOfChar[n] == 0) return false;
     }
 
     return true;

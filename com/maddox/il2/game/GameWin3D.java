@@ -20,15 +20,15 @@ public class GameWin3D extends MainWin3D
     } else if (USGS.mode() == 2) {
       Main.stateStack().push(35);
     }
-    else if (this.netGameSpy != null) {
-      if (this.netGameSpy.isServer())
+    else if (this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy != null) {
+      if (this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.isServer())
         Main.stateStack().push(35);
       else
         Main.stateStack().push(34);
       i = 0;
       GUIMainMenu localGUIMainMenu1 = (GUIMainMenu)GameState.get(2);
-      localGUIMainMenu1.pPilotName.cap = new GCaption(this.netGameSpy.userName);
-      com.maddox.il2.gui.GUIInfoName.nickName = this.netGameSpy.userName;
+      localGUIMainMenu1.pPilotName.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.userName);
+      com.maddox.il2.gui.GUIInfoName.nickName = this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.userName;
     }
     else {
       int k = Config.cur.ini.get("game", "Intro", 0);
@@ -39,21 +39,21 @@ public class GameWin3D extends MainWin3D
       i = 0;
     }
 
-    if (this.netGameSpy == null) {
-      this.netGameSpyListener = new GameSpy();
+    if (this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy == null) {
+      this.jdField_netGameSpyListener_of_type_ComMaddoxIl2NetGameSpy = new GameSpy();
       if (USGS.isUsed())
-        this.netGameSpyListener.setListenerOnly(USGS.room);
+        this.jdField_netGameSpyListener_of_type_ComMaddoxIl2NetGameSpy.setListenerOnly(USGS.room);
       else {
-        this.netGameSpyListener.setListenerOnly(null);
+        this.jdField_netGameSpyListener_of_type_ComMaddoxIl2NetGameSpy.setListenerOnly(null);
       }
     }
     if (i != 0) {
       GUIMainMenu localGUIMainMenu2 = (GUIMainMenu)GameState.get(2);
-      localGUIMainMenu2.pPilotName.cap = new GCaption(USGS.name);
+      localGUIMainMenu2.pPilotName.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(USGS.name);
       com.maddox.il2.gui.GUIInfoName.nickName = USGS.name;
     }
     if (j == 0)
-      menuMusicPlay();
+      Main3D.menuMusicPlay();
   }
 
   private static boolean tryStartGS() {
@@ -132,7 +132,7 @@ public class GameWin3D extends MainWin3D
     }
     if (localGameSpy.userName == null)
       localGameSpy.userName = args[0];
-    this.netGameSpy = localGameSpy;
+    this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy = localGameSpy;
   }
 
   private void startClientGameSpy() {
@@ -145,7 +145,7 @@ public class GameWin3D extends MainWin3D
     }
     if (localGameSpy.serverIP == null)
       localGameSpy.serverIP = args[0];
-    this.netGameSpy = localGameSpy;
+    this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy = localGameSpy;
   }
 
   public static void main(String[] paramArrayOfString)

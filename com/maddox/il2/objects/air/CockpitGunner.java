@@ -15,7 +15,6 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.hotkey.HookGunner;
 import com.maddox.il2.engine.hotkey.HookGunner.Move;
-import com.maddox.il2.engine.hotkey.HookPilot;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.il2.game.Main3D;
@@ -37,9 +36,7 @@ public class CockpitGunner extends Cockpit
   private Orient _tmpOrient = new Orient();
   private HookGunner hookGunner;
   private boolean bNetMirror = false;
-  private float saveZN;
-  protected float normZN;
-  protected float gsZN;
+
   protected int _aiTuretNum = -1;
 
   protected int _weaponControlNum = -1;
@@ -57,25 +54,13 @@ public class CockpitGunner extends Cockpit
   public String[] getHotKeyEnvs() { return this.hotKeyEnvs;
   }
 
-  private float ZNear(float paramFloat)
+  public HookGunner hookGunner()
   {
-    if (paramFloat < 0.0F) {
-      return -1.0F;
-    }
-
-    Camera3D localCamera3D = (Camera3D)Actor.getByName("camera");
-    float f = localCamera3D.ZNear;
-
-    localCamera3D.ZNear = paramFloat;
-
-    return f;
-  }
-  public HookGunner hookGunner() {
     return this.hookGunner;
   }
   public Turret aiTurret() { if (this._aiTuretNum == -1)
       this._aiTuretNum = Property.intValue(getClass(), "aiTuretNum", 0);
-    return this.fm.turret[this._aiTuretNum];
+    return this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.turret[this._aiTuretNum];
   }
 
   public int weaponControlNum()
@@ -94,7 +79,7 @@ public class CockpitGunner extends Cockpit
       return;
     aiTurret().bIsAIControlled = (!paramBoolean);
     aiTurret().target = null;
-    this.fm.CT.WeaponControl[weaponControlNum()] = false;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = false;
     this.bGunFire = false;
     if (paramBoolean) {
       hookGunner().resetMove(0.0F, 0.0F);
@@ -136,7 +121,7 @@ public class CockpitGunner extends Cockpit
   protected void doHitMasterAircraft(Aircraft paramAircraft, Hook paramHook, String paramString)
   {
     _tmpLoc1.set(0.1D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-    paramAircraft.pos.getAbs(_tmpLoc2);
+    paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(_tmpLoc2);
     paramHook.computePos(paramAircraft, _tmpLoc2, _tmpLoc1);
     _tmpLoc1.get(_tmpP1);
     _tmpLoc1.set(48.899999999999999D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
@@ -149,18 +134,18 @@ public class CockpitGunner extends Cockpit
         _tmpShot.powerType = 0;
         _tmpShot.mass = localGun.bulletMassa();
         paramAircraft.hierMesh(); _tmpShot.p.interpolate(_tmpP1, _tmpP2, HierMesh.collisionDistMulti(0));
-        _tmpShot.v.x = (float)(_tmpP2.x - _tmpP1.x);
-        _tmpShot.v.y = (float)(_tmpP2.y - _tmpP1.y);
-        _tmpShot.v.z = (float)(_tmpP2.z - _tmpP1.z);
+        _tmpShot.v.jdField_x_of_type_Double = (float)(_tmpP2.jdField_x_of_type_Double - _tmpP1.jdField_x_of_type_Double);
+        _tmpShot.v.jdField_y_of_type_Double = (float)(_tmpP2.jdField_y_of_type_Double - _tmpP1.jdField_y_of_type_Double);
+        _tmpShot.v.jdField_z_of_type_Double = (float)(_tmpP2.jdField_z_of_type_Double - _tmpP1.jdField_z_of_type_Double);
         _tmpShot.v.normalize();
         _tmpShot.v.scale(localGun.bulletSpeed());
         paramAircraft.getSpeed(_tmpV1);
-        _tmpShot.v.x += (float)_tmpV1.x;
-        _tmpShot.v.y += (float)_tmpV1.y;
-        _tmpShot.v.z += (float)_tmpV1.z;
+        _tmpShot.v.jdField_x_of_type_Double += (float)_tmpV1.jdField_x_of_type_Double;
+        _tmpShot.v.jdField_y_of_type_Double += (float)_tmpV1.jdField_y_of_type_Double;
+        _tmpShot.v.jdField_z_of_type_Double += (float)_tmpV1.jdField_z_of_type_Double;
         _tmpShot.tickOffset = 1.0D;
         _tmpShot.chunkName = "CF_D0";
-        _tmpShot.initiator = this.fm.actor;
+        _tmpShot.initiator = this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.actor;
 
         paramAircraft.msgShot(_tmpShot);
       }
@@ -189,47 +174,42 @@ public class CockpitGunner extends Cockpit
     localHookGunner.reset();
     localHookGunner.use(true);
 
-    localAircraft.setAcoustics(this.acoustics);
-    if (this.acoustics != null) {
+    localAircraft.setAcoustics(this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics);
+    if (this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics != null) {
       localAircraft.enableDoorSnd(true);
-      if (this.acoustics.getEnvNum() == 2) localAircraft.setDoorSnd(1.0F);
+      if (this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics.getEnvNum() == 2) localAircraft.setDoorSnd(1.0F);
     }
 
-    localMain3D.camera3D.pos.setRel(new Point3d(), new Orient());
-    localMain3D.camera3D.pos.setBase(localAircraft, localHookGunner, false);
-    localMain3D.camera3D.pos.resetAsBase();
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(localAircraft, localHookGunner, false);
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
-    this.pos.resetAsBase();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
-    localMain3D.cameraCockpit.pos.setRel(new Point3d(), new Orient());
-    localMain3D.cameraCockpit.pos.setBase(this, localHookGunner, false);
-    localMain3D.cameraCockpit.pos.resetAsBase();
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, localHookGunner, false);
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
     localMain3D.overLoad.setShow(true);
 
     localMain3D.renderCockpit.setShow(true);
 
     localAircraft.drawing(!isNullShow());
-
-    this.saveZN = ZNear(HookPilot.current.isAim() ? this.gsZN : this.normZN);
     return true;
   }
 
-  protected void doFocusLeave()
-  {
-    this.saveZN = ZNear(this.saveZN);
-
+  protected void doFocusLeave() {
     HookGunner localHookGunner = hookGunner();
     Aircraft localAircraft = aircraft();
     Main3D localMain3D = Main3D.cur3D();
 
     localHookGunner.use(false);
 
-    localMain3D.camera3D.pos.setRel(new Point3d(), new Orient());
-    localMain3D.camera3D.pos.setBase(null, null, false);
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, false);
 
-    localMain3D.cameraCockpit.pos.setRel(new Point3d(), new Orient());
-    localMain3D.cameraCockpit.pos.setBase(null, null, false);
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, false);
 
     localMain3D.overLoad.setShow(false);
     localMain3D.renderCockpit.setShow(false);
@@ -243,19 +223,15 @@ public class CockpitGunner extends Cockpit
   public CockpitGunner(String paramString1, String paramString2) {
     super(paramString1, paramString2);
     this.cameraHook = new HookNamed(this.mesh, "CAMERA");
-    this.pos.setBase(aircraft(), new Cockpit.HookOnlyOrient(), false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(aircraft(), new Cockpit.HookOnlyOrient(), false);
     this.hookGunner = new HookGunner(Main3D.cur3D().cameraCockpit, Main3D.cur3D().camera3D);
     hookGunner().setMover(this);
     interpPut(new Interpolater(), null, Time.current(), null);
 
     Aircraft localAircraft = aircraft();
-    BulletEmitter[] arrayOfBulletEmitter = localAircraft.FM.CT.Weapons[weaponControlNum()];
-    if (arrayOfBulletEmitter != null) {
+    BulletEmitter[] arrayOfBulletEmitter = localAircraft.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[weaponControlNum()];
+    if (arrayOfBulletEmitter != null)
       this.emitter = arrayOfBulletEmitter[0];
-    }
-
-    this.normZN = Property.floatValue(getClass(), "normZN", -1.0F);
-    this.gsZN = Property.floatValue(getClass(), "gsZN", -1.0F);
   }
 
   static

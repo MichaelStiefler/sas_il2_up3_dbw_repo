@@ -34,13 +34,13 @@ public class CmdMaxPing extends Cmd
     if (Main.cur().netServerParams.isMirror()) return null;
 
     if (paramMap.containsKey("DELAY")) {
-      this.delay = arg(paramMap, "DELAY", 0, 5, 0, 60);
+      this.delay = Cmd.arg(paramMap, "DELAY", 0, 5, 0, 60);
     }
     if (paramMap.containsKey("WARNINGS")) {
-      this.num = arg(paramMap, "WARNINGS", 0, 3, 0, 100);
+      this.num = Cmd.arg(paramMap, "WARNINGS", 0, 3, 0, 100);
     }
     if (paramMap.containsKey("_$$")) {
-      this.maxping = arg(paramMap, "_$$", 0, 3000, 0, 30000);
+      this.maxping = Cmd.arg(paramMap, "_$$", 0, 3000, 0, 30000);
     } else {
       INFO_HARD(" maxping  " + this.maxping + " ms");
       INFO_HARD(" delay    " + this.delay + " s");
@@ -100,8 +100,8 @@ public class CmdMaxPing extends Cmd
 
   public CmdMaxPing()
   {
-    this.param.put("DELAY", null);
-    this.param.put("WARNINGS", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("DELAY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("WARNINGS", null);
     this._properties.put("NAME", "maxping");
     this._levelAccess = 1;
   }

@@ -579,9 +579,9 @@ public class Message
   }
 
   private final void sendToArray(Object paramObject) {
-    int j = ((Object[])(Object[])paramObject).length;
+    int j = ((Object[])paramObject).length;
     for (int i = 0; i < j; i++) {
-      Object localObject = ((Object[])(Object[])paramObject)[i];
+      Object localObject = ((Object[])paramObject)[i];
       if (localObject != null)
         sendToObject(localObject);
     }

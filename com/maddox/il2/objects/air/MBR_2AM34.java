@@ -10,7 +10,6 @@ import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -29,11 +28,11 @@ public class MBR_2AM34 extends Scheme1
     case 36:
       return super.cutFM(37, paramInt2, paramActor);
     case 11:
-      cutFM(17, paramInt2, paramActor); this.FM.cut(17, paramInt2, paramActor);
-      cutFM(18, paramInt2, paramActor); this.FM.cut(18, paramInt2, paramActor);
+      cutFM(17, paramInt2, paramActor); this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(17, paramInt2, paramActor);
+      cutFM(18, paramInt2, paramActor); this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(18, paramInt2, paramActor);
       return super.cutFM(paramInt1, paramInt2, paramActor);
     case 19:
-      this.FM.Gears.bIsSail = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.bIsSail = false;
     }
 
     return super.cutFM(paramInt1, paramInt2, paramActor);
@@ -49,24 +48,24 @@ public class MBR_2AM34 extends Scheme1
   {
     super.update(paramFloat);
     for (int i = 0; i < 3; i++) for (int j = 0; j < 2; j++)
-        if (this.FM.Gears.clpGearEff[i][j] != null) {
-          this.tmpp.set(this.FM.Gears.clpGearEff[i][j].pos.getAbsPoint());
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j] != null) {
+          this.tmpp.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
           this.tmpp.z = 0.01D;
-          this.FM.Gears.clpGearEff[i][j].pos.setAbs(this.tmpp);
-          this.FM.Gears.clpGearEff[i][j].pos.reset();
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.tmpp);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         }
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 0:
       break;
     case 1:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 2:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
     }
   }
 
@@ -129,10 +128,8 @@ public class MBR_2AM34 extends Scheme1
         if (f2 < -97.666F + 0.481482F * f1) f2 = -97.666F + 0.481482F * f1;
         bool = false;
       }
-      if (f2 > 60.0F) {
-        f2 = 60.0F; bool = false;
-      }
-      break;
+      if (f2 <= 60.0F) break;
+      f2 = 60.0F; bool = false; break;
     case 1:
       f3 = Math.abs(f1);
       if (f3 < 2.0F) bool = false;
@@ -163,13 +160,13 @@ public class MBR_2AM34 extends Scheme1
 
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
     if ((paramShot.chunkName.startsWith("Engine1")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
     }
     if (paramShot.chunkName.startsWith("Pilot1"))
       killPilot(paramShot.initiator, 0);
@@ -249,21 +246,21 @@ public class MBR_2AM34 extends Scheme1
 
     Property.set(localClass, "FlightModel", "FlightModels/MBR-2-AM-34.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 3, 3, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 3, 3, 3, 3, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "8xAO10", new String[] { "MGunShKASt 750", "MGunShKASt 750", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1" });
+    Aircraft.weaponsRegister(localClass, "8xAO10", new String[] { "MGunShKASt 750", "MGunShKASt 750", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1" });
 
-    weaponsRegister(localClass, "6xFAB50", new String[] { "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", null, null });
+    Aircraft.weaponsRegister(localClass, "6xFAB50", new String[] { "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", null, null });
 
-    weaponsRegister(localClass, "8xFAB50", new String[] { "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
+    Aircraft.weaponsRegister(localClass, "8xFAB50", new String[] { "MGunShKASt 750", "MGunShKASt 750", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
 
-    weaponsRegister(localClass, "2xFAB100", new String[] { "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, "BombGunFAB100", "BombGunFAB100" });
+    Aircraft.weaponsRegister(localClass, "2xFAB100", new String[] { "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, "BombGunFAB100", "BombGunFAB100" });
 
-    weaponsRegister(localClass, "2xFAB250", new String[] { "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, "BombGunFAB250", "BombGunFAB250" });
+    Aircraft.weaponsRegister(localClass, "2xFAB250", new String[] { "MGunShKASt 750", "MGunShKASt 750", null, null, null, null, null, null, "BombGunFAB250", "BombGunFAB250" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }
 }

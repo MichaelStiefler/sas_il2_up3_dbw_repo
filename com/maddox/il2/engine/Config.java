@@ -24,20 +24,19 @@ import com.maddox.util.UnicodeTo8bit;
 import java.io.PrintStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
 
 public class Config
 {
   public static final String JRE = "JRE";
   public static final boolean AEROMASH = false;
   public static final String PRODUCT = "FB_PF";
-  private static final String _VERSION = "4.10.1";
-  private static final int _TRACK_SINGLE_VERSION = 30;
-  public static final int TRACK_NET_VERSION = 103;
+  private static final String _VERSION = "4.09";
+  private static final int _TRACK_SINGLE_VERSION = 29;
+  public static final int TRACK_NET_VERSION = 102;
   public static final boolean TRACK_CHECK = false;
-  public static final String VERSION = "4.10.1m";
-  public static final String NET_VERSION = "FB_PF_v_4.10.1m";
-  public static final int TRACK_SINGLE_VERSION = 130;
+  public static final String VERSION = "4.09m";
+  public static final String NET_VERSION = "FB_PF_v_4.09m";
+  public static final int TRACK_SINGLE_VERSION = 129;
   public static String LOCALE = "PE";
   public static final boolean bCHECK_LOCALE = true;
   public static final String RELEASE = "ON";
@@ -134,8 +133,6 @@ public class Config
   public boolean newCloudsRender = true;
 
   private static boolean bUseRender = false;
-
-  public ArrayList zutiServerNames = null;
 
   protected boolean bSoundUse = false;
   private boolean bDebugSound = false;
@@ -243,10 +240,7 @@ public class Config
       this.netRemoteHost = this.ini.get("NET", "remoteHost", this.netRemoteHost);
       this.netRouteChannels = this.ini.get("NET", "routeChannels", this.netRouteChannels, 0, 16);
       this.netServerChannels = this.ini.get("NET", "serverChannels", this.netServerChannels, 1, 31);
-
-      zutiLoadServers();
-    }
-    else {
+    } else {
       this.netServerChannels = this.ini.get("NET", "serverChannels", this.netServerChannels, 1, 128);
     }
     this.netSkinDownload = this.ini.get("NET", "SkinDownload", this.netSkinDownload);
@@ -271,20 +265,7 @@ public class Config
       this.ini.setValue("NET", "remotePort", "" + this.netRemotePort);
       this.ini.setValue("NET", "remoteHost", this.netRemoteHost);
       this.ini.setValue("NET", "routeChannels", "" + this.netRouteChannels);
-
-      for (int i = 0; i < this.zutiServerNames.size(); i++)
-      {
-        String str = "";
-        if (i < 10)
-          str = "00" + new Integer(i).toString();
-        else if ((i > 9) && (i < 100))
-          str = "0" + new Integer(i).toString();
-        else if (i > 99) str = new Integer(i).toString();
-
-        this.ini.setValue("NET", "remoteHost_" + str, (String)this.zutiServerNames.get(i));
-      }
     }
-
     this.ini.setValue("NET", "serverChannels", "" + this.netServerChannels);
     this.ini.setValue("NET", "SkinDownload", this.netSkinDownload ? "1" : "0");
     this.ini.setValue("NET", "serverName", UnicodeTo8bit.save(this.netServerName, false));
@@ -573,37 +554,9 @@ public class Config
 
   public Config(IniFile paramIniFile, boolean paramBoolean)
   {
-    this.zutiServerNames = new ArrayList();
-
     bUseRender = paramBoolean;
     GObj.loadNative();
     this.ini = paramIniFile;
     load();
-  }
-
-  private void zutiLoadServers()
-  {
-    for (int i = 0; i < 255; i++)
-    {
-      String str1 = "";
-      if (i < 10)
-        str1 = "00" + new Integer(i).toString();
-      else if ((i > 9) && (i < 100))
-        str1 = "0" + new Integer(i).toString();
-      else if (i > 99) str1 = new Integer(i).toString();
-
-      String str2 = this.ini.get("NET", "remoteHost_" + str1, "");
-      if (str2.trim().length() <= 0) continue; this.zutiServerNames.add(str2);
-    }
-  }
-
-  public ArrayList zutiGetServerNames()
-  {
-    return this.zutiServerNames;
-  }
-
-  public void zutiAddServerName(String paramString)
-  {
-    if (!this.zutiServerNames.contains(paramString)) this.zutiServerNames.add(paramString);
   }
 }

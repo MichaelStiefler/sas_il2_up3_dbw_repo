@@ -19,13 +19,13 @@ public class MsgBackgroundTask extends Message
     if ((paramObject instanceof MsgBackgroundTaskListener)) {
       switch (this.id) {
       case 0:
-        ((MsgBackgroundTaskListener)paramObject).msgBackgroundTaskStarted((BackgroundTask)this._sender);
+        ((MsgBackgroundTaskListener)paramObject).msgBackgroundTaskStarted((BackgroundTask)this.jdField__sender_of_type_JavaLangObject);
         break;
       case 1:
-        ((MsgBackgroundTaskListener)paramObject).msgBackgroundTaskStep((BackgroundTask)this._sender);
+        ((MsgBackgroundTaskListener)paramObject).msgBackgroundTaskStep((BackgroundTask)this.jdField__sender_of_type_JavaLangObject);
         break;
       case 2:
-        ((MsgBackgroundTaskListener)paramObject).msgBackgroundTaskStoped((BackgroundTask)this._sender);
+        ((MsgBackgroundTaskListener)paramObject).msgBackgroundTaskStoped((BackgroundTask)this.jdField__sender_of_type_JavaLangObject);
         break;
       }
 

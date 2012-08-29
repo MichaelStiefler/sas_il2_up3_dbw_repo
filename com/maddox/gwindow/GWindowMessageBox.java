@@ -55,7 +55,7 @@ public class GWindowMessageBox extends GWindowFramed
   public void preRender() {
     super.preRender();
     if (this.bTimeOut) {
-      this.timeOut -= this.root.deltaTimeSec;
+      this.timeOut -= this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec;
       if (this.timeOut <= 0.0F)
         doResult(5);
     }
@@ -64,22 +64,22 @@ public class GWindowMessageBox extends GWindowFramed
   private void computeWin()
   {
     float f1 = lookAndFeel().metric();
-    this.win.dx = (this.metricWidth * f1);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (this.metricWidth * f1);
     GRegion localGRegion = getClientRegion();
     float f2 = localGRegion.dx - f1 * 2.0F;
     setCanvasFont(this.messageFont);
     int i = computeLines(this.message, 0, this.message.length(), f2);
     if (i == 0) i = 1;
-    float f3 = i * this.root.textFonts[this.messageFont].height + (i - 1) * (0.5F * f1);
+    float f3 = i * this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.messageFont].height + (i - 1) * (0.5F * f1);
 
     f3 += f1 * 5.5F;
 
-    this.win.dy = (this.win.dy - localGRegion.dy + f3);
-    localGRegion = this.root.getClientRegion();
-    if (this.win.dy > localGRegion.dy)
-      this.win.dy = localGRegion.dy;
-    this.win.x = ((this.root.win.dx - this.win.dx) / 2.0F);
-    this.win.y = ((this.root.win.dy - this.win.dy) / 2.0F);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGRegion.dy + f3);
+    localGRegion = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.getClientRegion();
+    if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > localGRegion.dy)
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = localGRegion.dy;
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.x = ((this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) / 2.0F);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.y = ((this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) / 2.0F);
   }
 
   public void created() {
@@ -97,8 +97,8 @@ public class GWindowMessageBox extends GWindowFramed
     GRegion localGRegion = getClientRegion();
     float f1 = localGRegion.dx / lookAndFeel().metric() - 8.0F;
     float f2 = localGRegion.dy / lookAndFeel().metric() - 2.5F;
-    this.clientWindow = create(localGRegion.x, localGRegion.y, localGRegion.dx, localGRegion.dy, false, new Client());
-    Client localClient = (Client)this.clientWindow;
+    this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow = create(localGRegion.x, localGRegion.y, localGRegion.dx, localGRegion.dy, false, new Client());
+    Client localClient = (Client)this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow;
     switch (this.buttons) {
     case 4:
     default:

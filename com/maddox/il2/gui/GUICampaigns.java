@@ -49,7 +49,7 @@ public class GUICampaigns extends GameState
     if ((paramGameState != null) && (paramGameState.id() == 58)) {
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt)
           {
@@ -125,7 +125,7 @@ public class GUICampaigns extends GameState
   }
 
   private void removeItem() {
-    int i = this.wTable.selectRow;
+    int i = this.wTable.jdField_selectRow_of_type_Int;
     if (i < 0) return;
     String str1 = "users/" + World.cur().userCfg.sId + "/campaigns.ini";
     SectFile localSectFile = new SectFile(str1, 1, true, World.cur().userCfg.krypto());
@@ -163,7 +163,7 @@ public class GUICampaigns extends GameState
   }
 
   private void doStart() {
-    int i = this.wTable.selectRow;
+    int i = this.wTable.jdField_selectRow_of_type_Int;
     if (i < 0) return;
     Item localItem = (Item)this.wTable.campList.get(i);
     if (localItem.camp.isComplete()) {
@@ -184,7 +184,7 @@ public class GUICampaigns extends GameState
 
     Main.cur().currentMissionFile = localItem.camp.nextMission();
     if (Main.cur().currentMissionFile == null) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+      new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
       {
         public void result(int paramInt)
         {
@@ -192,7 +192,7 @@ public class GUICampaigns extends GameState
       };
       return;
     }
-    ((GUIRoot)this.dialogClient.root).setBackCountry("campaign", Main.cur().campaign.branch());
+    ((GUIRoot)this.dialogClient.jdField_root_of_type_ComMaddoxGwindowGWindowRoot).setBackCountry("campaign", Main.cur().campaign.branch());
     if (Main.cur().campaign.isDGen())
       Main.stateStack().change(62);
     else
@@ -243,7 +243,7 @@ public class GUICampaigns extends GameState
       int i;
       GUICampaigns.Item localItem;
       if (paramGWindow == GUICampaigns.this.bStat) {
-        i = GUICampaigns.this.wTable.selectRow;
+        i = GUICampaigns.this.wTable.jdField_selectRow_of_type_Int;
         if (i < 0) return true;
         localItem = (GUICampaigns.Item)GUICampaigns.this.wTable.campList.get(i);
         Main.cur().campaign = localItem.camp;
@@ -254,7 +254,7 @@ public class GUICampaigns extends GameState
         return true;
       }
       if (paramGWindow == GUICampaigns.this.bDiff) {
-        i = GUICampaigns.this.wTable.selectRow;
+        i = GUICampaigns.this.wTable.jdField_selectRow_of_type_Int;
         if (i < 0) return true;
         localItem = (GUICampaigns.Item)GUICampaigns.this.wTable.campList.get(i);
         World.cur().diffUser.set(localItem.camp.difficulty());
@@ -276,7 +276,7 @@ public class GUICampaigns extends GameState
       super.render();
       setCanvasColor(GColor.Gray);
       setCanvasFont(0);
-      if ((GUICampaigns.this.wTable.selectRow >= 0) && (((GUICampaigns.Item)GUICampaigns.this.wTable.campList.get(GUICampaigns.this.wTable.selectRow)).camp.isDGen()))
+      if ((GUICampaigns.this.wTable.jdField_selectRow_of_type_Int >= 0) && (((GUICampaigns.Item)GUICampaigns.this.wTable.campList.get(GUICampaigns.this.wTable.jdField_selectRow_of_type_Int)).camp.isDGen()))
       {
         draw(x1024(80.0F), y1024(544.0F), x1024(336.0F), y1024(48.0F), 2, GUICampaigns.this.i18n("camps.Roster"));
       }
@@ -364,7 +364,7 @@ public class GUICampaigns extends GameState
       addColumn(I18N.gui("camps.Awards"), null);
       addColumn(I18N.gui("camps.Completed"), null);
       addColumn(I18N.gui("camps.Difficulty"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(11.0F);
       getColumn(1).setRelativeDx(6.0F);
       getColumn(2).setRelativeDx(5.0F);
@@ -377,7 +377,7 @@ public class GUICampaigns extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

@@ -1,6 +1,5 @@
 package com.maddox.il2.ai;
 
-import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.air.Airdrome;
 import com.maddox.il2.ai.air.NearestAircraft;
@@ -18,26 +17,18 @@ import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.hotkey.HookView;
 import com.maddox.il2.fm.Atmosphere;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Wind;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiAircraft;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.game.ZutiTimer_Refly;
 import com.maddox.il2.game.order.OrdersTree;
-import com.maddox.il2.gui.GUINetMission;
-import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.Chat;
 import com.maddox.il2.net.NetMissionTrack;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorViewPoint;
 import com.maddox.il2.objects.ScoreRegister;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.NetGunner;
 import com.maddox.il2.objects.air.Paratrooper;
 import com.maddox.il2.objects.air.Runaway;
@@ -45,14 +36,12 @@ import com.maddox.il2.objects.buildings.HouseManager;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.HotKeyEnvs;
 import com.maddox.rts.IniFile;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,20 +54,12 @@ public class World
   public static float MaxLongVisualDistance = 10000.0F;
   public static float MaxPlateVisualDistance = 16000.0F;
 
-  public boolean blockMorseChat = false;
-  public boolean smallMapWPLabels = false;
-  public boolean showMorseAsText = false;
-
   public RangeRandom rnd = new RangeRandom();
 
   public int camouflage = 0;
   public static final int CAMOUFLAGE_SUMMER = 0;
   public static final int CAMOUFLAGE_WINTER = 1;
   public static final int CAMOUFLAGE_DESERT = 2;
-  public static final int CAMOUFLAGE_PACIFIC = 3;
-  public static final int CAMOUFLAGE_ETO = 4;
-  public static final int CAMOUFLAGE_MTO = 5;
-  public static final int CAMOUFLAGE_CBI = 6;
   public DifficultySettings diffCur = new DifficultySettings();
 
   public DifficultySettings diffUser = new DifficultySettings();
@@ -145,8 +126,6 @@ public class World
   private Sun sun = new Sun();
   public Voice voicebase = new Voice();
 
-  private BornPlace zutiCurrentBornPlace = null;
-
   public static RangeRandom Rnd()
   {
     return cur().rnd;
@@ -156,12 +135,7 @@ public class World
   {
     if ("SUMMER".equalsIgnoreCase(paramString)) this.camouflage = 0;
     else if ("WINTER".equalsIgnoreCase(paramString)) this.camouflage = 1;
-    else if ("DESERT".equalsIgnoreCase(paramString)) this.camouflage = 2;
-    else if ("PACIFIC".equalsIgnoreCase(paramString)) this.camouflage = 3;
-    else if ("ETO".equalsIgnoreCase(paramString)) this.camouflage = 4;
-    else if ("MTO".equalsIgnoreCase(paramString)) this.camouflage = 5;
-    else if ("CBI".equalsIgnoreCase(paramString)) this.camouflage = 6;
-    else
+    else if ("DESERT".equalsIgnoreCase(paramString)) this.camouflage = 2; else
       this.camouflage = 0;
   }
 
@@ -240,7 +214,7 @@ public class World
   public static void setPlayerAircraft(Aircraft paramAircraft) {
     cur().PlayerAircraft = paramAircraft;
     if (paramAircraft != null) {
-      cur().PlayerFM = paramAircraft.FM;
+      cur().PlayerFM = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       cur().scoreCounter.playerStartAir(paramAircraft);
     } else {
       cur().PlayerFM = null;
@@ -249,7 +223,7 @@ public class World
 
   public static void setPlayerFM() {
     if (Actor.isValid(cur().PlayerAircraft))
-      cur().PlayerFM = cur().PlayerAircraft.FM;
+      cur().PlayerFM = cur().PlayerAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
   }
 
   public static void setPlayerRegiment()
@@ -266,35 +240,21 @@ public class World
     }
   }
 
-  public static void doPlayerParatrooper(Paratrooper paramParatrooper)
-  {
-    FlightModel localFlightModel = getPlayerFM();
-
-    if (!isPlayerParatrooper())
-    {
-      if (Config.isUSE_RENDER())
-        RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
-      cur().bPlayerParatrooper = true;
-      if (ZutiAircraft.isPlaneLandedAndDamaged(localFlightModel))
-        cur().scoreCounter.playerParatrooper();
-      if (Config.isUSE_RENDER()) {
-        if (Main3D.cur3D().viewActor() == getPlayerAircraft())
-          Main3D.cur3D().setViewFlow10(paramParatrooper, false);
-        Main3D.cur3D().ordersTree.unactivate();
-        ForceFeedback.stopMission();
-      }
-
-    }
-
-    if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (Mission.isDogfight()))
-    {
-      ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-      GUINetMission.setPlayerParatrooper(paramParatrooper);
+  public static void doPlayerParatrooper(Paratrooper paramParatrooper) {
+    if (isPlayerParatrooper()) return;
+    if (Config.isUSE_RENDER())
+      RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
+    cur().bPlayerParatrooper = true;
+    cur().scoreCounter.playerParatrooper();
+    if (Config.isUSE_RENDER()) {
+      if (Main3D.cur3D().viewActor() == getPlayerAircraft())
+        Main3D.cur3D().setViewFlow10(paramParatrooper, false);
+      Main3D.cur3D().ordersTree.unactivate();
+      ForceFeedback.stopMission();
     }
   }
 
-  public static void doGunnerParatrooper(Paratrooper paramParatrooper)
-  {
+  public static void doGunnerParatrooper(Paratrooper paramParatrooper) {
     if (isPlayerParatrooper()) return;
     if (Config.isUSE_RENDER())
       RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
@@ -304,12 +264,6 @@ public class World
       if (Main3D.cur3D().viewActor() == getPlayerAircraft())
         Main3D.cur3D().setViewFlow10(paramParatrooper, false);
       ForceFeedback.stopMission();
-
-      if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (Mission.isDogfight()))
-      {
-        ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-        GUINetMission.setPlayerParatrooper(paramParatrooper);
-      }
     }
   }
 
@@ -326,25 +280,8 @@ public class World
       RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
     cur().bPlayerDead = true;
     cur().scoreCounter.playerDead();
-
-    if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (Mission.isDogfight()))
-    {
-      if (getPlayerFM().Gears.nOfGearsOnGr < 3)
-      {
-        ZutiSupportMethods.ZUTI_KIA_COUNTER += 1;
-      }
-
-      ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-      float f = Main.cur().mission.zutiMisc_ReflyKIADelay + ZutiSupportMethods.ZUTI_KIA_COUNTER * Main.cur().mission.zutiMisc_ReflyKIADelayMultiplier;
-      ZutiSupportMethods.setPlayerBanDuration(()f);
-      GUINetMission.setReflyTimer(new ZutiTimer_Refly(f));
-      System.out.println(((NetUser)NetEnv.host()).uniqueName() + " has died for " + ZutiSupportMethods.ZUTI_KIA_COUNTER + " times. Refly penalty is " + f + "s.");
-      EventLog.type(true, ((NetUser)NetEnv.host()).uniqueName() + " has died for " + ZutiSupportMethods.ZUTI_KIA_COUNTER + " times. Refly penalty is " + f + "s.");
-    }
   }
-
-  public static void setPlayerCaptured()
-  {
+  public static void setPlayerCaptured() {
     cur().bPlayerCaptured = true;
     cur().scoreCounter.playerCaptured();
   }
@@ -364,44 +301,8 @@ public class World
       throw new ActorException("actor " + paramActor1.getClass() + ":" + paramActor1.name() + " alredy dead");
     }
 
-    if ((paramActor1 instanceof PlaneGeneric))
-    {
-      cur().zutiManagePilotsBornPlacePlaneCounter((PlaneGeneric)paramActor1);
-    }
-    if (((paramActor1 instanceof NetAircraft)) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()))
-    {
-      try
-      {
-        boolean bool1 = false;
-        boolean bool2 = false;
-        if (paramActor2 != null)
-        {
-          bool1 = paramActor1.name().equals(paramActor2.name());
-          bool2 = paramActor2.name().equals("NONAME");
-        }
+    Voice.testTargDestr(paramActor1, paramActor2 == remover ? null : paramActor2);
 
-        boolean bool3 = ZutiSupportMethods.isPlaneStationary(((NetAircraft)paramActor1).FM);
-
-        if ((paramActor2 != null) && (!bool2) && (!bool1) && (!bool3)) {
-          ZutiSupportMethods.managePilotBornPlacePlaneCounter((NetAircraft)paramActor1, false);
-        }
-        else
-        {
-          ZutiSupportMethods.managePilotBornPlacePlaneCounter((NetAircraft)paramActor1, true);
-        }
-      }
-      catch (Exception localException)
-      {
-        System.out.println("onActorDied Exception: " + localException);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-
-    }
-
-    if (!Mission.isDogfight()) {
-      Voice.testTargDestr(paramActor1, paramActor2 == remover ? null : paramActor2);
-    }
     trySendChatMsgDied(paramActor1, paramActor2 == remover ? paramActor1 : paramActor2);
 
     paramActor1.setDiedFlag(true);
@@ -435,10 +336,10 @@ public class World
     Point3d localPoint3d1 = new Point3d();
     Point3d localPoint3d2 = new Point3d();
     Point3d localPoint3d3 = new Point3d();
-    localPoint3d1.set(paramActor.pos.getAbsPoint());
-    localPoint3d2.set(paramActor.pos.getAbsPoint());
-    localPoint3d1.z -= 40.0D;
-    localPoint3d2.z += 40.0D;
+    localPoint3d1.set(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+    localPoint3d2.set(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+    localPoint3d1.jdField_z_of_type_Double -= 40.0D;
+    localPoint3d2.jdField_z_of_type_Double += 40.0D;
     Actor localActor = Engine.collideEnv().getLine(localPoint3d2, localPoint3d1, false, clipFilter, localPoint3d3);
     if (Actor.isValid(localActor)) {
       if ((Config.isUSE_RENDER()) && 
@@ -449,7 +350,7 @@ public class World
       return;
     }
     ActorViewPoint localActorViewPoint = new ActorViewPoint();
-    localActorViewPoint.pos.setAbs(paramActor.pos.getAbs()); localActorViewPoint.pos.reset();
+    localActorViewPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs()); localActorViewPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     localActorViewPoint.dreamFire(true);
     if ((Config.isUSE_RENDER()) && 
       (Main3D.cur3D().viewActor() == paramActor)) {
@@ -484,14 +385,14 @@ public class World
       return;
     }
     int i = Engine.cur.world.scoreCounter.getRegisteredType(paramActor2);
-    if (!localAircraft.FM.isSentBuryNote())
+    if (!localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isSentBuryNote())
     {
-      localAircraft.FM.setSentBuryNote(true);
+      localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSentBuryNote(true);
       switch (i) {
       case 0:
         if (((paramActor2 instanceof Aircraft)) && (((Aircraft)paramActor2).netUser() != null)) {
           Chat.sendLog(1, "gore_kill" + Rnd().nextInt(1, 5), (Aircraft)paramActor2, localAircraft);
-          if ((!localAircraft.FM.isWasAirborne()) && (localAircraft.isDamagerExclusive()))
+          if ((!localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isWasAirborne()) && (localAircraft.isDamagerExclusive()))
             Chat.sendLogRnd(2, "gore_vulcher", (Aircraft)paramActor2, null);
         } else {
           Chat.sendLogRnd(1, "gore_ai", localAircraft, null);
@@ -517,7 +418,6 @@ public class World
         return;
       case 5:
       case 8:
-      case 9:
       }
 
       Chat.sendLogRnd(1, "gore_crashes", localAircraft, null);
@@ -592,22 +492,15 @@ public class World
   public void resetUser() {
     this.bPlayerParatrooper = false;
     this.bPlayerDead = false;
-
-    ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
   }
 
-  public World()
-  {
+  public World() {
     this.war = new War();
     this.bArcade = Config.cur.ini.get("game", "Arcade", this.bArcade);
     if (Config.LOCALE.equals("RU")) {
       this.bHighGore = Config.cur.ini.get("game", "HighGore", this.bHighGore);
       this.bHakenAllowed = Config.cur.ini.get("game", "HakenAllowed", this.bHakenAllowed);
     }
-
-    this.blockMorseChat = Config.cur.ini.get("game", "BlockMorseChat", this.blockMorseChat);
-    this.smallMapWPLabels = Config.cur.ini.get("game", "SmallMapWPLabels", this.smallMapWPLabels);
-    this.showMorseAsText = Config.cur.ini.get("game", "ShowMorseAsText", this.showMorseAsText);
   }
 
   public static float getTimeofDay()
@@ -631,51 +524,6 @@ public class World
   public static Sun Sun() { return cur().sun; } 
   public Sun sun() {
     return this.sun;
-  }
-
-  private void zutiManagePilotsBornPlacePlaneCounter(PlaneGeneric paramPlaneGeneric)
-  {
-    String str = ZutiAircraft.getStaticAcNameFromActor(paramPlaneGeneric.toString());
-    Point3d localPoint3d = paramPlaneGeneric.pos.getAbsPoint();
-    double d1 = localPoint3d.x;
-    double d2 = localPoint3d.y;
-    try
-    {
-      int i = 0;
-      if (this.zutiCurrentBornPlace != null)
-      {
-        double d3 = Math.sqrt(Math.pow(this.zutiCurrentBornPlace.place.x - d1, 2.0D) + Math.pow(this.zutiCurrentBornPlace.place.y - d2, 2.0D));
-        if (d3 <= this.zutiCurrentBornPlace.r)
-        {
-          this.zutiCurrentBornPlace.zutiReleaseAircraft(null, str, false, true, false);
-
-          i = 1;
-        }
-      }
-      if ((i == 0) && (this.bornPlaces != null))
-      {
-        BornPlace localBornPlace = null;
-        for (int j = 0; j < this.bornPlaces.size(); j++)
-        {
-          localBornPlace = (BornPlace)this.bornPlaces.get(j);
-
-          if (!localBornPlace.zutiIncludeStaticPlanes)
-          {
-            continue;
-          }
-          double d4 = Math.pow(localBornPlace.place.x - d1, 2.0D) + Math.pow(localBornPlace.place.y - d2, 2.0D);
-          if (d4 > localBornPlace.r * localBornPlace.r) {
-            continue;
-          }
-          localBornPlace.zutiReleaseAircraft(null, str, false, true, false);
-
-          this.zutiCurrentBornPlace = localBornPlace;
-        }
-      }
-    }
-    catch (Exception localException) {
-      localException.printStackTrace();
-    }
   }
 
   static

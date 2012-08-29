@@ -7,7 +7,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.rts.JoyFF;
 import com.maddox.rts.JoyFF.Effect;
@@ -48,9 +47,7 @@ public class ForceFeedback
       for (int i = 0; i < arrayOfBulletEmitter.length; i++) {
         if (arrayOfBulletEmitter[i] != null) {
           if ((arrayOfBulletEmitter[i] instanceof GunGeneric)) {
-            GunGeneric localGunGeneric = (GunGeneric)arrayOfBulletEmitter[i];
-            if (localGunGeneric.prop == null) return;
-            float f = localGunGeneric.prop.shotFreq;
+            float f = ((GunGeneric)arrayOfBulletEmitter[i]).prop.shotFreq;
             if (f > 10.83F)
             {
               if (World.cur().isDebugFM()) System.out.println("Trigger " + paramInt + " assessed as MACHINEGUN..");
@@ -76,20 +73,15 @@ public class ForceFeedback
             triggerFXType[paramInt] = 5;
             break;
           }
-          if ((arrayOfBulletEmitter[i] instanceof RocketGun))
-          {
-            triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/bomb.ffe");
-            triggerFXType[paramInt] = 4;
-            break;
-          }
-          if ((arrayOfBulletEmitter[i] instanceof RocketBombGun)) {
-            triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/bomb.ffe");
-            triggerFXType[paramInt] = 5;
-            break;
-          }
+          if (!(arrayOfBulletEmitter[i] instanceof RocketGun))
+            continue;
+          triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/bomb.ffe");
+          triggerFXType[paramInt] = 4;
+          break;
         }
       }
     }
+
     if (paramBoolean) {
       if (triggerFXType[paramInt] == 3) triggerFX[paramInt].stop();
       triggerFX[paramInt].start(1);

@@ -137,7 +137,7 @@ public class MXY_7 extends Scheme2a
     switch (paramInt1) {
     case 3:
     case 19:
-      this.FM.AS.setEngineDies(this, 0);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineDies(this, 0);
       return false;
     }
     return super.cutFM(paramInt1, paramInt2, paramActor);
@@ -159,18 +159,18 @@ public class MXY_7 extends Scheme2a
       else {
         localActor = Engine.cur.actorLand;
       }
-      MsgExplosion.send(this, null, this.FM.Loc, localActor, 0.0F, 600.0F, 0, 600.0F);
+      MsgExplosion.send(this, null, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, localActor, 0.0F, 600.0F, 0, 600.0F);
     }
   }
 
   protected void doExplosion()
   {
     super.doExplosion();
-    World.cur(); if (this.FM.Loc.z - 10.0D < World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y))
-      if (Engine.land().isWater(this.FM.Loc.x, this.FM.Loc.y))
-        Explosions.BOMB250_Water(this.FM.Loc, 1.0F, 1.0F);
+    World.cur(); if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - 10.0D < World.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double))
+      if (Engine.land().isWater(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double))
+        Explosions.BOMB250_Water(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, 1.0F, 1.0F);
       else
-        Explosions.BOMB250_Land(this.FM.Loc, 1.0F, 1.0F, true);
+        Explosions.BOMB250_Land(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, 1.0F, 1.0F);
   }
 
   public void update(float paramFloat)
@@ -179,29 +179,29 @@ public class MXY_7 extends Scheme2a
       checkAsDrone();
     }
 
-    if ((this.FM instanceof Maneuver)) {
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) {
       if (typeDockableIsDocked()) {
-        if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
-          ((Maneuver)this.FM).unblock();
-          ((Maneuver)this.FM).set_maneuver(48);
-          ((Maneuver)this.FM).AP.way.setCur(((Aircraft)this.queen_).FM.AP.way.Cur());
-          ((Pilot)this.FM).setDumbTime(3000L);
+        if ((!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) || (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode())) {
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).unblock();
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(48);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur());
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(3000L);
         }
       }
-      else if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
-        if (this.FM.EI.engines[0].getStage() == 0) {
-          this.FM.EI.setEngineRunning();
+      else if ((!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) || (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode())) {
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getStage() == 0) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
         }
         if (this.dtime > 0L) {
-          ((Maneuver)this.FM).setBusy(false);
-          ((Maneuver)this.FM).Group.leaderGroup = null;
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Pilot)this.FM).setDumbTime(3000L);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setBusy(false);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group.leaderGroup = null;
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(3000L);
           if (Time.current() > this.dtime + 3000L) {
             this.dtime = -1L;
-            ((Maneuver)this.FM).clear_stack();
-            ((Maneuver)this.FM).pop();
-            ((Pilot)this.FM).setDumbTime(0L);
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).clear_stack();
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).pop();
+            ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(0L);
           }
         }
       }
@@ -209,23 +209,23 @@ public class MXY_7 extends Scheme2a
     }
 
     super.update(paramFloat);
-    if (this.FM.AS.isMaster()) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
       for (int i = 0; i < 3; i++) {
-        if ((this.FM.CT.PowerControl > 0.77F) && (this.FM.EI.engines[i].getStage() == 0) && (this.FM.M.fuel > 0.0F) && (!typeDockableIsDocked()))
+        if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl > 0.77F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getStage() == 0) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel > 0.0F) && (!typeDockableIsDocked()))
         {
-          this.FM.EI.engines[i].setStage(this, 6);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setStage(this, 6);
         }
-        if (((this.FM.CT.PowerControl >= 0.77F) || (this.FM.EI.engines[i].getStage() <= 0)) && (this.FM.M.fuel != 0.0F))
+        if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl >= 0.77F) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getStage() <= 0)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel != 0.0F))
           continue;
-        this.FM.EI.engines[i].setEngineStops(this);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setEngineStops(this);
       }
 
       if (Config.isUSE_RENDER())
-        for (i = 0; i < 3; i++)
-          if ((this.FM.EI.engines[i].getw() > 50.0F) && (this.FM.EI.engines[i].getStage() == 6))
-            this.FM.AS.setSootState(this, i, 1);
+        for (int j = 0; j < 3; j++)
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw() > 50.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getStage() == 6))
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setSootState(this, j, 1);
           else
-            this.FM.AS.setSootState(this, i, 0);
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setSootState(this, j, 0);
     }
   }
 
@@ -233,21 +233,21 @@ public class MXY_7 extends Scheme2a
   {
     super.rareAction(paramFloat, paramBoolean);
     if ((paramBoolean) && 
-      (this.FM.AP.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).FM.Or.getKren()) < 3.0F))
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.getKren()) < 3.0F))
     {
-      if (this.FM.isPlayers()) {
-        if (((this.FM instanceof RealFlightModel)) && (!((RealFlightModel)this.FM).isRealMode())) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) {
+        if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) && (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode())) {
           typeDockableAttemptDetach();
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Maneuver)this.FM).setCheckStrike(false);
-          this.FM.Vwld.z -= 5.0D;
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setCheckStrike(false);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double -= 5.0D;
           this.dtime = Time.current();
         }
       } else {
         typeDockableAttemptDetach();
-        ((Maneuver)this.FM).set_maneuver(22);
-        ((Maneuver)this.FM).setCheckStrike(false);
-        this.FM.Vwld.z -= 5.0D;
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setCheckStrike(false);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double -= 5.0D;
         this.dtime = Time.current();
       }
     }
@@ -261,8 +261,8 @@ public class MXY_7 extends Scheme2a
   private void checkAsDrone()
   {
     if (this.target_ == null) {
-      if (this.FM.AP.way.curr().getTarget() == null) this.FM.AP.way.next();
-      this.target_ = this.FM.AP.way.curr().getTarget();
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget() == null) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
+      this.target_ = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget();
       if ((Actor.isValid(this.target_)) && ((this.target_ instanceof Wing))) {
         Wing localWing = (Wing)this.target_;
         int i = aircIndex();
@@ -301,7 +301,7 @@ public class MXY_7 extends Scheme2a
 
   public void typeDockableAttemptAttach()
   {
-    if (!this.FM.AS.isMaster()) {
+    if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
       return;
     }
 
@@ -316,7 +316,7 @@ public class MXY_7 extends Scheme2a
   }
 
   public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
     {
       if (typeDockableIsDocked())
       {
@@ -430,11 +430,11 @@ public class MXY_7 extends Scheme2a
 
     Property.set(localClass, "FlightModel", "FlightModels/MXY-7-11.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0 });
-    weaponHooksRegister(localClass, new String[] { "_Clip00" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_Clip00" });
 
-    weaponsRegister(localClass, "default", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { null });
 
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

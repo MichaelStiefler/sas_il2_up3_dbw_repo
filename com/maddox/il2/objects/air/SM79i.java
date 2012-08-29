@@ -1,7 +1,5 @@
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.CLASS;
@@ -20,12 +18,6 @@ public class SM79i extends SM79
   {
     this.fSightCurAltitude = 850.0F;
     this.fSightCurSpeed = 150.0F;
-  }
-
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    this.FM.AS.wantBeaconsNet(true);
   }
 
   public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
@@ -134,60 +126,60 @@ public class SM79i extends SM79
 
   public void typeBomberAdjDistanceReset()
   {
-    this.fSightCurForwardAngle = 0.0F;
+    this.jdField_fSightCurForwardAngle_of_type_Float = 0.0F;
   }
 
   public void typeBomberAdjDistancePlus()
   {
-    this.fSightCurForwardAngle += 0.4F;
-    if (this.fSightCurForwardAngle > 75.0F)
-      this.fSightCurForwardAngle = 75.0F;
+    this.jdField_fSightCurForwardAngle_of_type_Float += 0.4F;
+    if (this.jdField_fSightCurForwardAngle_of_type_Float > 75.0F)
+      this.jdField_fSightCurForwardAngle_of_type_Float = 75.0F;
   }
 
   public void typeBomberAdjDistanceMinus()
   {
-    this.fSightCurForwardAngle -= 0.4F;
-    if (this.fSightCurForwardAngle < -16.0F)
-      this.fSightCurForwardAngle = -16.0F;
+    this.jdField_fSightCurForwardAngle_of_type_Float -= 0.4F;
+    if (this.jdField_fSightCurForwardAngle_of_type_Float < -15.0F)
+      this.jdField_fSightCurForwardAngle_of_type_Float = -15.0F;
   }
 
   public void typeBomberAdjSideslipReset()
   {
-    this.fSightCurSideslip = 0.0F;
+    this.jdField_fSightCurSideslip_of_type_Float = 0.0F;
   }
 
   public void typeBomberAdjSideslipPlus()
   {
-    this.fSightCurSideslip = (float)(this.fSightCurSideslip + 0.5D);
-    if (this.thisWeaponsName.startsWith("1x"))
+    this.jdField_fSightCurSideslip_of_type_Float = (float)(this.jdField_fSightCurSideslip_of_type_Float + 0.5D);
+    if (this.jdField_thisWeaponsName_of_type_JavaLangString.startsWith("1x"))
     {
-      if (this.fSightCurSideslip > 40.0F)
-        this.fSightCurSideslip = 40.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + this.fSightCurSideslip);
+      if (this.jdField_fSightCurSideslip_of_type_Float > 40.0F)
+        this.jdField_fSightCurSideslip_of_type_Float = 40.0F;
+      HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + this.jdField_fSightCurSideslip_of_type_Float);
     }
     else
     {
-      if (this.fSightCurSideslip > 12.0F)
-        this.fSightCurSideslip = 12.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.fSightCurSideslip);
+      if (this.jdField_fSightCurSideslip_of_type_Float > 10.0F)
+        this.jdField_fSightCurSideslip_of_type_Float = 10.0F;
+      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.jdField_fSightCurSideslip_of_type_Float);
     }
   }
 
   public void typeBomberAdjSideslipMinus()
   {
-    this.fSightCurSideslip = (float)(this.fSightCurSideslip - 0.5D);
+    this.jdField_fSightCurSideslip_of_type_Float = (float)(this.jdField_fSightCurSideslip_of_type_Float - 0.5D);
 
-    if (this.thisWeaponsName.startsWith("1x"))
+    if (this.jdField_thisWeaponsName_of_type_JavaLangString.startsWith("1x"))
     {
-      if (this.fSightCurSideslip < -40.0F)
-        this.fSightCurSideslip = -40.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + this.fSightCurSideslip);
+      if (this.jdField_fSightCurSideslip_of_type_Float < -40.0F)
+        this.jdField_fSightCurSideslip_of_type_Float = -40.0F;
+      HUD.log(AircraftHotKeys.hudLogWeaponId, "Torpedo Angle  " + this.jdField_fSightCurSideslip_of_type_Float);
     }
     else
     {
-      if (this.fSightCurSideslip < -12.0F)
-        this.fSightCurSideslip = -12.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.fSightCurSideslip);
+      if (this.jdField_fSightCurSideslip_of_type_Float < -10.0F)
+        this.jdField_fSightCurSideslip_of_type_Float = -10.0F;
+      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip " + this.jdField_fSightCurSideslip_of_type_Float);
     }
   }
 
@@ -246,8 +238,8 @@ public class SM79i extends SM79
   {
     paramNetMsgGuaranted.writeFloat(this.fSightCurAltitude);
     paramNetMsgGuaranted.writeFloat(this.fSightCurSpeed);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurForwardAngle);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurSideslip);
+    paramNetMsgGuaranted.writeFloat(this.jdField_fSightCurForwardAngle_of_type_Float);
+    paramNetMsgGuaranted.writeFloat(this.jdField_fSightCurSideslip_of_type_Float);
   }
 
   public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput)
@@ -255,8 +247,8 @@ public class SM79i extends SM79
   {
     this.fSightCurAltitude = paramNetMsgInput.readFloat();
     this.fSightCurSpeed = paramNetMsgInput.readFloat();
-    this.fSightCurForwardAngle = paramNetMsgInput.readFloat();
-    this.fSightCurSideslip = paramNetMsgInput.readFloat();
+    this.jdField_fSightCurForwardAngle_of_type_Float = paramNetMsgInput.readFloat();
+    this.jdField_fSightCurSideslip_of_type_Float = paramNetMsgInput.readFloat();
   }
 
   static
@@ -280,22 +272,22 @@ public class SM79i extends SM79
 
     Aircraft.weaponHooksRegister(localClass, new String[] { "_12,7_01", "_12,7_02", "_12,7_00", "_12,7_04", "_12,7_03", "_ExternalDev01", "_ExternalBomb01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawnC01", "_BombSpawnC02", "_BombSpawnC03", "_BombSpawnC04", "_BombSpawnC05", "_BombSpawnC06", "_BombSpawnC07", "_BombSpawnC08", "_BombSpawnC09", "_BombSpawnC10", "_BombSpawnC11", "_BombSpawnC12" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "12x100_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, "BombGunIT_100_M 12", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "12x100_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, "BombGunIT_100_M 12", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "12x50_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, "BombGunIT_50_M 12", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "12x50_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, "BombGunIT_50_M 12", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "12xCassette", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, null, null, "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56" });
+    Aircraft.weaponsRegister(localClass, "12xCassette", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, null, null, "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56", "BombGunSpezzoniera 56" });
 
-    weaponsRegister(localClass, "6x100_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, "BombGunIT_100_M 6", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "6x100_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, "BombGunIT_100_M 6", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "5x250_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, "BombGunIT_250_T 5", null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "5x250_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, "BombGunIT_250_T 5", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x500_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, null, "BombGunIT_500_T 2", null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2x500_delay_drop", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, null, null, null, "BombGunIT_500_T 2", null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xLTW_Torp", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, "BombGunTorpFiume 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1xLTW_Torp", new String[] { "MGunBredaSAFATSM127s 350", "MGunBredaSAFATSM127s 500", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM77s 350", "MGunBredaSAFATSM127s 500", null, "BombGunTorpFiume 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

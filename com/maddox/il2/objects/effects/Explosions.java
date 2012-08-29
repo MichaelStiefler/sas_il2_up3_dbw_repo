@@ -24,7 +24,6 @@ import com.maddox.il2.engine.LightPointWorld;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Mesh;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.ActorCrater;
 import com.maddox.il2.objects.ActorLand;
@@ -68,9 +67,9 @@ public class Explosions
 
     for (int i = 0; i < 2; i++) {
       localLoc.set(paramLoc);
-      localLoc.getPoint().x += World.Rnd().nextDouble(-12.0D, 12.0D);
-      localLoc.getPoint().y += World.Rnd().nextDouble(-12.0D, 12.0D);
-      localLoc.getPoint().z += World.Rnd().nextDouble(-3.0D, 3.0D);
+      localLoc.getPoint().jdField_x_of_type_Double += World.Rnd().nextDouble(-12.0D, 12.0D);
+      localLoc.getPoint().jdField_y_of_type_Double += World.Rnd().nextDouble(-12.0D, 12.0D);
+      localLoc.getPoint().jdField_z_of_type_Double += World.Rnd().nextDouble(-3.0D, 3.0D);
       Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1.0F);
     }
     int j = World.Rnd().nextInt(2, 6);
@@ -111,7 +110,7 @@ public class Explosions
     }
 
     if (paramString1.equalsIgnoreCase("Tank")) {
-      Tank_Explode(paramActorHMesh.pos.getAbsPoint());
+      Tank_Explode(paramActorHMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     } else if (paramString1.equalsIgnoreCase("_TankSmoke_")) {
       if (paramFloat > 0.0F) {
         Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", paramFloat * 0.7F);
@@ -120,7 +119,7 @@ public class Explosions
       }
     }
     else if (paramString1.equalsIgnoreCase("Car")) {
-      Car_Explode(paramActorHMesh.pos.getAbsPoint());
+      Car_Explode(paramActorHMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       if (paramFloat > 0.0F) {
         Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/CarDyingFire.eff", paramFloat * 0.7F);
 
@@ -153,7 +152,7 @@ public class Explosions
       }
     }
     else if (paramString1.equalsIgnoreCase("Artillery")) {
-      Antiaircraft_Explode(paramActorHMesh.pos.getAbsPoint());
+      Antiaircraft_Explode(paramActorHMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       if (paramFloat > 0.0F)
       {
         Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", paramFloat * 0.7F);
@@ -163,7 +162,7 @@ public class Explosions
     }
     else if (paramString1.equalsIgnoreCase("Stationary"))
     {
-      Antiaircraft_Explode(paramActorHMesh.pos.getAbsPoint());
+      Antiaircraft_Explode(paramActorHMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       if (paramFloat > 0.0F) {
         Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", paramFloat * 0.7F);
 
@@ -172,7 +171,7 @@ public class Explosions
     }
     else if (paramString1.equalsIgnoreCase("Aircraft"))
     {
-      Antiaircraft_Explode(paramActorHMesh.pos.getAbsPoint());
+      Antiaircraft_Explode(paramActorHMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     } else if (paramString1.equalsIgnoreCase("Aircraft")) {
       System.out.println("*** Unknown named explode: '" + paramString1 + "'");
     }
@@ -327,16 +326,16 @@ public class Explosions
 
       if (bEnableActorCrater) {
         int i = 64;
-        while ((i >= 2) && 
-          (paramFloat1 < i))
+        while (i >= 2) {
+          if (paramFloat1 >= i) break;
           i /= 2;
-        if (i >= 2)
+        }if (i >= 2)
           new ActorCrater("3do/Effects/Explosion/Crater" + i + "/Live.sim", l, paramFloat2);
       }
     }
   }
 
-  private static void fontain(Point3d paramPoint3d, float paramFloat1, float paramFloat2, int paramInt1, int paramInt2, boolean paramBoolean)
+  private static void fontain(Point3d paramPoint3d, float paramFloat1, float paramFloat2, int paramInt1, int paramInt2)
   {
     int i = 4 + (int)(Math.random() * 2.0D);
     float f1 = 30.0F;
@@ -370,9 +369,9 @@ public class Explosions
 
       Eff3DActor localEff3DActor1 = Eff3DActor.New(l, 1.0F, str3, 3.5F);
       for (int j = 0; j < i; j++) {
-        float f7 = (float)(360.0D * Math.random());
-        float f8 = 90.0F + (2.0F * (float)Math.random() - 1.0F) * f1;
-        o.set(f7, f8, 0.0F);
+        float f6 = (float)(360.0D * Math.random());
+        float f7 = 90.0F + (2.0F * (float)Math.random() - 1.0F) * f1;
+        o.set(f6, f7, 0.0F);
         l.set(paramPoint3d, o);
         Eff3DActor.New(l, 1.0F, str2, paramFloat1);
       }
@@ -381,17 +380,7 @@ public class Explosions
       l.set(paramPoint3d, o);
       ExplodeSurfaceWave(paramInt1, f2, f5);
       SurfaceLight(paramInt1, f4, 2.0F);
-
-      float f6 = 80.0F;
-      if ((paramBoolean) && (!Mission.isCoop()) && (!Mission.isDogfight()))
-      {
-        if (paramInt2 == 0)
-          f6 *= Main.cur().mission.zutiMisc_BombsCat2_CratersVisibilityMultiplier;
-        else if (paramInt2 == 2)
-          f6 *= Main.cur().mission.zutiMisc_BombsCat3_CratersVisibilityMultiplier;
-        else f6 *= Main.cur().mission.zutiMisc_BombsCat1_CratersVisibilityMultiplier;
-      }
-      SurfaceCrater(paramInt1, f3, f6);
+      SurfaceCrater(paramInt1, f3, 80.0F);
 
       o.set(0.0F, 90.0F, 0.0F);
       l.set(paramPoint3d, o);
@@ -465,7 +454,7 @@ public class Explosions
     {
       double d1 = (Math.random() - 0.5D) * f1;
       double d2 = (Math.random() - 0.5D) * f1;
-      localPoint3d.set(paramPoint3d); localPoint3d.x += d1; localPoint3d.y += d2;
+      localPoint3d.set(paramPoint3d); localPoint3d.jdField_x_of_type_Double += d1; localPoint3d.jdField_y_of_type_Double += d2;
       o.set(0.0F, 90.0F, 0.0F); l.set(localPoint3d, o);
       Eff3DActor.New(l, 1.0F, Math.random() < 0.5D ? str1 : str2, 3.0F);
     }
@@ -528,14 +517,14 @@ public class Explosions
     float f1 = 4.0F; float f2 = 1.0F;
     if (Mission.isDeathmatch())
       bEnableActorCrater = false;
-    fontain(paramPoint3d, f1, f2, 0, 0, false);
+    fontain(paramPoint3d, f1, f2, 0, 0);
     bEnableActorCrater = true;
     SfxExplosion.crashAir(paramPoint3d, 0);
   }
   public static void AirDrop_Water(Point3d paramPoint3d) {
     if (!Config.isUSE_RENDER()) return;
     float f1 = 4.0F; float f2 = 1.0F;
-    fontain(paramPoint3d, f1, f2, 1, 0, false);
+    fontain(paramPoint3d, f1, f2, 1, 0);
     SfxExplosion.crashAir(paramPoint3d, 2);
   }
   public static void AirDrop_Air(Point3d paramPoint3d) {
@@ -548,7 +537,7 @@ public class Explosions
   {
     if (!Config.isUSE_RENDER()) return;
     float f1 = 3.0F; float f2 = 1.0F;
-    fontain(paramPoint3d, f1, f2, 1, 1, false);
+    fontain(paramPoint3d, f1, f2, 1, 1);
     SfxExplosion.crashParts(paramPoint3d, 2);
   }
 
@@ -593,9 +582,9 @@ public class Explosions
     Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1.0F);
     Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1.0F);
     Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1.0F);
-    World.cur(); if (paramPoint3d.z - World.land().HQ(paramPoint3d.x, paramPoint3d.y) > 3.0D) {
+    World.cur(); if (paramPoint3d.jdField_z_of_type_Double - World.land().HQ(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double) > 3.0D) {
       SfxExplosion.crashAir(paramPoint3d, 1); } else {
-      World.cur(); if (World.land().isWater(paramPoint3d.x, paramPoint3d.y))
+      World.cur(); if (World.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double))
         SfxExplosion.crashAir(paramPoint3d, 2);
       else
         SfxExplosion.crashAir(paramPoint3d, 0); 
@@ -656,41 +645,42 @@ public class Explosions
     Eff3DActor.New(l, paramFloat2, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1.0F);
   }
 
-  public static void BOMB250_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean)
+  public static void BOMB250_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2)
   {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 0, paramBoolean);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 0);
   }
   public static void BOMB250_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 0, false);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 0);
   }
   public static void BOMB250_Object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 0, false);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 0);
   }
 
-  public static void BOMB1000a_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean) {
+  public static void BOMB1000a_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 2, paramBoolean);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 2);
   }
   public static void BOMB1000a_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 2, false);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 2);
   }
   public static void BOMB1000a_Object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 2, false);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 2);
   }
 
-  public static void bomb1000_land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean) {
+  public static void bomb1000_land(Point3d paramPoint3d, float paramFloat1, float paramFloat2)
+  {
     if (!Config.isUSE_RENDER()) return;
     o.set(0.0F, 90.0F, 0.0F);
     l.set(paramPoint3d, o);
     SurfaceLight(0, 10000.0F, 1.0F);
     SurfaceCrater(0, 112.1F, 600.0F);
     ExplodeSurfaceWave(0, 2000.0F, 4.6F);
-    paramPoint3d.z += 5.0D;
+    paramPoint3d.jdField_z_of_type_Double += 5.0D;
     l.set(paramPoint3d, o);
     Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(buff).eff", -1.0F);
     Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(circle).eff", -1.0F);
@@ -704,7 +694,7 @@ public class Explosions
     l.set(paramPoint3d, o);
     SurfaceLight(0, 10000.0F, 1.0F);
     ExplodeSurfaceWave(1, 3000.0F, 6.6F);
-    paramPoint3d.z += 5.0D;
+    paramPoint3d.jdField_z_of_type_Double += 5.0D;
     l.set(paramPoint3d, o);
     Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(buff).eff", -1.0F);
     Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(circle).eff", -1.0F);
@@ -734,18 +724,18 @@ public class Explosions
     if (!Config.isUSE_RENDER()) return; 
   }
 
-  public static void RS82_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean)
+  public static void RS82_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2)
   {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 1, paramBoolean);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 1);
   }
   public static void RS82_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 1, false);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 1);
   }
   public static void RS82_Object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 1, false);
+    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 1);
   }
 
   public static void Explode10Kg_Object(Point3d paramPoint3d, Vector3f paramVector3f, float paramFloat1, float paramFloat2)
@@ -818,7 +808,7 @@ public class Explosions
       if (paramActor == null) {
         SfxExplosion.shell(paramPoint3d, 1, paramFloat1, paramInt, paramFloat2);
       }
-      else if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y))
+      else if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double))
         SfxExplosion.shell(paramPoint3d, 2, paramFloat1, paramInt, paramFloat2);
       else
         SfxExplosion.shell(paramPoint3d, 0, paramFloat1, paramInt, paramFloat2);
@@ -826,11 +816,9 @@ public class Explosions
 
   public static void generateRocket(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2)
   {
-    generate(paramActor, paramPoint3d, paramFloat1 > 15.0F ? paramFloat1 : 15.0F, paramInt, paramFloat2, false);
+    generate(paramActor, paramPoint3d, paramFloat1 > 15.0F ? paramFloat1 : 15.0F, paramInt, paramFloat2);
   }
-
-  public static void generate(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2, boolean paramBoolean)
-  {
+  public static void generate(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2) {
     if (!Config.isUSE_RENDER()) return;
 
     if (paramActor != null)
@@ -838,7 +826,7 @@ public class Explosions
       generateSound(paramActor, paramPoint3d, paramFloat1, paramInt, paramFloat2);
 
       rel.set(paramPoint3d);
-      paramActor.pos.getAbs(tmpLoc); paramActor.pos.getCurrent(l); l.interpolate(tmpLoc, 0.5D);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(tmpLoc); paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(l); l.interpolate(tmpLoc, 0.5D);
       rel.sub(l);
 
       if (paramInt == 2) {
@@ -869,45 +857,45 @@ public class Explosions
       if ((paramActor instanceof ActorLand))
       {
         if (paramFloat1 < 15.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) Explode10Kg_Water(paramPoint3d, 4.0F, 1.0F); else
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) Explode10Kg_Water(paramPoint3d, 4.0F, 1.0F); else
             Explode10Kg_Land(paramPoint3d, 4.0F, 1.0F);
         } else if (paramFloat1 < 50.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-            RS82_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
+            RS82_Land(paramPoint3d, 4.0F, 1.0F);
         } else if (paramFloat1 < 450.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB250_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else
+            BOMB250_Land(paramPoint3d, 4.0F, 1.0F);
         } else if (paramFloat1 < 3000.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB1000a_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB1000a_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) BOMB1000a_Water(paramPoint3d, 4.0F, 1.0F); else
+            BOMB1000a_Land(paramPoint3d, 4.0F, 1.0F);
         }
-        else if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) bomb1000_water(paramPoint3d, -1.0F, 1.0F); else {
-          bomb1000_land(paramPoint3d, -1.0F, 1.0F, paramBoolean);
+        else if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) bomb1000_water(paramPoint3d, -1.0F, 1.0F); else {
+          bomb1000_land(paramPoint3d, -1.0F, 1.0F);
         }
 
       }
       else if (paramFloat1 < 50.0F) {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 5.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-            RS82_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
+        if (paramPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double) < 5.0D) {
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
+            RS82_Land(paramPoint3d, 4.0F, 1.0F);
         }
         bomb50_land(paramPoint3d, -1.0F, 1.0F);
       } else if (paramFloat1 < 450.0F) {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 10.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB250_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
+        if (paramPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double) < 10.0D) {
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else
+            BOMB250_Land(paramPoint3d, 4.0F, 1.0F);
         }
         bomb50_land(paramPoint3d, -1.0F, 2.0F);
       } else if (paramFloat1 < 3000.0F) {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 20.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB1000a_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB1000a_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
+        if (paramPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double) < 20.0D) {
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) BOMB1000a_Water(paramPoint3d, 4.0F, 1.0F); else
+            BOMB1000a_Land(paramPoint3d, 4.0F, 1.0F);
         }
         bomb50_land(paramPoint3d, -1.0F, 2.0F);
       } else {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 50.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) bomb1000_water(paramPoint3d, -1.0F, 1.0F); else
-            bomb1000_land(paramPoint3d, -1.0F, 1.0F, paramBoolean);
+        if (paramPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double) < 50.0D) {
+          if (Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double)) bomb1000_water(paramPoint3d, -1.0F, 1.0F); else
+            bomb1000_land(paramPoint3d, -1.0F, 1.0F);
         }
         bomb50_land(paramPoint3d, -1.0F, 10.0F);
       }
@@ -926,7 +914,7 @@ public class Explosions
     playShotSound(paramShot);
 
     rel.set(paramShot.p);
-    paramActor.pos.getAbs(tmpLoc); paramActor.pos.getCurrent(l); l.interpolate(tmpLoc, paramShot.tickOffset);
+    paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(tmpLoc); paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(l); l.interpolate(tmpLoc, paramShot.tickOffset);
     rel.sub(l);
 
     if ((World.cur().isArcade()) && (!(paramActor instanceof Aircraft))) {
@@ -958,9 +946,9 @@ public class Explosions
       else if (f < 5.0F)
         Explode10Kg_Land(paramShot.p, 4.0F, 1.0F);
       else if (f < 50.0F)
-        RS82_Land(paramShot.p, 4.0F, 1.0F, false);
+        RS82_Land(paramShot.p, 4.0F, 1.0F);
       else {
-        BOMB250_Land(paramShot.p, 4.0F, 1.0F, false);
+        BOMB250_Land(paramShot.p, 4.0F, 1.0F);
       }
       break;
     case 1:
@@ -993,7 +981,7 @@ public class Explosions
 
     rel.set(paramPoint3d);
     if (paramActor != null) {
-      paramActor.pos.getAbs(tmpLoc); paramActor.pos.getCurrent(l); l.interpolate(tmpLoc, paramDouble);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(tmpLoc); paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(l); l.interpolate(tmpLoc, paramDouble);
       rel.sub(l);
     }
 
@@ -1004,7 +992,7 @@ public class Explosions
 
     if ((paramActor instanceof ActorLand))
     {
-      boolean bool = Engine.land().isWater(paramPoint3d.x, paramPoint3d.y);
+      boolean bool = Engine.land().isWater(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double);
 
       if (paramFloat1 < 0.001F) {
         if (!bool) Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/12_Burn.eff", -1.0F); 
@@ -1018,16 +1006,16 @@ public class Explosions
       }
       else if (paramFloat1 < 1.0F) {
         if (bool) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-          RS82_Land(paramPoint3d, 4.0F, 1.0F, false);
+          RS82_Land(paramPoint3d, 4.0F, 1.0F);
       } else if (paramFloat1 < 15.0F) {
         if (bool) Explode10Kg_Water(paramPoint3d, 4.0F, 1.0F); else
           Explode10Kg_Land(paramPoint3d, 4.0F, 1.0F);
       } else if (paramFloat1 < 50.0F) {
         if (bool) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-          RS82_Land(paramPoint3d, 4.0F, 1.0F, false);
+          RS82_Land(paramPoint3d, 4.0F, 1.0F);
       }
       else if (bool) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else {
-        BOMB250_Land(paramPoint3d, 4.0F, 1.0F, false);
+        BOMB250_Land(paramPoint3d, 4.0F, 1.0F);
       }
 
     }

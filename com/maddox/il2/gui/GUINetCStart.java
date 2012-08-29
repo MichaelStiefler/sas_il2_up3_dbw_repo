@@ -76,9 +76,10 @@ public class GUINetCStart extends GameState
       if (paramGWindow == GUINetCStart.this.bPrev) {
         if (GUINetCStart.this.bKick == null) {
           GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-          localGUINetClientGuard.dlgDestroy(new GUINetClientGuard.DestroyExec() {
-            public void destroy(GUINetClientGuard paramGUINetClientGuard) { paramGUINetClientGuard.destroy(true); } } );
-        } else {
+          localGUINetClientGuard.dlgDestroy(new GUINetCStart.1(this));
+        }
+        else
+        {
           Mission.cur().destroy();
           Main.stateStack().change(Main.cur().netServerParams.bNGEN ? 69 : 38);
         }
@@ -198,7 +199,7 @@ public class GUINetCStart extends GameState
       addColumn(I18N.gui("netcstart.Player"), null);
       addColumn(I18N.gui("netcstart.Ping"), null);
       addColumn(I18N.gui("netcstart.State"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(5.0F);
       getColumn(1).setRelativeDx(2.0F);
       getColumn(2).setRelativeDx(3.0F);
@@ -206,7 +207,7 @@ public class GUINetCStart extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

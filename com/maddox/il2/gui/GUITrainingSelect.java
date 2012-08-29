@@ -163,11 +163,11 @@ public class GUITrainingSelect extends GameState
       super.afterCreated();
       this.bColumnsSizable = false;
       addColumn(I18N.gui("training.Tracks"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {

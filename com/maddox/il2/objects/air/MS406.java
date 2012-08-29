@@ -9,8 +9,8 @@ public class MS406 extends MS400X
   public void update(float paramFloat)
   {
     resetYPRmodifier();
-    xyz[1] = cvt(this.FM.EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 0.2F, 0.0F);
-    hierMesh().chunkSetLocate("OilRad_D0", xyz, ypr);
+    Aircraft.xyz[1] = Aircraft.cvt(this.FM.EI.engines[0].getControlRadiator(), 0.0F, 1.0F, 0.2F, 0.0F);
+    hierMesh().chunkSetLocate("OilRad_D0", Aircraft.xyz, Aircraft.ypr);
     super.update(paramFloat);
   }
 
@@ -31,10 +31,9 @@ public class MS406 extends MS400X
 
     Property.set(localClass, "FlightModel", "FlightModels/MS406.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01" });
-    weaponsRegister(localClass, "default", new String[] { "MGunMAC1934 300", "MGunMAC1934 300", "MGunHispanoMkIki 60" });
-    weaponsRegister(localClass, "3xMAC1934", new String[] { "MGunMAC1934 300", "MGunMAC1934 300", "MGunMAC1934i 300" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15k 300", "MGunMG15k 300", "MGunHispanoMkIki 60" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null });
   }
 }

@@ -77,7 +77,6 @@ import com.maddox.il2.objects.air.Cockpit.Camera3DMirror;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.PaintScheme;
 import com.maddox.il2.objects.effects.Cinema;
-import com.maddox.il2.objects.effects.DarkerNight;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.effects.LightsGlare;
 import com.maddox.il2.objects.effects.OverLoad;
@@ -86,7 +85,6 @@ import com.maddox.il2.objects.effects.SunFlare;
 import com.maddox.il2.objects.effects.SunGlare;
 import com.maddox.il2.objects.effects.Zip;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.TestRunway;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.vehicles.lights.SearchlightGeneric;
 import com.maddox.il2.objects.weapons.Bomb;
@@ -196,7 +194,6 @@ public class Main3D extends Main
   public CameraOrtho2D cameraMap2D;
   public Land2D land2D;
   public Land2DText land2DText;
-  public DarkerNight darkerNight;
   private static String _sLastMusic = "ru";
   protected int viewMirror;
   private int iconTypes;
@@ -369,7 +366,7 @@ public class Main3D extends Main
 
   public static Main3D cur3D()
   {
-    return (Main3D)cur();
+    return (Main3D)Main.cur();
   }
 
   public boolean isUseStartLog()
@@ -378,17 +375,15 @@ public class Main3D extends Main
   public boolean isShowStartIntro() { return this.bShowStartIntro; } 
   public boolean isDrawLand() {
     return this.bDrawLand; } 
-  public void setDrawLand(boolean paramBoolean) { this.bDrawLand = paramBoolean;
-  }
+  public void setDrawLand(boolean paramBoolean) { this.bDrawLand = paramBoolean; }
 
-  public boolean isDemoPlaying()
-  {
+  public boolean isDemoPlaying() {
     if (this.playRecordedStreams != null) return true;
     if (this.keyRecord == null) return false;
     return this.keyRecord.isPlaying();
   }
   public Actor viewActor() {
-    return this.camera3D.pos.base();
+    return this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base();
   }
   public boolean isViewInsideShow() {
     if (!Actor.isValid(this.cockpitCur))
@@ -464,9 +459,9 @@ public class Main3D extends Main
 
     Selector.resetGame();
     this.hookViewFly.use(true); this.bViewFly = true;
-    this.camera3D.pos.setRel(new Point3d(), new Orient());
-    this.camera3D.pos.changeBase(paramActor, this.hookViewFly, false);
-    this.camera3D.pos.resetAsBase();
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeBase(paramActor, this.hookViewFly, false);
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
     Engine.soundListener().setUseBaseSpeed(false);
   }
 
@@ -476,9 +471,9 @@ public class Main3D extends Main
     endViewInside();
 
     this.bViewEnemy = true;
-    this.camera3D.pos.setRel(new Point3d(), new Orient());
-    this.camera3D.pos.changeBase(paramActor, this.hookViewEnemy, false);
-    this.camera3D.pos.resetAsBase();
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeBase(paramActor, this.hookViewEnemy, false);
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
     if ((paramActor instanceof ActorViewPoint))
       ((ActorViewPoint)paramActor).setViewActor(this.hookViewEnemy.enemy());
   }
@@ -558,12 +553,12 @@ public class Main3D extends Main
 
   public void setViewFlow30(Actor paramActor) {
     setView(paramActor, true);
-    this.hookView.set(paramActor, 30.0F, -30.0F); this.camera3D.pos.resetAsBase();
+    this.hookView.set(paramActor, 30.0F, -30.0F); this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
   }
   public void setViewFlow10(Actor paramActor, boolean paramBoolean) {
     this.hookView.setFollow(paramBoolean);
     setView(paramActor, true);
-    this.hookView.set(paramActor, 10.0F, -10.0F); this.camera3D.pos.resetAsBase();
+    this.hookView.set(paramActor, 10.0F, -10.0F); this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
   }
   public void setView(Actor paramActor) { setView(paramActor, false); } 
   public void setView(Actor paramActor, boolean paramBoolean) {
@@ -574,9 +569,9 @@ public class Main3D extends Main
 
       Selector.resetGame();
       this.hookView.use(true);
-      this.camera3D.pos.setRel(new Point3d(), new Orient());
-      this.camera3D.pos.changeBase(paramActor, this.hookView, false);
-      this.camera3D.pos.resetAsBase();
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeBase(paramActor, this.hookView, false);
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
     }
   }
 
@@ -692,34 +687,34 @@ public class Main3D extends Main
     for (int i = 1; i < 3; i++) {
       this._camera3D[i] = new Camera3D();
       this._camera3D[i].set(FOVX, 1.2F, 48000.0F);
-      this._camera3D[i].pos.setBase(this.camera3D, null, false);
+      this._camera3D[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.camera3D, null, false);
       this._render3D0[i] = new Render3D0(i, 1.0F - i * 0.001F);
       this._render3D0[i].setSaveAspect(true);
       this._render3D0[i].setCamera(this._camera3D[i]);
     }
-    this._camera3D[1].pos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
-    this._camera3D[2].pos.setRel(new Orient(FOVX, 0.0F, 0.0F));
+    this._camera3D[1].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
+    this._camera3D[2].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(FOVX, 0.0F, 0.0F));
 
     this.render3D1 = new Render3D1(0, 0.9F);
     this.render3D1.setSaveAspect(Config.cur.windowSaveAspect);
     this.render3D1.setName("render3D1");
     this.render3D1.setCamera(this.camera3D);
-    for (i = 1; i < 3; i++) {
-      this._render3D1[i] = new Render3D1(i, 0.9F - i * 0.001F);
-      this._render3D1[i].setSaveAspect(true);
-      this._render3D1[i].setCamera(this._camera3D[i]);
+    for (int j = 1; j < 3; j++) {
+      this._render3D1[j] = new Render3D1(j, 0.9F - j * 0.001F);
+      this._render3D1[j].setSaveAspect(true);
+      this._render3D1[j].setCamera(this._camera3D[j]);
     }
 
     this.camera3DR = new Camera3DR();
     this.camera3DR.setName("cameraR");
     this.camera3DR.set(FOVX, 1.2F, 48000.0F);
-    this.camera3DR.pos.setBase(this.camera3D, new HookReflection(), false);
+    this.camera3DR.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.camera3D, new HookReflection(), false);
     this.render3D0R = new Render3D0R(1.1F);
     this.render3D0R.setSaveAspect(Config.cur.windowSaveAspect);
     this.render3D0R.setName("render3D0R");
     this.render3D0R.setCamera(this.camera3DR);
 
-    Engine.soundListener().pos.setBase(this.camera3D, null, false);
+    Engine.soundListener().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.camera3D, null, false);
 
     TextScr.font();
 
@@ -734,19 +729,19 @@ public class Main3D extends Main
     this.render2D.setShow(true);
     this._camera2D[0] = this.camera2D;
     this._render2D[0] = this.render2D;
-    for (i = 1; i < 3; i++) {
-      this._camera2D[i] = new CameraOrtho2D();
-      this._render2D[i] = new Render2D(i, 0.95F - i * 0.001F);
-      this._render2D[i].setSaveAspect(true);
-      this._render2D[i].setCamera(this._camera2D[i]);
-      this._camera2D[i].set(0.0F, this._render2D[i].getViewPortWidth(), 0.0F, this._render2D[i].getViewPortHeight());
-      this._camera2D[i].set(0.0F, 1.0F);
+    for (int k = 1; k < 3; k++) {
+      this._camera2D[k] = new CameraOrtho2D();
+      this._render2D[k] = new Render2D(k, 0.95F - k * 0.001F);
+      this._render2D[k].setSaveAspect(true);
+      this._render2D[k].setCamera(this._camera2D[k]);
+      this._camera2D[k].set(0.0F, this._render2D[k].getViewPortWidth(), 0.0F, this._render2D[k].getViewPortHeight());
+      this._camera2D[k].set(0.0F, 1.0F);
     }
 
     this.camera3DMirror = new Cockpit.Camera3DMirror();
     this.camera3DMirror.setName("cameraMirror");
     this.camera3DMirror.set(FOVX, 1.2F, 48000.0F);
-    this.camera3DMirror.pos.setBase(this.camera3D, Cockpit.getHookCamera3DMirror(false), false);
+    this.camera3DMirror.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.camera3D, Cockpit.getHookCamera3DMirror(false), false);
     this.render3D0Mirror = new Render3D0Mirror(1.8F);
     this.render3D0Mirror.setName("render3D0Mirror");
     this.render3D0Mirror.setCamera(this.camera3DMirror);
@@ -771,19 +766,19 @@ public class Main3D extends Main
     this.renderCockpit.setShow(false);
     this._cameraCockpit[0] = this.cameraCockpit;
     this._renderCockpit[0] = this.renderCockpit;
-    for (i = 1; i < 3; i++) {
-      this._cameraCockpit[i] = new Camera3D();
-      this._cameraCockpit[i].set(FOVX, 0.05F, 12.5F);
-      this._cameraCockpit[i].pos.setBase(this.cameraCockpit, null, false);
-      this._renderCockpit[i] = new RenderCockpit(i, 0.5F - i * 0.001F);
-      this._renderCockpit[i].setSaveAspect(true);
-      this._renderCockpit[i].setCamera(this._cameraCockpit[i]);
+    for (int m = 1; m < 3; m++) {
+      this._cameraCockpit[m] = new Camera3D();
+      this._cameraCockpit[m].set(FOVX, 0.05F, 12.5F);
+      this._cameraCockpit[m].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.cameraCockpit, null, false);
+      this._renderCockpit[m] = new RenderCockpit(m, 0.5F - m * 0.001F);
+      this._renderCockpit[m].setSaveAspect(true);
+      this._renderCockpit[m].setCamera(this._cameraCockpit[m]);
     }
-    this._cameraCockpit[1].pos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
-    this._cameraCockpit[2].pos.setRel(new Orient(FOVX, 0.0F, 0.0F));
+    this._cameraCockpit[1].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
+    this._cameraCockpit[2].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(FOVX, 0.0F, 0.0F));
 
     this.cameraCockpitMirror = new Cockpit.Camera3DMirror();
-    this.cameraCockpitMirror.pos.setBase(this.cameraCockpit, Cockpit.getHookCamera3DMirror(true), false);
+    this.cameraCockpitMirror.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.cameraCockpit, Cockpit.getHookCamera3DMirror(true), false);
     this.cameraCockpitMirror.setName("cameraCockpitMirror");
     this.cameraCockpitMirror.set(FOVX, 0.05F, 12.5F);
     this.renderCockpitMirror = new RenderCockpitMirror(1.77F);
@@ -823,10 +818,10 @@ public class Main3D extends Main
     this._sunFlareRender[0].setName("renderSunFlare");
     this._sunFlareRender[0].setSaveAspect(Config.cur.windowSaveAspect);
     this._sunFlareRender[0].setShow(false);
-    for (int j = 1; j < 3; j++) {
-      this._sunFlareRender[j] = SunFlare.newRender(j, 0.19F, this._camera3D[j]);
-      this._sunFlareRender[j].setSaveAspect(true);
-      this._sunFlareRender[j].setShow(false);
+    for (int n = 1; n < 3; n++) {
+      this._sunFlareRender[n] = SunFlare.newRender(n, 0.19F, this._camera3D[n]);
+      this._sunFlareRender[n].setSaveAspect(true);
+      this._sunFlareRender[n].setShow(false);
     }
 
     this.lightsGlare = new LightsGlare(0, 0.17F);
@@ -834,10 +829,10 @@ public class Main3D extends Main
     this.lightsGlare.setCamera(new CameraOrtho2D());
     this.lightsGlare.setShow(false);
     this._lightsGlare[0] = this.lightsGlare;
-    for (j = 1; j < 3; j++) {
-      this._lightsGlare[j] = new LightsGlare(j, 0.17F - j * 0.001F);
-      this._lightsGlare[j].setSaveAspect(true);
-      this._lightsGlare[j].setCamera(new CameraOrtho2D());
+    for (int i1 = 1; i1 < 3; i1++) {
+      this._lightsGlare[i1] = new LightsGlare(i1, 0.17F - i1 * 0.001F);
+      this._lightsGlare[i1].setSaveAspect(true);
+      this._lightsGlare[i1].setCamera(new CameraOrtho2D());
     }
 
     this.sunGlare = new SunGlare(0, 0.15F);
@@ -845,10 +840,10 @@ public class Main3D extends Main
     this.sunGlare.setCamera(new CameraOrtho2D());
     this.sunGlare.setShow(false);
     this._sunGlare[0] = this.sunGlare;
-    for (j = 1; j < 3; j++) {
-      this._sunGlare[j] = new SunGlare(j, 0.15F - j * 0.001F);
-      this._sunGlare[j].setSaveAspect(true);
-      this._sunGlare[j].setCamera(new CameraOrtho2D());
+    for (int i2 = 1; i2 < 3; i2++) {
+      this._sunGlare[i2] = new SunGlare(i2, 0.15F - i2 * 0.001F);
+      this._sunGlare[i2].setSaveAspect(true);
+      this._sunGlare[i2].setCamera(new CameraOrtho2D());
     }
 
     this.overLoad = new OverLoad(0, 0.1F);
@@ -856,26 +851,21 @@ public class Main3D extends Main
     this.overLoad.setCamera(new CameraOrtho2D());
     this.overLoad.setShow(false);
     this._overLoad[0] = this.overLoad;
-    for (j = 1; j < 3; j++) {
-      this._overLoad[j] = new OverLoad(j, 0.1F - j * 0.001F);
-      this._overLoad[j].setSaveAspect(true);
-      this._overLoad[j].setCamera(new CameraOrtho2D());
+    for (int i3 = 1; i3 < 3; i3++) {
+      this._overLoad[i3] = new OverLoad(i3, 0.1F - i3 * 0.001F);
+      this._overLoad[i3].setSaveAspect(true);
+      this._overLoad[i3].setCamera(new CameraOrtho2D());
     }
-
-    this.darkerNight = new DarkerNight(0, 0.7F);
-    this.darkerNight.setSaveAspect(Config.cur.windowSaveAspect);
-    this.darkerNight.setCamera(new CameraOrtho2D());
-    this.darkerNight.setShow(true);
 
     this._cinema[0] = new Cinema(0, 0.09F);
     this._cinema[0].setSaveAspect(Config.cur.windowSaveAspect);
     this._cinema[0].setCamera(new CameraOrtho2D());
     this._cinema[0].setShow(false);
-    for (j = 1; j < 3; j++) {
-      this._cinema[j] = new Cinema(j, 0.09F - j * 0.001F);
-      this._cinema[j].setSaveAspect(true);
-      this._cinema[j].setCamera(new CameraOrtho2D());
-      this._cinema[j].setShow(false);
+    for (int i4 = 1; i4 < 3; i4++) {
+      this._cinema[i4] = new Cinema(i4, 0.09F - i4 * 0.001F);
+      this._cinema[i4].setSaveAspect(true);
+      this._cinema[i4].setCamera(new CameraOrtho2D());
+      this._cinema[i4].setShow(false);
     }
 
     this.timeSkip = new TimeSkip(-1.1F);
@@ -985,7 +975,6 @@ public class Main3D extends Main
     this.lightsGlare.setSaveAspect(paramBoolean);
     this.sunGlare.setSaveAspect(paramBoolean);
     this.overLoad.setSaveAspect(paramBoolean);
-    this.darkerNight.setSaveAspect(paramBoolean);
     this._cinema[0].setSaveAspect(paramBoolean);
     Config.cur.windowSaveAspect = paramBoolean;
   }
@@ -1111,8 +1100,8 @@ public class Main3D extends Main
     SearchlightGeneric.resetGame();
 
     disableCockpitsHotKeys();
-    this.camera3D.pos.changeBase(null, null, false);
-    this.camera3D.pos.setAbs(new Point3d(), new Orient());
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeBase(null, null, false);
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(), new Orient());
     FreeFly.adapter().resetGame();
     if (HookPilot.current != null) {
       HookPilot.current.use(false);
@@ -1169,10 +1158,10 @@ public class Main3D extends Main
     }
 
     if (this.cockpits != null) {
-      for (i = 0; i < this.cockpits.length; i++) {
-        if (Actor.isValid(this.cockpits[i]))
-          this.cockpits[i].destroy();
-        this.cockpits[i] = null;
+      for (int j = 0; j < this.cockpits.length; j++) {
+        if (Actor.isValid(this.cockpits[j]))
+          this.cockpits[j].destroy();
+        this.cockpits[j] = null;
       }
       this.cockpits = null;
     }
@@ -1182,7 +1171,7 @@ public class Main3D extends Main
 
   public void resetGameCreate() {
     super.resetGameCreate();
-    Engine.soundListener().pos.setBase(this.camera3D, null, false);
+    Engine.soundListener().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.camera3D, null, false);
     Engine.soundListener().setUseBaseSpeed(true);
   }
 
@@ -1316,7 +1305,7 @@ public class Main3D extends Main
     if (localSectFile.vars(i) <= 10)
       return "Track file '" + str + "' is empty";
     int j = Integer.parseInt(localSectFile.var(i, 0));
-    if (j != 130)
+    if (j != 129)
       return "Track file '" + str + "' version is not supported";
     int k = Integer.parseInt(localSectFile.var(i, 1));
     float f1 = Float.parseFloat(localSectFile.var(i, 2));
@@ -1381,11 +1370,11 @@ public class Main3D extends Main
       BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localInputStream1));
       int i = Integer.parseInt(localBufferedReader.readLine());
       int j = i;
-      if (i >= 103)
+      if (i >= 102)
         j = Integer.parseInt(localBufferedReader.readLine());
       localBufferedReader.close();
 
-      if ((i != 100) && (i != 101) && (i != 102) && (i != 103)) {
+      if ((i != 100) && (i != 101) && (i != 102)) {
         try { this.playRecordedStreams.close(); } catch (Exception localException3) {
         }this.playRecordedStreams = null;
         return "Track file '" + paramString + "' version is not supported";
@@ -1478,22 +1467,22 @@ public class Main3D extends Main
   }
 
   public boolean saveRecordedMission(String paramString) {
-    if (this.mission == null) return false;
-    if (this.mission.isDestroyed()) return false;
+    if (this.jdField_mission_of_type_ComMaddoxIl2GameMission == null) return false;
+    if (this.jdField_mission_of_type_ComMaddoxIl2GameMission.isDestroyed()) return false;
     if (!this.keyRecord.isContainRecorded()) return false; try
     {
-      SectFile localSectFile = this.mission.sectFile();
+      SectFile localSectFile = this.jdField_mission_of_type_ComMaddoxIl2GameMission.sectFile();
       int i = localSectFile.sectionIndex("$$$record");
       if (i >= 0)
         localSectFile.sectionClear(i);
       else {
         i = localSectFile.sectionAdd("$$$record");
       }
-      localSectFile.lineAdd(i, "130", "");
-      long l = Finger.incLong(this.mission.finger(), 130);
+      localSectFile.lineAdd(i, "129", "");
+      long l = Finger.incLong(this.jdField_mission_of_type_ComMaddoxIl2GameMission.finger(), 129);
       int j = World.cur().diffCur.get();
       localSectFile.lineAdd(i, "" + j, "");
-      l = Finger.incLong(this.mission.finger(), j);
+      l = Finger.incLong(this.jdField_mission_of_type_ComMaddoxIl2GameMission.finger(), j);
       localSectFile.lineAdd(i, "" + World.cur().userCoverMashineGun, "");
       l = Finger.incLong(l, World.cur().userCoverMashineGun);
       localSectFile.lineAdd(i, "" + World.cur().userCoverCannon, "");
@@ -1564,7 +1553,7 @@ public class Main3D extends Main
       if ((Actor.isValid(this.cockpitCur)) && (this.cockpitCur.isToggleAim()))
         i |= 4;
       FlightModel localFlightModel = World.getPlayerFM();
-      if ((localFlightModel != null) && (localFlightModel.AS.bShowSmokesOn))
+      if ((localFlightModel != null) && (localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bShowSmokesOn))
         i |= 8;
       if (isEnableRenderingCockpit()) i |= 16;
       if ((Actor.isValid(this.cockpitCur)) && (this.cockpitCur.isToggleUp()))
@@ -1640,7 +1629,7 @@ public class Main3D extends Main
         this.cockpitCur.doToggleAim((i & 0x4) != 0);
       FlightModel localFlightModel = World.getPlayerFM();
       if (localFlightModel != null)
-        localFlightModel.AS.setAirShowState((i & 0x8) != 0);
+        localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setAirShowState((i & 0x8) != 0);
       if (Actor.isValid(this.cockpitCur)) {
         setEnableRenderingCockpit((i & 0x10) != 0);
         this.cockpitCur.doToggleUp((i & 0x20) != 0);
@@ -1693,13 +1682,13 @@ public class Main3D extends Main
     this._dIn[0] /= this._dIn[3]; this._dIn[1] /= this._dIn[3]; this._dIn[2] /= this._dIn[3];
 
     if (this.bRenderMirror) {
-      paramPoint3d.x = (this._viewportMirror[0] + (1.0D + this._dIn[0]) * this._viewportMirror[2] / 2.0D);
-      paramPoint3d.y = (this._viewportMirror[1] + (1.0D + this._dIn[1]) * this._viewportMirror[3] / 2.0D);
+      paramPoint3d.jdField_x_of_type_Double = (this._viewportMirror[0] + (1.0D + this._dIn[0]) * this._viewportMirror[2] / 2.0D);
+      paramPoint3d.jdField_y_of_type_Double = (this._viewportMirror[1] + (1.0D + this._dIn[1]) * this._viewportMirror[3] / 2.0D);
     } else {
-      paramPoint3d.x = (this._viewport[this.iRenderIndx][0] + (1.0D + this._dIn[0]) * this._viewport[this.iRenderIndx][2] / 2.0D);
-      paramPoint3d.y = (this._viewport[this.iRenderIndx][1] + (1.0D + this._dIn[1]) * this._viewport[this.iRenderIndx][3] / 2.0D);
+      paramPoint3d.jdField_x_of_type_Double = (this._viewport[this.iRenderIndx][0] + (1.0D + this._dIn[0]) * this._viewport[this.iRenderIndx][2] / 2.0D);
+      paramPoint3d.jdField_y_of_type_Double = (this._viewport[this.iRenderIndx][1] + (1.0D + this._dIn[1]) * this._viewport[this.iRenderIndx][3] / 2.0D);
     }
-    paramPoint3d.z = ((1.0D + this._dIn[2]) / 2.0D);
+    paramPoint3d.jdField_z_of_type_Double = ((1.0D + this._dIn[2]) / 2.0D);
     return true;
   }
 
@@ -1707,11 +1696,11 @@ public class Main3D extends Main
     if (!project2d(paramDouble1, paramDouble2, paramDouble3, paramPoint3d))
       return false;
     if (this.bRenderMirror) {
-      paramPoint3d.x -= this._viewportMirror[0];
-      paramPoint3d.y -= this._viewportMirror[1];
+      paramPoint3d.jdField_x_of_type_Double -= this._viewportMirror[0];
+      paramPoint3d.jdField_y_of_type_Double -= this._viewportMirror[1];
     } else {
-      paramPoint3d.x -= this._viewport[this.iRenderIndx][0];
-      paramPoint3d.y -= this._viewport[this.iRenderIndx][1];
+      paramPoint3d.jdField_x_of_type_Double -= this._viewport[this.iRenderIndx][0];
+      paramPoint3d.jdField_y_of_type_Double -= this._viewport[this.iRenderIndx][1];
     }
     return true;
   }
@@ -1732,18 +1721,18 @@ public class Main3D extends Main
     }
 
     double d = 1.0D / this._dIn[3];
-    paramPoint3d.x = (this._dIn[0] * d);
-    paramPoint3d.y = (this._dIn[1] * d);
-    paramPoint3d.z = (this._dIn[2] * d);
+    paramPoint3d.jdField_x_of_type_Double = (this._dIn[0] * d);
+    paramPoint3d.jdField_y_of_type_Double = (this._dIn[1] * d);
+    paramPoint3d.jdField_z_of_type_Double = (this._dIn[2] * d);
 
     return true;
   }
 
   public boolean project2d(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return project2d(paramPoint3d1.x, paramPoint3d1.y, paramPoint3d1.z, paramPoint3d2);
+    return project2d(paramPoint3d1.jdField_x_of_type_Double, paramPoint3d1.jdField_y_of_type_Double, paramPoint3d1.jdField_z_of_type_Double, paramPoint3d2);
   }
   public boolean project2d_cam(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return project2d_cam(paramPoint3d1.x, paramPoint3d1.y, paramPoint3d1.z, paramPoint3d2);
+    return project2d_cam(paramPoint3d1.jdField_x_of_type_Double, paramPoint3d1.jdField_y_of_type_Double, paramPoint3d1.jdField_z_of_type_Double, paramPoint3d2);
   }
 
   private void shadowPairsClear()
@@ -1757,7 +1746,7 @@ public class Main3D extends Main
     int i = paramArrayList.size();
     for (int j = 0; j < i; j++) {
       Object localObject = paramArrayList.get(j);
-      if (((localObject instanceof BigshipGeneric)) && (!(localObject instanceof TestRunway))) {
+      if ((localObject instanceof BigshipGeneric)) {
         BigshipGeneric localBigshipGeneric = (BigshipGeneric)localObject;
         if ((Actor.isValid(localBigshipGeneric.getAirport())) && (!this.shadowPairsMap1.containsKey(localBigshipGeneric))) {
           this.shadowPairsList1.add(localBigshipGeneric);
@@ -1772,11 +1761,11 @@ public class Main3D extends Main
     if (i == 0) return;
     for (int j = 0; j < i; j++) {
       this.shadowPairsCur1 = ((BigshipGeneric)this.shadowPairsList1.get(j));
-      Point3d localPoint3d = this.shadowPairsCur1.pos.getAbsPoint();
-      double d1 = localPoint3d.x - shadowPairsR;
-      double d2 = localPoint3d.y - shadowPairsR;
-      double d3 = localPoint3d.x + shadowPairsR;
-      double d4 = localPoint3d.y + shadowPairsR;
+      Point3d localPoint3d = this.shadowPairsCur1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+      double d1 = localPoint3d.jdField_x_of_type_Double - shadowPairsR;
+      double d2 = localPoint3d.jdField_y_of_type_Double - shadowPairsR;
+      double d3 = localPoint3d.jdField_x_of_type_Double + shadowPairsR;
+      double d4 = localPoint3d.jdField_y_of_type_Double + shadowPairsR;
       Engine.drawEnv().getFiltered((AbstractCollection)null, d1, d2, d3, d4, 14, this.shadowPairsFilter);
     }
     if (this.shadowPairsList2.size() == 0) return;
@@ -1787,16 +1776,16 @@ public class Main3D extends Main
   {
     paramRender.useClearColor((!this.bDrawLand) || ((RenderContext.texGetFlags() & 0x20) != 0));
 
-    paramRender.getCamera().pos.getRender(this.__p, this.__o);
+    paramRender.getCamera().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(this.__p, this.__o);
 
     if ((!this.bRenderMirror) && (this.iRenderIndx == 0))
     {
       SearchlightGeneric.lightPlanesBySearchlights();
 
-      localObject = paramRender.getCamera().pos.base();
+      localObject = paramRender.getCamera().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base();
       if (Actor.isValid((Actor)localObject)) {
         ((Actor)localObject).getSpeed(this.__v);
-        Camera.SetTargetSpeed((float)this.__v.x, (float)this.__v.y, (float)this.__v.z);
+        Camera.SetTargetSpeed((float)this.__v.jdField_x_of_type_Double, (float)this.__v.jdField_y_of_type_Double, (float)this.__v.jdField_z_of_type_Double);
       } else {
         Camera.SetTargetSpeed(0.0F, 0.0F, 0.0F);
       }
@@ -1807,23 +1796,21 @@ public class Main3D extends Main
       this.clouds.preRender();
     }
     if (this.bDrawLand) {
-      Engine.land().preRender((float)this.__p.z, false);
+      Engine.land().preRender((float)this.__p.jdField_z_of_type_Double, false);
     }
-    this.darkerNight.preRender();
-
     Object localObject = this.bRenderMirror ? this.drwMirror : this.drwMaster[this.iRenderIndx];
-    Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxVisualDistance, 4, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, true);
+    Engine.drawEnv().preRender(this.__p.jdField_x_of_type_Double, this.__p.jdField_y_of_type_Double, this.__p.jdField_z_of_type_Double, World.MaxVisualDistance, 4, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, true);
 
-    Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxLongVisualDistance, 8, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, false);
+    Engine.drawEnv().preRender(this.__p.jdField_x_of_type_Double, this.__p.jdField_y_of_type_Double, this.__p.jdField_z_of_type_Double, World.MaxLongVisualDistance, 8, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, false);
 
     if (!this.bRenderMirror) {
       shadowPairsAdd(((DrwArray)localObject).drwSolid);
       shadowPairsAdd(((DrwArray)localObject).drwTransp);
     }
     if ((!this.bRenderMirror) || (this.viewMirror > 1)) {
-      Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxStaticVisualDistance, 2, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, false);
+      Engine.drawEnv().preRender(this.__p.jdField_x_of_type_Double, this.__p.jdField_y_of_type_Double, this.__p.jdField_z_of_type_Double, World.MaxStaticVisualDistance, 2, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, false);
 
-      Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxPlateVisualDistance, 1, ((DrwArray)localObject).drwSolidPlate, ((DrwArray)localObject).drwTranspPlate, ((DrwArray)localObject).drwShadowPlate, true);
+      Engine.drawEnv().preRender(this.__p.jdField_x_of_type_Double, this.__p.jdField_y_of_type_Double, this.__p.jdField_z_of_type_Double, World.MaxPlateVisualDistance, 1, ((DrwArray)localObject).drwSolidPlate, ((DrwArray)localObject).drwTranspPlate, ((DrwArray)localObject).drwShadowPlate, true);
     }
 
     BulletGeneric.preRenderAll();
@@ -1835,7 +1822,7 @@ public class Main3D extends Main
     Render.enableFog(this.bEnableFog);
 
     if (this.bDrawLand) {
-      Engine.lightEnv().prepareForRender(this.camera3D.pos.getAbsPoint(), 8000.0F);
+      Engine.lightEnv().prepareForRender(this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), 8000.0F);
       i = Engine.land().render0(this.bRenderMirror) != 2 ? 1 : 0;
       LightPoint.clearRender();
     }
@@ -1864,7 +1851,7 @@ public class Main3D extends Main
   private void doRender3D1(Render paramRender)
   {
     if ((this.bDrawClouds) && (this.clouds != null) && (RenderContext.cfgSky.get() > 0)) {
-      Engine.lightEnv().prepareForRender(this.camera3D.pos.getAbsPoint(), RenderContext.cfgSky.get() * 4000.0F);
+      Engine.lightEnv().prepareForRender(this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), RenderContext.cfgSky.get() * 4000.0F);
 
       SearchlightGeneric.lightCloudsBySearchlights();
       this.clouds.render();
@@ -1881,12 +1868,9 @@ public class Main3D extends Main
       Render.flush();
       Render.enableFog(false);
     }
-
-    this.darkerNight.render();
   }
 
-  private void plateToRenderArray(ArrayList paramArrayList1, ArrayList paramArrayList2)
-  {
+  private void plateToRenderArray(ArrayList paramArrayList1, ArrayList paramArrayList2) {
     int i = paramArrayList1.size();
     for (int j = 0; j < i; j++) {
       Actor localActor = (Actor)paramArrayList1.get(j);
@@ -1894,7 +1878,7 @@ public class Main3D extends Main
         paramArrayList2.add(localActor);
       }
       else if (((localActor instanceof ActorMesh)) && ((((ActorMesh)localActor).mesh() instanceof MeshShared))) {
-        localActor.pos.getRender(this.__l);
+        localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(this.__l);
         if (!((MeshShared)((ActorMesh)localActor).mesh()).putToRenderArray(this.__l))
           localActor.draw.render(localActor);
       } else {
@@ -2041,7 +2025,7 @@ public class Main3D extends Main
     this.iconFarViewActor = viewActor();
     this.iconFarPadlockItem.str = null;
     this.iconFarPadlockActor = getViewPadlockEnemy();
-    this._camera3D[this.iRenderIndx].pos.getRender(this.farActorFilter.camp);
+    this._camera3D[this.iRenderIndx].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(this.farActorFilter.camp);
     Point3d localPoint3d1 = this.farActorFilter.camp;
 
     float f1 = Engine.lightEnv().sun().ToLight.z; if (f1 < 0.0F) f1 = 0.0F;
@@ -2058,7 +2042,7 @@ public class Main3D extends Main
     int k = localList.size();
     for (int m = 0; m < k; m++) {
       Actor localActor = (Actor)localList.get(m);
-      Point3d localPoint3d2 = localActor.pos.getAbsPoint();
+      Point3d localPoint3d2 = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
       double d4 = localPoint3d1.distance(localPoint3d2);
       if (d4 < 25000.0D) {
         this.farActorFilter.isUse(localActor, d4);
@@ -2100,7 +2084,7 @@ public class Main3D extends Main
         this.line3XYZ[7] = (this.iconFarPadlockItem.y + f2);
         this.line3XYZ[8] = this.iconFarPadlockItem.z;
       } else {
-        this.camera3D.pos.getRender(this._lineP, this._lineO);
+        this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(this._lineP, this._lineO);
         double d1 = -this._lineO.getKren() * 3.141592653589793D / 180.0D;
         double d2 = Math.sin(d1);
         double d3 = Math.cos(d1);
@@ -2317,8 +2301,8 @@ public class Main3D extends Main
 
     private void drawPointer(int paramInt1, double paramDouble, int paramInt2, int paramInt3) {
       double d1 = Math.atan2(paramInt3, paramInt2);
-      double d2 = Math.atan2(this.p2d.y - paramInt3, this.p2d.x - paramInt2);
-      if (this.p2d.z > 1.0D)
+      double d2 = Math.atan2(this.p2d.jdField_y_of_type_Double - paramInt3, this.p2d.jdField_x_of_type_Double - paramInt2);
+      if (this.p2d.jdField_z_of_type_Double > 1.0D)
         if (d2 > 0.0D) d2 = -3.141592653589793D + d2; else
           d2 = 3.141592653589793D + d2;
       double d3;
@@ -2385,7 +2369,7 @@ public class Main3D extends Main
 
       paramActor.pos.getRender(this.p3d);
       if (!Main3D.this.project2d_cam(this.p3d, this.p2d)) return false;
-      if ((this.p2d.z > 1.0D) || (this.p2d.x < Main3D.this.iconClipX0) || (this.p2d.x > Main3D.this.iconClipX1) || (this.p2d.y < Main3D.this.iconClipY0) || (this.p2d.y > Main3D.this.iconClipY1))
+      if ((this.p2d.jdField_z_of_type_Double > 1.0D) || (this.p2d.jdField_x_of_type_Double < Main3D.this.iconClipX0) || (this.p2d.jdField_x_of_type_Double > Main3D.this.iconClipX1) || (this.p2d.jdField_y_of_type_Double < Main3D.this.iconClipY0) || (this.p2d.jdField_y_of_type_Double > Main3D.this.iconClipY1))
       {
         if (Main3D.this.bRenderMirror) return false;
         if (!(paramActor instanceof Aircraft)) return false;
@@ -2395,14 +2379,14 @@ public class Main3D extends Main
           drawPointer(i, paramDouble, Main3D.this.render2D.getViewPortWidth() / 2, Main3D.this.render2D.getViewPortHeight() / 2);
         return false;
       }
-      int j = (int)(this.p2d.x - 1.0D);
-      int k = (int)(this.p2d.y - 0.5D);
+      int j = (int)(this.p2d.jdField_x_of_type_Double - 1.0D);
+      int k = (int)(this.p2d.jdField_y_of_type_Double - 0.5D);
       int m = 8355711;
       int n = 255;
       int i1 = 0;
       if (Main3D.this.bEnableFog) {
         Render.enableFog(true);
-        m = Landscape.getFogRGBA((float)this.p3d.x, (float)this.p3d.y, (float)this.p3d.z);
+        m = Landscape.getFogRGBA((float)this.p3d.jdField_x_of_type_Double, (float)this.p3d.jdField_y_of_type_Double, (float)this.p3d.jdField_z_of_type_Double);
         i1 = m >>> 24;
         n -= i1;
         Render.enableFog(false);
@@ -2415,30 +2399,30 @@ public class Main3D extends Main
 
       if ((paramActor instanceof Aircraft)) {
         if (paramDouble > Main3D.this.iconAirDrawMin) {
-          Render.drawTile(j, k + 1.0F, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
+          Render.drawTile(j, k + 1.0F, 2.0F, 1.0F, (float)(-this.p2d.jdField_z_of_type_Double), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
 
-          Render.drawTile(j, k, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
+          Render.drawTile(j, k, 2.0F, 1.0F, (float)(-this.p2d.jdField_z_of_type_Double), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
         }
 
       }
       else if (Main3D.this.isBomb(paramActor)) {
         if (paramDouble > Main3D.this.iconSmallDrawMin) {
-          Render.drawTile(j, k + 1.0F, 1.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
+          Render.drawTile(j, k + 1.0F, 1.0F, 1.0F, (float)(-this.p2d.jdField_z_of_type_Double), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
 
-          Render.drawTile(j, k, 1.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
+          Render.drawTile(j, k, 1.0F, 1.0F, (float)(-this.p2d.jdField_z_of_type_Double), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
         }
 
       }
       else if (paramDouble > Main3D.this.iconGroundDrawMin) {
-        Render.drawTile(j, k + 1.0F, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
+        Render.drawTile(j, k + 1.0F, 2.0F, 1.0F, (float)(-this.p2d.jdField_z_of_type_Double), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
 
-        Render.drawTile(j, k, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
+        Render.drawTile(j, k, 2.0F, 1.0F, (float)(-this.p2d.jdField_z_of_type_Double), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
       }
 
       k += 8;
 
       if ((paramActor == Main3D.this.iconFarPadlockActor) && (Main3D.this.iconTypes() != 0)) {
-        Main3D.this.iconFarPadlockItem.set(localDotRange.colorIcon(paramDouble, i, n), j, k, 0, (float)(-this.p2d.z), "");
+        Main3D.this.iconFarPadlockItem.set(localDotRange.colorIcon(paramDouble, i, n), j, k, 0, (float)(-this.p2d.jdField_z_of_type_Double), "");
         Main3D.this.iconFarPadlockItem.bGround = (!(paramActor instanceof Aircraft));
         if (World.cur().diffCur.No_Icons) {
           int i6 = ((int)(localDotRange.alphaIcon(paramDouble) * n) & 0xFF) << 24;
@@ -2493,7 +2477,7 @@ public class Main3D extends Main
         }
       }
       if (localObject != null)
-        Main3D.this.insertFarActorItem(localDotRange.colorIcon(paramDouble, i, n), j, k, (float)(-this.p2d.z), (String)localObject);
+        Main3D.this.insertFarActorItem(localDotRange.colorIcon(paramDouble, i, n), j, k, (float)(-this.p2d.jdField_z_of_type_Double), (String)localObject);
       return false;
     }
   }
@@ -2571,7 +2555,7 @@ public class Main3D extends Main
       super.contextResize(paramInt1, paramInt2);
       Main3D.this.renderHUDcontextResize(paramInt1, paramInt2);
       Main3D.this.hud.contextResize(paramInt1, paramInt2);
-      renders().setCommonClearColor((this.viewPort[0] != 0.0F) || (this.viewPort[1] != 0.0F));
+      renders().setCommonClearColor((this.jdField_viewPort_of_type_ArrayOfFloat[0] != 0.0F) || (this.jdField_viewPort_of_type_ArrayOfFloat[1] != 0.0F));
     }
     public void preRender() {
       Main3D.this.hud.preRender();
@@ -2599,8 +2583,8 @@ public class Main3D extends Main
     protected void contextResize(int paramInt1, int paramInt2)
     {
       setViewPort(new int[] { Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight() });
-      if (this.camera != null)
-        ((Camera3D)this.camera).set(((Camera3D)this.camera).FOV(), Main3D.this.mirrorWidth() / Main3D.this.mirrorHeight()); 
+      if (this.jdField_camera_of_type_ComMaddoxIl2EngineCamera != null)
+        ((Camera3D)this.jdField_camera_of_type_ComMaddoxIl2EngineCamera).set(((Camera3D)this.jdField_camera_of_type_ComMaddoxIl2EngineCamera).FOV(), Main3D.this.mirrorWidth() / Main3D.this.mirrorHeight()); 
     }
 
     public boolean isShow() {
@@ -2674,8 +2658,8 @@ public class Main3D extends Main
     protected void contextResize(int paramInt1, int paramInt2)
     {
       setViewPort(new int[] { Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight() });
-      if (this.camera != null)
-        ((CameraOrtho2D)this.camera).set(0.0F, Main3D.this.mirrorWidth(), 0.0F, Main3D.this.mirrorHeight()); 
+      if (this.jdField_camera_of_type_ComMaddoxIl2EngineCamera != null)
+        ((CameraOrtho2D)this.jdField_camera_of_type_ComMaddoxIl2EngineCamera).set(0.0F, Main3D.this.mirrorWidth(), 0.0F, Main3D.this.mirrorHeight()); 
     }
 
     public boolean isShow() {
@@ -2723,11 +2707,11 @@ public class Main3D extends Main
       Main3D.access$1202(Main3D.this, false);
     }
     public void render() {
-      this.camera.activateWorldMode(0);
+      this.jdField_camera_of_type_ComMaddoxIl2EngineCamera.activateWorldMode(0);
       gl.GetDoublev(2982, Main3D.this._modelMatrix3DMirror);
       gl.GetDoublev(2983, Main3D.this._projMatrix3DMirror);
       gl.GetIntegerv(2978, Main3D.this._viewportMirror);
-      this.camera.deactivateWorldMode();
+      this.jdField_camera_of_type_ComMaddoxIl2EngineCamera.deactivateWorldMode();
       Main3D.access$1202(Main3D.this, true);
       Main3D.this.doRender3D0(this);
       Main3D.access$1202(Main3D.this, false);
@@ -2744,8 +2728,8 @@ public class Main3D extends Main
     protected void contextResize(int paramInt1, int paramInt2)
     {
       setViewPort(new int[] { Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight() });
-      if (this.camera != null)
-        ((Camera3D)this.camera).set(((Camera3D)this.camera).FOV(), Main3D.this.mirrorWidth() / Main3D.this.mirrorHeight()); 
+      if (this.jdField_camera_of_type_ComMaddoxIl2EngineCamera != null)
+        ((Camera3D)this.jdField_camera_of_type_ComMaddoxIl2EngineCamera).set(((Camera3D)this.jdField_camera_of_type_ComMaddoxIl2EngineCamera).FOV(), Main3D.this.mirrorWidth() / Main3D.this.mirrorHeight()); 
     }
 
     public boolean isShow() {
@@ -2848,11 +2832,11 @@ public class Main3D extends Main
 
     public void render() {
       Main3D.access$602(Main3D.this, this._indx);
-      this.camera.activateWorldMode(0);
+      this.jdField_camera_of_type_ComMaddoxIl2EngineCamera.activateWorldMode(0);
       gl.GetDoublev(2982, Main3D.this._modelMatrix3D[Main3D.this.iRenderIndx]);
       gl.GetDoublev(2983, Main3D.this._projMatrix3D[Main3D.this.iRenderIndx]);
       gl.GetIntegerv(2978, Main3D.this._viewport[Main3D.this.iRenderIndx]);
-      this.camera.deactivateWorldMode();
+      this.jdField_camera_of_type_ComMaddoxIl2EngineCamera.deactivateWorldMode();
       Main3D.this.doRender3D0(this);
       Main3D.access$602(Main3D.this, 0);
     }
@@ -2927,24 +2911,23 @@ public class Main3D extends Main
         if (Landscape.isExistMeshs()) {
           this.drwSolid.clear();
           this.drwTransp.clear();
-          Engine.drawEnv().preRender(Main3D.this.__p.x, Main3D.this.__p.y, Main3D.this.__p.z, World.MaxVisualDistance * 0.5F, 1, this.drwSolidL, this.drwTranspL, null, bool);
+          Engine.drawEnv().preRender(Main3D.this.__p.jdField_x_of_type_Double, Main3D.this.__p.jdField_y_of_type_Double, Main3D.this.__p.jdField_z_of_type_Double, World.MaxVisualDistance * 0.5F, 1, this.drwSolidL, this.drwTranspL, null, bool);
 
           int i = this.drwSolidL.size();
-          Actor localActor;
           for (int j = 0; j < i; j++) {
-            localActor = (Actor)this.drwSolidL.get(j);
-            if ((localActor instanceof ActorLandMesh))
-              this.drwSolid.add(localActor);
+            Actor localActor1 = (Actor)this.drwSolidL.get(j);
+            if ((localActor1 instanceof ActorLandMesh))
+              this.drwSolid.add(localActor1);
           }
           i = this.drwTranspL.size();
-          for (j = 0; j < i; j++) {
-            localActor = (Actor)this.drwTranspL.get(j);
-            if ((localActor instanceof ActorLandMesh))
-              this.drwTransp.add(localActor);
+          for (int k = 0; k < i; k++) {
+            Actor localActor2 = (Actor)this.drwTranspL.get(k);
+            if ((localActor2 instanceof ActorLandMesh))
+              this.drwTransp.add(localActor2);
           }
           bool = false;
         }
-        Engine.drawEnv().preRender(Main3D.this.__p.x, Main3D.this.__p.y, Main3D.this.__p.z, World.MaxVisualDistance * 0.5F, 14, this.drwSolid, this.drwTransp, null, bool);
+        Engine.drawEnv().preRender(Main3D.this.__p.jdField_x_of_type_Double, Main3D.this.__p.jdField_y_of_type_Double, Main3D.this.__p.jdField_z_of_type_Double, World.MaxVisualDistance * 0.5F, 14, this.drwSolid, this.drwTransp, null, bool);
 
         Engine.land().ObjectsReflections_End();
       } }
@@ -3001,13 +2984,13 @@ public class Main3D extends Main
     {
       super.set(paramFloat);
       Main3D.this._camera3D[1].set(paramFloat);
-      Main3D.this._camera3D[1].pos.setRel(new Orient(-paramFloat, 0.0F, 0.0F));
+      Main3D.this._camera3D[1].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(-paramFloat, 0.0F, 0.0F));
       Main3D.this._camera3D[2].set(paramFloat);
-      Main3D.this._camera3D[2].pos.setRel(new Orient(paramFloat, 0.0F, 0.0F));
+      Main3D.this._camera3D[2].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(paramFloat, 0.0F, 0.0F));
       Main3D.this._cameraCockpit[1].set(paramFloat);
-      Main3D.this._cameraCockpit[1].pos.setRel(new Orient(-paramFloat, 0.0F, 0.0F));
+      Main3D.this._cameraCockpit[1].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(-paramFloat, 0.0F, 0.0F));
       Main3D.this._cameraCockpit[2].set(paramFloat);
-      Main3D.this._cameraCockpit[2].pos.setRel(new Orient(paramFloat, 0.0F, 0.0F));
+      Main3D.this._cameraCockpit[2].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Orient(paramFloat, 0.0F, 0.0F));
       Main3D.this.camera3DR.set(paramFloat);
     }
   }

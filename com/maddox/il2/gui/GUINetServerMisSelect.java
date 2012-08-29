@@ -61,7 +61,7 @@ public class GUINetServerMisSelect extends GameState
 
   private void doLoadMission()
   {
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F)
+    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -108,7 +108,7 @@ public class GUINetServerMisSelect extends GameState
   private void missionBad(String paramString) {
     this.loadMessageBox.close(false);
     this.loadMessageBox = null;
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.Error"), paramString, 3, 0.0F) {
+    new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netsms.Error"), paramString, 3, 0.0F) {
       public void result(int paramInt) {
       }
     };
@@ -202,13 +202,13 @@ public class GUINetServerMisSelect extends GameState
           if ((arrayOfFile[i].isDirectory()) || (arrayOfFile[i].isHidden()) || (arrayOfFile[i].getName().toLowerCase().lastIndexOf(".properties") >= 0)) {
             continue;
           }
-          FileMission localFileMission = new FileMission(str2, arrayOfFile[i].getName());
-          this._scanMap.put(localFileMission.fileName, localFileMission);
+          localObject = new FileMission(str2, arrayOfFile[i].getName());
+          this._scanMap.put(((FileMission)localObject).fileName, localObject);
         }
 
-        Iterator localIterator = this._scanMap.keySet().iterator();
-        while (localIterator.hasNext())
-          this.wTable.files.add(this._scanMap.get(localIterator.next()));
+        Object localObject = this._scanMap.keySet().iterator();
+        while (((Iterator)localObject).hasNext())
+          this.wTable.files.add(this._scanMap.get(((Iterator)localObject).next()));
         if (this._scanMap.size() > 0)
           this.wTable.setSelect(0, 0);
         else
@@ -320,14 +320,14 @@ public class GUINetServerMisSelect extends GameState
     public void render()
     {
       String str = null;
-      if (GUINetServerMisSelect.this.wTable.selectRow >= 0) {
-        str = ((GUINetServerMisSelect.FileMission)GUINetServerMisSelect.this.wTable.files.get(GUINetServerMisSelect.this.wTable.selectRow)).description;
+      if (GUINetServerMisSelect.this.wTable.jdField_selectRow_of_type_Int >= 0) {
+        str = ((GUINetServerMisSelect.FileMission)GUINetServerMisSelect.this.wTable.files.get(GUINetServerMisSelect.this.wTable.jdField_selectRow_of_type_Int)).description;
         if ((str != null) && (str.length() == 0)) str = null;
       }
       if (str != null) {
         setCanvasFont(0);
         setCanvasColorBLACK();
-        drawLines(0.0F, -this.root.C.font.descender, str, 0, str.length(), this.win.dx, this.root.C.font.height);
+        drawLines(0.0F, -this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.descender, str, 0, str.length(), this.win.dx, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height);
       }
     }
   }
@@ -358,12 +358,12 @@ public class GUINetServerMisSelect extends GameState
       super.afterCreated();
       this.bColumnsSizable = false;
       addColumn(I18N.gui("netsms.Mission_files"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       resized();
     }
 
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {

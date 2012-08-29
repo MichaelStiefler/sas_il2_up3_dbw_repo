@@ -35,7 +35,6 @@ public abstract class SmokeGeneric extends ActorHMesh
 {
   private SmokeProperties prop = null;
   private float heightAboveLandSurface;
-  private Eff3DActor eff;
   private static SmokeProperties constr_arg1 = null;
   private static ActorSpawnArg constr_arg2 = null;
 
@@ -67,13 +66,15 @@ public abstract class SmokeGeneric extends ActorHMesh
 
     double d = 0.0D;
     if (paramActorSpawnArg.timeLenExist) {
-      d = paramActorSpawnArg.point.z;
-      paramActorSpawnArg.point.z = paramActorSpawnArg.timeLen;
+      d = paramActorSpawnArg.point.jdField_z_of_type_Double;
+      paramActorSpawnArg.point.jdField_z_of_type_Double = paramActorSpawnArg.timeLen;
     }
     paramActorSpawnArg.setStationary(this);
     if (paramActorSpawnArg.timeLenExist) {
-      paramActorSpawnArg.point.z = d;
+      paramActorSpawnArg.point.jdField_z_of_type_Double = d;
     }
+
+    setArmy(0);
 
     collide(false);
     drawing(true);
@@ -86,25 +87,16 @@ public abstract class SmokeGeneric extends ActorHMesh
     if (!Config.isUSE_RENDER()) return;
     if ((Main.state() != null) && (Main.state().id() == 18))
       Eff3D.initSetTypeTimer(true);
-    this.eff = Eff3DActor.New(this, null, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 90.0F, 0.0F), 1.0F, this.prop.effectName, -1.0F);
+    Eff3DActor.New(this, null, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 90.0F, 0.0F), 1.0F, this.prop.effectName, -1.0F);
   }
 
   private void Align() {
-    this.pos.getAbs(p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
 
-    if (p.z < Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface)
-      p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    this.pos.setAbs(p, o);
-  }
-
-  public void setVisible(boolean paramBoolean)
-  {
-    setArmy(0);
-    if (paramBoolean)
-      this.eff._setIntesity(1.0F);
-    else
-      this.eff._setIntesity(0.0F);
+    if (p.jdField_z_of_type_Double < Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.heightAboveLandSurface)
+      p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.heightAboveLandSurface);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public void align()
@@ -116,10 +108,10 @@ public abstract class SmokeGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel) throws IOException {

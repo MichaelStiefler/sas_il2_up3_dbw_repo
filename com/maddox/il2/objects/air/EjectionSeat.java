@@ -74,17 +74,17 @@ public class EjectionSeat extends ActorHMesh
     public boolean tick()
     {
       float f = Time.tickLenFs();
-      EjectionSeat.this.v.z -= 9.810000000000001D * f * f;
+      EjectionSeat.this.v.jdField_z_of_type_Double -= 9.810000000000001D * f * f;
       EjectionSeat.this.v.x *= 0.9900000095367432D;
       EjectionSeat.this.v.y *= 0.9900000095367432D;
 
       EjectionSeat.this.l.add(EjectionSeat.this.v);
       EjectionSeat.this.pos.setAbs(EjectionSeat.this.l);
       World.cur(); double d = World.land().HQ_Air(EjectionSeat.this.l.getPoint().x, EjectionSeat.this.l.getPoint().y);
-      if (EjectionSeat.this.l.getPoint().z < d) {
+      if (EjectionSeat.this.l.getPoint().jdField_z_of_type_Double < d) {
         MsgDestroy.Post(Time.current(), this.actor);
       }
-      if ((EjectionSeat.this.bPilotAttached) && ((EjectionSeat.this.l.getPoint().z < d) || (Time.current() > EjectionSeat.this.timeStart + 3000L)))
+      if ((EjectionSeat.this.bPilotAttached) && ((EjectionSeat.this.l.getPoint().jdField_z_of_type_Double < d) || (Time.current() > EjectionSeat.this.timeStart + 3000L)))
       {
         if ((!EjectionSeat.this.ownerAircraft.isNet()) || (EjectionSeat.this.ownerAircraft.isNetMaster())) {
           Vector3d localVector3d = new Vector3d(EjectionSeat.this.v);
@@ -93,9 +93,9 @@ public class EjectionSeat extends ActorHMesh
             Paratrooper localParatrooper = new Paratrooper(EjectionSeat.this.ownerAircraft, EjectionSeat.this.ownerAircraft.getArmy(), 0, EjectionSeat.this.l, localVector3d);
             EjectionSeat.this.doRemovePilot();
             EjectionSeat.access$202(EjectionSeat.this, false);
-            EjectionSeat.this.ownerAircraft.FM.AS.astateBailoutStep = 12;
+            EjectionSeat.this.ownerAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateBailoutStep = 12;
             EventLog.onBailedOut(EjectionSeat.this.ownerAircraft, 0);
-            EjectionSeat.this.ownerAircraft.FM.AS.setPilotState(EjectionSeat.this.ownerAircraft, 0, 100, false);
+            EjectionSeat.this.ownerAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setPilotState(EjectionSeat.this.ownerAircraft, 0, 100, false);
           }
         } else {
           EjectionSeat.this.doRemovePilot();

@@ -243,7 +243,7 @@ public final class InterpolateAdapter
       Actor localActor = (Actor)this.listeners.get(j);
       if (localActor.pos != null) {
         Point3d localPoint3d = localActor.pos.getAbsPoint();
-        double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
+        double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
         if (d2 <= d1)
           paramAbstractCollection.add(localActor);
@@ -259,7 +259,7 @@ public final class InterpolateAdapter
       Actor localActor = (Actor)this.listeners.get(j);
       if (localActor.pos != null) {
         Point3d localPoint3d = localActor.pos.getAbsPoint();
-        double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
+        double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
         if ((d2 > d1) || 
           (!paramActorFilter.isUse(localActor, d2)) || 
@@ -279,7 +279,7 @@ public final class InterpolateAdapter
         int k = localActor.getArmy();
         if ((k != 0) && (k != paramInt)) {
           Point3d localPoint3d = localActor.pos.getAbsPoint();
-          double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
+          double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
           if (d2 <= d1)
             paramAccumulator.add(localActor, d2);
@@ -298,10 +298,10 @@ public final class InterpolateAdapter
         int k = localActor.getArmy();
         if ((k != 0) && (k != paramInt)) {
           Point3d localPoint3d = localActor.pos.getAbsPoint();
-          double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y);
+          double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double);
 
           if (d2 <= d1) {
-            double d3 = localPoint3d.z - paramPoint3d.z;
+            double d3 = localPoint3d.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double;
             if ((d3 <= paramDouble3) && (d3 >= paramDouble2))
               paramAccumulator.add(localActor, d2 + d3 * d3);
           }

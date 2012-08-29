@@ -13,16 +13,16 @@ public class GWindowDialogControl extends GWindow
 
   public boolean isDefault()
   {
-    if (!(this.parentWindow instanceof GWindowDialogClient))
+    if (!(this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowDialogClient))
       return false;
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.parentWindow;
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow;
     return localGWindowDialogClient.defaultControl == this;
   }
 
   public boolean isEscape() {
-    if (!(this.parentWindow instanceof GWindowDialogClient))
+    if (!(this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowDialogClient))
       return false;
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.parentWindow;
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow;
     return localGWindowDialogClient.escapeControl == this;
   }
   public boolean isEnable() {
@@ -88,16 +88,16 @@ public class GWindowDialogControl extends GWindow
   }
 
   public GWindowDialogControl() {
-    this.bNotify = true;
+    this.jdField_bNotify_of_type_Boolean = true;
   }
 
   public GWindowDialogControl(GWindow paramGWindow) {
-    this.bNotify = true;
+    this.jdField_bNotify_of_type_Boolean = true;
     doNew(paramGWindow, 0.0F, 0.0F, 12.0F, 12.0F, false);
   }
 
   public GWindowDialogControl(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    this.bNotify = true;
+    this.jdField_bNotify_of_type_Boolean = true;
     doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
   }
 }

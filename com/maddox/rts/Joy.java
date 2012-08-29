@@ -31,19 +31,18 @@ public class Joy
   public static final int UNKNOWN = -1;
   public static final int BUTTONS = 70;
   private boolean bEnabled;
-  private Listeners listeners = new Listeners();
-  private Listeners realListeners = new Listeners();
+  private Listeners listeners;
+  private Listeners realListeners;
   private Object focus;
-  private int amount = 0;
+  private int amount;
   private int[][] mov;
   private int[][] filter;
   private boolean[][] filterUpdated;
   private int[][] cur_mov;
   private int[][] pov;
-  private boolean[][] buttons = new boolean[4][70];
+  private boolean[][] buttons;
   private int[][][] koof;
-  private MessageCache cache = new MessageCache(MsgJoy.class);
-
+  private MessageCache cache;
   private boolean bAttached = false;
   private int[] countButtons;
   private int[] countAxes;
@@ -143,13 +142,13 @@ public class Joy
 
   public void getSensitivity(int paramInt1, int paramInt2, int[] paramArrayOfInt)
   {
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < 12; i++)
       paramArrayOfInt[i] = this.koof[paramInt1][paramInt2][i];
   }
 
   public void setSensitivity(int paramInt1, int paramInt2, int[] paramArrayOfInt)
   {
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < 12; i++)
       this.koof[paramInt1][paramInt2][i] = paramArrayOfInt[i];
   }
 
@@ -340,18 +339,15 @@ public class Joy
     if (!this.bEnabled) return;
     _clear();
   }
-
-  protected void _clear()
-  {
-    int j;
+  protected void _clear() {
     for (int i = 0; i < 4; i++)
-      for (j = 0; j < 70; j++)
+      for (int j = 0; j < 70; j++)
         if (this.buttons[i][j] != 0)
           setRelease(Time.currentReal(), i, j);
-    for (i = 0; i < 4; i++)
+    for (int k = 0; k < 4; k++)
     {
-      for (j = 0; j < 4; j++)
-        this.pov[i][j] = -1;
+      for (int m = 0; m < 4; m++)
+        this.pov[k][m] = -1;
     }
   }
 
@@ -407,129 +403,7 @@ public class Joy
     return k;
   }
 
-  public boolean updateMoveMW2(int paramInt1, int paramInt2)
-  {
-    int i = 0;
-    if (this.mov[paramInt1][paramInt2] == -125)
-    {
-      i = -125;
-    }
-    else
-    {
-      if (this.koof[paramInt1][paramInt2][11] == 0)
-      {
-        if (this.mov[paramInt1][paramInt2] < -125)
-          this.mov[paramInt1][paramInt2] = -125;
-        if (this.mov[paramInt1][paramInt2] > 125)
-          this.mov[paramInt1][paramInt2] = 125;
-        j = this.mov[paramInt1][paramInt2];
-      }
-      else {
-        filterUpdate(paramInt1, paramInt2);
-        if (this.filter[paramInt1][paramInt2] < -125)
-          this.filter[paramInt1][paramInt2] = -125;
-        if (this.filter[paramInt1][paramInt2] > 125)
-          this.filter[paramInt1][paramInt2] = 125;
-        j = this.filter[paramInt1][paramInt2];
-      }
-      if (Math.abs(j + 125) < this.koof[paramInt1][paramInt2][0])
-      {
-        this.cur_mov[paramInt1][paramInt2] = -125;
-      }
-      else {
-        int k = j < 0 ? 1 : 0;
-        float f1 = 0.0F;
-        j += 125;
-        j = 250 - j;
-        float f2 = 25.0F;
-        int m = (int)(j / f2);
-        if (m > 9)
-          m = 9;
-        if (m == 0)
-          f1 = interpolate(0, 0, this.koof[paramInt1][paramInt2][11], j / f2);
-        else
-          f1 = interpolate(m, this.koof[paramInt1][paramInt2][m], this.koof[paramInt1][paramInt2][(m + 1)], j / f2 - m);
-        int n = Math.round(f1 / 100.0F * 250.0F);
-        n -= 125;
-        if (n > 125)
-          n = 125;
-        if (n < -125)
-          n = -125;
-        if (n == -126)
-          n++;
-        i = -n;
-      }
-    }
-    int j = this.cur_mov[paramInt1][paramInt2] != i ? 1 : 0;
-    this.cur_mov[paramInt1][paramInt2] = i;
-    return j;
-  }
-
-  private boolean updateMoveMW1(int paramInt1, int paramInt2)
-  {
-    if (this.koof[paramInt1][paramInt2][12] == 2) {
-      return updateMoveMW2(paramInt1, paramInt2);
-    }
-    int i = 0;
-    if (this.mov[paramInt1][paramInt2] == -125)
-    {
-      i = -125;
-    }
-    else
-    {
-      if (this.koof[paramInt1][paramInt2][11] == 0)
-      {
-        if (this.mov[paramInt1][paramInt2] < -125)
-          this.mov[paramInt1][paramInt2] = -125;
-        if (this.mov[paramInt1][paramInt2] > 125)
-          this.mov[paramInt1][paramInt2] = 125;
-        j = this.mov[paramInt1][paramInt2];
-      }
-      else {
-        filterUpdate(paramInt1, paramInt2);
-        if (this.filter[paramInt1][paramInt2] < -125)
-          this.filter[paramInt1][paramInt2] = -125;
-        if (this.filter[paramInt1][paramInt2] > 125)
-          this.filter[paramInt1][paramInt2] = 125;
-        j = this.filter[paramInt1][paramInt2];
-      }
-      if (Math.abs(j + 125) < this.koof[paramInt1][paramInt2][0])
-      {
-        this.cur_mov[paramInt1][paramInt2] = -125;
-      }
-      else {
-        int k = j < 0 ? 1 : 0;
-        float f1 = 0.0F;
-        j += 125;
-        float f2 = 25.0F;
-        int m = (int)(j / f2);
-        if (m > 9)
-          m = 9;
-        if (m == 0)
-          f1 = interpolate(0, 0, this.koof[paramInt1][paramInt2][1], j / f2);
-        else
-          f1 = interpolate(m, this.koof[paramInt1][paramInt2][m], this.koof[paramInt1][paramInt2][(m + 1)], j / f2 - m);
-        int n = Math.round(f1 / 100.0F * 250.0F);
-        n -= 125;
-        if (n > 125)
-          n = 125;
-        if (n < -125)
-          n = -125;
-        if (n == -126)
-          n++;
-        i = n;
-      }
-    }
-    int j = this.cur_mov[paramInt1][paramInt2] != i ? 1 : 0;
-    this.cur_mov[paramInt1][paramInt2] = i;
-    return j;
-  }
-
-  private boolean updateMove(int paramInt1, int paramInt2)
-  {
-    if (this.koof[paramInt1][paramInt2][12] > 0) {
-      return updateMoveMW1(paramInt1, paramInt2);
-    }
+  private boolean updateMove(int paramInt1, int paramInt2) {
     int i = 0;
     if (this.mov[paramInt1][paramInt2] == -1) {
       i = -1;
@@ -583,7 +457,7 @@ public class Joy
   private void writeConfig(IniFile paramIniFile, String paramString1, int paramInt1, int paramInt2, String paramString2) {
     if ((this.caps[paramInt1] & 1 << paramInt2) == 0) return;
     StringBuffer localStringBuffer = new StringBuffer();
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 12; i++) {
       if (i != 0) localStringBuffer.append(' ');
       localStringBuffer.append(this.koof[paramInt1][paramInt2][i]);
     }
@@ -610,7 +484,6 @@ public class Joy
       if (paramBoolean) this.koof[paramInt1][paramInt2][i] = localNumberTokenizer.next(100); else
         this.koof[paramInt1][paramInt2][i] = localNumberTokenizer.next(i * 10);
     this.koof[paramInt1][paramInt2][11] = localNumberTokenizer.next(0);
-    this.koof[paramInt1][paramInt2][12] = localNumberTokenizer.next(0);
     return true;
   }
 
@@ -637,44 +510,46 @@ public class Joy
     JoyFF.setEnable(paramIniFile.get(paramString, "FF", JoyFF.isEnable()));
   }
 
-  protected Joy(IniFile paramIniFile, String paramString)
-  {
-    int j;
+  protected Joy(IniFile paramIniFile, String paramString) {
+    this.listeners = new Listeners();
+    this.realListeners = new Listeners();
+    this.cache = new MessageCache(MsgJoy.class);
+    this.amount = 0;
+    this.buttons = new boolean[4][70];
     for (int i = 0; i < 4; i++)
-      for (j = 0; j < 70; j++)
+      for (int j = 0; j < 70; j++)
         this.buttons[i][j] = 0;
     this.mov = new int[4][8];
     this.filter = new int[4][8];
     this.filterUpdated = new boolean[4][8];
     this.cur_mov = new int[4][8];
-    for (i = 0; i < 4; i++)
-      for (j = 0; j < 8; j++)
+    for (int k = 0; k < 4; k++)
+      for (int m = 0; m < 8; m++)
       {
-        byte tmp206_205 = (this.mov[i][j] = -1); this.cur_mov[i][j] = tmp206_205; this.filter[i][j] = tmp206_205;
-        this.filterUpdated[i][j] = 0;
+        byte tmp204_203 = (this.mov[k][m] = -1); this.cur_mov[k][m] = tmp204_203; this.filter[k][m] = tmp204_203;
+        this.filterUpdated[k][m] = 0;
       }
     this.pov = new int[4][4];
-    for (i = 0; i < 4; i++)
-      for (j = 0; j < 4; j++)
-        this.pov[i][j] = -1;
+    for (int n = 0; n < 4; n++)
+      for (int i1 = 0; i1 < 4; i1++)
+        this.pov[n][i1] = -1;
     this.bEnabled = true;
-    this.koof = new int[4][8][13];
+    this.koof = new int[4][8][12];
     this.countButtons = new int[4];
     this.countAxes = new int[4];
     this.countPOVs = new int[4];
     this.caps = new int[4];
-    for (i = 0; i < 4; i++) {
-      for (j = 0; j < 8; j++) {
-        this.koof[i][j][0] = 0;
-        for (int k = 1; k < 11; k++)
-          this.koof[i][j][k] = 100;
-        this.koof[i][j][11] = 0;
-        this.koof[i][j][12] = 0;
+    for (int i2 = 0; i2 < 4; i2++) {
+      for (int i3 = 0; i3 < 8; i3++) {
+        this.koof[i2][i3][0] = 0;
+        for (int i4 = 1; i4 < 11; i4++)
+          this.koof[i2][i3][i4] = 100;
+        this.koof[i2][i3][11] = 0;
       }
-      this.countButtons[i] = 0;
-      this.countAxes[i] = 0;
-      this.countPOVs[i] = 0;
-      this.caps[i] = 0;
+      this.countButtons[i2] = 0;
+      this.countAxes[i2] = 0;
+      this.countPOVs[i2] = 0;
+      this.caps[i2] = 0;
     }
     loadConfig(paramIniFile, paramString);
   }

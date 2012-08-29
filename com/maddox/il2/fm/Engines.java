@@ -146,7 +146,7 @@ public class Engines extends FMMath
 
     int j = 1;
     float f = paramSectFile.get(str1, "Vmax", 0.0F) * 0.2777778F;
-    for (int m = 2; ; m++) {
+    int m = 2; for (goto 458; ; m++) {
       if (paramSectFile.get(str1, "VmaxH" + m, -1.0F) == -1.0F) {
         j = m - 1;
         break;
@@ -162,9 +162,9 @@ public class Engines extends FMMath
     else {
       this.kh = new float[j];
       this.khAlt = new float[j];
-      for (m = 0; m < this.kh.length; m++) {
-        this.khAlt[m] = paramSectFile.get(str1, "HofVmax" + (m + 1), 100.0F);
-        this.kh[m] = getKforH(f, paramSectFile.get(str1, "VmaxH" + (m + 1), 0.0F) * 0.2777778F, this.khAlt[m]);
+      for (int n = 0; n < this.kh.length; n++) {
+        this.khAlt[n] = paramSectFile.get(str1, "HofVmax" + (n + 1), 100.0F);
+        this.kh[n] = getKforH(f, paramSectFile.get(str1, "VmaxH" + (n + 1), 0.0F) * 0.2777778F, this.khAlt[n]);
       }
     }
   }
@@ -218,13 +218,13 @@ public class Engines extends FMMath
 
   public void update(float paramFloat, FlightModel paramFlightModel)
   {
-    float f3 = Pitot.Indicator((float)paramFlightModel.Loc.z, paramFlightModel.getSpeedKMH());
+    float f3 = Pitot.Indicator((float)paramFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double, paramFlightModel.getSpeedKMH());
 
     int j = 1;
-    float f1 = Atmosphere.temperature((float)paramFlightModel.Loc.z) - 273.14999F;
+    float f1 = Atmosphere.temperature((float)paramFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double) - 273.14999F;
 
     if (this.stage == 6) {
-      f2 = 1.05F * (float)Math.sqrt(Math.sqrt(getPower() > 0.2F ? getPower() + paramFlightModel.AS.astateOilStates[0] * 0.33F : 0.2F)) * (float)Math.sqrt(this.Wx / this.W0 > 0.75F ? this.Wx / this.W0 : 0.75D) * this.tOilOutMaxRPM * (j != 0 ? 0.9F : 1.0F) * (1.0F - f3 * 0.0002F) + 22.0F;
+      f2 = 1.05F * (float)Math.sqrt(Math.sqrt(getPower() > 0.2F ? getPower() + paramFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateOilStates[0] * 0.33F : 0.2F)) * (float)Math.sqrt(this.Wx / this.W0 > 0.75F ? this.Wx / this.W0 : 0.75D) * this.tOilOutMaxRPM * (j != 0 ? 0.9F : 1.0F) * (1.0F - f3 * 0.0002F) + 22.0F;
 
       if (getPower() > 1.0F) f2 *= getPower();
       this.TOilOut += (f2 - this.TOilOut) * paramFloat * this.tChangeSpeed;
@@ -244,28 +244,31 @@ public class Engines extends FMMath
     if (this.TOilOut < f1) this.TOilOut = f1;
     if (this.TOilIn < f1) this.TOilIn = f1;
     if (this.TWaterOut < f1) this.TWaterOut = f1;
-    int i;
+
     if ((World.cur().diffCur.Engine_Overheat) && ((this.TWaterOut > this.tWaterCritMax) || (this.TOilOut > this.tOilCritMax)))
     {
       if (heatStringID == -1) heatStringID = HUD.makeIdLog();
       HUD.log(heatStringID, "EngineOverheat");
       this.timeCounter += paramFloat;
-      if (this.timeCounter <= this.timeOverheat) return; for (i = 0; i < this.Power.length; ) {
-        if (this.Power[i] > 0.33F) {
-          this.Power[i] -= 0.00666F * paramFloat;
-          this.tOilCritMax -= 0.00666F * paramFloat * (this.tOilCritMax - this.tOilOutMaxRPM);
+      if (this.timeCounter > this.timeOverheat) {
+        for (int i = 0; i < this.Power.length; i++) {
+          if (this.Power[i] > 0.33F) {
+            this.Power[i] -= 0.00666F * paramFloat;
+            this.tOilCritMax -= 0.00666F * paramFloat * (this.tOilCritMax - this.tOilOutMaxRPM);
+          }
+          else {
+            this.Power[i] = 0.33F;
+            this.stage = 7;
+          }
         }
-        else {
-          this.Power[i] = 0.33F;
-          this.stage = 7;
-        }
-        i++; continue;
 
-        if (this.timeCounter <= 0.0F) break;
-        this.timeCounter = 0.0F;
-        if (heatStringID == -1) heatStringID = HUD.makeIdLog();
-        HUD.log(heatStringID, "EngineRestored");
       }
+
+    }
+    else if (this.timeCounter > 0.0F) {
+      this.timeCounter = 0.0F;
+      if (heatStringID == -1) heatStringID = HUD.makeIdLog();
+      HUD.log(heatStringID, "EngineRestored");
     }
   }
 
@@ -288,7 +291,7 @@ public class Engines extends FMMath
       this.oldStage = this.stage;
     }
     if ((this.stage > 0) && (this.stage < 6) && (this.fmdreference != null))
-      this.fmdreference.CT.setPowerControl(0.2F);
+      this.fmdreference.CT.PowerControl = 0.2F;
     int i;
     switch (this.stage) {
     case 0:
@@ -314,9 +317,9 @@ public class Engines extends FMMath
         if (this.bRan) {
           this.given = ()(100.0F + (this.tOilOutMaxRPM - this.TOilOut) / (this.tOilOutMaxRPM - f) * 7900.0F * World.Rnd().nextFloat(2.0F, 4.2F));
           if (this.given > 9000L) this.given = World.Rnd().nextLong(7800L, 9600L);
-          if ((this.fmdreference.AS.isMaster()) && (World.Rnd().nextFloat() < 0.5F)) {
+          if ((this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (World.Rnd().nextFloat() < 0.5F)) {
             this.stage = 0;
-            this.fmdreference.AS.setEngineStops(0);
+            this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineStops(0);
           }
         }
       }
@@ -327,8 +330,8 @@ public class Engines extends FMMath
       if (bTFirst)
       {
         this.given = ()(50.0F * World.Rnd().nextFloat(1.0F, 2.0F));
-        if ((this.fmdreference.AS.isMaster()) && (World.Rnd().nextFloat() < 0.12F) && ((this.tOilOutMaxRPM - this.TOilOut) / (this.tOilOutMaxRPM - f) < 0.75F)) {
-          this.fmdreference.AS.setEngineStops(0);
+        if ((this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (World.Rnd().nextFloat() < 0.12F) && ((this.tOilOutMaxRPM - this.TOilOut) / (this.tOilOutMaxRPM - f) < 0.75F)) {
+          this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineStops(0);
         }
       }
       this.Wx = (0.1047F * (60.0F + 60.0F * (float)l / (float)this.given));
@@ -338,8 +341,8 @@ public class Engines extends FMMath
       for (i = 1; i < 4; i++)
         for (int j = 1; j < 64; j++)
           try {
-            Hook localHook = this.fmdreference.actor.findHook("_Engine" + i + "EF_" + (j < 10 ? "0" + j : new StringBuffer().append("").append(j).toString()));
-            if (localHook != null) Eff3DActor.New(this.fmdreference.actor, localHook, null, 1.0F, "3DO/Effects/Aircraft/EngineStart" + World.Rnd().nextInt(1, 3) + ".eff", -1.0F);
+            Hook localHook = this.fmdreference.jdField_actor_of_type_ComMaddoxIl2EngineActor.findHook("_Engine" + i + "EF_" + (j < 10 ? "0" + j : new StringBuffer().append("").append(j).toString()));
+            if (localHook != null) Eff3DActor.New(this.fmdreference.jdField_actor_of_type_ComMaddoxIl2EngineActor, localHook, null, 1.0F, "3DO/Effects/Aircraft/EngineStart" + World.Rnd().nextInt(1, 3) + ".eff", -1.0F);
           }
           catch (Exception localException)
           {
@@ -348,7 +351,7 @@ public class Engines extends FMMath
     case 4:
       if (bTFirst) {
         this.given = ()(500.0F * World.Rnd().nextFloat(1.0F, 2.0F));
-        if ((this.fmdreference.AS.isMaster()) && (World.Rnd().nextFloat() < 0.05F))
+        if ((this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (World.Rnd().nextFloat() < 0.05F))
           setPowerReadyness(0, getEngineDamageFactor(0) - 0.1F);
       }
       this.Wx = 12.564F;
@@ -360,15 +363,15 @@ public class Engines extends FMMath
         if (this.bRan) {
           if ((this.tOilOutMaxRPM - this.TOilOut) / (this.tOilOutMaxRPM - f) > 0.75F) {
             if (this.bInline) {
-              if ((this.fmdreference.AS.isMaster()) && (getEngineDamageFactor(0) > 0.75F) && (World.Rnd().nextFloat() < 0.25F))
+              if ((this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (getEngineDamageFactor(0) > 0.75F) && (World.Rnd().nextFloat() < 0.25F))
                 setPowerReadyness(0, getEngineDamageFactor(0) - 0.05F);
             }
-            else if ((this.fmdreference.AS.isMaster()) && (World.Rnd().nextFloat() < 0.1F)) {
-              this.fmdreference.AS.setEngineDies(this.fmdreference.actor, 0);
+            else if ((this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (World.Rnd().nextFloat() < 0.1F)) {
+              this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineDies(this.fmdreference.jdField_actor_of_type_ComMaddoxIl2EngineActor, 0);
             }
           }
-          if ((this.fmdreference.AS.isMaster()) && (World.Rnd().nextFloat() < 0.1F))
-            this.fmdreference.AS.setEngineStops(0);
+          if ((this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (World.Rnd().nextFloat() < 0.1F))
+            this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineStops(0);
         }
         this.bRan = true;
       }
@@ -378,7 +381,7 @@ public class Engines extends FMMath
     case 6:
       if (!bTFirst) break;
       this.given = -1L;
-      this.fmdreference.AS.setEngineRunning(0); break;
+      this.fmdreference.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineRunning(0); break;
     case 7:
       if (bTFirst) {
         this.given = -1L;
@@ -439,11 +442,11 @@ public class Engines extends FMMath
     }
 
     if (World.cur().diffCur.Torque_N_Gyro_Effects) {
-      L.x = (this.Ix * this.Wx * f1 * 0.15F);
+      L.jdField_x_of_type_Float = (this.Ix * this.Wx * f1 * 0.15F);
       paramVector3f2.cross(paramVector3f1, L);
       float f4 = this.Ix * (this.Wx - f3) / paramFloat1 * 0.8F;
-      paramVector3f2.x += (f1 > 0.0F ? f4 : -f4);
-      paramVector3f2.x *= (this.PropDir == 1 ? 1.0F : -1.0F);
+      paramVector3f2.jdField_x_of_type_Float += (f1 > 0.0F ? f4 : -f4);
+      paramVector3f2.jdField_x_of_type_Float *= (this.PropDir == 1 ? 1.0F : -1.0F);
     } else {
       paramVector3f2.set(0.0F, 0.0F, 0.0F);
     }
@@ -490,7 +493,7 @@ public class Engines extends FMMath
     f1 *= this.PowerSET * this.Power100;
 
     float f2 = paramFloat2 / this.khAlt[0];
-    if (f2 < 1.0F) f2 = interpolate(1.0F, this.kh[0], f2); else
+    if (f2 < 1.0F) f2 = FMMath.interpolate(1.0F, this.kh[0], f2); else
       f2 = this.kh[0] / f2;
     return f1 * f2;
   }
@@ -514,7 +517,7 @@ public class Engines extends FMMath
 
     k = 0.0F;
     for (i = 0; i < this.kh.length; i++) {
-      ktmp = interpolate(this.khAlt[0] / this.khAlt[i], this.kh[i], paramFloat2 / this.khAlt[i]);
+      ktmp = FMMath.interpolate(this.khAlt[0] / this.khAlt[i], this.kh[i], paramFloat2 / this.khAlt[i]);
       if (paramFloat2 > this.khAlt[i]) ktmp = this.kh[i] * (Atmosphere.density(paramFloat2) / Atmosphere.density(this.khAlt[i]));
 
       if (ktmp <= k) continue; k = ktmp;
@@ -548,18 +551,18 @@ public class Engines extends FMMath
   public void doStartEngine(FlightModel paramFlightModel)
   {
     this.fmdreference = paramFlightModel;
-    if ((Airport.distToNearestAirport(this.fmdreference.Loc) < 1000.0D) && (this.fmdreference.isStationedOnGround())) {
+    if ((Airport.distToNearestAirport(this.fmdreference.jdField_Loc_of_type_ComMaddoxJGPPoint3d) < 1000.0D) && (this.fmdreference.isStationedOnGround())) {
       this.stage = 1;
       this.bRan = false;
       this.timer = Time.current();
-      paramFlightModel.AS.setEngineStarts(0);
+      paramFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineStarts(0);
       return;
     }
     if (this.stage == 0)
       if (this.bAutonomous) {
         this.stage = 1;
         this.timer = Time.current();
-        paramFlightModel.AS.setEngineStarts(0);
+        paramFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineStarts(0);
       } else {
         doStopEngine(paramFlightModel);
         this.magneto = 0;
@@ -573,7 +576,7 @@ public class Engines extends FMMath
       this.stage = 0;
       this.magneto = 0;
       this.timer = Time.current();
-      paramFlightModel.AS.setEngineStops(0);
+      paramFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineStops(0);
     }
   }
 
@@ -585,7 +588,7 @@ public class Engines extends FMMath
       setPowerReadyness(paramInt, 0.0F);
       if ((this.PowerSET != 0.0F) && (getPower() == 0.0F)) {
         this.stage = 7;
-        if (World.getPlayerAircraft() == paramFlightModel.actor) HUD.log("FailedEngine");
+        if (World.getPlayerAircraft() == paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor) HUD.log("FailedEngine");
         this.magneto = 0;
       }
       this.timer = Time.current();
@@ -597,7 +600,7 @@ public class Engines extends FMMath
     if ((this.kh.length > 1) && (this.khAlt[0] != 55.0F)) {
       this.kh = new float[] { 1.0F };
       this.khAlt = new float[] { 55.0F };
-      if (World.getPlayerAircraft() == paramFlightModel.actor) HUD.log("FailedCompressor"); 
+      if (World.getPlayerAircraft() == paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor) HUD.log("FailedCompressor"); 
     }
   }
 
@@ -605,7 +608,7 @@ public class Engines extends FMMath
   {
     this.fmdreference = paramFlightModel;
     if (this.stage == 0) {
-      if (paramFlightModel.getAltitude() - Engine.land().HQ(paramFlightModel.Loc.x, paramFlightModel.Loc.y) > 25.0D)
+      if (paramFlightModel.getAltitude() - Engine.land().HQ(paramFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.x, paramFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.y) > 25.0D)
       {
         if (this.bRan) {
           this.magneto = 2;
@@ -631,7 +634,7 @@ public class Engines extends FMMath
       this.stage = 6;
       this.bRan = true;
       this.timer = Time.current();
-      paramFlightModel.AS.setEngineRunning(0);
+      paramFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setEngineRunning(0);
       break;
     default:
       return;

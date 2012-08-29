@@ -28,10 +28,10 @@ public class PE_2SERIES110 extends PE_2
   public void onAircraftLoaded()
   {
     super.onAircraftLoaded();
-    if (this.FM.turret.length != 0) {
-      this.FM.turret[1].bIsOperable = false;
-      this.FM.turret[2].bIsOperable = false;
-      this.FM.turret[3].bIsOperable = false;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length != 0) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
     }
     this.gun3 = getGunByHookName("_MGUN03");
     this.gun4 = getGunByHookName("_MGUN04");
@@ -41,20 +41,20 @@ public class PE_2SERIES110 extends PE_2
   {
     if (Time.current() > this.tme) {
       this.tme = (Time.current() + World.Rnd().nextLong(5000L, 20000L));
-      if (this.FM.turret.length != 0) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length != 0) {
         this.gun3.loadBullets(Math.min(this.gun3.countBullets(), this.gun4.countBullets()));
         this.gun4.loadBullets(this.gun3.countBullets());
         Actor localActor = null;
-        for (int i = 1; i < 4; i++) { if (!this.FM.turret[i].bIsOperable) continue; localActor = this.FM.turret[i].target; }
-        for (i = 1; i < 4; i++) this.FM.turret[i].target = localActor;
+        for (int i = 1; i < 4; i++) { if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[i].bIsOperable) continue; localActor = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[i].target; }
+        for (int j = 1; j < 4; j++) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[j].target = localActor;
         if (localActor == null) {
           setRadist(0);
         }
         else if (Actor.isValid(localActor)) {
-          this.pos.getAbs(tmpLoc2); localActor.pos.getAbs(tmpLoc3); tmpLoc2.transformInv(tmpLoc3.getPoint());
-          if (tmpLoc3.getPoint().x < -Math.abs(tmpLoc3.getPoint().y))
+          this.pos.getAbs(Aircraft.tmpLoc2); localActor.pos.getAbs(Aircraft.tmpLoc3); Aircraft.tmpLoc2.transformInv(Aircraft.tmpLoc3.getPoint());
+          if (Aircraft.tmpLoc3.getPoint().x < -Math.abs(Aircraft.tmpLoc3.getPoint().jdField_y_of_type_Double))
             setRadist(1);
-          else if (tmpLoc3.getPoint().y < 0.0D)
+          else if (Aircraft.tmpLoc3.getPoint().jdField_y_of_type_Double < 0.0D)
             setRadist(2);
           else {
             setRadist(3);
@@ -104,42 +104,42 @@ public class PE_2SERIES110 extends PE_2
     hierMesh().chunkVisible("Pilot3a_D0", false);
     hierMesh().chunkVisible("Pilot3b_D0", false);
     hierMesh().chunkVisible("Pilot3c_D0", false);
-    this.FM.turret[1].bIsOperable = false;
-    this.FM.turret[2].bIsOperable = false;
-    this.FM.turret[3].bIsOperable = false;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
     switch (paramInt) {
     case 0:
       hierMesh().chunkVisible("Pilot3_D0", true);
-      this.FM.turret[1].bIsOperable = true;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = true;
       break;
     case 1:
       hierMesh().chunkVisible("Pilot3a_D0", true);
-      this.FM.turret[1].bIsOperable = true;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = true;
       break;
     case 2:
       hierMesh().chunkVisible("Pilot3b_D0", true);
-      this.FM.turret[2].bIsOperable = true;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = true;
       hierMesh().chunkVisible("Turret3B_D0", true);
       hierMesh().chunkVisible("Turret4B_D0", false);
       break;
     case 3:
       hierMesh().chunkVisible("Pilot3c_D0", true);
-      this.FM.turret[3].bIsOperable = true;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = true;
       hierMesh().chunkVisible("Turret3B_D0", false);
       hierMesh().chunkVisible("Turret4B_D0", true);
     }
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 1:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 2:
-      this.FM.turret[1].setHealth(paramFloat);
-      this.FM.turret[2].setHealth(paramFloat);
-      this.FM.turret[3].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
     }
   }
 
@@ -149,103 +149,103 @@ public class PE_2SERIES110 extends PE_2
   }
 
   public void typeBomberAdjDistanceReset() {
-    this.fSightCurForwardAngle = 0.0F;
+    this.jdField_fSightCurForwardAngle_of_type_Float = 0.0F;
   }
 
   public void typeBomberAdjDistancePlus() {
-    this.fSightCurForwardAngle += 0.2F;
-    if (this.fSightCurForwardAngle > 75.0F) {
-      this.fSightCurForwardAngle = 75.0F;
+    this.jdField_fSightCurForwardAngle_of_type_Float += 0.2F;
+    if (this.jdField_fSightCurForwardAngle_of_type_Float > 75.0F) {
+      this.jdField_fSightCurForwardAngle_of_type_Float = 75.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)(this.fSightCurForwardAngle * 1.0F)) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)(this.jdField_fSightCurForwardAngle_of_type_Float * 1.0F)) });
   }
 
   public void typeBomberAdjDistanceMinus() {
-    this.fSightCurForwardAngle -= 0.2F;
-    if (this.fSightCurForwardAngle < -15.0F) {
-      this.fSightCurForwardAngle = -15.0F;
+    this.jdField_fSightCurForwardAngle_of_type_Float -= 0.2F;
+    if (this.jdField_fSightCurForwardAngle_of_type_Float < -15.0F) {
+      this.jdField_fSightCurForwardAngle_of_type_Float = -15.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)(this.fSightCurForwardAngle * 1.0F)) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)(this.jdField_fSightCurForwardAngle_of_type_Float * 1.0F)) });
   }
 
   public void typeBomberAdjSideslipReset() {
-    this.fSightCurSideslip = 0.0F;
+    this.jdField_fSightCurSideslip_of_type_Float = 0.0F;
   }
 
   public void typeBomberAdjSideslipPlus() {
-    this.fSightCurSideslip += 1.0F;
-    if (this.fSightCurSideslip > 45.0F) {
-      this.fSightCurSideslip = 45.0F;
+    this.jdField_fSightCurSideslip_of_type_Float += 1.0F;
+    if (this.jdField_fSightCurSideslip_of_type_Float > 45.0F) {
+      this.jdField_fSightCurSideslip_of_type_Float = 45.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 1.0F)) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.jdField_fSightCurSideslip_of_type_Float * 1.0F)) });
   }
 
   public void typeBomberAdjSideslipMinus() {
-    this.fSightCurSideslip -= 1.0F;
-    if (this.fSightCurSideslip < -45.0F) {
-      this.fSightCurSideslip = -45.0F;
+    this.jdField_fSightCurSideslip_of_type_Float -= 1.0F;
+    if (this.jdField_fSightCurSideslip_of_type_Float < -45.0F) {
+      this.jdField_fSightCurSideslip_of_type_Float = -45.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 1.0F)) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.jdField_fSightCurSideslip_of_type_Float * 1.0F)) });
   }
 
   public void typeBomberAdjAltitudeReset() {
-    this.fSightCurAltitude = 300.0F;
+    this.jdField_fSightCurAltitude_of_type_Float = 300.0F;
   }
 
   public void typeBomberAdjAltitudePlus() {
-    this.fSightCurAltitude += 10.0F;
-    if (this.fSightCurAltitude > 6000.0F) {
-      this.fSightCurAltitude = 6000.0F;
+    this.jdField_fSightCurAltitude_of_type_Float += 10.0F;
+    if (this.jdField_fSightCurAltitude_of_type_Float > 6000.0F) {
+      this.jdField_fSightCurAltitude_of_type_Float = 6000.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.jdField_fSightCurAltitude_of_type_Float) });
   }
 
   public void typeBomberAdjAltitudeMinus() {
-    this.fSightCurAltitude -= 10.0F;
-    if (this.fSightCurAltitude < 300.0F) {
-      this.fSightCurAltitude = 300.0F;
+    this.jdField_fSightCurAltitude_of_type_Float -= 10.0F;
+    if (this.jdField_fSightCurAltitude_of_type_Float < 300.0F) {
+      this.jdField_fSightCurAltitude_of_type_Float = 300.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.jdField_fSightCurAltitude_of_type_Float) });
   }
 
   public void typeBomberAdjSpeedReset() {
-    this.fSightCurSpeed = 50.0F;
+    this.jdField_fSightCurSpeed_of_type_Float = 50.0F;
   }
 
   public void typeBomberAdjSpeedPlus() {
-    this.fSightCurSpeed += 5.0F;
-    if (this.fSightCurSpeed > 650.0F) {
-      this.fSightCurSpeed = 650.0F;
+    this.jdField_fSightCurSpeed_of_type_Float += 5.0F;
+    if (this.jdField_fSightCurSpeed_of_type_Float > 650.0F) {
+      this.jdField_fSightCurSpeed_of_type_Float = 650.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fSightCurSpeed) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.jdField_fSightCurSpeed_of_type_Float) });
   }
 
   public void typeBomberAdjSpeedMinus() {
-    this.fSightCurSpeed -= 5.0F;
-    if (this.fSightCurSpeed < 50.0F) {
-      this.fSightCurSpeed = 50.0F;
+    this.jdField_fSightCurSpeed_of_type_Float -= 5.0F;
+    if (this.jdField_fSightCurSpeed_of_type_Float < 50.0F) {
+      this.jdField_fSightCurSpeed_of_type_Float = 50.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fSightCurSpeed) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.jdField_fSightCurSpeed_of_type_Float) });
   }
 
   public void typeBomberUpdate(float paramFloat) {
-    double d = this.fSightCurSpeed / 3.6D * Math.sqrt(this.fSightCurAltitude * 0.203873598D);
-    d -= this.fSightCurAltitude * this.fSightCurAltitude * 1.419E-005D;
-    this.fSightSetForwardAngle = (float)Math.toDegrees(Math.atan(d / this.fSightCurAltitude));
+    double d = this.jdField_fSightCurSpeed_of_type_Float / 3.6D * Math.sqrt(this.jdField_fSightCurAltitude_of_type_Float * 0.203873598D);
+    d -= this.jdField_fSightCurAltitude_of_type_Float * this.jdField_fSightCurAltitude_of_type_Float * 1.419E-005D;
+    this.fSightSetForwardAngle = (float)Math.toDegrees(Math.atan(d / this.jdField_fSightCurAltitude_of_type_Float));
   }
 
   public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    paramNetMsgGuaranted.writeFloat(this.fSightCurAltitude);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurSpeed);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurForwardAngle);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurSideslip);
+    paramNetMsgGuaranted.writeFloat(this.jdField_fSightCurAltitude_of_type_Float);
+    paramNetMsgGuaranted.writeFloat(this.jdField_fSightCurSpeed_of_type_Float);
+    paramNetMsgGuaranted.writeFloat(this.jdField_fSightCurForwardAngle_of_type_Float);
+    paramNetMsgGuaranted.writeFloat(this.jdField_fSightCurSideslip_of_type_Float);
   }
 
   public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-    this.fSightCurAltitude = paramNetMsgInput.readFloat();
-    this.fSightCurSpeed = paramNetMsgInput.readFloat();
-    this.fSightCurForwardAngle = paramNetMsgInput.readFloat();
-    this.fSightCurSideslip = paramNetMsgInput.readFloat();
+    this.jdField_fSightCurAltitude_of_type_Float = paramNetMsgInput.readFloat();
+    this.jdField_fSightCurSpeed_of_type_Float = paramNetMsgInput.readFloat();
+    this.jdField_fSightCurForwardAngle_of_type_Float = paramNetMsgInput.readFloat();
+    this.jdField_fSightCurSideslip_of_type_Float = paramNetMsgInput.readFloat();
   }
 
   static
@@ -265,25 +265,25 @@ public class PE_2SERIES110 extends PE_2
 
     Property.set(localClass, "LOSElevation", 0.76315F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 10, 11, 12, 13, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON02", "_CANNON01", "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1, 10, 11, 12, 13, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON02", "_CANNON01", "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "6fab50", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, null, null, "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
+    Aircraft.weaponsRegister(localClass, "6fab50", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, null, null, "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
 
-    weaponsRegister(localClass, "6fab100", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, null, null, "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100" });
+    Aircraft.weaponsRegister(localClass, "6fab100", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, null, null, "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100", "BombGunFAB100" });
 
-    weaponsRegister(localClass, "2fab250", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2fab250", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2fab2502fab100", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, "BombGunFAB100", "BombGunFAB100" });
+    Aircraft.weaponsRegister(localClass, "2fab2502fab100", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, "BombGunFAB100", "BombGunFAB100" });
 
-    weaponsRegister(localClass, "4fab250", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4fab250", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2fab500", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", "BombGunFAB500", "BombGunFAB500", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2fab500", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", "BombGunFAB500", "BombGunFAB500", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2fab5002fab250", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", "BombGunFAB500", "BombGunFAB500", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2fab5002fab250", new String[] { "MGunShKASki 450", "MGunUBki 150", "MGunUBt 200", "MGunUBt 200", "MGunShKASt 450", "MGunShKASt 450", "BombGunFAB500", "BombGunFAB500", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

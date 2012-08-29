@@ -52,7 +52,7 @@ public class GUICampaignStat extends GUIStat
     if ((paramGameState != null) && (paramGameState.id() == 58)) {
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt) {
             GUICampaignStat.this.doExit();
@@ -78,14 +78,15 @@ public class GUICampaignStat extends GUIStat
     this.completeMissions = Main.cur().campaign.completeMissions();
     int[] arrayOfInt1 = Main.cur().campaign.enemyGroundDestroyed();
     int k;
+    int m;
     if (arrayOfInt1 != null) {
       if (Scores.arrayEnemyGroundKill != null) {
         int[] arrayOfInt2 = new int[arrayOfInt1.length + Scores.enemyGroundKill];
         j = 0;
         for (k = 0; k < arrayOfInt1.length; k++)
           arrayOfInt2[(j++)] = arrayOfInt1[k];
-        for (k = 0; k < Scores.arrayEnemyGroundKill.length; k++)
-          arrayOfInt2[(j++)] = Scores.arrayEnemyGroundKill[k];
+        for (m = 0; m < Scores.arrayEnemyGroundKill.length; m++)
+          arrayOfInt2[(j++)] = Scores.arrayEnemyGroundKill[m];
         Scores.arrayEnemyGroundKill = arrayOfInt2;
       } else {
         Scores.arrayEnemyGroundKill = arrayOfInt1;
@@ -101,18 +102,18 @@ public class GUICampaignStat extends GUIStat
     if ((!World.isPlayerDead()) && (!World.isPlayerCaptured()) && ((World.cur().targetsGuard.isTaskComplete()) || (Time.current() / 1000.0D / 60.0D > 20.0D) || (!World.cur().diffCur.NoInstantSuccess)))
     {
       this.bMissComplete = true;
-      this.bNext.showWindow();
+      this.jdField_bNext_of_type_ComMaddoxIl2GuiGUIButton.showWindow();
       this.completeMissions += 1;
       k = Main.cur().campaign.rank();
       this.bNewRank = (i != k);
 
       this.awards = Main.cur().campaign.awards(Scores.score);
-      int m = Main.cur().campaign.awards(Main.cur().campaign.score());
+      m = Main.cur().campaign.awards(Main.cur().campaign.score());
       if (this.awards > m)
         j = this.awards - 1;
     } else {
       this.bMissComplete = false;
-      this.bNext.hideWindow();
+      this.jdField_bNext_of_type_ComMaddoxIl2GuiGUIButton.hideWindow();
       i = Main.cur().campaign.rank();
       this.bNewRank = false;
       this.awards = Main.cur().campaign.awards(Main.cur().campaign.score());
@@ -212,7 +213,7 @@ public class GUICampaignStat extends GUIStat
       }
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt) {
             GUICampaignStat.this.doExit();
@@ -237,7 +238,7 @@ public class GUICampaignStat extends GUIStat
 
   protected void clientRender()
   {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    GUIStat.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient;
     GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)localDialogClient.lookAndFeel();
     GUISeparate.draw(localDialogClient, GColor.Gray, localDialogClient.x1024(32.0F), localDialogClient.y1024(448.0F), localDialogClient.x1024(672.0F), 2.0F);
     GUISeparate.draw(localDialogClient, GColor.Gray, localDialogClient.x1024(416.0F), localDialogClient.y1024(464.0F), 2.0F, localDialogClient.y1024(240.0F));
@@ -288,7 +289,7 @@ public class GUICampaignStat extends GUIStat
   }
 
   protected void clientRender2() {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    GUIStat.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient;
 
     if (NetMissionTrack.countRecorded == 0)
       localDialogClient.draw(localDialogClient.x1024(496.0F), localDialogClient.y1024(464.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 0, i18n("campstat.SaveTrack"));
@@ -299,7 +300,7 @@ public class GUICampaignStat extends GUIStat
   }
 
   protected void clientSetPosSize() {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    GUIStat.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient;
     localDialogClient.set1024PosSize(144.0F, 32.0F, 736.0F, 736.0F);
     this.airScroll.set1024PosSize(32.0F, 64.0F, 672.0F, 80.0F);
     this.groundScroll.set1024PosSize(32.0F, 192.0F, 672.0F, 80.0F);
@@ -307,7 +308,7 @@ public class GUICampaignStat extends GUIStat
     this.bViewAward.set1024PosSize(480.0F, 320.0F, 160.0F, 112.0F);
 
     this.bSave.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(488.0F));
-    this.bNext.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(552.0F));
+    this.jdField_bNext_of_type_ComMaddoxIl2GuiGUIButton.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(552.0F));
     this.bRefly.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(617.0F));
     this.bExit.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(680.0F));
   }
@@ -320,7 +321,7 @@ public class GUICampaignStat extends GUIStat
     super(30);
     init(paramGWindowRoot);
     this.infoMenu.info = i18n("campstat.info");
-    this.bViewAward = ((WAwardButton)this.dialogClient.addControl(new WAwardButton(this.dialogClient)));
+    this.bViewAward = ((WAwardButton)this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient.addControl(new WAwardButton(this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient)));
   }
 
   class WAwardButton extends GWindowButton
@@ -337,11 +338,11 @@ public class GUICampaignStat extends GUIStat
       super.render();
       if (GUICampaignStat.this.lastAward != null) {
         setCanvasColorWHITE();
-        int i = this.root.C.alpha;
-        this.root.C.alpha = 255;
-        if (this.bDown) draw(this.win.dx / 5.0F + 1.0F, this.win.dy / 5.0F + 1.0F, 3.0F * this.win.dx / 5.0F, 3.0F * this.win.dy / 5.0F, GUICampaignStat.this.lastAward); else
-          draw(this.win.dx / 5.0F, this.win.dy / 5.0F, 3.0F * this.win.dx / 5.0F, 3.0F * this.win.dy / 5.0F, GUICampaignStat.this.lastAward);
-        this.root.C.alpha = i;
+        int i = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
+        if (this.bDown) draw(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F + 1.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F + 1.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F, GUICampaignStat.this.lastAward); else
+          draw(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F, GUICampaignStat.this.lastAward);
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = i;
       }
     }
 

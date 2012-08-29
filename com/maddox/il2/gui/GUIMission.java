@@ -52,7 +52,7 @@ public class GUIMission extends GameState
       Main.cur().netServerParams.setMode(2);
       new NetLocalControl();
     }
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.StandBy"), i18n("miss.Loading"), 5, 0.0F)
+    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.StandBy"), i18n("miss.Loading"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -82,7 +82,7 @@ public class GUIMission extends GameState
   private void missionBad(String paramString)
   {
     this.loadMessageBox.close(false);
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), paramString, 3, 0.0F)
+    new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), paramString, 3, 0.0F)
     {
       public void result(int paramInt) {
         Main.cur().netServerParams.destroy();
@@ -183,15 +183,8 @@ public class GUIMission extends GameState
           NetMissionTrack.stopRecording();
           GUI.activate();
         }
-        try
-        {
-          Main.cur().netServerParams.destroy();
-          RTSConf.cur.netEnv.control.destroy();
-        }
-        catch (NullPointerException localNullPointerException)
-        {
-        }
-
+        Main.cur().netServerParams.destroy();
+        RTSConf.cur.netEnv.control.destroy();
         GUIMission.this.doExit();
         return true;
       }

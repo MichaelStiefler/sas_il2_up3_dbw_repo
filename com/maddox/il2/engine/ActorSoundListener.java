@@ -22,7 +22,7 @@ public class ActorSoundListener extends Actor
   }
 
   public ActorSoundListener() {
-    this.draw = new SoundListenerDraw();
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new SoundListenerDraw();
     this.pos = new ActorPosMove(this);
     drawing(true);
     setName("ActorSoundListener");
@@ -35,14 +35,14 @@ public class ActorSoundListener extends Actor
 
   public double getRelRhoSqr(Point3d paramPoint3d)
   {
-    double d1 = paramPoint3d.x - this.absPos.x;
-    double d2 = paramPoint3d.y - this.absPos.y;
-    double d3 = paramPoint3d.z - this.absPos.z;
+    double d1 = paramPoint3d.jdField_x_of_type_Double - this.absPos.jdField_x_of_type_Double;
+    double d2 = paramPoint3d.jdField_y_of_type_Double - this.absPos.jdField_y_of_type_Double;
+    double d3 = paramPoint3d.jdField_z_of_type_Double - this.absPos.jdField_z_of_type_Double;
     return d1 * d1 + d2 * d2 + d3 * d3;
   }
 
   public void initDraw()
   {
-    ((SoundListenerDraw)this.draw).init();
+    ((SoundListenerDraw)this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw).init();
   }
 }

@@ -34,11 +34,11 @@ public class CmdKickN extends Cmd
     HashMap localHashMap = new HashMap();
 
     if (paramMap.containsKey("_$$")) {
-      int i = nargs(paramMap, "_$$");
+      int i = Cmd.nargs(paramMap, "_$$");
       for (int j = 0; j < i; j++) {
-        String str = arg(paramMap, "_$$", j);
+        String str = Cmd.arg(paramMap, "_$$", j);
         if ((str.charAt(0) >= '0') && (str.charAt(0) <= '9')) {
-          int k = arg(paramMap, "_$$", j, 1000, 0, 1000);
+          int k = Cmd.arg(paramMap, "_$$", j, 1000, 0, 1000);
           if ((k > 0) && (k <= NetEnv.hosts().size())) {
             NetUser localNetUser = (NetUser)NetEnv.hosts().get(k - 1);
             if (!localHashMap.containsKey(localNetUser)) {

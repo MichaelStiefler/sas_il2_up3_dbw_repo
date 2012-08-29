@@ -89,11 +89,11 @@ public class PathFind
   }
 
   public static boolean setStartPoint(int paramInt, PNodes paramPNodes) {
-    Point3d localPoint3d = paramPNodes.pos.getAbsPoint();
-    if ((paramPNodes == startPoint[paramInt]) && (localPoint3d.x == startPosX[paramInt]) && (localPoint3d.y == startPosY[paramInt])) return true;
-    if (SetStartPoint(paramInt, (float)localPoint3d.x, (float)localPoint3d.y)) {
-      startPosX[paramInt] = localPoint3d.x;
-      startPosY[paramInt] = localPoint3d.y;
+    Point3d localPoint3d = paramPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    if ((paramPNodes == startPoint[paramInt]) && (localPoint3d.jdField_x_of_type_Double == startPosX[paramInt]) && (localPoint3d.jdField_y_of_type_Double == startPosY[paramInt])) return true;
+    if (SetStartPoint(paramInt, (float)localPoint3d.jdField_x_of_type_Double, (float)localPoint3d.jdField_y_of_type_Double)) {
+      startPosX[paramInt] = localPoint3d.jdField_x_of_type_Double;
+      startPosY[paramInt] = localPoint3d.jdField_y_of_type_Double;
       startPoint[paramInt] = paramPNodes;
       return true;
     }
@@ -103,13 +103,13 @@ public class PathFind
 
   public static boolean isPointReacheable(int paramInt, PNodes paramPNodes)
   {
-    Point3d localPoint3d = paramPNodes.pos.getAbsPoint();
-    return IsPointReacheable(paramInt, (float)localPoint3d.x, (float)localPoint3d.y);
+    Point3d localPoint3d = paramPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    return IsPointReacheable(paramInt, (float)localPoint3d.jdField_x_of_type_Double, (float)localPoint3d.jdField_y_of_type_Double);
   }
 
   public static float[] buildPath(int paramInt, PNodes paramPNodes) {
-    Point3d localPoint3d = paramPNodes.pos.getAbsPoint();
-    float[] arrayOfFloat = BuildPath(paramInt, (float)localPoint3d.x, (float)localPoint3d.y);
+    Point3d localPoint3d = paramPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    float[] arrayOfFloat = BuildPath(paramInt, (float)localPoint3d.jdField_x_of_type_Double, (float)localPoint3d.jdField_y_of_type_Double);
     if (arrayOfFloat == null) return null;
     for (int i = 0; i < arrayOfFloat.length / 4; i++) {
       Engine.land(); arrayOfFloat[(i * 4 + 2)] = Landscape.HQ(arrayOfFloat[(i * 4 + 0)], arrayOfFloat[(i * 4 + 1)]);

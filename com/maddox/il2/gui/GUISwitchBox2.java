@@ -36,27 +36,27 @@ public class GUISwitchBox2 extends GWindowCheckBox
   public void render() {
     setCanvasColorWHITE();
     if (isEnable()) {
-      if (isChecked()) draw(0.0F, 0.0F, this.win.dx, this.win.dy, texUp); else
-        draw(0.0F, 0.0F, this.win.dx, this.win.dy, texDown);
+      if (isChecked()) draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, texUp); else
+        draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, texDown);
     }
-    else if (isChecked()) draw(0.0F, 0.0F, this.win.dx, this.win.dy, texDUp); else
-      draw(0.0F, 0.0F, this.win.dx, this.win.dy, texDDown);
+    else if (isChecked()) draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, texDUp); else
+      draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, texDDown);
   }
 
   public GSize getMinSize(GSize paramGSize)
   {
-    paramGSize.dx = this.win.dx;
-    paramGSize.dy = this.win.dy;
+    paramGSize.dx = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    paramGSize.dy = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     return paramGSize;
   }
 
   public void setPosC(float paramFloat1, float paramFloat2) {
-    super.setPos(paramFloat1 - this.win.dx / 2.0F, paramFloat2 - this.win.dy / 2.0F);
+    super.setPos(paramFloat1 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F, paramFloat2 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F);
   }
 
   public void resolutionChanged() {
-    this.win.dx = x1024(64.0F);
-    this.win.dy = y1024(80.0F);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = x1024(64.0F);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = y1024(80.0F);
   }
 
   public void created() {
@@ -78,7 +78,7 @@ public class GUISwitchBox2 extends GWindowCheckBox
 
   public boolean _notify(int paramInt1, int paramInt2) {
     if (paramInt1 == 2) {
-      this.bChecked = (!this.bChecked);
+      this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
       if (this.cfg != null) {
         if (this.bUpdate) {
           this.cfg.set(this.iFlag, isChecked());

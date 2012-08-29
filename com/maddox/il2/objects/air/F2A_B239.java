@@ -22,11 +22,11 @@ public class F2A_B239 extends F2A
     Property.set(localClass, "cockpitClass", CockpitF2A1.class);
     Property.set(localClass, "LOSElevation", 1.032F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

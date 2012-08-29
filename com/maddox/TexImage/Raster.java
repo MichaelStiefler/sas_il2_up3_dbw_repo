@@ -23,7 +23,9 @@ public class Raster
     }
     else {
       m = 1;
-    }if (i > j)
+    }
+    int n;
+    if (i > j)
     {
       n = i >> 1;
       while (paramInt1 != paramInt3)
@@ -38,18 +40,20 @@ public class Raster
       }
 
     }
-
-    int n = j >> 1;
-    while (paramInt2 != paramInt4)
+    else
     {
-      paramRasterizable.pixel(paramInt1, paramInt2);
-      paramInt2 += m;
-      n += i;
-      if (n <= j) {
-        continue;
+      n = j >> 1;
+      while (paramInt2 != paramInt4)
+      {
+        paramRasterizable.pixel(paramInt1, paramInt2);
+        paramInt2 += m;
+        n += i;
+        if (n <= j) {
+          continue;
+        }
+        paramInt1 += k;
+        n -= j;
       }
-      paramInt1 += k;
-      n -= j;
     }
 
     paramRasterizable.pixel(paramInt3, paramInt4);
@@ -85,6 +89,8 @@ public class Raster
     } else {
       i1 = 1;
     }
+    int i2;
+    int i3;
     if (i > Math.max(j, k))
     {
       i2 = i >> 1;
@@ -105,9 +111,9 @@ public class Raster
         paramInt3 += i1;
         i3 -= i;
       }
-    }
 
-    if (j > Math.max(i, k))
+    }
+    else if (j > Math.max(i, k))
     {
       i2 = j >> 1;
       i3 = j >> 1;
@@ -129,24 +135,26 @@ public class Raster
       }
 
     }
-
-    int i2 = k >> 1;
-    int i3 = k >> 1;
-    while (paramInt3 != paramInt6)
+    else
     {
-      paramRasterizable.pixel(paramInt1, paramInt2, paramInt3);
-      paramInt3 += i1;
-      i2 += i;
-      i3 += j;
-      if (i2 > k)
+      i2 = k >> 1;
+      i3 = k >> 1;
+      while (paramInt3 != paramInt6)
       {
-        paramInt1 += m;
-        i2 -= k;
+        paramRasterizable.pixel(paramInt1, paramInt2, paramInt3);
+        paramInt3 += i1;
+        i2 += i;
+        i3 += j;
+        if (i2 > k)
+        {
+          paramInt1 += m;
+          i2 -= k;
+        }
+        if (i3 <= k)
+          continue;
+        paramInt2 += n;
+        i3 -= k;
       }
-      if (i3 <= k)
-        continue;
-      paramInt2 += n;
-      i3 -= k;
     }
 
     paramRasterizable.pixel(paramInt4, paramInt5, paramInt6);

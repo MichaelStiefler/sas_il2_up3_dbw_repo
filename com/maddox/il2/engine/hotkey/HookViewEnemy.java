@@ -26,7 +26,7 @@ public class HookViewEnemy extends HookView
 
   public void resetGame()
   {
-    lastBaseActor = null;
+    HookView.lastBaseActor = null;
     enemy = null;
     Aenemy = null;
     Genemy = null;
@@ -38,10 +38,10 @@ public class HookViewEnemy extends HookView
   }
   public void reset(float paramFloat1, float paramFloat2, float paramFloat3) {
     len = paramFloat1;
-    if (this.camera != null) {
-      Actor localActor = this.camera.pos.base();
-      if (this.bUse)
-        this.camera.pos.inValidate(true); 
+    if (this.jdField_camera_of_type_ComMaddoxIl2EngineActor != null) {
+      Actor localActor = this.jdField_camera_of_type_ComMaddoxIl2EngineActor.pos.base();
+      if (this.jdField_bUse_of_type_Boolean)
+        this.jdField_camera_of_type_ComMaddoxIl2EngineActor.pos.inValidate(true); 
     }
   }
 
@@ -55,43 +55,43 @@ public class HookViewEnemy extends HookView
   }
 
   public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2, boolean paramBoolean) {
-    paramLoc1.get(this.pAbs, this.oAbs);
-    if (this.bUse) {
-      if (lastBaseActor != paramActor) {
-        lastBaseActor = paramActor;
-        _visibleR = -1.0F;
+    paramLoc1.get(this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d, this.jdField_oAbs_of_type_ComMaddoxIl2EngineOrient);
+    if (this.jdField_bUse_of_type_Boolean) {
+      if (HookView.lastBaseActor != paramActor) {
+        HookView.lastBaseActor = paramActor;
+        HookView._visibleR = -1.0F;
         if ((Actor.isValid(paramActor)) && ((paramActor instanceof ActorMesh)))
-          _visibleR = ((ActorMesh)paramActor).mesh().visibilityR();
+          HookView._visibleR = ((ActorMesh)paramActor).mesh().visibilityR();
       }
       boolean bool = paramActor instanceof ActorViewPoint;
-      if (paramBoolean) enemy.pos.getRender(this.p); else
-        enemy.pos.getAbs(this.p);
-      Ve.sub(this.p, this.pAbs);
+      if (paramBoolean) enemy.pos.getRender(this.jdField_p_of_type_ComMaddoxJGPPoint3d); else
+        enemy.pos.getAbs(this.jdField_p_of_type_ComMaddoxJGPPoint3d);
+      Ve.sub(this.jdField_p_of_type_ComMaddoxJGPPoint3d, this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d);
       float f = (float)Ve.length();
       Ve.normalize();
-      if (!bool) Ve.z -= pullVector(paramActor, this.pAbs);
-      this.o.setAT0(Ve);
-      if ((len < 0.0F) && (paramBoolean) && 
-        (-len + defaultLen() > f)) {
-        len = -f + defaultLen();
+      if (!bool) Ve.jdField_z_of_type_Double -= pullVector(paramActor, this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d);
+      this.jdField_o_of_type_ComMaddoxIl2EngineOrient.setAT0(Ve);
+      if ((HookView.len < 0.0F) && (paramBoolean) && 
+        (-HookView.len + HookView.defaultLen() > f)) {
+        HookView.len = -f + HookView.defaultLen();
       }
-      Ve.scale(-len);
-      this.pAbs.add(Ve);
+      Ve.scale(-HookView.len);
+      this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d.add(Ve);
       if (!bool) {
-        this.pAbs.z += 0.2D * len;
+        this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double += 0.2D * HookView.len;
       }
-      double d = World.land().HQ_Air(this.pAbs.x, this.pAbs.y) + 2.0D;
-      if (this.pAbs.z < d)
-        this.pAbs.z = d;
-      paramLoc2.set(this.pAbs, this.o);
+      double d = World.land().HQ_Air(this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) + 2.0D;
+      if (this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double < d)
+        this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double = d;
+      paramLoc2.set(this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d, this.jdField_o_of_type_ComMaddoxIl2EngineOrient);
     } else {
-      paramLoc2.set(this.pAbs, this.oAbs);
+      paramLoc2.set(this.jdField_pAbs_of_type_ComMaddoxJGPPoint3d, this.jdField_oAbs_of_type_ComMaddoxIl2EngineOrient);
     }
   }
 
   private float pullVector(Actor paramActor, Point3d paramPoint3d)
   {
-    float f2 = (float)(paramPoint3d.z - World.land().HQ(paramPoint3d.x, paramPoint3d.y));
+    float f2 = (float)(paramPoint3d.jdField_z_of_type_Double - World.land().HQ(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double));
     paramActor.getSpeed(Vt);
     float f1 = 10.0F;
 
@@ -102,16 +102,16 @@ public class HookViewEnemy extends HookView
 
   public boolean start(Actor paramActor1, Actor paramActor2, boolean paramBoolean1, boolean paramBoolean2) {
     bGround = paramBoolean1;
-    _visibleR = -1.0F;
+    HookView._visibleR = -1.0F;
     if (Actor.isValid(paramActor1)) {
       if ((paramActor1 instanceof ActorMesh))
-        _visibleR = ((ActorMesh)paramActor1).mesh().visibilityR();
+        HookView._visibleR = ((ActorMesh)paramActor1).mesh().visibilityR();
       paramActor1.pos.inValidate(true);
     } else {
       stop();
       return false;
     }
-    paramActor1.pos.getAbs(this.p);
+    paramActor1.pos.getAbs(this.jdField_p_of_type_ComMaddoxJGPPoint3d);
     enemy = paramActor2;
     if (enemy == null) {
       if (bGround) enemy = Genemy; else enemy = Aenemy;
@@ -122,20 +122,20 @@ public class HookViewEnemy extends HookView
         }
       }
     }
-    this.bUse = ((this.camera != null) && (Actor.isValid(enemy)));
-    useCommon(2, this.bUse);
+    this.jdField_bUse_of_type_Boolean = ((this.jdField_camera_of_type_ComMaddoxIl2EngineActor != null) && (Actor.isValid(enemy)));
+    useCommon(2, this.jdField_bUse_of_type_Boolean);
     if (bGround) Genemy = enemy; else Aenemy = enemy;
     clipLen(paramActor1);
-    return this.bUse;
+    return this.jdField_bUse_of_type_Boolean;
   }
 
   public void stop() {
     useCommon(2, false);
-    this.bUse = false;
+    this.jdField_bUse_of_type_Boolean = false;
   }
 
   public boolean isRun() {
-    return this.bUse;
+    return this.jdField_bUse_of_type_Boolean;
   }
 
   public HookViewEnemy() {

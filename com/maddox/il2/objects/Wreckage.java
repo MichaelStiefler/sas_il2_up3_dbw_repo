@@ -59,9 +59,9 @@ public class Wreckage extends ActorMesh
 
   public void setSpeed(Vector3d paramVector3d)
   {
-    this.v.set(paramVector3d); this.v.z += 5.0D;
-    if (this.v.z > 50.0D)
-      this.v.z = 50.0D;
+    this.v.set(paramVector3d); this.v.jdField_z_of_type_Double += 5.0D;
+    if (this.v.jdField_z_of_type_Double > 50.0D)
+      this.v.jdField_z_of_type_Double = 50.0D;
   }
 
   private void construct(float paramFloat)
@@ -70,20 +70,20 @@ public class Wreckage extends ActorMesh
     drawing(true);
     getDimensions(sz);
     this.M = paramFloat;
-    float f1 = sz.x * sz.y + sz.x * sz.z + sz.z * sz.y;
+    float f1 = sz.jdField_x_of_type_Float * sz.jdField_y_of_type_Float + sz.jdField_x_of_type_Float * sz.jdField_z_of_type_Float + sz.jdField_z_of_type_Float * sz.jdField_y_of_type_Float;
     if (f1 < 0.01F) {
       f1 = 0.01F;
     }
     if (this.M < 0.001F)
     {
-      f2 = sz.x * sz.y * sz.z;
+      f2 = sz.jdField_x_of_type_Float * sz.jdField_y_of_type_Float * sz.jdField_z_of_type_Float;
       if (f2 < 0.01F) {
         f2 = 0.01F;
       }
       f3 = f1 * 2.0F * 0.02F;
       this.M = (500.0F * Math.min(f2, f3));
     }
-    float f2 = sz.x; float f3 = sz.y; float f4 = sz.z;
+    float f2 = sz.jdField_x_of_type_Float; float f3 = sz.jdField_y_of_type_Float; float f4 = sz.jdField_z_of_type_Float;
     int i = 0; int j = 1; int k = 2;
     float f5;
     int m;
@@ -119,7 +119,7 @@ public class Wreckage extends ActorMesh
       wn = j;
     } else {
       this.W.set(sz);
-      if (this.W.x < 1.0E-010F) this.W.x += 1.0E-010F;
+      if (this.W.jdField_x_of_type_Float < 1.0E-010F) this.W.jdField_x_of_type_Float += 1.0E-010F;
       this.W.normalize();
       wn = k;
     }
@@ -156,16 +156,16 @@ public class Wreckage extends ActorMesh
     if (!Config.isUSE_RENDER()) return;
     long l = Time.current();
     if (l == timeLastWreckageDrop_Water) {
-      double d1 = posLastWreckageDrop_Water.x - paramPoint3d.x;
-      double d2 = posLastWreckageDrop_Water.y - paramPoint3d.y;
+      double d1 = posLastWreckageDrop_Water.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double;
+      double d2 = posLastWreckageDrop_Water.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double;
       if (d1 * d1 + d2 * d2 < 100.0D) {
         return;
       }
     }
     pClipZ1.set(p);
     pClipZ2.set(p);
-    pClipZ1.z -= 2.0D;
-    pClipZ2.z += 42.0D;
+    pClipZ1.jdField_z_of_type_Double -= 2.0D;
+    pClipZ2.jdField_z_of_type_Double += 42.0D;
     Actor localActor = Engine.collideEnv().getLine(pClipZ2, pClipZ1, false, clipFilter, pClipRes);
     if (Actor.isValid(localActor)) {
       return;
@@ -202,14 +202,14 @@ public class Wreckage extends ActorMesh
 
       localHierMesh1.getChunkCurVisBoundBox(localPoint3f1, localPoint3f2);
       localPoint3d2.set(localPoint3f1);
-      localPoint3d2.add(localPoint3f2.x, localPoint3f2.y, localPoint3f2.z);
+      localPoint3d2.add(localPoint3f2.jdField_x_of_type_Float, localPoint3f2.jdField_y_of_type_Float, localPoint3f2.jdField_z_of_type_Float);
       localPoint3d2.scale(0.5D);
 
       localHierMesh1.getChunkLocObj(LO);
       LO.transform(localPoint3d2);
 
       localPoint3f2.sub(localPoint3f1);
-      double d2 = localPoint3f2.x * localPoint3f2.y * localPoint3f2.z;
+      double d2 = localPoint3f2.jdField_x_of_type_Float * localPoint3f2.jdField_y_of_type_Float * localPoint3f2.jdField_z_of_type_Float;
       double d3 = 500.0D;
       double d4 = d2 * d3;
 
@@ -266,41 +266,41 @@ public class Wreckage extends ActorMesh
       float f2 = 10.0F / (f3 + 0.1F); if (f2 > 1.0F) f2 = 1.0F;
       f2 *= Wreckage.dv[Wreckage.this.lr] * f1;
 
-      Wreckage.this.pos.getAbs(Wreckage.p, Wreckage.o);
+      Wreckage.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Wreckage.p, Wreckage.o);
       Wreckage.o.increment(Wreckage.this.W.z * f1, Wreckage.this.W.y * f1, -Wreckage.this.W.x * f1);
       Wreckage.oh.set(f2, 0.0F, 0.0F);
       Wreckage.oh.transform(Wreckage.this.v);
       Wreckage.o.setYaw(Wreckage.o.getYaw() - f2);
       float f5 = Wreckage.this.A * f1;
-      Wreckage.this.v.x = deceleron(Wreckage.this.v.x, f5);
-      Wreckage.this.v.y = deceleron(Wreckage.this.v.y, f5);
-      Wreckage.this.v.z = deceleron(Wreckage.this.v.z, f5);
-      Wreckage.this.v.z -= World.g() * f1;
+      Wreckage.this.v.jdField_x_of_type_Double = deceleron(Wreckage.this.v.jdField_x_of_type_Double, f5);
+      Wreckage.this.v.jdField_y_of_type_Double = deceleron(Wreckage.this.v.jdField_y_of_type_Double, f5);
+      Wreckage.this.v.jdField_z_of_type_Double = deceleron(Wreckage.this.v.jdField_z_of_type_Double, f5);
+      Wreckage.this.v.jdField_z_of_type_Double -= World.g() * f1;
       Wreckage.p.scaleAdd(f1, Wreckage.this.v, Wreckage.p);
-      double d = World.land().HQ(Wreckage.p.x, Wreckage.p.y);
-      if (Wreckage.p.z <= d)
+      double d = World.land().HQ(Wreckage.p.jdField_x_of_type_Double, Wreckage.p.jdField_y_of_type_Double);
+      if (Wreckage.p.jdField_z_of_type_Double <= d)
       {
-        World.land().N(Wreckage.p.x, Wreckage.p.y, Wreckage.Nf); Wreckage.N.set(Wreckage.Nf);
+        World.land().N(Wreckage.p.jdField_x_of_type_Double, Wreckage.p.jdField_y_of_type_Double, Wreckage.Nf); Wreckage.N.set(Wreckage.Nf);
         float f4;
         if ((f4 = (float)Wreckage.this.v.dot(Wreckage.N)) < 0.0F) {
           if (f4 < -40.0F) f4 = -40.0F;
           Wreckage.N.scale(2.0F * f4);
           Wreckage.this.v.sub(Wreckage.N);
           Wreckage.this.v.scale(0.5D);
-          if (World.land().isWater(Wreckage.p.x, Wreckage.p.y)) {
-            MsgDestroy.Post(Time.current(), this.actor);
+          if (World.land().isWater(Wreckage.p.jdField_x_of_type_Double, Wreckage.p.jdField_y_of_type_Double)) {
+            MsgDestroy.Post(Time.current(), this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
             Wreckage.access$1000(Wreckage.p);
             return false;
           }
-          if ((!Wreckage.this.bBoundToBeDestroyed) && (Math.abs(Wreckage.this.v.z) < 1.0D)) {
-            MsgDestroy.Post(Time.current() + 80000L, this.actor);
+          if ((!Wreckage.this.bBoundToBeDestroyed) && (Math.abs(Wreckage.this.v.jdField_z_of_type_Double) < 1.0D)) {
+            MsgDestroy.Post(Time.current() + 80000L, this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
             Wreckage.access$1102(Wreckage.this, true);
             return false;
           }
         }
-        Wreckage.p.z = d;
+        Wreckage.p.jdField_z_of_type_Double = d;
       }
-      Wreckage.this.pos.setAbs(Wreckage.p, Wreckage.o);
+      Wreckage.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Wreckage.p, Wreckage.o);
       return true;
     }
   }

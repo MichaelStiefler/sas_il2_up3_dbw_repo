@@ -19,10 +19,5 @@ public class Bomb5327 extends Torpedo
     Property.set(localClass, "velocity", 23.25F);
     Property.set(localClass, "traveltime", 159.13F);
     Property.set(localClass, "startingspeed", 40.0F);
-
-    Property.set(localClass, "impactAngleMin", 14.0F);
-    Property.set(localClass, "impactAngleMax", 24.0F);
-    Property.set(localClass, "impactSpeed", 74.0F);
-    Property.set(localClass, "armingTime", 3.0F);
   }
 }

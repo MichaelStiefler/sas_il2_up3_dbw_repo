@@ -27,8 +27,8 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
     if ((this.bailingOut) && (paramFloat >= 1.0F) && (!this.canopyForward))
     {
       this.canopyForward = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceCockpitDoor(0.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
     }
     else if (this.canopyForward)
     {
@@ -65,9 +65,9 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
     {
       super.hitDaSilk();
     }
-    else if ((this.FM.isPlayers()) || (isNetPlayer()))
+    else if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) || (isNetPlayer()))
     {
-      if ((this.FM.CT.getCockpitDoor() == 1.0D) && (!this.bailingOut))
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() == 1.0D) && (!this.bailingOut))
       {
         this.bailingOut = true;
         this.okToJump = true;
@@ -75,14 +75,14 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
         super.hitDaSilk();
       }
     }
-    else if (!this.FM.AS.isPilotDead(0))
+    else if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(0))
     {
-      if ((this.FM.CT.getCockpitDoor() < 1.0D) && (!this.bailingOut))
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() < 1.0D) && (!this.bailingOut))
       {
         this.bailingOut = true;
-        this.FM.AS.setCockpitDoor(this, 1);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
       }
-      else if ((this.FM.CT.getCockpitDoor() == 1.0D) && (!this.bailingOut))
+      else if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() == 1.0D) && (!this.bailingOut))
       {
         this.bailingOut = true;
         this.okToJump = true;
@@ -92,11 +92,11 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
 
     }
 
-    if ((!this.sideDoorOpened) && (this.FM.AS.bIsAboutToBailout) && (!this.FM.AS.isPilotDead(0)))
+    if ((!this.sideDoorOpened) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsAboutToBailout) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(0)))
     {
       this.sideDoorOpened = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceCockpitDoor(0.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
     }
   }
 
@@ -138,7 +138,7 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
   public void rareAction(float paramFloat, boolean paramBoolean)
   {
     super.rareAction(paramFloat, paramBoolean);
-    if ((!this.oneTimeCheckDone) && (!this.FM.isPlayers()) && (!isNetPlayer()))
+    if ((!this.oneTimeCheckDone) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && (!isNetPlayer()))
     {
       if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
       {
@@ -147,15 +147,15 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
         {
           if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.25F)
           {
-            this.FM.CT.cockpitDoorControl = 1.0F;
-            this.FM.AS.setCockpitDoor(this, 1);
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl = 1.0F;
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
           }
 
         }
         else if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
         {
-          this.FM.CT.cockpitDoorControl = 1.0F;
-          this.FM.AS.setCockpitDoor(this, 1);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl = 1.0F;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
         }
       }
     }
@@ -199,18 +199,18 @@ public class I_16TYPE5_SKIS extends I_16FixedSkis
 
     Property.set(localClass, "LOSElevation", 0.82595F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 9, 9 });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 9, 9 });
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null });
 
-    weaponsRegister(localClass, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
 
-    weaponsRegister(localClass, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
 
-    weaponsRegister(localClass, "PV-1", new String[] { "MGunPV1 900", "MGunPV1 900", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "PV-1", new String[] { "MGunPV1 900", "MGunPV1 900", null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

@@ -184,9 +184,9 @@ public class Matrix4f
 
   public final void get(Tuple3f paramTuple3f)
   {
-    paramTuple3f.x = this.m03;
-    paramTuple3f.y = this.m13;
-    paramTuple3f.z = this.m23;
+    paramTuple3f.jdField_x_of_type_Float = this.m03;
+    paramTuple3f.jdField_y_of_type_Float = this.m13;
+    paramTuple3f.jdField_z_of_type_Float = this.m23;
   }
 
   public final void getRotationScale(Matrix3f paramMatrix3f)
@@ -236,25 +236,25 @@ public class Matrix4f
   public final void setRow(int paramInt, Tuple4f paramTuple4f)
   {
     if (paramInt == 0) {
-      this.m00 = paramTuple4f.x;
-      this.m01 = paramTuple4f.y;
-      this.m02 = paramTuple4f.z;
-      this.m03 = paramTuple4f.w;
+      this.m00 = paramTuple4f.jdField_x_of_type_Float;
+      this.m01 = paramTuple4f.jdField_y_of_type_Float;
+      this.m02 = paramTuple4f.jdField_z_of_type_Float;
+      this.m03 = paramTuple4f.jdField_w_of_type_Float;
     } else if (paramInt == 1) {
-      this.m10 = paramTuple4f.x;
-      this.m11 = paramTuple4f.y;
-      this.m12 = paramTuple4f.z;
-      this.m13 = paramTuple4f.w;
+      this.m10 = paramTuple4f.jdField_x_of_type_Float;
+      this.m11 = paramTuple4f.jdField_y_of_type_Float;
+      this.m12 = paramTuple4f.jdField_z_of_type_Float;
+      this.m13 = paramTuple4f.jdField_w_of_type_Float;
     } else if (paramInt == 2) {
-      this.m20 = paramTuple4f.x;
-      this.m21 = paramTuple4f.y;
-      this.m22 = paramTuple4f.z;
-      this.m23 = paramTuple4f.w;
+      this.m20 = paramTuple4f.jdField_x_of_type_Float;
+      this.m21 = paramTuple4f.jdField_y_of_type_Float;
+      this.m22 = paramTuple4f.jdField_z_of_type_Float;
+      this.m23 = paramTuple4f.jdField_w_of_type_Float;
     } else if (paramInt == 3) {
-      this.m30 = paramTuple4f.x;
-      this.m31 = paramTuple4f.y;
-      this.m32 = paramTuple4f.z;
-      this.m33 = paramTuple4f.w;
+      this.m30 = paramTuple4f.jdField_x_of_type_Float;
+      this.m31 = paramTuple4f.jdField_y_of_type_Float;
+      this.m32 = paramTuple4f.jdField_z_of_type_Float;
+      this.m33 = paramTuple4f.jdField_w_of_type_Float;
     }
   }
 
@@ -286,25 +286,25 @@ public class Matrix4f
   public final void getRow(int paramInt, Vector4f paramVector4f)
   {
     if (paramInt == 0) {
-      paramVector4f.x = this.m00;
-      paramVector4f.y = this.m01;
-      paramVector4f.z = this.m02;
-      paramVector4f.w = this.m03;
+      paramVector4f.jdField_x_of_type_Float = this.m00;
+      paramVector4f.jdField_y_of_type_Float = this.m01;
+      paramVector4f.jdField_z_of_type_Float = this.m02;
+      paramVector4f.jdField_w_of_type_Float = this.m03;
     } else if (paramInt == 1) {
-      paramVector4f.x = this.m10;
-      paramVector4f.y = this.m11;
-      paramVector4f.z = this.m12;
-      paramVector4f.w = this.m13;
+      paramVector4f.jdField_x_of_type_Float = this.m10;
+      paramVector4f.jdField_y_of_type_Float = this.m11;
+      paramVector4f.jdField_z_of_type_Float = this.m12;
+      paramVector4f.jdField_w_of_type_Float = this.m13;
     } else if (paramInt == 2) {
-      paramVector4f.x = this.m20;
-      paramVector4f.y = this.m21;
-      paramVector4f.z = this.m22;
-      paramVector4f.w = this.m23;
+      paramVector4f.jdField_x_of_type_Float = this.m20;
+      paramVector4f.jdField_y_of_type_Float = this.m21;
+      paramVector4f.jdField_z_of_type_Float = this.m22;
+      paramVector4f.jdField_w_of_type_Float = this.m23;
     } else if (paramInt == 3) {
-      paramVector4f.x = this.m30;
-      paramVector4f.y = this.m31;
-      paramVector4f.z = this.m32;
-      paramVector4f.w = this.m33;
+      paramVector4f.jdField_x_of_type_Float = this.m30;
+      paramVector4f.jdField_y_of_type_Float = this.m31;
+      paramVector4f.jdField_z_of_type_Float = this.m32;
+      paramVector4f.jdField_w_of_type_Float = this.m33;
     }
   }
 
@@ -361,25 +361,25 @@ public class Matrix4f
   public final void setColumn(int paramInt, Vector4f paramVector4f)
   {
     if (paramInt == 0) {
-      this.m00 = paramVector4f.x;
-      this.m10 = paramVector4f.y;
-      this.m20 = paramVector4f.z;
-      this.m30 = paramVector4f.w;
+      this.m00 = paramVector4f.jdField_x_of_type_Float;
+      this.m10 = paramVector4f.jdField_y_of_type_Float;
+      this.m20 = paramVector4f.jdField_z_of_type_Float;
+      this.m30 = paramVector4f.jdField_w_of_type_Float;
     } else if (paramInt == 1) {
-      this.m01 = paramVector4f.x;
-      this.m11 = paramVector4f.y;
-      this.m21 = paramVector4f.z;
-      this.m31 = paramVector4f.w;
+      this.m01 = paramVector4f.jdField_x_of_type_Float;
+      this.m11 = paramVector4f.jdField_y_of_type_Float;
+      this.m21 = paramVector4f.jdField_z_of_type_Float;
+      this.m31 = paramVector4f.jdField_w_of_type_Float;
     } else if (paramInt == 2) {
-      this.m02 = paramVector4f.x;
-      this.m12 = paramVector4f.y;
-      this.m22 = paramVector4f.z;
-      this.m32 = paramVector4f.w;
+      this.m02 = paramVector4f.jdField_x_of_type_Float;
+      this.m12 = paramVector4f.jdField_y_of_type_Float;
+      this.m22 = paramVector4f.jdField_z_of_type_Float;
+      this.m32 = paramVector4f.jdField_w_of_type_Float;
     } else if (paramInt == 3) {
-      this.m03 = paramVector4f.x;
-      this.m13 = paramVector4f.y;
-      this.m23 = paramVector4f.z;
-      this.m33 = paramVector4f.w;
+      this.m03 = paramVector4f.jdField_x_of_type_Float;
+      this.m13 = paramVector4f.jdField_y_of_type_Float;
+      this.m23 = paramVector4f.jdField_z_of_type_Float;
+      this.m33 = paramVector4f.jdField_w_of_type_Float;
     }
   }
 
@@ -411,25 +411,25 @@ public class Matrix4f
   public final void getColumn(int paramInt, Vector4f paramVector4f)
   {
     if (paramInt == 0) {
-      paramVector4f.x = this.m00;
-      paramVector4f.y = this.m10;
-      paramVector4f.z = this.m20;
-      paramVector4f.w = this.m30;
+      paramVector4f.jdField_x_of_type_Float = this.m00;
+      paramVector4f.jdField_y_of_type_Float = this.m10;
+      paramVector4f.jdField_z_of_type_Float = this.m20;
+      paramVector4f.jdField_w_of_type_Float = this.m30;
     } else if (paramInt == 1) {
-      paramVector4f.x = this.m01;
-      paramVector4f.y = this.m11;
-      paramVector4f.z = this.m21;
-      paramVector4f.w = this.m31;
+      paramVector4f.jdField_x_of_type_Float = this.m01;
+      paramVector4f.jdField_y_of_type_Float = this.m11;
+      paramVector4f.jdField_z_of_type_Float = this.m21;
+      paramVector4f.jdField_w_of_type_Float = this.m31;
     } else if (paramInt == 2) {
-      paramVector4f.x = this.m02;
-      paramVector4f.y = this.m12;
-      paramVector4f.z = this.m22;
-      paramVector4f.w = this.m32;
+      paramVector4f.jdField_x_of_type_Float = this.m02;
+      paramVector4f.jdField_y_of_type_Float = this.m12;
+      paramVector4f.jdField_z_of_type_Float = this.m22;
+      paramVector4f.jdField_w_of_type_Float = this.m32;
     } else if (paramInt == 3) {
-      paramVector4f.x = this.m03;
-      paramVector4f.y = this.m13;
-      paramVector4f.z = this.m23;
-      paramVector4f.w = this.m33;
+      paramVector4f.jdField_x_of_type_Float = this.m03;
+      paramVector4f.jdField_y_of_type_Float = this.m13;
+      paramVector4f.jdField_z_of_type_Float = this.m23;
+      paramVector4f.jdField_w_of_type_Float = this.m33;
     }
   }
 
@@ -534,12 +534,12 @@ public class Matrix4f
 
   public final void set(Quat4f paramQuat4f)
   {
-    setFromQuat(paramQuat4f.x, paramQuat4f.y, paramQuat4f.z, paramQuat4f.w);
+    setFromQuat(paramQuat4f.jdField_x_of_type_Float, paramQuat4f.jdField_y_of_type_Float, paramQuat4f.jdField_z_of_type_Float, paramQuat4f.jdField_w_of_type_Float);
   }
 
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
-    setFromAxisAngle(paramAxisAngle4f.x, paramAxisAngle4f.y, paramAxisAngle4f.z, paramAxisAngle4f.angle);
+    setFromAxisAngle(paramAxisAngle4f.jdField_x_of_type_Float, paramAxisAngle4f.jdField_y_of_type_Float, paramAxisAngle4f.jdField_z_of_type_Float, paramAxisAngle4f.angle);
   }
 
   public final void set(Quat4d paramQuat4d)
@@ -565,9 +565,9 @@ public class Matrix4f
   {
     set(paramQuat4f);
     mulRotationScale(paramFloat);
-    this.m03 = paramTuple3f.x;
-    this.m13 = paramTuple3f.y;
-    this.m23 = paramTuple3f.z;
+    this.m03 = paramTuple3f.jdField_x_of_type_Float;
+    this.m13 = paramTuple3f.jdField_y_of_type_Float;
+    this.m23 = paramTuple3f.jdField_z_of_type_Float;
   }
 
   public final void set(Matrix4d paramMatrix4d)
@@ -655,9 +655,9 @@ public class Matrix4f
 
   public final void set(Tuple3f paramTuple3f, float paramFloat)
   {
-    this.m00 = paramFloat; this.m01 = 0.0F; this.m02 = 0.0F; this.m03 = (paramFloat * paramTuple3f.x);
-    this.m10 = 0.0F; this.m11 = paramFloat; this.m12 = 0.0F; this.m13 = (paramFloat * paramTuple3f.y);
-    this.m20 = 0.0F; this.m21 = 0.0F; this.m22 = paramFloat; this.m23 = (paramFloat * paramTuple3f.z);
+    this.m00 = paramFloat; this.m01 = 0.0F; this.m02 = 0.0F; this.m03 = (paramFloat * paramTuple3f.jdField_x_of_type_Float);
+    this.m10 = 0.0F; this.m11 = paramFloat; this.m12 = 0.0F; this.m13 = (paramFloat * paramTuple3f.jdField_y_of_type_Float);
+    this.m20 = 0.0F; this.m21 = 0.0F; this.m22 = paramFloat; this.m23 = (paramFloat * paramTuple3f.jdField_z_of_type_Float);
     this.m30 = 0.0F; this.m31 = 0.0F; this.m32 = 0.0F; this.m33 = 1.0F;
   }
 
@@ -679,9 +679,9 @@ public class Matrix4f
 
   public void setTranslation(Tuple3f paramTuple3f)
   {
-    this.m03 = paramTuple3f.x;
-    this.m13 = paramTuple3f.y;
-    this.m23 = paramTuple3f.z;
+    this.m03 = paramTuple3f.jdField_x_of_type_Float;
+    this.m13 = paramTuple3f.jdField_y_of_type_Float;
+    this.m23 = paramTuple3f.jdField_z_of_type_Float;
   }
 
   public final void rotX(float paramFloat)
@@ -776,7 +776,7 @@ public class Matrix4f
 
   public final void transform(Tuple4f paramTuple4f1, Tuple4f paramTuple4f2)
   {
-    paramTuple4f2.set(this.m00 * paramTuple4f1.x + this.m01 * paramTuple4f1.y + this.m02 * paramTuple4f1.z + this.m03 * paramTuple4f1.w, this.m10 * paramTuple4f1.x + this.m11 * paramTuple4f1.y + this.m12 * paramTuple4f1.z + this.m13 * paramTuple4f1.w, this.m20 * paramTuple4f1.x + this.m21 * paramTuple4f1.y + this.m22 * paramTuple4f1.z + this.m23 * paramTuple4f1.w, this.m30 * paramTuple4f1.x + this.m31 * paramTuple4f1.y + this.m32 * paramTuple4f1.z + this.m33 * paramTuple4f1.w);
+    paramTuple4f2.set(this.m00 * paramTuple4f1.jdField_x_of_type_Float + this.m01 * paramTuple4f1.jdField_y_of_type_Float + this.m02 * paramTuple4f1.jdField_z_of_type_Float + this.m03 * paramTuple4f1.jdField_w_of_type_Float, this.m10 * paramTuple4f1.jdField_x_of_type_Float + this.m11 * paramTuple4f1.jdField_y_of_type_Float + this.m12 * paramTuple4f1.jdField_z_of_type_Float + this.m13 * paramTuple4f1.jdField_w_of_type_Float, this.m20 * paramTuple4f1.jdField_x_of_type_Float + this.m21 * paramTuple4f1.jdField_y_of_type_Float + this.m22 * paramTuple4f1.jdField_z_of_type_Float + this.m23 * paramTuple4f1.jdField_w_of_type_Float, this.m30 * paramTuple4f1.jdField_x_of_type_Float + this.m31 * paramTuple4f1.jdField_y_of_type_Float + this.m32 * paramTuple4f1.jdField_z_of_type_Float + this.m33 * paramTuple4f1.jdField_w_of_type_Float);
   }
 
   public final void transform(Tuple4f paramTuple4f)
@@ -786,7 +786,7 @@ public class Matrix4f
 
   public final void transform(Point3f paramPoint3f1, Point3f paramPoint3f2)
   {
-    paramPoint3f2.set(this.m00 * paramPoint3f1.x + this.m01 * paramPoint3f1.y + this.m02 * paramPoint3f1.z + this.m03, this.m10 * paramPoint3f1.x + this.m11 * paramPoint3f1.y + this.m12 * paramPoint3f1.z + this.m13, this.m20 * paramPoint3f1.x + this.m21 * paramPoint3f1.y + this.m22 * paramPoint3f1.z + this.m23);
+    paramPoint3f2.set(this.m00 * paramPoint3f1.jdField_x_of_type_Float + this.m01 * paramPoint3f1.jdField_y_of_type_Float + this.m02 * paramPoint3f1.jdField_z_of_type_Float + this.m03, this.m10 * paramPoint3f1.jdField_x_of_type_Float + this.m11 * paramPoint3f1.jdField_y_of_type_Float + this.m12 * paramPoint3f1.jdField_z_of_type_Float + this.m13, this.m20 * paramPoint3f1.jdField_x_of_type_Float + this.m21 * paramPoint3f1.jdField_y_of_type_Float + this.m22 * paramPoint3f1.jdField_z_of_type_Float + this.m23);
   }
 
   public final void transform(Point3f paramPoint3f)
@@ -796,7 +796,7 @@ public class Matrix4f
 
   public final void transform(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
-    paramTuple3f2.set(this.m00 * paramTuple3f1.x + this.m01 * paramTuple3f1.y + this.m02 * paramTuple3f1.z, this.m10 * paramTuple3f1.x + this.m11 * paramTuple3f1.y + this.m12 * paramTuple3f1.z, this.m20 * paramTuple3f1.x + this.m21 * paramTuple3f1.y + this.m22 * paramTuple3f1.z);
+    paramTuple3f2.set(this.m00 * paramTuple3f1.jdField_x_of_type_Float + this.m01 * paramTuple3f1.jdField_y_of_type_Float + this.m02 * paramTuple3f1.jdField_z_of_type_Float, this.m10 * paramTuple3f1.jdField_x_of_type_Float + this.m11 * paramTuple3f1.jdField_y_of_type_Float + this.m12 * paramTuple3f1.jdField_z_of_type_Float, this.m20 * paramTuple3f1.jdField_x_of_type_Float + this.m21 * paramTuple3f1.jdField_y_of_type_Float + this.m22 * paramTuple3f1.jdField_z_of_type_Float);
   }
 
   public final void transform(Tuple3f paramTuple3f)

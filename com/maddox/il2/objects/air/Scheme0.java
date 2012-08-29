@@ -30,7 +30,7 @@ import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public abstract class Scheme0 extends AircraftLH
+public abstract class Scheme0 extends Aircraft
 {
   protected ActorSimpleMesh towString;
   private static Orient o = new Orient();
@@ -88,35 +88,35 @@ public abstract class Scheme0 extends AircraftLH
 
   public void setGliderToTraktor()
   {
-    if (!(this.FM instanceof Pilot)) {
+    if (!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) {
       this.bGliderSetUp = true;
       return;
     }
 
-    if (this.FM.AP.way.curr().getTarget() == null) this.FM.AP.way.next();
-    if ((this.FM.AP.way.curr().getTarget() != null) && (Actor.isValid(this.FM.AP.way.curr().getTarget())) && ((this.FM.AP.way.curr().getTargetActorRandom() instanceof Aircraft)))
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget() == null) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget() != null) && (Actor.isValid(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget())) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTargetActorRandom() instanceof Aircraft)))
     {
-      Actor localActor = this.FM.AP.way.curr().getTargetActorRandom();
-      FlightModel localFlightModel = ((Aircraft)localActor).FM;
-      if (localFlightModel.Loc.x == 0.0D) return;
+      Actor localActor = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTargetActorRandom();
+      FlightModel localFlightModel = ((Aircraft)localActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      if (localFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double == 0.0D) return;
 
-      double d = this.FM.Loc.z - Engine.land().HQ(this.FM.Loc.x, this.FM.Loc.y);
-      if (d < 2.0F * this.FM.Gears.H) {
-        this.FM.Loc.z = (Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) + this.FM.Gears.H + 0.0D);
-        this.FM.Or.set(this.FM.Or.getYaw(), this.FM.Gears.Pitch, this.FM.Or.getRoll());
-        this.FM.Or.wrap();
-        ((Maneuver)this.FM).set_maneuver(26);
-        this.FM.Vwld.set(0.0D, 0.0D, 0.0D);
+      double d = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double);
+      if (d < 2.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double = (Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) + this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H + 0.0D);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getYaw(), this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.Pitch, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getRoll());
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.wrap();
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(26);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(0.0D, 0.0D, 0.0D);
       } else {
-        ((Maneuver)this.FM).set_maneuver(24);
-        this.FM.Vwld.set(localFlightModel.Vwld);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(24);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(localFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
       }
 
-      Maneuver localManeuver1 = (Maneuver)this.FM;
+      Maneuver localManeuver1 = (Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       Maneuver localManeuver2 = (Maneuver)localFlightModel;
       if (localManeuver1.Group != null) localManeuver1.Group.delAircraft(this);
       if (localManeuver2.Group != null) localManeuver2.Group.addAircraft(this);
-      this.FM.Leader = localFlightModel;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = localFlightModel;
 
       if (((localActor instanceof HE_111Z)) || ((localActor instanceof LI_2))) {
         ((ActorHMesh)localActor).hierMesh().chunkVisible("Cart_D0", true);
@@ -158,46 +158,46 @@ public abstract class Scheme0 extends AircraftLH
       {
         Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
         localHook.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), localLoc);
-        this.traktor.x = localLoc.getPoint().x;
-        this.traktor.y = localLoc.getPoint().y;
-        this.traktor.z = localLoc.getPoint().z;
+        this.traktor.jdField_x_of_type_Double = localLoc.getPoint().jdField_x_of_type_Double;
+        this.traktor.jdField_y_of_type_Double = localLoc.getPoint().jdField_y_of_type_Double;
+        this.traktor.jdField_z_of_type_Double = localLoc.getPoint().jdField_z_of_type_Double;
 
         Vector3f localVector3f = new Vector3f();
-        localVector3f.set((float)this.traktor.x - this.stringLength, (float)this.traktor.y, (float)this.traktor.z);
-        localFlightModel.Or.transform(localVector3f);
-        this.FM.Loc.set(localFlightModel.Loc); this.FM.Loc.x += localVector3f.x; this.FM.Loc.y += localVector3f.y; this.FM.Loc.z += localVector3f.z;
-        this.FM.Or.set(localFlightModel.Or);
-        this.FM.actor.pos.setAbs(this.FM.Loc, this.FM.Or);
-        this.FM.actor.pos.reset();
+        localVector3f.set((float)this.traktor.jdField_x_of_type_Double - this.stringLength, (float)this.traktor.jdField_y_of_type_Double, (float)this.traktor.jdField_z_of_type_Double);
+        localFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transform(localVector3f);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.set(localFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d); this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double += localVector3f.x; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double += localVector3f.y; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double += localVector3f.z;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.set(localFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
-        d = this.FM.Loc.z - Engine.land().HQ(this.FM.Loc.x, this.FM.Loc.y);
-        if (d < 2.0F * this.FM.Gears.H) {
-          this.FM.Loc.z = (Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) + this.FM.Gears.H + 0.0D);
-          debugprintln("FM.z=" + this.FM.Loc.z + " Land.z=" + Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) + " Gear.h=" + this.FM.Gears.H);
-          this.FM.Or.set(this.FM.Or.getYaw(), this.FM.Gears.Pitch, this.FM.Or.getRoll());
-          this.FM.Or.wrap();
-          ((Maneuver)this.FM).set_maneuver(26);
-          this.FM.Vwld.set(0.0D, 0.0D, 0.0D);
-          this.FM.actor.pos.setAbs(this.FM.Loc, this.FM.Or);
-          this.FM.actor.pos.reset();
+        d = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double);
+        if (d < 2.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double = (Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) + this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H + 0.0D);
+          debugprintln("FM.z=" + this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double + " Land.z=" + Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) + " Gear.h=" + this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getYaw(), this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.Pitch, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getRoll());
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.wrap();
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(26);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(0.0D, 0.0D, 0.0D);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         } else {
-          ((Maneuver)this.FM).set_maneuver(24);
-          this.FM.Vwld.set(localFlightModel.Vwld);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(24);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(localFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
         }
 
-        this.offsetReference.set(this.stringLength - (float)this.traktor.x, (float)(-this.traktor.y), (float)(-this.traktor.z));
-        this.FM.Offset.set(this.offsetReference);
-        ((Maneuver)this.FM).followOffset.set(this.offsetReference);
+        this.offsetReference.set(this.stringLength - (float)this.traktor.jdField_x_of_type_Double, (float)(-this.traktor.jdField_y_of_type_Double), (float)(-this.traktor.jdField_z_of_type_Double));
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d.set(this.offsetReference);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).followOffset.set(this.offsetReference);
       }
       else {
-        ((Maneuver)this.FM).set_task(3);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_task(3);
         debugprintln("Glider attached to a vessel of unsupported type.. Glider autolands..");
-        ((Maneuver)this.FM).set_maneuver(49);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(49);
       }
     } else {
-      ((Maneuver)this.FM).set_task(3);
+      ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_task(3);
       debugprintln("Incorrect glider way setup.. Glider autolands..");
-      ((Maneuver)this.FM).set_maneuver(49);
+      ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(49);
     }
     this.bGliderSetUp = true;
     this.bAttached = true;
@@ -206,7 +206,7 @@ public abstract class Scheme0 extends AircraftLH
   public void onAircraftLoaded()
   {
     this.towString = new ActorSimpleMesh(Property.stringValue(getClass(), "gliderString", "3DO/Arms/TowCable/mono.sim"));
-    this.towString.pos.setBase(this, findHook("_TowHook"), false);
+    this.towString.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, findHook("_TowHook"), false);
     this.towString.drawing(false);
 
     this.boostThrust = Property.floatValue(getClass(), "gliderBoostThrust", 0.0F);
@@ -230,97 +230,97 @@ public abstract class Scheme0 extends AircraftLH
   {
     if (!this.bGliderSetUp) {
       setGliderToTraktor();
-      this.ploughFM = this.FM;
+      this.ploughFM = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     }
 
     super.update(paramFloat);
 
-    if (!(this.FM instanceof Pilot)) return;
+    if (!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) return;
 
-    if (((((Maneuver)this.FM).get_maneuver() == 24) || (((Maneuver)this.FM).get_maneuver() == 53) || (((Maneuver)this.FM).get_maneuver() == 26) || (((Maneuver)this.FM).get_maneuver() == 64) || (((Maneuver)this.FM).get_maneuver() == 0)) && (this.bAttached))
+    if (((((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 24) || (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 53) || (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 26) || (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 64) || (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 0)) && (this.bAttached))
     {
-      if ((this.FM.Leader != null) && (!(this.FM.Leader.actor instanceof TypeGlider))) {
-        this.traktorFM = this.FM.Leader;
-        this.ploughFM = this.FM;
-        this.FM.Offset.set(this.offsetReference);
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel != null) && (!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeGlider))) {
+        this.traktorFM = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel;
+        this.ploughFM = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d.set(this.offsetReference);
 
         this.towString.drawing(true);
 
-        v.set(this.traktor); this.FM.Leader.Or.transform(v); v.add(this.FM.Leader.Loc);
+        v.set(this.traktor); this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transform(v); v.add(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
 
-        v.x -= this.FM.Leader.Vwld.x * Time.tickConstLenFs();
-        v.y -= this.FM.Leader.Vwld.y * Time.tickConstLenFs();
-        v.z -= this.FM.Leader.Vwld.z * Time.tickConstLenFs();
-        v.sub(this.towString.pos.getAbsPoint());
+        v.jdField_x_of_type_Double -= this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double * Time.tickConstLenFs();
+        v.jdField_y_of_type_Double -= this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_y_of_type_Double * Time.tickConstLenFs();
+        v.jdField_z_of_type_Double -= this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double * Time.tickConstLenFs();
+        v.sub(this.towString.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
         this.towString.mesh().setScaleXYZ((float)v.length(), 1.0F, 1.0F);
         if (v.length() > this.stringLength * this.towStringCutFactor) {
           debugprintln("Glider string overstressed (" + (int)v.length() + "metres) and tears off..");
-          ((Maneuver)this.FM).set_maneuver(49);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(49);
         }
 
-        this.FM.Or.transformInv(v);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transformInv(v);
         o.setAT0(v);
-        this.towString.pos.setRel(o);
+        this.towString.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(o);
 
         v.normalize();
-        if (v.x < 0.9961950182914734D)
+        if (v.jdField_x_of_type_Double < 0.9961950182914734D)
         {
-          this.FM.Or.increment((float)v.y, (float)v.z, 0.0F);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.increment((float)v.jdField_y_of_type_Double, (float)v.jdField_z_of_type_Double, 0.0F);
         }
 
-        this.FM.EI.engines[0].initializeTowString(force());
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].initializeTowString(force());
 
-        if (((Maneuver)this.FM).get_maneuver() == 26) {
-          this.FM.Or.setYPR(this.FM.Leader.Or.getYaw(), this.FM.Or.getPitch(), 0.0F);
-          this.FM.Or.wrap();
-          if ((this.fireOutTime == 0L) && (this.FM.Leader.getSpeedKMH() > 40.0F) && (this.FM.Leader.CT.PowerControl > 0.99F)) {
+        if (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 26) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.setYPR(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getYaw(), this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getPitch(), 0.0F);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.wrap();
+          if ((this.fireOutTime == 0L) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.getSpeedKMH() > 40.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.CT.PowerControl > 0.99F)) {
             this.fireOutTime = (Time.current() + this.boosterFireOutTime);
             debugprintln("Firing up take-off rockets!.");
             doFireBoosters();
 
-            this.FM.AS.setGliderBoostOn();
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderBoostOn();
           }
         }
       }
       else {
         this.towString.drawing(false);
         this.bAttached = false;
-        this.FM.EI.engines[0].initializeTowString(0.0F);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].initializeTowString(0.0F);
       }
     }
     else {
-      if ((((Maneuver)this.FM).get_maneuver() == 21) && 
+      if ((((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 21) && 
         (v.length() < this.stringLength * this.towStringCutFactor)) {
-        ((Maneuver)this.FM).set_maneuver(24);
-        ((Pilot)this.FM).set_task(2);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(24);
+        ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_task(2);
         return;
       }
 
       this.towString.drawing(false);
       this.bAttached = false;
-      this.FM.EI.engines[0].initializeTowString(0.0F);
-      if (!this.FM.isReadyToDie()) {
-        this.FM.setReadyToDieSoftly(true);
-        debugprintln("Craft out of control (MAN=" + ManString.name(((Maneuver)this.FM).get_maneuver()) + "), abandoning flight.");
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].initializeTowString(0.0F);
+      if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isReadyToDie()) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setReadyToDieSoftly(true);
+        debugprintln("Craft out of control (MAN=" + ManString.name(((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver()) + "), abandoning flight.");
         this.traktorFM = null;
-        if (((Maneuver)this.FM).get_maneuver() == 44) ((Maneuver)this.FM).bombsOut = true;
+        if (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 44) ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).bombsOut = true;
       }
 
     }
 
-    if ((this.bHasCart) && (this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 45.0D)) {
+    if ((this.bHasCart) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) > 45.0D)) {
       debugprintln("Detaching take-off cart!.");
       doCutCart();
 
-      this.FM.AS.setGliderCutCart();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderCutCart();
       this.bHasCart = false;
     }
     if ((this.bHasBoosters) && 
-      (Time.current() > this.fireOutTime + 6000L) && (this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 202.0D)) {
+      (Time.current() > this.fireOutTime + 6000L) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) > 202.0D)) {
       debugprintln("Dropping used boosters!.");
       doCutBoosters();
 
-      this.FM.AS.setGliderBoostOff();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderBoostOff();
       this.bHasBoosters = false;
     }
   }
@@ -330,10 +330,10 @@ public abstract class Scheme0 extends AircraftLH
     float f = 0.0F;
     if (Time.current() < this.fireOutTime) f += this.boostThrust;
     if (this.traktor == null) return 0.0F;
-    tmpv.sub(this.traktorFM.Loc, this.ploughFM.Loc);
-    this.ploughFM.Or.transformInv(tmpv);
-    if (tmpv.x > this.stringLength) {
-      f += ((float)tmpv.x - this.stringLength) * ((float)tmpv.x - this.stringLength) * this.stringKx;
+    tmpv.sub(this.traktorFM.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this.ploughFM.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+    this.ploughFM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transformInv(tmpv);
+    if (tmpv.jdField_x_of_type_Double > this.stringLength) {
+      f += ((float)tmpv.jdField_x_of_type_Double - this.stringLength) * ((float)tmpv.jdField_x_of_type_Double - this.stringLength) * this.stringKx;
     }
     return f;
   }

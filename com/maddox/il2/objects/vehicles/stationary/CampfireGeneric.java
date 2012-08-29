@@ -75,12 +75,12 @@ public abstract class CampfireGeneric extends ActorHMesh
 
     collide(false);
     drawing(true);
-    this.draw = new MyDraw();
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new MyDraw();
 
     this.light = new LightPointActor(new LightPointWorld(), new Point3d(0.0D, 0.0D, 1.5D));
     this.light.light.setColor(new Color3f(1.0F, 0.95F, 0.66F));
     this.light.light.setEmit(1.0F, 22.0F);
-    this.draw.lightMap().put("light", this.light);
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.lightMap().put("light", this.light);
 
     createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
 
@@ -91,10 +91,10 @@ public abstract class CampfireGeneric extends ActorHMesh
   }
 
   private void Align() {
-    this.pos.getAbs(p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
     p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    this.pos.setAbs(p, o);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public void align()
@@ -106,10 +106,10 @@ public abstract class CampfireGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel) throws IOException

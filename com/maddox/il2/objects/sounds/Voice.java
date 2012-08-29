@@ -158,7 +158,7 @@ public class Voice extends VoiceBase
   }
 
   static boolean frequency() {
-    return Main3D.cur3D().ordersTree.frequency().booleanValue();
+    return Main3D.cur3D().ordersTree.frequency();
   }
 
   public static void setSyncMode(int paramInt)
@@ -184,9 +184,9 @@ public class Voice extends VoiceBase
 
   public static int actorVoice(Aircraft paramAircraft, int paramInt) {
     if ((paramAircraft == null) || (!Actor.isValid(paramAircraft)) || ((paramAircraft instanceof JU_88MSTL))) return 0;
-    if ((paramAircraft.FM instanceof Maneuver)) {
-      if (((Maneuver)paramAircraft.FM).silence) return 0;
-      if (((Maneuver)paramAircraft.FM).kamikaze) return 0;
+    if ((paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) {
+      if (((Maneuver)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).silence) return 0;
+      if (((Maneuver)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).kamikaze) return 0;
     }
     Squadron localSquadron = paramAircraft.getSquadron();
     if (localSquadron == null) return 0;
@@ -214,7 +214,7 @@ public class Voice extends VoiceBase
       else return 0;
       if (!Actor.isAlive(localAircraft1)) return 0;
       World.cur(); if (localAircraft1 == World.getPlayerAircraft()) return 0;
-      if (localAircraft1.FM.AS.astatePilotStates[0] > 50) return 0;
+      if (localAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[0] > 50) return 0;
       return 1;
     case 1:
       Aircraft localAircraft2 = War.getNearestFriend(paramAircraft);
@@ -224,12 +224,12 @@ public class Voice extends VoiceBase
       return pilotVoice[(localAircraft2.getWing().indexInSquadron() * 4 + localAircraft2.aircIndex())];
     case 4:
       if (!Actor.isAlive(paramAircraft)) return 0;
-      if ((paramAircraft == World.getPlayerAircraft()) && (paramAircraft.FM.turret[0].bIsAIControlled)) return 5;
+      if ((paramAircraft == World.getPlayerAircraft()) && (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsAIControlled)) return 5;
       return 0;
     case 0:
       if (!Actor.isAlive(paramAircraft)) return 0;
       if (paramAircraft == World.getPlayerAircraft()) return 0;
-      if (paramAircraft.FM.AS.astatePilotStates[0] > 50) return 0;
+      if (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[0] > 50) return 0;
 
       return pilotVoice[(paramAircraft.getWing().indexInSquadron() * 4 + paramAircraft.aircIndex())];
     case 6:
@@ -263,9 +263,7 @@ public class Voice extends VoiceBase
     if (!Config.isUSE_RENDER()) return;
 
     int j = World.getPlayerArmy();
-    if (Main3D.cur3D().ordersTree.frequency() == null)
-      return;
-    if (Main3D.cur3D().ordersTree.frequency().booleanValue()) {
+    if (Main3D.cur3D().ordersTree.frequency()) {
       if (paramInt2 != j) return;
     }
     else if (paramInt2 == j) return;
@@ -274,7 +272,7 @@ public class Voice extends VoiceBase
 
     if (World.cur().isDebugFM()) {
       String str1 = "";
-      for (int m = 0; (m < paramArrayOfInt.length) && (paramArrayOfInt[m] != 0); m++) str1 = str1 + " " + vbStr[paramArrayOfInt[m]];
+      for (int m = 0; (m < paramArrayOfInt.length) && (paramArrayOfInt[m] != 0); m++) str1 = str1 + " " + VoiceBase.vbStr[paramArrayOfInt[m]];
       System.out.print("AN: ");
       System.out.print(paramInt1);
       System.out.print("  Army: ");
@@ -444,17 +442,16 @@ public class Voice extends VoiceBase
     speakHeading(paramAircraft, i);
   }
 
-  public static void speakHeading(Aircraft paramAircraft)
-  {
-    Vector3d localVector3d = paramAircraft.FM.Vwld;
-    float f = 57.324841F * (float)Math.atan2(localVector3d.x, localVector3d.y);
+  public static void speakHeading(Aircraft paramAircraft) {
+    Vector3d localVector3d = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Vwld;
+    float f = 57.324841F * (float)Math.atan2(localVector3d.jdField_x_of_type_Double, localVector3d.jdField_y_of_type_Double);
     int i = (int)f;
     i = (i + 180) % 360;
     speakHeading(paramAircraft, i);
   }
 
   public static void speakHeadingToHome(Aircraft paramAircraft, Point3d paramPoint3d) {
-    float f = 57.324841F * (float)Math.atan2(paramPoint3d.x, paramPoint3d.y);
+    float f = 57.324841F * (float)Math.atan2(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double);
     int i = (int)f;
     i = (i + 180) % 360;
     while (i < 0) i += 360;
@@ -472,7 +469,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakHeadingToTarget(Aircraft paramAircraft, Point3d paramPoint3d) {
-    float f = 57.324841F * (float)Math.atan2(paramPoint3d.x, paramPoint3d.y);
+    float f = 57.324841F * (float)Math.atan2(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double);
     int i = (int)f;
     i = (i + 180) % 360;
     while (i < 0) i += 360;
@@ -540,10 +537,10 @@ public class Voice extends VoiceBase
     String str1 = paramAircraft.getRegiment().speech();
     new_speak(i, j, str1, 81, 1);
     speak(i, j, str1, 169, 1);
-    if ((paramAircraft.FM instanceof Pilot)) {
-      Pilot localPilot = (Pilot)paramAircraft.FM;
-      if (Actor.isValid(localPilot.target_ground)) {
-        localObject = localPilot.target_ground;
+    if ((paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) {
+      Pilot localPilot = (Pilot)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      if (Actor.isValid(localPilot.jdField_target_ground_of_type_ComMaddoxIl2EngineActor)) {
+        localObject = localPilot.jdField_target_ground_of_type_ComMaddoxIl2EngineActor;
         if ((localObject instanceof CarGeneric)) str[0] = 162;
         else if ((localObject instanceof TankGeneric)) str[0] = 152;
         else if ((localObject instanceof AAA)) str[0] = 111;
@@ -565,9 +562,9 @@ public class Voice extends VoiceBase
         }
       }
       if (localWing1.airc.length > 0)
-        for (k = 0; k < localWing1.airc.length; k++)
-          if (((localWing2 != localWing1) || (k != 0)) && 
-            (localWing1.airc[k] != null)) speakAttackGround(localWing1.airc[k]);
+        for (int m = 0; m < localWing1.airc.length; m++)
+          if (((localWing2 != localWing1) || (m != 0)) && 
+            (localWing1.airc[m] != null)) speakAttackGround(localWing1.airc[m]);
     }
   }
 
@@ -602,10 +599,10 @@ public class Voice extends VoiceBase
     if (i < cur().SpeakEndGattack[j]) return;
     cur().SpeakEndGattack[j] = (i + 60);
 
-    if ((paramAircraft.FM instanceof Pilot)) {
-      Pilot localPilot = (Pilot)paramAircraft.FM;
+    if ((paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) {
+      Pilot localPilot = (Pilot)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       internalAir = paramAircraft;
-      if (Actor.isValid(localPilot.target_ground))
+      if (Actor.isValid(localPilot.jdField_target_ground_of_type_ComMaddoxIl2EngineActor))
         new MsgAction(10.0D) {
           public void doAction() {
             Voice.speakLeaderRepeatGattack();
@@ -692,7 +689,7 @@ public class Voice extends VoiceBase
   public static void speakBombersUnderAttack(Aircraft paramAircraft, boolean paramBoolean) {
     int i = (int)(Time.current() / 60000L);
     if (!Actor.isValid(paramAircraft)) return;
-    int j = (paramAircraft.FM.AP.way.curr().Action == 3) && (paramAircraft.FM.AP.getWayPointDistance() < 20000.0F) ? 1 : 0;
+    int j = (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3) && (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.getWayPointDistance() < 20000.0F) ? 1 : 0;
 
     int k = paramAircraft.getArmy();
     String str1 = paramAircraft.getRegiment().speech();
@@ -823,7 +820,7 @@ public class Voice extends VoiceBase
     Wing localWing = paramAircraft.getWing();
     if (localWing.airc.length > 0) {
       speakHeading(localWing.airc[0]);
-      speakAltitude(paramAircraft, (int)localWing.airc[0].FM.Loc.z);
+      speakAltitude(paramAircraft, (int)localWing.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double);
       str[0] = 136;
       str[1] = 0;
       airSpeaksArray(paramAircraft, 3, str, 2);
@@ -853,7 +850,7 @@ public class Voice extends VoiceBase
     Wing localWing = paramAircraft.getWing();
     if (localWing.airc.length > 0) {
       speakHeading(localWing.airc[0]);
-      speakAltitude(paramAircraft, (int)localWing.airc[0].FM.Loc.z);
+      speakAltitude(paramAircraft, (int)localWing.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double);
     }
   }
 
@@ -862,7 +859,7 @@ public class Voice extends VoiceBase
     int j = paramAircraft1.getArmy() - 1 & 0x1;
     if (i < cur().SpeakEnemyDetected[j]) return;
     cur().SpeakEnemyDetected[j] = (i + 40);
-    if (!(paramAircraft1.FM instanceof Pilot)) return;
+    if (!(paramAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) return;
     if (paramAircraft1.aircNumber() < 2) return;
 
     Aircraft localAircraft = paramAircraft2;
@@ -887,7 +884,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakCheckYour6(Aircraft paramAircraft1, Aircraft paramAircraft2) {
-    if ((!Actor.isAlive(paramAircraft1)) || (paramAircraft1.getWing() == null)) return;
+    if (!Actor.isAlive(paramAircraft1)) return;
     int i = (int)(Time.current() / 60000L);
     int j = paramAircraft1.getArmy() - 1 & 0x1;
     int k = paramAircraft1.aircIndex();
@@ -907,15 +904,8 @@ public class Voice extends VoiceBase
     int i = (int)(Time.current() / 60000L);
     int j = paramAircraft.getArmy() - 1 & 0x1;
     int k = paramAircraft.aircIndex();
-    try
-    {
-      if (i < cur().SpeakToReturn[j][k]) return;
-      cur().SpeakToReturn[j][k] = (i + 5);
-    }
-    catch (ArrayIndexOutOfBoundsException localArrayIndexOutOfBoundsException)
-    {
-      return;
-    }
+    if (i < cur().SpeakToReturn[j][k]) return;
+    cur().SpeakToReturn[j][k] = (i + 5);
     if (paramAircraft.aircNumber() < 2) return;
     int m = paramAircraft.getWing().indexInSquadron() * 4 + paramAircraft.aircIndex();
     if (m > 15) return;
@@ -965,14 +955,8 @@ public class Voice extends VoiceBase
     int i = (int)(Time.current() / 60000L);
     int j = paramAircraft.getArmy() - 1 & 0x1;
     int k = paramAircraft.aircIndex();
-    try
-    {
-      if (i < cur().SpeakMayday[j][k]) return;
-      cur().SpeakMayday[j][k] = (i + 1);
-    }
-    catch (ArrayIndexOutOfBoundsException localArrayIndexOutOfBoundsException)
-    {
-    }
+    if (i < cur().SpeakMayday[j][k]) return;
+    cur().SpeakMayday[j][k] = (i + 1);
 
     setSyncMode(2);
     speakThisIs(paramAircraft);
@@ -1000,7 +984,7 @@ public class Voice extends VoiceBase
     str[3] = 0;
     speakRandom(i, j, str1, str, 1);
     speakHeading(paramAircraft);
-    speakAltitude(paramAircraft, (int)paramAircraft.FM.Loc.z);
+    speakAltitude(paramAircraft, (int)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double);
 
     if (!(paramAircraft instanceof TypeFighter)) {
       Aircraft localAircraft = War.getNearestFriendlyFighter(paramAircraft, 50000.0F);
@@ -1011,7 +995,7 @@ public class Voice extends VoiceBase
 
   public static void speakThisIs(Aircraft paramAircraft)
   {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = paramAircraft.aircNumber();
@@ -1025,7 +1009,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakIAm(Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = paramAircraft.aircNumber();
@@ -1051,7 +1035,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakNumber_same_str(int paramInt, Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = i * 4 + j;
@@ -1064,7 +1048,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakNumber(int paramInt, Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = i * 4 + j;
@@ -1354,7 +1338,7 @@ public class Voice extends VoiceBase
     if (i < cur().SpeakTargetDestroyed[j][k]) return;
     cur().SpeakTargetDestroyed[j][k] = (i + 60);
 
-    if ((paramAircraft == World.getPlayerAircraft()) && (paramAircraft.FM.turret.length > 0) && (paramAircraft.FM.AS.astatePilotStates[paramAircraft.FM.turret.length] < 90) && (paramAircraft.FM.turret[0].bIsAIControlled))
+    if ((paramAircraft == World.getPlayerAircraft()) && (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length > 0) && (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length] < 90) && (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsAIControlled))
     {
       new MsgAction(5.5D) {
         public void doAction() {
@@ -1611,7 +1595,7 @@ public class Voice extends VoiceBase
           int i = paramActor1.getArmy();
           if (i == 0) {
             paramActor1.pos.getAbs(P3d);
-            i = Front.army(P3d.x, P3d.x);
+            i = Front.army(P3d.jdField_x_of_type_Double, P3d.jdField_x_of_type_Double);
           }
           if (i != paramActor2.getArmy())
             speakTargetDestroyed((Aircraft)paramActor2);
@@ -1643,24 +1627,6 @@ public class Voice extends VoiceBase
     str[0] = 253;
     str[1] = 0;
     speakRandom(4, i, str1, str, 1);
-  }
-
-  public static void speakNegative(Aircraft paramAircraft)
-  {
-    int i = paramAircraft.getArmy();
-    String str1 = paramAircraft.getRegiment().speech();
-    str[0] = 295;
-    str[2] = 0;
-    speakRandom(6, i, str1, str, 1);
-  }
-
-  public static void speakRooger(Aircraft paramAircraft)
-  {
-    int i = paramAircraft.getArmy();
-    String str1 = paramAircraft.getRegiment().speech();
-    str[0] = 298;
-    str[2] = 0;
-    speakRandom(6, i, str1, str, 1);
   }
 
   static

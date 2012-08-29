@@ -89,8 +89,6 @@ public class GUIAirArming extends GameState
   public GWindowComboControl cSquadron;
   public GUISwitchBox3 sNumberOn;
   public GWindowComboControl cPlane;
-  public GUIButton bJoy;
-  private BornPlace zutiSelectedBornPlace = null;
   public GUIButton bBack;
   public static final int SINGLE = 0;
   public static final int CAMPAIGN = 1;
@@ -147,7 +145,6 @@ public class GUIAirArming extends GameState
 
   public void _enter()
   {
-    this.zutiSelectedBornPlace = null;
     try
     {
       if (this.resCountry == null)
@@ -172,14 +169,14 @@ public class GUIAirArming extends GameState
       Object localObject3;
       Object localObject4;
       Object localObject5;
-      Object localObject7;
-      Object localObject9;
+      Object localObject6;
+      Object localObject8;
       Object localObject10;
       Object localObject1;
       int k;
-      Object localObject6;
-      Object localObject8;
-      Object localObject11;
+      int i1;
+      Object localObject12;
+      Object localObject9;
       switch (stateId) {
       case 0:
       case 1:
@@ -198,45 +195,26 @@ public class GUIAirArming extends GameState
         this.planeName = ((String)localObject2);
         localObject3 = ((String)localObject2).substring(0, ((String)localObject2).length() - 1);
         localObject4 = ((String)localObject3).substring(0, ((String)localObject3).length() - 1);
-        localObject5 = (Regiment)Actor.getByName((String)localObject4);
-        String str1 = localSectFile.get(this.planeName, "Class", (String)null);
-        localObject7 = ObjIO.classForName(str1);
-        localObject9 = Property.stringValue((Class)localObject7, "keyName", null);
-        this.airNames.add(localObject9);
-        this.cAircraft.add(I18N.plane((String)localObject9));
+        Regiment localRegiment = (Regiment)Actor.getByName((String)localObject4);
+        localObject5 = localSectFile.get(this.planeName, "Class", (String)null);
+        localObject6 = ObjIO.classForName((String)localObject5);
+        localObject8 = Property.stringValue((Class)localObject6, "keyName", null);
+        this.airNames.add(localObject8);
+        this.cAircraft.add(I18N.plane((String)localObject8));
         this.cAircraft.setSelected(0, true, false);
-        this.countryLst.add(((Regiment)localObject5).branch());
-        this.cCountry.add(this.resCountry.getString(((Regiment)localObject5).branch()));
+        this.countryLst.add(localRegiment.branch());
+        this.cCountry.add(this.resCountry.getString(localRegiment.branch()));
         this.cCountry.setSelected(0, true, false);
         localObject10 = new ArrayList();
-        ((ArrayList)localObject10).add(localObject5);
-        this.regList.put(((Regiment)localObject5).branch(), localObject10);
-        this.cRegiment.add(((Regiment)localObject5).shortInfo());
+        ((ArrayList)localObject10).add(localRegiment);
+        this.regList.put(localRegiment.branch(), localObject10);
+        this.cRegiment.add(localRegiment.shortInfo());
         this.cRegiment.setSelected(0, true, false);
-        int i8 = localSectFile.get(this.planeName, "Fuel", 100, 0, 100);
-
-        if (i8 <= 10)
-          this.cFuel.setSelected(0, true, false);
-        else if (i8 <= 20)
-          this.cFuel.setSelected(1, true, false);
-        else if (i8 <= 30)
-          this.cFuel.setSelected(2, true, false);
-        else if (i8 <= 40)
+        int i6 = localSectFile.get(this.planeName, "Fuel", 100, 0, 100);
+        if (i6 <= 25) this.cFuel.setSelected(0, true, false);
+        else if (i6 <= 50) this.cFuel.setSelected(1, true, false);
+        else if (i6 <= 75) this.cFuel.setSelected(2, true, false); else
           this.cFuel.setSelected(3, true, false);
-        else if (i8 <= 50)
-          this.cFuel.setSelected(4, true, false);
-        else if (i8 <= 60)
-          this.cFuel.setSelected(5, true, false);
-        else if (i8 <= 70)
-          this.cFuel.setSelected(6, true, false);
-        else if (i8 <= 80)
-          this.cFuel.setSelected(7, true, false);
-        else if (i8 <= 90)
-          this.cFuel.setSelected(8, true, false);
-        else {
-          this.cFuel.setSelected(9, true, false);
-        }
-
         this.playerNum = localSectFile.get("Main", "playerNum", 0);
         if (stateId == 1)
           this.bEnableWeaponChange = ((this.playerNum == 0) && (!World.cur().isWeaponsConstant()));
@@ -264,29 +242,10 @@ public class GUIAirArming extends GameState
           localObject2 = Main.cur().currentMissionFile;
           i = ((SectFile)localObject2).get(this.planeName, "Fuel", 100, 0, 100);
         }
-
-        if (i <= 10)
-          this.cFuel.setSelected(0, true, false);
-        else if (i <= 20)
-          this.cFuel.setSelected(1, true, false);
-        else if (i <= 30)
-          this.cFuel.setSelected(2, true, false);
-        else if (i <= 40)
+        if (i <= 25) this.cFuel.setSelected(0, true, false);
+        else if (i <= 50) this.cFuel.setSelected(1, true, false);
+        else if (i <= 75) this.cFuel.setSelected(2, true, false); else
           this.cFuel.setSelected(3, true, false);
-        else if (i <= 50)
-          this.cFuel.setSelected(4, true, false);
-        else if (i <= 60)
-          this.cFuel.setSelected(5, true, false);
-        else if (i <= 70)
-          this.cFuel.setSelected(6, true, false);
-        else if (i <= 80)
-          this.cFuel.setSelected(7, true, false);
-        else if (i <= 90)
-          this.cFuel.setSelected(8, true, false);
-        else {
-          this.cFuel.setSelected(9, true, false);
-        }
-
         this.cFuel.setEnable(this.bEnableWeaponChange);
         this.airNames.add(GUINetAircraft.selectedAircraftKeyName());
         this.cAircraft.add(GUINetAircraft.selectedAircraftName());
@@ -312,182 +271,144 @@ public class GUIAirArming extends GameState
         this.wNumber.showWindow();
         this.cSquadron.showWindow();
         this.sNumberOn.hideWindow();
-
-        if (localUserCfg.fuel <= 10.0F)
-          this.cFuel.setSelected(0, true, false);
-        else if (localUserCfg.fuel <= 20.0F)
-          this.cFuel.setSelected(1, true, false);
-        else if (localUserCfg.fuel <= 30.0F)
-          this.cFuel.setSelected(2, true, false);
-        else if (localUserCfg.fuel <= 40.0F)
+        if (localUserCfg.fuel <= 25.0F) this.cFuel.setSelected(0, true, false);
+        else if (localUserCfg.fuel <= 50.0F) this.cFuel.setSelected(1, true, false);
+        else if (localUserCfg.fuel <= 75.0F) this.cFuel.setSelected(2, true, false); else {
           this.cFuel.setSelected(3, true, false);
-        else if (localUserCfg.fuel <= 50.0F)
-          this.cFuel.setSelected(4, true, false);
-        else if (localUserCfg.fuel <= 60.0F)
-          this.cFuel.setSelected(5, true, false);
-        else if (localUserCfg.fuel <= 70.0F)
-          this.cFuel.setSelected(6, true, false);
-        else if (localUserCfg.fuel <= 80.0F)
-          this.cFuel.setSelected(7, true, false);
-        else if (localUserCfg.fuel <= 90.0F)
-          this.cFuel.setSelected(8, true, false);
-        else {
-          this.cFuel.setSelected(9, true, false);
         }
 
         localObject1 = (NetUser)NetEnv.host();
         k = ((NetUser)localObject1).getBornPlace();
         localObject3 = (BornPlace)World.cur().bornPlaces.get(k);
-
-        this.zutiSelectedBornPlace = ((BornPlace)localObject3);
-        localObject4 = this.zutiSelectedBornPlace.zutiHomeBaseCountries;
-
-        localObject5 = this.zutiSelectedBornPlace.zutiGetAvailablePlanesList();
-        if (localObject5 != null) {
-          for (int i1 = 0; i1 < ((ArrayList)localObject5).size(); i1++) {
-            localObject7 = (String)((ArrayList)localObject5).get(i1);
-            localObject9 = (Class)Property.value(localObject7, "airClass", null);
-            if (localObject9 == null)
+        int m;
+        if (((BornPlace)localObject3).airNames != null) {
+          localObject4 = ((BornPlace)localObject3).airNames;
+          for (m = 0; m < ((ArrayList)localObject4).size(); m++) {
+            localObject5 = (String)((ArrayList)localObject4).get(m);
+            localObject6 = (Class)Property.value(localObject5, "airClass", null);
+            if (localObject6 == null)
               continue;
-            if (!this.airNames.contains(localObject7)) {
-              this.airNames.add(localObject7);
-              this.cAircraft.add(I18N.plane((String)localObject7));
-            }
+            this.airNames.add(localObject5);
+            this.cAircraft.add(I18N.plane((String)localObject5));
           }
         }
-
         if (this.airNames.size() == 0) {
-          localObject6 = Main.cur().airClasses;
-          for (int i4 = 0; i4 < ((ArrayList)localObject6).size(); i4++) {
-            localObject9 = (Class)((ArrayList)localObject6).get(i4);
-            localObject10 = Property.stringValue((Class)localObject9, "keyName");
-            if (Property.containsValue((Class)localObject9, "cockpitClass")) {
-              this.airNames.add(localObject10);
-              this.cAircraft.add(I18N.plane((String)localObject10));
+          localObject4 = Main.cur().airClasses;
+          for (m = 0; m < ((ArrayList)localObject4).size(); m++) {
+            localObject5 = (Class)((ArrayList)localObject4).get(m);
+            localObject6 = Property.stringValue((Class)localObject5, "keyName");
+            if (Property.containsValue((Class)localObject5, "cockpitClass")) {
+              this.airNames.add(localObject6);
+              this.cAircraft.add(I18N.plane((String)localObject6));
             }
           }
         }
 
-        localObject6 = Regiment.getAll();
-        localObject8 = new TreeMap();
-        int i5 = ((List)localObject6).size();
-        Object localObject12;
-        Object localObject13;
-        Object localObject14;
-        for (int i7 = 0; i7 < i5; i7++) {
-          localObject12 = (Regiment)((List)localObject6).get(i7);
-          localObject13 = ((Regiment)localObject12).name();
+        localObject4 = Regiment.getAll();
+        TreeMap localTreeMap = new TreeMap();
+        i1 = ((List)localObject4).size();
+        for (int i2 = 0; i2 < i1; i2++) {
+          localObject8 = (Regiment)((List)localObject4).get(i2);
+          localObject10 = ((Regiment)localObject8).name();
 
-          if (!this.regHash.containsKey(localObject13)) {
-            this.regHash.put(localObject13, localObject12);
-            ArrayList localArrayList2 = (ArrayList)this.regList.get(((Regiment)localObject12).branch());
-            if (localArrayList2 == null) {
-              localObject14 = null;
+          if (!this.regHash.containsKey(localObject10)) {
+            this.regHash.put(localObject10, localObject8);
+            localObject12 = (ArrayList)this.regList.get(((Regiment)localObject8).branch());
+            if (localObject12 == null) {
+              String str1 = null;
               try {
-                localObject14 = this.resCountry.getString(((Regiment)localObject12).branch());
+                str1 = this.resCountry.getString(((Regiment)localObject8).branch());
               } catch (Exception localException6) {
                 continue;
               }
-              localArrayList2 = new ArrayList();
-              this.regList.put(((Regiment)localObject12).branch(), localArrayList2);
-              ((TreeMap)localObject8).put(localObject14, ((Regiment)localObject12).branch());
+              localObject12 = new ArrayList();
+              this.regList.put(((Regiment)localObject8).branch(), localObject12);
+              localTreeMap.put(str1, ((Regiment)localObject8).branch());
             }
-            localArrayList2.add(localObject12);
+            ((ArrayList)localObject12).add(localObject8);
           }
-        }
-        int i10;
-        try {
-          String str2 = Main.cur().netFileServerReg.primaryPath();
-          localObject12 = new File(HomePath.toFileSystemName(str2, 0));
-          localObject13 = ((File)localObject12).listFiles();
-          if (localObject13 != null)
-            for (i10 = 0; i10 < localObject13.length; i10++) {
-              localObject14 = localObject13[i10];
-              if (((File)localObject14).isFile()) {
-                String str3 = ((File)localObject14).getName();
-                if (!this.regHash.containsKey(str3)) {
-                  String str4 = str3.toLowerCase();
-                  if ((str4.endsWith(".bmp")) || (str4.endsWith(".tga")) || 
-                    (str4.length() > 123)) continue;
-                  int i11 = BmpUtils.squareSizeBMP8Pal(str2 + "/" + str4 + ".bmp");
-                  if ((i11 != 64) && (i11 != 128))
-                    System.out.println("File " + str2 + "/" + str4 + ".bmp NOT loaded");
+        }int i8;
+        ArrayList localArrayList2;
+        try { localObject8 = Main.cur().netFileServerReg.primaryPath();
+          localObject10 = new File(HomePath.toFileSystemName((String)localObject8, 0));
+          localObject12 = ((File)localObject10).listFiles();
+          if (localObject12 != null)
+            for (i8 = 0; i8 < localObject12.length; i8++) {
+              localArrayList2 = localObject12[i8];
+              if (localArrayList2.isFile()) {
+                String str2 = localArrayList2.getName();
+                if (!this.regHash.containsKey(str2)) {
+                  String str3 = str2.toLowerCase();
+                  if ((str3.endsWith(".bmp")) || (str3.endsWith(".tga")) || 
+                    (str3.length() > 123)) continue;
+                  int i9 = BmpUtils.squareSizeBMP8Pal((String)localObject8 + "/" + str3 + ".bmp");
+                  if ((i9 != 64) && (i9 != 128))
+                    System.out.println("File " + (String)localObject8 + "/" + str3 + ".bmp NOT loaded");
                   else
                     try
                     {
-                      UserRegiment localUserRegiment = new UserRegiment(str3);
+                      UserRegiment localUserRegiment = new UserRegiment(str2);
 
-                      this.regHash.put(str3, localUserRegiment);
+                      this.regHash.put(str2, localUserRegiment);
                       ArrayList localArrayList3 = (ArrayList)this.regList.get(localUserRegiment.branch);
                       if (localArrayList3 == null) {
-                        String str5 = null;
+                        String str4 = null;
                         try {
-                          str5 = this.resCountry.getString(localUserRegiment.branch);
+                          str4 = this.resCountry.getString(localUserRegiment.branch);
                         } catch (Exception localException8) {
                           continue;
                         }
                         localArrayList3 = new ArrayList();
                         this.regList.put(localUserRegiment.branch, localArrayList3);
-                        ((TreeMap)localObject8).put(str5, localUserRegiment.branch);
+                        localTreeMap.put(str4, localUserRegiment.branch);
                       }
                       localArrayList3.add(localUserRegiment);
                     }
                     catch (Exception localException7)
                     {
                       System.out.println(localException7.getMessage());
-                      System.out.println("Regiment " + str3 + " NOT loaded");
+                      System.out.println("Regiment " + str2 + " NOT loaded");
                     }
                 }
               }
-            }
-        } catch (Exception localException3) {
-          System.out.println(localException3.getMessage());
-          localException3.printStackTrace();
+            } } catch (Exception localException2) {
+          System.out.println(localException2.getMessage());
+          localException2.printStackTrace();
         }
 
-        localObject11 = ((TreeMap)localObject8).keySet().iterator();
-        while (((Iterator)localObject11).hasNext()) {
-          localObject12 = (String)((Iterator)localObject11).next();
-
-          if ((localObject4 == null) || (((ArrayList)localObject4).size() == 0))
-          {
-            this.countryLst.add(((TreeMap)localObject8).get(localObject12));
-            this.cCountry.add((String)localObject12);
-          }
-          else if (((ArrayList)localObject4).contains(localObject12))
-          {
-            this.countryLst.add(((TreeMap)localObject8).get(localObject12));
-            this.cCountry.add((String)localObject12);
-          }
+        localObject9 = localTreeMap.keySet().iterator();
+        while (((Iterator)localObject9).hasNext()) {
+          localObject10 = (String)((Iterator)localObject9).next();
+          this.countryLst.add(localTreeMap.get(localObject10));
+          this.cCountry.add((String)localObject10);
         }
-        ((TreeMap)localObject8).clear();
+        localTreeMap.clear();
 
         this.cCountry.setSelected(0, true, false);
         fillRegiments();
         this.wNumber.setValue("" + localUserCfg.netTacticalNumber, false);
         this.cSquadron.setSelected(localUserCfg.netSquadron, true, false);
         if (localUserCfg.netRegiment != null) {
-          localObject12 = this.regHash.get(localUserCfg.netRegiment);
-          if (localObject12 != null) {
-            localObject13 = null;
-            if ((localObject12 instanceof Regiment))
-              localObject13 = ((Regiment)localObject12).branch();
+          localObject10 = this.regHash.get(localUserCfg.netRegiment);
+          if (localObject10 != null) {
+            localObject12 = null;
+            if ((localObject10 instanceof Regiment))
+              localObject12 = ((Regiment)localObject10).branch();
             else
-              localObject13 = ((UserRegiment)localObject12).branch;
-            i10 = 0;
-            while ((i10 < this.countryLst.size()) && 
-              (!((String)localObject13).equals(this.countryLst.get(i10)))) {
-              i10++;
+              localObject12 = ((UserRegiment)localObject10).branch;
+            i8 = 0;
+            for (; i8 < this.countryLst.size(); i8++) {
+              if (((String)localObject12).equals(this.countryLst.get(i8)))
+                break;
             }
-
-            if (i10 < this.countryLst.size()) {
-              this.cCountry.setSelected(i10, true, false);
+            if (i8 < this.countryLst.size()) {
+              this.cCountry.setSelected(i8, true, false);
               fillRegiments();
-              localObject14 = (ArrayList)this.regList.get(this.countryLst.get(i10));
-              if (localObject14 != null) {
-                for (i10 = 0; i10 < ((ArrayList)localObject14).size(); i10++) {
-                  if (localObject12.equals(((ArrayList)localObject14).get(i10))) {
-                    this.cRegiment.setSelected(i10, true, false);
+              localArrayList2 = (ArrayList)this.regList.get(this.countryLst.get(i8));
+              if (localArrayList2 != null) {
+                for (i8 = 0; i8 < localArrayList2.size(); i8++) {
+                  if (localObject10.equals(localArrayList2.get(i8))) {
+                    this.cRegiment.setSelected(i8, true, false);
                     break;
                   }
                 }
@@ -497,9 +418,9 @@ public class GUIAirArming extends GameState
         }
         this.cAircraft.setSelected(-1, false, false);
         try {
-          for (int i9 = 0; i9 < this.airNames.size(); i9++)
-            if (localUserCfg.netAirName.equals(this.airNames.get(i9))) {
-              this.cAircraft.setSelected(i9, true, false);
+          for (int i5 = 0; i5 < this.airNames.size(); i5++)
+            if (localUserCfg.netAirName.equals(this.airNames.get(i5))) {
+              this.cAircraft.setSelected(i5, true, false);
               break;
             }
         } catch (Exception localException4) {
@@ -508,12 +429,9 @@ public class GUIAirArming extends GameState
           this.cAircraft.setSelected(0, true, false);
           localUserCfg.netAirName = ((String)this.airNames.get(0));
         }
-        if ((localUserCfg.netRegiment == null) && (this.cRegiment.size() > 0)) {
-          this.cRegiment.setSelected(-1, false, false);
-          this.cRegiment.setSelected(0, true, true);
-        }
-
-        break;
+        if ((localUserCfg.netRegiment != null) || (this.cRegiment.size() <= 0)) break;
+        this.cRegiment.setSelected(-1, false, false);
+        this.cRegiment.setSelected(0, true, true); break;
       case 4:
         if (this.quikPlayer) {
           this.wMashineGun.showWindow();
@@ -534,29 +452,11 @@ public class GUIAirArming extends GameState
         this.sNumberOn.showWindow();
         this.quikCurPlane = 0;
         this.sNumberOn.setChecked(this.quikNumberOn[this.quikCurPlane], false);
-
-        if (this.quikFuel <= 10)
-          this.cFuel.setSelected(0, true, false);
-        else if (this.quikFuel <= 20)
-          this.cFuel.setSelected(1, true, false);
-        else if (this.quikFuel <= 30)
-          this.cFuel.setSelected(2, true, false);
-        else if (this.quikFuel <= 40)
+        if (this.quikFuel <= 25) this.cFuel.setSelected(0, true, false);
+        else if (this.quikFuel <= 50) this.cFuel.setSelected(1, true, false);
+        else if (this.quikFuel <= 75) this.cFuel.setSelected(2, true, false); else {
           this.cFuel.setSelected(3, true, false);
-        else if (this.quikFuel <= 50)
-          this.cFuel.setSelected(4, true, false);
-        else if (this.quikFuel <= 60)
-          this.cFuel.setSelected(5, true, false);
-        else if (this.quikFuel <= 70)
-          this.cFuel.setSelected(6, true, false);
-        else if (this.quikFuel <= 80)
-          this.cFuel.setSelected(7, true, false);
-        else if (this.quikFuel <= 90)
-          this.cFuel.setSelected(8, true, false);
-        else {
-          this.cFuel.setSelected(9, true, false);
         }
-
         localObject1 = this.quikListPlane;
         for (k = 0; k < ((ArrayList)localObject1).size(); k++) {
           localObject3 = (Class)((ArrayList)localObject1).get(k);
@@ -566,61 +466,61 @@ public class GUIAirArming extends GameState
             this.cAircraft.add(I18N.plane((String)localObject4));
           }
         }
-        List localList = Regiment.getAll();
-        localObject3 = new TreeMap();
-        int m = localList.size();
-        for (int n = 0; n < m; n++) {
-          localObject6 = (Regiment)localList.get(n);
-          if (((Regiment)localObject6).getArmy() == this.quikArmy) {
-            localObject8 = ((Regiment)localObject6).name();
+        localObject3 = Regiment.getAll();
+        localObject4 = new TreeMap();
+        int n = ((List)localObject3).size();
+        Object localObject11;
+        for (i1 = 0; i1 < n; i1++) {
+          localObject7 = (Regiment)((List)localObject3).get(i1);
+          if (((Regiment)localObject7).getArmy() == this.quikArmy) {
+            localObject9 = ((Regiment)localObject7).name();
 
-            if (!this.regHash.containsKey(localObject8)) {
-              this.regHash.put(localObject8, localObject6);
-              ArrayList localArrayList1 = (ArrayList)this.regList.get(((Regiment)localObject6).branch());
-              if (localArrayList1 == null) {
-                localObject11 = null;
+            if (!this.regHash.containsKey(localObject9)) {
+              this.regHash.put(localObject9, localObject7);
+              localObject11 = (ArrayList)this.regList.get(((Regiment)localObject7).branch());
+              if (localObject11 == null) {
+                localObject12 = null;
                 try {
-                  localObject11 = this.resCountry.getString(((Regiment)localObject6).branch());
+                  localObject12 = this.resCountry.getString(((Regiment)localObject7).branch());
                 } catch (Exception localException5) {
                   continue;
                 }
-                localArrayList1 = new ArrayList();
-                this.regList.put(((Regiment)localObject6).branch(), localArrayList1);
-                ((TreeMap)localObject3).put(localObject11, ((Regiment)localObject6).branch());
+                localObject11 = new ArrayList();
+                this.regList.put(((Regiment)localObject7).branch(), localObject11);
+                ((TreeMap)localObject4).put(localObject12, ((Regiment)localObject7).branch());
               }
-              localArrayList1.add(localObject6);
+              ((ArrayList)localObject11).add(localObject7);
             }
           }
         }
-        Iterator localIterator = ((TreeMap)localObject3).keySet().iterator();
-        while (localIterator.hasNext()) {
-          localObject6 = (String)localIterator.next();
-          this.countryLst.add(((TreeMap)localObject3).get(localObject6));
-          this.cCountry.add((String)localObject6);
+        Object localObject7 = ((TreeMap)localObject4).keySet().iterator();
+        while (((Iterator)localObject7).hasNext()) {
+          localObject9 = (String)((Iterator)localObject7).next();
+          this.countryLst.add(((TreeMap)localObject4).get(localObject9));
+          this.cCountry.add((String)localObject9);
         }
-        ((TreeMap)localObject3).clear();
+        ((TreeMap)localObject4).clear();
 
         this.cCountry.setSelected(0, true, false);
         fillRegiments();
 
         if (this.quikRegiment != null) {
-          localObject6 = this.regHash.get(this.quikRegiment);
-          if (localObject6 != null) {
-            localObject8 = ((Regiment)localObject6).branch();
-            int i6 = 0;
-            while ((i6 < this.countryLst.size()) && 
-              (!((String)localObject8).equals(this.countryLst.get(i6)))) {
-              i6++;
+          localObject9 = this.regHash.get(this.quikRegiment);
+          if (localObject9 != null) {
+            localObject11 = ((Regiment)localObject9).branch();
+            int i7 = 0;
+            for (; i7 < this.countryLst.size(); i7++) {
+              if (((String)localObject11).equals(this.countryLst.get(i7)))
+                break;
             }
-
-            if (i6 < this.countryLst.size()) {
-              this.cCountry.setSelected(i6, true, false);
+            if (i7 < this.countryLst.size()) {
+              this.cCountry.setSelected(i7, true, false);
               fillRegiments();
-              localObject11 = (ArrayList)this.regList.get(this.countryLst.get(i6));
-              if (localObject11 != null) {
-                for (i6 = 0; i6 < ((ArrayList)localObject11).size(); i6++) {
-                  if (localObject6.equals(((ArrayList)localObject11).get(i6))) {
-                    this.cRegiment.setSelected(i6, true, false);
+              ArrayList localArrayList1 = (ArrayList)this.regList.get(this.countryLst.get(i7));
+              if (localArrayList1 != null) {
+                for (i7 = 0; i7 < localArrayList1.size(); i7++) {
+                  if (localObject9.equals(localArrayList1.get(i7))) {
+                    this.cRegiment.setSelected(i7, true, false);
                     break;
                   }
                 }
@@ -630,12 +530,12 @@ public class GUIAirArming extends GameState
         }
         this.cAircraft.setSelected(-1, false, false);
         try {
-          for (int i2 = 0; i2 < this.airNames.size(); i2++)
-            if (this.quikPlane.equals(this.airNames.get(i2))) {
-              this.cAircraft.setSelected(i2, true, false);
+          for (int i3 = 0; i3 < this.airNames.size(); i3++)
+            if (this.quikPlane.equals(this.airNames.get(i3))) {
+              this.cAircraft.setSelected(i3, true, false);
               break;
             }
-        } catch (Exception localException2) {
+        } catch (Exception localException3) {
         }
         if (this.cAircraft.getSelected() < 0) {
           this.cAircraft.setSelected(0, true, false);
@@ -646,15 +546,12 @@ public class GUIAirArming extends GameState
           this.cRegiment.setSelected(0, true, true);
         }
         this.cPlane.clear(false);
-        for (int i3 = 0; i3 < this.quikPlanes; i3++)
-          this.cPlane.add(" " + (i3 + 1));
+        for (int i4 = 0; i4 < this.quikPlanes; i4++)
+          this.cPlane.add(" " + (i4 + 1));
         this.cPlane.setSelected(this.quikCurPlane, true, false);
       }
 
-      if ((this.zutiSelectedBornPlace != null) && (this.zutiSelectedBornPlace.zutiEnablePlaneLimits))
-        zutiFillWeapons(this.zutiSelectedBornPlace);
-      else
-        fillWeapons();
+      fillWeapons();
       selectWeapon();
 
       fillSkins();
@@ -719,10 +616,6 @@ public class GUIAirArming extends GameState
       String str1 = (String)this.airNames.get(i);
       for (int j = 0; j < arrayOfString.length; j++) {
         String str2 = arrayOfString[j];
-
-        if (!Aircraft.isWeaponDateOk(localClass, str2)) {
-          continue;
-        }
         if (!this.bEnableWeaponChange) {
           String str3 = Main.cur().currentMissionFile.get(this.planeName, "weapons", (String)null);
           if (!str2.equals(str3))
@@ -975,12 +868,12 @@ public class GUIAirArming extends GameState
             GUIAirArming.this.actorMesh.pos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
         }
         else if (paramInt == 0) {
-          paramFloat1 -= this.win.dx / 2.0F;
-          if (Math.abs(paramFloat1) < this.win.dx / 16.0F) GUIAirArming.this.animateMeshA = 0.0F; else
-            GUIAirArming.this.animateMeshA = (-128.0F * paramFloat1 / this.win.dx);
-          paramFloat2 -= this.win.dy / 2.0F;
-          if (Math.abs(paramFloat2) < this.win.dy / 16.0F) GUIAirArming.this.animateMeshT = 0.0F; else
-            GUIAirArming.this.animateMeshT = (-128.0F * paramFloat2 / this.win.dy);
+          paramFloat1 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F;
+          if (Math.abs(paramFloat1) < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 16.0F) GUIAirArming.this.animateMeshA = 0.0F; else
+            GUIAirArming.this.animateMeshA = (-128.0F * paramFloat1 / this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
+          paramFloat2 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F;
+          if (Math.abs(paramFloat2) < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 16.0F) GUIAirArming.this.animateMeshT = 0.0F; else
+            GUIAirArming.this.animateMeshT = (-128.0F * paramFloat2 / this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
         }
       }
     };
@@ -1010,12 +903,12 @@ public class GUIAirArming extends GameState
 
       Aircraft.prepareMeshCamouflage(str3, this.actorMesh.hierMesh());
 
-      this.actorMesh.pos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
-      this.actorMesh.pos.reset();
+      this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
+      this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       d *= Math.cos(0.2617993877991494D) / Math.sin(this.camera3D.FOV() * 3.141592653589793D / 180.0D / 2.0D);
-      this.camera3D.pos.setAbs(new Point3d(d, 0.0D, 0.0D), new Orient(180.0F, 0.0F, 0.0F));
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(d, 0.0D, 0.0D), new Orient(180.0F, 0.0F, 0.0F));
 
-      this.camera3D.pos.reset();
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1124,9 +1017,7 @@ public class GUIAirArming extends GameState
     int i = this.cAircraft.getSelected();
     if (i < 0) return;
     Class localClass1 = (Class)Property.value(this.airNames.get(i), "airClass", null);
-
-    String[] arrayOfString1 = zutiSyncWeaponsLists(Aircraft.getWeaponsRegistered(localClass1));
-
+    String[] arrayOfString1 = Aircraft.getWeaponsRegistered(localClass1);
     if ((arrayOfString1 == null) || (arrayOfString1.length == 0)) return;
     i = this.cWeapon.getSelected();
     if ((i < 0) || (i >= arrayOfString1.length)) return;
@@ -1150,9 +1041,9 @@ public class GUIAirArming extends GameState
         if (str == null) continue;
         try {
           localObject = new ActorSimpleMesh(str);
-          ((ActorSimpleMesh)localObject).pos.setBase(this.actorMesh, new HookNamed(this.actorMesh, arrayOfString2[j]), false);
-          ((ActorSimpleMesh)localObject).pos.changeHookToRel();
-          ((ActorSimpleMesh)localObject).pos.resetAsBase();
+          ((ActorSimpleMesh)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.actorMesh, new HookNamed(this.actorMesh, arrayOfString2[j]), false);
+          ((ActorSimpleMesh)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
+          ((ActorSimpleMesh)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
           this.weaponMeshs.add(localObject);
         } catch (Exception localException) {
           System.out.println(localException.getMessage());
@@ -1284,24 +1175,24 @@ public class GUIAirArming extends GameState
     GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
 
     this.wMashineGun = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wMashineGun.bNumericOnly = (this.wMashineGun.bNumericFloat = 1);
-    this.wMashineGun.bDelayedNotify = true;
+    this.wMashineGun.jdField_bNumericOnly_of_type_Boolean = (this.wMashineGun.jdField_bNumericFloat_of_type_Boolean = 1);
+    this.wMashineGun.jdField_bDelayedNotify_of_type_Boolean = true;
 
     this.wCannon = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wCannon.bNumericOnly = (this.wCannon.bNumericFloat = 1);
-    this.wCannon.bDelayedNotify = true;
+    this.wCannon.jdField_bNumericOnly_of_type_Boolean = (this.wCannon.jdField_bNumericFloat_of_type_Boolean = 1);
+    this.wCannon.jdField_bDelayedNotify_of_type_Boolean = true;
 
     this.wRocket = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wRocket.bNumericOnly = (this.wRocket.bNumericFloat = 1);
-    this.wRocket.bDelayedNotify = true;
+    this.wRocket.jdField_bNumericOnly_of_type_Boolean = (this.wRocket.jdField_bNumericFloat_of_type_Boolean = 1);
+    this.wRocket.jdField_bDelayedNotify_of_type_Boolean = true;
 
     this.wRocketDelay = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wRocketDelay.bNumericOnly = (this.wRocketDelay.bNumericFloat = 1);
-    this.wRocketDelay.bDelayedNotify = true;
+    this.wRocketDelay.jdField_bNumericOnly_of_type_Boolean = (this.wRocketDelay.jdField_bNumericFloat_of_type_Boolean = 1);
+    this.wRocketDelay.jdField_bDelayedNotify_of_type_Boolean = true;
 
     this.wBombDelay = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wBombDelay.bNumericOnly = (this.wBombDelay.bNumericFloat = 1);
-    this.wBombDelay.bDelayedNotify = true;
+    this.wBombDelay.jdField_bNumericOnly_of_type_Boolean = (this.wBombDelay.jdField_bNumericFloat_of_type_Boolean = 1);
+    this.wBombDelay.jdField_bDelayedNotify_of_type_Boolean = true;
 
     this.wNumber = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null) {
       public void keyboardKey(int paramInt, boolean paramBoolean) {
@@ -1310,29 +1201,21 @@ public class GUIAirArming extends GameState
           notify(2, 0);
       }
     }));
-    this.wNumber.bNumericOnly = true;
-    this.wNumber.bDelayedNotify = true;
+    this.wNumber.jdField_bNumericOnly_of_type_Boolean = true;
+    this.wNumber.jdField_bDelayedNotify_of_type_Boolean = true;
     this.wNumber.align = 1;
 
     this.sNumberOn = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
 
     this.cFuel = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F)));
     this.cFuel.setEditable(false);
-
-    this.cFuel.add("10");
-    this.cFuel.add("20");
-    this.cFuel.add("30");
-    this.cFuel.add("40");
+    this.cFuel.add("25");
     this.cFuel.add("50");
-    this.cFuel.add("60");
-    this.cFuel.add("70");
-    this.cFuel.add("80");
-    this.cFuel.add("90");
+    this.cFuel.add("75");
     this.cFuel.add("100");
 
     this.cAircraft = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F)));
     this.cAircraft.setEditable(false);
-    this.cAircraft.listVisibleLines = 16;
 
     this.cWeapon = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F)));
     this.cWeapon.setEditable(false);
@@ -1365,81 +1248,10 @@ public class GUIAirArming extends GameState
 
     this.bBack = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
 
-    this.bJoy = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-
     createRender();
 
     this.dialogClient.activateWindow();
     this.client.hideWindow();
-  }
-
-  private void zutiFillWeapons(BornPlace paramBornPlace)
-  {
-    this.cWeapon.clear();
-    this.weaponNames.clear();
-    int i = this.cAircraft.getSelected();
-
-    ArrayList localArrayList = paramBornPlace.zutiGetAcLoadouts((String)this.airNames.get(i));
-
-    if ((localArrayList == null) || (localArrayList.size() < 1))
-    {
-      fillWeapons();
-      return;
-    }
-
-    if (i < 0) {
-      return;
-    }
-    Class localClass = (Class)Property.value(this.airNames.get(i), "airClass", null);
-    String[] arrayOfString = Aircraft.getWeaponsRegistered(localClass);
-    if ((arrayOfString != null) && (arrayOfString.length > 0))
-    {
-      String str1 = (String)this.airNames.get(i);
-      for (int j = 0; j < arrayOfString.length; j++)
-      {
-        String str2 = arrayOfString[j];
-
-        if (!Aircraft.isWeaponDateOk(localClass, str2)) {
-          continue;
-        }
-        String str3 = I18N.weapons(str1, str2);
-
-        if (!this.bEnableWeaponChange)
-        {
-          String str4 = Main.cur().currentMissionFile.get(this.planeName, "weapons", (String)null);
-          if (!str2.equals(str4)) {
-            continue;
-          }
-        }
-        if (!localArrayList.contains(str3))
-          continue;
-        this.weaponNames.add(str2);
-        this.cWeapon.add(str3);
-      }
-
-      if (this.weaponNames.size() == 0)
-      {
-        this.weaponNames.add(arrayOfString[0]);
-        this.cWeapon.add(I18N.weapons(str1, arrayOfString[0]));
-      }
-      this.cWeapon.setSelected(0, true, false);
-    }
-  }
-
-  private String[] zutiSyncWeaponsLists(String[] paramArrayOfString)
-  {
-    ArrayList localArrayList = new ArrayList();
-    for (int i = 0; i < paramArrayOfString.length; i++)
-    {
-      if (this.weaponNames.contains(paramArrayOfString[i])) {
-        localArrayList.add(paramArrayOfString[i]);
-      }
-    }
-    String[] arrayOfString = new String[localArrayList.size()];
-    for (int j = 0; j < localArrayList.size(); j++) {
-      arrayOfString[j] = ((String)localArrayList.get(j));
-    }
-    return arrayOfString;
   }
 
   static class UserRegiment
@@ -1504,28 +1316,14 @@ public class GUIAirArming extends GameState
       if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
 
       UserCfg localUserCfg = World.cur().userCfg;
-
-      if (paramGWindow == GUIAirArming.this.bJoy)
-      {
-        Main.stateStack().push(53);
-        return true;
-      }
-
       if (paramGWindow == GUIAirArming.this.cAircraft) {
         if ((GUIAirArming.stateId != 2) && (GUIAirArming.stateId != 4))
           return true;
         if (GUIAirArming.stateId == 2)
           localUserCfg.netAirName = GUIAirArming.this.airName();
-        else if (GUIAirArming.stateId == 4) {
+        else if (GUIAirArming.stateId == 4)
           GUIAirArming.this.quikPlane = GUIAirArming.this.airName();
-        }
-
-        if (GUIAirArming.this.zutiSelectedBornPlace == null)
-          GUIAirArming.this.fillWeapons();
-        else {
-          GUIAirArming.this.zutiFillWeapons(GUIAirArming.this.zutiSelectedBornPlace);
-        }
-
+        GUIAirArming.this.fillWeapons();
         GUIAirArming.this.selectWeapon();
         GUIAirArming.this.fillSkins();
         GUIAirArming.this.selectSkin();
@@ -1662,12 +1460,11 @@ public class GUIAirArming extends GameState
 
         return true;
       }
-
       if (paramGWindow == GUIAirArming.this.cFuel) {
         if (GUIAirArming.this.bEnableWeaponChange)
-          if (GUIAirArming.this.isNet()) localUserCfg.fuel = ((GUIAirArming.this.cFuel.getSelected() + 1) * 10);
-          else if (GUIAirArming.stateId == 4) GUIAirArming.this.quikFuel = ((GUIAirArming.this.cFuel.getSelected() + 1) * 10); else
-            Main.cur().currentMissionFile.set(GUIAirArming.this.planeName, "Fuel", (GUIAirArming.this.cFuel.getSelected() + 1) * 10);
+          if (GUIAirArming.this.isNet()) localUserCfg.fuel = ((GUIAirArming.this.cFuel.getSelected() + 1) * 25);
+          else if (GUIAirArming.stateId == 4) GUIAirArming.this.quikFuel = ((GUIAirArming.this.cFuel.getSelected() + 1) * 25); else
+            Main.cur().currentMissionFile.set(GUIAirArming.this.planeName, "Fuel", (GUIAirArming.this.cFuel.getSelected() + 1) * 25);
       }
       else {
         if (paramGWindow == GUIAirArming.this.cSquadron) {
@@ -1767,22 +1564,22 @@ public class GUIAirArming extends GameState
 
     public void render() {
       super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(628.0F), y1024(156.0F), x1024(364.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(628.0F), y1024(300.0F), x1024(364.0F), 2.0F);
+      GUISeparate.draw(this, GColor.Gray, x1024(628.0F), y1024(176.0F), x1024(364.0F), 2.0F);
+      GUISeparate.draw(this, GColor.Gray, x1024(628.0F), y1024(320.0F), x1024(364.0F), 2.0F);
       GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(640.0F), x1024(962.0F), 2.0F);
       setCanvasColor(GColor.Gray);
       setCanvasFont(0);
-      draw(x1024(644.0F), y1024(12.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Aircraft"));
-      draw(x1024(644.0F), y1024(76.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.WeaponLoadout"));
-      draw(x1024(644.0F), y1024(156.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Country"));
-      draw(x1024(644.0F), y1024(220.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Regiment"));
-      draw(x1024(644.0F), y1024(300.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Skin"));
-      draw(x1024(644.0F), y1024(364.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Pilot"));
+      draw(x1024(644.0F), y1024(32.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Aircraft"));
+      draw(x1024(644.0F), y1024(96.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.WeaponLoadout"));
+      draw(x1024(644.0F), y1024(176.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Country"));
+      draw(x1024(644.0F), y1024(240.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Regiment"));
+      draw(x1024(644.0F), y1024(320.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Skin"));
+      draw(x1024(644.0F), y1024(384.0F), x1024(332.0F), y1024(32.0F), 1, GUIAirArming.this.i18n("neta.Pilot"));
       if (GUIAirArming.stateId == 2) {
-        draw(x1024(628.0F), y1024(450.0F), x1024(220.0F), y1024(32.0F), 0, GUIAirArming.this.i18n("neta.Number"));
-        draw(x1024(644.0F), y1024(450.0F), x1024(220.0F), y1024(32.0F), 2, GUIAirArming.this.i18n("neta.Squadron"));
+        draw(x1024(628.0F), y1024(448.0F), x1024(220.0F), y1024(32.0F), 0, GUIAirArming.this.i18n("neta.Number"));
+        draw(x1024(864.0F), y1024(448.0F), x1024(128.0F), y1024(32.0F), 2, GUIAirArming.this.i18n("neta.Squadron"));
       } else {
-        draw(x1024(628.0F), y1024(450.0F), x1024(220.0F), y1024(32.0F), 0, GUIAirArming.this.i18n("neta.NumberOn"));
+        draw(x1024(628.0F), y1024(480.0F), x1024(220.0F), y1024(32.0F), 0, GUIAirArming.this.i18n("neta.NumberOn"));
       }
 
       GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
@@ -1805,10 +1602,8 @@ public class GUIAirArming extends GameState
 
       draw(x1024(96.0F), y1024(656.0F), x1024(320.0F), y1024(48.0F), 0, GUIAirArming.this.i18n("neta.Apply"));
 
-      draw(x1024(326.0F), y1024(656.0F), x1024(620.0F), y1024(48.0F), 0, GUIAirArming.this.i18n("neta.Joystick"));
-
       if (GUIAirArming.this.cNoseart.isVisible()) {
-        draw(x1024(292.0F), y1024(496.0F), x1024(320.0F), y1024(32.0F), 2, GUIAirArming.this.i18n("neta.Noseart"));
+        draw(x1024(292.0F), y1024(656.0F), x1024(320.0F), y1024(48.0F), 2, GUIAirArming.this.i18n("neta.Noseart"));
       }
 
       setCanvasColorWHITE();
@@ -1827,27 +1622,25 @@ public class GUIAirArming extends GameState
       GUIAirArming.this.wBombDelay.setPosSize(x1024(832.0F), y1024(544.0F), x1024(96.0F) - localGUILookAndFeel1.getVScrollBarW(), y1024(32.0F));
       GUIAirArming.this.cFuel.set1024PosSize(832.0F, 592.0F, 96.0F, 32.0F);
       if (GUIAirArming.stateId == 4)
-        GUIAirArming.this.cAircraft.set1024PosSize(628.0F, 44.0F, 298.0F, 32.0F);
+        GUIAirArming.this.cAircraft.set1024PosSize(628.0F, 64.0F, 298.0F, 32.0F);
       else
-        GUIAirArming.this.cAircraft.set1024PosSize(628.0F, 44.0F, 364.0F, 32.0F);
-      GUIAirArming.this.cPlane.set1024PosSize(932.0F, 44.0F, 60.0F, 32.0F);
-      GUIAirArming.this.cWeapon.set1024PosSize(628.0F, 108.0F, 364.0F, 32.0F);
-      GUIAirArming.this.cCountry.set1024PosSize(628.0F, 188.0F, 364.0F, 32.0F);
-      GUIAirArming.this.cRegiment.set1024PosSize(628.0F, 252.0F, 364.0F, 32.0F);
-      GUIAirArming.this.cSkin.set1024PosSize(628.0F, 332.0F, 364.0F, 32.0F);
-      GUIAirArming.this.cPilot.set1024PosSize(628.0F, 396.0F, 364.0F, 32.0F);
-      GUIAirArming.this.wNumber.set1024PosSize(704.0F, 450.0F, 64.0F, 32.0F);
-      GUIAirArming.this.cSquadron.set1024PosSize(896.0F, 450.0F, 96.0F, 32.0F);
-      GUIAirArming.this.sNumberOn.setPosC(x1024(944.0F), y1024(466.0F));
-      GUIAirArming.this.cNoseart.set1024PosSize(628.0F, 496.0F, 364.0F, 32.0F);
+        GUIAirArming.this.cAircraft.set1024PosSize(628.0F, 64.0F, 364.0F, 32.0F);
+      GUIAirArming.this.cPlane.set1024PosSize(932.0F, 64.0F, 60.0F, 32.0F);
+      GUIAirArming.this.cWeapon.set1024PosSize(628.0F, 128.0F, 364.0F, 32.0F);
+      GUIAirArming.this.cCountry.set1024PosSize(628.0F, 208.0F, 364.0F, 32.0F);
+      GUIAirArming.this.cRegiment.set1024PosSize(628.0F, 272.0F, 364.0F, 32.0F);
+      GUIAirArming.this.cSkin.set1024PosSize(628.0F, 352.0F, 364.0F, 32.0F);
+      GUIAirArming.this.cPilot.set1024PosSize(628.0F, 416.0F, 364.0F, 32.0F);
+      GUIAirArming.this.wNumber.set1024PosSize(628.0F, 480.0F, 112.0F, 32.0F);
+      GUIAirArming.this.cSquadron.set1024PosSize(896.0F, 480.0F, 96.0F, 32.0F);
+      GUIAirArming.this.sNumberOn.setPosC(x1024(944.0F), y1024(496.0F));
+      GUIAirArming.this.cNoseart.set1024PosSize(628.0F, 664.0F, 364.0F, 32.0F);
 
       GUILookAndFeel localGUILookAndFeel2 = (GUILookAndFeel)lookAndFeel();
       GBevel localGBevel = localGUILookAndFeel2.bevelComboDown;
       GUIAirArming.this.renders.setPosSize(x1024(32.0F) + localGBevel.L.dx, y1024(32.0F) + localGBevel.T.dy, x1024(564.0F) - localGBevel.L.dx - localGBevel.R.dx, y1024(432.0F) - localGBevel.T.dy - localGBevel.B.dy);
 
       GUIAirArming.this.bBack.setPosC(x1024(56.0F), y1024(680.0F));
-
-      GUIAirArming.this.bJoy.setPosC(x1024(286.0F), y1024(680.0F));
     }
   }
 
@@ -1857,26 +1650,17 @@ public class GUIAirArming extends GameState
     {
       if (Actor.isValid(GUIAirArming.this.actorMesh)) {
         if ((GUIAirArming.this.animateMeshA != 0.0F) || (GUIAirArming.this.animateMeshT != 0.0F)) {
-          GUIAirArming.this.actorMesh.pos.getAbs(GUIAirArming.this._orient);
-          GUIAirArming.this._orient.set(GUIAirArming.this._orient.azimut() + GUIAirArming.this.animateMeshA * GUIAirArming.this.client.root.deltaTimeSec, GUIAirArming.this._orient.tangage() + GUIAirArming.this.animateMeshT * GUIAirArming.this.client.root.deltaTimeSec, 0.0F);
+          GUIAirArming.this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(GUIAirArming.this._orient);
+          GUIAirArming.this._orient.set(GUIAirArming.this._orient.azimut() + GUIAirArming.this.animateMeshA * GUIAirArming.this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, GUIAirArming.this._orient.tangage() + GUIAirArming.this.animateMeshT * GUIAirArming.this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, 0.0F);
 
-          float f = GUIAirArming.this._orient.getYaw();
-          while (f > 360.0F) {
-            f -= 360.0F;
-          }
-          while (f < 0.0F) {
-            f += 360.0F;
-          }
-          GUIAirArming.this._orient.setYaw(f);
-
-          GUIAirArming.this.actorMesh.pos.setAbs(GUIAirArming.this._orient);
-          GUIAirArming.this.actorMesh.pos.reset();
+          GUIAirArming.this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(GUIAirArming.this._orient);
+          GUIAirArming.this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         }
-        GUIAirArming.this.actorMesh.draw.preRender(GUIAirArming.this.actorMesh);
+        GUIAirArming.this.actorMesh.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.preRender(GUIAirArming.this.actorMesh);
         for (int i = 0; i < GUIAirArming.this.weaponMeshs.size(); i++) {
           ActorMesh localActorMesh = (ActorMesh)GUIAirArming.this.weaponMeshs.get(i);
           if (Actor.isValid(localActorMesh))
-            localActorMesh.draw.preRender(localActorMesh); 
+            localActorMesh.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.preRender(localActorMesh); 
         }
       }
     }
@@ -1884,11 +1668,11 @@ public class GUIAirArming extends GameState
     public void render() {
       if (Actor.isValid(GUIAirArming.this.actorMesh)) {
         Render.prepareStates();
-        GUIAirArming.this.actorMesh.draw.render(GUIAirArming.this.actorMesh);
+        GUIAirArming.this.actorMesh.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.render(GUIAirArming.this.actorMesh);
         for (int i = 0; i < GUIAirArming.this.weaponMeshs.size(); i++) {
           ActorMesh localActorMesh = (ActorMesh)GUIAirArming.this.weaponMeshs.get(i);
           if (Actor.isValid(localActorMesh))
-            localActorMesh.draw.render(localActorMesh); 
+            localActorMesh.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.render(localActorMesh); 
         }
       }
     }

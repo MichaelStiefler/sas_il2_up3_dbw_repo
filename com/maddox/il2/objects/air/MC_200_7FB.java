@@ -34,15 +34,15 @@ public class MC_200_7FB extends MC_200xyz
     Property.set(localClass, "cockpitClass", CockpitMC_200_VII_new.class);
     Property.set(localClass, "LOSElevation", 0.9119F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127si 350", "MGunBredaSAFAT127si 350", null, null });
 
-    weaponsRegister(localClass, "2x50", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", "BombGunIT_50_M 1", "BombGunIT_50_M 1" });
+    Aircraft.weaponsRegister(localClass, "2x50", new String[] { "MGunBredaSAFAT127si 350", "MGunBredaSAFAT127si 350", "BombGun50kg 1", "BombGun50kg 1" });
 
-    weaponsRegister(localClass, "2x100", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", "BombGunIT_100_M 1", "BombGunIT_100_M 1" });
+    Aircraft.weaponsRegister(localClass, "2x100", new String[] { "MGunBredaSAFAT127si 350", "MGunBredaSAFAT127si 350", "BombGun100kg 1", "BombGun100kg 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

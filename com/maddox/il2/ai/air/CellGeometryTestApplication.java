@@ -119,31 +119,31 @@ public class CellGeometryTestApplication
         field.placeAirPlaneId(plane2[i], field.resX(), field.resY(), "" + i); } else {
         System.out.println("cannot find place for plane2_" + i);
       }
-    for (i = 0; i < 5; i++)
-      if (field.findPlaceForAirPlane(plane[i])) {
+    for (int j = 0; j < 5; j++)
+      if (field.findPlaceForAirPlane(plane[j])) {
         System.out.println("found, x=" + field.resX() + ", y=" + field.resY());
-        field.placeAirPlaneId(plane[i], field.resX(), field.resY(), "" + (i + 5)); } else {
-        System.out.println("cannot find place for plane1_" + (i + 5));
+        field.placeAirPlaneId(plane[j], field.resX(), field.resY(), "" + (j + 5)); } else {
+        System.out.println("cannot find place for plane1_" + (j + 5));
       }
     field.debugPrint();
 
     System.out.println("Blank Complex-Siluet AirField:");
     createComplexSiluetAirField();
 
-    for (i = 0; i < 5; i++) {
-      if (fieldC.findPlaceForAirPlane(plane2[i])) {
+    for (int k = 0; k < 5; k++) {
+      if (fieldC.findPlaceForAirPlane(plane2[k])) {
         System.out.println("found, x=" + fieldC.resX() + ", y=" + fieldC.resY());
-        fieldC.placeAirPlaneId(plane2[i], fieldC.resX(), fieldC.resY(), "" + i); } else {
-        System.out.println("cannot find place for plane2_" + i);
+        fieldC.placeAirPlaneId(plane2[k], fieldC.resX(), fieldC.resY(), "" + k); } else {
+        System.out.println("cannot find place for plane2_" + k);
       }
 
     }
 
-    for (i = 0; i < 5; i++)
-      if (fieldC.findPlaceForAirPlane(plane[i])) {
+    for (int m = 0; m < 5; m++)
+      if (fieldC.findPlaceForAirPlane(plane[m])) {
         System.out.println("found, x=" + fieldC.resX() + ", y=" + fieldC.resY());
-        fieldC.placeAirPlaneId(plane[i], fieldC.resX(), fieldC.resY(), "" + (i + 5)); } else {
-        System.out.println("cannot find place for plane1_" + (i + 5));
+        fieldC.placeAirPlaneId(plane[m], fieldC.resX(), fieldC.resY(), "" + (m + 5)); } else {
+        System.out.println("cannot find place for plane1_" + (m + 5));
       }
     fieldC.debugPrint();
   }

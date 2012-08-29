@@ -28,8 +28,8 @@ public class G_55_Late extends G_55xyz
 
     Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127g55 300", "MGunBredaSAFAT127g55 300", "MGunMG15120t 200", "MGunMG15120kh 250", "MGunMG15120kh 250" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127g55 300", "MGunBredaSAFAT127g55 300", "MGunMG15120t 200", "MGunMG15120kh 250", "MGunMG15120kh 250" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

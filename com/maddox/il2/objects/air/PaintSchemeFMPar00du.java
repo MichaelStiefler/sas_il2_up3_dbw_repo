@@ -15,7 +15,7 @@ public class PaintSchemeFMPar00du extends PaintSchemeFMPar00
     {
       float f = 1.0F;
 
-      changeMat(paramClass, paramHierMesh, "Overlay6", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "null", "null.tga", 1.0F, 1.0F, 1.0F);
 
       int j = 344 + (paramInt3 - 1) % 20;
 

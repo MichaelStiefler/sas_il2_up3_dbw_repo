@@ -108,7 +108,7 @@ public class GTreeModelDir
   }
 
   private File[] childs(File paramFile) {
-    File[] arrayOfFile = (File[])(File[])this.fileChild.get(paramFile);
+    File[] arrayOfFile = (File[])this.fileChild.get(paramFile);
     if (arrayOfFile == null) {
       arrayOfFile = paramFile.listFiles(filter);
       if (arrayOfFile == null) arrayOfFile = new File[0];

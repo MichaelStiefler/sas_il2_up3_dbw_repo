@@ -23,12 +23,12 @@ public class CmdRadio0 extends Cmd
 
   public CmdRadio0()
   {
-    this.param.put("NEW", null);
-    this.param.put("KILL", null);
-    this.param.put("SET", null);
-    this.param.put("LIST", null);
-    this.param.put("INFO", null);
-    this.param.put("TEST", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NEW", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("KILL", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SET", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LIST", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("INFO", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TEST", null);
     this._properties.put("NAME", "radio");
     this._levelAccess = 0;
   }
@@ -39,23 +39,23 @@ public class CmdRadio0 extends Cmd
       Chat.radioSpawn.printInfo();
     }
     else if (paramMap.containsKey("_$$")) {
-      System.out.println("Unknown command :" + arg(paramMap, "_$$", 0));
+      System.out.println("Unknown command :" + Cmd.arg(paramMap, "_$$", 0));
     }
     else
     {
       String str;
       if (paramMap.containsKey("NEW")) {
-        str = arg(paramMap, "NEW", 0);
+        str = Cmd.arg(paramMap, "NEW", 0);
         if (str == null) System.out.println("ERROR: no name"); else
           Chat.radioSpawn.create(str, RadioChannel.getCurrentCodec());
       }
       if (paramMap.containsKey("KILL")) {
-        str = arg(paramMap, "KILL", 0);
+        str = Cmd.arg(paramMap, "KILL", 0);
         if (str == null) System.out.println("ERROR: no name"); else
           Chat.radioSpawn.kill(str);
       }
       if (paramMap.containsKey("SET")) {
-        str = arg(paramMap, "SET", 0);
+        str = Cmd.arg(paramMap, "SET", 0);
         Chat.radioSpawn.set(str);
       }
       if (paramMap.containsKey("LIST")) {
@@ -65,7 +65,7 @@ public class CmdRadio0 extends Cmd
         Chat.radioSpawn.printInfo();
       }
       if (paramMap.containsKey("TEST")) {
-        str = arg(paramMap, "TEST", 0);
+        str = Cmd.arg(paramMap, "TEST", 0);
         if (str == null) {
           System.out.println("TEST MODE: " + RadioChannel.tstMode + " loop: " + RadioChannel.tstLoop);
         }

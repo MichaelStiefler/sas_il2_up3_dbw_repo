@@ -46,18 +46,18 @@ public class DXXI_DK extends DXXI
     {
       super.moveFan(paramFloat);
 
-      float f1 = this.FM.CT.getAileron();
-      float f2 = this.FM.CT.getElevator();
-      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9.0F * f1, cvt(f2, -1.0F, 1.0F, -8.0F, 9.5F));
-      hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - cvt(f2, -1.0F, 1.0F, -37.0F, 35.0F));
-      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + cvt(f2, -1.0F, 0.0F, -61.0F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 43.0F));
+      float f1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getAileron();
+      float f2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator();
+      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9.0F * f1, Aircraft.cvt(f2, -1.0F, 1.0F, -8.0F, 9.5F));
+      hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, Aircraft.cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - Aircraft.cvt(f2, -1.0F, 1.0F, -37.0F, 35.0F));
+      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + Aircraft.cvt(f2, -1.0F, 0.0F, -61.0F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 43.0F));
     }
   }
 
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers())
       this.bChangedPit = true;
     Wreckage localWreckage;
     Vector3d localVector3d;
@@ -70,7 +70,7 @@ public class DXXI_DK extends DXXI
         localWreckage = new Wreckage(this, hierMesh().chunkFind("GearR22_D1"));
         localWreckage.collide(true);
         localVector3d = new Vector3d();
-        localVector3d.set(this.FM.Vwld);
+        localVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
         localWreckage.setSpeed(localVector3d);
       }
     }
@@ -83,7 +83,7 @@ public class DXXI_DK extends DXXI
         localWreckage = new Wreckage(this, hierMesh().chunkFind("GearL22_D1"));
         localWreckage.collide(true);
         localVector3d = new Vector3d();
-        localVector3d.set(this.FM.Vwld);
+        localVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
         localWreckage.setSpeed(localVector3d);
       }
     }
@@ -107,10 +107,10 @@ public class DXXI_DK extends DXXI
     Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
     Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303sipzl 500", "MGunBrowning303sipzl 500", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303sipzl 500", "MGunBrowning303sipzl 500", null, null });
 
-    weaponsRegister(localClass, "madsen", new String[] { "MGunBrowning303sipzl 500", "MGunBrowning303sipzl 500", "MGunMadsen20 60", "MGunMadsen20 60" });
+    Aircraft.weaponsRegister(localClass, "madsen", new String[] { "MGunBrowning303sipzl 500", "MGunBrowning303sipzl 500", "MGunMadsen20 60", "MGunMadsen20 60" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

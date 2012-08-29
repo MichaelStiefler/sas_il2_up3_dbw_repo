@@ -28,7 +28,7 @@ public class HashMapXY16List
     int i = 0;
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
+      ArrayList localArrayList = (ArrayList)localHashMapIntEntry.getValue();
       i += localArrayList.size();
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }
@@ -58,7 +58,7 @@ public class HashMapXY16List
   {
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
+      ArrayList localArrayList = (ArrayList)localHashMapIntEntry.getValue();
       paramList.add(localArrayList);
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }
@@ -107,7 +107,7 @@ public class HashMapXY16List
   public void allValuesTrimToSize() {
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
+      ArrayList localArrayList = (ArrayList)localHashMapIntEntry.getValue();
       localArrayList.trimToSize();
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }
@@ -124,7 +124,7 @@ public class HashMapXY16List
   public void clear() {
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
+      ArrayList localArrayList = (ArrayList)localHashMapIntEntry.getValue();
       localArrayList.clear();
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }

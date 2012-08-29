@@ -120,12 +120,12 @@ public abstract class SirenGeneric extends ActorHMesh
 
   private void Align()
   {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.z = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.heightAboveLandSurface);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
     o.orient(n);
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public void align()
@@ -136,7 +136,7 @@ public abstract class SirenGeneric extends ActorHMesh
   private boolean danger()
   {
     Point3d localPoint3d = new Point3d();
-    this.pos.getAbs(localPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d);
     Vector3d localVector3d = new Vector3d();
 
     Map.Entry localEntry = Engine.name2Actor().nextEntry(null);
@@ -146,7 +146,7 @@ public abstract class SirenGeneric extends ActorHMesh
       {
         if ((localActor.getArmy() != this.myArmy) && 
           (localActor.getSpeed(localVector3d) > 20.0D) && 
-          (localActor.pos.getAbsPoint().distance(localPoint3d) < 18000.0D))
+          (localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(localPoint3d) < 18000.0D))
         {
           return true;
         }
@@ -162,10 +162,10 @@ public abstract class SirenGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel) throws IOException

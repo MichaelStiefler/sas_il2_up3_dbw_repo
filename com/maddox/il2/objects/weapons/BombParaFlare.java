@@ -48,8 +48,8 @@ public class BombParaFlare extends Bomb
     {
       getSpeed(v3d);
       v3d.scale(0.97D);
-      if (v3d.z < -2.0D)
-        v3d.z += 1.1F * Time.tickConstLenFs();
+      if (v3d.jdField_z_of_type_Double < -2.0D)
+        v3d.jdField_z_of_type_Double += 1.1F * Time.tickConstLenFs();
       setSpeed(v3d);
     }
     else if (this.curTm > this.ttcurTM)

@@ -65,77 +65,76 @@ public class GUINetServerNGenSelect extends GameState
     if ((arrayOfString == null) || (arrayOfString.length == 0)) return;
 
     TreeMap localTreeMap = new TreeMap();
-    String str5;
-    Object localObject2;
+    Object localObject3;
     for (int i = 0; i < arrayOfString.length; i++) {
       if ((arrayOfFile[i].isDirectory()) || (arrayOfFile[i].isHidden()))
         continue;
-      str5 = arrayOfString[i];
-      if (str5 != null) {
-        str5 = str5.toLowerCase();
-        if ((str5.length() <= str2.length()) || (!str5.regionMatches(true, 0, str2, 0, str2.length())))
+      localObject1 = arrayOfString[i];
+      if (localObject1 != null) {
+        localObject1 = ((String)localObject1).toLowerCase();
+        if ((((String)localObject1).length() <= str2.length()) || (!((String)localObject1).regionMatches(true, 0, str2, 0, str2.length())))
           continue;
-        int k = -1;
+        int j = -1;
         int m = 0;
-        if ((str3 != null) && (str5.length() > str3.length()) && (str5.regionMatches(true, str5.length() - str3.length(), str3, 0, str3.length())))
+        if ((str3 != null) && (((String)localObject1).length() > str3.length()) && (((String)localObject1).regionMatches(true, ((String)localObject1).length() - str3.length(), str3, 0, str3.length())))
         {
-          k = str5.length() - str3.length();
+          j = ((String)localObject1).length() - str3.length();
           m = 1;
         }
-        if ((k == -1) && (str5.length() > str4.length()) && (str5.regionMatches(true, str5.length() - str4.length(), str4, 0, str4.length())))
+        if ((j == -1) && (((String)localObject1).length() > str4.length()) && (((String)localObject1).regionMatches(true, ((String)localObject1).length() - str4.length(), str4, 0, str4.length())))
         {
-          k = str5.length() - str4.length();
-          if ((str5.length() > str4.length() + 3) && (str5.charAt(str5.length() - str4.length() - 3) == '_'))
+          j = ((String)localObject1).length() - str4.length();
+          if ((((String)localObject1).length() > str4.length() + 3) && (((String)localObject1).charAt(((String)localObject1).length() - str4.length() - 3) == '_'))
             continue;
           m = 0;
         }
-        if (k >= str2.length()) {
-          localObject2 = str5.substring(str2.length(), k);
-          if ((m == 0) && (localTreeMap.containsKey(localObject2)))
+        if (j >= str2.length()) {
+          localObject3 = ((String)localObject1).substring(str2.length(), j);
+          if ((m == 0) && (localTreeMap.containsKey(localObject3)))
             continue;
-          localTreeMap.put(localObject2, str5);
+          localTreeMap.put(localObject3, localObject1);
         }
       }
     }
     if (localTreeMap.size() == 0) {
       return;
     }
-    Iterator localIterator = localTreeMap.keySet().iterator();
-    Object localObject1;
-    Item localItem2;
-    while (localIterator.hasNext()) {
-      str5 = (String)localIterator.next();
-      localObject1 = (String)localTreeMap.get(str5);
-      localItem2 = new Item();
-      localItem2.bNew = true;
-      localItem2.prefix = str5;
-      localItem2.fileName = ("ngen/" + (String)localObject1);
-      localObject2 = new SectFile(localItem2.fileName, 4, true, null, RTSConf.charEncoding, true);
-      localItem2.name = ((SectFile)localObject2).get("$locale", "name", "");
-      localItem2.note = ((SectFile)localObject2).get("$locale", "note", "");
-      this.wTable.campList.add(localItem2);
+    Object localObject1 = localTreeMap.keySet().iterator();
+    Object localObject2;
+    SectFile localSectFile;
+    while (((Iterator)localObject1).hasNext()) {
+      String str5 = (String)((Iterator)localObject1).next();
+      localObject2 = (String)localTreeMap.get(str5);
+      localObject3 = new Item();
+      ((Item)localObject3).bNew = true;
+      ((Item)localObject3).prefix = str5;
+      ((Item)localObject3).fileName = ("ngen/" + (String)localObject2);
+      localSectFile = new SectFile(((Item)localObject3).fileName, 4, true, null, RTSConf.charEncoding, true);
+      ((Item)localObject3).name = localSectFile.get("$locale", "name", "");
+      ((Item)localObject3).note = localSectFile.get("$locale", "note", "");
+      this.wTable.campList.add(localObject3);
     }
 
     localFile = new File(HomePath.get(0), "missions/net/ngen");
     arrayOfFile = localFile.listFiles();
-    int j;
+    int k;
     if ((arrayOfFile != null) && (arrayOfFile.length > 0)) {
-      for (j = 0; j < arrayOfFile.length; j++) {
-        if ((!arrayOfFile[j].isDirectory()) || (arrayOfFile[j].isHidden())) continue;
+      for (k = 0; k < arrayOfFile.length; k++) {
+        if ((!arrayOfFile[k].isDirectory()) || (arrayOfFile[k].isHidden())) continue;
         try {
-          localObject1 = new File(arrayOfFile[j], "conf.dat");
-          if (((File)localObject1).exists()) {
-            localItem2 = new Item();
-            localItem2.bNew = false;
-            localItem2.fileName = ("missions/net/ngen/" + arrayOfFile[j].getName().toLowerCase() + "/conf.dat");
-            localObject2 = new SectFile(localItem2.fileName, 4, true, null, RTSConf.charEncoding, true);
-            localItem2.bEnd = ((SectFile)localObject2).get("$select", "complete", false);
-            localItem2.name = ((SectFile)localObject2).get("$locale", "name", "");
-            localItem2.note = ((SectFile)localObject2).get("$locale", "note", "");
-            this.wTable.campList.add(localItem2);
-            int n = ((SectFile)localObject2).sectionIndex("$missions");
+          localObject2 = new File(arrayOfFile[k], "conf.dat");
+          if (((File)localObject2).exists()) {
+            localObject3 = new Item();
+            ((Item)localObject3).bNew = false;
+            ((Item)localObject3).fileName = ("missions/net/ngen/" + arrayOfFile[k].getName().toLowerCase() + "/conf.dat");
+            localSectFile = new SectFile(((Item)localObject3).fileName, 4, true, null, RTSConf.charEncoding, true);
+            ((Item)localObject3).bEnd = localSectFile.get("$select", "complete", false);
+            ((Item)localObject3).name = localSectFile.get("$locale", "name", "");
+            ((Item)localObject3).note = localSectFile.get("$locale", "note", "");
+            this.wTable.campList.add(localObject3);
+            int n = localSectFile.sectionIndex("$missions");
             if (n >= 0)
-              localItem2.missions = ((SectFile)localObject2).vars(n);
+              ((Item)localObject3).missions = localSectFile.vars(n);
           }
         } catch (Exception localException) {
           System.out.println(localException.getMessage());
@@ -147,14 +146,14 @@ public class GUINetServerNGenSelect extends GameState
     if (this.wTable.campList.size() == 0)
       return;
     if (cur != null) {
-      j = 0;
-      for (; j < this.wTable.campList.size(); j++) {
-        Item localItem1 = (Item)this.wTable.campList.get(j);
-        if (cur.equals(localItem1))
+      k = 0;
+      for (; k < this.wTable.campList.size(); k++) {
+        Item localItem = (Item)this.wTable.campList.get(k);
+        if (cur.equals(localItem))
           break;
       }
-      if (j < this.wTable.campList.size())
-        this.wTable.setSelect(j, 0);
+      if (k < this.wTable.campList.size())
+        this.wTable.setSelect(k, 0);
       else
         this.wTable.setSelect(0, 0);
     }
@@ -198,23 +197,23 @@ public class GUINetServerNGenSelect extends GameState
         GUINetServer.exitServer(true);
         return true;
       }
-      GUINetServerNGenSelect.Item localItem;
+      GUINetServerNGenSelect.Item localItem1;
       int i;
       Object localObject;
       if (paramGWindow == GUINetServerNGenSelect.this.bDel) {
-        if (GUINetServerNGenSelect.this.wTable.selectRow < 0) return true;
-        if (GUINetServerNGenSelect.this.wTable.selectRow >= GUINetServerNGenSelect.this.wTable.campList.size()) return true;
+        if (GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int < 0) return true;
+        if (GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int >= GUINetServerNGenSelect.this.wTable.campList.size()) return true;
         GUINetServerNGenSelect.cur = null;
-        localItem = (GUINetServerNGenSelect.Item)GUINetServerNGenSelect.this.wTable.campList.get(GUINetServerNGenSelect.this.wTable.selectRow);
+        localItem1 = (GUINetServerNGenSelect.Item)GUINetServerNGenSelect.this.wTable.campList.get(GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int);
         try {
-          String str1 = localItem.fileName;
+          String str1 = localItem1.fileName;
           i = str1.lastIndexOf("/conf.dat");
           if (i >= 0)
             str1 = str1.substring(0, i);
           localObject = new File(HomePath.get(0), str1);
           clearDir((File)localObject);
-          GUINetServerNGenSelect.this.wTable.campList.remove(GUINetServerNGenSelect.this.wTable.selectRow);
-          if (GUINetServerNGenSelect.this.wTable.selectRow >= GUINetServerNGenSelect.this.wTable.campList.size())
+          GUINetServerNGenSelect.this.wTable.campList.remove(GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int);
+          if (GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int >= GUINetServerNGenSelect.this.wTable.campList.size())
             GUINetServerNGenSelect.this.wTable.setSelect(GUINetServerNGenSelect.this.wTable.campList.size() - 1, 0);
         } catch (Exception localException1) {
           System.out.println(localException1.getMessage());
@@ -223,13 +222,13 @@ public class GUINetServerNGenSelect extends GameState
         }
         return true;
       }if (paramGWindow == GUINetServerNGenSelect.this.bStart) {
-        if (GUINetServerNGenSelect.this.wTable.selectRow < 0) return true;
-        if (GUINetServerNGenSelect.this.wTable.selectRow >= GUINetServerNGenSelect.this.wTable.campList.size()) return true;
+        if (GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int < 0) return true;
+        if (GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int >= GUINetServerNGenSelect.this.wTable.campList.size()) return true;
         GUINetServerNGenSelect.cur = null;
-        localItem = (GUINetServerNGenSelect.Item)GUINetServerNGenSelect.this.wTable.campList.get(GUINetServerNGenSelect.this.wTable.selectRow);
-        if (localItem.bNew) {
+        localItem1 = (GUINetServerNGenSelect.Item)GUINetServerNGenSelect.this.wTable.campList.get(GUINetServerNGenSelect.this.wTable.jdField_selectRow_of_type_Int);
+        if (localItem1.bNew) {
           try {
-            String str2 = localItem.prefix;
+            String str2 = localItem1.prefix;
             for (i = 1; i > 0; i++) {
               localObject = new File(HomePath.get(0), "missions/net/ngen/" + str2 + i);
               if (!((File)localObject).exists()) {
@@ -238,14 +237,14 @@ public class GUINetServerNGenSelect extends GameState
                 break;
               }
             }
-            String str3 = str2 + "/conf.dat";
-            localObject = new GUINetServerNGenSelect.Item(localItem);
-            ((GUINetServerNGenSelect.Item)localObject).bNew = false;
-            ((GUINetServerNGenSelect.Item)localObject).fileName = str3;
-            SectFile localSectFile = new SectFile(localItem.fileName, 0, true, null, RTSConf.charEncoding, true);
-            localSectFile.saveFile(str3);
+            localObject = str2 + "/conf.dat";
+            GUINetServerNGenSelect.Item localItem2 = new GUINetServerNGenSelect.Item(localItem1);
+            localItem2.bNew = false;
+            localItem2.fileName = ((String)localObject);
+            SectFile localSectFile = new SectFile(localItem1.fileName, 0, true, null, RTSConf.charEncoding, true);
+            localSectFile.saveFile((String)localObject);
 
-            GUINetServerNGenSelect.cur = (GUINetServerNGenSelect.Item)localObject;
+            GUINetServerNGenSelect.cur = localItem2;
           }
           catch (Exception localException2) {
             System.out.println(localException2.getMessage());
@@ -254,7 +253,7 @@ public class GUINetServerNGenSelect extends GameState
           }
         }
         else {
-          GUINetServerNGenSelect.cur = localItem;
+          GUINetServerNGenSelect.cur = localItem1;
         }
         if (GUINetServerNGenSelect.cur != null) {
           Main.stateStack().change(69);
@@ -371,7 +370,7 @@ public class GUINetServerNGenSelect extends GameState
       addColumn(I18N.gui("ngens.state"), null);
       addColumn(I18N.gui("ngens.missions"), null);
       addColumn(I18N.gui("ngens.note"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(10.0F);
       getColumn(1).setRelativeDx(5.0F);
       getColumn(2).setRelativeDx(5.0F);
@@ -384,20 +383,20 @@ public class GUINetServerNGenSelect extends GameState
     }
     public boolean isEnableDel() {
       if (this.campList == null) return false;
-      if (this.selectRow < 0) return false;
-      if (this.selectRow >= this.campList.size()) return false;
-      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(this.selectRow);
+      if (this.jdField_selectRow_of_type_Int < 0) return false;
+      if (this.jdField_selectRow_of_type_Int >= this.campList.size()) return false;
+      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(this.jdField_selectRow_of_type_Int);
       return !localItem.bNew;
     }
     public boolean isEnableLoad() {
       if (this.campList == null) return false;
-      if (this.selectRow < 0) return false;
-      if (this.selectRow >= this.campList.size()) return false;
-      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(this.selectRow);
+      if (this.jdField_selectRow_of_type_Int < 0) return false;
+      if (this.jdField_selectRow_of_type_Int >= this.campList.size()) return false;
+      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(this.jdField_selectRow_of_type_Int);
       return !localItem.bEnd;
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

@@ -19,12 +19,12 @@ public class GUINetClientCBrief extends GUIBriefing
 
   public void enter(GameState paramGameState) {
     super.enter(paramGameState);
-    if ((paramGameState != null) && (this.briefSound != null))
+    if ((paramGameState != null) && (this.jdField_briefSound_of_type_JavaLangString != null))
       if (paramGameState.id() == 36) {
         CmdEnv.top().exec("music PUSH");
-        CmdEnv.top().exec("music LIST " + this.briefSound);
+        CmdEnv.top().exec("music LIST " + this.jdField_briefSound_of_type_JavaLangString);
         CmdEnv.top().exec("music PLAY");
-        this._briefSound = this.briefSound;
+        this._briefSound = this.jdField_briefSound_of_type_JavaLangString;
       }
       else if (paramGameState.id() == 44) {
         String str = Main.cur().currentMissionFile.get("MAIN", "briefSound" + ((NetUser)NetEnv.host()).getArmy());
@@ -39,10 +39,10 @@ public class GUINetClientCBrief extends GUIBriefing
   public void leave(GameState paramGameState) {
     if ((paramGameState != null) && (paramGameState.id() == 48))
     {
-      if (this.briefSound != null) {
+      if (this.jdField_briefSound_of_type_JavaLangString != null) {
         CmdEnv.top().exec("music POP");
         CmdEnv.top().exec("music STOP");
-        this.briefSound = null;
+        this.jdField_briefSound_of_type_JavaLangString = null;
         this._briefSound = null;
       }
     }
@@ -50,7 +50,7 @@ public class GUINetClientCBrief extends GUIBriefing
   }
   public void leavePop(GameState paramGameState) {
     if ((paramGameState != null) && (paramGameState.id() == 2) && 
-      (this.briefSound != null)) {
+      (this.jdField_briefSound_of_type_JavaLangString != null)) {
       CmdEnv.top().exec("music POP");
       CmdEnv.top().exec("music PLAY");
     }
@@ -61,28 +61,28 @@ public class GUINetClientCBrief extends GUIBriefing
   }
 
   public boolean isExistTextDescription() {
-    return this.textDescription != null;
+    return this.jdField_textDescription_of_type_JavaLangString != null;
   }
   public void clearTextDescription() {
-    this.textDescription = null;
+    this.jdField_textDescription_of_type_JavaLangString = null;
   }
   public void setTextDescription(String paramString) {
     try {
       ResourceBundle localResourceBundle = ResourceBundle.getBundle(paramString, RTSConf.cur.locale);
-      this.textDescription = localResourceBundle.getString("Description");
+      this.jdField_textDescription_of_type_JavaLangString = localResourceBundle.getString("Description");
       prepareTextDescription(Army.amountSingle());
     } catch (Exception localException) {
-      this.textDescription = null;
-      this.textArmyDescription = null;
+      this.jdField_textDescription_of_type_JavaLangString = null;
+      this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString = null;
     }
     this.wScrollDescription.resized();
   }
   protected String textDescription() {
-    if (this.textArmyDescription == null) return null;
+    if (this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString == null) return null;
     if (GUINetAircraft.isSelectedValid()) {
-      return this.textArmyDescription[GUINetAircraft.selectedRegiment().getArmy()];
+      return this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString[GUINetAircraft.selectedRegiment().getArmy()];
     }
-    return this.textArmyDescription[0];
+    return this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString[0];
   }
 
   private boolean isValidAircraft() {
@@ -109,17 +109,15 @@ public class GUINetClientCBrief extends GUIBriefing
   }
 
   protected void clientRender() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-
-    localDialogClient.draw(localDialogClient.x1024(5.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(160.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Disconnect"));
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Difficulty"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Aircraft"));
+    GUIBriefingGeneric.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIBriefingGeneric$DialogClient;
+    localDialogClient.draw(localDialogClient.x1024(144.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(160.0F), localDialogClient.y1024(48.0F), 0, i18n("brief.Disconnect"));
+    localDialogClient.draw(localDialogClient.x1024(256.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 2, i18n("brief.Difficulty"));
+    localDialogClient.draw(localDialogClient.x1024(528.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 2, i18n("brief.Aircraft"));
     super.clientRender();
   }
   protected void clientSetPosSize() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-
-    this.bLoodout.setPosC(localDialogClient.x1024(768.0F), localDialogClient.y1024(689.0F));
+    GUIBriefingGeneric.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIBriefingGeneric$DialogClient;
+    this.bLoodout.setPosC(localDialogClient.x1024(742.0F), localDialogClient.y1024(680.0F));
   }
 
   public GUINetClientCBrief(GWindowRoot paramGWindowRoot) {

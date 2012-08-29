@@ -25,13 +25,13 @@ public class CmdChannel extends Cmd
 
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
   {
-    boolean bool = exist(paramMap, "SOCKET");
+    boolean bool = Cmd.exist(paramMap, "SOCKET");
 
     int i = -1;
     Object localObject;
     int j;
-    if (nargs(paramMap, "_$$") == 1) {
-      i = arg(paramMap, "_$$", 0, -1);
+    if (Cmd.nargs(paramMap, "_$$") == 1) {
+      i = Cmd.arg(paramMap, "_$$", 0, -1);
       if (i == -1) {
         ERR_HARD("Unknown number of channel");
         return null;
@@ -41,20 +41,20 @@ public class CmdChannel extends Cmd
         ERR_HARD("Channel: " + i + " not found");
         return null;
       }
-      if (exist(paramMap, "DESTROY")) {
+      if (Cmd.exist(paramMap, "DESTROY")) {
         ((NetChannel)localObject).destroy("Connection lost.");
         return localObject;
-      }if ((exist(paramMap, "SPEED")) || (exist(paramMap, "TIMEOUT")) || (exist(paramMap, "STAT"))) {
-        if (nargs(paramMap, "SPEED") == 1) {
-          double d = arg(paramMap, "SPEED", 0, 1000) / 1000.0D;
+      }if ((Cmd.exist(paramMap, "SPEED")) || (Cmd.exist(paramMap, "TIMEOUT")) || (Cmd.exist(paramMap, "STAT"))) {
+        if (Cmd.nargs(paramMap, "SPEED") == 1) {
+          double d = Cmd.arg(paramMap, "SPEED", 0, 1000) / 1000.0D;
           ((NetChannel)localObject).setMaxSpeed(d);
         }
-        if (nargs(paramMap, "TIMEOUT") == 1) {
-          j = arg(paramMap, "TIMEOUT", 0, 131);
+        if (Cmd.nargs(paramMap, "TIMEOUT") == 1) {
+          j = Cmd.arg(paramMap, "TIMEOUT", 0, 131);
           ((NetChannel)localObject).setMaxTimeout(j * 1000);
         }
-        if (nargs(paramMap, "STAT") == 1) {
-          j = arg(paramMap, "STAT", 0, -1) * 1000;
+        if (Cmd.nargs(paramMap, "STAT") == 1) {
+          j = Cmd.arg(paramMap, "STAT", 0, -1) * 1000;
           Stat localStat;
           if (j <= 0) {
             localStat = (Stat)this.stat.get(localObject);
@@ -100,11 +100,11 @@ public class CmdChannel extends Cmd
 
   public CmdChannel()
   {
-    this.param.put("DESTROY", null);
-    this.param.put("SPEED", null);
-    this.param.put("TIMEOUT", null);
-    this.param.put("STAT", null);
-    this.param.put("SOCKET", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("DESTROY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SPEED", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TIMEOUT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("STAT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SOCKET", null);
     this._properties.put("NAME", "channel");
     this._levelAccess = 1;
   }

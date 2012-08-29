@@ -126,7 +126,7 @@ public class UdpSocket extends NetSocket
     else
       this.udp = new DatagramSocket();
     setParams();
-    this.bOpen = true;
+    this.jdField_bOpen_of_type_Boolean = true;
   }
 
   public void open(int paramInt)
@@ -138,7 +138,7 @@ public class UdpSocket extends NetSocket
     else
       this.udp = new DatagramSocket(paramInt);
     setParams();
-    this.bOpen = true;
+    this.jdField_bOpen_of_type_Boolean = true;
   }
 
   public void open(int paramInt, NetAddress paramNetAddress)
@@ -150,7 +150,7 @@ public class UdpSocket extends NetSocket
     else
       this.udp = new DatagramSocket(paramInt, ((IPAddress)paramNetAddress).ip());
     setParams();
-    this.bOpen = true;
+    this.jdField_bOpen_of_type_Boolean = true;
   }
 
   private void setParams() throws SocketException {
@@ -163,7 +163,7 @@ public class UdpSocket extends NetSocket
   {
     if (isOpen()) {
       this.udp.close();
-      this.bOpen = false;
+      this.jdField_bOpen_of_type_Boolean = false;
     }
   }
 

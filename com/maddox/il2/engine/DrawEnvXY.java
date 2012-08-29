@@ -8,7 +8,6 @@ import com.maddox.util.HashMapXY16List;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -184,7 +183,7 @@ public class DrawEnvXY extends DrawEnv
                         continue;
                       if (localActor1.draw.uniformMaxDist > 0.0F) {
                         localActor1.pos.getRender(p);
-                        double d13 = (paramDouble1 - p.x) * (paramDouble1 - p.x) + (paramDouble2 - p.y) * (paramDouble2 - p.y) + (paramDouble3 - p.z) * (paramDouble3 - p.z);
+                        double d13 = (paramDouble1 - p.jdField_x_of_type_Double) * (paramDouble1 - p.jdField_x_of_type_Double) + (paramDouble2 - p.jdField_y_of_type_Double) * (paramDouble2 - p.jdField_y_of_type_Double) + (paramDouble3 - p.jdField_z_of_type_Double) * (paramDouble3 - p.jdField_z_of_type_Double);
 
                         d17 = (localActor1.draw.uniformMaxDist - d1) * d2;
                         if (d13 > d17 * d17)
@@ -232,7 +231,7 @@ public class DrawEnvXY extends DrawEnv
                 continue;
               if (localActor3.draw.uniformMaxDist > 0.0F) {
                 localActor3.pos.getRender(p);
-                d17 = (paramDouble1 - p.x) * (paramDouble1 - p.x) + (paramDouble2 - p.y) * (paramDouble2 - p.y) + (paramDouble3 - p.z) * (paramDouble3 - p.z);
+                d17 = (paramDouble1 - p.jdField_x_of_type_Double) * (paramDouble1 - p.jdField_x_of_type_Double) + (paramDouble2 - p.jdField_y_of_type_Double) * (paramDouble2 - p.jdField_y_of_type_Double) + (paramDouble3 - p.jdField_z_of_type_Double) * (paramDouble3 - p.jdField_z_of_type_Double);
 
                 double d20 = (localActor3.draw.uniformMaxDist - d1) * d2;
                 if (d17 > d20 * d20)
@@ -310,7 +309,7 @@ public class DrawEnvXY extends DrawEnv
                       if ((Actor.isValid(localActor2)) && ((localActor2.flags & 0x1) != 0) && (localActor2.draw != null)) {
                         if (localActor2.draw.uniformMaxDist > 0.0F) {
                           localActor2.pos.getRender(p);
-                          double d14 = (paramDouble1 - p.x) * (paramDouble1 - p.x) + (paramDouble2 - p.y) * (paramDouble2 - p.y) + (paramDouble3 - p.z) * (paramDouble3 - p.z);
+                          double d14 = (paramDouble1 - p.jdField_x_of_type_Double) * (paramDouble1 - p.jdField_x_of_type_Double) + (paramDouble2 - p.jdField_y_of_type_Double) * (paramDouble2 - p.jdField_y_of_type_Double) + (paramDouble3 - p.jdField_z_of_type_Double) * (paramDouble3 - p.jdField_z_of_type_Double);
 
                           double d18 = (localActor2.draw.uniformMaxDist - d1) * d2;
                           if (d14 > d18 * d18)
@@ -399,7 +398,7 @@ public class DrawEnvXY extends DrawEnv
               Actor localActor1 = (Actor)localEntry1.getKey();
               if (Actor.isValid(localActor1)) {
                 localObject2 = localActor1.pos.getAbsPoint();
-                double d4 = (((Point3d)localObject2).x - d2) * (((Point3d)localObject2).x - d2) + (((Point3d)localObject2).y - d3) * (((Point3d)localObject2).y - d3);
+                double d4 = (((Point3d)localObject2).jdField_x_of_type_Double - d2) * (((Point3d)localObject2).jdField_x_of_type_Double - d2) + (((Point3d)localObject2).jdField_y_of_type_Double - d3) * (((Point3d)localObject2).jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse(localActor1, d4)) && 
                   (paramAbstractCollection != null)) paramAbstractCollection.add(localActor1);
               }
@@ -418,7 +417,7 @@ public class DrawEnvXY extends DrawEnv
               localObject2 = (Actor)((List)localObject1).get(i4);
               if (Actor.isValid((Actor)localObject2)) {
                 Point3d localPoint3d1 = ((Actor)localObject2).pos.getAbsPoint();
-                d6 = (localPoint3d1.x - d2) * (localPoint3d1.x - d2) + (localPoint3d1.y - d3) * (localPoint3d1.y - d3);
+                d6 = (localPoint3d1.jdField_x_of_type_Double - d2) * (localPoint3d1.jdField_x_of_type_Double - d2) + (localPoint3d1.jdField_y_of_type_Double - d3) * (localPoint3d1.jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse((Actor)localObject2, d6)) && 
                   (paramAbstractCollection != null)) paramAbstractCollection.add(localObject2);
               }
@@ -441,7 +440,7 @@ public class DrawEnvXY extends DrawEnv
               Actor localActor2 = (Actor)localEntry2.getKey();
               if (Actor.isValid(localActor2)) {
                 localObject2 = localActor2.pos.getAbsPoint();
-                double d5 = (((Point3d)localObject2).x - d2) * (((Point3d)localObject2).x - d2) + (((Point3d)localObject2).y - d3) * (((Point3d)localObject2).y - d3);
+                double d5 = (((Point3d)localObject2).jdField_x_of_type_Double - d2) * (((Point3d)localObject2).jdField_x_of_type_Double - d2) + (((Point3d)localObject2).jdField_y_of_type_Double - d3) * (((Point3d)localObject2).jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse(localActor2, d5)) && 
                   (paramAbstractCollection != null)) paramAbstractCollection.add(localActor2);
               }
@@ -465,7 +464,7 @@ public class DrawEnvXY extends DrawEnv
               localObject2 = (Actor)((List)localObject1).get(i5);
               if (Actor.isValid((Actor)localObject2)) {
                 Point3d localPoint3d2 = ((Actor)localObject2).pos.getAbsPoint();
-                d6 = (localPoint3d2.x - d2) * (localPoint3d2.x - d2) + (localPoint3d2.y - d3) * (localPoint3d2.y - d3);
+                d6 = (localPoint3d2.jdField_x_of_type_Double - d2) * (localPoint3d2.jdField_x_of_type_Double - d2) + (localPoint3d2.jdField_y_of_type_Double - d3) * (localPoint3d2.jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse((Actor)localObject2, d6)) && 
                   (paramAbstractCollection != null)) paramAbstractCollection.add(localObject2);
               }
@@ -500,7 +499,7 @@ public class DrawEnvXY extends DrawEnv
               Actor localActor1 = (Actor)localEntry1.getKey();
               if (Actor.isValid(localActor1)) {
                 localObject2 = localActor1.pos.getAbsPoint();
-                double d4 = (((Point3d)localObject2).x - d2) * (((Point3d)localObject2).x - d2) + (((Point3d)localObject2).y - d3) * (((Point3d)localObject2).y - d3);
+                double d4 = (((Point3d)localObject2).jdField_x_of_type_Double - d2) * (((Point3d)localObject2).jdField_x_of_type_Double - d2) + (((Point3d)localObject2).jdField_y_of_type_Double - d3) * (((Point3d)localObject2).jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse(localActor1, d4)) && 
                   (paramAbstractMap != null)) paramAbstractMap.put(localActor1, null);
               }
@@ -519,7 +518,7 @@ public class DrawEnvXY extends DrawEnv
               localObject2 = (Actor)((List)localObject1).get(i4);
               if (Actor.isValid((Actor)localObject2)) {
                 Point3d localPoint3d1 = ((Actor)localObject2).pos.getAbsPoint();
-                d6 = (localPoint3d1.x - d2) * (localPoint3d1.x - d2) + (localPoint3d1.y - d3) * (localPoint3d1.y - d3);
+                d6 = (localPoint3d1.jdField_x_of_type_Double - d2) * (localPoint3d1.jdField_x_of_type_Double - d2) + (localPoint3d1.jdField_y_of_type_Double - d3) * (localPoint3d1.jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse((Actor)localObject2, d6)) && 
                   (paramAbstractMap != null)) paramAbstractMap.put(localObject2, null);
               }
@@ -542,7 +541,7 @@ public class DrawEnvXY extends DrawEnv
               Actor localActor2 = (Actor)localEntry2.getKey();
               if (Actor.isValid(localActor2)) {
                 localObject2 = localActor2.pos.getAbsPoint();
-                double d5 = (((Point3d)localObject2).x - d2) * (((Point3d)localObject2).x - d2) + (((Point3d)localObject2).y - d3) * (((Point3d)localObject2).y - d3);
+                double d5 = (((Point3d)localObject2).jdField_x_of_type_Double - d2) * (((Point3d)localObject2).jdField_x_of_type_Double - d2) + (((Point3d)localObject2).jdField_y_of_type_Double - d3) * (((Point3d)localObject2).jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse(localActor2, d5)) && 
                   (paramAbstractMap != null)) paramAbstractMap.put(localActor2, null);
               }
@@ -566,7 +565,7 @@ public class DrawEnvXY extends DrawEnv
               localObject2 = (Actor)((List)localObject1).get(i5);
               if (Actor.isValid((Actor)localObject2)) {
                 Point3d localPoint3d2 = ((Actor)localObject2).pos.getAbsPoint();
-                d6 = (localPoint3d2.x - d2) * (localPoint3d2.x - d2) + (localPoint3d2.y - d3) * (localPoint3d2.y - d3);
+                d6 = (localPoint3d2.jdField_x_of_type_Double - d2) * (localPoint3d2.jdField_x_of_type_Double - d2) + (localPoint3d2.jdField_y_of_type_Double - d3) * (localPoint3d2.jdField_y_of_type_Double - d3);
                 if ((paramActorFilter.isUse((Actor)localObject2, d6)) && 
                   (paramAbstractMap != null)) paramAbstractMap.put(localObject2, null);
               }
@@ -610,19 +609,19 @@ public class DrawEnvXY extends DrawEnv
     int k;
     int m;
     if (((paramActor instanceof VisibilityLong)) && (((VisibilityLong)paramActor).isVisibilityLong())) {
-      i = (int)paramPoint3d1.x / 1600;
-      j = (int)paramPoint3d1.y / 1600;
-      k = (int)paramPoint3d2.x / 1600;
-      m = (int)paramPoint3d2.y / 1600;
+      i = (int)paramPoint3d1.jdField_x_of_type_Double / 1600;
+      j = (int)paramPoint3d1.jdField_y_of_type_Double / 1600;
+      k = (int)paramPoint3d2.jdField_x_of_type_Double / 1600;
+      m = (int)paramPoint3d2.jdField_y_of_type_Double / 1600;
       if ((i != k) || (j != m)) {
         this.mapXYLong.remove(j, i, paramActor);
         this.mapXYLong.put(m, k, paramActor, null);
       }
     } else {
-      i = (int)paramPoint3d1.x / 200;
-      j = (int)paramPoint3d1.y / 200;
-      k = (int)paramPoint3d2.x / 200;
-      m = (int)paramPoint3d2.y / 200;
+      i = (int)paramPoint3d1.jdField_x_of_type_Double / 200;
+      j = (int)paramPoint3d1.jdField_y_of_type_Double / 200;
+      k = (int)paramPoint3d2.jdField_x_of_type_Double / 200;
+      m = (int)paramPoint3d2.jdField_y_of_type_Double / 200;
       if ((i != k) || (j != m)) {
         this.mapXY.remove(j, i, paramActor);
         this.mapXY.put(m, k, paramActor, null);
@@ -637,12 +636,12 @@ public class DrawEnvXY extends DrawEnv
       int i;
       int j;
       if (((paramActor instanceof VisibilityLong)) && (((VisibilityLong)paramActor).isVisibilityLong())) {
-        i = (int)localPoint3d.x / 1600;
-        j = (int)localPoint3d.y / 1600;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 1600;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 1600;
         this.mapXYLong.put(j, i, paramActor, null);
       } else {
-        i = (int)localPoint3d.x / 200;
-        j = (int)localPoint3d.y / 200;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 200;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 200;
         this.mapXY.put(j, i, paramActor, null);
       }
     }
@@ -655,12 +654,12 @@ public class DrawEnvXY extends DrawEnv
       int i;
       int j;
       if (((paramActor instanceof VisibilityLong)) && (((VisibilityLong)paramActor).isVisibilityLong())) {
-        i = (int)localPoint3d.x / 1600;
-        j = (int)localPoint3d.y / 1600;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 1600;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 1600;
         this.mapXYLong.remove(j, i, paramActor);
       } else {
-        i = (int)localPoint3d.x / 200;
-        j = (int)localPoint3d.y / 200;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 200;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 200;
         this.mapXY.remove(j, i, paramActor);
       }
     }
@@ -673,19 +672,19 @@ public class DrawEnvXY extends DrawEnv
     int k;
     int m;
     if ((paramActor instanceof LandPlate)) {
-      i = (int)paramPoint3d1.x / 1600;
-      j = (int)paramPoint3d1.y / 1600;
-      k = (int)paramPoint3d2.x / 1600;
-      m = (int)paramPoint3d2.y / 1600;
+      i = (int)paramPoint3d1.jdField_x_of_type_Double / 1600;
+      j = (int)paramPoint3d1.jdField_y_of_type_Double / 1600;
+      k = (int)paramPoint3d2.jdField_x_of_type_Double / 1600;
+      m = (int)paramPoint3d2.jdField_y_of_type_Double / 1600;
       if ((i != k) || (j != m)) {
         this.lstXYPlate.remove(j, i, paramActor);
         this.lstXYPlate.put(m, k, paramActor);
       }
     } else {
-      i = (int)paramPoint3d1.x / 200;
-      j = (int)paramPoint3d1.y / 200;
-      k = (int)paramPoint3d2.x / 200;
-      m = (int)paramPoint3d2.y / 200;
+      i = (int)paramPoint3d1.jdField_x_of_type_Double / 200;
+      j = (int)paramPoint3d1.jdField_y_of_type_Double / 200;
+      k = (int)paramPoint3d2.jdField_x_of_type_Double / 200;
+      m = (int)paramPoint3d2.jdField_y_of_type_Double / 200;
       if ((i != k) || (j != m)) {
         this.lstXY.remove(j, i, paramActor);
         this.lstXY.put(m, k, paramActor);
@@ -700,12 +699,12 @@ public class DrawEnvXY extends DrawEnv
       int i;
       int j;
       if ((paramActor instanceof LandPlate)) {
-        i = (int)localPoint3d.x / 1600;
-        j = (int)localPoint3d.y / 1600;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 1600;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 1600;
         this.lstXYPlate.put(j, i, paramActor);
       } else {
-        i = (int)localPoint3d.x / 200;
-        j = (int)localPoint3d.y / 200;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 200;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 200;
         this.lstXY.put(j, i, paramActor);
       }
     }
@@ -718,12 +717,12 @@ public class DrawEnvXY extends DrawEnv
       int i;
       int j;
       if ((paramActor instanceof LandPlate)) {
-        i = (int)localPoint3d.x / 1600;
-        j = (int)localPoint3d.y / 1600;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 1600;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 1600;
         this.lstXYPlate.remove(j, i, paramActor);
       } else {
-        i = (int)localPoint3d.x / 200;
-        j = (int)localPoint3d.y / 200;
+        i = (int)localPoint3d.jdField_x_of_type_Double / 200;
+        j = (int)localPoint3d.jdField_y_of_type_Double / 200;
         this.lstXY.remove(j, i, paramActor);
       }
     }
@@ -742,27 +741,26 @@ public class DrawEnvXY extends DrawEnv
     ArrayList localArrayList1 = new ArrayList();
     ArrayList localArrayList2 = new ArrayList();
     this.mapXY.allValues(localArrayList1);
-    Object localObject;
     for (int i = 0; i < localArrayList1.size(); i++) {
-      localObject = (HashMapExt)localArrayList1.get(i);
-      localArrayList2.addAll(((HashMapExt)localObject).keySet());
+      HashMapExt localHashMapExt1 = (HashMapExt)localArrayList1.get(i);
+      localArrayList2.addAll(localHashMapExt1.keySet());
       Engine.destroyListGameActors(localArrayList2);
     }
     localArrayList1.clear();
 
     this.mapXYLong.allValues(localArrayList1);
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localObject = (HashMapExt)localArrayList1.get(i);
-      localArrayList2.addAll(((HashMapExt)localObject).keySet());
+    for (int j = 0; j < localArrayList1.size(); j++) {
+      HashMapExt localHashMapExt2 = (HashMapExt)localArrayList1.get(j);
+      localArrayList2.addAll(localHashMapExt2.keySet());
       Engine.destroyListGameActors(localArrayList2);
     }
     localArrayList1.clear();
 
     this.lstXY.allValues(localArrayList1);
     this.lstXYPlate.allValues(localArrayList1);
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localObject = (ArrayList)localArrayList1.get(i);
-      localArrayList2.addAll((Collection)localObject);
+    for (int k = 0; k < localArrayList1.size(); k++) {
+      ArrayList localArrayList3 = (ArrayList)localArrayList1.get(k);
+      localArrayList2.addAll(localArrayList3);
       Engine.destroyListGameActors(localArrayList2);
     }
     localArrayList1.clear();

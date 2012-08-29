@@ -12,7 +12,7 @@ public class Line3d
 
   public Line3d()
   {
-    this.A.x = (this.A.y = this.A.z = 0.5773502588272095D);
+    this.A.jdField_x_of_type_Double = (this.A.jdField_y_of_type_Double = this.A.jdField_z_of_type_Double = 0.5773502588272095D);
   }
 
   public Line3d(Line3d paramLine3d)
@@ -32,16 +32,16 @@ public class Line3d
 
   public final void set(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    this.A.x = (paramPoint3d2.x - paramPoint3d1.x);
-    this.A.y = (paramPoint3d2.y - paramPoint3d1.y);
-    this.A.z = (paramPoint3d2.z - paramPoint3d1.z);
+    this.A.jdField_x_of_type_Double = (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    this.A.jdField_y_of_type_Double = (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
+    this.A.jdField_z_of_type_Double = (paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double);
     this.A.normalize();
     this.P0 = paramPoint3d1;
   }
 
   public final double distance(Point3d paramPoint3d)
   {
-    Vector3d localVector3d = new Vector3d(paramPoint3d.x - this.P0.x, paramPoint3d.y - this.P0.y, paramPoint3d.z - this.P0.z);
+    Vector3d localVector3d = new Vector3d(paramPoint3d.jdField_x_of_type_Double - this.P0.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double - this.P0.jdField_y_of_type_Double, paramPoint3d.jdField_z_of_type_Double - this.P0.jdField_z_of_type_Double);
 
     double d = this.A.dot(localVector3d);
     return Math.sqrt(localVector3d.lengthSquared() - d * d);
@@ -65,7 +65,7 @@ public class Line3d
 
   public String toString()
   {
-    return "( " + this.A.x + "," + this.A.y + "," + this.A.z + "; " + this.P0.x + "," + this.P0.y + "," + this.P0.z + " )";
+    return "( " + this.A.jdField_x_of_type_Double + "," + this.A.jdField_y_of_type_Double + "," + this.A.jdField_z_of_type_Double + "; " + this.P0.jdField_x_of_type_Double + "," + this.P0.jdField_y_of_type_Double + "," + this.P0.jdField_z_of_type_Double + " )";
   }
 
   public static void main(String[] paramArrayOfString)

@@ -64,8 +64,7 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
   private static final int ICON_Train = 10;
   private static final int ICON_Pilot = 11;
   private static final int ICON_Airstatic = 12;
-  private static final int ICON_RadarRadio = 13;
-  private Mat[] iconAction = new Mat[14];
+  private Mat[] iconAction = new Mat[13];
 
   private HashMap assPilot = new HashMap();
   private HashMap assType = new HashMap();
@@ -98,7 +97,7 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
     if (paramGameState.id() == 58) {
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt) {
             GUIDGenDeBriefing.this.doBack();
@@ -123,9 +122,9 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
     prepareTypeAssociation();
 
     if (NetMissionTrack.countRecorded == 0)
-      this.bDifficulty.showWindow();
+      this.jdField_bDifficulty_of_type_ComMaddoxIl2GuiGUIButton.showWindow();
     else {
-      this.bDifficulty.hideWindow();
+      this.jdField_bDifficulty_of_type_ComMaddoxIl2GuiGUIButton.hideWindow();
     }
     Scores.compute();
 
@@ -141,8 +140,8 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
         int i = 0;
         for (int j = 0; j < arrayOfInt1.length; j++)
           arrayOfInt2[(i++)] = arrayOfInt1[j];
-        for (j = 0; j < Scores.arrayEnemyGroundKill.length; j++)
-          arrayOfInt2[(i++)] = Scores.arrayEnemyGroundKill[j];
+        for (int k = 0; k < Scores.arrayEnemyGroundKill.length; k++)
+          arrayOfInt2[(i++)] = Scores.arrayEnemyGroundKill[k];
         Scores.arrayEnemyGroundKill = arrayOfInt2;
       } else {
         Scores.arrayEnemyGroundKill = arrayOfInt1;
@@ -156,10 +155,10 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
     if ((!World.isPlayerDead()) && (!World.isPlayerCaptured()) && ((World.cur().targetsGuard.isTaskComplete()) || (Time.current() / 1000.0D / 60.0D > 20.0D) || (!World.cur().diffCur.NoInstantSuccess)))
     {
       this.bMissComplete = true;
-      this.bNext.showWindow();
+      this.jdField_bNext_of_type_ComMaddoxIl2GuiGUIButton.showWindow();
     } else {
       this.bMissComplete = false;
-      this.bNext.hideWindow();
+      this.jdField_bNext_of_type_ComMaddoxIl2GuiGUIButton.hideWindow();
     }
 
     super._enter();
@@ -212,7 +211,7 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
 
   protected void fillTextDescription() {
     BufferedReader localBufferedReader = null;
-    this.textDescription = null;
+    this.jdField_textDescription_of_type_JavaLangString = null;
     this.sound = null;
     try {
       localBufferedReader = new BufferedReader(new SFSReader("dgen/debrifing.txt", RTSConf.charEncoding));
@@ -226,21 +225,20 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
         if (i == 0)
           continue;
         if (str.startsWith("SOUND ")) {
-          this.sound = str.substring("SOUND ".length());
-        } else {
-          str = UnicodeTo8bit.load(str, false);
-          if (localStringBuffer == null) {
-            localStringBuffer = new StringBuffer(str);
-          }
-          else {
-            localStringBuffer.append('\n');
-            localStringBuffer.append(str);
-          }
+          this.sound = str.substring("SOUND ".length()); continue;
         }
+        str = UnicodeTo8bit.load(str, false);
+        if (localStringBuffer == null) {
+          localStringBuffer = new StringBuffer(str); continue;
+        }
+
+        localStringBuffer.append('\n');
+        localStringBuffer.append(str);
       }
+
       localBufferedReader.close();
       if (localStringBuffer != null)
-        this.textDescription = localStringBuffer.toString();
+        this.jdField_textDescription_of_type_JavaLangString = localStringBuffer.toString();
     } catch (Exception localException1) {
       if (localBufferedReader != null) try {
           localBufferedReader.close(); } catch (Exception localException2) {
@@ -279,9 +277,13 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
       Campaign localCampaign = Main.cur().campaign;
       String str1 = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/status.dat";
       BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str1, RTSConf.charEncoding));
-      for (int i = 0; i < 9; i++) {
-        localBufferedReader.readLine();
-      }
+      int i = 0;
+      while (true) { localBufferedReader.readLine();
+
+        i++; if (i >= 9)
+        {
+          break;
+        } }
       while (localBufferedReader.ready())
       {
         String str2 = localBufferedReader.readLine();
@@ -345,86 +347,84 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
   }
 
   private void drawEvents() {
-    GPoint localGPoint = this.renders.getMouseXY();
+    GPoint localGPoint = this.jdField_renders_of_type_ComMaddoxIl2EngineGUIRenders.getMouseXY();
     int i = -1;
     float f1 = localGPoint.x;
-    float f2 = this.renders.win.dy - 1.0F - localGPoint.y;
+    float f2 = this.jdField_renders_of_type_ComMaddoxIl2EngineGUIRenders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 1.0F - localGPoint.y;
     float f3 = IconDraw.scrSizeX() / 2;
     float f4 = f1; float f5 = f2;
     ArrayList localArrayList = EventLog.actions;
     int j = localArrayList.size();
-    float f9;
+    Object localObject;
     for (int k = 0; k < j; k++) {
-      Mat localMat = null;
-      EventLog.Action localAction2 = (EventLog.Action)localArrayList.get(k);
-      switch (localAction2.event) {
+      localObject = null;
+      EventLog.Action localAction = (EventLog.Action)localArrayList.get(k);
+      switch (localAction.event) {
       case 0:
-        this.assPilot.put(localAction2.arg0, localAction2.arg1);
+        this.assPilot.put(localAction.arg0, localAction.arg1);
         break;
       case 2:
       case 3:
       case 4:
-        switch (localAction2.scoreItem0) { case 0:
-          localMat = this.iconAction[4]; break;
+        switch (localAction.scoreItem0) { case 0:
+          localObject = this.iconAction[4]; break;
         case 8:
-          localMat = this.iconAction[12]; break;
+          localObject = this.iconAction[12]; break;
         case 1:
-          localMat = this.iconAction[9]; break;
+          localObject = this.iconAction[9]; break;
         case 2:
-          localMat = this.iconAction[3]; break;
+          localObject = this.iconAction[3]; break;
         case 3:
-          localMat = this.iconAction[5]; break;
+          localObject = this.iconAction[5]; break;
         case 4:
-          localMat = this.iconAction[0]; break;
+          localObject = this.iconAction[0]; break;
         case 5:
-          localMat = this.iconAction[2]; break;
+          localObject = this.iconAction[2]; break;
         case 6:
-          localMat = this.iconAction[10]; break;
+          localObject = this.iconAction[10]; break;
         case 7:
-          localMat = this.iconAction[8]; break;
-        case 9:
-          localMat = this.iconAction[13]; }
+          localObject = this.iconAction[8]; }
         break;
       case 5:
-        if ((localAction2.argi != 0) || (this.assPilot.get(localAction2.arg0) == null)) break;
-        localMat = this.iconAction[1]; break;
+        if ((localAction.argi != 0) || (this.assPilot.get(localAction.arg0) == null)) break;
+        localObject = this.iconAction[1]; break;
       case 6:
-        if ((localAction2.argi != 0) || (this.assPilot.get(localAction2.arg0) == null)) break;
-        localMat = this.iconAction[11]; break;
+        if ((localAction.argi != 0) || (this.assPilot.get(localAction.arg0) == null)) break;
+        localObject = this.iconAction[11]; break;
       case 7:
-        if ((localAction2.argi != 0) || (this.assPilot.get(localAction2.arg0) == null)) break;
-        localMat = this.iconAction[6]; break;
+        if ((localAction.argi != 0) || (this.assPilot.get(localAction.arg0) == null)) break;
+        localObject = this.iconAction[6]; break;
       case 1:
       }
 
-      if (localMat != null) {
-        float f7 = (float)((localAction2.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        f9 = (float)((localAction2.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-        IconDraw.setColor(0xFF000000 | Army.color(localAction2.army0));
-        IconDraw.render(localMat, f7, f9);
-        if ((f7 >= f1 - f3) && (f7 <= f1 + f3) && (f9 >= f2 - f3) && (f9 <= f2 + f3)) {
+      if (localObject != null) {
+        float f6 = (float)((localAction.x - this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldXOffset) * this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale);
+        float f8 = (float)((localAction.y - this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldYOffset) * this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale);
+        IconDraw.setColor(0xFF000000 | Army.color(localAction.army0));
+        IconDraw.render((Mat)localObject, f6, f8);
+        if ((f6 >= f1 - f3) && (f6 <= f1 + f3) && (f8 >= f2 - f3) && (f8 <= f2 + f3)) {
           i = k;
-          f4 = f7; f5 = f9;
+          f4 = f6; f5 = f8;
         }
       }
     }
     if (i >= 0) {
-      EventLog.Action localAction1 = (EventLog.Action)localArrayList.get(i);
+      localObject = (EventLog.Action)localArrayList.get(i);
       for (int m = 0; m < 4; m++) this.tip[m] = null;
       String str;
-      switch (localAction1.event) {
+      switch (((EventLog.Action)localObject).event) {
       case 2:
-        if (localAction1.scoreItem0 == 0)
-          this.tip[1] = getAss(localAction1.arg0);
+        if (((EventLog.Action)localObject).scoreItem0 == 0)
+          this.tip[1] = getAss(((EventLog.Action)localObject).arg0);
         else {
-          this.tip[1] = getByScoreItem(localAction1.scoreItem0, localAction1.arg0);
+          this.tip[1] = getByScoreItem(((EventLog.Action)localObject).scoreItem0, ((EventLog.Action)localObject).arg0);
         }
         this.tip[2] = i18n("debrief.Crashed");
 
         break;
       case 3:
-        this.tip[1] = getAss(localAction1.arg0);
-        str = getAss(localAction1.arg1);
+        this.tip[1] = getAss(((EventLog.Action)localObject).arg0);
+        str = getAss(((EventLog.Action)localObject).arg1);
         if (str != null) {
           this.tip[2] = i18n("debrief.ShotDownBy");
           this.tip[3] = str;
@@ -434,8 +434,8 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
 
         break;
       case 4:
-        this.tip[1] = getByScoreItem(localAction1.scoreItem0, localAction1.arg0);
-        str = (String)this.assPilot.get(localAction1.arg1);
+        this.tip[1] = getByScoreItem(((EventLog.Action)localObject).scoreItem0, ((EventLog.Action)localObject).arg0);
+        str = (String)this.assPilot.get(((EventLog.Action)localObject).arg1);
         if (str != null) {
           this.tip[2] = i18n("debrief.DestroyedBy");
           this.tip[3] = str;
@@ -445,58 +445,50 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
 
         break;
       case 5:
-        str = getAss(localAction1.arg0);
-        if (str != null) {
-          this.tip[1] = str;
-          this.tip[2] = i18n("debrief.BailedOut");
-        }
-
-        break;
+        str = getAss(((EventLog.Action)localObject).arg0);
+        if (str == null) break;
+        this.tip[1] = str;
+        this.tip[2] = i18n("debrief.BailedOut"); break;
       case 6:
-        str = getAss(localAction1.arg0);
-        if (str != null) {
-          this.tip[1] = str;
-          this.tip[2] = i18n("debrief.WasKilled");
-        }
-
-        break;
+        str = getAss(((EventLog.Action)localObject).arg0);
+        if (str == null) break;
+        this.tip[1] = str;
+        this.tip[2] = i18n("debrief.WasKilled"); break;
       case 7:
-        str = getAss(localAction1.arg0);
-        if (str != null) {
-          this.tip[1] = str;
-          this.tip[2] = i18n("debrief.Landed");
-        }
-
-        break;
+        str = getAss(((EventLog.Action)localObject).arg0);
+        if (str == null) break;
+        this.tip[1] = str;
+        this.tip[2] = i18n("debrief.Landed"); break;
       }
 
       if (this.tip[1] != null) {
-        this.tip[0] = EventLog.logOnTime(localAction1.time).toString();
-        float f6 = this.gridFont.width(this.tip[0]);
+        this.tip[0] = EventLog.logOnTime(((EventLog.Action)localObject).time).toString();
+        float f7 = this.jdField_gridFont_of_type_ComMaddoxIl2EngineTTFont.width(this.tip[0]);
         int n = 1;
-        for (int i1 = 1; (i1 < 4) && 
-          (this.tip[i1] != null); i1++)
-        {
+        for (int i1 = 1; i1 < 4; i1++) {
+          if (this.tip[i1] == null) {
+            break;
+          }
           n = i1;
-          f9 = this.gridFont.width(this.tip[i1]);
-          if (f6 >= f9) continue; f6 = f9;
+          f9 = this.jdField_gridFont_of_type_ComMaddoxIl2EngineTTFont.width(this.tip[i1]);
+          if (f7 >= f9) continue; f7 = f9;
         }
-        float f8 = -this.gridFont.descender();
-        f9 = this.gridFont.height() + f8;
-        f6 += 2.0F * f8;
-        float f10 = f9 * (n + 1) + 2.0F * f8;
+        float f9 = -this.jdField_gridFont_of_type_ComMaddoxIl2EngineTTFont.descender();
+        float f10 = this.jdField_gridFont_of_type_ComMaddoxIl2EngineTTFont.height() + f9;
+        f7 += 2.0F * f9;
+        float f11 = f10 * (n + 1) + 2.0F * f9;
 
-        float f11 = f4 - f6 / 2.0F;
-        float f12 = f5 + f3;
-        if (f11 + f6 > this.renders.win.dx) f11 = this.renders.win.dx - f6;
-        if (f12 + f10 > this.renders.win.dy) f12 = this.renders.win.dy - f10;
-        if (f11 < 0.0F) f11 = 0.0F;
+        float f12 = f4 - f7 / 2.0F;
+        float f13 = f5 + f3;
+        if (f12 + f7 > this.jdField_renders_of_type_ComMaddoxIl2EngineGUIRenders.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) f12 = this.jdField_renders_of_type_ComMaddoxIl2EngineGUIRenders.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - f7;
+        if (f13 + f11 > this.jdField_renders_of_type_ComMaddoxIl2EngineGUIRenders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) f13 = this.jdField_renders_of_type_ComMaddoxIl2EngineGUIRenders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f11;
         if (f12 < 0.0F) f12 = 0.0F;
+        if (f13 < 0.0F) f13 = 0.0F;
 
-        Render.drawTile(f11, f12, f6, f10, 0.0F, this.emptyMat, -813694977, 0.0F, 0.0F, 1.0F, 1.0F);
+        Render.drawTile(f12, f13, f7, f11, 0.0F, this.emptyMat, -813694977, 0.0F, 0.0F, 1.0F, 1.0F);
         Render.drawEnd();
         for (int i2 = 0; i2 <= n; i2++)
-          this.gridFont.output(-16777216, f11 + f8, f12 + f8 + (n - i2) * f9 + f8, 0.0F, this.tip[i2]);
+          this.jdField_gridFont_of_type_ComMaddoxIl2EngineTTFont.output(-16777216, f12 + f9, f13 + f9 + (n - i2) * f10 + f9, 0.0F, this.tip[i2]);
       }
     }
   }
@@ -522,9 +514,7 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
     case 6:
       return i18n("debrief.Train");
     case 7:
-      return i18n("debrief.Ship");
-    case 9:
-      return i18n("debrief.Radio"); }
+      return i18n("debrief.Ship"); }
     return paramString;
   }
 
@@ -541,7 +531,7 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
 
   private void drawPlayerPath() {
     Render.drawBeginLines(-1);
-    double d1 = 5.0D / this.cameraMap2D.worldScale;
+    double d1 = 5.0D / this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale;
     d1 *= d1;
     ArrayList localArrayList = EventLog.actions;
     int i = localArrayList.size();
@@ -557,11 +547,11 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
         double d2 = (localObject.x - localAction.x) * (localObject.x - localAction.x) + (localObject.y - localAction.y) * (localObject.y - localAction.y);
         if (d2 < d1)
           continue;
-        this.lineXYZ[0] = (float)((localObject.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        this.lineXYZ[1] = (float)((localObject.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+        this.lineXYZ[0] = (float)((localObject.x - this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldXOffset) * this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale);
+        this.lineXYZ[1] = (float)((localObject.y - this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldYOffset) * this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale);
         this.lineXYZ[2] = 0.0F;
-        this.lineXYZ[3] = (float)((localAction.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        this.lineXYZ[4] = (float)((localAction.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+        this.lineXYZ[3] = (float)((localAction.x - this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldXOffset) * this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale);
+        this.lineXYZ[4] = (float)((localAction.y - this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldYOffset) * this.jdField_cameraMap2D_of_type_ComMaddoxIl2EngineCameraOrtho2D.worldScale);
         this.lineXYZ[5] = 0.0F;
         Render.drawLines(this.lineXYZ, 2, 3.0F, j, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 1);
 
@@ -638,7 +628,7 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
       }
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt) {
             GUIDGenDeBriefing.this.doBack();
@@ -652,14 +642,11 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
 
   protected void clientRender() {
     GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-
-    if (this.bNext.isVisible()) {
-      localDialogClient.draw(localDialogClient.x1024(427.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(170.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.Apply"));
-    }
-
-    localDialogClient.draw(localDialogClient.x1024(0.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(170.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.MainMenu"));
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.SaveTrack"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.ReFly"));
+    localDialogClient.draw(localDialogClient.x1024(144.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(160.0F), localDialogClient.y1024(48.0F), 0, i18n("debrief.MainMenu"));
+    localDialogClient.draw(localDialogClient.x1024(256.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 2, i18n("debrief.SaveTrack"));
+    localDialogClient.draw(localDialogClient.x1024(528.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 2, i18n("debrief.ReFly"));
+    if (this.jdField_bNext_of_type_ComMaddoxIl2GuiGUIButton.isVisible())
+      localDialogClient.draw(localDialogClient.x1024(768.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(160.0F), localDialogClient.y1024(48.0F), 2, i18n("debrief.Apply"));
   }
 
   public GUIDGenDeBriefing(GWindowRoot paramGWindowRoot) {
@@ -678,6 +665,5 @@ public class GUIDGenDeBriefing extends GUIDeBriefing
     this.iconAction[10] = Mat.New("icons/objActTrain.mat");
     this.iconAction[11] = Mat.New("icons/objActPilot.mat");
     this.iconAction[12] = Mat.New("icons/objActAirstatic.mat");
-    this.iconAction[13] = Mat.New("icons/objActRR.mat");
   }
 }

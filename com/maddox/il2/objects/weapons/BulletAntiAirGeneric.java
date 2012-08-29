@@ -14,31 +14,31 @@ public abstract class BulletAntiAirGeneric extends Bullet
   protected float explodeAtHeight;
   protected boolean time_explode;
 
-  public BulletAntiAirGeneric(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong, float paramFloat, boolean paramBoolean)
+  public BulletAntiAirGeneric(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong, float paramFloat, boolean paramBoolean)
   {
-    super(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
+    super(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong);
     this.explodeAtHeight = paramFloat;
     this.time_explode = paramBoolean;
   }
 
   public void move(float paramFloat)
   {
-    if (this.gun == null) {
+    if (this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric == null) {
       destroy();
       return;
     }
 
-    this.p0.set(this.p1);
-    this.p1.scaleAdd(paramFloat, this.speed, this.p0);
+    this.jdField_p0_of_type_ComMaddoxJGPPoint3d.set(this.jdField_p1_of_type_ComMaddoxJGPPoint3d);
+    this.jdField_p1_of_type_ComMaddoxJGPPoint3d.scaleAdd(paramFloat, this.jdField_speed_of_type_ComMaddoxJGPVector3d, this.jdField_p0_of_type_ComMaddoxJGPPoint3d);
 
     if (this.explodeAtHeight > 0.0F) {
-      if ((float)this.p1.z >= this.explodeAtHeight) {
+      if ((float)this.jdField_p1_of_type_ComMaddoxJGPPoint3d.z >= this.explodeAtHeight) {
         timeOut();
         destroy();
         return;
       }
     }
-    else this.speed.z += this.gun.bulletAG[indx()] * paramFloat;
+    else this.jdField_speed_of_type_ComMaddoxJGPVector3d.z += this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.bulletAG[indx()] * paramFloat;
   }
 
   public void timeOut()
@@ -47,16 +47,16 @@ public abstract class BulletAntiAirGeneric extends Bullet
       return;
     }
 
-    if (this.gun == null) {
+    if (this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric == null) {
       return;
     }
 
     BulletProperties localBulletProperties = properties();
 
-    tmpP.interpolate(this.p0, this.p1, Time.tickOffset());
-    MsgExplosion.send(null, null, tmpP, this.owner, localBulletProperties.massa, localBulletProperties.power, localBulletProperties.powerType, localBulletProperties.powerRadius);
+    Bullet.tmpP.interpolate(this.jdField_p0_of_type_ComMaddoxJGPPoint3d, this.jdField_p1_of_type_ComMaddoxJGPPoint3d, Time.tickOffset());
+    MsgExplosion.send(null, null, Bullet.tmpP, this.owner, localBulletProperties.massa, localBulletProperties.power, localBulletProperties.powerType, localBulletProperties.powerRadius);
 
-    explodeInAir_Effect(tmpP);
+    explodeInAir_Effect(Bullet.tmpP);
   }
 
   protected abstract void explodeInAir_Effect(Point3d paramPoint3d);

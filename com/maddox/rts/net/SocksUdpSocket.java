@@ -288,12 +288,11 @@ public class SocksUdpSocket extends DatagramSocket
   private static final InetAddress getInetAddress(int paramInt1, byte[] paramArrayOfByte, int paramInt2)
     throws IOException
   {
-    int i;
     String str;
     switch (paramInt1) {
     case 1:
       StringBuffer localStringBuffer = new StringBuffer(16);
-      for (i = paramInt2; i < paramInt2 + 4; i++) {
+      for (int i = paramInt2; i < paramInt2 + 4; i++) {
         localStringBuffer.append(paramArrayOfByte[i] < 0 ? (short)(paramArrayOfByte[i] + 256) : (short)paramArrayOfByte[i]);
         if (i < paramInt2 + 3)
           localStringBuffer.append('.');
@@ -301,9 +300,9 @@ public class SocksUdpSocket extends DatagramSocket
       str = localStringBuffer.toString();
       break;
     case 3:
-      i = paramArrayOfByte[(paramInt2++)];
-      if (i < 0) i += 256;
-      str = new String(paramArrayOfByte, paramInt2, i);
+      int j = paramArrayOfByte[(paramInt2++)];
+      if (j < 0) j += 256;
+      str = new String(paramArrayOfByte, paramInt2, j);
       break;
     case 4:
       throw new IOException("Error: IPV6 is not supported.");
@@ -365,10 +364,9 @@ public class SocksUdpSocket extends DatagramSocket
       if (i == 0)
         continue;
       if ((i < 2) || (arrayOfByte[0] != 1)) {
-        str = "failed to parse the authentication reply from the socks server."; } else {
-        if (arrayOfByte[1] == 0) break;
-        str = "failed to through the authentication reply from the socks server.";
-      }
+        str = "failed to parse the authentication reply from the socks server."; break;
+      }if (arrayOfByte[1] == 0) break;
+      str = "failed to through the authentication reply from the socks server."; break;
     }
 
     return str;

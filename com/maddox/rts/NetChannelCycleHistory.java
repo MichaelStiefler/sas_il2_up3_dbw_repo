@@ -30,11 +30,13 @@ class NetChannelCycleHistory
     long l = paramLong2;
     int j = 0;
     int k = 1;
-    while (true) { i--; if ((i < this.tail) || (k == 0)) break;
+    do {
       if (this.time[(i & this.seq.length - 1)] < paramLong1) k = 0;
       l = this.time[(i & this.seq.length - 1)];
       j += (this.seq[(i & this.seq.length - 1)] >> 16);
-    }
+
+      i--; } while ((i >= this.tail) && (k != 0));
+
     l = paramLong2 - l;
     if (l <= 0L) return paramDouble;
     return j / l;
@@ -50,12 +52,13 @@ class NetChannelCycleHistory
   public int getIndex(int paramInt) {
     paramInt &= 16383;
     int i = this.head;
-    while (true) { i--; if (i < this.tail) break;
+    do {
       if ((this.seq[(i & this.seq.length - 1)] & 0x3FFF) == paramInt) {
         this.tail = i;
         return i & this.seq.length - 1;
       }
-    }
+      i--; } while (i >= this.tail);
+
     return -1;
   }
   public long getTime(int paramInt) {

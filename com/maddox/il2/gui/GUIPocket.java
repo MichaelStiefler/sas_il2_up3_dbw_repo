@@ -31,10 +31,10 @@ public class GUIPocket extends GWindowDialogControl
   public void render() {
     setCanvasColorWHITE();
     if (this.bEnable) {
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, bevel, texture);
-      lookAndFeel().renderTextDialogControl(this, 9.0F, 0.0F, this.win.dx - 9.0F - 7.0F, this.win.dy, this.color, false);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, bevel, texture);
+      lookAndFeel().renderTextDialogControl(this, 9.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 9.0F - 7.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.color, false);
     } else {
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, bevelEmpty, texture);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, bevelEmpty, texture);
     }
   }
 
@@ -42,7 +42,7 @@ public class GUIPocket extends GWindowDialogControl
     super(paramGWindow);
     init();
     this.cap = new GCaption(paramString);
-    this.toolTip = this.toolTip;
+    this.jdField_toolTip_of_type_JavaLangString = this.jdField_toolTip_of_type_JavaLangString;
     this.align = 1;
   }
 }

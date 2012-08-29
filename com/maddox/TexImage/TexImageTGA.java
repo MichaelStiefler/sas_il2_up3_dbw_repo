@@ -36,8 +36,8 @@ class TexImageTGA
 
     int i = this.ImgDescript & 0xF;
 
-    if (i > 8) throw new Exception("Too much Alpha bits");
-    for (; this.IDLength > 0; this.IDLength = (byte)(this.IDLength - 1)) paramInputStream.read();
+    if (i > 8) throw new Exception("Too much Alpha bits"); do {
+      paramInputStream.read(); this.IDLength = (byte)(this.IDLength - 1); } while (this.IDLength > 0);
 
     switch (this.ImageType) { case 2:
     case 3:
@@ -186,74 +186,70 @@ class TexImageTGA
   {
     int i;
     int j;
+    int k;
+    int m;
+    int n;
+    int i1;
     switch (paramTexImage.type) {
     case 6407:
     case 32849:
       i = paramTexImage.sx * 3;
-      for (j = 0; j < paramTexImage.sy; ) {
+      for (j = 0; j < paramTexImage.sy; j++) {
         for (k = 0; k < i; k += 3) {
           m = paramTexImage.image(k, j);
           paramTexImage.image(k, j, paramTexImage.image(k + 2, j));
           paramTexImage.image(k + 2, j, m);
         }
-        j++; continue;
-
-        i = paramTexImage.sx * 4;
-        for (j = 0; j < paramTexImage.sy; ) {
-          for (k = 0; k < i; k += 4) {
-            m = paramTexImage.image(k, j);
-            paramTexImage.image(k, j, paramTexImage.image(k + 2, j));
-            paramTexImage.image(k + 2, j, m);
-          }
-          j++; continue;
-
-          i = paramTexImage.sx * 2;
-          for (j = 0; j < paramTexImage.sy; ) {
-            for (k = 0; k < i; k += 2) {
-              n = (byte)(paramTexImage.image(k + 1, j) >> 3 & 0x1F);
-              i1 = (byte)(paramTexImage.image(k, j) << 3);
-              paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xE0);
-              paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
-              paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0x7);
-              paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
-            }
-            j++; continue;
-
-            i = paramTexImage.sx * 2;
-            for (j = 0; j < paramTexImage.sy; ) {
-              for (k = 0; k < i; k += 2) {
-                n = (byte)(paramTexImage.image(k + 1, j) >> 4 & 0xF);
-                i1 = (byte)(paramTexImage.image(k, j) << 4);
-                paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xF0);
-                paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
-                paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0xF);
-                paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
-              }
-              j++; continue;
-
-              i = paramTexImage.sx * 2;
-              for (j = 0; j < paramTexImage.sy; j++)
-                for (k = 0; k < i; k += 2) {
-                  n = (byte)(paramTexImage.image(k + 1, j) >> 2 & 0x1F);
-                  i1 = (byte)(paramTexImage.image(k, j) << 2 & 0x7C);
-                  paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xE0);
-                  paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
-                  paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0x83);
-                  paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
-                }
-            }
-          }
-        }
       }
+      break;
     case 6408:
     case 32856:
+      i = paramTexImage.sx * 4;
+      for (j = 0; j < paramTexImage.sy; j++) {
+        for (k = 0; k < i; k += 4) {
+          m = paramTexImage.image(k, j);
+          paramTexImage.image(k, j, paramTexImage.image(k + 2, j));
+          paramTexImage.image(k + 2, j, m);
+        }
+      }
+      break;
     case 32848:
+      i = paramTexImage.sx * 2;
+      for (j = 0; j < paramTexImage.sy; j++) {
+        for (k = 0; k < i; k += 2) {
+          n = (byte)(paramTexImage.image(k + 1, j) >> 3 & 0x1F);
+          i1 = (byte)(paramTexImage.image(k, j) << 3);
+          paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xE0);
+          paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
+          paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0x7);
+          paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
+        }
+      }
+      break;
     case 32854:
+      i = paramTexImage.sx * 2;
+      for (j = 0; j < paramTexImage.sy; j++) {
+        for (k = 0; k < i; k += 2) {
+          n = (byte)(paramTexImage.image(k + 1, j) >> 4 & 0xF);
+          i1 = (byte)(paramTexImage.image(k, j) << 4);
+          paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xF0);
+          paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
+          paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0xF);
+          paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
+        }
+      }
+      break;
     case 32855:
+      i = paramTexImage.sx * 2;
+      for (j = 0; j < paramTexImage.sy; j++)
+        for (k = 0; k < i; k += 2) {
+          n = (byte)(paramTexImage.image(k + 1, j) >> 2 & 0x1F);
+          i1 = (byte)(paramTexImage.image(k, j) << 2 & 0x7C);
+          paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xE0);
+          paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
+          paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0x83);
+          paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
+        }
     }
-    int k;
-    int m;
-    int n;
-    int i1;
   }
 }

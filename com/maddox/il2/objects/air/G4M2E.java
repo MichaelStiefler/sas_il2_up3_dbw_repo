@@ -33,7 +33,7 @@ public class G4M2E extends G4M
   }
 
   public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
     {
       for (int i = 0; i < this.drones.length; i++) {
         if (!Actor.isValid(this.drones[i]))
@@ -49,24 +49,24 @@ public class G4M2E extends G4M
       return;
     }
     Aircraft localAircraft = (Aircraft)paramActor;
-    if ((localAircraft.FM.AS.isMaster()) && (localAircraft.FM.Gears.onGround()) && (localAircraft.FM.getSpeedKMH() < 10.0F) && (this.FM.getSpeedKMH() < 10.0F))
+    if ((localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.onGround()) && (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeedKMH() < 10.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeedKMH() < 10.0F))
     {
       for (int i = 0; i < this.drones.length; i++)
         if (!Actor.isValid(this.drones[i])) {
           HookNamed localHookNamed = new HookNamed(this, "_Dockport" + i);
           Loc localLoc1 = new Loc();
           Loc localLoc2 = new Loc();
-          this.pos.getAbs(localLoc2);
+          this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc2);
           localHookNamed.computePos(this, localLoc2, localLoc1);
-          paramActor.pos.getAbs(localLoc2);
+          paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc2);
           if (localLoc1.getPoint().distance(localLoc2.getPoint()) < 5.0D) {
-            if (this.FM.AS.isMaster())
+            if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
             {
               typeDockableRequestAttach(paramActor, i, true);
               return;
             }
 
-            this.FM.AS.netToMaster(32, i, 0, paramActor);
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(32, i, 0, paramActor);
             return;
           }
         }
@@ -79,13 +79,13 @@ public class G4M2E extends G4M
       if (paramActor != this.drones[i])
         continue;
       Aircraft localAircraft = (Aircraft)paramActor;
-      if (localAircraft.FM.AS.isMaster())
-        if (this.FM.AS.isMaster())
+      if (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
         {
           typeDockableRequestDetach(paramActor, i, true);
         }
         else
-          this.FM.AS.netToMaster(33, i, 1, paramActor);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(33, i, 1, paramActor);
     }
   }
 
@@ -95,30 +95,30 @@ public class G4M2E extends G4M
       return;
     }
     if (paramBoolean) {
-      if (this.FM.AS.isMaster()) {
-        this.FM.AS.netToMirrors(34, paramInt, 1, paramActor);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMirrors(34, paramInt, 1, paramActor);
         typeDockableDoAttachToDrone(paramActor, paramInt);
       } else {
-        this.FM.AS.netToMaster(34, paramInt, 1, paramActor);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(34, paramInt, 1, paramActor);
       }
     }
-    else if (this.FM.AS.isMaster()) {
+    else if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
       if (!Actor.isValid(this.drones[paramInt])) {
-        this.FM.AS.netToMirrors(34, paramInt, 1, paramActor);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMirrors(34, paramInt, 1, paramActor);
         typeDockableDoAttachToDrone(paramActor, paramInt);
       }
     }
-    else this.FM.AS.netToMaster(34, paramInt, 0, paramActor);
+    else this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(34, paramInt, 0, paramActor);
   }
 
   public void typeDockableRequestDetach(Actor paramActor, int paramInt, boolean paramBoolean)
   {
     if (paramBoolean)
-      if (this.FM.AS.isMaster()) {
-        this.FM.AS.netToMirrors(35, paramInt, 1, paramActor);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMirrors(35, paramInt, 1, paramActor);
         typeDockableDoDetachFromDrone(paramInt);
       } else {
-        this.FM.AS.netToMaster(35, paramInt, 1, paramActor);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(35, paramInt, 1, paramActor);
       }
   }
 
@@ -128,12 +128,12 @@ public class G4M2E extends G4M
       HookNamed localHookNamed = new HookNamed(this, "_Dockport" + paramInt);
       Loc localLoc1 = new Loc();
       Loc localLoc2 = new Loc();
-      this.pos.getAbs(localLoc2);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc2);
       localHookNamed.computePos(this, localLoc2, localLoc1);
-      paramActor.pos.setAbs(localLoc1);
-      paramActor.pos.setBase(this, null, true);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localLoc1);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, null, true);
 
-      paramActor.pos.resetAsBase();
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
       this.drones[paramInt] = paramActor;
       ((TypeDockable)this.drones[paramInt]).typeDockableDoAttachToQueen(this, paramInt);
     }
@@ -143,7 +143,7 @@ public class G4M2E extends G4M
     if (!Actor.isValid(this.drones[paramInt])) {
       return;
     }
-    this.drones[paramInt].pos.setBase(null, null, true);
+    this.drones[paramInt].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, true);
     ((TypeDockable)this.drones[paramInt]).typeDockableDoDetachFromQueen(paramInt);
     this.drones[paramInt] = null;
   }
@@ -238,11 +238,11 @@ public class G4M2E extends G4M
 
     Property.set(localClass, "FlightModel", "FlightModels/G4M1-11.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303t 500", "MGunBrowning303t 500", "MGunHo5t 500", "MGunHo5t 500", "MGunHo5t 500", "MGunHo5t 500" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303t 500", "MGunBrowning303t 500", "MGunHo5t 500", "MGunHo5t 500", "MGunHo5t 500", "MGunHo5t 500" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

@@ -15,8 +15,8 @@ class OrderBreak extends Order
     Voice.setSyncMode(1);
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
-      if ((Actor.isAlive(localAircraft)) && ((localAircraft.FM instanceof Pilot))) {
-        Pilot localPilot = (Pilot)localAircraft.FM;
+      if ((Actor.isAlive(localAircraft)) && ((localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot))) {
+        Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
         if (OrdersTree.curOrdersTree.alone()) localPilot.aggressiveWingman = true;
         if (localPilot.get_task() == 2) {
           localPilot.Leader = null;

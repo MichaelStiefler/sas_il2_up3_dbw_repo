@@ -36,7 +36,7 @@ public class GWindowMenuBarItem extends GWindow
     activateWindow();
     if (this.subMenu == null) return;
     lAF().soundPlay("MenuPoolDown");
-    this.subMenu.setPos(0.0F, this.win.dy);
+    this.subMenu.setPos(0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     this.subMenu.activateWindow();
   }
   public void unSelect() {
@@ -67,8 +67,8 @@ public class GWindowMenuBarItem extends GWindow
     if ((this.cap != null) && (this.cap.offsetHotKey > 0))
       this.cap.offsetHotKey = -1;
     GSize localGSize = getMinSize();
-    this.win.dx = localGSize.dx;
-    this.win.dy = localGSize.dy;
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = localGSize.dx;
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = localGSize.dy;
     if (this.subMenu != null)
       this.subMenu.resolutionChanged();
   }
@@ -76,8 +76,8 @@ public class GWindowMenuBarItem extends GWindow
   public void created() {
     super.created();
     GSize localGSize = getMinSize();
-    this.win.dx = localGSize.dx;
-    this.win.dy = localGSize.dy;
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = localGSize.dx;
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = localGSize.dy;
   }
 
   public GWindowMenuBarItem(GWindowMenuBar paramGWindowMenuBar, String paramString1, String paramString2) {

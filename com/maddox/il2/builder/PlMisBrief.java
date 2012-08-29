@@ -1,7 +1,6 @@
 package com.maddox.il2.builder;
 
 import com.maddox.gwindow.GRegion;
-import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowDialogClient;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowEditText;
@@ -54,13 +53,15 @@ public class PlMisBrief extends Plugin
         String str4;
         if ("Name".compareToIgnoreCase(str3) == 0) {
           str4 = SharedTokenizer.getGap();
-          if (str4 != null)
-            this.wEditor.wName.setValue(UnicodeTo8bit.load(str4), false);
-        } else if ("Short".compareToIgnoreCase(str3) == 0) {
+          if (str4 != null) {
+            this.wEditor.wName.setValue(UnicodeTo8bit.load(str4), false); continue;
+          }
+        }if ("Short".compareToIgnoreCase(str3) == 0) {
           str4 = SharedTokenizer.getGap();
-          if (str4 != null)
-            fillEditor(this.wEditor.wShort.edit, str4);
-        } else if ("Description".compareToIgnoreCase(str3) == 0) {
+          if (str4 != null) {
+            fillEditor(this.wEditor.wShort.edit, str4); continue;
+          }
+        }if ("Description".compareToIgnoreCase(str3) == 0) {
           str4 = SharedTokenizer.getGap();
           if (str4 != null)
             fillEditor(this.wEditor.wInfo.edit, str4); 
@@ -163,13 +164,13 @@ public class PlMisBrief extends Plugin
 
   public void configure()
   {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisTarget: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
   }
 
   public void createGUI() {
-    this.mEditor = builder.mEdit.subMenu.addItem(0, new GWindowMenuItem(builder.mEdit.subMenu, i18n("&Texts"), i18n("TIPTexts"))
+    this.mEditor = Plugin.builder.mEdit.subMenu.addItem(1, new GWindowMenuItem(Plugin.builder.mEdit.subMenu, Plugin.i18n("&Texts"), Plugin.i18n("TIPTexts"))
     {
       public void execute() {
         if (PlMisBrief.this.wEditor.isVisible()) PlMisBrief.this.wEditor.hideWindow(); else
@@ -207,32 +208,18 @@ public class PlMisBrief extends Plugin
       this.bAlwaysOnTop = true;
       super.created();
       this.title = Plugin.i18n("Texts");
-      this.clientWindow = create(new GWindowTabDialogClient());
-      GWindowTabDialogClient localGWindowTabDialogClient = (GWindowTabDialogClient)this.clientWindow;
+      this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow = create(new GWindowTabDialogClient());
+      GWindowTabDialogClient localGWindowTabDialogClient = (GWindowTabDialogClient)this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow;
       localGWindowTabDialogClient.addTab(Plugin.i18n("textName"), localGWindowTabDialogClient.create(this.nameClient = new GWindowDialogClient()));
-      this.nameClient.addControl(this.wName = new GWindowEditControl(this.nameClient, 0.0F, 0.0F, 1.0F, 1.0F, "") {
-        public boolean notify(int paramInt1, int paramInt2) {
-          if ((paramInt1 == 2) && (paramInt2 == 0))
-            PlMission.setChanged();
-          return super.notify(paramInt1, paramInt2);
-        }
-      });
-      localGWindowTabDialogClient.addTab(Plugin.i18n("textShort"), localGWindowTabDialogClient.create(this.wShort = new GWindowEditTextControl() {
-        public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-          if ((paramGWindow == this.edit) && (paramInt1 == 2) && (paramInt2 == 0))
-            PlMission.setChanged();
-          return super.notify(paramGWindow, paramInt1, paramInt2);
-        }
-      }));
-      localGWindowTabDialogClient.addTab(Plugin.i18n("textDescr"), localGWindowTabDialogClient.create(this.wInfo = new GWindowEditTextControl() {
-        public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-          if ((paramGWindow == this.edit) && (paramInt1 == 2) && (paramInt2 == 0))
-            PlMission.setChanged();
-          return super.notify(paramGWindow, paramInt1, paramInt2);
-        } } ));
+      this.nameClient.addControl(this.wName = new PlMisBrief.1(this, this.nameClient, 0.0F, 0.0F, 1.0F, 1.0F, ""));
+
+      localGWindowTabDialogClient.addTab(Plugin.i18n("textShort"), localGWindowTabDialogClient.create(this.wShort = new PlMisBrief.2(this)));
+
+      localGWindowTabDialogClient.addTab(Plugin.i18n("textDescr"), localGWindowTabDialogClient.create(this.wInfo = new PlMisBrief.3(this)));
     }
 
-    public void deleteAll() {
+    public void deleteAll()
+    {
       this.wName.setValue("", false);
       this.wShort.edit.clear(false);
       this.wInfo.edit.clear(false);

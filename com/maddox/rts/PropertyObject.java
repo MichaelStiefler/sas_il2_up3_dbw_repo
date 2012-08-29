@@ -5,12 +5,12 @@ class PropertyObject extends Property
   private Object value = null;
 
   public PropertyObject(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
+    invokeObserver(Property.lastMapInt, Property.lastAction); }
 
   public PropertyObject(Object paramObject1, String paramString, Object paramObject2) {
     super(paramObject1, paramString);
     this.value = paramObject2;
-    invokeObserver(lastMapInt, lastAction);
+    invokeObserver(Property.lastMapInt, Property.lastAction);
   }
   public Class classValue() { if (this.value == null) return Object.class; return this.value.getClass(); } 
   public int intValue() { if ((this.value instanceof Number)) return ((Number)this.value).intValue(); return super.intValue(); } 

@@ -4,13 +4,8 @@ import com.maddox.rts.Property;
 
 public class BombAmpoule extends Bomb
 {
-  public void start()
+  static
   {
-    this.armingTime = 0L;
-    super.start();
-  }
-
-  static {
     Class localClass = BombAmpoule.class;
     Property.set(localClass, "mesh", "3DO/Arms/Ampoule/mono.sim");
     Property.set(localClass, "radius", 0.5F);

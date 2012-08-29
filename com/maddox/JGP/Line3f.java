@@ -12,7 +12,7 @@ public class Line3f
 
   public Line3f()
   {
-    this.A.x = (this.A.y = this.A.z = 0.5773503F);
+    this.A.jdField_x_of_type_Float = (this.A.jdField_y_of_type_Float = this.A.jdField_z_of_type_Float = 0.5773503F);
   }
 
   public Line3f(Line3f paramLine3f)
@@ -32,16 +32,16 @@ public class Line3f
 
   public final void set(Point3f paramPoint3f1, Point3f paramPoint3f2)
   {
-    this.A.x = (paramPoint3f2.x - paramPoint3f1.x);
-    this.A.y = (paramPoint3f2.y - paramPoint3f1.y);
-    this.A.z = (paramPoint3f2.z - paramPoint3f1.z);
+    this.A.jdField_x_of_type_Float = (paramPoint3f2.jdField_x_of_type_Float - paramPoint3f1.jdField_x_of_type_Float);
+    this.A.jdField_y_of_type_Float = (paramPoint3f2.jdField_y_of_type_Float - paramPoint3f1.jdField_y_of_type_Float);
+    this.A.jdField_z_of_type_Float = (paramPoint3f2.jdField_z_of_type_Float - paramPoint3f1.jdField_z_of_type_Float);
     this.A.normalize();
     this.P0 = paramPoint3f1;
   }
 
   public final float distance(Point3f paramPoint3f)
   {
-    Vector3f localVector3f = new Vector3f(paramPoint3f.x - this.P0.x, paramPoint3f.y - this.P0.y, paramPoint3f.z - this.P0.z);
+    Vector3f localVector3f = new Vector3f(paramPoint3f.jdField_x_of_type_Float - this.P0.jdField_x_of_type_Float, paramPoint3f.jdField_y_of_type_Float - this.P0.jdField_y_of_type_Float, paramPoint3f.jdField_z_of_type_Float - this.P0.jdField_z_of_type_Float);
 
     float f = this.A.dot(localVector3f);
     return (float)Math.sqrt(localVector3f.lengthSquared() - f * f);
@@ -65,7 +65,7 @@ public class Line3f
 
   public String toString()
   {
-    return "( " + this.A.x + "," + this.A.y + "," + this.A.z + "; " + this.P0.x + "," + this.P0.y + "," + this.P0.z + " )";
+    return "( " + this.A.jdField_x_of_type_Float + "," + this.A.jdField_y_of_type_Float + "," + this.A.jdField_z_of_type_Float + "; " + this.P0.jdField_x_of_type_Float + "," + this.P0.jdField_y_of_type_Float + "," + this.P0.jdField_z_of_type_Float + " )";
   }
 
   public static void main(String[] paramArrayOfString)

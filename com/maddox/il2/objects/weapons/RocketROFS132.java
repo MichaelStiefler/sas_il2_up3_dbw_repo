@@ -14,12 +14,12 @@ public class RocketROFS132 extends Rocket
 
   protected void doExplosion(Actor paramActor, String paramString)
   {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     MsgExplosion.send(paramActor, paramString, p, getOwner(), 10.1F, 8.4F, 1, 1200.0F);
     super.doExplosion(paramActor, paramString);
   }
   protected void doExplosionAir() {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     MsgExplosion.send(null, null, p, getOwner(), 10.1F, 8.4F, 1, 1200.0F);
     super.doExplosionAir();
   }

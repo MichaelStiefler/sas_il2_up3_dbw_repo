@@ -52,35 +52,35 @@ public class Quat4f extends Tuple4f
 
   public final void setIdent()
   {
-    this.x = 0.0F;
-    this.y = 0.0F;
-    this.z = 0.0F;
-    this.w = 1.0F;
+    this.jdField_x_of_type_Float = 0.0F;
+    this.jdField_y_of_type_Float = 0.0F;
+    this.jdField_z_of_type_Float = 0.0F;
+    this.jdField_w_of_type_Float = 1.0F;
   }
 
   public final void conjugate(Quat4f paramQuat4f)
   {
-    this.x = (-paramQuat4f.x);
-    this.y = (-paramQuat4f.y);
-    this.z = (-paramQuat4f.z);
-    this.w = paramQuat4f.w;
+    this.jdField_x_of_type_Float = (-paramQuat4f.jdField_x_of_type_Float);
+    this.jdField_y_of_type_Float = (-paramQuat4f.jdField_y_of_type_Float);
+    this.jdField_z_of_type_Float = (-paramQuat4f.jdField_z_of_type_Float);
+    this.jdField_w_of_type_Float = paramQuat4f.jdField_w_of_type_Float;
   }
 
   public final void conjugate()
   {
-    this.x = (-this.x);
-    this.y = (-this.y);
-    this.z = (-this.z);
+    this.jdField_x_of_type_Float = (-this.jdField_x_of_type_Float);
+    this.jdField_y_of_type_Float = (-this.jdField_y_of_type_Float);
+    this.jdField_z_of_type_Float = (-this.jdField_z_of_type_Float);
   }
 
   public final void mul(Quat4f paramQuat4f1, Quat4f paramQuat4f2)
   {
-    set(paramQuat4f1.x * paramQuat4f2.w + paramQuat4f1.w * paramQuat4f2.x + paramQuat4f1.y * paramQuat4f2.z - paramQuat4f1.z * paramQuat4f2.y, paramQuat4f1.y * paramQuat4f2.w + paramQuat4f1.w * paramQuat4f2.y + paramQuat4f1.z * paramQuat4f2.x - paramQuat4f1.x * paramQuat4f2.z, paramQuat4f1.z * paramQuat4f2.w + paramQuat4f1.w * paramQuat4f2.z + paramQuat4f1.x * paramQuat4f2.y - paramQuat4f1.y * paramQuat4f2.x, paramQuat4f1.w * paramQuat4f2.w - paramQuat4f1.x * paramQuat4f2.x - paramQuat4f1.y * paramQuat4f2.y - paramQuat4f1.z * paramQuat4f2.z);
+    set(paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_w_of_type_Float + paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_x_of_type_Float + paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_z_of_type_Float - paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_y_of_type_Float, paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_w_of_type_Float + paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_y_of_type_Float + paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_x_of_type_Float - paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_z_of_type_Float, paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_w_of_type_Float + paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_z_of_type_Float + paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_y_of_type_Float - paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_x_of_type_Float, paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_w_of_type_Float - paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_x_of_type_Float - paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_y_of_type_Float - paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_z_of_type_Float);
   }
 
   public final void mul(Quat4f paramQuat4f)
   {
-    set(this.x * paramQuat4f.w + this.w * paramQuat4f.x + this.y * paramQuat4f.z - this.z * paramQuat4f.y, this.y * paramQuat4f.w + this.w * paramQuat4f.y + this.z * paramQuat4f.x - this.x * paramQuat4f.z, this.z * paramQuat4f.w + this.w * paramQuat4f.z + this.x * paramQuat4f.y - this.y * paramQuat4f.x, this.w * paramQuat4f.w - this.x * paramQuat4f.x - this.y * paramQuat4f.y - this.z * paramQuat4f.z);
+    set(this.jdField_x_of_type_Float * paramQuat4f.jdField_w_of_type_Float + this.jdField_w_of_type_Float * paramQuat4f.jdField_x_of_type_Float + this.jdField_y_of_type_Float * paramQuat4f.jdField_z_of_type_Float - this.jdField_z_of_type_Float * paramQuat4f.jdField_y_of_type_Float, this.jdField_y_of_type_Float * paramQuat4f.jdField_w_of_type_Float + this.jdField_w_of_type_Float * paramQuat4f.jdField_y_of_type_Float + this.jdField_z_of_type_Float * paramQuat4f.jdField_x_of_type_Float - this.jdField_x_of_type_Float * paramQuat4f.jdField_z_of_type_Float, this.jdField_z_of_type_Float * paramQuat4f.jdField_w_of_type_Float + this.jdField_w_of_type_Float * paramQuat4f.jdField_z_of_type_Float + this.jdField_x_of_type_Float * paramQuat4f.jdField_y_of_type_Float - this.jdField_y_of_type_Float * paramQuat4f.jdField_x_of_type_Float, this.jdField_w_of_type_Float * paramQuat4f.jdField_w_of_type_Float - this.jdField_x_of_type_Float * paramQuat4f.jdField_x_of_type_Float - this.jdField_y_of_type_Float * paramQuat4f.jdField_y_of_type_Float - this.jdField_z_of_type_Float * paramQuat4f.jdField_z_of_type_Float);
   }
 
   public final void mulInverse(Quat4f paramQuat4f1, Quat4f paramQuat4f2)
@@ -89,7 +89,7 @@ public class Quat4f extends Tuple4f
 
     f = f == 0.0D ? f : 1.0F / f;
 
-    set((paramQuat4f1.x * paramQuat4f2.w - paramQuat4f1.w * paramQuat4f2.x - paramQuat4f1.y * paramQuat4f2.z + paramQuat4f1.z * paramQuat4f2.y) * f, (paramQuat4f1.y * paramQuat4f2.w - paramQuat4f1.w * paramQuat4f2.y - paramQuat4f1.z * paramQuat4f2.x + paramQuat4f1.x * paramQuat4f2.z) * f, (paramQuat4f1.z * paramQuat4f2.w - paramQuat4f1.w * paramQuat4f2.z - paramQuat4f1.x * paramQuat4f2.y + paramQuat4f1.y * paramQuat4f2.x) * f, (paramQuat4f1.w * paramQuat4f2.w + paramQuat4f1.x * paramQuat4f2.x + paramQuat4f1.y * paramQuat4f2.y + paramQuat4f1.z * paramQuat4f2.z) * f);
+    set((paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_w_of_type_Float - paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_x_of_type_Float - paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_z_of_type_Float + paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_y_of_type_Float) * f, (paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_w_of_type_Float - paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_y_of_type_Float - paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_x_of_type_Float + paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_z_of_type_Float) * f, (paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_w_of_type_Float - paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_z_of_type_Float - paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_y_of_type_Float + paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_x_of_type_Float) * f, (paramQuat4f1.jdField_w_of_type_Float * paramQuat4f2.jdField_w_of_type_Float + paramQuat4f1.jdField_x_of_type_Float * paramQuat4f2.jdField_x_of_type_Float + paramQuat4f1.jdField_y_of_type_Float * paramQuat4f2.jdField_y_of_type_Float + paramQuat4f1.jdField_z_of_type_Float * paramQuat4f2.jdField_z_of_type_Float) * f);
   }
 
   public final void mulInverse(Quat4f paramQuat4f)
@@ -98,52 +98,52 @@ public class Quat4f extends Tuple4f
 
     f = f == 0.0D ? f : 1.0F / f;
 
-    set((this.x * paramQuat4f.w - this.w * paramQuat4f.x - this.y * paramQuat4f.z + this.z * paramQuat4f.y) * f, (this.y * paramQuat4f.w - this.w * paramQuat4f.y - this.z * paramQuat4f.x + this.x * paramQuat4f.z) * f, (this.z * paramQuat4f.w - this.w * paramQuat4f.z - this.x * paramQuat4f.y + this.y * paramQuat4f.x) * f, (this.w * paramQuat4f.w + this.x * paramQuat4f.x + this.y * paramQuat4f.y + this.z * paramQuat4f.z) * f);
+    set((this.jdField_x_of_type_Float * paramQuat4f.jdField_w_of_type_Float - this.jdField_w_of_type_Float * paramQuat4f.jdField_x_of_type_Float - this.jdField_y_of_type_Float * paramQuat4f.jdField_z_of_type_Float + this.jdField_z_of_type_Float * paramQuat4f.jdField_y_of_type_Float) * f, (this.jdField_y_of_type_Float * paramQuat4f.jdField_w_of_type_Float - this.jdField_w_of_type_Float * paramQuat4f.jdField_y_of_type_Float - this.jdField_z_of_type_Float * paramQuat4f.jdField_x_of_type_Float + this.jdField_x_of_type_Float * paramQuat4f.jdField_z_of_type_Float) * f, (this.jdField_z_of_type_Float * paramQuat4f.jdField_w_of_type_Float - this.jdField_w_of_type_Float * paramQuat4f.jdField_z_of_type_Float - this.jdField_x_of_type_Float * paramQuat4f.jdField_y_of_type_Float + this.jdField_y_of_type_Float * paramQuat4f.jdField_x_of_type_Float) * f, (this.jdField_w_of_type_Float * paramQuat4f.jdField_w_of_type_Float + this.jdField_x_of_type_Float * paramQuat4f.jdField_x_of_type_Float + this.jdField_y_of_type_Float * paramQuat4f.jdField_y_of_type_Float + this.jdField_z_of_type_Float * paramQuat4f.jdField_z_of_type_Float) * f);
   }
 
   private final float norm()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+    return this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float + this.jdField_w_of_type_Float * this.jdField_w_of_type_Float;
   }
 
   public final void inverse(Quat4f paramQuat4f)
   {
     float f = paramQuat4f.norm();
 
-    this.x = (-paramQuat4f.x / f);
-    this.y = (-paramQuat4f.y / f);
-    this.z = (-paramQuat4f.z / f);
-    paramQuat4f.w /= f;
+    this.jdField_x_of_type_Float = (-paramQuat4f.jdField_x_of_type_Float / f);
+    this.jdField_y_of_type_Float = (-paramQuat4f.jdField_y_of_type_Float / f);
+    this.jdField_z_of_type_Float = (-paramQuat4f.jdField_z_of_type_Float / f);
+    this.jdField_w_of_type_Float = (paramQuat4f.jdField_w_of_type_Float / f);
   }
 
   public final void inverse()
   {
     float f = norm();
 
-    this.x = (-this.x / f);
-    this.y = (-this.y / f);
-    this.z = (-this.z / f);
-    this.w /= f;
+    this.jdField_x_of_type_Float = (-this.jdField_x_of_type_Float / f);
+    this.jdField_y_of_type_Float = (-this.jdField_y_of_type_Float / f);
+    this.jdField_z_of_type_Float = (-this.jdField_z_of_type_Float / f);
+    this.jdField_w_of_type_Float = (this.jdField_w_of_type_Float / f);
   }
 
   public final void normalize(Quat4f paramQuat4f)
   {
     float f = (float)Math.sqrt(paramQuat4f.norm());
 
-    paramQuat4f.x /= f;
-    paramQuat4f.y /= f;
-    paramQuat4f.z /= f;
-    paramQuat4f.w /= f;
+    this.jdField_x_of_type_Float = (paramQuat4f.jdField_x_of_type_Float / f);
+    this.jdField_y_of_type_Float = (paramQuat4f.jdField_y_of_type_Float / f);
+    this.jdField_z_of_type_Float = (paramQuat4f.jdField_z_of_type_Float / f);
+    this.jdField_w_of_type_Float = (paramQuat4f.jdField_w_of_type_Float / f);
   }
 
   public final void normalize()
   {
     float f = (float)Math.sqrt(norm());
 
-    this.x /= f;
-    this.y /= f;
-    this.z /= f;
-    this.w /= f;
+    this.jdField_x_of_type_Float /= f;
+    this.jdField_y_of_type_Float /= f;
+    this.jdField_z_of_type_Float /= f;
+    this.jdField_w_of_type_Float /= f;
   }
 
   public final void set(Matrix4f paramMatrix4f)
@@ -168,40 +168,40 @@ public class Quat4f extends Tuple4f
 
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
-    this.x = paramAxisAngle4f.x;
-    this.y = paramAxisAngle4f.y;
-    this.z = paramAxisAngle4f.z;
-    float f1 = (float)Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z) + 1.0E-035F;
+    this.jdField_x_of_type_Float = paramAxisAngle4f.jdField_x_of_type_Float;
+    this.jdField_y_of_type_Float = paramAxisAngle4f.jdField_y_of_type_Float;
+    this.jdField_z_of_type_Float = paramAxisAngle4f.jdField_z_of_type_Float;
+    float f1 = (float)Math.sqrt(this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float) + 1.0E-035F;
 
     float f2 = (float)(Math.sin(0.5D * paramAxisAngle4f.angle) / f1);
-    this.x *= f2;
-    this.y *= f2;
-    this.z *= f2;
-    this.w = (float)Math.cos(0.5D * paramAxisAngle4f.angle);
+    this.jdField_x_of_type_Float *= f2;
+    this.jdField_y_of_type_Float *= f2;
+    this.jdField_z_of_type_Float *= f2;
+    this.jdField_w_of_type_Float = (float)Math.cos(0.5D * paramAxisAngle4f.angle);
   }
 
   public void set(Vector3f paramVector3f)
   {
     float f1 = paramVector3f.length() + 1.0E-035F;
     float f2 = (float)(Math.sin(0.5D * f1) / f1);
-    this.x = (paramVector3f.x * f2);
-    this.y = (paramVector3f.y * f2);
-    this.z = (paramVector3f.z * f2);
-    this.w = (float)Math.cos(0.5D * f1);
+    this.jdField_x_of_type_Float = (paramVector3f.jdField_x_of_type_Float * f2);
+    this.jdField_y_of_type_Float = (paramVector3f.jdField_y_of_type_Float * f2);
+    this.jdField_z_of_type_Float = (paramVector3f.jdField_z_of_type_Float * f2);
+    this.jdField_w_of_type_Float = (float)Math.cos(0.5D * f1);
   }
 
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
-    this.x = (float)paramAxisAngle4d.x;
-    this.y = (float)paramAxisAngle4d.y;
-    this.z = (float)paramAxisAngle4d.z;
-    float f1 = (float)Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    this.jdField_x_of_type_Float = (float)paramAxisAngle4d.x;
+    this.jdField_y_of_type_Float = (float)paramAxisAngle4d.y;
+    this.jdField_z_of_type_Float = (float)paramAxisAngle4d.z;
+    float f1 = (float)Math.sqrt(this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float);
 
     float f2 = (float)(Math.sin(0.5D * paramAxisAngle4d.angle) / f1);
-    this.x *= f2;
-    this.y *= f2;
-    this.z *= f2;
-    this.w = (float)Math.cos(0.5D * paramAxisAngle4d.angle);
+    this.jdField_x_of_type_Float *= f2;
+    this.jdField_y_of_type_Float *= f2;
+    this.jdField_z_of_type_Float *= f2;
+    this.jdField_w_of_type_Float = (float)Math.cos(0.5D * paramAxisAngle4d.angle);
   }
 
   public final void interpolate(Quat4f paramQuat4f, float paramFloat)
@@ -209,12 +209,12 @@ public class Quat4f extends Tuple4f
     normalize();
     float f1 = (float)Math.sqrt(paramQuat4f.norm());
 
-    float f2 = paramQuat4f.x / f1;
-    float f3 = paramQuat4f.y / f1;
-    float f4 = paramQuat4f.z / f1;
-    float f5 = paramQuat4f.w / f1;
+    float f2 = paramQuat4f.jdField_x_of_type_Float / f1;
+    float f3 = paramQuat4f.jdField_y_of_type_Float / f1;
+    float f4 = paramQuat4f.jdField_z_of_type_Float / f1;
+    float f5 = paramQuat4f.jdField_w_of_type_Float / f1;
 
-    float f6 = this.x * f2 + this.y * f3 + this.z * f4 + this.w * f5;
+    float f6 = this.jdField_x_of_type_Float * f2 + this.jdField_y_of_type_Float * f3 + this.jdField_z_of_type_Float * f4 + this.jdField_w_of_type_Float * f5;
 
     if (f6 < 0.0F) { f6 = -f6;
       f2 = -f2; f3 = -f3; f4 = -f4; f5 = -f5;
@@ -231,10 +231,10 @@ public class Quat4f extends Tuple4f
     float f8 = (float)Math.sin((1.0D - paramFloat) * f6) / f7;
     f6 = (float)Math.sin(paramFloat * f6) / f7;
 
-    this.x = (f8 * this.x + f6 * f2);
-    this.y = (f8 * this.y + f6 * f3);
-    this.z = (f8 * this.z + f6 * f4);
-    this.w = (f8 * this.w + f6 * f5);
+    this.jdField_x_of_type_Float = (f8 * this.jdField_x_of_type_Float + f6 * f2);
+    this.jdField_y_of_type_Float = (f8 * this.jdField_y_of_type_Float + f6 * f3);
+    this.jdField_z_of_type_Float = (f8 * this.jdField_z_of_type_Float + f6 * f4);
+    this.jdField_w_of_type_Float = (f8 * this.jdField_w_of_type_Float + f6 * f5);
   }
 
   public final void interpolate(Quat4f paramQuat4f1, Quat4f paramQuat4f2, float paramFloat)
@@ -253,34 +253,34 @@ public class Quat4f extends Tuple4f
     float f1;
     if (f2 >= 0.0D) {
       f1 = (float)Math.sqrt(f2 + 1.0D);
-      this.w = (float)(f1 * 0.5D);
+      this.jdField_w_of_type_Float = (float)(f1 * 0.5D);
       f1 = 0.5F / f1;
-      this.x = ((paramFloat8 - paramFloat6) * f1);
-      this.y = ((paramFloat3 - paramFloat7) * f1);
-      this.z = ((paramFloat4 - paramFloat2) * f1);
+      this.jdField_x_of_type_Float = ((paramFloat8 - paramFloat6) * f1);
+      this.jdField_y_of_type_Float = ((paramFloat3 - paramFloat7) * f1);
+      this.jdField_z_of_type_Float = ((paramFloat4 - paramFloat2) * f1);
     } else {
       float f3 = Math.max(Math.max(paramFloat1, paramFloat5), paramFloat9);
       if (f3 == paramFloat1) {
         f1 = (float)Math.sqrt(paramFloat1 - (paramFloat5 + paramFloat9) + 1.0D);
-        this.x = (float)(f1 * 0.5D);
+        this.jdField_x_of_type_Float = (float)(f1 * 0.5D);
         f1 = 0.5F / f1;
-        this.y = ((paramFloat2 + paramFloat4) * f1);
-        this.z = ((paramFloat7 + paramFloat3) * f1);
-        this.w = ((paramFloat8 - paramFloat6) * f1);
+        this.jdField_y_of_type_Float = ((paramFloat2 + paramFloat4) * f1);
+        this.jdField_z_of_type_Float = ((paramFloat7 + paramFloat3) * f1);
+        this.jdField_w_of_type_Float = ((paramFloat8 - paramFloat6) * f1);
       } else if (f3 == paramFloat5) {
         f1 = (float)Math.sqrt(paramFloat5 - (paramFloat9 + paramFloat1) + 1.0D);
-        this.y = (float)(f1 * 0.5D);
+        this.jdField_y_of_type_Float = (float)(f1 * 0.5D);
         f1 = 0.5F / f1;
-        this.z = ((paramFloat6 + paramFloat8) * f1);
-        this.x = ((paramFloat2 + paramFloat4) * f1);
-        this.w = ((paramFloat3 - paramFloat7) * f1);
+        this.jdField_z_of_type_Float = ((paramFloat6 + paramFloat8) * f1);
+        this.jdField_x_of_type_Float = ((paramFloat2 + paramFloat4) * f1);
+        this.jdField_w_of_type_Float = ((paramFloat3 - paramFloat7) * f1);
       } else {
         f1 = (float)Math.sqrt(paramFloat9 - (paramFloat1 + paramFloat5) + 1.0D);
-        this.z = (float)(f1 * 0.5D);
+        this.jdField_z_of_type_Float = (float)(f1 * 0.5D);
         f1 = 0.5F / f1;
-        this.x = ((paramFloat7 + paramFloat3) * f1);
-        this.y = ((paramFloat6 + paramFloat8) * f1);
-        this.w = ((paramFloat4 - paramFloat2) * f1);
+        this.jdField_x_of_type_Float = ((paramFloat7 + paramFloat3) * f1);
+        this.jdField_y_of_type_Float = ((paramFloat6 + paramFloat8) * f1);
+        this.jdField_w_of_type_Float = ((paramFloat4 - paramFloat2) * f1);
       }
     }
   }
@@ -324,10 +324,10 @@ public class Quat4f extends Tuple4f
     float f5 = (float)Math.sin(paramFloat3 * 0.5F);
     float f6 = (float)Math.cos(paramFloat3 * 0.5F);
 
-    this.x = (f2 * f4 * f5 - f1 * f3 * f6);
-    this.y = (f2 * f3 * f6 + f1 * f4 * f5);
-    this.z = (f1 * f4 * f6 - f2 * f3 * f5);
-    this.w = (f2 * f4 * f6 + f1 * f3 * f5);
+    this.jdField_x_of_type_Float = (f2 * f4 * f5 - f1 * f3 * f6);
+    this.jdField_y_of_type_Float = (f2 * f3 * f6 + f1 * f4 * f5);
+    this.jdField_z_of_type_Float = (f1 * f4 * f6 - f2 * f3 * f5);
+    this.jdField_w_of_type_Float = (f2 * f4 * f6 + f1 * f3 * f5);
   }
 
   public void getEulers(float[] paramArrayOfFloat)

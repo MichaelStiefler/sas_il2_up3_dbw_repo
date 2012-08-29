@@ -16,11 +16,13 @@ public class SharedTokenizer
     paramString.getChars(0, i, buf, 0);
     ptr = 0; end = i;
 
-    while ((ptr < end) && 
-      (buf[ptr] <= ' ')) ptr += 1;
+    while (ptr < end) {
+      if (buf[ptr] > ' ') break; ptr += 1;
+    }
 
-    while ((end > ptr) && 
-      (buf[(end - 1)] <= ' ')) end -= 1;
+    while (end > ptr) {
+      if (buf[(end - 1)] > ' ') break; end -= 1;
+    }
   }
 
   public static String getGap()
@@ -29,8 +31,8 @@ public class SharedTokenizer
     start = ptr;
     stop = end;
     ptr = end;
-    while ((stop > start) && 
-      (buf[(stop - 1)] <= ' ')) {
+    while (stop > start) {
+      if (buf[(stop - 1)] > ' ') break;
       stop -= 1;
     }
     if (stop <= start)
@@ -47,12 +49,13 @@ public class SharedTokenizer
     int j = ptr;
     while (j < end) {
       i++;
-      while ((j < end) && 
-        (buf[j] > ' ')) j++;
+      while (j < end) {
+        if (buf[j] <= ' ') break; j++;
+      }
 
-      while ((j < end) && 
-        (buf[j] <= ' ')) j++;
-
+      while (j < end) {
+        if (buf[j] > ' ') break; j++;
+      }
     }
 
     return i;
@@ -60,16 +63,17 @@ public class SharedTokenizer
 
   private static void nextWord() {
     start = ptr;
-    while ((ptr < end) && 
-      (buf[ptr] > ' ')) ptr += 1;
+    while (ptr < end) {
+      if (buf[ptr] <= ' ') break; ptr += 1;
+    }
 
     stop = ptr;
-    while ((ptr < end) && 
-      (buf[ptr] <= ' ')) ptr += 1;
+    while (ptr < end) {
+      if (buf[ptr] > ' ') break; ptr += 1;
+    }
   }
 
-  public static void _nextWord()
-  {
+  public static void _nextWord() {
     nextWord();
   }
 

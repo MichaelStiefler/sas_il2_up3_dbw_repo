@@ -158,9 +158,9 @@ public class LightsGlare extends Render
     VisibilityChecker.checkObjObstacle = true;
     VisibilityChecker.targetPosInput = paramPoint3d;
 
-    paramPoint3f.x = 0.0F;
+    paramPoint3f.jdField_x_of_type_Float = 0.0F;
     float f = VisibilityChecker.computeVisibility(null, paramActor);
-    paramPoint3f.x = VisibilityChecker.resultAng;
+    paramPoint3f.jdField_x_of_type_Float = VisibilityChecker.resultAng;
 
     return f;
   }
@@ -210,69 +210,68 @@ public class LightsGlare extends Render
     float f7;
     float f8;
     float f9;
-    float f10;
     for (int n = 0; n < i; n++) {
-      f3 = this.glareData[(n * 3 + 0)];
-      f4 = this.glareData[(n * 3 + 1)];
-      f5 = this.glareData[(n * 3 + 2)];
+      f2 = this.glareData[(n * 3 + 0)];
+      f3 = this.glareData[(n * 3 + 1)];
+      f4 = this.glareData[(n * 3 + 2)];
 
-      if (f3 < 0.0F)
+      if (f2 < 0.0F)
       {
+        f5 = 0.0F;
         f6 = 0.0F;
-        f7 = 0.0F;
       }
       else {
-        f8 = 34.0F;
-        if (f4 >= f8) {
-          f6 = 0.0F;
+        f7 = 34.0F;
+        if (f3 >= f7) {
+          f5 = 0.0F;
         } else {
-          f9 = f4 / f8;
-          f6 = 0.5F * (Geom.cosDeg(f9 * 180.0F) + 1.0F);
-          if (f6 >= 1.0F) {
-            f6 = 1.0F;
+          f8 = f3 / f7;
+          f5 = 0.5F * (Geom.cosDeg(f8 * 180.0F) + 1.0F);
+          if (f5 >= 1.0F) {
+            f5 = 1.0F;
           }
-          f6 *= f3;
-          if (f6 <= 0.0F) {
-            f6 = 0.0F;
+          f5 *= f2;
+          if (f5 <= 0.0F) {
+            f5 = 0.0F;
           }
         }
 
-        f9 = 48.0F;
-        if (f4 >= f9) {
-          f7 = 0.0F;
+        f8 = 48.0F;
+        if (f3 >= f8) {
+          f6 = 0.0F;
         } else {
-          f10 = f4 / f9;
-          f7 = 0.5F * (Geom.cosDeg(f10 * 180.0F) + 1.0F);
+          f9 = f3 / f8;
+          f6 = 0.5F * (Geom.cosDeg(f9 * 180.0F) + 1.0F);
         }
-        if (f3 > 0.003921569F) {
-          f7 *= f3;
-          f7 = 0.2F + 0.8F * f7;
-          if (f7 >= 1.0F)
-            f7 = 1.0F;
+        if (f2 > 0.003921569F) {
+          f6 *= f2;
+          f6 = 0.2F + 0.8F * f6;
+          if (f6 >= 1.0F)
+            f6 = 1.0F;
         }
         else {
-          f7 = 0.0F;
+          f6 = 0.0F;
         }
       }
-      f1 += f6;
+      f1 += f5;
 
       if (l2 < 0L)
       {
-        f5 = f7;
+        f4 = f6;
       } else if (l2 != 0L)
       {
-        f8 = f7 - f5;
-        f9 = f8 >= 0.0F ? 5.0F : 2.5F;
-        f10 = (float)l2 * f9 / 1000.0F;
-        if (f10 >= Math.abs(f8))
-          f5 = f7;
+        f7 = f6 - f4;
+        f8 = f7 >= 0.0F ? 5.0F : 2.5F;
+        f9 = (float)l2 * f8 / 1000.0F;
+        if (f9 >= Math.abs(f7))
+          f4 = f6;
         else {
-          f5 += (f8 < 0.0F ? -f10 : f10);
+          f4 += (f7 < 0.0F ? -f9 : f9);
         }
       }
 
-      this.glareData[(n * 3 + 2)] = f5;
-      if ((f3 >= 0.0F) && (f5 >= 0.007843138F)) {
+      this.glareData[(n * 3 + 2)] = f4;
+      if ((f2 >= 0.0F) && (f4 >= 0.007843138F)) {
         m = 1;
       }
 
@@ -329,7 +328,7 @@ public class LightsGlare extends Render
 
         tmpp2.scale(0.7699999809265137D);
 
-        gl.Color4f((float)tmpp2.x, (float)tmpp2.y, (float)tmpp2.z, 1.0F - this.curGlare * 0.86F);
+        gl.Color4f((float)tmpp2.jdField_x_of_type_Double, (float)tmpp2.jdField_y_of_type_Double, (float)tmpp2.jdField_z_of_type_Double, 1.0F - this.curGlare * 0.86F);
       }
 
       gl.Vertex2f(1.0F, 1.0F);
@@ -364,13 +363,13 @@ public class LightsGlare extends Render
         continue;
       }
 
-      if (!Main3D.cur3D().project2d_norm(tmpp1.x, tmpp1.y, tmpp1.z, tmpp2))
+      if (!Main3D.cur3D().project2d_norm(tmpp1.jdField_x_of_type_Double, tmpp1.jdField_y_of_type_Double, tmpp1.jdField_z_of_type_Double, tmpp2))
       {
         continue;
       }
 
-      f6 = ((float)tmpp2.x + 1.0F) * 0.5F;
-      f7 = ((float)tmpp2.y + 1.0F) * 0.5F;
+      f6 = ((float)tmpp2.jdField_x_of_type_Double + 1.0F) * 0.5F;
+      f7 = ((float)tmpp2.jdField_y_of_type_Double + 1.0F) * 0.5F;
 
       if (i2 != 0) {
         f10 = f5 <= 0.4F ? 0.0F : (f5 - 0.4F) / 0.6F;
@@ -388,13 +387,13 @@ public class LightsGlare extends Render
         continue;
       }
 
-      f10 = Geom.tanDeg(Main3D.cur3D().camera3D.FOV() * 0.5F);
-      float f11 = -90.0F * ((float)tmpp2.x * f10);
+      float f10 = Geom.tanDeg(Main3D.cur3D().camera3D.FOV() * 0.5F);
+      float f11 = -90.0F * ((float)tmpp2.jdField_x_of_type_Double * f10);
       float f12 = Geom.cosDeg(f11);
       float f13 = Geom.sinDeg(f11);
 
       gl.Begin(7);
-      gl.Color4f(tmpcolor.x, tmpcolor.y, tmpcolor.z, f5);
+      gl.Color4f(tmpcolor.jdField_x_of_type_Float, tmpcolor.y, tmpcolor.z, f5);
 
       float f14 = 0.0039063F;
 

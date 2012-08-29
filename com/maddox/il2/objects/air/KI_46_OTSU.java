@@ -19,11 +19,11 @@ public class KI_46_OTSU extends KI_46
 
     Property.set(localClass, "FlightModel", "FlightModels/Ki-46-IIIKai.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunHo5ki 200", "MGunHo5ki 200" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunHo5ki 200", "MGunHo5ki 200" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

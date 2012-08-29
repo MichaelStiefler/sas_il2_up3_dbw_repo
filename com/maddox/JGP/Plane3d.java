@@ -11,12 +11,12 @@ public class Plane3d
 
   public Plane3d()
   {
-    this.N.x = (this.N.y = this.N.z = 0.5773502588272095D);
+    this.N.jdField_x_of_type_Double = (this.N.jdField_y_of_type_Double = this.N.jdField_z_of_type_Double = 0.5773502588272095D);
     this.D = 0.0D;
   }
 
   public Plane3d(Plane3d paramPlane3d) {
-    this.N.x = paramPlane3d.N.x; this.N.y = paramPlane3d.N.y; this.N.z = paramPlane3d.N.z;
+    this.N.jdField_x_of_type_Double = paramPlane3d.N.jdField_x_of_type_Double; this.N.jdField_y_of_type_Double = paramPlane3d.N.jdField_y_of_type_Double; this.N.jdField_z_of_type_Double = paramPlane3d.N.jdField_z_of_type_Double;
     this.D = paramPlane3d.D;
   }
 
@@ -32,19 +32,19 @@ public class Plane3d
   }
 
   public final void set(Plane3d paramPlane3d) {
-    this.N.x = paramPlane3d.N.x; this.N.y = paramPlane3d.N.y; this.N.z = paramPlane3d.N.z;
+    this.N.jdField_x_of_type_Double = paramPlane3d.N.jdField_x_of_type_Double; this.N.jdField_y_of_type_Double = paramPlane3d.N.jdField_y_of_type_Double; this.N.jdField_z_of_type_Double = paramPlane3d.N.jdField_z_of_type_Double;
     this.D = paramPlane3d.D;
   }
 
   public final void set(Point3d paramPoint3d1, Point3d paramPoint3d2, Point3d paramPoint3d3)
   {
-    double d1 = paramPoint3d2.x - paramPoint3d1.x; double d4 = paramPoint3d3.x - paramPoint3d1.x;
-    double d2 = paramPoint3d2.y - paramPoint3d1.y; double d5 = paramPoint3d3.y - paramPoint3d1.y;
-    double d3 = paramPoint3d2.z - paramPoint3d1.z; double d6 = paramPoint3d3.z - paramPoint3d1.z;
+    double d1 = paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double; double d4 = paramPoint3d3.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double;
+    double d2 = paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double; double d5 = paramPoint3d3.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double;
+    double d3 = paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double; double d6 = paramPoint3d3.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double;
 
-    this.N.x = (d2 * d6 - d5 * d3);
-    this.N.y = (d4 * d3 - d1 * d6);
-    this.N.z = (d1 * d5 - d4 * d3);
+    this.N.jdField_x_of_type_Double = (d2 * d6 - d5 * d3);
+    this.N.jdField_y_of_type_Double = (d4 * d3 - d1 * d6);
+    this.N.jdField_z_of_type_Double = (d1 * d5 - d4 * d3);
     this.N.normalize();
     this.D = (-this.N.dot(paramPoint3d1));
   }
@@ -75,7 +75,7 @@ public class Plane3d
       throw new JGPException("Can't make a line from parallel planes");
     }
 
-    double[] arrayOfDouble = { this.N.x, this.N.y, this.N.z, -this.D, paramPlane3d.N.x, paramPlane3d.N.y, paramPlane3d.N.z, -paramPlane3d.D, localLine3d.A.x, localLine3d.A.y, localLine3d.A.z, 0.0D };
+    double[] arrayOfDouble = { this.N.jdField_x_of_type_Double, this.N.jdField_y_of_type_Double, this.N.jdField_z_of_type_Double, -this.D, paramPlane3d.N.jdField_x_of_type_Double, paramPlane3d.N.jdField_y_of_type_Double, paramPlane3d.N.jdField_z_of_type_Double, -paramPlane3d.D, localLine3d.A.jdField_x_of_type_Double, localLine3d.A.jdField_y_of_type_Double, localLine3d.A.jdField_z_of_type_Double, 0.0D };
     try
     {
       localLine3d.P0 = NSolved.Solve3d(arrayOfDouble);
@@ -106,7 +106,7 @@ public class Plane3d
 
   public String toString()
   {
-    return "( " + this.N.x + "," + this.N.y + "," + this.N.z + ", " + this.D + " )";
+    return "( " + this.N.jdField_x_of_type_Double + "," + this.N.jdField_y_of_type_Double + "," + this.N.jdField_z_of_type_Double + ", " + this.D + " )";
   }
 
   public static void main(String[] paramArrayOfString) throws JGPException

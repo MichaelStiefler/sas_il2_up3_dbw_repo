@@ -9,17 +9,17 @@ public class KI_21_II extends KI_21
 {
   public static void moveGear(HierMesh paramHierMesh, float paramFloat)
   {
-    paramHierMesh.chunkSetAngles("GearL6_D0", 0.0F, cvt(paramFloat, 0.01F, 0.06F, 0.0F, -70.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(paramFloat, 0.01F, 0.06F, 0.0F, -70.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearL10_D0", 0.0F, cvt(paramFloat, 0.05F, 0.75F, 0.0F, -38.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearL11_D0", 0.0F, 0.0F, cvt(paramFloat, 0.05F, 0.75F, 0.0F, -45.0F));
-    paramHierMesh.chunkSetAngles("GearL13_D0", 0.0F, cvt(paramFloat, 0.05F, 0.75F, 0.0F, -157.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL6_D0", 0.0F, Aircraft.cvt(paramFloat, 0.01F, 0.06F, 0.0F, -70.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL7_D0", 0.0F, Aircraft.cvt(paramFloat, 0.01F, 0.06F, 0.0F, -70.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL10_D0", 0.0F, Aircraft.cvt(paramFloat, 0.05F, 0.75F, 0.0F, -38.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL11_D0", 0.0F, 0.0F, Aircraft.cvt(paramFloat, 0.05F, 0.75F, 0.0F, -45.0F));
+    paramHierMesh.chunkSetAngles("GearL13_D0", 0.0F, Aircraft.cvt(paramFloat, 0.05F, 0.75F, 0.0F, -157.0F), 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearR6_D0", 0.0F, cvt(paramFloat, 0.3F, 0.35F, 0.0F, -70.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(paramFloat, 0.3F, 0.35F, 0.0F, -70.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR10_D0", 0.0F, cvt(paramFloat, 0.34F, 0.99F, 0.0F, -38.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR11_D0", 0.0F, 0.0F, cvt(paramFloat, 0.05F, 0.75F, 0.0F, -45.0F));
-    paramHierMesh.chunkSetAngles("GearR13_D0", 0.0F, cvt(paramFloat, 0.34F, 0.99F, 0.0F, -157.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR6_D0", 0.0F, Aircraft.cvt(paramFloat, 0.3F, 0.35F, 0.0F, -70.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR7_D0", 0.0F, Aircraft.cvt(paramFloat, 0.3F, 0.35F, 0.0F, -70.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR10_D0", 0.0F, Aircraft.cvt(paramFloat, 0.34F, 0.99F, 0.0F, -38.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR11_D0", 0.0F, 0.0F, Aircraft.cvt(paramFloat, 0.05F, 0.75F, 0.0F, -45.0F));
+    paramHierMesh.chunkSetAngles("GearR13_D0", 0.0F, Aircraft.cvt(paramFloat, 0.34F, 0.99F, 0.0F, -157.0F), 0.0F);
   }
   protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat);
   }
@@ -81,21 +81,21 @@ public class KI_21_II extends KI_21
 
     Property.set(localClass, "FlightModel", "FlightModels/Ki-21-II.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_BombSpawn09" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "20x15", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 3", "BombGun15kgJ 3", "BombGun15kgJ 2" });
+    Aircraft.weaponsRegister(localClass, "20x15", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 2", "BombGun15kgJ 3", "BombGun15kgJ 3", "BombGun15kgJ 2" });
 
-    weaponsRegister(localClass, "16x50", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 2", "BombGun50kgJ 2", "BombGun50kgJ 2", "BombGun50kgJ 3", "BombGun50kgJ 3" });
+    Aircraft.weaponsRegister(localClass, "16x50", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 1", "BombGun50kgJ 2", "BombGun50kgJ 2", "BombGun50kgJ 2", "BombGun50kgJ 3", "BombGun50kgJ 3" });
 
-    weaponsRegister(localClass, "9x100", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ" });
+    Aircraft.weaponsRegister(localClass, "9x100", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ", "BombGun100kgJ" });
 
-    weaponsRegister(localClass, "4x250", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun250kgJ", "BombGun250kgJ", null, null, "BombGun250kgJ", "BombGun250kgJ", null, null, null });
+    Aircraft.weaponsRegister(localClass, "4x250", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", "BombGun250kgJ", "BombGun250kgJ", null, null, "BombGun250kgJ", "BombGun250kgJ", null, null, null });
 
-    weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", null, "BombGun500kgJ", null, null, "BombGun500kgJ", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning303t 750", "MGunBrowning303t 750", "MGunBrowning303t 750", null, "BombGun500kgJ", null, null, "BombGun500kgJ", null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

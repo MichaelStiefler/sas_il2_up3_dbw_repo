@@ -48,8 +48,8 @@ public class CmdBanned extends Cmd
     if (paramMap.containsKey("LOAD")) {
       j = 0;
       String str1 = NetBanned.fileName;
-      if (nargs(paramMap, "LOAD") > 0)
-        str1 = arg(paramMap, "LOAD", 0);
+      if (Cmd.nargs(paramMap, "LOAD") > 0)
+        str1 = Cmd.arg(paramMap, "LOAD", 0);
       localNetBanned.load(str1);
     }
     int k;
@@ -58,27 +58,27 @@ public class CmdBanned extends Cmd
     if ((paramMap.containsKey("ADD")) && (i != 0)) {
       if (paramMap.containsKey("NAME")) {
         j = 0;
-        k = nargs(paramMap, "NAME");
+        k = Cmd.nargs(paramMap, "NAME");
         for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "NAME", n);
+          str3 = Cmd.arg(paramMap, "NAME", n);
           if (!localNetBanned.name.contains(str3))
             localNetBanned.name.add(str3);
         }
       }
       if (paramMap.containsKey("PATTERN")) {
         j = 0;
-        k = nargs(paramMap, "PATTERN");
+        k = Cmd.nargs(paramMap, "PATTERN");
         for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "PATTERN", n);
+          str3 = Cmd.arg(paramMap, "PATTERN", n);
           if (!localNetBanned.patt.contains(str3))
             localNetBanned.patt.add(str3);
         }
       }
       if (paramMap.containsKey("IP")) {
         j = 0;
-        k = nargs(paramMap, "IP");
+        k = Cmd.nargs(paramMap, "IP");
         for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "IP", n);
+          str3 = Cmd.arg(paramMap, "IP", n);
           int[][] arrayOfInt1 = localNetBanned.ipItem(str3);
           if (arrayOfInt1 != null) {
             if (localNetBanned.findIpItem(arrayOfInt1) == -1)
@@ -95,9 +95,9 @@ public class CmdBanned extends Cmd
       int i1;
       if (paramMap.containsKey("NAME")) {
         j = 0;
-        k = nargs(paramMap, "NAME");
+        k = Cmd.nargs(paramMap, "NAME");
         for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "NAME", n);
+          str3 = Cmd.arg(paramMap, "NAME", n);
           i1 = localNetBanned.name.indexOf(str3);
           if (i1 >= 0)
             localNetBanned.name.remove(i1);
@@ -105,9 +105,9 @@ public class CmdBanned extends Cmd
       }
       if (paramMap.containsKey("PATTERN")) {
         j = 0;
-        k = nargs(paramMap, "PATTERN");
+        k = Cmd.nargs(paramMap, "PATTERN");
         for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "PATTERN", n);
+          str3 = Cmd.arg(paramMap, "PATTERN", n);
           i1 = localNetBanned.patt.indexOf(str3);
           if (i1 >= 0)
             localNetBanned.patt.remove(i1);
@@ -115,9 +115,9 @@ public class CmdBanned extends Cmd
       }
       if (paramMap.containsKey("IP")) {
         j = 0;
-        k = nargs(paramMap, "IP");
+        k = Cmd.nargs(paramMap, "IP");
         for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "IP", n);
+          str3 = Cmd.arg(paramMap, "IP", n);
           int[][] arrayOfInt2 = localNetBanned.ipItem(str3);
           if (arrayOfInt2 != null) {
             int i2 = localNetBanned.findIpItem(arrayOfInt2);
@@ -133,8 +133,8 @@ public class CmdBanned extends Cmd
     if (paramMap.containsKey("SAVE")) {
       j = 0;
       String str2 = NetBanned.fileName;
-      if (nargs(paramMap, "SAVE") > 0)
-        str2 = arg(paramMap, "SAVE", 0);
+      if (Cmd.nargs(paramMap, "SAVE") > 0)
+        str2 = Cmd.arg(paramMap, "SAVE", 0);
       localNetBanned.save(str2);
     }
     if (j != 0)
@@ -167,14 +167,14 @@ public class CmdBanned extends Cmd
   }
 
   public CmdBanned() {
-    this.param.put("NAME", null);
-    this.param.put("PATTERN", null);
-    this.param.put("IP", null);
-    this.param.put("ADD", null);
-    this.param.put("REM", null);
-    this.param.put("LOAD", null);
-    this.param.put("SAVE", null);
-    this.param.put("CLEAR", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NAME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PATTERN", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("IP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ADD", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("REM", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOAD", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SAVE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("CLEAR", null);
     this._properties.put("NAME", "banned");
     this._levelAccess = 1;
   }

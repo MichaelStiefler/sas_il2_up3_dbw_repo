@@ -190,8 +190,8 @@ public class OverLoad extends Render
 
     gl.Color4f(f3, f3, f3, f4);
     for (int i = 0; i <= 16; i++) {
-      gl.TexCoord2f(tnts[i].x, tnts[i].y);
-      Vertex2f(pnts[i].x, pnts[i].y);
+      gl.TexCoord2f(tnts[i].jdField_x_of_type_Float, tnts[i].jdField_y_of_type_Float);
+      Vertex2f(pnts[i].jdField_x_of_type_Float, pnts[i].jdField_y_of_type_Float);
     }
     gl.End();
 
@@ -209,7 +209,7 @@ public class OverLoad extends Render
     Vertex2f(0.0F, 0.0F);
 
     for (int i = 0; i <= 16; i++) {
-      Vertex2f(pnts[i].x, pnts[i].y);
+      Vertex2f(pnts[i].jdField_x_of_type_Float, pnts[i].jdField_y_of_type_Float);
     }
     gl.End();
 
@@ -226,10 +226,10 @@ public class OverLoad extends Render
       pnts[i] = new Point2f();
       tnts[i] = new Point2f();
       double d = i * 2.0F * 3.141592653589793D / 16.0D;
-      pnts[i].x = ((float)Math.cos(d) * 1.48F);
-      pnts[i].y = ((float)Math.sin(d) * 1.48F);
-      pnts[i].x *= 3.5F;
-      pnts[i].y *= 3.5F;
+      pnts[i].jdField_x_of_type_Float = ((float)Math.cos(d) * 1.48F);
+      pnts[i].jdField_y_of_type_Float = ((float)Math.sin(d) * 1.48F);
+      tnts[i].jdField_x_of_type_Float = (pnts[i].jdField_x_of_type_Float * 3.5F);
+      tnts[i].jdField_y_of_type_Float = (pnts[i].jdField_y_of_type_Float * 3.5F);
     }
   }
 }

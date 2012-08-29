@@ -110,21 +110,21 @@ public class GUIChatDialog extends GWindow
   }
 
   public float downHeight() {
-    return this.root.textFonts[0].height * 11.0F;
+    return this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].height * 11.0F;
   }
 
   private void chatDrawPos(boolean paramBoolean)
   {
     Chat localChat = Main.cur().chat;
     if (localChat == null) return;
-    GFont localGFont = this.root.textFonts[0];
+    GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0];
     float f = localGFont.height;
     int i = localChat.buf.size();
     if (i == 0) {
       this.posChat = 0;
       return;
     }
-    int j = (int)(this.wViewChat.win.dy / f);
+    int j = (int)(this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f);
     int k = j / 3;
     if (k == 0) k = 1;
     this.posChat = (paramBoolean ? this.posChat + k : this.posChat - k);
@@ -145,7 +145,7 @@ public class GUIChatDialog extends GWindow
       this.posConsole = 0;
       return;
     }
-    int j = (int)(this.wViewConsole.win.dy / f);
+    int j = (int)(this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f);
     int k = j / 3;
     if (k == 0) k = 1;
     this.posConsole = (paramBoolean ? this.posConsole + k : this.posConsole - k);
@@ -160,8 +160,8 @@ public class GUIChatDialog extends GWindow
       this.chatEditSlot[i] = UnicodeTo8bit.load(Config.cur.ini.get("chat", "msg" + i, new String()));
     this.chatAdrSlot[0] = "ALL";
     this.chatAdrSlot[1] = "MY_ARMY";
-    for (i = 2; i < 10; i++) {
-      this.chatAdrSlot[i] = UnicodeTo8bit.load(Config.cur.ini.get("chat", "adr" + i, new String()));
+    for (int j = 2; j < 10; j++) {
+      this.chatAdrSlot[j] = UnicodeTo8bit.load(Config.cur.ini.get("chat", "adr" + j, new String()));
     }
     this.wClient = ((WClient)create(new WClient()));
 
@@ -189,17 +189,17 @@ public class GUIChatDialog extends GWindow
     if (!isTransparent()) {
       localObject = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
       setCanvasColorWHITE();
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, (GBevel)localObject, ((GUILookAndFeel)lookAndFeel()).basicelements, false);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, (GBevel)localObject, ((GUILookAndFeel)lookAndFeel()).basicelements, false);
     } else {
       if (Main3D.cur3D().hud.isDrawNetStat()) return;
       localObject = Main3D.cur3D().guiManager;
       if (((GUIWindowManager)localObject).isMouseActive()) {
-        this.root.C.alpha = 255;
-        GUISeparate.draw(this, GColor.Black, 0.0F, 0.0F, this.win.dx, 2.0F);
-        GUISeparate.draw(this, GColor.Black, 0.0F, 0.0F, 2.0F, this.win.dy);
-        GUISeparate.draw(this, GColor.Black, this.win.dx - 2.0F, 0.0F, 2.0F, this.win.dy);
-        GUISeparate.draw(this, GColor.Black, 0.0F, this.win.dy - 2.0F, this.win.dx, 2.0F);
-        this.root.C.alpha = 0;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
+        GUISeparate.draw(this, GColor.Black, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, 2.0F);
+        GUISeparate.draw(this, GColor.Black, 0.0F, 0.0F, 2.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+        GUISeparate.draw(this, GColor.Black, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F, 0.0F, 2.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+        GUISeparate.draw(this, GColor.Black, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 2.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, 2.0F);
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 0;
       }
     }
   }
@@ -234,17 +234,17 @@ public class GUIChatDialog extends GWindow
   }
   public void doRender(boolean paramBoolean) {
     boolean bool = isTransparent();
-    int i = this.root.C.alpha;
-    if (bool) this.root.C.alpha = 0;
+    int i = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+    if (bool) this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 0;
     super.doRender(paramBoolean);
-    if (bool) this.root.C.alpha = i;
+    if (bool) this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = i;
 
-    int j = this.root.C.alpha;
-    this.root.C.alpha = 255;
+    int j = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+    this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
 
     float f = 0.0F;
     int k = AudioDevice.getRadioStatus();
-    if (getChild(this.root, GUIInfoMenu.class, false, true) != null) f = 32.0F;
+    if (getChild(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, GUIInfoMenu.class, false, true) != null) f = 32.0F;
     int m;
     int n;
     if ((k & 0x3) >= 2) {
@@ -285,7 +285,7 @@ public class GUIChatDialog extends GWindow
       draw(x1024(882.0F), y1024(f + 16.0F), x1024(16.0F), y1024(16.0F), this.texIndicator, 0.0F, 16.0F, 16.0F, 16.0F);
       drawU(i1, i2, x1024(900.0F), y1024(f + 2.0F + 16.0F));
     }
-    this.root.C.alpha = j;
+    this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = j;
   }
   public void preRender() {
     Chat localChat = Main.cur().chat;
@@ -293,24 +293,24 @@ public class GUIChatDialog extends GWindow
       hideWindow();
     GBevel localGBevel;
     if (isDownVisible()) {
-      if (this.wClient.win.dy == this.clientHeight + downHeight())
+      if (this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dy == this.clientHeight + downHeight())
         return;
       localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      setSize(this.win.dx, this.clientHeight + downHeight() + localGBevel.T.dy + localGBevel.B.dy);
+      setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.clientHeight + downHeight() + localGBevel.T.dy + localGBevel.B.dy);
     } else {
-      if (this.wClient.win.dy == this.clientHeight)
+      if (this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dy == this.clientHeight)
         return;
       localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      setSize(this.win.dx, this.clientHeight + localGBevel.T.dy + localGBevel.B.dy);
+      setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.clientHeight + localGBevel.T.dy + localGBevel.B.dy);
     }
   }
 
   public void resized() {
     GSize localGSize = getMinSize();
-    if (this.win.dx < localGSize.dx) this.win.dx = localGSize.dx;
-    if (this.win.dy < localGSize.dy) this.win.dy = localGSize.dy;
+    if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx < localGSize.dx) this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = localGSize.dx;
+    if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy < localGSize.dy) this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = localGSize.dy;
     GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-    this.wClient.setPosSize(localGBevel.L.dx, localGBevel.T.dy, this.win.dx - localGBevel.L.dx - localGBevel.R.dx, this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+    this.wClient.setPosSize(localGBevel.L.dx, localGBevel.T.dy, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
   }
 
   public void resolutionChanged() {
@@ -332,38 +332,38 @@ public class GUIChatDialog extends GWindow
   private void loadRegion() {
     GRegion localGRegion = new GRegion(0.0F, 0.2F, 0.3F, 0.2F);
     Config.cur.ini.get("chat", "region", localGRegion);
-    this.clientHeight = (localGRegion.dy * this.root.win.dy);
+    this.clientHeight = (localGRegion.dy * this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
     float f = this.clientHeight + localGBevel.T.dy + localGBevel.B.dy;
     if (isDownVisible()) f += downHeight();
-    setPosSize(localGRegion.x * this.root.win.dx, localGRegion.y * this.root.win.dy, localGRegion.dx * this.root.win.dx, f);
+    setPosSize(localGRegion.x * this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, localGRegion.y * this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGRegion.dx * this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f);
   }
   private void saveRegion() {
     GRegion localGRegion = new GRegion();
-    localGRegion.x = (this.win.x / this.root.win.dx);
-    localGRegion.y = (this.win.y / this.root.win.dy);
-    localGRegion.dx = (this.win.dx / this.root.win.dx);
-    localGRegion.dy = (this.clientHeight / this.root.win.dy);
+    localGRegion.x = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.x / this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
+    localGRegion.y = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.y / this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+    localGRegion.dx = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
+    localGRegion.dy = (this.clientHeight / this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     Config.cur.ini.set("chat", "region", localGRegion, false);
   }
 
   int frameHitTest(float paramFloat1, float paramFloat2)
   {
     GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-    if ((paramFloat1 < 0.0F) || (paramFloat1 > this.win.dx) || (paramFloat2 < 0.0F) || (paramFloat2 > this.win.dy))
+    if ((paramFloat1 < 0.0F) || (paramFloat1 > this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) || (paramFloat2 < 0.0F) || (paramFloat2 > this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy))
     {
       return 0;
     }if (paramFloat1 <= localGBevel.L.dx) {
       if (paramFloat2 <= localGBevel.T.dy) return 2;
-      if (paramFloat2 >= this.win.dy - localGBevel.T.dy - localGBevel.B.dy) return 7;
+      if (paramFloat2 >= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy) return 7;
       return 5;
-    }if (paramFloat1 >= this.win.dx - localGBevel.L.dx - localGBevel.R.dx) {
+    }if (paramFloat1 >= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx) {
       if (paramFloat2 <= localGBevel.T.dy) return 4;
-      if (paramFloat2 >= this.win.dy - localGBevel.T.dy - localGBevel.B.dy) return 9;
+      if (paramFloat2 >= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy) return 9;
       return 6;
     }
     if (paramFloat2 <= localGBevel.T.dy) return 1;
-    if (paramFloat2 >= this.win.dy - localGBevel.T.dy - localGBevel.B.dy) return 8;
+    if (paramFloat2 >= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy) return 8;
 
     return 1;
   }
@@ -384,7 +384,7 @@ public class GUIChatDialog extends GWindow
       else if (isMouseCaptured()) {
         this.sizingState = 0;
         mouseCapture(false);
-        this.mouseCursor = 1;
+        this.jdField_mouseCursor_of_type_Int = 1;
         saveRegion();
       }
     }
@@ -396,13 +396,13 @@ public class GUIChatDialog extends GWindow
         i = frameHitTest(paramFloat1, paramFloat2);
         if (i == 0) return;
         this.sizingState = 1;
-        this.mouseCursor = 3;
+        this.jdField_mouseCursor_of_type_Int = 3;
         mouseCapture(true);
       }
       else if (isMouseCaptured()) {
         this.sizingState = 0;
         mouseCapture(false);
-        this.mouseCursor = 1;
+        this.jdField_mouseCursor_of_type_Int = 1;
         saveRegion();
       }
   }
@@ -410,87 +410,87 @@ public class GUIChatDialog extends GWindow
   public void mouseMove(float paramFloat1, float paramFloat2)
   {
     super.mouseMove(paramFloat1, paramFloat2);
-    GRegion localGRegion = this.root.getClientRegion();
-    if ((this.root.mousePos.x < localGRegion.x) || (this.root.mousePos.x >= localGRegion.x + localGRegion.dx) || (this.root.mousePos.y < localGRegion.y) || (this.root.mousePos.y >= localGRegion.y + localGRegion.dy))
+    GRegion localGRegion = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.getClientRegion();
+    if ((this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.x < localGRegion.x) || (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.x >= localGRegion.x + localGRegion.dx) || (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.y < localGRegion.y) || (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.y >= localGRegion.y + localGRegion.dy))
     {
       return;
     }
     GSize localGSize = null;
     if ((this.sizingState != 1) && (this.sizingState != 0)) {
-      _newSize.set(this.win.dx, this.win.dy); localGSize = getMinSize(); localGSize.dy += downHeight();
+      _newSize.set(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy); localGSize = getMinSize(); localGSize.dy += downHeight();
     }
     switch (this.sizingState)
     {
     case 0:
       int i = frameHitTest(paramFloat1, paramFloat2);
-      this.mouseCursor = 1;
+      this.jdField_mouseCursor_of_type_Int = 1;
       if (i == 0) return;
       switch (i) { case 2:
-        this.mouseCursor = 10; break;
+        this.jdField_mouseCursor_of_type_Int = 10; break;
       case 3:
-        this.mouseCursor = 9; break;
+        this.jdField_mouseCursor_of_type_Int = 9; break;
       case 4:
-        this.mouseCursor = 8; break;
+        this.jdField_mouseCursor_of_type_Int = 8; break;
       case 5:
-        this.mouseCursor = 11; break;
+        this.jdField_mouseCursor_of_type_Int = 11; break;
       case 6:
-        this.mouseCursor = 11; break;
+        this.jdField_mouseCursor_of_type_Int = 11; break;
       case 7:
-        this.mouseCursor = 8; break;
+        this.jdField_mouseCursor_of_type_Int = 8; break;
       case 8:
-        this.mouseCursor = 9; break;
+        this.jdField_mouseCursor_of_type_Int = 9; break;
       case 9:
-        this.mouseCursor = 10; break;
+        this.jdField_mouseCursor_of_type_Int = 10; break;
       case 1:
-        this.mouseCursor = 3;
+        this.jdField_mouseCursor_of_type_Int = 3;
       }
 
       return;
     case 1:
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y + this.root.mouseStep.dy);
+      setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.x + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.y + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       return;
     case 2:
-      _newSize.add(-this.root.mouseStep.dx, -this.root.mouseStep.dy);
+      _newSize.add(-this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, -this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y + this.root.mouseStep.dy);
+      setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.x + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.y + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       setSize();
       return;
     case 3:
-      _newSize.add(0.0F, -this.root.mouseStep.dy);
+      _newSize.add(0.0F, -this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       if (_newSize.dy < localGSize.dy) break;
-      setPos(this.win.x, this.win.y + this.root.mouseStep.dy);
+      setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.x, this.jdField_win_of_type_ComMaddoxGwindowGRegion.y + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       setSize();
       return;
     case 4:
-      _newSize.add(this.root.mouseStep.dx, -this.root.mouseStep.dy);
+      _newSize.add(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, -this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setPos(this.win.x, this.win.y + this.root.mouseStep.dy);
+      setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.x, this.jdField_win_of_type_ComMaddoxGwindowGRegion.y + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       setSize();
       return;
     case 5:
-      _newSize.add(-this.root.mouseStep.dx, 0.0F);
+      _newSize.add(-this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, 0.0F);
       if (_newSize.dx < localGSize.dx) break;
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y);
+      setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.x + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.y);
       setSize();
       return;
     case 6:
-      _newSize.add(this.root.mouseStep.dx, 0.0F);
+      _newSize.add(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, 0.0F);
       if (_newSize.dx < localGSize.dx) break;
       setSize();
       return;
     case 7:
-      _newSize.add(-this.root.mouseStep.dx, this.root.mouseStep.dy);
+      _newSize.add(-this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y);
+      setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.x + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.y);
       setSize();
       return;
     case 8:
-      _newSize.add(0.0F, this.root.mouseStep.dy);
+      _newSize.add(0.0F, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       if (_newSize.dy < localGSize.dy) break;
       setSize();
       return;
     case 9:
-      _newSize.add(this.root.mouseStep.dx, this.root.mouseStep.dy);
+      _newSize.add(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
       if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
       setSize();
       return;
@@ -498,7 +498,7 @@ public class GUIChatDialog extends GWindow
 
     this.sizingState = 0;
     mouseCapture(false);
-    this.mouseCursor = 1;
+    this.jdField_mouseCursor_of_type_Int = 1;
   }
 
   private void setSize() {
@@ -643,11 +643,11 @@ public class GUIChatDialog extends GWindow
       GFont localGFont = this.root.textFonts[0];
       float f = localGFont.height;
       int i = localChat.buf.size();
-      int j = (int)(GUIChatDialog.this.wDrawChat.win.dy / f);
+      int j = (int)(GUIChatDialog.this.wDrawChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f);
       if (j > i)
         j = i;
       if (j > 0) {
-        drawScroll(GUIChatDialog.this.wViewChat.win.x + GUIChatDialog.this.wViewChat.win.dx, GUIChatDialog.this.wViewChat.win.y, this.win.dx - GUIChatDialog.this.wViewChat.win.x - GUIChatDialog.this.wViewChat.win.dx, GUIChatDialog.this.wViewChat.win.dy, i, GUIChatDialog.this.posChat, j);
+        drawScroll(GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.x + GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.y, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.x - GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, i, GUIChatDialog.this.posChat, j);
       }
 
       if (!GUIChatDialog.this.isDownVisible()) return;
@@ -656,21 +656,21 @@ public class GUIChatDialog extends GWindow
       localGFont = GUIChatDialog.this.consoleFont;
       f = localGFont.height;
       i = localList.size();
-      j = (int)(GUIChatDialog.this.wDrawConsole.win.dy / f);
+      j = (int)(GUIChatDialog.this.wDrawConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f);
       if (j > i)
         j = i;
       if (j > 0)
-        drawScroll(GUIChatDialog.this.wViewConsole.win.x + GUIChatDialog.this.wViewConsole.win.dx, GUIChatDialog.this.wViewConsole.win.y, this.win.dx - GUIChatDialog.this.wViewConsole.win.x - GUIChatDialog.this.wViewConsole.win.dx, GUIChatDialog.this.wViewConsole.win.dy, i, GUIChatDialog.this.posConsole, j);
+        drawScroll(GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.x + GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.y, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.x - GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, i, GUIChatDialog.this.posConsole, j);
     }
 
     public void resized()
     {
-      GUIChatDialog.this.wEdit.setPosSize(0.0F, GUIChatDialog.this.clientHeight - y1024(32.0F), this.win.dx, y1024(32.0F));
-      GUIChatDialog.this.wViewChat.setPosSize(x1024(2.0F), y1024(2.0F), this.win.dx - x1024(4.0F), GUIChatDialog.this.clientHeight - y1024(36.0F));
-      GUIChatDialog.this.wDrawChat.setPosSize(0.0F, 0.0F, GUIChatDialog.this.wViewChat.win.dx, GUIChatDialog.this.wViewChat.win.dy);
-      GUIChatDialog.this.wViewConsole.setPosSize(x1024(2.0F), y1024(2.0F) + GUIChatDialog.this.clientHeight, this.win.dx - x1024(4.0F), this.win.dy - GUIChatDialog.this.clientHeight - y1024(4.0F));
+      GUIChatDialog.this.wEdit.setPosSize(0.0F, GUIChatDialog.this.clientHeight - y1024(32.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, y1024(32.0F));
+      GUIChatDialog.this.wViewChat.setPosSize(x1024(2.0F), y1024(2.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - x1024(4.0F), GUIChatDialog.this.clientHeight - y1024(36.0F));
+      GUIChatDialog.this.wDrawChat.setPosSize(0.0F, 0.0F, GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIChatDialog.this.wViewChat.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+      GUIChatDialog.this.wViewConsole.setPosSize(x1024(2.0F), y1024(2.0F) + GUIChatDialog.this.clientHeight, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - x1024(4.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - GUIChatDialog.this.clientHeight - y1024(4.0F));
 
-      GUIChatDialog.this.wDrawConsole.setPosSize(0.0F, 0.0F, GUIChatDialog.this.wViewConsole.win.dx, GUIChatDialog.this.wViewConsole.win.dy);
+      GUIChatDialog.this.wDrawConsole.setPosSize(0.0F, 0.0F, GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIChatDialog.this.wViewConsole.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
       super.resized();
     }
   }
@@ -686,7 +686,7 @@ public class GUIChatDialog extends GWindow
       super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
       if (!GUIChatDialog.this.isDownVisible()) return;
       if ((paramInt == 0) && (!paramBoolean))
-        GUIChatDialog.this.consoleDrawPos(paramFloat2 < this.win.dy / 2.0F);
+        GUIChatDialog.this.consoleDrawPos(paramFloat2 < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F);
     }
 
     public void render() {
@@ -702,17 +702,17 @@ public class GUIChatDialog extends GWindow
         localGFont = GUIChatDialog.this.consoleFont;
         f1 = localGFont.height;
         int i = ((List)localObject).size();
-        int j = (int)(this.win.dy / f1);
+        int j = (int)(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f1);
         if (i > j)
           i = j;
         if (i <= 0) return;
-        float f3 = this.win.dy - f1;
+        float f3 = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f1;
         int k = GUIChatDialog.this.posConsole;
         if (k + i >= ((List)localObject).size()) k = ((List)localObject).size() - i;
         setCanvasColor(16777215);
-        this.root.C.font = localGFont;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = localGFont;
         if (GUIChatDialog.this.isTransparent())
-          this.root.C.alpha = 127;
+          this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 127;
         for (int m = 0; m < i; m++) {
           String str = (String)((List)localObject).get(k);
           int n = str.length();
@@ -723,14 +723,12 @@ public class GUIChatDialog extends GWindow
               break;
             }
           }
-          draw(0.0F, f3, this.win.dx, f1, 0, str);
+          draw(0.0F, f3, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, str);
           f3 -= f1;
           k++;
         }
-        if (GUIChatDialog.this.isTransparent()) {
-          this.root.C.alpha = 0;
-        }
-        break;
+        if (!GUIChatDialog.this.isTransparent()) break;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 0; break;
       case 0:
         renderTable(GUIChatDialog.this.chatEditSlot, GUIChatDialog.this.chatCurEditSlot);
         break;
@@ -739,12 +737,12 @@ public class GUIChatDialog extends GWindow
         break;
       case 2:
         localObject = (NetUser)NetEnv.host();
-        localGFont = this.root.textFonts[0];
+        localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0];
         f1 = localGFont.height;
-        float f2 = this.win.dy - f1 * 10.0F - f1 / 2.0F;
+        float f2 = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f1 * 10.0F - f1 / 2.0F;
 
         setCanvasColor(16777215);
-        draw(0.0F, f2, this.win.dx, f1, 0, GUIChatDialog.this.radioSlot[0]);
+        draw(0.0F, f2, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, GUIChatDialog.this.radioSlot[0]);
         f2 += f1;
 
         renderRadioSlot(f2, localGFont, 1, ((NetUser)localObject).isRadioNone(), null);
@@ -762,13 +760,13 @@ public class GUIChatDialog extends GWindow
 
     private void renderTable(String[] paramArrayOfString, int paramInt)
     {
-      GFont localGFont = this.root.textFonts[0];
+      GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0];
       float f1 = localGFont.height;
-      float f2 = this.win.dy - f1 * paramArrayOfString.length - f1 / 2.0F;
+      float f2 = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f1 * paramArrayOfString.length - f1 / 2.0F;
       for (int i = 0; i < paramArrayOfString.length; i++) {
         if (paramInt == i) setCanvasColor(0); else
           setCanvasColor(16777215);
-        draw(0.0F, f2, this.win.dx, f1, 0, " " + i + ". " + paramArrayOfString[i]);
+        draw(0.0F, f2, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, " " + i + ". " + paramArrayOfString[i]);
         f2 += f1;
       }
     }
@@ -789,9 +787,9 @@ public class GUIChatDialog extends GWindow
         }
       }
       if (paramBoolean)
-        draw(0.0F, paramFloat, this.win.dx, paramGFont.height, 0, " " + paramInt + ". (" + i + ")  \t *" + GUIChatDialog.this.radioSlot[paramInt]);
+        draw(0.0F, paramFloat, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGFont.height, 0, " " + paramInt + ". (" + i + ")  \t *" + GUIChatDialog.this.radioSlot[paramInt]);
       else
-        draw(0.0F, paramFloat, this.win.dx, paramGFont.height, 0, " " + paramInt + ". (" + i + ")  \t  " + GUIChatDialog.this.radioSlot[paramInt]);
+        draw(0.0F, paramFloat, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGFont.height, 0, " " + paramInt + ". (" + i + ")  \t  " + GUIChatDialog.this.radioSlot[paramInt]);
     }
   }
 
@@ -805,7 +803,7 @@ public class GUIChatDialog extends GWindow
     {
       super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
       if ((paramInt == 0) && (!paramBoolean))
-        GUIChatDialog.this.chatDrawPos(paramFloat2 < this.win.dy / 2.0F);
+        GUIChatDialog.this.chatDrawPos(paramFloat2 < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F);
     }
 
     public void render()
@@ -813,39 +811,39 @@ public class GUIChatDialog extends GWindow
       if (Main3D.cur3D().hud.isDrawNetStat()) return;
       Chat localChat = Main.cur().chat;
       if (localChat == null) return;
-      GFont localGFont = this.root.textFonts[0];
+      GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0];
       float f1 = localGFont.height;
       int i = localChat.buf.size();
-      int j = (int)(this.win.dy / f1);
+      int j = (int)(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f1);
       if (i > j)
         i = j;
       if (i <= 0) return;
-      float f2 = this.win.dy - f1;
+      float f2 = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f1;
       int k = GUIChatDialog.this.posChat;
       if (k + i >= localChat.buf.size()) k = localChat.buf.size() - i;
       setCanvasColor(16777215);
       setCanvasFont(0);
       if (GUIChatDialog.this.isTransparent())
-        this.root.C.alpha = 255;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
       for (int m = 0; m < i; m++) {
         ChatMessage localChatMessage = (ChatMessage)localChat.buf.get(k);
         if (localChatMessage.from != null) {
           String str = localChatMessage.from.shortName() + ":\t" + localChatMessage.msg;
           setCanvasColor(0);
-          draw(0.0F, f2 + 1.0F, this.win.dx, f1, 0, str);
-          draw(1.0F, f2, this.win.dx, f1, 0, str);
-          draw(1.0F, f2 + 1.0F, this.win.dx, f1, 0, str);
+          draw(0.0F, f2 + 1.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, str);
+          draw(1.0F, f2, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, str);
+          draw(1.0F, f2 + 1.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, str);
           setCanvasColor(Army.color(((NetUser)localChatMessage.from).getArmy()));
-          draw(0.0F, f2, this.win.dx, f1, 0, str);
+          draw(0.0F, f2, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, str);
         } else {
           setCanvasColor(16777215);
-          draw(0.0F, f2, this.win.dx, f1, 0, "--- " + localChatMessage.msg);
+          draw(0.0F, f2, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, 0, "--- " + localChatMessage.msg);
         }
         f2 -= f1;
         k++;
       }
       if (GUIChatDialog.this.isTransparent())
-        this.root.C.alpha = 0;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 0;
     }
   }
 
@@ -871,16 +869,14 @@ public class GUIChatDialog extends GWindow
             break;
           }
 
-          if ((this.caretOffset >= 2) && (this.caretOffset <= str.length()) && (str.charAt(this.caretOffset - 2) == '\\') && (Character.isDigit(str.charAt(this.caretOffset - 1))))
-          {
-            i = str.charAt(this.caretOffset - 1) - '0';
-            this.value.deleteCharAt(this.caretOffset - 1);
-            this.value.deleteCharAt(this.caretOffset - 2);
-            this.value.insert(this.caretOffset - 2, GUIChatDialog.this.chatEditSlot[i]);
-            setValue(this.value.toString(), false);
+          if ((this.jdField_caretOffset_of_type_Int < 2) || (this.jdField_caretOffset_of_type_Int > str.length()) || (str.charAt(this.jdField_caretOffset_of_type_Int - 2) != '\\') || (!Character.isDigit(str.charAt(this.jdField_caretOffset_of_type_Int - 1)))) {
+            break;
           }
-
-          break;
+          i = str.charAt(this.jdField_caretOffset_of_type_Int - 1) - '0';
+          this.jdField_value_of_type_JavaLangStringBuffer.deleteCharAt(this.jdField_caretOffset_of_type_Int - 1);
+          this.jdField_value_of_type_JavaLangStringBuffer.deleteCharAt(this.jdField_caretOffset_of_type_Int - 2);
+          this.jdField_value_of_type_JavaLangStringBuffer.insert(this.jdField_caretOffset_of_type_Int - 2, GUIChatDialog.this.chatEditSlot[i]);
+          setValue(this.jdField_value_of_type_JavaLangStringBuffer.toString(), false); break;
         case 1:
           if ((GUIChatDialog.this.chatCurAdrSlot == 0) || (GUIChatDialog.this.chatCurAdrSlot == 1)) {
             setValue(GUIChatDialog.this.chatAdrSlot[GUIChatDialog.this.chatCurAdrSlot], false); } else {
@@ -897,8 +893,8 @@ public class GUIChatDialog extends GWindow
               else {
                 GUIChatDialog.this.radioSlot[4] = "";
               }
-              if (GUIChatDialog.this.radioCurSlot == 4)
-                setValue("." + GUIChatDialog.this.radioSlot[4], false);
+              if (GUIChatDialog.this.radioCurSlot != 4) break;
+              setValue("." + GUIChatDialog.this.radioSlot[4], false);
             }
           } else {
             if ((str.length() == 2) && (Character.isDigit(str.charAt(1)))) {

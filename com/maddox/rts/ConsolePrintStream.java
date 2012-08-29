@@ -15,26 +15,22 @@ class ConsolePrintStream extends PrintStream
     this.console = paramConsole;
   }
 
-  private void write(char[] paramArrayOfChar)
-  {
-    int i;
+  private void write(char[] paramArrayOfChar) {
     if (this.bErr)
-      for (i = 0; i < paramArrayOfChar.length; i++)
+      for (int i = 0; i < paramArrayOfChar.length; i++)
         this.console.errWrite(paramArrayOfChar[i]);
     else
-      for (i = 0; i < paramArrayOfChar.length; i++)
-        this.console.outWrite(paramArrayOfChar[i]);
+      for (int j = 0; j < paramArrayOfChar.length; j++)
+        this.console.outWrite(paramArrayOfChar[j]);
   }
 
-  private void write(String paramString)
-  {
-    int i;
+  private void write(String paramString) {
     if (this.bErr)
-      for (i = 0; i < paramString.length(); i++)
+      for (int i = 0; i < paramString.length(); i++)
         this.console.errWrite(paramString.charAt(i));
     else
-      for (i = 0; i < paramString.length(); i++)
-        this.console.outWrite(paramString.charAt(i));
+      for (int j = 0; j < paramString.length(); j++)
+        this.console.outWrite(paramString.charAt(j));
   }
 
   private void newLine() {

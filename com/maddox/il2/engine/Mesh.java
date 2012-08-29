@@ -26,52 +26,52 @@ public class Mesh extends GObj
   }
 
   public void setPos(Point3d paramPoint3d, Orient paramOrient) {
-    SetPosXYZATK(this.cppObj, paramPoint3d.x, paramPoint3d.y, paramPoint3d.z, paramOrient.getAzimut(), paramOrient.getTangage(), paramOrient.getKren());
+    SetPosXYZATK(this.jdField_cppObj_of_type_Int, paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double, paramPoint3d.jdField_z_of_type_Double, paramOrient.getAzimut(), paramOrient.getTangage(), paramOrient.getKren());
   }
 
   public void setPos(Loc paramLoc) {
     Point3d localPoint3d = paramLoc.getPoint();
     Orient localOrient = paramLoc.getOrient();
-    SetPosXYZATK(this.cppObj, localPoint3d.x, localPoint3d.y, localPoint3d.z, localOrient.getAzimut(), localOrient.getTangage(), localOrient.getKren());
+    SetPosXYZATK(this.jdField_cppObj_of_type_Int, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, localOrient.getAzimut(), localOrient.getTangage(), localOrient.getKren());
   }
 
   public final int preRender(Point3d paramPoint3d) {
-    return PreRenderXYZ(this.cppObj, paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
+    return PreRenderXYZ(this.jdField_cppObj_of_type_Int, paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double, paramPoint3d.jdField_z_of_type_Double);
   }
 
   public int preRender() {
-    return PreRender(this.cppObj);
+    return PreRender(this.jdField_cppObj_of_type_Int);
   }
 
   public void setFastShadowVisibility(int paramInt)
   {
     if (Config.isUSE_RENDER())
-      SetFastShadowVisibility(this.cppObj, paramInt);
+      SetFastShadowVisibility(this.jdField_cppObj_of_type_Int, paramInt);
   }
 
   public void render() {
-    Render(this.cppObj);
+    Render(this.jdField_cppObj_of_type_Int);
   }
   public void renderShadowProjective() {
-    RenderShadowProjective(this.cppObj);
+    RenderShadowProjective(this.jdField_cppObj_of_type_Int);
   }
   public void renderShadowVolume() {
-    RenderShadowVolume(this.cppObj);
+    RenderShadowVolume(this.jdField_cppObj_of_type_Int);
   }
   public void renderShadowVolumeHQ() {
-    RenderShadowVolumeHQ(this.cppObj);
+    RenderShadowVolumeHQ(this.jdField_cppObj_of_type_Int);
   }
 
   public int detectCollision(Loc paramLoc1, Mesh paramMesh, Loc paramLoc2) {
     paramLoc1.get(tmp);
     paramLoc2.get(tmp2);
-    return DetectCollision(this.cppObj, tmp, paramMesh.cppObj, tmp2);
+    return DetectCollision(this.jdField_cppObj_of_type_Int, tmp, paramMesh.jdField_cppObj_of_type_Int, tmp2);
   }
   public float detectCollisionLine(Loc paramLoc, Point3d paramPoint3d1, Point3d paramPoint3d2) {
     paramLoc.get(tmp);
     paramPoint3d1.get(ad1);
     paramPoint3d2.get(ad2);
-    return DetectCollisionLine(this.cppObj, tmp, ad1, ad2);
+    return DetectCollisionLine(this.jdField_cppObj_of_type_Int, tmp, ad1, ad2);
   }
 
   public int detectCollisionLineMulti(Loc paramLoc, Point3d paramPoint3d1, Point3d paramPoint3d2)
@@ -79,7 +79,7 @@ public class Mesh extends GObj
     paramLoc.get(tmp);
     paramPoint3d1.get(ad1);
     paramPoint3d2.get(ad2);
-    return DetectCollisionLineMulti(this.cppObj, tmp, ad1, ad2);
+    return DetectCollisionLineMulti(this.jdField_cppObj_of_type_Int, tmp, ad1, ad2);
   }
 
   public static native String collisionNameMulti(int paramInt1, int paramInt2);
@@ -90,74 +90,74 @@ public class Mesh extends GObj
   {
     paramLoc.get(tmp);
 
-    tmp2[0] = paramPoint3d1.x;
-    tmp2[1] = paramPoint3d1.y;
-    tmp2[2] = paramPoint3d1.z;
+    tmp2[0] = paramPoint3d1.jdField_x_of_type_Double;
+    tmp2[1] = paramPoint3d1.jdField_y_of_type_Double;
+    tmp2[2] = paramPoint3d1.jdField_z_of_type_Double;
 
-    tmp2[3] = paramPoint3d2.x;
-    tmp2[4] = paramPoint3d2.y;
-    tmp2[5] = paramPoint3d2.z;
+    tmp2[3] = paramPoint3d2.jdField_x_of_type_Double;
+    tmp2[4] = paramPoint3d2.jdField_y_of_type_Double;
+    tmp2[5] = paramPoint3d2.jdField_z_of_type_Double;
 
-    tmp2[6] = paramPoint3d3.x;
-    tmp2[7] = paramPoint3d3.y;
-    tmp2[8] = paramPoint3d3.z;
+    tmp2[6] = paramPoint3d3.jdField_x_of_type_Double;
+    tmp2[7] = paramPoint3d3.jdField_y_of_type_Double;
+    tmp2[8] = paramPoint3d3.jdField_z_of_type_Double;
 
-    tmp2[9] = paramPoint3d4.x;
-    tmp2[10] = paramPoint3d4.y;
-    tmp2[11] = paramPoint3d4.z;
+    tmp2[9] = paramPoint3d4.jdField_x_of_type_Double;
+    tmp2[10] = paramPoint3d4.jdField_y_of_type_Double;
+    tmp2[11] = paramPoint3d4.jdField_z_of_type_Double;
 
-    return DetectCollisionQuad(this.cppObj, tmp, tmp2);
+    return DetectCollisionQuad(this.jdField_cppObj_of_type_Int, tmp, tmp2);
   }
 
   public int detectCollision_Quad_Multi(Loc paramLoc, Point3d paramPoint3d1, Point3d paramPoint3d2, Point3d paramPoint3d3, Point3d paramPoint3d4)
   {
     paramLoc.get(tmp);
 
-    tmp2[0] = paramPoint3d1.x;
-    tmp2[1] = paramPoint3d1.y;
-    tmp2[2] = paramPoint3d1.z;
+    tmp2[0] = paramPoint3d1.jdField_x_of_type_Double;
+    tmp2[1] = paramPoint3d1.jdField_y_of_type_Double;
+    tmp2[2] = paramPoint3d1.jdField_z_of_type_Double;
 
-    tmp2[3] = paramPoint3d2.x;
-    tmp2[4] = paramPoint3d2.y;
-    tmp2[5] = paramPoint3d2.z;
+    tmp2[3] = paramPoint3d2.jdField_x_of_type_Double;
+    tmp2[4] = paramPoint3d2.jdField_y_of_type_Double;
+    tmp2[5] = paramPoint3d2.jdField_z_of_type_Double;
 
-    tmp2[6] = paramPoint3d3.x;
-    tmp2[7] = paramPoint3d3.y;
-    tmp2[8] = paramPoint3d3.z;
+    tmp2[6] = paramPoint3d3.jdField_x_of_type_Double;
+    tmp2[7] = paramPoint3d3.jdField_y_of_type_Double;
+    tmp2[8] = paramPoint3d3.jdField_z_of_type_Double;
 
-    tmp2[9] = paramPoint3d4.x;
-    tmp2[10] = paramPoint3d4.y;
-    tmp2[11] = paramPoint3d4.z;
+    tmp2[9] = paramPoint3d4.jdField_x_of_type_Double;
+    tmp2[10] = paramPoint3d4.jdField_y_of_type_Double;
+    tmp2[11] = paramPoint3d4.jdField_z_of_type_Double;
 
-    return DetectCollisionQuadMultiM(this.cppObj, tmp, tmp2);
+    return DetectCollisionQuadMultiM(this.jdField_cppObj_of_type_Int, tmp, tmp2);
   }
 
   public int detectCollisionPoint(Loc paramLoc, Point3d paramPoint3d) {
     paramLoc.get(tmp);
     paramPoint3d.get(ad);
-    return DetectCollisionPoint(this.cppObj, tmp, ad);
+    return DetectCollisionPoint(this.jdField_cppObj_of_type_Int, tmp, ad);
   }
   public float detectCollisionPlane(Loc paramLoc, Vector3d paramVector3d, double paramDouble) {
     paramLoc.get(tmp);
     paramVector3d.get(tmp2); tmp2[3] = paramDouble;
-    return DetectCollisionPlane(this.cppObj, tmp, tmp2);
+    return DetectCollisionPlane(this.jdField_cppObj_of_type_Int, tmp, tmp2);
   }
   public static native String collisionChunk(int paramInt);
 
   public void setScale(float paramFloat) {
-    SetScale(this.cppObj, paramFloat);
+    SetScale(this.jdField_cppObj_of_type_Int, paramFloat);
   }
 
   public float scale() {
-    return Scale(this.cppObj);
+    return Scale(this.jdField_cppObj_of_type_Int);
   }
 
   public void setScaleXYZ(float paramFloat1, float paramFloat2, float paramFloat3) {
-    SetScaleXYZ(this.cppObj, paramFloat1, paramFloat2, paramFloat3);
+    SetScaleXYZ(this.jdField_cppObj_of_type_Int, paramFloat1, paramFloat2, paramFloat3);
   }
 
   public void scaleXYZ(float[] paramArrayOfFloat) {
-    ScaleXYZ(this.cppObj, paramArrayOfFloat);
+    ScaleXYZ(this.jdField_cppObj_of_type_Int, paramArrayOfFloat);
   }
 
   public float visibilityR() {
@@ -171,7 +171,7 @@ public class Mesh extends GObj
 
   public float getUniformMaxDist()
   {
-    return GetUniformMaxDist(this.cppObj);
+    return GetUniformMaxDist(this.jdField_cppObj_of_type_Int);
   }
   public void setCurChunk(int paramInt) {
   }
@@ -180,16 +180,16 @@ public class Mesh extends GObj
     return 0;
   }
   public int frames() {
-    return Frames(this.cppObj);
+    return Frames(this.jdField_cppObj_of_type_Int);
   }
   public void setFrame(int paramInt) {
-    SetFrame(this.cppObj, paramInt);
+    SetFrame(this.jdField_cppObj_of_type_Int, paramInt);
   }
   public void setFrame(int paramInt1, int paramInt2, float paramFloat) {
-    SetFrame(this.cppObj, paramInt1, paramInt2, paramFloat);
+    SetFrame(this.jdField_cppObj_of_type_Int, paramInt1, paramInt2, paramFloat);
   }
   public void setFrameFromRange(int paramInt1, int paramInt2, float paramFloat) {
-    SetFrameFromRange(this.cppObj, paramInt1, paramInt2, paramFloat);
+    SetFrameFromRange(this.jdField_cppObj_of_type_Int, paramInt1, paramInt2, paramFloat);
   }
 
   public void getBoundBox(float[] paramArrayOfFloat)
@@ -197,7 +197,7 @@ public class Mesh extends GObj
     if (paramArrayOfFloat.length < 6) {
       throw new GObjException("Internal error: wrong array size");
     }
-    GetBoundBox(this.cppObj, paramArrayOfFloat);
+    GetBoundBox(this.jdField_cppObj_of_type_Int, paramArrayOfFloat);
   }
 
   public void getDimensions(Vector3f paramVector3f) {
@@ -208,18 +208,18 @@ public class Mesh extends GObj
   }
 
   public int hooks() {
-    return Hooks(this.cppObj);
+    return Hooks(this.jdField_cppObj_of_type_Int);
   }
   public int hookFind(String paramString) {
-    return HookFind(this.cppObj, paramString);
+    return HookFind(this.jdField_cppObj_of_type_Int, paramString);
   }
 
   public String hookName(int paramInt) {
-    return HookName(this.cppObj, paramInt);
+    return HookName(this.jdField_cppObj_of_type_Int, paramInt);
   }
 
   public void hookMatrix(int paramInt, Matrix4d paramMatrix4d) {
-    HookMatrix(this.cppObj, paramInt, tmp);
+    HookMatrix(this.jdField_cppObj_of_type_Int, paramInt, tmp);
     paramMatrix4d.set(tmp);
   }
 
@@ -233,7 +233,7 @@ public class Mesh extends GObj
     tmp[1] = paramMatrix4d1.m10; tmp[5] = paramMatrix4d1.m11; tmp[9] = paramMatrix4d1.m12; tmp[13] = paramMatrix4d1.m13;
     tmp[2] = paramMatrix4d1.m20; tmp[6] = paramMatrix4d1.m21; tmp[10] = paramMatrix4d1.m22; tmp[14] = paramMatrix4d1.m23;
     tmp[3] = paramMatrix4d1.m30; tmp[7] = paramMatrix4d1.m31; tmp[11] = paramMatrix4d1.m32; tmp[15] = paramMatrix4d1.m33;
-    int i = HookFaceFind(this.cppObj, tmp, tmp2);
+    int i = HookFaceFind(this.jdField_cppObj_of_type_Int, tmp, tmp2);
     if (i != -1) {
       paramMatrix4d2.set(tmp2);
     }
@@ -246,49 +246,49 @@ public class Mesh extends GObj
   }
 
   public void hookFaceMatrix(int paramInt1, int paramInt2, Matrix4d paramMatrix4d) {
-    HookFaceMatrix(this.cppObj, paramInt1, paramInt2, tmp);
+    HookFaceMatrix(this.jdField_cppObj_of_type_Int, paramInt1, paramInt2, tmp);
     paramMatrix4d.set(tmp);
   }
 
   public int materials()
   {
-    return Materials(this.cppObj);
+    return Materials(this.jdField_cppObj_of_type_Int);
   }
 
   public int materialFind(String paramString, int paramInt1, int paramInt2) {
-    return MaterialFind(this.cppObj, paramString, paramInt1, paramInt2);
+    return MaterialFind(this.jdField_cppObj_of_type_Int, paramString, paramInt1, paramInt2);
   }
 
   public int materialFind(String paramString, int paramInt) {
-    return MaterialFind(this.cppObj, paramString, paramInt, -1);
+    return MaterialFind(this.jdField_cppObj_of_type_Int, paramString, paramInt, -1);
   }
 
   public int materialFind(String paramString) {
-    return MaterialFind(this.cppObj, paramString, 0, -1);
+    return MaterialFind(this.jdField_cppObj_of_type_Int, paramString, 0, -1);
   }
 
   public Mat material(int paramInt) {
-    return (Mat)Material(this.cppObj, paramInt);
+    return (Mat)Material(this.jdField_cppObj_of_type_Int, paramInt);
   }
 
   public void materialReplace(int paramInt, Mat paramMat) {
-    MaterialReplace(this.cppObj, paramInt, paramMat.cppObject());
+    MaterialReplace(this.jdField_cppObj_of_type_Int, paramInt, paramMat.cppObject());
   }
 
   public void materialReplace(int paramInt, String paramString) {
-    MaterialReplace(this.cppObj, paramInt, paramString);
+    MaterialReplace(this.jdField_cppObj_of_type_Int, paramInt, paramString);
   }
 
   public void materialReplace(String paramString, Mat paramMat) {
-    MaterialReplace(this.cppObj, paramString, paramMat.cppObject());
+    MaterialReplace(this.jdField_cppObj_of_type_Int, paramString, paramMat.cppObject());
   }
 
   public void materialReplaceToNull(String paramString) {
-    MaterialReplace(this.cppObj, paramString, 0);
+    MaterialReplace(this.jdField_cppObj_of_type_Int, paramString, 0);
   }
 
   public void materialReplace(String paramString1, String paramString2) {
-    MaterialReplace(this.cppObj, paramString1, paramString2);
+    MaterialReplace(this.jdField_cppObj_of_type_Int, paramString1, paramString2);
   }
 
   public void makeAllMaterialsDarker(float paramFloat1, float paramFloat2) {
@@ -332,26 +332,26 @@ public class Mesh extends GObj
   public static boolean isSimilar(Mesh paramMesh1, Mesh paramMesh2)
   {
     if (paramMesh1 == paramMesh2) return true;
-    return IsSimilar(paramMesh1.cppObj, paramMesh2.cppObj) != 0;
+    return IsSimilar(paramMesh1.jdField_cppObj_of_type_Int, paramMesh2.jdField_cppObj_of_type_Int) != 0;
   }
 
   protected float heightMapMeshGetHeight(double paramDouble1, double paramDouble2) {
-    return HeightMapMeshGetHeight(this.cppObj, paramDouble1, paramDouble2);
+    return HeightMapMeshGetHeight(this.jdField_cppObj_of_type_Int, paramDouble1, paramDouble2);
   }
   protected boolean heightMapMeshGetNormal(double paramDouble1, double paramDouble2, float[] paramArrayOfFloat) {
-    return HeightMapMeshGetNormal(this.cppObj, paramDouble1, paramDouble2, paramArrayOfFloat) == 1;
+    return HeightMapMeshGetNormal(this.jdField_cppObj_of_type_Int, paramDouble1, paramDouble2, paramArrayOfFloat) == 1;
   }
   protected boolean heightMapMeshGetPlane(double paramDouble1, double paramDouble2, double[] paramArrayOfDouble) {
-    return HeightMapMeshGetPlane(this.cppObj, paramDouble1, paramDouble2, paramArrayOfDouble) == 1;
+    return HeightMapMeshGetPlane(this.jdField_cppObj_of_type_Int, paramDouble1, paramDouble2, paramArrayOfDouble) == 1;
   }
   protected float heightMapMeshGetRayHit(double[] paramArrayOfDouble) {
-    return HeightMapMeshGetRayHit(this.cppObj, paramArrayOfDouble);
+    return HeightMapMeshGetRayHit(this.jdField_cppObj_of_type_Int, paramArrayOfDouble);
   }
 
   public void destroy() {
-    if (this.cppObj != 0) {
-      Finalize(this.cppObj);
-      this.cppObj = 0;
+    if (this.jdField_cppObj_of_type_Int != 0) {
+      GObj.Finalize(this.jdField_cppObj_of_type_Int);
+      this.jdField_cppObj_of_type_Int = 0;
     }
   }
 
@@ -362,14 +362,14 @@ public class Mesh extends GObj
     super(0);
     if (paramString == null)
       throw new GObjException("Meshname is empty");
-    this.cppObj = Load(paramString);
+    this.jdField_cppObj_of_type_Int = Load(paramString);
 
-    if (this.cppObj == 0)
+    if (this.jdField_cppObj_of_type_Int == 0)
       throw new GObjException("Mesh " + paramString + " not created");
-    this.collisionR = CollisionR(this.cppObj);
-    this.visibilityR = VisibilityR(this.cppObj);
+    this.collisionR = CollisionR(this.jdField_cppObj_of_type_Int);
+    this.visibilityR = VisibilityR(this.jdField_cppObj_of_type_Int);
     if (Config.isUSE_RENDER()) {
-      this.bAllowsSimpleRendering = (IsAllowsSimpleRendering(this.cppObj) != 0);
+      this.bAllowsSimpleRendering = (IsAllowsSimpleRendering(this.jdField_cppObj_of_type_Int) != 0);
     }
     Pre.load(paramString);
   }
@@ -377,16 +377,16 @@ public class Mesh extends GObj
   public Mesh(HierMesh paramHierMesh)
   {
     super(0);
-    this.cppObj = CreateMeshFromHiermeshChunk(paramHierMesh.cppObj);
+    this.jdField_cppObj_of_type_Int = CreateMeshFromHiermeshChunk(paramHierMesh.jdField_cppObj_of_type_Int);
 
-    if (this.cppObj == 0)
+    if (this.jdField_cppObj_of_type_Int == 0)
       throw new GObjException("Mesh not created from hiermesh");
-    this.collisionR = CollisionR(this.cppObj);
-    this.visibilityR = VisibilityR(this.cppObj);
+    this.collisionR = CollisionR(this.jdField_cppObj_of_type_Int);
+    this.visibilityR = VisibilityR(this.jdField_cppObj_of_type_Int);
     if (Config.isUSE_RENDER()) {
-      this.bAllowsSimpleRendering = (IsAllowsSimpleRendering(this.cppObj) != 0);
+      this.bAllowsSimpleRendering = (IsAllowsSimpleRendering(this.jdField_cppObj_of_type_Int) != 0);
     }
-    Pre.load(GetFileName(this.cppObj)); } 
+    Pre.load(GetFileName(this.jdField_cppObj_of_type_Int)); } 
   private native int Load(String paramString);
 
   private native int CreateMeshFromHiermeshChunk(int paramInt);

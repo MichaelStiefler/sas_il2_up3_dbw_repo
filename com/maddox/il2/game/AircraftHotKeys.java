@@ -28,7 +28,6 @@ import com.maddox.il2.objects.air.A6M;
 import com.maddox.il2.objects.air.A6M5C;
 import com.maddox.il2.objects.air.A6M7_62;
 import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.AircraftLH;
 import com.maddox.il2.objects.air.Cockpit;
 import com.maddox.il2.objects.air.CockpitGunner;
 import com.maddox.il2.objects.air.CockpitPilot;
@@ -43,11 +42,9 @@ import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.air.TypeDiveBomber;
 import com.maddox.il2.objects.air.TypeDockable;
 import com.maddox.il2.objects.air.TypeFighterAceMaker;
-import com.maddox.il2.objects.air.TypeHasToKG;
 import com.maddox.il2.objects.air.TypeX4Carrier;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.weapons.TorpedoGun;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Console;
 import com.maddox.rts.HotKeyCmd;
@@ -80,34 +77,6 @@ public class AircraftHotKeys
   private boolean bAfterburner = false;
   private float lastPower = -0.5F;
   private float lastProp = 1.5F;
-
-  private float lastPower2 = -0.5F;
-  private float lastPower1 = -0.5F;
-  private float lastPower3 = -0.5F;
-  private float lastPower4 = -0.5F;
-  private float lastProp1 = 1.5F;
-  private float lastProp2 = 1.5F;
-  private float lastProp3 = 1.5F;
-  private float lastProp4 = 1.5F;
-  private float lastRadiator = -0.5F;
-  private AircraftLH bAAircraft;
-  private FlightModel baFM;
-  private static final int MOVE_POWER1 = 15;
-  private static final int MOVE_POWER2 = 16;
-  private static final int MOVE_POWER3 = 17;
-  private static final int MOVE_POWER4 = 18;
-  private static final int MOVE_RADIATOR = 19;
-  private static final int MOVE_PROP1 = 20;
-  private static final int MOVE_PROP2 = 21;
-  private static final int MOVE_PROP3 = 22;
-  private static final int MOVE_PROP4 = 23;
-  private static final int MOVE_ZOOM = 100;
-  private boolean changeFovEnabled = true;
-  private static final int BEACON_PLUS = 139;
-  private static final int BEACON_MINUS = 140;
-  private static final int AUX1_PLUS = 149;
-  private static final int AUX1_MINUS = 150;
-  private static final int AUX_A = 157;
   private static final int MOVE_POWER = 1;
   private static final int MOVE_FLAPS = 2;
   private static final int MOVE_AILERON = 3;
@@ -256,14 +225,14 @@ public class AircraftHotKeys
     return this.bAfterburner;
   }
   public void setAfterburner(boolean paramBoolean) {
-    if (this.FM.EI.isSelectionHasControlAfterburner()) {
+    if (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlAfterburner()) {
       this.bAfterburner = paramBoolean;
       if (this.bAfterburner) {
-        if (((this.FM.actor instanceof Hurricane)) || (((this.FM.actor instanceof A6M)) && (!(this.FM.actor instanceof A6M7_62)) && (!(this.FM.actor instanceof A6M5C))) || ((this.FM.actor instanceof P_51)) || ((this.FM.actor instanceof SPITFIRE)) || ((this.FM.actor instanceof MOSQUITO)) || ((this.FM.actor instanceof TEMPEST)))
+        if (((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Hurricane)) || (((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof A6M)) && (!(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof A6M7_62)) && (!(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof A6M5C))) || ((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof P_51)) || ((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof SPITFIRE)) || ((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof MOSQUITO)) || ((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TEMPEST)))
         {
           HUD.logRightBottom("BoostWepTP0");
         }
-        else HUD.logRightBottom("BoostWepTP" + this.FM.EI.getFirstSelected().getAfterburnerType());
+        else HUD.logRightBottom("BoostWepTP" + this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getAfterburnerType());
       }
       else
       {
@@ -272,7 +241,7 @@ public class AircraftHotKeys
 
     }
 
-    this.FM.CT.setAfterburnerControl(this.bAfterburner);
+    this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setAfterburnerControl(this.bAfterburner);
   }
   public void setAfterburnerForAutoActivation(boolean paramBoolean) {
     this.bAfterburner = paramBoolean;
@@ -283,7 +252,7 @@ public class AircraftHotKeys
   }
   public void setPropAuto(boolean paramBoolean) {
     if ((paramBoolean) && 
-      (!this.FM.EI.isSelectionAllowsAutoProp())) {
+      (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionAllowsAutoProp())) {
       return;
     }
 
@@ -295,18 +264,7 @@ public class AircraftHotKeys
     this.bAfterburner = false;
     this.bPropAuto = true;
     this.lastPower = -0.5F;
-
-    this.lastPower1 = -0.5F;
-    this.lastPower2 = -0.5F;
-    this.lastPower3 = -0.5F;
-    this.lastPower4 = -0.5F;
-
     this.lastProp = 1.5F;
-
-    this.lastProp1 = 1.5F;
-    this.lastProp2 = 1.5F;
-    this.lastProp3 = 1.5F;
-    this.lastProp4 = 1.5F;
   }
   public void resetUser() {
     resetGame();
@@ -327,149 +285,43 @@ public class AircraftHotKeys
 
     return false;
   }
-
-  private boolean setBombAimerAircraft()
-  {
-    this.bAAircraft = null;
-
-    if (!Actor.isAlive(World.getPlayerAircraft())) {
-      return false;
-    }
-    if (World.isPlayerParatrooper()) {
-      return false;
-    }
-    if (World.isPlayerDead()) {
-      return false;
-    }
-    FlightModel localFlightModel = World.getPlayerFM();
-
-    if (localFlightModel == null)
-      return false;
-    this.bAAircraft = ((AircraftLH)localFlightModel.actor);
-    this.baFM = localFlightModel;
-
-    return true;
-  }
-
   private void setPowerControl(float paramFloat) {
     if (paramFloat < 0.0F) paramFloat = 0.0F;
     if (paramFloat > 1.1F) paramFloat = 1.1F;
     this.lastPower = paramFloat;
 
-    this.FM.CT.setPowerControl(paramFloat);
-    hudPower(this.FM.CT.PowerControl);
+    this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setPowerControl(paramFloat);
+    hudPower(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl);
   }
 
-  private void setPowerControl(float paramFloat, int paramInt)
-  {
-    if (paramFloat < 0.0F) {
-      paramFloat = 0.0F;
-    }
-    if (paramFloat > 1.1F) {
-      paramFloat = 1.1F;
-    }
-    this.FM.CT.setPowerControl(paramFloat, paramInt - 1);
-    hudPower(paramFloat);
-  }
-
-  private void setPropControl(float paramFloat, int paramInt)
-  {
-    if (paramFloat < 0.0F) {
-      paramFloat = 0.0F;
-    }
-    if (paramFloat > 1.0F) {
-      paramFloat = 1.0F;
-    }
-    this.FM.CT.setStepControl(paramFloat, paramInt - 1);
-  }
-
-  private void setPropControl(float paramFloat)
-  {
+  private void setPropControl(float paramFloat) {
     if (!World.cur().diffCur.ComplexEManagement) {
       return;
     }
     if (paramFloat < 0.0F) paramFloat = 0.0F;
     if (paramFloat > 1.0F) paramFloat = 1.0F;
     this.lastProp = paramFloat;
-    if (!this.FM.EI.isSelectionAllowsAutoProp()) {
+    if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionAllowsAutoProp()) {
       this.bPropAuto = false;
     }
     if (!this.bPropAuto) {
-      this.FM.CT.setStepControlAuto(false);
-      this.FM.CT.setStepControl(paramFloat);
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setStepControlAuto(false);
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setStepControl(paramFloat);
+      HUD.log(hudLogPowerId, "PropPitch", new Object[] { new Integer(Math.round(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getStepControl() * 100.0F)) });
     }
   }
 
-  private void setMixControl(float paramFloat)
-  {
+  private void setMixControl(float paramFloat) {
     if (!World.cur().diffCur.ComplexEManagement) {
       return;
     }
     if (paramFloat < 0.0F) paramFloat = 0.0F;
     if (paramFloat > 1.2F) paramFloat = 1.2F;
-    if (this.FM.EI.getFirstSelected() != null) {
-      this.FM.EI.setMix(paramFloat);
-      paramFloat = this.FM.EI.getFirstSelected().getControlMix();
-      this.FM.CT.setMixControl(paramFloat);
-      HUD.log(hudLogPowerId, "PropMix", new Object[] { new Integer(Math.round(this.FM.CT.getMixControl() * 100.0F)) });
-    }
-  }
-
-  private void setRadiatorControl(float paramFloat)
-  {
-    if (paramFloat < 0.0F) {
-      paramFloat = 0.0F;
-    }
-    if (paramFloat > 1.0F) {
-      paramFloat = 1.0F;
-    }
-    if (!this.FM.EI.isSelectionHasControlRadiator()) {
-      return;
-    }
-    if (this.FM.CT.getRadiatorControlAuto())
-    {
-      if (paramFloat > 0.8F) {
-        return;
-      }
-      this.FM.CT.setRadiatorControlAuto(false, this.FM.EI);
-
-      if (World.cur().diffCur.ComplexEManagement)
-      {
-        this.FM.CT.setRadiatorControl(paramFloat);
-
-        HUD.log(hudLogPowerId, "Radiator {0}%", new Object[] { new Integer(Math.round(this.FM.CT.getRadiatorControl() * 100.0F)) });
-      }
-      else
-      {
-        this.FM.CT.setRadiatorControl(1.0F);
-        HUD.log("RadiatorON");
-      }
-
-      return;
-    }
-
-    if (World.cur().diffCur.ComplexEManagement)
-    {
-      if ((this.FM.actor instanceof MOSQUITO)) {
-        if (paramFloat > 0.5F) {
-          this.FM.CT.setRadiatorControl(1.0F);
-          HUD.log("RadiatorON");
-        }
-        else {
-          this.FM.CT.setRadiatorControl(0.0F);
-          HUD.log("RadiatorOFF");
-        }
-      } else {
-        this.FM.CT.setRadiatorControl(paramFloat);
-
-        HUD.log(hudLogPowerId, "Radiator {0}%", new Object[] { new Integer(Math.round(this.FM.CT.getRadiatorControl() * 100.0F)) });
-      }
-
-    }
-    else
-    {
-      this.FM.CT.setRadiatorControlAuto(true, this.FM.EI);
-      HUD.log("RadiatorOFF");
+    if (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null) {
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setMix(paramFloat);
+      paramFloat = this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMix();
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setMixControl(paramFloat);
+      HUD.log(hudLogPowerId, "PropMix", new Object[] { new Integer(Math.round(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getMixControl() * 100.0F)) });
     }
   }
 
@@ -478,19 +330,17 @@ public class AircraftHotKeys
     HUD.log(hudLogPowerId, "Power", new Object[] { new Integer(Math.round(paramFloat * 100.0F)) });
   }
 
-  private void hudWeapon(boolean paramBoolean, int paramInt)
-  {
+  private void hudWeapon(boolean paramBoolean, int paramInt) {
     int i = 0;
     int j = 0;
     int k = 0;
     int m = 0;
 
-    BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[paramInt];
+    BulletEmitter[] arrayOfBulletEmitter = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[paramInt];
     if (arrayOfBulletEmitter == null) return;
     for (int n = 0; n < arrayOfBulletEmitter.length; n++) {
       if ((arrayOfBulletEmitter[n] == null) || 
-        (!arrayOfBulletEmitter[n].haveBullets()))
-        continue;
+        (!arrayOfBulletEmitter[n].haveBullets())) continue;
       i = 1;
       break;
     }
@@ -508,58 +358,29 @@ public class AircraftHotKeys
 
   private void doCmdPilot(int paramInt, boolean paramBoolean)
   {
-    if (!setBombAimerAircraft())
-      return;
-    if (paramBoolean)
-    {
-      switch (paramInt)
-      {
-      case 139:
-      case 140:
-      case 149:
-      case 150:
-        doCmdPilotTick(paramInt);
-        return;
-      case 157:
-        this.bAAircraft.auxPressed(1);
-        return;
-      }
-
-    }
-
     if (!setPilot()) return;
 
-    Aircraft localAircraft = (Aircraft)this.FM.actor;
+    Aircraft localAircraft = (Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor;
 
     switch (paramInt) { case 16:
-      this.FM.CT.WeaponControl[0] = paramBoolean; hudWeapon(paramBoolean, 0); break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[0] = paramBoolean; hudWeapon(paramBoolean, 0); break;
     case 17:
-      this.FM.CT.WeaponControl[1] = paramBoolean; hudWeapon(paramBoolean, 1); break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[1] = paramBoolean; hudWeapon(paramBoolean, 1); break;
     case 18:
-      this.FM.CT.WeaponControl[2] = paramBoolean; hudWeapon(paramBoolean, 2); break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[2] = paramBoolean; hudWeapon(paramBoolean, 2); break;
     case 19:
-      this.FM.CT.WeaponControl[3] = paramBoolean; hudWeapon(paramBoolean, 3);
-      if ((!(localAircraft instanceof TypeHasToKG)) || (this.FM.CT.Weapons[3] == null) || (!(this.FM.CT.Weapons[3][0] instanceof TorpedoGun)) || (!this.FM.CT.Weapons[3][0].haveBullets()))
-        break;
-      this.FM.AS.replicateGyroAngleToNet();
-      this.FM.AS.replicateSpreadAngleToNet(); break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = paramBoolean; hudWeapon(paramBoolean, 3); break;
     case 64:
-      this.FM.CT.WeaponControl[0] = paramBoolean; hudWeapon(paramBoolean, 0);
-      this.FM.CT.WeaponControl[1] = paramBoolean; hudWeapon(paramBoolean, 1); break;
-    case 73:
-      this.FM.CT.setElectricPropUp(paramBoolean);
-      break;
-    case 74:
-      this.FM.CT.setElectricPropDn(paramBoolean);
-      break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[0] = paramBoolean; hudWeapon(paramBoolean, 0);
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[1] = paramBoolean; hudWeapon(paramBoolean, 1); break;
     }
 
     if (!paramBoolean) {
       switch (paramInt) {
       case 71:
         if (((localAircraft instanceof TypeBomber)) || ((localAircraft instanceof DO_335))) {
-          this.FM.CT.StabilizerControl = (!this.FM.CT.StabilizerControl);
-          HUD.log("Stabilizer" + (this.FM.CT.StabilizerControl ? "On" : "Off"));
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl = (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl);
+          HUD.log("Stabilizer" + (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl ? "On" : "Off"));
         }
         return;
       case 15:
@@ -574,50 +395,50 @@ public class AircraftHotKeys
         return;
       case 1:
       case 2:
-        if (this.FM.CT.StabilizerControl) break;
-        this.FM.CT.RudderControl = 0.0F; break;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = 0.0F; break;
       case 0:
-        this.FM.CT.BrakeControl = 0.0F; break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl = 0.0F; break;
       case 3:
       case 4:
-        if (this.FM.CT.StabilizerControl) break;
-        this.FM.CT.ElevatorControl = 0.0F; break;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = 0.0F; break;
       case 5:
       case 6:
-        if (this.FM.CT.StabilizerControl) break;
-        this.FM.CT.AileronControl = 0.0F; break;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = 0.0F; break;
       case 54:
-        if ((this.FM.Gears.onGround()) || 
-          (this.FM.CT.GearControl <= 0.0F) || (!this.FM.Gears.isOperable()) || (this.FM.Gears.isHydroOperable())) break;
-        this.FM.CT.GearControl -= 0.02F;
-        if (this.FM.CT.GearControl > 0.0F) break;
-        this.FM.CT.GearControl = 0.0F;
+        if ((this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) || 
+          (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl <= 0.0F) || (!this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.isOperable()) || (this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.isHydroOperable())) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl -= 0.02F;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl > 0.0F) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 0.0F;
         HUD.log("GearUp"); break;
       case 55:
-        if ((this.FM.Gears.onGround()) || 
-          (this.FM.CT.GearControl >= 1.0F) || (!this.FM.Gears.isOperable()) || (this.FM.Gears.isHydroOperable())) break;
-        this.FM.CT.GearControl += 0.02F;
-        if (this.FM.CT.GearControl < 1.0F) break;
-        this.FM.CT.GearControl = 1.0F;
+        if ((this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) || 
+          (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl >= 1.0F) || (!this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.isOperable()) || (this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.isHydroOperable())) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl += 0.02F;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl < 1.0F) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 1.0F;
         HUD.log("GearDown"); break;
       case 63:
-        if (!this.FM.CT.bHasAirBrakeControl) break;
-        this.FM.CT.AirBrakeControl = (this.FM.CT.AirBrakeControl > 0.5F ? 0.0F : 1.0F);
-        HUD.log("Divebrake" + (this.FM.CT.AirBrakeControl == 0.0F ? "OFF" : "ON")); break;
+        if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAirBrakeControl) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl = (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl > 0.5F ? 0.0F : 1.0F);
+        HUD.log("Divebrake" + (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl == 0.0F ? "OFF" : "ON")); break;
       case 70:
-        if ((World.cur().diffCur.SeparateEStart) && (this.FM.EI.getNumSelected() > 1) && 
-          (this.FM.EI.getFirstSelected().getStage() == 0)) {
+        if ((World.cur().diffCur.SeparateEStart) && (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNumSelected() > 1) && 
+          (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getStage() == 0)) {
           return;
         }
 
-        this.FM.EI.toggle();
+        this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.toggle();
         break;
       case 126:
-        if (!(this.FM.actor instanceof TypeDockable)) break;
-        if (((TypeDockable)this.FM.actor).typeDockableIsDocked())
-          ((TypeDockable)this.FM.actor).typeDockableAttemptDetach();
+        if (!(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeDockable)) break;
+        if (((TypeDockable)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeDockableIsDocked())
+          ((TypeDockable)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeDockableAttemptDetach();
         else {
-          ((TypeDockable)this.FM.actor).typeDockableAttemptAttach();
+          ((TypeDockable)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeDockableAttemptAttach();
         }
 
       }
@@ -625,75 +446,75 @@ public class AircraftHotKeys
       return;
     }
     int[] arrayOfInt1;
-    int k;
+    int j;
     int[] arrayOfInt2;
+    int m;
     switch (paramInt) {
     case 7:
-      if (!this.FM.EI.isSelectionHasControlRadiator()) break;
-      if (this.FM.CT.getRadiatorControlAuto()) {
-        this.FM.CT.setRadiatorControlAuto(false, this.FM.EI);
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlRadiator()) break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControlAuto()) {
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControlAuto(false, this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface);
         if (World.cur().diffCur.ComplexEManagement) {
-          this.FM.CT.setRadiatorControl(0.0F);
-          HUD.log("RadiatorControl" + (int)(this.FM.CT.getRadiatorControl() * 10.0F));
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl(0.0F);
+          HUD.log("RadiatorControl" + (int)(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControl() * 10.0F));
         } else {
-          this.FM.CT.setRadiatorControl(1.0F);
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl(1.0F);
           HUD.log("RadiatorON");
         }
       }
       else if (World.cur().diffCur.ComplexEManagement) {
-        if (this.FM.CT.getRadiatorControl() > 0.8F) {
-          if (this.FM.EI.isSelectionAllowsAutoRadiator()) {
-            this.FM.CT.setRadiatorControlAuto(true, this.FM.EI);
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControl() == 1.0F) {
+          if (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionAllowsAutoRadiator()) {
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControlAuto(true, this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface);
             HUD.log("RadiatorOFF");
           } else {
-            this.FM.CT.setRadiatorControl(0.0F);
-            HUD.log("RadiatorControl" + (int)(this.FM.CT.getRadiatorControl() * 10.0F));
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl(0.0F);
+            HUD.log("RadiatorControl" + (int)(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControl() * 10.0F));
           }
         } else {
-          if ((this.FM.actor instanceof MOSQUITO))
-            this.FM.CT.setRadiatorControl(1.0F);
+          if ((this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof MOSQUITO))
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl(1.0F);
           else {
-            this.FM.CT.setRadiatorControl(this.FM.CT.getRadiatorControl() + 0.2F);
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControl() + 0.2F);
           }
-          HUD.log("RadiatorControl" + (int)(this.FM.CT.getRadiatorControl() * 10.0F));
+          HUD.log("RadiatorControl" + (int)(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControl() * 10.0F));
         }
       } else {
-        this.FM.CT.setRadiatorControlAuto(true, this.FM.EI);
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControlAuto(true, this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface);
         HUD.log("RadiatorOFF"); } break;
     case 0:
-      if (!this.FM.CT.bHasBrakeControl) break;
-      this.FM.CT.BrakeControl = 1.0F; break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl = 1.0F; break;
     case 3:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.ElevatorControl = -1.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = -1.0F; break;
     case 4:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.ElevatorControl = 1.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = 1.0F; break;
     case 5:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.AileronControl = -1.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = -1.0F; break;
     case 6:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.AileronControl = 1.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = 1.0F; break;
     case 72:
-      if (!this.FM.CT.bHasLockGearControl) break;
-      this.FM.Gears.bTailwheelLocked = (!this.FM.Gears.bTailwheelLocked);
-      HUD.log("TailwheelLock" + (this.FM.Gears.bTailwheelLocked ? "ON" : "OFF")); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasLockGearControl) break;
+      this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.bTailwheelLocked = (!this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.bTailwheelLocked);
+      HUD.log("TailwheelLock" + (this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.bTailwheelLocked ? "ON" : "OFF")); break;
     case 1:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.RudderControl = -1.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = -1.0F; break;
     case 56:
-      if ((this.FM.CT.StabilizerControl) || 
-        (this.FM.CT.RudderControl <= -1.0F)) break; this.FM.CT.RudderControl -= 0.1F; break;
+      if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl <= -1.0F)) break; this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl -= 0.1F; break;
     case 57:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.RudderControl = 0.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = 0.0F; break;
     case 2:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.RudderControl = 1.0F; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = 1.0F; break;
     case 58:
-      if ((this.FM.CT.StabilizerControl) || 
-        (this.FM.CT.RudderControl >= 1.0F)) break; this.FM.CT.RudderControl += 0.1F; break;
+      if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl >= 1.0F)) break; this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl += 0.1F; break;
     case 20:
       setPowerControl(0.0F); break;
     case 21:
@@ -717,336 +538,336 @@ public class AircraftHotKeys
     case 30:
       setPowerControl(1.0F); break;
     case 59:
-      setPowerControl(this.FM.CT.PowerControl + 0.05F); break;
+      setPowerControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl + 0.05F); break;
     case 60:
-      setPowerControl(this.FM.CT.PowerControl - 0.05F); break;
+      setPowerControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl - 0.05F); break;
     case 61:
       setAfterburner(!this.bAfterburner);
       break;
     case 31:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.0F); break;
     case 32:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.1F); break;
     case 33:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.2F); break;
     case 34:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.3F); break;
     case 35:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.4F); break;
     case 36:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.5F); break;
     case 37:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.6F); break;
     case 38:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.7F); break;
     case 39:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.8F); break;
     case 40:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(0.9F); break;
     case 41:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(1.0F); break;
     case 73:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(this.lastProp + 0.05F); break;
     case 74:
-      if (!this.FM.EI.isSelectionHasControlProp()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) break;
       setPropControl(this.lastProp - 0.05F); break;
     case 42:
-      if ((!this.FM.EI.isSelectionHasControlProp()) || (!World.cur().diffCur.ComplexEManagement)) break;
+      if ((!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp()) || (!World.cur().diffCur.ComplexEManagement)) break;
       setPropAuto(!this.bPropAuto);
       if (this.bPropAuto) {
         HUD.log("PropAutoPitch");
-        this.lastProp = this.FM.CT.getStepControl();
-        this.FM.CT.setStepControlAuto(true);
+        this.lastProp = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getStepControl();
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setStepControlAuto(true);
       } else {
-        this.FM.CT.setStepControlAuto(false);
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setStepControlAuto(false);
         setPropControl(this.lastProp); } break;
     case 114:
-      if ((!this.FM.EI.isSelectionHasControlFeather()) || (!World.cur().diffCur.ComplexEManagement) || 
-        (this.FM.EI.getFirstSelected() == null)) break;
-      this.FM.EI.setFeather(this.FM.EI.getFirstSelected().getControlFeather() == 0 ? 1 : 0); break;
+      if ((!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlFeather()) || (!World.cur().diffCur.ComplexEManagement) || 
+        (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() == null)) break;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setFeather(this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlFeather() == 0 ? 1 : 0); break;
     case 75:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.0F); break;
     case 76:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.1F); break;
     case 77:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.2F); break;
     case 78:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.3F); break;
     case 79:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.4F); break;
     case 80:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.5F); break;
     case 81:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.6F); break;
     case 82:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.7F); break;
     case 83:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.8F); break;
     case 84:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(0.9F); break;
     case 85:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
       setMixControl(1.0F); break;
     case 86:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
-      setMixControl(this.FM.CT.getMixControl() + 0.2F); break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
+      setMixControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getMixControl() + 0.2F); break;
     case 87:
-      if (!this.FM.EI.isSelectionHasControlMix()) break;
-      setMixControl(this.FM.CT.getMixControl() - 0.2F); break;
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMix()) break;
+      setMixControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getMixControl() - 0.2F); break;
     case 89:
-      if ((!this.FM.EI.isSelectionHasControlMagnetos()) || (this.FM.EI.getFirstSelected() == null) || 
-        (this.FM.EI.getFirstSelected().getControlMagnetos() <= 0)) break;
-      this.FM.CT.setMagnetoControl(this.FM.EI.getFirstSelected().getControlMagnetos() - 1);
-      HUD.log("MagnetoSetup" + this.FM.CT.getMagnetoControl()); break;
+      if ((!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMagnetos()) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() == null) || 
+        (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos() <= 0)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setMagnetoControl(this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos() - 1);
+      HUD.log("MagnetoSetup" + this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getMagnetoControl()); break;
     case 88:
-      if ((!this.FM.EI.isSelectionHasControlMagnetos()) || (this.FM.EI.getFirstSelected() == null) || 
-        (this.FM.EI.getFirstSelected().getControlMagnetos() >= 3)) break;
-      this.FM.CT.setMagnetoControl(this.FM.EI.getFirstSelected().getControlMagnetos() + 1);
-      HUD.log("MagnetoSetup" + this.FM.CT.getMagnetoControl()); break;
+      if ((!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMagnetos()) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() == null) || 
+        (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos() >= 3)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setMagnetoControl(this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos() + 1);
+      HUD.log("MagnetoSetup" + this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getMagnetoControl()); break;
     case 116:
-      if ((!this.FM.EI.isSelectionHasControlCompressor()) || (this.FM.EI.getFirstSelected() == null) || (!World.cur().diffCur.ComplexEManagement)) break;
-      this.FM.CT.setCompressorControl(this.FM.EI.getFirstSelected().getControlCompressor() - 1);
-      HUD.log("CompressorSetup" + this.FM.CT.getCompressorControl()); break;
+      if ((!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlCompressor()) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() == null) || (!World.cur().diffCur.ComplexEManagement)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setCompressorControl(this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlCompressor() - 1);
+      HUD.log("CompressorSetup" + this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getCompressorControl()); break;
     case 115:
-      if ((!this.FM.EI.isSelectionHasControlCompressor()) || (this.FM.EI.getFirstSelected() == null) || (!World.cur().diffCur.ComplexEManagement)) break;
-      this.FM.CT.setCompressorControl(this.FM.EI.getFirstSelected().getControlCompressor() + 1);
-      HUD.log("CompressorSetup" + this.FM.CT.getCompressorControl()); break;
+      if ((!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlCompressor()) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() == null) || (!World.cur().diffCur.ComplexEManagement)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setCompressorControl(this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlCompressor() + 1);
+      HUD.log("CompressorSetup" + this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getCompressorControl()); break;
     case 90:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControlAll(true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(true);
       HUD.log("EngineSelectAll");
       break;
     case 91:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControlAll(false);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
       HUD.log("EngineSelectNone");
       break;
     case 92:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControlAll(false);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
 
-      arrayOfInt1 = this.FM.EI.getSublist(this.FM.Scheme, 1);
-      for (k = 0; k < arrayOfInt1.length; k++) {
-        this.FM.EI.setCurControl(arrayOfInt1[k], true);
+      arrayOfInt1 = this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getSublist(this.FM.jdField_Scheme_of_type_Int, 1);
+      for (j = 0; j < arrayOfInt1.length; j++) {
+        this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(arrayOfInt1[j], true);
       }
 
       HUD.log("EngineSelectLeft");
       break;
     case 93:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControlAll(false);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
 
-      arrayOfInt1 = this.FM.EI.getSublist(this.FM.Scheme, 2);
-      for (k = 0; k < arrayOfInt1.length; k++) {
-        this.FM.EI.setCurControl(arrayOfInt1[k], true);
+      arrayOfInt1 = this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getSublist(this.FM.jdField_Scheme_of_type_Int, 2);
+      for (j = 0; j < arrayOfInt1.length; j++) {
+        this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(arrayOfInt1[j], true);
       }
 
       HUD.log("EngineSelectRight");
       break;
     case 94:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControlAll(false);
-      this.FM.EI.setCurControl(0, true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(0, true);
       HUD.log("EngineSelect1");
       break;
     case 95:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControlAll(false);
-      this.FM.EI.setCurControl(1, true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(1, true);
       HUD.log("EngineSelect2");
       break;
     case 96:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1) || (this.FM.EI.getNum() < 3)) return;
-      this.FM.EI.setCurControlAll(false);
-      this.FM.EI.setCurControl(2, true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() < 3)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(2, true);
       HUD.log("EngineSelect3");
       break;
     case 97:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1) || (this.FM.EI.getNum() < 4)) return;
-      this.FM.EI.setCurControlAll(false);
-      this.FM.EI.setCurControl(3, true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() < 4)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(3, true);
       HUD.log("EngineSelect4");
       break;
     case 98:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1) || (this.FM.EI.getNum() < 5)) return;
-      this.FM.EI.setCurControlAll(false);
-      this.FM.EI.setCurControl(4, true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() < 5)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(4, true);
       HUD.log("EngineSelect5");
       break;
     case 99:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1) || (this.FM.EI.getNum() < 6)) return;
-      this.FM.EI.setCurControlAll(false);
-      this.FM.EI.setCurControl(5, true);
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1) || (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() < 6)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(false);
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(5, true);
       HUD.log("EngineSelect6");
       break;
     case 102:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      for (int i = 0; i < this.FM.EI.getNum(); i++) {
-        this.FM.EI.setCurControl(i, !this.FM.EI.getCurControl(i));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      for (int i = 0; i < this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); i++) {
+        this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(i, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(i));
       }
       HUD.log("EngineToggleAll");
       break;
     case 103:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
 
-      arrayOfInt2 = this.FM.EI.getSublist(this.FM.Scheme, 1);
-      for (k = 0; k < arrayOfInt2.length; k++) {
-        this.FM.EI.setCurControl(arrayOfInt2[k], !this.FM.EI.getCurControl(arrayOfInt2[k]));
+      arrayOfInt2 = this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getSublist(this.FM.jdField_Scheme_of_type_Int, 1);
+      for (m = 0; m < arrayOfInt2.length; m++) {
+        this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(arrayOfInt2[m], !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(arrayOfInt2[m]));
       }
 
       HUD.log("EngineToggleLeft");
       break;
     case 104:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
 
-      arrayOfInt2 = this.FM.EI.getSublist(this.FM.Scheme, 2);
-      for (k = 0; k < arrayOfInt2.length; k++) {
-        this.FM.EI.setCurControl(arrayOfInt2[k], !this.FM.EI.getCurControl(arrayOfInt2[k]));
+      arrayOfInt2 = this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getSublist(this.FM.jdField_Scheme_of_type_Int, 2);
+      for (m = 0; m < arrayOfInt2.length; m++) {
+        this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(arrayOfInt2[m], !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(arrayOfInt2[m]));
       }
 
       HUD.log("EngineToggleRight");
       break;
     case 105:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControl(0, !this.FM.EI.getCurControl(0));
-      HUD.log("EngineSelect1" + (this.FM.EI.getCurControl(0) ? "" : "OFF"));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(0, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(0));
+      HUD.log("EngineSelect1" + (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(0) ? "" : "OFF"));
       break;
     case 106:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControl(1, !this.FM.EI.getCurControl(1));
-      HUD.log("EngineSelect2" + (this.FM.EI.getCurControl(1) ? "" : "OFF"));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(1, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(1));
+      HUD.log("EngineSelect2" + (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(1) ? "" : "OFF"));
       break;
     case 107:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControl(2, !this.FM.EI.getCurControl(2));
-      HUD.log("EngineSelect3" + (this.FM.EI.getCurControl(2) ? "" : "OFF"));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(2, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(2));
+      HUD.log("EngineSelect3" + (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(2) ? "" : "OFF"));
       break;
     case 108:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControl(3, !this.FM.EI.getCurControl(3));
-      HUD.log("EngineSelect4" + (this.FM.EI.getCurControl(3) ? "" : "OFF"));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(3, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(3));
+      HUD.log("EngineSelect4" + (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(3) ? "" : "OFF"));
       break;
     case 109:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControl(4, !this.FM.EI.getCurControl(4));
-      HUD.log("EngineSelect5" + (this.FM.EI.getCurControl(4) ? "" : "OFF"));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(4, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(4));
+      HUD.log("EngineSelect5" + (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(4) ? "" : "OFF"));
       break;
     case 110:
-      if ((this.FM.Scheme == 0) || (this.FM.Scheme == 1)) return;
-      this.FM.EI.setCurControl(5, !this.FM.EI.getCurControl(5));
-      HUD.log("EngineSelect6" + (this.FM.EI.getCurControl(5) ? "" : "OFF"));
+      if ((this.FM.jdField_Scheme_of_type_Int == 0) || (this.FM.jdField_Scheme_of_type_Int == 1)) return;
+      this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControl(5, !this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(5));
+      HUD.log("EngineSelect6" + (this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(5) ? "" : "OFF"));
       break;
     case 113:
-      if (!this.FM.EI.isSelectionHasControlExtinguisher()) break;
-      for (int j = 0; j < this.FM.EI.getNum(); j++) {
-        if (!this.FM.EI.getCurControl(j)) continue; this.FM.EI.engines[j].setExtinguisherFire();
+      if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlExtinguisher()) break;
+      for (int k = 0; k < this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); k++) {
+        if (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getCurControl(k)) continue; this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[k].setExtinguisherFire();
       }
-      break;
     case 53:
-      if (!this.FM.CT.bHasFlapsControl) break;
-      if (!this.FM.CT.bHasFlapsControlRed) {
-        if (this.FM.CT.FlapsControl < 0.2F) {
-          this.FM.CT.FlapsControl = 0.2F;
+      if ((goto 6381) || 
+        (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasFlapsControl)) break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasFlapsControlRed) {
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl < 0.2F) {
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.2F;
           HUD.log("FlapsCombat");
-        } else if (this.FM.CT.FlapsControl < 0.33F) {
-          this.FM.CT.FlapsControl = 0.33F;
+        } else if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl < 0.33F) {
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.33F;
           HUD.log("FlapsTakeOff"); } else {
-          if (this.FM.CT.FlapsControl >= 1.0F) break;
-          this.FM.CT.FlapsControl = 1.0F;
+          if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl >= 1.0F) break;
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 1.0F;
           HUD.log("FlapsLanding");
         }
       } else {
-        if (this.FM.CT.FlapsControl >= 0.5F) break;
-        this.FM.CT.FlapsControl = 1.0F;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl >= 0.5F) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 1.0F;
         HUD.log("FlapsLanding"); } break;
     case 52:
-      if (!this.FM.CT.bHasFlapsControl) break;
-      if (!this.FM.CT.bHasFlapsControlRed) {
-        if (this.FM.CT.FlapsControl > 0.33F) {
-          this.FM.CT.FlapsControl = 0.33F;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasFlapsControl) break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasFlapsControlRed) {
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl > 0.33F) {
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.33F;
           HUD.log("FlapsTakeOff");
-        } else if (this.FM.CT.FlapsControl > 0.2F) {
-          this.FM.CT.FlapsControl = 0.2F;
+        } else if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl > 0.2F) {
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.2F;
           HUD.log("FlapsCombat"); } else {
-          if (this.FM.CT.FlapsControl <= 0.0F) break;
-          this.FM.CT.FlapsControl = 0.0F;
+          if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl <= 0.0F) break;
+          this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.0F;
           HUD.log("FlapsRaised");
         }
       } else {
-        if (this.FM.CT.FlapsControl <= 0.5F) break;
-        this.FM.CT.FlapsControl = 0.0F;
+        if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl <= 0.5F) break;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.0F;
         HUD.log("FlapsRaised"); } break;
     case 9:
-      if ((!this.FM.CT.bHasGearControl) || 
-        (this.FM.Gears.onGround()) || (!this.FM.Gears.isHydroOperable())) break;
-      if ((this.FM.CT.GearControl > 0.5F) && (this.FM.CT.getGear() > 0.99F)) {
-        this.FM.CT.GearControl = 0.0F;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasGearControl) || 
+        (this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) || (!this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.isHydroOperable())) break;
+      if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl > 0.5F) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear() > 0.99F)) {
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 0.0F;
         HUD.log("GearUp");
-      } else if ((this.FM.CT.GearControl < 0.5F) && (this.FM.CT.getGear() < 0.01F)) {
-        this.FM.CT.GearControl = 1.0F;
+      } else if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl < 0.5F) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear() < 0.01F)) {
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 1.0F;
         HUD.log("GearDown");
       }
-      if (!this.FM.Gears.isAnyDamaged()) break;
+      if (!this.FM.jdField_Gears_of_type_ComMaddoxIl2FmGear.isAnyDamaged()) break;
       HUD.log("GearDamaged"); break;
     case 129:
-      if (!this.FM.CT.bHasArrestorControl) break;
-      if (this.FM.CT.arrestorControl > 0.5F) {
-        this.FM.AS.setArrestor(this.FM.actor, 0);
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasArrestorControl) break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.arrestorControl > 0.5F) {
+        this.FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setArrestor(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor, 0);
         HUD.log("HookUp");
       } else {
-        this.FM.AS.setArrestor(this.FM.actor, 1);
+        this.FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setArrestor(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor, 1);
         HUD.log("HookDown"); } break;
     case 130:
       if (!this.FM.canChangeBrakeShoe) break;
-      if (this.FM.brakeShoe) {
-        this.FM.brakeShoe = false;
+      if (this.FM.jdField_brakeShoe_of_type_Boolean) {
+        this.FM.jdField_brakeShoe_of_type_Boolean = false;
         HUD.log("BrakeShoeOff");
       } else {
-        this.FM.brakeShoe = true;
+        this.FM.jdField_brakeShoe_of_type_Boolean = true;
         HUD.log("BrakeShoeOn"); } break;
     case 127:
-      if (!this.FM.CT.bHasWingControl) break;
-      if ((this.FM.CT.wingControl < 0.5F) && (this.FM.CT.getWing() < 0.01F))
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasWingControl) break;
+      if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.wingControl < 0.5F) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getWing() < 0.01F))
       {
-        this.FM.AS.setWingFold(localAircraft, 1);
+        this.FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setWingFold(localAircraft, 1);
         HUD.log("WingFold"); } else {
-        if ((this.FM.CT.wingControl <= 0.5F) || (this.FM.CT.getWing() <= 0.99F))
+        if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.wingControl <= 0.5F) || (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getWing() <= 0.99F))
           break;
-        this.FM.AS.setWingFold(localAircraft, 0);
+        this.FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setWingFold(localAircraft, 0);
         HUD.log("WingExpand"); } break;
     case 128:
-      if (!this.FM.CT.bHasCockpitDoorControl) break;
-      if ((this.FM.CT.cockpitDoorControl < 0.5F) && (this.FM.CT.getCockpitDoor() < 0.01F)) {
-        this.FM.AS.setCockpitDoor(localAircraft, 1);
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasCockpitDoorControl) break;
+      if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl < 0.5F) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() < 0.01F)) {
+        this.FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(localAircraft, 1);
         HUD.log("CockpitDoorOPN"); } else {
-        if ((this.FM.CT.cockpitDoorControl <= 0.5F) || (this.FM.CT.getCockpitDoor() <= 0.99F)) break;
-        this.FM.AS.setCockpitDoor(localAircraft, 0);
+        if ((this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl <= 0.5F) || (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() <= 0.99F)) break;
+        this.FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(localAircraft, 0);
         HUD.log("CockpitDoorCLS"); } break;
     case 43:
-      if (!this.FM.CT.bHasElevatorTrim) break;
-      this.FM.CT.setTrimElevatorControl(0.0F); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasElevatorTrim) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(0.0F); break;
     case 44:
       doCmdPilotTick(paramInt);
       break;
@@ -1054,8 +875,8 @@ public class AircraftHotKeys
       doCmdPilotTick(paramInt);
       break;
     case 46:
-      if (!this.FM.CT.bHasAileronTrim) break;
-      this.FM.CT.setTrimAileronControl(0.0F); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAileronTrim) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimAileronControl(0.0F); break;
     case 47:
       doCmdPilotTick(paramInt);
       break;
@@ -1063,8 +884,8 @@ public class AircraftHotKeys
       doCmdPilotTick(paramInt);
       break;
     case 49:
-      if (!this.FM.CT.bHasRudderTrim) break;
-      this.FM.CT.setTrimRudderControl(0.0F); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasRudderTrim) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimRudderControl(0.0F); break;
     case 50:
       doCmdPilotTick(paramInt);
       break;
@@ -1106,7 +927,7 @@ public class AircraftHotKeys
       doCmdPilotTick(paramInt);
       break;
     case 62:
-      this.FM.CT.dropFuelTanks();
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.dropFuelTanks();
     case 8:
     case 10:
     case 11:
@@ -1134,64 +955,35 @@ public class AircraftHotKeys
     case 111:
     case 112:
     case 126: }  } 
-  private void doCmdPilotTick(int paramInt) { if (!setBombAimerAircraft()) {
-      return;
-    }
-    switch (paramInt)
-    {
-    case 149:
-      this.bAAircraft.auxPlus(1);
-      toTrackSign(paramInt);
-      return;
-    case 150:
-      this.bAAircraft.auxMinus(1);
-      toTrackSign(paramInt);
-      return;
-    case 139:
-      if (World.cur().diffCur.RealisticNavigationInstruments)
-      {
-        this.bAAircraft.beaconPlus();
-        toTrackSign(paramInt);
-      }
-      return;
-    case 140:
-      if (World.cur().diffCur.RealisticNavigationInstruments)
-      {
-        this.bAAircraft.beaconMinus();
-        toTrackSign(paramInt);
-      }
-      return;
-    }
-
-    if (!setPilot()) return;
-    Aircraft localAircraft = (Aircraft)this.FM.actor;
+  private void doCmdPilotTick(int paramInt) { if (!setPilot()) return;
+    Aircraft localAircraft = (Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor;
 
     switch (paramInt)
     {
     case 44:
-      if ((!this.FM.CT.bHasElevatorTrim) || 
-        (this.FM.CT.getTrimElevatorControl() >= 0.5F)) break;
-      this.FM.CT.setTrimElevatorControl(this.FM.CT.getTrimElevatorControl() + 0.00625F); break;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasElevatorTrim) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl() >= 0.5F)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl() + 0.00625F); break;
     case 45:
-      if ((!this.FM.CT.bHasElevatorTrim) || 
-        (this.FM.CT.getTrimElevatorControl() <= -0.5F)) break;
-      this.FM.CT.setTrimElevatorControl(this.FM.CT.getTrimElevatorControl() - 0.00625F); break;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasElevatorTrim) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl() <= -0.5F)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl() - 0.00625F); break;
     case 47:
-      if ((!this.FM.CT.bHasAileronTrim) || 
-        (this.FM.CT.getTrimAileronControl() >= 0.5F)) break;
-      this.FM.CT.setTrimAileronControl(this.FM.CT.getTrimAileronControl() + 0.00625F); break;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAileronTrim) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl() >= 0.5F)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimAileronControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl() + 0.00625F); break;
     case 48:
-      if ((!this.FM.CT.bHasAileronTrim) || 
-        (this.FM.CT.getTrimAileronControl() <= -0.5F)) break;
-      this.FM.CT.setTrimAileronControl(this.FM.CT.getTrimAileronControl() - 0.00625F); break;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAileronTrim) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl() <= -0.5F)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimAileronControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl() - 0.00625F); break;
     case 50:
-      if ((!this.FM.CT.bHasRudderTrim) || 
-        (this.FM.CT.getTrimRudderControl() >= 0.5F)) break;
-      this.FM.CT.setTrimRudderControl(this.FM.CT.getTrimRudderControl() + 0.00625F); break;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasRudderTrim) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl() >= 0.5F)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimRudderControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl() + 0.00625F); break;
     case 51:
-      if ((!this.FM.CT.bHasRudderTrim) || 
-        (this.FM.CT.getTrimRudderControl() <= -0.5F)) break;
-      this.FM.CT.setTrimRudderControl(this.FM.CT.getTrimRudderControl() - 0.00625F); break;
+      if ((!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasRudderTrim) || 
+        (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl() <= -0.5F)) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimRudderControl(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl() - 0.00625F); break;
     case 117:
       if ((localAircraft instanceof TypeBomber)) {
         ((TypeBomber)localAircraft).typeBomberAdjDistancePlus();
@@ -1216,21 +1008,21 @@ public class AircraftHotKeys
       if ((localAircraft instanceof TypeBomber)) {
         ((TypeBomber)localAircraft).typeBomberAdjSideslipPlus();
         toTrackSign(paramInt);
-      }if ((localAircraft instanceof TypeX4Carrier)) {
-        ((TypeX4Carrier)localAircraft).typeX4CAdjSidePlus();
-        toTrackSign(paramInt); } else {
-        if (!(localAircraft instanceof TypeFighterAceMaker)) break;
+      } else if ((localAircraft instanceof TypeFighterAceMaker)) {
         ((TypeFighterAceMaker)localAircraft).typeFighterAceMakerAdjSideslipPlus();
+        toTrackSign(paramInt); } else {
+        if (!(localAircraft instanceof TypeX4Carrier)) break;
+        ((TypeX4Carrier)localAircraft).typeX4CAdjSidePlus();
         toTrackSign(paramInt); } break;
     case 120:
       if ((localAircraft instanceof TypeBomber)) {
         ((TypeBomber)localAircraft).typeBomberAdjSideslipMinus();
         toTrackSign(paramInt);
-      }if ((localAircraft instanceof TypeX4Carrier)) {
-        ((TypeX4Carrier)localAircraft).typeX4CAdjSideMinus();
-        toTrackSign(paramInt); } else {
-        if (!(localAircraft instanceof TypeFighterAceMaker)) break;
+      } else if ((localAircraft instanceof TypeFighterAceMaker)) {
         ((TypeFighterAceMaker)localAircraft).typeFighterAceMakerAdjSideslipMinus();
+        toTrackSign(paramInt); } else {
+        if (!(localAircraft instanceof TypeX4Carrier)) break;
+        ((TypeX4Carrier)localAircraft).typeX4CAdjSideMinus();
         toTrackSign(paramInt); } break;
     case 121:
       if ((localAircraft instanceof TypeBomber)) {
@@ -1238,20 +1030,20 @@ public class AircraftHotKeys
         toTrackSign(paramInt);
       } else if ((localAircraft instanceof TypeDiveBomber)) {
         ((TypeDiveBomber)localAircraft).typeDiveBomberAdjAltitudePlus();
-        toTrackSign(paramInt);
-      }if (!(localAircraft instanceof TypeX4Carrier)) break;
-      ((TypeX4Carrier)localAircraft).typeX4CAdjAttitudePlus();
-      toTrackSign(paramInt); break;
+        toTrackSign(paramInt); } else {
+        if (!(localAircraft instanceof TypeX4Carrier)) break;
+        ((TypeX4Carrier)localAircraft).typeX4CAdjAttitudePlus();
+        toTrackSign(paramInt); } break;
     case 122:
       if ((localAircraft instanceof TypeBomber)) {
         ((TypeBomber)localAircraft).typeBomberAdjAltitudeMinus();
         toTrackSign(paramInt);
       } else if ((localAircraft instanceof TypeDiveBomber)) {
         ((TypeDiveBomber)localAircraft).typeDiveBomberAdjAltitudeMinus();
-        toTrackSign(paramInt);
-      }if (!(localAircraft instanceof TypeX4Carrier)) break;
-      ((TypeX4Carrier)localAircraft).typeX4CAdjAttitudeMinus();
-      toTrackSign(paramInt); break;
+        toTrackSign(paramInt); } else {
+        if (!(localAircraft instanceof TypeX4Carrier)) break;
+        ((TypeX4Carrier)localAircraft).typeX4CAdjAttitudeMinus();
+        toTrackSign(paramInt); } break;
     case 123:
       if ((localAircraft instanceof TypeBomber)) {
         ((TypeBomber)localAircraft).typeBomberAdjSpeedPlus();
@@ -1356,113 +1148,38 @@ public class AircraftHotKeys
   private void doCmdPilotMove(int paramInt, float paramFloat)
   {
     if (!setPilot()) return;
-    float f1;
-    float f2;
+    float f;
     switch (paramInt)
     {
     case 1:
-      f1 = paramFloat * 0.55F + 0.55F;
-      if (Math.abs(f1 - this.lastPower) >= 0.01F) {
-        setPowerControl(f1);
-      }
-
-      break;
+      f = paramFloat * 0.55F + 0.55F;
+      if (Math.abs(f - this.lastPower) < 0.01F) break;
+      setPowerControl(f); break;
     case 7:
-      f1 = paramFloat * 0.5F + 0.5F;
-      if ((Math.abs(f1 - this.lastProp) >= 0.02F) && (this.FM.EI.isSelectionHasControlProp())) {
-        setPropControl(f1);
-      }
-      break;
+      f = paramFloat * 0.5F + 0.5F;
+      if ((Math.abs(f - this.lastProp) < 0.02F) || (!this.FM.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlProp())) break;
+      setPropControl(f); break;
     case 2:
-      if (!this.FM.CT.bHasFlapsControl) break;
-      if (!this.FM.CT.bHasFlapsControlRed) {
-        this.FM.CT.FlapsControl = (paramFloat * 0.5F + 0.5F);
-      }
-      else if (paramFloat < 0.0F) {
-        this.FM.CT.FlapsControl = 0.0F;
-        HUD.log("FlapsRaised");
-      } else {
-        this.FM.CT.FlapsControl = 1.0F;
-        HUD.log("FlapsLanding"); } break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = (paramFloat * 0.5F + 0.5F);
+      break;
     case 3:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.AileronControl = paramFloat; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = paramFloat; break;
     case 4:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.ElevatorControl = paramFloat; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = paramFloat; break;
     case 5:
-      if (this.FM.CT.StabilizerControl) break;
-      this.FM.CT.RudderControl = paramFloat; break;
+      if (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl) break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = paramFloat; break;
     case 6:
-      if (!this.FM.CT.bHasBrakeControl) break;
-      this.FM.CT.BrakeControl = (paramFloat * 0.5F + 0.5F); break;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl = (paramFloat * 0.5F + 0.5F);
+      break;
     case 8:
-      if (!this.FM.CT.bHasAileronTrim) break; this.FM.CT.setTrimAileronControl(paramFloat * 0.5F); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAileronTrim) break; this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimAileronControl(paramFloat * 0.5F); break;
     case 9:
-      if (!this.FM.CT.bHasElevatorTrim) break; this.FM.CT.setTrimElevatorControl(paramFloat * 0.5F); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasElevatorTrim) break; this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(paramFloat * 0.5F); break;
     case 10:
-      if (!this.FM.CT.bHasRudderTrim) break; this.FM.CT.setTrimRudderControl(paramFloat * 0.5F); break;
-    case 100:
-      if (!this.changeFovEnabled) break;
-      paramFloat = (paramFloat * 0.5F + 0.5F) * 60.0F + 30.0F;
-
-      CmdEnv.top().exec("fov " + paramFloat); break;
-    case 15:
-      f1 = paramFloat * 0.55F + 0.55F;
-      if (Math.abs(f1 - this.lastPower1) < 0.01F)
-        break;
-      this.lastPower1 = f1;
-      setPowerControl(f1, 1);
-      break;
-    case 16:
-      f1 = paramFloat * 0.55F + 0.55F;
-      if (Math.abs(f1 - this.lastPower2) < 0.01F) {
-        break;
-      }
-      this.lastPower2 = f1;
-      setPowerControl(f1, 2);
-      break;
-    case 17:
-      f1 = paramFloat * 0.55F + 0.55F;
-      if (Math.abs(f1 - this.lastPower3) < 0.01F)
-        break;
-      this.lastPower3 = f1;
-      setPowerControl(f1, 3);
-      break;
-    case 18:
-      f1 = paramFloat * 0.55F + 0.55F;
-      if (Math.abs(f1 - this.lastPower4) < 0.01F)
-        break;
-      this.lastPower4 = f1;
-      setPowerControl(f1, 4);
-      break;
-    case 19:
-      f1 = paramFloat * 0.5F + 0.5F;
-      if (Math.abs(f1 - this.lastRadiator) < 0.02F)
-        break;
-      this.lastRadiator = f1;
-      setRadiatorControl(f1);
-      break;
-    case 20:
-      f2 = paramFloat * 0.5F + 0.5F;
-      if ((Math.abs(f2 - this.lastProp1) < 0.02F) || (0 >= this.FM.EI.getNum()) || (!this.FM.EI.engines[0].isHasControlProp()))
-        break;
-      setPropControl(f2, 1); break;
-    case 21:
-      f2 = paramFloat * 0.5F + 0.5F;
-      if ((Math.abs(f2 - this.lastProp2) < 0.02F) || (1 >= this.FM.EI.getNum()) || (!this.FM.EI.engines[1].isHasControlProp()))
-        break;
-      setPropControl(f2, 2); break;
-    case 22:
-      f2 = paramFloat * 0.5F + 0.5F;
-      if ((Math.abs(f2 - this.lastProp3) < 0.02F) || (2 >= this.FM.EI.getNum()) || (!this.FM.EI.engines[2].isHasControlProp()))
-        break;
-      setPropControl(f2, 3); break;
-    case 23:
-      f2 = paramFloat * 0.5F + 0.5F;
-      if ((Math.abs(f2 - this.lastProp4) < 0.02F) || (3 >= this.FM.EI.getNum()) || (!this.FM.EI.engines[3].isHasControlProp()))
-        break;
-      setPropControl(f2, 4); break;
+      if (!this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasRudderTrim) break; this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimRudderControl(paramFloat * 0.5F); break;
     default:
       return;
     }
@@ -1494,48 +1211,9 @@ public class AircraftHotKeys
     HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-trimaileron", 8, 18));
     HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-trimelevator", 9, 19));
     HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-trimrudder", 10, 20));
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("11", "zoom", 100, 30, true));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-zoom", 100, 31, true));
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("15", "power1", 15, 32));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-power1", 15, 23));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("16", "power2", 16, 34));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-power2", 16, 35));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("17", "power3", 17, 170));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-power3", 17, 171));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("18", "power4", 18, 172));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-power4", 18, 174));
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("25", "radiator", 19, 36, true));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-radiator", 19, 37, true));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("26", "prop1", 20, 38));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-prop1", 20, 39));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("27", "prop2", 21, 40));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-prop2", 21, 41));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("28", "prop3", 22, 175));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-prop3", 22, 176));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove("29", "prop4", 23, 177));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFireMove(null, "-prop4", 23, 178));
   }
 
-  private void createCommonHotKeys()
-  {
-    String str = "misc";
-    HotKeyCmdEnv.setCurrentEnv(str);
-    HotKeyEnv.fromIni(str, Config.cur.ini, "HotKey pilot");
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ18", "BEACON_PLUS", 139, 359));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ19", "BEACON_MINUS", 140, 360));
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ40", "AUX1_PLUS", 149, 369));
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ41", "AUX1_MINUS", 150, 370));
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmdFire("ZZZ60", "AUX_A", 157, 377));
-  }
-
-  public void createPilotHotKeys()
-  {
+  public void createPilotHotKeys() {
     String str = "pilot";
     HotKeyCmdEnv.setCurrentEnv(str);
     HotKeyEnv.fromIni(str, Config.cur.ini, "HotKey " + str);
@@ -1706,7 +1384,7 @@ public class AircraftHotKeys
     if (World.isPlayerParatrooper()) return null;
     if (World.isPlayerDead()) return null;
     if (Main3D.cur3D().cockpits == null) return null;
-    int i = World.getPlayerAircraft().FM.AS.astatePlayerIndex;
+    int i = World.getPlayerAircraft().FM.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePlayerIndex;
     for (int j = 0; j < Main3D.cur3D().cockpits.length; j++) {
       if ((Main3D.cur3D().cockpits[j] instanceof CockpitGunner)) {
         CockpitGunner localCockpitGunner = (CockpitGunner)Main3D.cur3D().cockpits[j];
@@ -1806,10 +1484,10 @@ public class AircraftHotKeys
         Main3D.cur3D().aircraftHotKeys.bAfterburner = false;
       }
 
-      ((RealFlightModel)localObject1).CT.resetControl(0);
-      ((RealFlightModel)localObject1).CT.resetControl(1);
-      ((RealFlightModel)localObject1).CT.resetControl(2);
-      ((RealFlightModel)localObject1).EI.setCurControlAll(true);
+      ((RealFlightModel)localObject1).jdField_CT_of_type_ComMaddoxIl2FmControls.resetControl(0);
+      ((RealFlightModel)localObject1).jdField_CT_of_type_ComMaddoxIl2FmControls.resetControl(1);
+      ((RealFlightModel)localObject1).jdField_CT_of_type_ComMaddoxIl2FmControls.resetControl(2);
+      ((RealFlightModel)localObject1).jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(true);
       ((RealFlightModel)localObject1).setRealMode(paramBoolean);
       HUD.log("PilotAI" + (((RealFlightModel)localObject1).isRealMode() ? "OFF" : "ON"));
     }
@@ -1825,7 +1503,7 @@ public class AircraftHotKeys
           ((Aircraft)localObject2).netCockpitAuto((Actor)localObject2, paramInt, !((CockpitGunner)localObject1).isRealMode());
       }
       Object localObject2 = World.getPlayerFM();
-      String str = AircraftState.astateHUDPilotHits[localObject2.AS.astatePilotFunctions[localObject1.astatePilotIndx()]];
+      String str = AircraftState.astateHUDPilotHits[localObject2.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotFunctions[localObject1.astatePilotIndx()]];
       HUD.log(str + (((CockpitGunner)localObject1).isRealMode() ? "AIOFF" : "AION"));
     }
   }
@@ -1850,16 +1528,13 @@ public class AircraftHotKeys
         if (Main3D.cur3D().isDemoPlaying()) return;
         if (World.getPlayerFM().AS.isPilotDead(Main3D.cur3D().cockpitCur.astatePilotIndx())) return;
         int i = Main3D.cur3D().cockpitCurIndx();
-        if (AircraftHotKeys.isCockpitRealMode(i))
-          new MsgAction(true, new Integer(i)) {
-            public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-              HotKeyCmd.exec("misc", "cockpitRealOff" + i); }
-          };
-        else new MsgAction(true, new Integer(i)) {
-            public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-              HotKeyCmd.exec("misc", "cockpitRealOn" + i);
-            }
-          };
+        if (AircraftHotKeys.isCockpitRealMode(i)) {
+          new AircraftHotKeys.15(this, true, new Integer(i));
+        }
+        else
+        {
+          new AircraftHotKeys.16(this, true, new Integer(i));
+        }
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilotAuto", "01")
@@ -1867,10 +1542,7 @@ public class AircraftHotKeys
       public void begin() {
         if (!AircraftHotKeys.this.isMiscValid()) return;
         if (Main3D.cur3D().isDemoPlaying()) return;
-        new MsgAction(true) {
-          public void doAction() { HotKeyCmd.exec("misc", "autopilotAuto_");
-          }
-        };
+        new AircraftHotKeys.18(this, true);
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "autopilotAuto_", null) {
@@ -1972,18 +1644,14 @@ public class AircraftHotKeys
         RealFlightModel localRealFlightModel = (RealFlightModel)World.getPlayerFM();
         if (!localRealFlightModel.isRealMode()) return;
 
-        if (localRealFlightModel.AS.bIsAboutToBailout) return;
-        if (!localRealFlightModel.AS.bIsEnableToBailout) return;
+        if (localRealFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsAboutToBailout) return;
+        if (!localRealFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsEnableToBailout) return;
         AircraftState.bCheckPlayerAircraft = false;
-        ((Aircraft)localRealFlightModel.actor).hitDaSilk();
+        ((Aircraft)localRealFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor).hitDaSilk();
         AircraftState.bCheckPlayerAircraft = true;
-        com.maddox.il2.objects.sounds.Voice.cur().SpeakBailOut[(localRealFlightModel.actor.getArmy() - 1 & 0x1)][((Aircraft)localRealFlightModel.actor).aircIndex()] = ((int)(Time.current() / 60000L) + 1);
+        com.maddox.il2.objects.sounds.Voice.cur().SpeakBailOut[(localRealFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.getArmy() - 1 & 0x1)][((Aircraft)localRealFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor).aircIndex()] = ((int)(Time.current() / 60000L) + 1);
 
-        new MsgAction(true) {
-          public void doAction() { if ((!Main3D.cur3D().isDemoPlaying()) || (!HotKeyEnv.isEnabled("aircraftView")))
-              HotKeyCmd.exec("aircraftView", "OutsideView");
-          }
-        };
+        new AircraftHotKeys.26(this, true);
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitDim", "03") {
@@ -2010,12 +1678,12 @@ public class AircraftHotKeys
         if (!AircraftHotKeys.this.isMiscValid()) return;
         FlightModel localFlightModel = World.getPlayerFM();
         if (localFlightModel == null) return;
-        boolean bool = localFlightModel.AS.bNavLightsOn;
-        localFlightModel.AS.setNavLightsState(!localFlightModel.AS.bNavLightsOn);
-        if ((!bool) && (!localFlightModel.AS.bNavLightsOn)) {
+        boolean bool = localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bNavLightsOn;
+        localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setNavLightsState(!localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bNavLightsOn);
+        if ((!bool) && (!localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bNavLightsOn)) {
           return;
         }
-        HUD.log("NavigationLights" + (localFlightModel.AS.bNavLightsOn ? "ON" : "OFF"));
+        HUD.log("NavigationLights" + (localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bNavLightsOn ? "ON" : "OFF"));
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleLandingLight", "06") {
@@ -2024,13 +1692,13 @@ public class AircraftHotKeys
         if (!AircraftHotKeys.this.isMiscValid()) return;
         FlightModel localFlightModel = World.getPlayerFM();
         if (localFlightModel == null) return;
-        boolean bool = localFlightModel.AS.bLandingLightOn;
-        localFlightModel.AS.setLandingLightState(!localFlightModel.AS.bLandingLightOn);
-        if ((!bool) && (!localFlightModel.AS.bLandingLightOn)) {
+        boolean bool = localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bLandingLightOn;
+        localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setLandingLightState(!localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bLandingLightOn);
+        if ((!bool) && (!localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bLandingLightOn)) {
           return;
         }
-        HUD.log("LandingLight" + (localFlightModel.AS.bLandingLightOn ? "ON" : "OFF"));
-        EventLog.onToggleLandingLight(localFlightModel.actor, localFlightModel.AS.bLandingLightOn);
+        HUD.log("LandingLight" + (localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bLandingLightOn ? "ON" : "OFF"));
+        EventLog.onToggleLandingLight(localFlightModel.actor, localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bLandingLightOn);
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "toggleSmokes", "07") {
@@ -2039,8 +1707,8 @@ public class AircraftHotKeys
         if (!AircraftHotKeys.this.isMiscValid()) return;
         FlightModel localFlightModel = World.getPlayerFM();
         if (localFlightModel == null) return;
-        localFlightModel.AS.setAirShowState(!localFlightModel.AS.bShowSmokesOn);
-        EventLog.onToggleSmoke(localFlightModel.actor, localFlightModel.AS.bShowSmokesOn);
+        localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setAirShowState(!localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bShowSmokesOn);
+        EventLog.onToggleSmoke(localFlightModel.actor, localFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bShowSmokesOn);
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "pad", "08") {
@@ -2173,8 +1841,8 @@ public class AircraftHotKeys
     Cockpit localCockpit = Main3D.cur3D().cockpits[paramInt];
     if (!localCockpit.isEnableFocusing()) return false;
     int i = localCockpit.astatePilotIndx();
-    if (World.getPlayerFM().AS.isPilotParatrooper(i)) return false;
-    if (World.getPlayerFM().AS.isPilotDead(i)) return false;
+    if (World.getPlayerFM().jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotParatrooper(i)) return false;
+    if (World.getPlayerFM().jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(i)) return false;
     if (Mission.isNet()) {
       if (Mission.isCoop()) {
         if (World.isPlayerGunner()) {
@@ -2275,7 +1943,6 @@ public class AircraftHotKeys
   public void setEnableChangeFov(boolean paramBoolean) {
     for (int i = 0; i < this.cmdFov.length; i++)
       this.cmdFov[i].enable(paramBoolean);
-    this.changeFovEnabled = paramBoolean;
   }
 
   public void createViewHotKeys()
@@ -2289,11 +1956,7 @@ public class AircraftHotKeys
       public void begin() {
         int i = AircraftHotKeys.this.nextValidCockpit();
         if (i < 0) return;
-        new MsgAction(true, new Integer(i)) {
-          public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-            HotKeyCmd.exec("aircraftView", "cockpitSwitch" + i);
-          }
-        };
+        new AircraftHotKeys.50(this, true, new Integer(i));
       }
     });
     for (int i = 0; i < 10; i++) {
@@ -2304,11 +1967,7 @@ public class AircraftHotKeys
         public void begin()
         {
           if (!AircraftHotKeys.this.isValidCockpit(this.indx)) return;
-          new MsgAction(true, new Integer(this.indx)) {
-            public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-              HotKeyCmd.exec("aircraftView", "cockpitSwitch" + i);
-            }
-          };
+          new AircraftHotKeys.52(this, true, new Integer(this.indx));
         }
       });
       HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "cockpitSwitch" + i, null) { int indx;
@@ -2401,11 +2060,7 @@ public class AircraftHotKeys
         else {
           i = 30;
         }
-        new MsgAction(true, new Integer(i)) {
-          public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-            HotKeyCmd.exec("aircraftView", "fov" + i);
-          }
-        };
+        new AircraftHotKeys.68(this, true, new Integer(i));
       }
     });
     HotKeyCmdEnv.addCmd(this.cmdFov[14] =  = new HotKeyCmd(true, "fovInc", "25") {
@@ -2413,11 +2068,7 @@ public class AircraftHotKeys
         if (i < 30) i = 30;
         if (i > 85) i = 85;
         i += 5;
-        new MsgAction(true, new Integer(i)) {
-          public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-            HotKeyCmd.exec("aircraftView", "fov" + i);
-          }
-        };
+        new AircraftHotKeys.70(this, true, new Integer(i));
       }
     });
     HotKeyCmdEnv.addCmd(this.cmdFov[15] =  = new HotKeyCmd(true, "fovDec", "26") {
@@ -2425,11 +2076,7 @@ public class AircraftHotKeys
         if (i < 35) i = 35;
         if (i > 90) i = 90;
         i -= 5;
-        new MsgAction(true, new Integer(i)) {
-          public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-            HotKeyCmd.exec("aircraftView", "fov" + i);
-          }
-        };
+        new AircraftHotKeys.72(this, true, new Integer(i));
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "CockpitView", "27") {
@@ -2442,17 +2089,15 @@ public class AircraftHotKeys
 
         if ((!Main3D.cur3D().isDemoPlaying()) && (World.getPlayerAircraft().netCockpitGetDriver(Main3D.cur3D().cockpitCurIndx()) == null))
         {
-          new MsgAction(true, new Integer(Main3D.cur3D().cockpitCurIndx())) {
-            public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-              HotKeyCmd.exec("misc", "cockpitEnter" + i); } } ;
+          new AircraftHotKeys.74(this, true, new Integer(Main3D.cur3D().cockpitCurIndx()));
         }
+
         if ((!Main3D.cur3D().isDemoPlaying()) && (!Main3D.cur3D().isViewOutside()) && (AircraftHotKeys.this.isAutoAutopilot()) && (!AircraftHotKeys.isCockpitRealMode(Main3D.cur3D().cockpitCurIndx())))
         {
-          new MsgAction(true, new Integer(Main3D.cur3D().cockpitCurIndx())) {
-            public void doAction(Object paramObject) { int i = ((Integer)paramObject).intValue();
-              HotKeyCmd.exec("misc", "cockpitRealOn" + i); }  } ;
+          new AircraftHotKeys.75(this, true, new Integer(Main3D.cur3D().cockpitCurIndx()));
         }
       }
+
       public void created() {
         setRecordId(212);
       }
@@ -2775,8 +2420,8 @@ public class AircraftHotKeys
         if (!AircraftHotKeys.this.isMiscValid()) return;
         if (!Actor.isValid(Main3D.cur3D().cockpitCur)) return;
         if (Main3D.cur3D().cockpitCur.isToggleAim()) return;
-        if (!World.getPlayerFM().CT.bHasCockpitDoorControl) return;
-        if ((!Main3D.cur3D().cockpitCur.isToggleUp()) && ((World.getPlayerFM().CT.cockpitDoorControl < 0.5F) || (World.getPlayerFM().CT.getCockpitDoor() < 0.99F)))
+        if (!World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasCockpitDoorControl) return;
+        if ((!Main3D.cur3D().cockpitCur.isToggleUp()) && ((World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl < 0.5F) || (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() < 0.99F)))
         {
           return;
         }Main3D.cur3D().cockpitCur.doToggleUp(!Main3D.cur3D().cockpitCur.isToggleUp());
@@ -2866,7 +2511,6 @@ public class AircraftHotKeys
     create_MiscHotKeys();
     createViewHotKeys();
     createTimeHotKeys();
-    createCommonHotKeys();
   }
 
   private Actor getViewActor() {
@@ -2914,9 +2558,9 @@ public class AircraftHotKeys
     namedAll = namedAircraft.keySet().toArray(namedAll);
     int j = 0;
     String str = localActor1.name();
-    while ((namedAll[j] != null) && 
-      (!str.equals(namedAll[j])))
-    {
+    while (namedAll[j] != null) {
+      if (str.equals(namedAll[j]))
+        break;
       j++;
     }
     if (namedAll[j] == null)
@@ -2935,33 +2579,19 @@ public class AircraftHotKeys
   class HotKeyCmdFireMove extends HotKeyCmdMove
   {
     int cmd;
-    boolean disableIfPaused;
-    private final AircraftHotKeys this$0;
 
     public void begin()
     {
       int i = name().charAt(0) == '-' ? -1 : 1;
-      this.this$0.doCmdPilotMove(this.cmd, Joy.normal(i * move()));
+      AircraftHotKeys.this.doCmdPilotMove(this.cmd, Joy.normal(i * move()));
     }
     public HotKeyCmdFireMove(String paramString1, String paramInt1, int paramInt2, int arg5) {
       super(paramInt1, paramString1);
-
-      this.this$0 = this$1;
-
       this.cmd = paramInt2;
       int i;
       setRecordId(i);
-      this.disableIfPaused = true;
     }
-
-    public HotKeyCmdFireMove(String paramString1, String paramInt1, int paramInt2, int paramBoolean, boolean arg6)
-    {
-      this(paramString1, paramInt1, paramInt2, paramBoolean);
-      boolean bool;
-      this.disableIfPaused = bool;
-    }
-    public boolean isDisableIfTimePaused() {
-      return this.disableIfPaused;
+    public boolean isDisableIfTimePaused() { return true;
     }
   }
 

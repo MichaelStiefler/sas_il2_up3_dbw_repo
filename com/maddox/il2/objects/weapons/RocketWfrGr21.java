@@ -24,7 +24,7 @@ public class RocketWfrGr21 extends Rocket
     Property.set(localClass, "timeFire", 1.8F);
     Property.set(localClass, "force", 1720.0F);
 
-    Property.set(localClass, "power", 40.799999F);
+    Property.set(localClass, "power", 38.599998F);
     Property.set(localClass, "powerType", 1);
     Property.set(localClass, "kalibr", 0.21F);
     Property.set(localClass, "massa", 110.0F);

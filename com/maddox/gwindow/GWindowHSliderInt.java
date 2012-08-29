@@ -52,19 +52,19 @@ public class GWindowHSliderInt extends GWindowDialogControl
   {
     switch (paramInt) {
     case 37:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setPos(this.pos - 1, true);
       return;
     case 39:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setPos(this.pos + 1, true);
       return;
     case 36:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setPos(this.posStart, true);
       return;
     case 35:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setPos(this.posStart + this.posCount - 1, true);
       return;
     case 38:
@@ -75,7 +75,7 @@ public class GWindowHSliderInt extends GWindowDialogControl
 
   public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
     super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if (!this.bEnable) { mouseCapture(false); return; }
+    if (!this.jdField_bEnable_of_type_Boolean) { mouseCapture(false); return; }
     if (paramInt != 0) return;
     if ((isMouseCaptured()) && (!paramBoolean)) {
       mouseCapture(false);
@@ -101,7 +101,7 @@ public class GWindowHSliderInt extends GWindowDialogControl
 
   public void mouseMove(float paramFloat1, float paramFloat2)
   {
-    if ((this.bEnable) && (isMouseCaptured()))
+    if ((this.jdField_bEnable_of_type_Boolean) && (isMouseCaptured()))
       setPos((int)((paramFloat1 - this.mouseSlidingX) / this.win.dx * this.posCount + this.posSlidingSave + 0.5F), this.bSlidingNotify);
   }
 

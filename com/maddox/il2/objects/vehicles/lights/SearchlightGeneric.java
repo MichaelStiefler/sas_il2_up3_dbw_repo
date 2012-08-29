@@ -153,7 +153,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
 
   public static int possibleGlare()
   {
-    if ((!hashmap_ALL.isEmpty()) && (World.Sun().ToSun.z <= -0.22F)) {
+    if ((!hashmap_ALL.isEmpty()) && (World.Sun().ToSun.jdField_z_of_type_Float <= -0.22F)) {
       if (hashmap_ALL_is_changed) {
         hashmap_ALL_is_changed = false;
         return 2;
@@ -185,7 +185,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
 
   public static boolean computeGlare(LightsGlare paramLightsGlare, Point3d paramPoint3d)
   {
-    com.maddox.il2.game.Main3D.cur3D()._camera3D[com.maddox.il2.game.Main3D.cur3D().getRenderIndx()].pos.getRender(Cam2WorldLoc);
+    com.maddox.il2.game.Main3D.cur3D()._camera3D[com.maddox.il2.game.Main3D.cur3D().getRenderIndx()].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(Cam2WorldLoc);
     Cam2WorldLoc.get(nosePos);
     noseDir.set(1.0D, 0.0D, 0.0D);
     Cam2WorldLoc.transform(noseDir);
@@ -241,7 +241,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
                 f4 = (float)(f4 * d3);
               }
               paramLightsGlare.glareData[j] = f4;
-              paramLightsGlare.glareData[(j + 1)] = accumColor.x;
+              paramLightsGlare.glareData[(j + 1)] = accumColor.jdField_x_of_type_Float;
             }
           }
         }
@@ -273,11 +273,11 @@ public abstract class SearchlightGeneric extends ActorHMesh
       {
         continue;
       }
-      if (localActor.draw == null)
+      if (localActor.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw == null)
       {
         continue;
       }
-      HashMapExt localHashMapExt = localActor.draw.lightMap();
+      HashMapExt localHashMapExt = localActor.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.lightMap();
       if (localHashMapExt == null)
       {
         continue;
@@ -308,11 +308,11 @@ public abstract class SearchlightGeneric extends ActorHMesh
       {
         continue;
       }
-      localActor.pos.getRender(planeP);
+      localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(planeP);
 
       double d1 = 0.0D;
 
-      if (planeP.z - World.land().HQ(planeP.x, planeP.y) > 10.0D)
+      if (planeP.jdField_z_of_type_Double - World.land().HQ(planeP.jdField_x_of_type_Double, planeP.jdField_y_of_type_Double) > 10.0D)
       {
         int k = 0;
         accumColor.set(0.0F, 0.0F, 0.0F);
@@ -326,54 +326,54 @@ public abstract class SearchlightGeneric extends ActorHMesh
           if ((d2 <= 0.0D) || (d2 >= localSearchlightGeneric.prop.H))
           {
             localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
-            continue;
           }
-
-          locLpos.scaleAdd(d2, localSearchlightGeneric.L, localSearchlightGeneric.B);
-
-          d2 /= localSearchlightGeneric.prop.H;
-          double d3 = localSearchlightGeneric.prop.R0 + (localSearchlightGeneric.prop.R1 - localSearchlightGeneric.prop.R0) * d2;
-          double d4 = d3 + localActor.collisionR() * 0.75D;
-
-          tmpv.sub(planeP, locLpos);
-          double d5 = tmpv.lengthSquared();
-          if (d5 >= d4 * d4)
+          else
           {
-            localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
-            continue;
+            locLpos.scaleAdd(d2, localSearchlightGeneric.L, localSearchlightGeneric.B);
+
+            d2 /= localSearchlightGeneric.prop.H;
+            double d3 = localSearchlightGeneric.prop.R0 + (localSearchlightGeneric.prop.R1 - localSearchlightGeneric.prop.R0) * d2;
+            double d4 = d3 + localActor.collisionR() * 0.75D;
+
+            tmpv.sub(planeP, locLpos);
+            double d5 = tmpv.lengthSquared();
+            if (d5 >= d4 * d4)
+            {
+              localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
+            }
+            else if (d4 - d3 <= 0.0D) {
+              localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
+            }
+            else {
+              d5 = Math.sqrt(d5);
+              double d6 = 1.0D - (d5 - d3) / (d4 - d3);
+              if (d6 >= 1.0D) {
+                d6 = 1.0D;
+              }
+
+              double d7 = (1.0D - d2) * localSearchlightGeneric.prop.LIGHT_LAND_I;
+              d7 *= d6;
+
+              if (d7 <= 0.0D) {
+                localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
+              }
+              else
+              {
+                d1 += d7;
+                accumColor.scaleAdd((float)d7, localSearchlightGeneric.prop.LIGHT_COLOR);
+                accumDir.scaleAdd(d7, localSearchlightGeneric.L);
+
+                localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
+              }
+            }
           }
-
-          if (d4 - d3 <= 0.0D) {
-            localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
-            continue;
-          }
-          d5 = Math.sqrt(d5);
-          double d6 = 1.0D - (d5 - d3) / (d4 - d3);
-          if (d6 >= 1.0D) {
-            d6 = 1.0D;
-          }
-
-          double d7 = (1.0D - d2) * localSearchlightGeneric.prop.LIGHT_LAND_I;
-          d7 *= d6;
-
-          if (d7 <= 0.0D) {
-            localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
-            continue;
-          }
-
-          d1 += d7;
-          accumColor.scaleAdd((float)d7, localSearchlightGeneric.prop.LIGHT_COLOR);
-          accumDir.scaleAdd(d7, localSearchlightGeneric.L);
-
-          localObject = hashmap_ON.nextEntry((Map.Entry)localObject);
         }
       }
-
-      if (localActor.draw == null)
+      if (localActor.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw == null)
       {
         continue;
       }
-      HashMapExt localHashMapExt = localActor.draw.lightMap();
+      HashMapExt localHashMapExt = localActor.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.lightMap();
 
       if (localHashMapExt == null)
       {
@@ -399,10 +399,10 @@ public abstract class SearchlightGeneric extends ActorHMesh
         accumDir.negate();
         float f1 = 100123.0F;
         accumDir.scale(1000.0D);
-        localActor.pos.getRender(locLloc);
+        localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(locLloc);
         locLloc.transformInv(accumDir);
 
-        float f2 = Math.max(accumColor.x, Math.max(accumColor.y, accumColor.z));
+        float f2 = Math.max(accumColor.jdField_x_of_type_Float, Math.max(accumColor.jdField_y_of_type_Float, accumColor.jdField_z_of_type_Float));
         accumColor.scale(1.0F / f2);
 
         if (d1 >= 1.350000023841858D) {
@@ -410,7 +410,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
         }
 
         ((LightPointActor)localObject).light.setEmit((float)d1, f1);
-        ((LightPointActor)localObject).light.setColor(accumColor.x, accumColor.y, accumColor.z);
+        ((LightPointActor)localObject).light.setColor(accumColor.jdField_x_of_type_Float, accumColor.jdField_y_of_type_Float, accumColor.jdField_z_of_type_Float);
         ((LightPointActor)localObject).relPos.set(accumDir);
       }
     }
@@ -434,13 +434,17 @@ public abstract class SearchlightGeneric extends ActorHMesh
       SearchlightGeneric localSearchlightGeneric = (SearchlightGeneric)localEntry.getKey();
       localEntry = hashmap_ON.nextEntry(localEntry);
 
-      if (localSearchlightGeneric.L.z <= 0.01D)
+      if (localSearchlightGeneric.L.jdField_z_of_type_Double <= 0.01D)
       {
         continue;
       }
-      double d2 = (d1 - localSearchlightGeneric.B.z) / localSearchlightGeneric.L.z;
-      if ((d2 < 0.0D) || 
-        (d2 >= localSearchlightGeneric.prop.H))
+      double d2 = (d1 - localSearchlightGeneric.B.jdField_z_of_type_Double) / localSearchlightGeneric.L.jdField_z_of_type_Double;
+      if (d2 < 0.0D)
+      {
+        continue;
+      }
+
+      if (d2 >= localSearchlightGeneric.prop.H)
       {
         continue;
       }
@@ -509,7 +513,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
         this.landLight.destroy();
         this.landLight = null;
       }
-      ((MyDrawer)this.draw).killLightMap();
+      ((MyDrawer)this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw).killLightMap();
 
       register_ONOFF(this, false);
 
@@ -531,15 +535,15 @@ public abstract class SearchlightGeneric extends ActorHMesh
       this.landLight.destroy();
       this.landLight = null;
     }
-    ((MyDrawer)this.draw).killLightMap();
+    ((MyDrawer)this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw).killLightMap();
 
     if (paramBoolean2) {
       this.landLight = new LightPointActor(new LightPointWorld(), new Point3d(0.0D, 0.0D, 0.0D));
-      this.landLight.light.setColor(this.prop.LIGHT_COLOR.x, this.prop.LIGHT_COLOR.y, this.prop.LIGHT_COLOR.z);
+      this.landLight.light.setColor(this.prop.LIGHT_COLOR.jdField_x_of_type_Float, this.prop.LIGHT_COLOR.jdField_y_of_type_Float, this.prop.LIGHT_COLOR.jdField_z_of_type_Float);
       this.landLight.light.setEmit(this.prop.LIGHT_LAND_I, this.prop.LIGHT_LAND_R);
-      this.draw.lightMap().put("light", this.landLight);
+      this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.lightMap().put("light", this.landLight);
 
-      this.cloudLight.setColor(this.prop.LIGHT_COLOR.x, this.prop.LIGHT_COLOR.y, this.prop.LIGHT_COLOR.z);
+      this.cloudLight.setColor(this.prop.LIGHT_COLOR.jdField_x_of_type_Float, this.prop.LIGHT_COLOR.jdField_y_of_type_Float, this.prop.LIGHT_COLOR.jdField_z_of_type_Float);
     }
 
     register_ONOFF(this, paramBoolean2);
@@ -688,7 +692,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     hierMesh().chunkSetAngles("Gun", arrayOfFloat[3], arrayOfFloat[4], arrayOfFloat[5]);
     hierMesh().chunkSetAngles("Body", arrayOfFloat[6], arrayOfFloat[7], arrayOfFloat[8]);
     this.heightAboveLandSurface = arrayOfFloat[9];
-    ((MyDrawer)this.draw).interpolateAngles = false;
+    ((MyDrawer)this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw).interpolateAngles = false;
 
     Align();
 
@@ -708,11 +712,11 @@ public abstract class SearchlightGeneric extends ActorHMesh
     hierMesh().chunkSetAngles("Head", this.headYaw, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Gun", -this.gunPitch, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
-    ((MyDrawer)this.draw).pushAngles(this.headYaw, -this.gunPitch);
+    ((MyDrawer)this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw).pushAngles(this.headYaw, -this.gunPitch);
 
     hierMesh().setCurChunk("Ray_ON");
     hierMesh().getChunkLocObj(locLloc);
-    locLloc.add(this.pos.getAbs());
+    locLloc.add(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
     this.L.set(1.0D, 0.0D, 0.0D);
     locLloc.transform(this.L);
     this.L.normalize();
@@ -751,32 +755,32 @@ public abstract class SearchlightGeneric extends ActorHMesh
 
     Point3d localPoint3d1 = new Point3d();
     hierMesh().hookMatrix(hierMesh().hookFind("ConeNear"), localMatrix4d);
-    localPoint3d1.x = localMatrix4d.m03;
-    localPoint3d1.y = localMatrix4d.m13;
-    localPoint3d1.z = localMatrix4d.m23;
+    localPoint3d1.jdField_x_of_type_Double = localMatrix4d.m03;
+    localPoint3d1.jdField_y_of_type_Double = localMatrix4d.m13;
+    localPoint3d1.jdField_z_of_type_Double = localMatrix4d.m23;
 
     Point3d localPoint3d2 = new Point3d();
     hierMesh().hookMatrix(hierMesh().hookFind("ConeFar"), localMatrix4d);
-    localPoint3d2.x = localMatrix4d.m03;
-    localPoint3d2.y = localMatrix4d.m13;
-    localPoint3d2.z = localMatrix4d.m23;
+    localPoint3d2.jdField_x_of_type_Double = localMatrix4d.m03;
+    localPoint3d2.jdField_y_of_type_Double = localMatrix4d.m13;
+    localPoint3d2.jdField_z_of_type_Double = localMatrix4d.m23;
 
     hierMesh().setCurChunk("Ray_ON");
     hierMesh().getChunkLocObj(locLloc);
     locLloc.transformInv(localPoint3d1);
     locLloc.transformInv(localPoint3d2);
 
-    if (Math.abs(localPoint3d1.x) > 0.1D) {
+    if (Math.abs(localPoint3d1.jdField_x_of_type_Double) > 0.1D) {
       System.out.println("**** Wrong position or orientation of ConeNear");
     }
 
-    this.prop.R0 = Math.sqrt(localPoint3d1.y * localPoint3d1.y + localPoint3d1.z * localPoint3d1.z);
-    this.prop.R1 = Math.sqrt(localPoint3d2.y * localPoint3d2.y + localPoint3d2.z * localPoint3d2.z);
-    if ((localPoint3d2.x - localPoint3d1.x < 0.1D) || (this.prop.R1 < this.prop.R0)) {
+    this.prop.R0 = Math.sqrt(localPoint3d1.jdField_y_of_type_Double * localPoint3d1.jdField_y_of_type_Double + localPoint3d1.jdField_z_of_type_Double * localPoint3d1.jdField_z_of_type_Double);
+    this.prop.R1 = Math.sqrt(localPoint3d2.jdField_y_of_type_Double * localPoint3d2.jdField_y_of_type_Double + localPoint3d2.jdField_z_of_type_Double * localPoint3d2.jdField_z_of_type_Double);
+    if ((localPoint3d2.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double < 0.1D) || (this.prop.R1 < this.prop.R0)) {
       System.out.println("**** Wrong position or orientation of ConeFar");
     }
 
-    this.prop.TANGA = ((this.prop.R1 - this.prop.R0) / (localPoint3d2.x - localPoint3d1.x));
+    this.prop.TANGA = ((this.prop.R1 - this.prop.R0) / (localPoint3d2.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double));
 
     float f = 1.0F;
 
@@ -799,7 +803,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     this.prop.R1 = (this.prop.R0 + this.prop.H * this.prop.TANGA);
 
     setGunAngles(0.0F, this.prop.GUN_STD_PITCH);
-    ((MyDrawer)this.draw).interpolateAngles = false;
+    ((MyDrawer)this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw).interpolateAngles = false;
 
     Align();
   }
@@ -819,7 +823,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     collide(true);
     drawing(true);
 
-    this.draw = new MyDrawer();
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new MyDrawer();
 
     this.lastTimeWhenFound = 0L;
     this.smoothMove = false;
@@ -852,10 +856,10 @@ public abstract class SearchlightGeneric extends ActorHMesh
 
   private void Align()
   {
-    this.pos.getAbs(p3d);
-    p3d.z = (Engine.land().HQ(p3d.x, p3d.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    this.pos.setAbs(p3d, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p3d);
+    p3d.jdField_z_of_type_Double = (Engine.land().HQ(p3d.jdField_x_of_type_Double, p3d.jdField_y_of_type_Double) + this.heightAboveLandSurface);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p3d, o);
   }
 
   public void align()
@@ -978,7 +982,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     return paramFloat <= 0.0F ? 0.0F : paramFloat;
   }
 
@@ -1001,8 +1005,8 @@ public abstract class SearchlightGeneric extends ActorHMesh
       localNetMsgGuaranted.writeShort(this.deathSeed);
       localNetMsgGuaranted.writeFloat(this.headYaw);
       localNetMsgGuaranted.writeFloat(this.gunPitch);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1017,7 +1021,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1029,7 +1033,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     if (!isNetMaster()) {
       return;
     }
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
     if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
@@ -1040,9 +1044,9 @@ public abstract class SearchlightGeneric extends ActorHMesh
       try {
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(84);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException1) {
         System.out.println(localException1.getMessage());
         localException1.printStackTrace();
@@ -1052,9 +1056,9 @@ public abstract class SearchlightGeneric extends ActorHMesh
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(70);
         this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException2) {
         System.out.println(localException2.getMessage());
         localException2.printStackTrace();
@@ -1067,15 +1071,15 @@ public abstract class SearchlightGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1086,10 +1090,10 @@ public abstract class SearchlightGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -1104,7 +1108,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     }
     localNetMsgGuaranted.writeFloat(this.headYaw);
     localNetMsgGuaranted.writeFloat(this.gunPitch);
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public float getReloadingTime(Aim paramAim)
@@ -1149,23 +1153,23 @@ public abstract class SearchlightGeneric extends ActorHMesh
     float f3 = paramAim.anglesPitch.getDeg(f1);
 
     setGunAngles(f2, f3);
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
 
     Actor localActor = paramAim.getEnemy();
 
     if ((Actor.isValid(localActor)) && (localActor.isAlive()) && (localActor.getArmy() != 0))
     {
       Point3d localPoint3d1 = new Point3d();
-      localActor.pos.getAbs(localPoint3d1);
+      localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d1);
 
       Point3d localPoint3d2 = new Point3d();
-      this.pos.getAbs(localPoint3d2);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d2);
 
       Vector3d localVector3d1 = new Vector3d();
       localVector3d1.sub(localPoint3d1, localPoint3d2);
 
       Orient localOrient = new Orient();
-      localOrient.setYPR(this.pos.getAbsOrient().getYaw() + f2, f3, 0.0F);
+      localOrient.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw() + f2, f3, 0.0F);
 
       Vector3d localVector3d2 = new Vector3d(1.0D, 0.0D, 0.0D);
       localOrient.transform(localVector3d2);
@@ -1209,7 +1213,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
     Actor localActor = null;
 
     NearestEnemies.set(WeaponsMask());
-    localActor = NearestEnemies.getAFoundFlyingPlane(this.pos.getAbsPoint(), AttackMaxDistance(), getArmy(), 250.0F);
+    localActor = NearestEnemies.getAFoundFlyingPlane(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), AttackMaxDistance(), getArmy(), 250.0F);
 
     return localActor;
   }
@@ -1293,8 +1297,8 @@ public abstract class SearchlightGeneric extends ActorHMesh
     paramActor.futurePosition(f1, localPoint3d1);
 
     Point3d localPoint3d2 = new Point3d();
-    this.pos.getAbs(localPoint3d2);
-    localPoint3d2.z += 2.0D;
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d2);
+    localPoint3d2.jdField_z_of_type_Double += 2.0D;
 
     Vector3d localVector3d = new Vector3d();
     localVector3d.sub(localPoint3d1, localPoint3d2);
@@ -1333,7 +1337,7 @@ public abstract class SearchlightGeneric extends ActorHMesh
       f4 = this.prop.GUN_MAX_PITCH_SPEED;
     }
 
-    int i = paramAim.setRotationForTargeting(this, this.pos.getAbs().getOrient(), localPoint3d2, this.headYaw, this.gunPitch, localVector3d, 0.0F, f1, this.prop.HEAD_YAW_RANGE, this.prop.GUN_MIN_PITCH, this.prop.GUN_MAX_PITCH, f3, f4, 0.0F);
+    int i = paramAim.setRotationForTargeting(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient(), localPoint3d2, this.headYaw, this.gunPitch, localVector3d, 0.0F, f1, this.prop.HEAD_YAW_RANGE, this.prop.GUN_MIN_PITCH, this.prop.GUN_MAX_PITCH, f3, f4, 0.0F);
 
     if ((i == 2) && 
       (Time.current() - this.lastTimeWhenFound > 22000L)) {
@@ -1738,9 +1742,9 @@ public abstract class SearchlightGeneric extends ActorHMesh
 
     MyDrawer() {  }
 
-    public void killLightMap() { if (this.lightMap != null) {
-        this.lightMap.clear();
-        this.lightMap = null;
+    public void killLightMap() { if (this.jdField_lightMap_of_type_ComMaddoxUtilHashMapExt != null) {
+        this.jdField_lightMap_of_type_ComMaddoxUtilHashMapExt.clear();
+        this.jdField_lightMap_of_type_ComMaddoxUtilHashMapExt = null;
       } }
 
     public void pushAngles(float paramFloat1, float paramFloat2)

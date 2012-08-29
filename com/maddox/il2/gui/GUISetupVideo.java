@@ -5,7 +5,6 @@ import com.maddox.gwindow.GTexRegion;
 import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowComboControl;
-import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GUIWindowManager;
@@ -14,7 +13,6 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.opengl.Provider;
-import com.maddox.rts.CmdEnv;
 import com.maddox.rts.IniFile;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.ScreenMode;
@@ -100,8 +98,8 @@ public class GUISetupVideo extends GameState
       this.providerName.add(0, "OpenGL");
       this.providerDll.add(0, str1);
     }
-    for (k = 0; k < this.providerName.size(); k++)
-      this.comboProvider.add((String)this.providerName.get(k));
+    for (int m = 0; m < this.providerName.size(); m++)
+      this.comboProvider.add((String)this.providerName.get(m));
   }
 
   private int _findProvider() {
@@ -210,21 +208,7 @@ public class GUISetupVideo extends GameState
     prepareUse3Renders(true);
     update();
     new MsgAction(72, 0.0D) {
-      public void doAction() { new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, GUISetupVideo.this.i18n("setupVideo.Confirm"), GUISetupVideo.this.i18n("setupVideo.Keep"), 1, 0.0F)
-        {
-          public void result(int paramInt)
-          {
-            if ((paramInt == 4) || (paramInt == 5)) {
-              CmdEnv.top().exec(GUISetupVideo.this.enterCmdLine);
-              GUISetupVideo.this.prepareUse3Renders(false);
-              GUISetupVideo.this.update();
-            } else {
-              GUISetupVideo.this.enterCmdLine = GUISetupVideo.this.cmdLine();
-              GUISetupVideo.this.enterSaveAspect = Config.cur.windowSaveAspect;
-              GUISetupVideo.this.enterUse3Renders = Config.cur.windowUse3Renders;
-            }
-          }
-        };
+      public void doAction() { new GUISetupVideo.2(this, Main3D.cur3D().guiManager.root, 20.0F, true, GUISetupVideo.this.i18n("setupVideo.Confirm"), GUISetupVideo.this.i18n("setupVideo.Keep"), 1, 0.0F);
       }
     };
   }
@@ -301,16 +285,8 @@ public class GUISetupVideo extends GameState
         return true;
       }
       if (paramGWindow == GUISetupVideo.this.bApply) {
-        new MsgAction(72, 0.0D) {
-          public void doAction() { String str = GUISetupVideo.this.cmdLine();
-            if (str == null) return;
-            if ((str.equals(GUISetupVideo.this.enterCmdLine)) && (GUISetupVideo.this.enterUse3Renders == GUISetupVideo.this.bCmdLineUse3Renders)) return;
-            if (CmdEnv.top().exec(str) == CmdEnv.RETURN_OK)
-              GUISetupVideo.this.doConfirm();
-            else
-              GUISetupVideo.this.update();
-          }
-        };
+        new GUISetupVideo.3(this, 72, 0.0D);
+
         return true;
       }
       return super.notify(paramGWindow, paramInt1, paramInt2);

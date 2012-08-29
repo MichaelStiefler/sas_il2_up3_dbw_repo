@@ -7,8 +7,6 @@ import com.maddox.il2.objects.weapons.BombGunSC50;
 import com.maddox.il2.objects.weapons.BombGunSC70;
 import com.maddox.il2.objects.weapons.FuelTankGun;
 import com.maddox.il2.objects.weapons.Pylon;
-import com.maddox.il2.objects.weapons.PylonHS129BK37;
-import com.maddox.il2.objects.weapons.PylonHS129BK75;
 import com.maddox.il2.objects.weapons.PylonMG15120Internal;
 import com.maddox.il2.objects.weapons.PylonP38RAIL3FL;
 import com.maddox.il2.objects.weapons.PylonP38RAIL3FR;
@@ -20,9 +18,6 @@ import com.maddox.il2.objects.weapons.PylonPE8_FAB100;
 import com.maddox.il2.objects.weapons.PylonPE8_FAB250;
 import com.maddox.il2.objects.weapons.PylonRO_82_1;
 import com.maddox.il2.objects.weapons.PylonRO_82_3;
-import com.maddox.il2.objects.weapons.PylonRO_WfrGr21;
-import com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual;
-import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.il2.objects.weapons.RocketGunR4M;
 import com.maddox.rts.SectFile;
@@ -95,8 +90,8 @@ public class Squares
 
     str1 = "Toughness";
 
-    for (i = 0; i < 44; i++) {
-      this.toughness[i] = (paramSectFile.get(str1, com.maddox.il2.objects.air.Aircraft.partNames()[i], 100) * 1.0E-004F);
+    for (int j = 0; j < 44; j++) {
+      this.toughness[j] = (paramSectFile.get(str1, com.maddox.il2.objects.air.Aircraft.partNames()[j], 100) * 1.0E-004F);
     }
 
     this.toughness[43] = 3.4028235E+38F;
@@ -122,7 +117,7 @@ public class Squares
 
     for (int i = 0; i < paramArrayOfBulletEmitter.length; i++) {
       if ((paramArrayOfBulletEmitter[i] == null) || (paramArrayOfBulletEmitter[i].length <= 0)) continue; for (int j = 0; j < paramArrayOfBulletEmitter[i].length; j++) {
-        if ((((paramArrayOfBulletEmitter[i][j] instanceof BombGun)) || ((paramArrayOfBulletEmitter[i][j] instanceof RocketBombGun))) && (paramArrayOfBulletEmitter[i][j].haveBullets()) && 
+        if (((paramArrayOfBulletEmitter[i][j] instanceof BombGun)) && (paramArrayOfBulletEmitter[i][j].haveBullets()) && 
           (paramArrayOfBulletEmitter[i][j].getHookName().startsWith("_External")) && 
           (this.dragParasiteCx < 0.704F)) {
           if (((paramArrayOfBulletEmitter[i][j] instanceof BombGunSC50)) || ((paramArrayOfBulletEmitter[i][j] instanceof BombGunSC70)) || ((paramArrayOfBulletEmitter[i][j] instanceof FuelTankGun)))
@@ -144,15 +139,8 @@ public class Squares
         }
 
         this.dragParasiteCx += 0.035F;
-
-        if (((paramArrayOfBulletEmitter[i][j] instanceof PylonHS129BK75)) || ((paramArrayOfBulletEmitter[i][j] instanceof PylonHS129BK37)))
-          this.dragParasiteCx += 0.45F;
-        if ((paramArrayOfBulletEmitter[i][j] instanceof PylonRO_WfrGr21))
-          this.dragParasiteCx += 0.015F;
-        if ((paramArrayOfBulletEmitter[i][j] instanceof PylonRO_WfrGr21Dual)) {
-          this.dragParasiteCx += 0.02F;
-        }
       }
+
     }
 
     this.dragParasiteCx += 0.02F * paramControls.getCockpitDoor();

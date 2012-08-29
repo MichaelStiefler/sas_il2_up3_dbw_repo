@@ -18,29 +18,29 @@ public class D3A1 extends D3A
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
     super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat) {
-    super.doWoundPilot(paramInt, paramFloat);
-    if (this.FM.isPlayers()) bChangedPit = true; 
+  public void doKillPilot(int paramInt) {
+    super.doKillPilot(paramInt);
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
   public void doMurderPilot(int paramInt) {
     super.doMurderPilot(paramInt);
-    if (this.FM.isPlayers()) bChangedPit = true;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true;
   }
 
   public void moveCockpitDoor(float paramFloat)
   {
     resetYPRmodifier();
-    xyz[1] = cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.44F);
-    hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
+    Aircraft.xyz[1] = Aircraft.cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.44F);
+    hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
     if (Config.isUSE_RENDER()) {
       if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) Main3D.cur3D().cockpits[0].onDoorMoved(paramFloat);
       setDoorSnd(paramFloat);
@@ -125,17 +125,17 @@ public class D3A1 extends D3A
 
     Property.set(localClass, "LOSElevation", 0.87195F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, null });
 
-    weaponsRegister(localClass, "1x250", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, "BombGun250kgJ 1" });
+    Aircraft.weaponsRegister(localClass, "1x250", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, "BombGun250kgJ 1" });
 
-    weaponsRegister(localClass, "1x2502x30", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun250kgJ 1" });
+    Aircraft.weaponsRegister(localClass, "1x2502x30", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun250kgJ 1" });
 
-    weaponsRegister(localClass, "1x2502x60", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun60kgJ 1", "BombGun60kgJ 1", "BombGun250kgJ 1" });
+    Aircraft.weaponsRegister(localClass, "1x2502x60", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun60kgJ 1", "BombGun60kgJ 1", "BombGun250kgJ 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

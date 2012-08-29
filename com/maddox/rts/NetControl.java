@@ -21,8 +21,8 @@ public final class NetControl extends NetObj
       localNetMsgGuaranted.writeInt(-1);
       localNetMsgGuaranted.write255(paramString);
       localNetMsgGuaranted.writeNetObj(null);
-      postTo(this.masterChannel, localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
+      NetObj.printDebug(localException);
     }
   }
 
@@ -45,7 +45,7 @@ public final class NetControl extends NetObj
         NetEnv.cur().connect.msgRequest(paramString);
       }
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -66,10 +66,10 @@ public final class NetControl extends NetObj
         postTo(localNetChannel, localNetMsgGuaranted);
         localNetChannel.destroy(paramString);
       } else {
-        this.masterChannel.destroy(paramString);
+        this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel.destroy(paramString);
       }
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -88,10 +88,10 @@ public final class NetControl extends NetObj
         postTo(localNetChannel, localNetMsgGuaranted);
         localNetChannel.controlStartInit();
       } else {
-        this.masterChannel.controlStartInit();
+        this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel.controlStartInit();
       }
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -126,19 +126,21 @@ public final class NetControl extends NetObj
             case 4:
               ((NetControlReal)localObject).msgAnswer(localNetObj, j, paramNetMsgInput.read255());
               break;
+            default:
+              break;
             }
           }
         }
-        else
-          switch (i) {
+        else switch (i) {
           case 0:
             doAsk(localNetObj, j);
             break;
           default:
             break;
-          }
+          } 
       }
-      else {
+      else
+      {
         switch (i) {
         case 0:
           if (localNetObj == null) {
@@ -152,9 +154,9 @@ public final class NetControl extends NetObj
             String str2 = str1 + " " + paramNetMsgInput.channel().remotePort();
 
             ((NetMsgGuaranted)localObject).write255(str2);
-            postTo(this.masterChannel, (NetMsgGuaranted)localObject);
+            postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, (NetMsgGuaranted)localObject);
           } else {
-            postTo(this.masterChannel, new NetMsgGuaranted(paramNetMsgInput, 1));
+            postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, new NetMsgGuaranted(paramNetMsgInput, 1));
           }
           break;
         case 4:
@@ -164,9 +166,9 @@ public final class NetControl extends NetObj
             ((NetMsgGuaranted)localObject).writeInt(paramNetMsgInput.channel().id());
             ((NetMsgGuaranted)localObject).write255(paramNetMsgInput.read255());
             ((NetMsgGuaranted)localObject).writeNetObj(NetEnv.host());
-            postTo(this.masterChannel, (NetMsgGuaranted)localObject);
+            postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, (NetMsgGuaranted)localObject);
           } else {
-            postTo(this.masterChannel, new NetMsgGuaranted(paramNetMsgInput, 1));
+            postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, new NetMsgGuaranted(paramNetMsgInput, 1));
           }
           break;
         case 1:
@@ -187,7 +189,7 @@ public final class NetControl extends NetObj
       }
     }
     catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -197,18 +199,18 @@ public final class NetControl extends NetObj
       localNetMsgGuaranted.writeByte(0);
       localNetMsgGuaranted.writeInt(-1);
       localNetMsgGuaranted.writeNetObj(null);
-      postTo(this.masterChannel, localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
+      NetObj.printDebug(localException);
     }
   }
 
   public void msgNetNewChannel(NetChannel paramNetChannel) {
-    if ((isMirror()) && (this.masterChannel == paramNetChannel)) return;
+    if ((isMirror()) && (this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel == paramNetChannel)) return;
     if ((paramNetChannel.isGlobal()) && (!paramNetChannel.isMirrored(this)))
       try {
         NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this);
         postTo(paramNetChannel, localNetMsgSpawn); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
   }
 
@@ -255,7 +257,7 @@ public final class NetControl extends NetObj
         NetChannel localNetChannel = paramNetMsgInput.channel();
         if (NetEnv.cur().control != null) {
           if ((NetEnv.cur().control instanceof NetControlLock)) {
-            NetControlLock localNetControlLock = (NetControlLock)(NetControlLock)NetEnv.cur().control;
+            NetControlLock localNetControlLock = (NetControlLock)NetEnv.cur().control;
             if (localNetControlLock.channel() == localNetChannel) {
               localNetControlLock.destroy();
             } else {

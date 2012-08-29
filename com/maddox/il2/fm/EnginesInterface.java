@@ -39,14 +39,14 @@ public class EnginesInterface extends FMMath
 
     this.engines = new Motor[this.num]; for (tmpI = 0; tmpI < this.num; tmpI += 1) this.engines[tmpI] = new Motor();
     this.bCurControl = new boolean[this.num];
-    Aircraft.debugprintln(this.reference.actor, "Loading " + this.num + " engine(s) from '" + paramSectFile.toString() + "....");
+    Aircraft.debugprintln(this.reference.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Loading " + this.num + " engine(s) from '" + paramSectFile.toString() + "....");
     Object localObject1;
     Object localObject2;
     for (tmpI = 0; tmpI < this.num; tmpI += 1)
     {
       localObject1 = paramSectFile.get(str, "Engine" + tmpI + "Family");
       localObject2 = paramSectFile.get(str, "Engine" + tmpI + "SubModel");
-      Aircraft.debugprintln(this.reference.actor, "Loading engine model from '" + (String)localObject1 + ".emd', submodel '" + (String)localObject2 + "'....");
+      Aircraft.debugprintln(this.reference.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Loading engine model from '" + (String)localObject1 + ".emd', submodel '" + (String)localObject2 + "'....");
       this.engines[tmpI].load(paramFlightModel, "FlightModels/" + (String)localObject1 + ".emd", (String)localObject2, tmpI);
     }
 
@@ -54,17 +54,17 @@ public class EnginesInterface extends FMMath
       localObject1 = new Point3d();
       localObject2 = new Vector3f();
       for (tmpI = 0; tmpI < this.num; tmpI += 1) {
-        ((Point3d)localObject1).x = paramSectFile.get(str, "Position" + tmpI + "x", 0.0F);
-        ((Point3d)localObject1).y = paramSectFile.get(str, "Position" + tmpI + "y", 0.0F);
-        ((Point3d)localObject1).z = paramSectFile.get(str, "Position" + tmpI + "z", 0.0F);
+        ((Point3d)localObject1).jdField_x_of_type_Double = paramSectFile.get(str, "Position" + tmpI + "x", 0.0F);
+        ((Point3d)localObject1).jdField_y_of_type_Double = paramSectFile.get(str, "Position" + tmpI + "y", 0.0F);
+        ((Point3d)localObject1).jdField_z_of_type_Double = paramSectFile.get(str, "Position" + tmpI + "z", 0.0F);
         this.engines[tmpI].setPos((Point3d)localObject1);
-        ((Vector3f)localObject2).x = paramSectFile.get(str, "Vector" + tmpI + "x", 0.0F);
-        ((Vector3f)localObject2).y = paramSectFile.get(str, "Vector" + tmpI + "y", 0.0F);
-        ((Vector3f)localObject2).z = paramSectFile.get(str, "Vector" + tmpI + "z", 0.0F);
+        ((Vector3f)localObject2).jdField_x_of_type_Float = paramSectFile.get(str, "Vector" + tmpI + "x", 0.0F);
+        ((Vector3f)localObject2).jdField_y_of_type_Float = paramSectFile.get(str, "Vector" + tmpI + "y", 0.0F);
+        ((Vector3f)localObject2).jdField_z_of_type_Float = paramSectFile.get(str, "Vector" + tmpI + "z", 0.0F);
         this.engines[tmpI].setVector((Vector3f)localObject2);
-        ((Point3d)localObject1).x = paramSectFile.get(str, "PropPosition" + tmpI + "x", 0.0F);
-        ((Point3d)localObject1).y = paramSectFile.get(str, "PropPosition" + tmpI + "y", 0.0F);
-        ((Point3d)localObject1).z = paramSectFile.get(str, "PropPosition" + tmpI + "z", 0.0F);
+        ((Point3d)localObject1).jdField_x_of_type_Double = paramSectFile.get(str, "PropPosition" + tmpI + "x", 0.0F);
+        ((Point3d)localObject1).jdField_y_of_type_Double = paramSectFile.get(str, "PropPosition" + tmpI + "y", 0.0F);
+        ((Point3d)localObject1).jdField_z_of_type_Double = paramSectFile.get(str, "PropPosition" + tmpI + "z", 0.0F);
         this.engines[tmpI].setPropPos((Point3d)localObject1);
       }
     }
@@ -80,7 +80,7 @@ public class EnginesInterface extends FMMath
   {
     Point3d localPoint3d = new Point3d(0.0D, 0.0D, 0.0D);
     Loc localLoc = new Loc();
-    if ((this.num == 0) || (this.engines[0].getPropPos().distanceSquared(new Point3f(0.0F, 0.0F, 0.0F)) > 0.0F)) {
+    if (this.engines[0].getPropPos().distanceSquared(new Point3f(0.0F, 0.0F, 0.0F)) > 0.0F) {
       return;
     }
 
@@ -94,9 +94,9 @@ public class EnginesInterface extends FMMath
       localHook.computePos(paramActor, paramActor.pos.getAbs(), localLoc);
       localLoc.get(localPoint3d);
       paramActor.pos.getAbs().transformInv(localPoint3d);
-      arrayOfFloat1[tmpI][0] = (float)localPoint3d.x;
-      arrayOfFloat1[tmpI][1] = (float)localPoint3d.y;
-      arrayOfFloat1[tmpI][2] = (float)localPoint3d.z;
+      arrayOfFloat1[tmpI][0] = (float)localPoint3d.jdField_x_of_type_Double;
+      arrayOfFloat1[tmpI][1] = (float)localPoint3d.jdField_y_of_type_Double;
+      arrayOfFloat1[tmpI][2] = (float)localPoint3d.jdField_z_of_type_Double;
     }
     for (tmpI = 0; tmpI < this.num; tmpI += 1) {
       localHook = paramActor.findHook("_Engine" + (tmpI + 1) + "Smoke");
@@ -104,9 +104,9 @@ public class EnginesInterface extends FMMath
       localHook.computePos(paramActor, paramActor.pos.getAbs(), localLoc);
       localLoc.get(localPoint3d);
       paramActor.pos.getAbs().transformInv(localPoint3d);
-      arrayOfFloat2[tmpI][0] = (float)localPoint3d.x;
-      arrayOfFloat2[tmpI][1] = (float)localPoint3d.y;
-      arrayOfFloat2[tmpI][2] = ((float)localPoint3d.z - 0.7F);
+      arrayOfFloat2[tmpI][0] = (float)localPoint3d.jdField_x_of_type_Double;
+      arrayOfFloat2[tmpI][1] = (float)localPoint3d.jdField_y_of_type_Double;
+      arrayOfFloat2[tmpI][2] = ((float)localPoint3d.jdField_z_of_type_Double - 0.7F);
     }
     switch (this.reference.Scheme) {
     case 0:
@@ -116,53 +116,53 @@ public class EnginesInterface extends FMMath
       this.engines[0].setVector(localVector3f);
       break;
     case 1:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = 0.0D;
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
+      localPoint3d.jdField_y_of_type_Double = 0.0D;
+      localPoint3d.jdField_z_of_type_Double = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
       this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.x = arrayOfFloat2[0][0];
-      localPoint3d.y = 0.0D;
-      localPoint3d.z = arrayOfFloat2[0][2];
+      localPoint3d.jdField_x_of_type_Double = arrayOfFloat2[0][0];
+      localPoint3d.jdField_y_of_type_Double = 0.0D;
+      localPoint3d.jdField_z_of_type_Double = arrayOfFloat2[0][2];
       this.engines[0].setPos(localPoint3d);
       this.engines[0].setVector(localVector3f);
       break;
     case 2:
     case 3:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = (0.5F * (arrayOfFloat1[0][1] + arrayOfFloat1[1][1]));
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
+      localPoint3d.jdField_y_of_type_Double = (0.5F * (arrayOfFloat1[0][1] + arrayOfFloat1[1][1]));
+      localPoint3d.jdField_z_of_type_Double = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
       this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = (0.5F * (arrayOfFloat1[2][1] + arrayOfFloat1[3][1]));
+      localPoint3d.jdField_y_of_type_Double = (0.5F * (arrayOfFloat1[2][1] + arrayOfFloat1[3][1]));
       this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.x = (0.5F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.5F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.5F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.5F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2]));
       this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[1][1];
       this.engines[1].setPos(localPoint3d);
       this.engines[0].setVector(localVector3f);
       this.engines[1].setVector(localVector3f);
       break;
     case 4:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
       this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[1][1];
       this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[2][1];
       this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[3][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[3][1];
       this.engines[3].setPropPos(localPoint3d);
-      localPoint3d.x = (0.25F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.25F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.25F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2]));
       this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[1][1];
       this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[2][1];
       this.engines[2].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[3][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[3][1];
       this.engines[3].setPos(localPoint3d);
       this.engines[0].setVector(localVector3f);
       this.engines[1].setVector(localVector3f);
@@ -170,29 +170,29 @@ public class EnginesInterface extends FMMath
       this.engines[3].setVector(localVector3f);
       break;
     case 5:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
       this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[1][1];
       this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = 0.0D;
+      localPoint3d.jdField_y_of_type_Double = 0.0D;
       this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[2][1];
       this.engines[3].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[3][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[3][1];
       this.engines[4].setPropPos(localPoint3d);
-      localPoint3d.x = (0.2F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0] + arrayOfFloat2[4][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.2F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2] + arrayOfFloat2[4][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.2F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0] + arrayOfFloat2[4][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.2F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2] + arrayOfFloat2[4][2]));
       this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[1][1];
       this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[2][1];
       this.engines[2].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[3][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[3][1];
       this.engines[3].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[4][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[4][1];
       this.engines[4].setPos(localPoint3d);
       this.engines[0].setVector(localVector3f);
       this.engines[1].setVector(localVector3f);
@@ -201,54 +201,54 @@ public class EnginesInterface extends FMMath
       this.engines[4].setVector(localVector3f);
       break;
     case 6:
-      localPoint3d.x = (0.3333333F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.3333333F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.3333333F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.3333333F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2]));
       this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[1][1];
       this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[2][1];
       this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.x = (0.3333333F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.3333333F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.3333333F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.3333333F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2]));
       this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[1][1];
       this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[2][1];
       this.engines[2].setPos(localPoint3d);
       this.engines[0].setVector(localVector3f);
       this.engines[1].setVector(localVector3f);
       this.engines[2].setVector(localVector3f);
       break;
     case 7:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
       this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = 0.0D;
+      localPoint3d.jdField_y_of_type_Double = 0.0D;
       this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[1][1];
       this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[2][1];
       this.engines[3].setPropPos(localPoint3d);
-      localPoint3d.y = 0.0D;
+      localPoint3d.jdField_y_of_type_Double = 0.0D;
       this.engines[4].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[3][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat1[3][1];
       this.engines[5].setPropPos(localPoint3d);
-      localPoint3d.x = (0.1666667F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0] + arrayOfFloat2[4][0] + arrayOfFloat2[5][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.1666667F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2] + arrayOfFloat2[4][2] + arrayOfFloat2[5][2]));
+      localPoint3d.jdField_x_of_type_Double = (0.1666667F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0] + arrayOfFloat2[4][0] + arrayOfFloat2[5][0]));
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[0][1];
+      localPoint3d.jdField_z_of_type_Double = (0.1666667F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2] + arrayOfFloat2[4][2] + arrayOfFloat2[5][2]));
       this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[1][1];
       this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[2][1];
       this.engines[2].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[3][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[3][1];
       this.engines[3].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[4][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[4][1];
       this.engines[4].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[5][1];
+      localPoint3d.jdField_y_of_type_Double = arrayOfFloat2[5][1];
       this.engines[5].setPos(localPoint3d);
       this.engines[0].setVector(localVector3f);
       this.engines[1].setVector(localVector3f);
@@ -269,12 +269,12 @@ public class EnginesInterface extends FMMath
     for (int i = 0; i < this.num; i++) {
       this.engines[i].update(paramFloat);
 
-      this.producedF.x += this.engines[i].getEngineForce().x;
-      this.producedF.y += this.engines[i].getEngineForce().y;
-      this.producedF.z += this.engines[i].getEngineForce().z;
-      this.producedM.x += this.engines[i].getEngineTorque().x;
-      this.producedM.y += this.engines[i].getEngineTorque().y;
-      this.producedM.z += this.engines[i].getEngineTorque().z;
+      this.producedF.jdField_x_of_type_Double += this.engines[i].getEngineForce().jdField_x_of_type_Float;
+      this.producedF.jdField_y_of_type_Double += this.engines[i].getEngineForce().jdField_y_of_type_Float;
+      this.producedF.jdField_z_of_type_Double += this.engines[i].getEngineForce().jdField_z_of_type_Float;
+      this.producedM.jdField_x_of_type_Double += this.engines[i].getEngineTorque().jdField_x_of_type_Float;
+      this.producedM.jdField_y_of_type_Double += this.engines[i].getEngineTorque().jdField_y_of_type_Float;
+      this.producedM.jdField_z_of_type_Double += this.engines[i].getEngineTorque().jdField_z_of_type_Float;
     }
   }
 
@@ -530,13 +530,6 @@ public class EnginesInterface extends FMMath
     }
   }
 
-  public void setPropDelta(int paramInt)
-  {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1)
-      if (this.bCurControl[tmpI] != 0)
-        this.engines[tmpI].setControlPropDelta(paramInt);
-  }
-
   public void setPropAuto(boolean paramBoolean) {
     for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
       if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlPropAuto(paramBoolean);
@@ -581,13 +574,13 @@ public class EnginesInterface extends FMMath
   public void setEngineStops()
   {
     for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setEngineStops(this.reference.actor);
+      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setEngineStops(this.reference.jdField_actor_of_type_ComMaddoxIl2EngineActor);
     }
   }
 
   public void setEngineRunning() {
     for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setEngineRunning(this.reference.actor);
+      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setEngineRunning(this.reference.jdField_actor_of_type_ComMaddoxIl2EngineActor);
     }
   }
 
@@ -595,7 +588,7 @@ public class EnginesInterface extends FMMath
   {
     float f = 0.0F;
     for (int i = 0; i < getNum(); i++) f += this.engines[i].forcePropAOA(paramFloat1, paramFloat2, paramFloat3, paramBoolean);
-    Aircraft.debugprintln(this.reference.actor, "Computed thrust at " + paramFloat1 + " m/s and " + paramFloat2 + " m is " + f + " N..");
+    Aircraft.debugprintln(this.reference.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Computed thrust at " + paramFloat1 + " m/s and " + paramFloat2 + " m is " + f + " N..");
     return f;
   }
 }

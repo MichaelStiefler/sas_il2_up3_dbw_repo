@@ -51,9 +51,9 @@ public class GWindowVScrollBar extends GWindowDialogControl
     if (this.pos > this.posMax) this.pos = this.posMax;
     if (this.pos < this.posMin) this.pos = this.posMin;
     boolean bool = this.posMin < this.posMax;
-    if (bool != this.bEnable)
+    if (bool != this.jdField_bEnable_of_type_Boolean)
       _setEnable(bool);
-    return this.bEnable;
+    return this.jdField_bEnable_of_type_Boolean;
   }
 
   public void _setEnable(boolean paramBoolean) {
@@ -64,7 +64,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
   }
 
   public void setEnable(boolean paramBoolean) {
-    if (paramBoolean != this.bEnable) {
+    if (paramBoolean != this.jdField_bEnable_of_type_Boolean) {
       if ((!checkRange()) && (paramBoolean))
         return;
       _setEnable(paramBoolean);
@@ -79,35 +79,35 @@ public class GWindowVScrollBar extends GWindowDialogControl
     this.bKeyDown = paramBoolean;
     switch (paramInt) {
     case 38:
-      if ((paramBoolean) && (this.bEnable)) {
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean)) {
         this.timeoutScroll = (-this.scroll);
         scroll(this.timeoutScroll);
       }
       return;
     case 40:
-      if ((paramBoolean) && (this.bEnable)) {
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean)) {
         this.timeoutScroll = this.scroll;
         scroll(this.timeoutScroll);
       }
       return;
     case 33:
-      if ((paramBoolean) && (this.bEnable)) {
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean)) {
         this.timeoutScroll = (-(this.posVisible - this.scroll));
         scroll(this.timeoutScroll);
       }
       return;
     case 34:
-      if ((paramBoolean) && (this.bEnable)) {
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean)) {
         this.timeoutScroll = (this.posVisible - this.scroll);
         scroll(this.timeoutScroll);
       }
       return;
     case 36:
-      if ((paramBoolean) && (this.bEnable)) setPos(this.posMin, true);
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean)) setPos(this.posMin, true);
       this.bKeyDown = false;
       return;
     case 35:
-      if ((paramBoolean) && (this.bEnable)) setPos(this.posMax, true);
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean)) setPos(this.posMax, true);
       this.bKeyDown = false;
       return;
     case 37:
@@ -119,7 +119,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
 
   public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
     super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if ((paramInt != 0) || (!this.bEnable)) return;
+    if ((paramInt != 0) || (!this.jdField_bEnable_of_type_Boolean)) return;
     if (!paramBoolean) { this.downState = 0; return; }
     this.downState = (paramFloat2 <= this.yM ? 1 : 2);
     this.timeoutScroll = (this.downState == 1 ? -(this.posVisible - this.scroll) : this.posVisible - this.scroll);
@@ -134,7 +134,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
 
   public boolean notify(int paramInt1, int paramInt2) {
     if (paramInt1 == 17) {
-      scrollDz(this.root.mouseRelMoveZ);
+      scrollDz(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseRelMoveZ);
       return true;
     }
     return super.notify(paramInt1, paramInt2);
@@ -142,8 +142,8 @@ public class GWindowVScrollBar extends GWindowDialogControl
 
   public void preRender() {
     super.preRender();
-    if ((this.bEnable) && ((this.bDown) || (this.bKeyDown))) {
-      this.timeout -= this.root.deltaTimeSec;
+    if ((this.jdField_bEnable_of_type_Boolean) && ((this.bDown) || (this.bKeyDown))) {
+      this.timeout -= this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec;
       if (this.timeout <= 0.0F) {
         this.timeout = 0.1F;
         scroll(this.timeoutScroll);
@@ -174,7 +174,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
   }
 
   public void resolutionChanged() {
-    boolean bool = this.bEnable;
+    boolean bool = this.jdField_bEnable_of_type_Boolean;
     resized();
     if (!bool) setEnable(false); 
   }
@@ -201,13 +201,13 @@ public class GWindowVScrollBar extends GWindowDialogControl
     {
       super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
       if (paramInt != 0) return;
-      if (!this.bEnable) { mouseCapture(false); return; }
+      if (!this.jdField_bEnable_of_type_Boolean) { mouseCapture(false); return; }
       mouseCapture(paramBoolean);
     }
     public void mouseMove(float paramFloat1, float paramFloat2) {
-      if ((this.bEnable) && (isMouseCaptured())) {
+      if ((this.jdField_bEnable_of_type_Boolean) && (isMouseCaptured())) {
         GWindowVScrollBar localGWindowVScrollBar = (GWindowVScrollBar)this.parentWindow;
-        GWindowVScrollBar.this.scroll(this.root.mouseStep.dy * (GWindowVScrollBar.this.posMax - GWindowVScrollBar.this.posMin) / (localGWindowVScrollBar.win.dy - localGWindowVScrollBar.uButton.win.dy - localGWindowVScrollBar.uButton.win.dy - this.win.dy));
+        GWindowVScrollBar.this.scroll(this.root.mouseStep.dy * (GWindowVScrollBar.this.posMax - GWindowVScrollBar.this.posMin) / (localGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGWindowVScrollBar.uButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGWindowVScrollBar.uButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy));
       }
     }
 
@@ -230,7 +230,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
     public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
     {
       super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
+      if ((paramInt != 0) || (!paramBoolean) || (!this.jdField_bEnable_of_type_Boolean)) return;
       GWindowVScrollBar.this.scroll(GWindowVScrollBar.this.scroll);
       GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.5F);
     }
@@ -240,7 +240,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
     }
     public void preRender() {
       super.preRender();
-      if ((this.bDown) && (this.bEnable)) {
+      if ((this.bDown) && (this.jdField_bEnable_of_type_Boolean)) {
         GWindowVScrollBar.access$024(GWindowVScrollBar.this, this.root.deltaTimeSec);
         if (GWindowVScrollBar.this.timeout <= 0.0F) {
           GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.1F);
@@ -262,7 +262,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
     public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
     {
       super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
+      if ((paramInt != 0) || (!paramBoolean) || (!this.jdField_bEnable_of_type_Boolean)) return;
       GWindowVScrollBar.this.scroll(-GWindowVScrollBar.this.scroll);
       GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.5F);
     }
@@ -272,7 +272,7 @@ public class GWindowVScrollBar extends GWindowDialogControl
     }
     public void preRender() {
       super.preRender();
-      if ((this.bDown) && (this.bEnable)) {
+      if ((this.bDown) && (this.jdField_bEnable_of_type_Boolean)) {
         GWindowVScrollBar.access$024(GWindowVScrollBar.this, this.root.deltaTimeSec);
         if (GWindowVScrollBar.this.timeout <= 0.0F) {
           GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.1F);

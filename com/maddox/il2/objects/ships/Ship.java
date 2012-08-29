@@ -1,31 +1,29 @@
 package com.maddox.il2.objects.ships;
 
 import com.maddox.il2.ai.ground.TgtShip;
-import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
 import com.maddox.rts.SectFile;
 
 public abstract class Ship
 {
   static
   {
-    new BigshipGeneric.SPAWN(G5.class);
+    new ShipGeneric.SPAWN(G5.class);
 
-    new BigshipGeneric.SPAWN(MO4.class);
+    new ShipGeneric.SPAWN(MO4.class);
 
-    new BigshipGeneric.SPAWN(BBK_1942.class);
+    new ShipGeneric.SPAWN(BBK_1942.class);
 
-    new BigshipGeneric.SPAWN(BBK1124_1943.class);
+    new ShipGeneric.SPAWN(BBK1124_1943.class);
 
-    new BigshipGeneric.SPAWN(Destroyer_USSR_Type7.class);
+    new ShipGeneric.SPAWN(Destroyer_USSR_Type7.class);
 
-    new BigshipGeneric.SPAWN(Destroyer_USSR_Type7_44.class);
+    new ShipGeneric.SPAWN(Destroyer_USSR_Type7_44.class);
 
-    new BigshipGeneric.SPAWN(Tral.class);
+    new ShipGeneric.SPAWN(Tral.class);
 
     new ShipGeneric.SPAWN(Shuka.class);
 
-    new BigshipGeneric.SPAWN(ShukaP.class);
+    new ShipGeneric.SPAWN(ShukaP.class);
 
     new BigshipGeneric.SPAWN(Aurora.class);
 
@@ -57,11 +55,11 @@ public abstract class Ship
 
     new BigshipGeneric.SPAWN(USSGreenlingSS213_Srf.class);
 
-    new BigshipGeneric.SPAWN(USSGreenlingSS213_Sub.class);
+    new ShipGeneric.SPAWN(USSGreenlingSS213_Sub.class);
 
     new BigshipGeneric.SPAWN(USSGatoSS212_Srf.class);
 
-    new BigshipGeneric.SPAWN(USSGatoSS212_Sub.class);
+    new ShipGeneric.SPAWN(USSGatoSS212_Sub.class);
 
     new BigshipGeneric.SPAWN(USSWardDD139.class);
 
@@ -95,31 +93,27 @@ public abstract class Ship
 
     new BigshipGeneric.SPAWN(HMSDukeOfYorkBB.class);
 
-    new BigshipGeneric.SPAWN(S80.class);
+    new ShipGeneric.SPAWN(S80.class);
 
-    new BigshipGeneric.SPAWN(MFP.class);
+    new ShipGeneric.SPAWN(MFP.class);
 
-    new BigshipGeneric.SPAWN(MFP2.class);
+    new ShipGeneric.SPAWN(MFP2.class);
 
-    new BigshipGeneric.SPAWN(MAS501.class);
+    new ShipGeneric.SPAWN(MAS501.class);
 
-    new BigshipGeneric.SPAWN(Murgesku.class);
+    new ShipGeneric.SPAWN(Murgesku.class);
 
-    new BigshipGeneric.SPAWN(MBoat.class);
+    new ShipGeneric.SPAWN(MBoat.class);
 
     new ShipGeneric.SPAWN(Submarine.class);
 
-    new BigshipGeneric.SPAWN(SubmarineP.class);
+    new ShipGeneric.SPAWN(SubmarineP.class);
 
     new BigshipGeneric.SPAWN(Niobe.class);
 
-    new BigshipGeneric.SPAWN(NiobeWithBeacon.class);
-
     new BigshipGeneric.SPAWN(SubTypeVIIC_Srf.class);
 
-    new BigshipGeneric.SPAWN(SubTypeVIIC_SrfWithBeacon.class);
-
-    new BigshipGeneric.SPAWN(SubTypeVIIC_Sub.class);
+    new ShipGeneric.SPAWN(SubTypeVIIC_Sub.class);
 
     new BigshipGeneric.SPAWN(Illmarinen.class);
 
@@ -153,8 +147,6 @@ public abstract class Ship
 
     new BigshipGeneric.SPAWN(IJNAmatsukazeDD43.class);
 
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD43WithBeacon.class);
-
     new BigshipGeneric.SPAWN(IJNNowakiDD43.class);
 
     new BigshipGeneric.SPAWN(IJNYukikazeDD43.class);
@@ -178,40 +170,10 @@ public abstract class Ship
     new BigshipGeneric.SPAWN(RwySteelLow.class);
 
     new BigshipGeneric.SPAWN(RwyTransp.class);
-
-    new BigshipGeneric.SPAWN(RwyTranspWide.class);
-
-    new BigshipGeneric.SPAWN(RwyTranspSqr.class);
-  }
-
-  public static class RwyTranspSqr extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTranspSqr()
-    {
-    }
-
-    public RwyTranspSqr(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class RwyTranspWide extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTranspWide()
-    {
-    }
-
-    public RwyTranspWide(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
   }
 
   public static class RwyTransp extends BigshipGeneric
-    implements TgtShip, TestRunway
+    implements TgtShip
   {
     public RwyTransp()
     {
@@ -224,7 +186,7 @@ public abstract class Ship
   }
 
   public static class RwySteelLow extends BigshipGeneric
-    implements TgtShip, TestRunway
+    implements TgtShip
   {
     public RwySteelLow()
     {
@@ -237,7 +199,7 @@ public abstract class Ship
   }
 
   public static class RwySteel extends BigshipGeneric
-    implements TgtShip, TestRunway
+    implements TgtShip
   {
     public RwySteel()
     {
@@ -250,7 +212,7 @@ public abstract class Ship
   }
 
   public static class RwyCon extends BigshipGeneric
-    implements TgtShip, TestRunway
+    implements TgtShip
   {
     public RwyCon()
     {
@@ -366,19 +328,6 @@ public abstract class Ship
     }
   }
 
-  public static class IJNAmatsukazeDD43WithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNAmatsukazeDD43WithBeacon()
-    {
-    }
-
-    public IJNAmatsukazeDD43WithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
   public static class IJNAmatsukazeDD43 extends BigshipGeneric
     implements TgtShip
   {
@@ -484,7 +433,7 @@ public abstract class Ship
   }
 
   public static class IJNCVGeneric extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
+    implements TgtShip
   {
     public IJNCVGeneric()
     {
@@ -497,7 +446,7 @@ public abstract class Ship
   }
 
   public static class IJNZuikakuCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
+    implements TgtShip
   {
     public IJNZuikakuCV()
     {
@@ -510,7 +459,7 @@ public abstract class Ship
   }
 
   public static class IJNShokakuCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
+    implements TgtShip
   {
     public IJNShokakuCV()
     {
@@ -523,7 +472,7 @@ public abstract class Ship
   }
 
   public static class IJNAkagiCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
+    implements TgtShip
   {
     public IJNAkagiCV()
     {
@@ -587,7 +536,7 @@ public abstract class Ship
     }
   }
 
-  public static class SubTypeVIIC_Sub extends BigshipGeneric
+  public static class SubTypeVIIC_Sub extends ShipGeneric
     implements TgtShip
   {
     public SubTypeVIIC_Sub()
@@ -595,19 +544,6 @@ public abstract class Ship
     }
 
     public SubTypeVIIC_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class SubTypeVIIC_SrfWithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public SubTypeVIIC_SrfWithBeacon()
-    {
-    }
-
-    public SubTypeVIIC_SrfWithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
@@ -626,19 +562,6 @@ public abstract class Ship
     }
   }
 
-  public static class NiobeWithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public NiobeWithBeacon()
-    {
-    }
-
-    public NiobeWithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
   public static class Niobe extends BigshipGeneric
     implements TgtShip
   {
@@ -652,7 +575,7 @@ public abstract class Ship
     }
   }
 
-  public static class SubmarineP extends BigshipGeneric
+  public static class SubmarineP extends ShipGeneric
     implements TgtShip
   {
     public SubmarineP()
@@ -678,7 +601,7 @@ public abstract class Ship
     }
   }
 
-  public static class MBoat extends BigshipGeneric
+  public static class MBoat extends ShipGeneric
     implements TgtShip
   {
     public MBoat()
@@ -691,7 +614,7 @@ public abstract class Ship
     }
   }
 
-  public static class Murgesku extends BigshipGeneric
+  public static class Murgesku extends ShipGeneric
     implements TgtShip
   {
     public Murgesku()
@@ -704,7 +627,7 @@ public abstract class Ship
     }
   }
 
-  public static class MAS501 extends BigshipGeneric
+  public static class MAS501 extends ShipGeneric
     implements TgtShip
   {
     public MAS501()
@@ -717,7 +640,7 @@ public abstract class Ship
     }
   }
 
-  public static class MFP2 extends BigshipGeneric
+  public static class MFP2 extends ShipGeneric
     implements TgtShip
   {
     public MFP2()
@@ -730,7 +653,7 @@ public abstract class Ship
     }
   }
 
-  public static class MFP extends BigshipGeneric
+  public static class MFP extends ShipGeneric
     implements TgtShip
   {
     public MFP()
@@ -743,7 +666,7 @@ public abstract class Ship
     }
   }
 
-  public static class S80 extends BigshipGeneric
+  public static class S80 extends ShipGeneric
     implements TgtShip
   {
     public S80()
@@ -796,7 +719,7 @@ public abstract class Ship
   }
 
   public static class HMSIllustriousCV extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public HMSIllustriousCV()
     {
@@ -835,7 +758,7 @@ public abstract class Ship
   }
 
   public static class USSIntrepidCV11 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSIntrepidCV11()
     {
@@ -848,7 +771,7 @@ public abstract class Ship
   }
 
   public static class USSEssexCV9 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSEssexCV9()
     {
@@ -861,7 +784,7 @@ public abstract class Ship
   }
 
   public static class USSShamrockBayCVE84 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSShamrockBayCVE84()
     {
@@ -874,7 +797,7 @@ public abstract class Ship
   }
 
   public static class USSKitkunBayCVE71 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSKitkunBayCVE71()
     {
@@ -887,7 +810,7 @@ public abstract class Ship
   }
 
   public static class USSCasablancaCVE55 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSCasablancaCVE55()
     {
@@ -964,7 +887,7 @@ public abstract class Ship
     }
   }
 
-  public static class USSGatoSS212_Sub extends BigshipGeneric
+  public static class USSGatoSS212_Sub extends ShipGeneric
     implements TgtShip
   {
     public USSGatoSS212_Sub()
@@ -990,7 +913,7 @@ public abstract class Ship
     }
   }
 
-  public static class USSGreenlingSS213_Sub extends BigshipGeneric
+  public static class USSGreenlingSS213_Sub extends ShipGeneric
     implements TgtShip
   {
     public USSGreenlingSS213_Sub()
@@ -1082,7 +1005,7 @@ public abstract class Ship
   }
 
   public static class USSCVGeneric extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSCVGeneric()
     {
@@ -1095,7 +1018,7 @@ public abstract class Ship
   }
 
   public static class USSSaratogaCV3 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSSaratogaCV3()
     {
@@ -1108,7 +1031,7 @@ public abstract class Ship
   }
 
   public static class USSLexingtonCV2 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+    implements TgtShip
   {
     public USSLexingtonCV2()
     {
@@ -1198,7 +1121,7 @@ public abstract class Ship
     }
   }
 
-  public static class ShukaP extends BigshipGeneric
+  public static class ShukaP extends ShipGeneric
     implements TgtShip
   {
     public ShukaP()
@@ -1224,7 +1147,7 @@ public abstract class Ship
     }
   }
 
-  public static class Tral extends BigshipGeneric
+  public static class Tral extends ShipGeneric
     implements TgtShip
   {
     public Tral()
@@ -1237,7 +1160,7 @@ public abstract class Ship
     }
   }
 
-  public static class Destroyer_USSR_Type7_44 extends BigshipGeneric
+  public static class Destroyer_USSR_Type7_44 extends ShipGeneric
     implements TgtShip
   {
     public Destroyer_USSR_Type7_44()
@@ -1250,7 +1173,7 @@ public abstract class Ship
     }
   }
 
-  public static class Destroyer_USSR_Type7 extends BigshipGeneric
+  public static class Destroyer_USSR_Type7 extends ShipGeneric
     implements TgtShip
   {
     public Destroyer_USSR_Type7()
@@ -1263,7 +1186,7 @@ public abstract class Ship
     }
   }
 
-  public static class BBK1124_1943 extends BigshipGeneric
+  public static class BBK1124_1943 extends ShipGeneric
     implements TgtShip
   {
     public BBK1124_1943()
@@ -1276,7 +1199,7 @@ public abstract class Ship
     }
   }
 
-  public static class BBK_1942 extends BigshipGeneric
+  public static class BBK_1942 extends ShipGeneric
     implements TgtShip
   {
     public BBK_1942()
@@ -1289,7 +1212,7 @@ public abstract class Ship
     }
   }
 
-  public static class MO4 extends BigshipGeneric
+  public static class MO4 extends ShipGeneric
     implements TgtShip
   {
     public MO4()
@@ -1302,7 +1225,7 @@ public abstract class Ship
     }
   }
 
-  public static class G5 extends BigshipGeneric
+  public static class G5 extends ShipGeneric
     implements TgtShip
   {
     public G5()

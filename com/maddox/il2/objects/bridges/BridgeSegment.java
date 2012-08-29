@@ -6,7 +6,6 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Explosion;
 import com.maddox.il2.ai.MsgExplosionListener;
 import com.maddox.il2.ai.MsgShotListener;
-import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ground.ChiefGround;
@@ -55,11 +54,11 @@ public class BridgeSegment extends ActorMesh
 
   private static String NameByIdx(int paramInt1, int paramInt2)
   {
-    return " Bridge" + paramInt1 + "Seg" + paramInt2;
+    return new String(" Bridge" + paramInt1 + "Seg" + paramInt2);
   }
 
   public static BridgeSegment getByIdx(int paramInt1, int paramInt2) {
-    return (BridgeSegment)(BridgeSegment)Actor.getByName(NameByIdx(paramInt1, paramInt2));
+    return (BridgeSegment)Actor.getByName(NameByIdx(paramInt1, paramInt2));
   }
 
   public static boolean isEncodedSegmentDamaged(int paramInt) {
@@ -87,7 +86,7 @@ public class BridgeSegment extends ActorMesh
     if (d1 >= d2) {
       return localPoint3d4.distance(paramPoint3d);
     }
-    d1 = localVector3d1.lengthSquared() - d1 * d1 / d2;
+    d1 = localVector3d1.length() - d1 * d1 / d2;
     if (d1 <= 0.0D) {
       return 0.0D;
     }
@@ -113,29 +112,26 @@ public class BridgeSegment extends ActorMesh
       return;
     }
 
-    damagedByTNT(paramActor.pos.getAbsPoint(), this.maxLife + 1.0F, paramActor);
+    if (isNetMirror()) {
+      return;
+    }
+
+    damagedByTNT(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.maxLife + 1.0F, paramActor);
   }
 
   private void damagedByTNT(Point3d paramPoint3d, float paramFloat, Actor paramActor)
   {
-    if (paramFloat <= this.ignoreTNT) {
+    if (paramFloat <= this.ignoreTNT)
       return;
+    if ((paramFloat < 2.0F * this.ignoreTNT) && (this.ignoreTNT > 1.0E-005F)) {
+      paramFloat = (paramFloat - this.ignoreTNT) / this.ignoreTNT;
+      paramFloat *= 2.0F * this.ignoreTNT;
     }
 
-    float f = World.Rnd().nextFloat();
-    f *= f;
-    paramFloat = f * paramFloat * 2.0F + (paramFloat * 0.8F - this.ignoreTNT / 2.0F);
-
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    int i = this.dir2d.x * (paramPoint3d.x - localPoint3d.x) + this.dir2d.y * (paramPoint3d.y - localPoint3d.y) < 0.0D ? 0 : 1;
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    int i = this.dir2d.jdField_x_of_type_Double * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + this.dir2d.jdField_y_of_type_Double * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) < 0.0D ? 0 : 1;
 
     if (this.life[i] <= 0.0F) {
-      return;
-    }
-
-    if (((LongBridge)getOwner()).isNetMirror()) {
-      LongBridge localLongBridge = (LongBridge)getOwner();
-      localLongBridge.sendLifeChanged(this.brID, this.ID, i, this.life[i] - paramFloat, paramActor, true);
       return;
     }
 
@@ -154,6 +150,10 @@ public class BridgeSegment extends ActorMesh
       return;
     }
 
+    if (isNetMirror()) {
+      return;
+    }
+
     if (paramShot.powerType == 1) {
       return;
     }
@@ -164,6 +164,10 @@ public class BridgeSegment extends ActorMesh
   public void msgExplosion(Explosion paramExplosion)
   {
     if (IsDead()) {
+      return;
+    }
+
+    if (isNetMirror()) {
       return;
     }
 
@@ -200,9 +204,6 @@ public class BridgeSegment extends ActorMesh
     LifeChanged(paramInt, 0.0F, paramActor, Mission.isServer());
   }
 
-  void netLifeChanged(int paramInt, float paramFloat, Actor paramActor, boolean paramBoolean) {
-    LifeChanged(paramInt, paramFloat, paramActor, paramBoolean);
-  }
   private void LifeChanged(int paramInt, float paramFloat, Actor paramActor, boolean paramBoolean) {
     if (paramFloat <= 0.0F) {
       paramFloat = 0.0F;
@@ -260,8 +261,8 @@ public class BridgeSegment extends ActorMesh
 
     setArmy(0);
 
-    this.pos.setAbs(paramPoint3d);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.dirOct = paramInt3;
     switch (this.dirOct) { case 0:

@@ -17,18 +17,10 @@ public class Turret
   public long timeNext = 0L;
   public boolean bIsShooting = false;
   public int tMode = 0;
-  public float health = 1.0F;
   public static final int TU_MO_SLEEP = 0;
   public static final int TU_MO_TRACKING = 1;
   public static final int TU_MO_FIRING_TRACKING = 2;
   public static final int TU_MO_FIRING_STOPPED = 3;
   public static final int TU_MO_PANIC = 4;
   public static final int TU_MO_STOPPED = 5;
-
-  public void setHealth(float paramFloat)
-  {
-    this.health = paramFloat;
-    if (paramFloat == 0.0F)
-      this.bIsOperable = false;
-  }
 }

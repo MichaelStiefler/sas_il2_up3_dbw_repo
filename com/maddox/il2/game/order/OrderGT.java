@@ -23,22 +23,22 @@ class OrderGT extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       localPilot.attackGround(paramInt);
       int j = 0;
-      if (localPilot.Group != null) {
-        this.Pd.set(localPilot.Group.Pos);
-        if ((OrdersTree.curOrdersTree.alone()) && ((localPilot.Group.grTask != 4) || (localPilot.Group.gTargetPreference != paramInt)) && (((Maneuver)Player().FM).Group == localPilot.Group))
+      if (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) {
+        this.Pd.set(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.Pos);
+        if ((OrdersTree.curOrdersTree.alone()) && ((localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.grTask != 4) || (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.gTargetPreference != paramInt)) && (((Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup))
         {
-          localObject = new AirGroup(localPilot.Group);
-          localPilot.Group.delAircraft(localAircraft);
+          localObject = new AirGroup(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(localAircraft);
           ((AirGroup)localObject).addAircraft(localAircraft);
         }
-        localPilot.Group.setGTargMode(paramInt);
-        localPilot.Group.setGTargMode(this.Pd, 3000.0F);
-        Object localObject = localPilot.Group.setGAttackObject(localPilot.Group.numInGroup(localAircraft));
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGTargMode(paramInt);
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGTargMode(this.Pd, 3000.0F);
+        Object localObject = localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGAttackObject(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.numInGroup(localAircraft));
         if (localObject != null) {
           if ((isEnableVoice()) && (CommandSet()[i] != Player()))
             if ((CommandSet()[i].getWing() == Player().getWing()) || (CommandSet()[i].aircIndex() == 0))
@@ -46,7 +46,7 @@ class OrderGT extends Order
             else
               Voice.speakOk(CommandSet()[i]);
           localPilot.target_ground = null;
-          localPilot.Group.setGroupTask(4);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(4);
           j = 1;
         }
       }

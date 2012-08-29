@@ -246,35 +246,35 @@ public class HotKeyEnv
     HashMapInt localHashMapInt = RTSConf.cur.hotKeyEnvs.keyState[i];
     HashMapExt localHashMapExt = RTSConf.cur.hotKeyEnvs.active;
     boolean bool = localHashMapInt.containsKey(paramInt);
-    Object localObject;
     if ((paramBoolean2) && (!bool)) {
       localHashMapInt.put(paramInt, null);
       int j = 0;
-      HashMapIntEntry localHashMapIntEntry1;
+      Object localObject;
+      HashMapIntEntry localHashMapIntEntry;
       for (int k = 0; k < RTSConf.cur.hotKeyEnvs.lst.size(); k++) {
-        localObject = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(k);
-        if ((((HotKeyEnv)localObject).bEnabled) && (((HotKeyEnv)localObject).hotKeyCmdEnv.isEnabled())) {
-          localHashMapIntEntry1 = localHashMapInt.nextEntry(null);
-          while (localHashMapIntEntry1 != null) {
-            HashMapIntEntry localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry1);
-            while (localHashMapIntEntry2 != null) {
-              if ((((HotKeyEnv)localObject).startCmd(paramBoolean1, localHashMapIntEntry1.getKey(), localHashMapIntEntry2.getKey())) || (((HotKeyEnv)localObject).startCmd(paramBoolean1, localHashMapIntEntry2.getKey(), localHashMapIntEntry1.getKey())))
+        HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(k);
+        if ((localHotKeyEnv.bEnabled) && (localHotKeyEnv.hotKeyCmdEnv.isEnabled())) {
+          localObject = localHashMapInt.nextEntry(null);
+          while (localObject != null) {
+            localHashMapIntEntry = localHashMapInt.nextEntry((HashMapIntEntry)localObject);
+            while (localHashMapIntEntry != null) {
+              if ((localHotKeyEnv.startCmd(paramBoolean1, ((HashMapIntEntry)localObject).getKey(), localHashMapIntEntry.getKey())) || (localHotKeyEnv.startCmd(paramBoolean1, localHashMapIntEntry.getKey(), ((HashMapIntEntry)localObject).getKey())))
               {
                 j = 1;
-              }localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry2);
+              }localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
             }
-            localHashMapIntEntry1 = localHashMapInt.nextEntry(localHashMapIntEntry1);
+            localObject = localHashMapInt.nextEntry((HashMapIntEntry)localObject);
           }
         }
       }
       if (j == 0) {
-        for (k = 0; k < RTSConf.cur.hotKeyEnvs.lst.size(); k++) {
-          localObject = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(k);
+        for (int n = 0; n < RTSConf.cur.hotKeyEnvs.lst.size(); n++) {
+          localObject = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(n);
           if ((((HotKeyEnv)localObject).bEnabled) && (((HotKeyEnv)localObject).hotKeyCmdEnv.isEnabled())) {
-            localHashMapIntEntry1 = localHashMapInt.nextEntry(null);
-            while (localHashMapIntEntry1 != null) {
-              ((HotKeyEnv)localObject).startCmd(paramBoolean1, 0, localHashMapIntEntry1.getKey());
-              localHashMapIntEntry1 = localHashMapInt.nextEntry(localHashMapIntEntry1);
+            localHashMapIntEntry = localHashMapInt.nextEntry(null);
+            while (localHashMapIntEntry != null) {
+              ((HotKeyEnv)localObject).startCmd(paramBoolean1, 0, localHashMapIntEntry.getKey());
+              localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
             }
           }
         }
@@ -283,17 +283,17 @@ public class HotKeyEnv
     else if ((!paramBoolean2) && (bool)) {
       Map.Entry localEntry = localHashMapExt.nextEntry(null);
       while (localEntry != null) {
-        HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getKey();
-        if (((localHotKeyCmd.modifierKey == paramInt) || (localHotKeyCmd.key == paramInt)) && (localHotKeyCmd.isRealTime() == paramBoolean1))
-          removed.add(localHotKeyCmd);
+        HotKeyCmd localHotKeyCmd1 = (HotKeyCmd)localEntry.getKey();
+        if (((localHotKeyCmd1.modifierKey == paramInt) || (localHotKeyCmd1.key == paramInt)) && (localHotKeyCmd1.isRealTime() == paramBoolean1))
+          removed.add(localHotKeyCmd1);
         localEntry = localHashMapExt.nextEntry(localEntry);
       }
       for (int m = 0; m < removed.size(); m++) {
-        localObject = (HotKeyCmd)removed.get(m);
-        localHashMapExt.remove(localObject);
-        RTSConf.cur.hotKeyCmdEnvs.post((HotKeyCmd)localObject, false, true);
-        ((HotKeyCmd)localObject).stop();
-        RTSConf.cur.hotKeyCmdEnvs.post((HotKeyCmd)localObject, false, false);
+        HotKeyCmd localHotKeyCmd2 = (HotKeyCmd)removed.get(m);
+        localHashMapExt.remove(localHotKeyCmd2);
+        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd2, false, true);
+        localHotKeyCmd2.stop();
+        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd2, false, false);
       }
       removed.clear();
       localHashMapInt.remove(paramInt);

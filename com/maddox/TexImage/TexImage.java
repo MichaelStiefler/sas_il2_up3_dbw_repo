@@ -266,7 +266,7 @@ public class TexImage
     for (int j = 0; j < this.sy; j++) for (int i = 0; i < this.sx; i++)
         if (this.BPP >= 1)
         {
-          int tmp120_119 = ((j * this.sx + i) * this.BPP); int k = tmp120_119; arrayOfFloat[0] += (this.image[tmp120_119] & 0xFF);
+          int tmp110_109 = ((j * this.sx + i) * this.BPP); int k = tmp110_109; arrayOfFloat[0] += (this.image[tmp110_109] & 0xFF);
           if (this.BPP > 1) arrayOfFloat[1] += (this.image[(k + 1)] & 0xFF);
           if (this.BPP > 2) arrayOfFloat[2] += (this.image[(k + 2)] & 0xFF);
           if (this.BPP <= 3) continue; arrayOfFloat[3] += (this.image[(k + 3)] & 0xFF);
@@ -286,6 +286,8 @@ public class TexImage
     TexImage localTexImage;
     int i1;
     int j;
+    int n;
+    int i;
     switch (this.type) { default:
       throw new Exception("scaleHalf(): type of image not supported");
     case 6407:
@@ -294,10 +296,8 @@ public class TexImage
     case 32856:
       k = this.sx / 2; m = this.sy / 2;
       localTexImage = new TexImage(this, 0, 0, k, m);
-      for (j = i1 = 0; j < m; )
-      {
-        int n;
-        for (int i = n = 0; i < k; n += 2) {
+      for (j = i1 = 0; j < m; i1 += 2) {
+        for (i = n = 0; i < k; n += 2) {
           localTexImage.R(i, j, intR(n, i1) + intR(n + 1, i1) + intR(n, i1 + 1) + intR(n + 1, i1 + 1) >> 2);
 
           localTexImage.G(i, j, intG(n, i1) + intG(n + 1, i1) + intG(n, i1 + 1) + intG(n + 1, i1 + 1) >> 2);
@@ -312,22 +312,23 @@ public class TexImage
 
             i++;
           }
-        j++; i1 += 2; continue;
-
-        k = this.sx / 2; m = this.sy / 2;
-        localTexImage = new TexImage(this, 0, 0, k, m);
-        for (j = i1 = 0; j < m; i1 += 2) {
-          for (i = n = 0; i < k; n += 2) {
-            localTexImage.I(i, j, intI(n, i1) + intI(n + 1, i1) + intI(n, i1 + 1) + intI(n + 1, i1 + 1) >> 2);
-
-            i++;
-          }
-          j++;
-        }
+        j++;
       }
 
+      break;
     case 6406:
     case 6409:
+      k = this.sx / 2; m = this.sy / 2;
+      localTexImage = new TexImage(this, 0, 0, k, m);
+      for (j = i1 = 0; j < m; i1 += 2) {
+        for (i = n = 0; i < k; n += 2) {
+          localTexImage.I(i, j, intI(n, i1) + intI(n + 1, i1) + intI(n, i1 + 1) + intI(n + 1, i1 + 1) >> 2);
+
+          i++;
+        }
+        j++;
+      }
+
     }
 
     this.image = localTexImage.image; localTexImage.image = null;
@@ -421,7 +422,7 @@ public class TexImage
           if (i2 > 255) i2 = 255;
           this.image[n] = (byte)(i2 & i4);
           i1 = i2 &= i5;
-          int tmp176_175 = (i1 * 3 >> 3); i1 = tmp176_175; error[j] = (tmp176_175 + i3);
+          int tmp161_160 = (i1 * 3 >> 3); i1 = tmp161_160; error[j] = (tmp161_160 + i3);
           i3 = i2 - i1 - i1 + (1262562454 >> RND & 0x1);
           if (++RND >= 31) RND = 0;
           n += this.BPP;

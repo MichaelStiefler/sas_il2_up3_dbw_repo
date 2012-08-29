@@ -546,14 +546,14 @@ public class GMatrix
       if (d1 == 0.0D)
         return 0.0D;
       d3 = d2 / d1;
-      if (Math.abs(d3) <= 4.9E-324D)
+      if (Math.abs(d3) <= Double.MIN_VALUE)
         return d1;
       return d1 * Math.sqrt(1.0D + d3 * d3);
     }
     if (d2 == 0.0D)
       return 0.0D;
     double d3 = d1 / d2;
-    if (Math.abs(d3) <= 4.9E-324D)
+    if (Math.abs(d3) <= Double.MIN_VALUE)
       return d2;
     return d2 * Math.sqrt(1.0D + d3 * d3);
   }
@@ -645,7 +645,7 @@ public class GMatrix
         }
         for (n = i3; n < d1; n++)
         {
-          double tmp1110_1109 = 0.0D; arrayOfDouble2[(n * d1 + k)] = tmp1110_1109; arrayOfDouble2[(k * d1 + n)] = tmp1110_1109;
+          double tmp1104_1103 = 0.0D; arrayOfDouble2[(n * d1 + k)] = tmp1104_1103; arrayOfDouble2[(k * d1 + n)] = tmp1104_1103;
         }
       }
       arrayOfDouble2[(k * d1 + k)] = 1.0D;
@@ -666,8 +666,9 @@ public class GMatrix
           for (i2 = k; i2 < i; i2++) arrayOfDouble1[(i2 * i + n)] += d4 * arrayOfDouble1[(i2 * i + k)];
         }
         for (n = k; n < i; n++) arrayOfDouble1[(n * i + k)] *= d5; 
+      } else {
+        for (n = k; n < i; n++) arrayOfDouble1[(n * i + k)] = 0.0D; 
       }
-      for (n = k; n < i; n++) arrayOfDouble1[(n * i + k)] = 0.0D;
       arrayOfDouble1[(k * i + k)] += 1.0D;
     }
     for (int i2 = d1 - 1; i2 >= 0; i2--) {
@@ -706,8 +707,7 @@ public class GMatrix
         if (i3 == i2) {
           if (d11 >= 0.0D) break;
           paramGMatrix2.setDiag(i2, -d11);
-          for (n = 0; n < d1; n++) arrayOfDouble2[(n * d1 + i2)] = (-arrayOfDouble2[(n * d1 + i2)]);
-
+          for (n = 0; n < d1; n++) arrayOfDouble2[(n * d1 + i2)] = (-arrayOfDouble2[(n * d1 + i2)]); break;
         }
 
         if (m == 30) {
@@ -801,29 +801,28 @@ public class GMatrix
     for (int m = 0; m < i; m++)
     {
       double d3;
-      int i3;
       for (int i1 = 0; i1 < m; i1++) {
         d3 = arrayOfDouble[(i1 * i + m)];
-        for (i3 = 0; i3 < i1; i3++) {
-          if ((arrayOfDouble[(i1 * i + i3)] != 0.0D) && (arrayOfDouble[(i3 * i + m)] != 0.0D))
-            d3 -= arrayOfDouble[(i1 * i + i3)] * arrayOfDouble[(i3 * i + m)];
+        for (i2 = 0; i2 < i1; i2++) {
+          if ((arrayOfDouble[(i1 * i + i2)] != 0.0D) && (arrayOfDouble[(i2 * i + m)] != 0.0D))
+            d3 -= arrayOfDouble[(i1 * i + i2)] * arrayOfDouble[(i2 * i + m)];
         }
         arrayOfDouble[(i1 * i + m)] = d3;
       }
       double d1 = 0.0D;
       int n = m;
       double d2;
-      for (i1 = m; i1 < i; i1++) {
-        d3 = arrayOfDouble[(i1 * i + m)];
-        for (i3 = 0; i3 < m; i3++) {
-          if ((arrayOfDouble[(i1 * i + i3)] != 0.0D) && (arrayOfDouble[(i3 * i + m)] != 0.0D))
-            d3 -= arrayOfDouble[(i1 * i + i3)] * arrayOfDouble[(i3 * i + m)];
+      for (int i2 = m; i2 < i; i2++) {
+        d3 = arrayOfDouble[(i2 * i + m)];
+        for (int i3 = 0; i3 < m; i3++) {
+          if ((arrayOfDouble[(i2 * i + i3)] != 0.0D) && (arrayOfDouble[(i3 * i + m)] != 0.0D))
+            d3 -= arrayOfDouble[(i2 * i + i3)] * arrayOfDouble[(i3 * i + m)];
         }
-        arrayOfDouble[(i1 * i + m)] = d3;
+        arrayOfDouble[(i2 * i + m)] = d3;
         d2 = Math.abs(d3);
         if (d2 >= d1) {
           d1 = d2;
-          n = i1;
+          n = i2;
         }
       }
 
@@ -838,8 +837,8 @@ public class GMatrix
 
       if (m != i - 1) {
         d2 = 1.0D / arrayOfDouble[(m * i + m)];
-        for (int i2 = m + 1; i2 < i; i2++) {
-          arrayOfDouble[(i2 * i + m)] *= d2;
+        for (int i4 = m + 1; i4 < i; i4++) {
+          arrayOfDouble[(i4 * i + m)] *= d2;
         }
       }
     }

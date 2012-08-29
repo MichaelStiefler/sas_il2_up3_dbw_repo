@@ -111,13 +111,13 @@ public class AsciiBitSet
         int i3 = 1 << (j & 0xFF);
         if ((n & 1 << i1) != 0)
         {
-          int tmp104_102 = i2;
-          byte[] tmp104_101 = paramArrayOfByte; tmp104_101[tmp104_102] = (byte)(tmp104_101[tmp104_102] | i3);
+          int tmp90_88 = i2;
+          byte[] tmp90_87 = paramArrayOfByte; tmp90_87[tmp90_88] = (byte)(tmp90_87[tmp90_88] | i3);
         }
         else
         {
-          int tmp117_115 = i2;
-          byte[] tmp117_114 = paramArrayOfByte; tmp117_114[tmp117_115] = (byte)(tmp117_114[tmp117_115] & (i3 ^ 0xFFFFFFFF));
+          int tmp103_101 = i2;
+          byte[] tmp103_100 = paramArrayOfByte; tmp103_100[tmp103_101] = (byte)(tmp103_100[tmp103_101] & (i3 ^ 0xFFFFFFFF));
         }
         i1++;
       }

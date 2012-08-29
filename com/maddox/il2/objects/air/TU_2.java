@@ -6,7 +6,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.Property;
 
 public abstract class TU_2 extends Scheme2a
@@ -37,39 +36,39 @@ public abstract class TU_2 extends Scheme2a
 
     if ((paramShot.chunkName.startsWith("WingLMid")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("WingRMid")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 3, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 3, 1);
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 2, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 2, 1);
     if ((paramShot.chunkName.startsWith("Engine1")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("Engine2")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 1, 1);
     }
     super.msgShot(paramShot);
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 0:
       break;
     case 1:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 2:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[2].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
     }
   }
 
@@ -97,7 +96,7 @@ public abstract class TU_2 extends Scheme2a
   {
     super.rareAction(paramFloat, paramBoolean);
 
-    if (this.FM.getAltitude() < 3000.0F) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F) {
       hierMesh().chunkVisible("HMask1_D0", false);
       hierMesh().chunkVisible("HMask2_D0", false);
       hierMesh().chunkVisible("HMask3_D0", false);

@@ -18,9 +18,9 @@ public abstract class HotKeyCmdTrackIRAngles extends HotKeyCmd
   }
 
   public final void doAngles() {
-    this.bActive = true;
+    this.jdField_bActive_of_type_Boolean = true;
     angles(this._yaw, this._pitch, this._roll);
-    this.bActive = false;
+    this.jdField_bActive_of_type_Boolean = false;
   }
 
   public HotKeyCmdTrackIRAngles(boolean paramBoolean, String paramString) {

@@ -38,13 +38,13 @@ public class KI_43_IIKAI extends KI_43
     Property.set(localClass, "cockpitClass", CockpitKI_43_IIKAI.class);
     Property.set(localClass, "LOSElevation", 0.4252F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 9, 9, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 9, 9, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50s_jap 250", "MGunBrowning50s_jap 250", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50s_jap 250", "MGunBrowning50s_jap 250", null, null, null, null });
 
-    weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning50s_jap 250", "MGunBrowning50s_jap 250", "PylonKI43PLN1", "PylonKI43PLN1", "BombGun250kgJ", "BombGun250kgJ" });
+    Aircraft.weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning50s_jap 250", "MGunBrowning50s_jap 250", "PylonKI43PLN1", "PylonKI43PLN1", "BombGun250kgJ", "BombGun250kgJ" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

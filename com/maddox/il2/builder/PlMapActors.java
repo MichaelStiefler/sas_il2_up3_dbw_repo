@@ -15,7 +15,6 @@ import com.maddox.gwindow.GWindowMenu;
 import com.maddox.gwindow.GWindowMenuBarItem;
 import com.maddox.gwindow.GWindowMenuItem;
 import com.maddox.gwindow.GWindowMenuPopUp;
-import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
@@ -165,12 +164,12 @@ public class PlMapActors extends Plugin
 
   public void mapLoaded() {
     deleteAll();
-    builder.deleteAll();
+    Plugin.builder.deleteAll();
     Engine.drawEnv().resetGameClear();
     Engine.drawEnv().resetGameCreate();
     if (World.cur().statics != null)
       World.cur().statics.resetGame();
-    if (!builder.isLoadedLandscape()) return;
+    if (!Plugin.builder.isLoadedLandscape()) return;
     load(staticFileName());
 
     Statics.trim();
@@ -204,7 +203,7 @@ public class PlMapActors extends Plugin
       this._clipSpawns.clear();
       this._clipAirdroms.clear();
       this._clipLoc.clear();
-      this._clipP0.x = (this._clipP0.y = this._clipP0.z = 0.0D);
+      this._clipP0.jdField_x_of_type_Double = (this._clipP0.jdField_y_of_type_Double = this._clipP0.jdField_z_of_type_Double = 0.0D);
     } else {
       this.landMapT = new TexImage();
       this.landMapH = new TexImage();
@@ -233,28 +232,26 @@ public class PlMapActors extends Plugin
         k = localDataInputStream.readInt();
       }
       int m = 0;
-      float f7;
-      Object localObject3;
+      float f5;
       for (int n = 0; n < k; n++) {
-        int i2 = localDataInputStream.readInt();
-        int i4 = localDataInputStream.readInt();
-        int i6 = localDataInputStream.readInt();
-        int i7 = localDataInputStream.readInt();
+        int i1 = localDataInputStream.readInt();
+        int i3 = localDataInputStream.readInt();
+        int i5 = localDataInputStream.readInt();
         int i8 = localDataInputStream.readInt();
-        f7 = localDataInputStream.readFloat();
+        int i10 = localDataInputStream.readInt();
+        f5 = localDataInputStream.readFloat();
 
         if ((paramBoolean1) && (!paramBoolean2)) {
-          localObject3 = new Bridge(m++, i8, i2, i4, i6, i7, f7);
-          Property.set(localObject3, "builderSpawn", "");
-          PlMapLoad.bridgeActors.add(localObject3);
+          Bridge localBridge = new Bridge(m++, i10, i1, i3, i5, i8, f5);
+          Property.set(localBridge, "builderSpawn", "");
+          PlMapLoad.bridgeActors.add(localBridge);
         }
       }
+      float f3;
       float f4;
-      float f5;
       Object localObject1;
-      int i5;
-      int i9;
-      int i10;
+      int i7;
+      int i12;
       if (j != 0) {
         k = localDataInputStream.readInt();
         if (k > 0) {
@@ -264,24 +261,24 @@ public class PlMapActors extends Plugin
           }
           k = localDataInputStream.readInt();
           while (k-- > 0) {
-            int i1 = localDataInputStream.readInt();
+            int i2 = localDataInputStream.readInt();
             float f1 = localDataInputStream.readFloat();
             float f2 = localDataInputStream.readFloat();
+            f3 = localDataInputStream.readFloat();
             f4 = localDataInputStream.readFloat();
             f5 = localDataInputStream.readFloat();
             float f6 = localDataInputStream.readFloat();
-            f7 = localDataInputStream.readFloat();
-            localLoc1.set(f1, f2, f4, f5, f6, f7);
-            localObject3 = (ActorSpawn)Spawn.get(i1);
-            if (localObject3 != null)
+            localLoc1.set(f1, f2, f3, f4, f5, f6);
+            ActorSpawn localActorSpawn = (ActorSpawn)Spawn.get(i2);
+            if (localActorSpawn != null)
               if (paramBoolean2) {
                 Loc localLoc3 = new Loc(localLoc1);
-                this._clipSpawns.add(localObject3);
+                this._clipSpawns.add(localActorSpawn);
                 this._clipLoc.add(localLoc3);
                 this._clipP0.add(localLoc3.getPoint());
                 i++;
               } else {
-                insert((ActorSpawn)localObject3, localLoc1, false);
+                insert(localActorSpawn, localLoc1, false);
               }
           }
         }
@@ -290,29 +287,29 @@ public class PlMapActors extends Plugin
       {
         k = localDataInputStream.readInt();
         localObject1 = null;
-        int i3;
+        int i4;
         if (k > 0) {
           localObject1 = new ActorSpawn[k];
-          for (i3 = 0; i3 < k; i3++) {
+          for (i4 = 0; i4 < k; i4++) {
             String str3 = localDataInputStream.readUTF();
-            localObject1[i3] = ((ActorSpawn)Spawn.get_WithSoftClass(str3));
+            localObject1[i4] = ((ActorSpawn)Spawn.get_WithSoftClass(str3));
           }
           k = localDataInputStream.readInt();
           while (k-- > 0) {
-            i3 = localDataInputStream.readInt();
-            float f3 = localDataInputStream.readFloat();
+            int i6 = localDataInputStream.readInt();
+            f3 = localDataInputStream.readFloat();
             f4 = localDataInputStream.readFloat();
             f5 = localDataInputStream.readFloat();
             localLoc1.set(f3, f4, 0.0D, f5, 0.0F, 0.0F);
-            if ((i3 < localObject1.length) && (localObject1[i3] != null)) {
+            if ((i6 < localObject1.length) && (localObject1[i6] != null)) {
               if (paramBoolean2) {
                 Loc localLoc2 = new Loc(localLoc1);
-                this._clipSpawns.add(localObject1[i3]);
+                this._clipSpawns.add(localObject1[i6]);
                 this._clipLoc.add(localLoc2);
                 this._clipP0.add(localLoc2.getPoint());
                 i++;
               } else {
-                insert(localObject1[i3], localLoc1, false);
+                insert(localObject1[i6], localLoc1, false);
               }
             }
           }
@@ -321,36 +318,36 @@ public class PlMapActors extends Plugin
         k = localDataInputStream.readInt();
         if (k > 0) {
           localObject1 = new ActorSpawn[k];
-          for (i3 = 0; i3 < k; i3++) {
+          for (i4 = 0; i4 < k; i4++) {
             String str4 = localDataInputStream.readUTF();
-            localObject1[i3] = ((ActorSpawn)Spawn.get_WithSoftClass(str4));
+            localObject1[i4] = ((ActorSpawn)Spawn.get_WithSoftClass(str4));
           }
-          i3 = localDataInputStream.readInt();
-          while (i3-- > 0) {
-            i5 = localDataInputStream.readInt();
-            f4 = (i5 & 0xFFFF) * 200.0F;
-            f5 = (i5 >> 16 & 0xFFFF) * 200.0F;
-            i9 = localDataInputStream.readInt();
-            while (i9-- > 0) {
-              i10 = localDataInputStream.readInt();
-              int i11 = localDataInputStream.readInt();
-              int i12 = i10 & 0x7FFF;
-              if ((i12 < localObject1.length) && (localObject1[i12] != null)) {
-                int i13 = (short)(i10 >> 16);
-                int i14 = (short)(i11 & 0xFFFF);
-                int i15 = (short)(i11 >> 16 & 0xFFFF);
-                float f8 = i13 * 360.0F / 32000.0F;
-                float f9 = i14 * 200.0F / 32000.0F + f4;
-                float f10 = i15 * 200.0F / 32000.0F + f5;
-                localLoc1.set(f9, f10, 0.0D, -f8, 0.0F, 0.0F);
+          i7 = localDataInputStream.readInt();
+          while (i7-- > 0) {
+            int i9 = localDataInputStream.readInt();
+            f4 = (i9 & 0xFFFF) * 200.0F;
+            f5 = (i9 >> 16 & 0xFFFF) * 200.0F;
+            i12 = localDataInputStream.readInt();
+            while (i12-- > 0) {
+              int i13 = localDataInputStream.readInt();
+              int i14 = localDataInputStream.readInt();
+              int i15 = i13 & 0x7FFF;
+              if ((i15 < localObject1.length) && (localObject1[i15] != null)) {
+                int i16 = (short)(i13 >> 16);
+                int i17 = (short)(i14 & 0xFFFF);
+                int i18 = (short)(i14 >> 16 & 0xFFFF);
+                float f7 = i16 * 360.0F / 32000.0F;
+                float f8 = i17 * 200.0F / 32000.0F + f4;
+                float f9 = i18 * 200.0F / 32000.0F + f5;
+                localLoc1.set(f8, f9, 0.0D, -f7, 0.0F, 0.0F);
                 if (paramBoolean2) {
                   Loc localLoc4 = new Loc(localLoc1);
-                  this._clipSpawns.add(localObject1[i12]);
+                  this._clipSpawns.add(localObject1[i15]);
                   this._clipLoc.add(localLoc4);
                   this._clipP0.add(localLoc4.getPoint());
                   i++;
                 } else {
-                  insert(localObject1[i12], localLoc1, false);
+                  insert(localObject1[i15], localLoc1, false);
                 }
               }
             }
@@ -360,20 +357,20 @@ public class PlMapActors extends Plugin
 
       if (localDataInputStream.available() > 0)
       {
-        localObject1 = (PlMapAirdrome)getPlugin("MapAirdrome");
+        localObject1 = (PlMapAirdrome)Plugin.getPlugin("MapAirdrome");
         Point3d localPoint3d = new Point3d();
-        for (i5 = 0; i5 < 3; i5++) {
+        for (i7 = 0; i7 < 3; i7++) {
           k = localDataInputStream.readInt();
           while (k-- > 0) {
-            PathAirdrome localPathAirdrome = new PathAirdrome(Plugin.builder.pathes, i5);
+            PathAirdrome localPathAirdrome = new PathAirdrome(Plugin.builder.pathes, i7);
             Property.set(localPathAirdrome, "builderPlugin", localObject1);
-            localPathAirdrome.drawing(((PlMapAirdrome)localObject1).mView.bChecked);
+            localPathAirdrome.drawing(((PlMapAirdrome)localObject1).mView.jdField_bChecked_of_type_Boolean);
             Object localObject2 = null;
-            i9 = localDataInputStream.readInt();
-            for (i10 = 0; i10 < i9; i10++) {
+            int i11 = localDataInputStream.readInt();
+            for (i12 = 0; i12 < i11; i12++) {
               localPoint3d.set(localDataInputStream.readFloat(), localDataInputStream.readFloat(), 0.0D);
-              localPoint3d.z = (Engine.land().HQ(localPoint3d.x, localPoint3d.y) + 0.2D);
-              localObject2 = new PAirdrome(localPathAirdrome, (PPoint)localObject2, localPoint3d, i5);
+              localPoint3d.jdField_z_of_type_Double = (Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) + 0.2D);
+              localObject2 = new PAirdrome(localPathAirdrome, (PPoint)localObject2, localPoint3d, i7);
               Property.set(localObject2, "builderPlugin", localObject1);
               Property.set(localObject2, "builderSpawn", "");
               if (paramBoolean2) {
@@ -397,26 +394,25 @@ public class PlMapActors extends Plugin
       String str1 = "Actors load from '" + paramString + "' FAILED: " + localException2.getMessage();
       System.out.println(str1);
       localException2.printStackTrace();
-      builder.tip(str1);
+      Plugin.builder.tip(str1);
     }
     if ((paramBoolean2) && (i > 0)) {
-      this._clipP0.x /= i; this._clipP0.y /= i; this._clipP0.z /= i;
+      this._clipP0.jdField_x_of_type_Double /= i; this._clipP0.jdField_y_of_type_Double /= i; this._clipP0.jdField_z_of_type_Double /= i;
       paste();
     }
   }
 
   public void save() {
     save(staticFileName());
-    String str2;
     if ((this.bTMapChanged) || (this.bBridgeChanged)) {
       int i = PlMapLoad.bridgeActors.size();
       TexImage localTexImage = this.landMapT;
       for (int j = 0; j < i; j++) {
-        Bridge localBridge = (Bridge)PlMapLoad.bridgeActors.get(j);
-        int k = localBridge.__x1;
-        int m = localBridge.__y1;
-        int n = localBridge.__x2;
-        int i1 = localBridge.__y2;
+        localObject = (Bridge)PlMapLoad.bridgeActors.get(j);
+        int k = ((Bridge)localObject).__x1;
+        int m = ((Bridge)localObject).__y1;
+        int n = ((Bridge)localObject).__x2;
+        int i1 = ((Bridge)localObject).__y2;
         int i2 = n - k;
         if (i2 < 0) i2 = -1;
         if (i2 > 0) i2 = 1;
@@ -432,13 +428,13 @@ public class PlMapActors extends Plugin
           m += i3;
         }
       }
-      str2 = "maps/" + PlMapLoad.mapDirName() + "/" + World.land().config.typeMap;
+      Object localObject = "maps/" + PlMapLoad.mapDirName() + "/" + World.land().config.typeMap;
       try {
-        localTexImage.SaveTGA(str2);
+        localTexImage.SaveTGA((String)localObject);
         this.bTMapChanged = false;
       } catch (Exception localException2) {
-        String str3 = "Type map '" + str2 + "' save FAILED: " + localException2.getMessage();
-        System.out.println(str3); builder.tip(str3);
+        String str3 = "Type map '" + (String)localObject + "' save FAILED: " + localException2.getMessage();
+        System.out.println(str3); Plugin.builder.tip(str3);
       }
     }
     if (this.bHMapChanged) {
@@ -447,11 +443,11 @@ public class PlMapActors extends Plugin
         this.landMapH.SaveTGA(str1);
         this.bHMapChanged = false;
       } catch (Exception localException1) {
-        str2 = "Height map '" + str1 + "' save FAILED: " + localException1.getMessage();
-        System.out.println(str2); builder.tip(str2);
+        String str2 = "Height map '" + str1 + "' save FAILED: " + localException1.getMessage();
+        System.out.println(str2); Plugin.builder.tip(str2);
       }
     }
-    doSave((SectFile)null);
+    Plugin.doSave((SectFile)null);
   }
 
   public void saveAs(String paramString) {
@@ -493,7 +489,7 @@ public class PlMapActors extends Plugin
       int n = 0;
       Map.Entry localEntry = this.allActors.nextEntry(null);
       String str2;
-      Object localObject3;
+      Object localObject2;
       while (localEntry != null) {
         localObject1 = (Actor)localEntry.getKey();
         if (Actor.isValid((Actor)localObject1)) {
@@ -510,21 +506,21 @@ public class PlMapActors extends Plugin
               this._saveClsMap.put(str2, new Integer(n));
               n++;
             }
-            localObject3 = ((Actor)localObject1).pos.getAbsPoint();
-            localHashMapXY16List.put((int)(((Point3d)localObject3).y / 200.0D), (int)(((Point3d)localObject3).x / 200.0D), localObject1);
+            localObject2 = ((Actor)localObject1).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+            localHashMapXY16List.put((int)(((Point3d)localObject2).jdField_y_of_type_Double / 200.0D), (int)(((Point3d)localObject2).jdField_x_of_type_Double / 200.0D), localObject1);
           }
         }
         localEntry = this.allActors.nextEntry(localEntry);
       }
-      Object localObject2;
-      int i4;
+      Object localObject3;
+      int i5;
       if (k > 0) {
         localObject1 = new String[k];
         localEntry = this._saveCls0Map.nextEntry(null);
         while (localEntry != null) {
           str2 = (String)localEntry.getKey();
-          localObject3 = (Integer)localEntry.getValue();
-          localObject1[localObject3.intValue()] = str2;
+          localObject2 = (Integer)localEntry.getValue();
+          localObject1[localObject2.intValue()] = str2;
           localEntry = this._saveCls0Map.nextEntry(localEntry);
         }
         localDataOutputStream.writeInt(k);
@@ -537,12 +533,12 @@ public class PlMapActors extends Plugin
           if (Actor.isValid((Actor)localObject2)) {
             localObject3 = getFullClassName((Actor)localObject2);
             if (this._saveCls0Map.containsKey(localObject3)) {
-              i4 = ((Integer)this._saveCls0Map.get(localObject3)).intValue();
-              Point3d localPoint3d1 = ((Actor)localObject2).pos.getAbsPoint();
-              Orient localOrient1 = ((Actor)localObject2).pos.getAbsOrient();
-              localDataOutputStream.writeInt(i4);
-              localDataOutputStream.writeFloat((float)localPoint3d1.x);
-              localDataOutputStream.writeFloat((float)localPoint3d1.y);
+              i5 = ((Integer)this._saveCls0Map.get(localObject3)).intValue();
+              Point3d localPoint3d1 = ((Actor)localObject2).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+              Orient localOrient1 = ((Actor)localObject2).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
+              localDataOutputStream.writeInt(i5);
+              localDataOutputStream.writeFloat((float)localPoint3d1.jdField_x_of_type_Double);
+              localDataOutputStream.writeFloat((float)localPoint3d1.jdField_y_of_type_Double);
               localDataOutputStream.writeFloat(localOrient1.azimut());
             }
           }
@@ -551,49 +547,49 @@ public class PlMapActors extends Plugin
       } else {
         localDataOutputStream.writeInt(0);
       }
-      Object localObject5;
+      Object localObject4;
       if (n > 0) {
         localObject1 = new String[n];
         localEntry = this._saveClsMap.nextEntry(null);
         while (localEntry != null) {
-          localObject2 = (String)localEntry.getKey();
-          localObject3 = (Integer)localEntry.getValue();
-          localObject1[localObject3.intValue()] = localObject2;
+          String str3 = (String)localEntry.getKey();
+          localObject2 = (Integer)localEntry.getValue();
+          localObject1[localObject2.intValue()] = str3;
           localEntry = this._saveClsMap.nextEntry(localEntry);
         }
         localDataOutputStream.writeInt(n);
         for (int i2 = 0; i2 < n; i2++) {
           localDataOutputStream.writeUTF(localObject1[i2]);
         }
-        i2 = 0;
+        i3 = 0;
         localObject3 = localHashMapXY16List.allKeys();
         localDataOutputStream.writeInt(localObject3.length);
-        for (i4 = 0; i4 < localObject3.length; i4++) {
-          int i6 = localHashMapXY16List.key2x(localObject3[i4]);
-          int i7 = localHashMapXY16List.key2y(localObject3[i4]);
-          float f1 = i6 * 200.0F;
-          float f2 = i7 * 200.0F;
-          localDataOutputStream.writeInt(i7 << 16 | i6);
-          localObject5 = localHashMapXY16List.get(i7, i6);
-          int i10 = ((List)localObject5).size();
-          i2 += i10;
-          localDataOutputStream.writeInt(i10);
-          for (int i11 = 0; i11 < i10; i11++) {
-            Actor localActor2 = (Actor)((List)localObject5).get(i11);
-            String str3 = getFullClassName(localActor2);
-            int i12 = ((Integer)this._saveClsMap.get(str3)).intValue();
-            Point3d localPoint3d3 = localActor2.pos.getAbsPoint();
-            Orient localOrient2 = localActor2.pos.getAbsOrient();
-            int i13 = i12 & 0x7FFF;
+        for (i5 = 0; i5 < localObject3.length; i5++) {
+          int i7 = localHashMapXY16List.key2x(localObject3[i5]);
+          int i8 = localHashMapXY16List.key2y(localObject3[i5]);
+          float f1 = i7 * 200.0F;
+          float f2 = i8 * 200.0F;
+          localDataOutputStream.writeInt(i8 << 16 | i7);
+          localObject4 = localHashMapXY16List.get(i8, i7);
+          int i11 = ((List)localObject4).size();
+          i3 += i11;
+          localDataOutputStream.writeInt(i11);
+          for (int i12 = 0; i12 < i11; i12++) {
+            Actor localActor2 = (Actor)((List)localObject4).get(i12);
+            String str4 = getFullClassName(localActor2);
+            int i13 = ((Integer)this._saveClsMap.get(str4)).intValue();
+            Point3d localPoint3d3 = localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+            Orient localOrient2 = localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
+            int i14 = i13 & 0x7FFF;
             float f3 = localOrient2.getYaw() % 360.0F;
-            i13 |= (int)(f3 * 32000.0F / 360.0F) << 16;
-            int i14 = (int)((localPoint3d3.x - f1) * 32000.0D / 200.0D) & 0xFFFF | (int)((localPoint3d3.y - f2) * 32000.0D / 200.0D) << 16;
+            i14 |= (int)(f3 * 32000.0F / 360.0F) << 16;
+            int i15 = (int)((localPoint3d3.jdField_x_of_type_Double - f1) * 32000.0D / 200.0D) & 0xFFFF | (int)((localPoint3d3.jdField_y_of_type_Double - f2) * 32000.0D / 200.0D) << 16;
 
-            localDataOutputStream.writeInt(i13);
             localDataOutputStream.writeInt(i14);
+            localDataOutputStream.writeInt(i15);
           }
         }
-        System.out.println("Saved actors: " + i2 + " blocks: " + localObject3.length);
+        System.out.println("Saved actors: " + i3 + " blocks: " + localObject3.length);
       } else {
         localDataOutputStream.writeInt(0);
       }
@@ -603,32 +599,31 @@ public class PlMapActors extends Plugin
       this._saveClsMap.clear();
 
       Object localObject1 = { 0, 0, 0 };
-      Object[] arrayOfObject = builder.pathes.getOwnerAttached();
-      Object localObject4;
+      Object[] arrayOfObject = Plugin.builder.pathes.getOwnerAttached();
       for (int i3 = 0; i3 < arrayOfObject.length; i3++) {
-        Actor localActor1 = (Actor)arrayOfObject[i3];
-        if (localActor1 == null) break;
-        if ((localActor1 instanceof PathAirdrome)) {
-          localObject4 = (PathAirdrome)localActor1;
-          localObject1[((PathAirdrome)localObject4)._iType] += 1;
+        localObject3 = (Actor)arrayOfObject[i3];
+        if (localObject3 == null) break;
+        if ((localObject3 instanceof PathAirdrome)) {
+          PathAirdrome localPathAirdrome1 = (PathAirdrome)localObject3;
+          localObject1[localPathAirdrome1._iType] += 1;
         }
       }
-      for (i3 = 0; i3 < 3; i3++) {
-        localDataOutputStream.writeInt(localObject1[i3]);
-        arrayOfObject = builder.pathes.getOwnerAttached();
-        for (int i5 = 0; i5 < arrayOfObject.length; i5++) {
-          localObject4 = (Actor)arrayOfObject[i5];
-          if (localObject4 == null) break;
-          if ((localObject4 instanceof PathAirdrome)) {
-            PathAirdrome localPathAirdrome = (PathAirdrome)localObject4;
-            if (localPathAirdrome._iType == i3) {
-              int i8 = localPathAirdrome.points();
-              localDataOutputStream.writeInt(i8);
-              for (int i9 = 0; i9 < i8; i9++) {
-                localObject5 = localPathAirdrome.point(i9);
-                Point3d localPoint3d2 = ((PPoint)localObject5).pos.getAbsPoint();
-                localDataOutputStream.writeFloat((float)localPoint3d2.x);
-                localDataOutputStream.writeFloat((float)localPoint3d2.y);
+      for (int i4 = 0; i4 < 3; i4++) {
+        localDataOutputStream.writeInt(localObject1[i4]);
+        arrayOfObject = Plugin.builder.pathes.getOwnerAttached();
+        for (int i6 = 0; i6 < arrayOfObject.length; i6++) {
+          Actor localActor1 = (Actor)arrayOfObject[i6];
+          if (localActor1 == null) break;
+          if ((localActor1 instanceof PathAirdrome)) {
+            PathAirdrome localPathAirdrome2 = (PathAirdrome)localActor1;
+            if (localPathAirdrome2._iType == i4) {
+              int i9 = localPathAirdrome2.points();
+              localDataOutputStream.writeInt(i9);
+              for (int i10 = 0; i10 < i9; i10++) {
+                localObject4 = localPathAirdrome2.point(i10);
+                Point3d localPoint3d2 = ((PPoint)localObject4).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+                localDataOutputStream.writeFloat((float)localPoint3d2.jdField_x_of_type_Double);
+                localDataOutputStream.writeFloat((float)localPoint3d2.jdField_y_of_type_Double);
               }
             }
           }
@@ -638,7 +633,7 @@ public class PlMapActors extends Plugin
       localDataOutputStream.close();
     } catch (Exception localException) {
       String str1 = "Actors save to '" + paramString + "' FAILED: " + localException.getMessage();
-      System.out.println(str1); builder.tip(str1);
+      System.out.println(str1); Plugin.builder.tip(str1);
     }
   }
 
@@ -722,9 +717,9 @@ public class PlMapActors extends Plugin
         int k = getFingerOfFullClassName(localActor);
         for (int m = 0; m < arrayOfItem.length; m++) {
           if (k == arrayOfItem[m].fingerOfFullClassName) {
-            Point3d localPoint3d = localActor.pos.getAbsPoint();
-            Orient localOrient = localActor.pos.getAbsOrient();
-            paramSectFile.lineAdd(i, "spawn", arrayOfItem[m].fullClassName + " POSP " + (float)localPoint3d.x + " " + (float)localPoint3d.y + " " + (float)localPoint3d.z + " POSO " + localOrient.azimut() + " " + localOrient.tangage() + " " + localOrient.kren());
+            Point3d localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+            Orient localOrient = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
+            paramSectFile.lineAdd(i, "spawn", arrayOfItem[m].fullClassName + " POSP " + (float)localPoint3d.jdField_x_of_type_Double + " " + (float)localPoint3d.jdField_y_of_type_Double + " " + (float)localPoint3d.jdField_z_of_type_Double + " POSO " + localOrient.azimut() + " " + localOrient.tangage() + " " + localOrient.kren());
 
             break;
           }
@@ -742,14 +737,14 @@ public class PlMapActors extends Plugin
       while (localObject1 != null) {
         localObject2 = (Actor)((Map.Entry)localObject1).getKey();
         if (Actor.isValid((Actor)localObject2)) {
-          Point3d localPoint3d = ((Actor)localObject2).pos.getAbsPoint();
-          localObject3 = ((Actor)localObject2).pos.getAbsOrient();
-          localPrintWriter.println("spawn " + getFullClassName((Actor)localObject2) + " POSP " + (float)localPoint3d.x + " " + (float)localPoint3d.y + " " + (float)localPoint3d.z + " POSO " + ((Orient)localObject3).azimut() + " " + ((Orient)localObject3).tangage() + " " + ((Orient)localObject3).kren());
+          Point3d localPoint3d = ((Actor)localObject2).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+          localObject3 = ((Actor)localObject2).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
+          localPrintWriter.println("spawn " + getFullClassName((Actor)localObject2) + " POSP " + (float)localPoint3d.jdField_x_of_type_Double + " " + (float)localPoint3d.jdField_y_of_type_Double + " " + (float)localPoint3d.jdField_z_of_type_Double + " POSO " + ((Orient)localObject3).azimut() + " " + ((Orient)localObject3).tangage() + " " + ((Orient)localObject3).kren());
         }
 
         localObject1 = this.allActors.nextEntry((Map.Entry)localObject1);
       }
-      Object localObject2 = builder.pathes.getOwnerAttached();
+      Object localObject2 = Plugin.builder.pathes.getOwnerAttached();
       for (int i = 0; i < localObject2.length; i++) {
         localObject3 = (Actor)localObject2[i];
         if (localObject3 == null) break;
@@ -761,48 +756,48 @@ public class PlMapActors extends Plugin
       localPrintWriter.close();
     } catch (Exception localException) {
       Object localObject1 = "Actors save as spawns to '" + paramString + "' FAILED: " + localException.getMessage();
-      System.out.println((String)localObject1); builder.tip((String)localObject1);
+      System.out.println((String)localObject1); Plugin.builder.tip((String)localObject1);
     }
   }
 
   public void renderMap2D()
   {
     Actor localActor2;
-    if (!builder.isFreeView()) {
-      Actor localActor1 = builder.selectedActor();
-      Actor[] arrayOfActor = builder.selectedActors();
+    if (!Plugin.builder.isFreeView()) {
+      Actor localActor1 = Plugin.builder.selectedActor();
+      Actor[] arrayOfActor = Plugin.builder.selectedActors();
       IconDraw.setColor(255, 0, 0, 255);
       for (int k = 0; k < arrayOfActor.length; k++) {
         localActor2 = arrayOfActor[k];
         if (localActor2 == null) break;
-        if (builder.project2d(localActor2.pos.getAbsPoint(), this.p2d)) {
+        if (Plugin.builder.project2d(localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2d)) {
           if (localActor2 == localActor1) {
             IconDraw.setColor(255, 255, 0, 255);
-            IconDraw.render(localActor2, this.p2d.x, this.p2d.y);
+            IconDraw.render(localActor2, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
             IconDraw.setColor(255, 0, 0, 255);
           } else {
-            IconDraw.render(localActor2, this.p2d.x, this.p2d.y);
+            IconDraw.render(localActor2, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
           }
         }
       }
     }
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length))
     {
       return;
     }if ((i == this.type.length - 2) && (this.matLabel != null)) {
       Point3d localPoint3d = null;
-      if (builder.isFreeView()) {
-        localActor2 = builder.selectedActor();
+      if (Plugin.builder.isFreeView()) {
+        localActor2 = Plugin.builder.selectedActor();
         if (!Actor.isValid(localActor2))
           return;
-        localPoint3d = localActor2.pos.getAbsPoint();
+        localPoint3d = localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
       } else {
-        localPoint3d = builder.posScreenToLand(builder.mousePosX, builder.mousePosY, 0.0D, 0.1D);
+        localPoint3d = Plugin.builder.posScreenToLand(Plugin.builder.mousePosX, Plugin.builder.mousePosY, 0.0D, 0.1D);
       }
-      int m = World.land().WORLD2PIXX(localPoint3d.x);
-      int n = World.land().WORLD2PIXY(localPoint3d.y);
+      int m = World.land().WORLD2PIXX(localPoint3d.jdField_x_of_type_Double);
+      int n = World.land().WORLD2PIXY(localPoint3d.jdField_y_of_type_Double);
       int i1 = this.squareTile;
       i1 |= 1;
       int i2 = m - i1 / 2;
@@ -816,16 +811,16 @@ public class PlMapActors extends Plugin
             double d1 = World.land().PIX2WORLDX(i7);
             double d2 = World.land().PIX2WORLDY(i6);
             double d3 = World.land().HQ(d1, d2);
-            builder.project2d(d1, d2, d3, this.p2d);
-            IconDraw.render(this.matLabel, this.p2d.x, this.p2d.y);
+            Plugin.builder.project2d(d1, d2, d3, this.p2d);
+            IconDraw.render(this.matLabel, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
           }
     }
   }
 
   public void changeType()
   {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if (i == this.type.length - 4) {
       this.newCurType = i;
       if (!setCurBridge()) return;
@@ -841,10 +836,10 @@ public class PlMapActors extends Plugin
     }
     if ((i < 0) || (i >= this.type.length - 4))
       return;
-    Object localObject = builder.selectedActor();
-    Loc localLoc = ((Actor)localObject).pos.getAbs();
+    Object localObject = Plugin.builder.selectedActor();
+    Loc localLoc = ((Actor)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
     insert(this.type[i].item[j].spawn_, localLoc, true);
-    if (builder.selectedActor() != localObject) {
+    if (Plugin.builder.selectedActor() != localObject) {
       this.allActors.remove(localObject);
       ((Actor)localObject).destroy();
     }
@@ -853,8 +848,8 @@ public class PlMapActors extends Plugin
   }
 
   public void changeType(boolean paramBoolean1, boolean paramBoolean2) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if (i == this.type.length - 4) {
       this.newCurType = i;
       if (paramBoolean2) bridgeType(paramBoolean1); else
@@ -862,15 +857,17 @@ public class PlMapActors extends Plugin
       return;
     }
 
-    int k = getFingerOfFullClassName(builder.selectedActor());
+    int k = getFingerOfFullClassName(Plugin.builder.selectedActor());
     if ((i < 0) || (i >= this.type.length - 4))
       i = 0;
     if ((j < 0) || (j >= this.type[i].item.length) || (this.type[i].item[j].fingerOfFullClassName != k))
     {
       int n = 0;
       for (int m = 0; m < this.type.length; m++) {
-        for (n = 0; (n < this.type[m].item.length) && 
-          (this.type[m].item[n].fingerOfFullClassName != k); n++);
+        for (n = 0; n < this.type[m].item.length; n++) {
+          if (this.type[m].item[n].fingerOfFullClassName == k)
+            break;
+        }
         if (n != this.type[m].item.length)
           break;
       }
@@ -904,10 +901,10 @@ public class PlMapActors extends Plugin
       }
     }
 
-    Actor localActor = builder.selectedActor();
-    Loc localLoc = localActor.pos.getAbs();
+    Actor localActor = Plugin.builder.selectedActor();
+    Loc localLoc = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
     insert(this.type[i].item[j].spawn_, localLoc, true);
-    if (builder.selectedActor() != localActor) {
+    if (Plugin.builder.selectedActor() != localActor) {
       localActor.destroy();
     }
     this.newCurType = i;
@@ -926,12 +923,12 @@ public class PlMapActors extends Plugin
       IconDraw.create(localActor);
       if (localActor.icon == null)
         localActor.icon = IconDraw.get("icons/unknown.mat");
-      builder.align(localActor);
+      Plugin.builder.align(localActor);
       Property.set(localActor, "builderSpawn", "");
       Property.set(localActor, "builderPlugin", this);
       this.allActors.put(localActor, null);
       if (paramBoolean)
-        builder.setSelected(localActor);
+        Plugin.builder.setSelected(localActor);
       return localActor;
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
@@ -947,8 +944,8 @@ public class PlMapActors extends Plugin
   }
 
   public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length))
     {
       return;
@@ -958,8 +955,8 @@ public class PlMapActors extends Plugin
     } else if (i == this.type.length - 3)
     {
       this.bTMapChanged = true;
-      int k = World.land().WORLD2PIXX(paramLoc.getPoint().x);
-      int m = World.land().WORLD2PIXY(paramLoc.getPoint().y);
+      int k = World.land().WORLD2PIXX(paramLoc.getPoint().jdField_x_of_type_Double);
+      int m = World.land().WORLD2PIXY(paramLoc.getPoint().jdField_y_of_type_Double);
       int n = 0;
       if (j == 0) n = 64;
       if (j == 1) n = 32;
@@ -985,14 +982,14 @@ public class PlMapActors extends Plugin
 
   private void peekHeight(Point3d paramPoint3d)
   {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     this.fillHeight = this.landMapH.intI(i, j);
-    builder.tip("Peek Height code = " + this.fillHeight);
+    Plugin.builder.tip("Peek Height code = " + this.fillHeight);
   }
   private void fillHeight(Point3d paramPoint3d, int paramInt) {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     paramInt |= 1;
     int k = i - paramInt / 2;
     int m = j - paramInt / 2;
@@ -1014,8 +1011,8 @@ public class PlMapActors extends Plugin
   }
 
   private void setHeight(Point3d paramPoint3d) {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     setHeight(i, j);
   }
   private void incHeight(int paramInt1, int paramInt2, int paramInt3) {
@@ -1031,13 +1028,13 @@ public class PlMapActors extends Plugin
   }
 
   private void incHeight(Point3d paramPoint3d, int paramInt) {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     incHeight(i, j, paramInt);
   }
   private void incHeight(Point3d paramPoint3d, int paramInt1, int paramInt2) {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     paramInt1 |= 1;
     int k = i - paramInt1 / 2;
     int m = j - paramInt1 / 2;
@@ -1050,8 +1047,8 @@ public class PlMapActors extends Plugin
   }
 
   public void msgMouseMove(int paramInt1, int paramInt2, int paramInt3) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length))
     {
       return;
@@ -1061,19 +1058,19 @@ public class PlMapActors extends Plugin
       Point3d localPoint3d;
       if (paramInt3 == 0) {
         if (HotKeyCmdEnv.env(Builder.envName).get("fill").isActive()) {
-          localActor = builder.selectedActor();
+          localActor = Plugin.builder.selectedActor();
           if (Actor.isValid(localActor)) {
-            localPoint3d = localActor.pos.getAbsPoint();
+            localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
             peekHeight(localPoint3d);
             fillHeight(localPoint3d, this.squareTile);
           }
         }
         return;
       }
-      if (builder.isFreeView()) {
-        localActor = builder.selectedActor();
+      if (Plugin.builder.isFreeView()) {
+        localActor = Plugin.builder.selectedActor();
         if (Actor.isValid(localActor)) {
-          localPoint3d = localActor.pos.getAbsPoint();
+          localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
           if (j == 0) {
             incHeight(localPoint3d, this.squareTile, paramInt3 > 0 ? 1 : -1);
           } else {
@@ -1118,8 +1115,8 @@ public class PlMapActors extends Plugin
   }
 
   private void blurHeight5(Point3d paramPoint3d, int paramInt) {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     paramInt |= 1;
     int k = i - paramInt / 2;
     int m = j - paramInt / 2;
@@ -1146,8 +1143,8 @@ public class PlMapActors extends Plugin
 
   private void changeTiles(Point3d paramPoint3d, int paramInt1, int paramInt2)
   {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     paramInt2 |= 1;
     int k = i - paramInt2 / 2;
     int m = j - paramInt2 / 2;
@@ -1160,8 +1157,8 @@ public class PlMapActors extends Plugin
   }
 
   private void changeTile(Point3d paramPoint3d, int paramInt) {
-    int i = World.land().WORLD2PIXX(paramPoint3d.x);
-    int j = World.land().WORLD2PIXY(paramPoint3d.y);
+    int i = World.land().WORLD2PIXX(paramPoint3d.jdField_x_of_type_Double);
+    int j = World.land().WORLD2PIXY(paramPoint3d.jdField_y_of_type_Double);
     changeTile(paramPoint3d, i, j, paramInt);
   }
   private void changeTile(Point3d paramPoint3d, int paramInt1, int paramInt2, int paramInt3) {
@@ -1247,8 +1244,8 @@ public class PlMapActors extends Plugin
   }
 
   private void _doFill(Point3d paramPoint3d) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length))
     {
       return;
@@ -1257,16 +1254,16 @@ public class PlMapActors extends Plugin
     changeTile(paramPoint3d, j);
   }
   private void _doFill() {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length))
     {
       return;
     }if ((i != this.type.length - 1) && (i != this.type.length - 2))
     {
       return;
-    }this._startFill.z = 0.0D;
-    this._endFill.z = 0.0D;
+    }this._startFill.jdField_z_of_type_Double = 0.0D;
+    this._endFill.jdField_z_of_type_Double = 0.0D;
     double d = this._endFill.distance(this._startFill);
     int k = (int)Math.round(d / 200.0D) + 1;
     float f = 1.0F / k;
@@ -1288,8 +1285,8 @@ public class PlMapActors extends Plugin
   public void endFill(Point3d paramPoint3d) {
   }
   public void fillPopUpMenu(GWindowMenuPopUp paramGWindowMenuPopUp, Point3d paramPoint3d) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length) || ((i != this.type.length - 2) && (i != this.type.length - 1)))
     {
       paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, "&Paste From File...", null) {
@@ -1299,33 +1296,33 @@ public class PlMapActors extends Plugin
       return;
     }
     GWindowMenuItem localGWindowMenuItem1 = paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, "&Fill Tile Size", null));
-    localGWindowMenuItem1.subMenu = ((GWindowMenu)(GWindowMenu)localGWindowMenuItem1.create(new GWindowMenu()));
+    localGWindowMenuItem1.subMenu = ((GWindowMenu)localGWindowMenuItem1.create(new GWindowMenu()));
     localGWindowMenuItem1.subMenu.close(false);
     GWindowMenuItem localGWindowMenuItem2 = localGWindowMenuItem1.subMenu.addItem(new GWindowMenuItem(localGWindowMenuItem1.subMenu, "&1", null) {
       public void execute() { PlMapActors.access$102(PlMapActors.this, 1);
       }
     });
-    localGWindowMenuItem2.bChecked = (this.squareTile == 1);
+    localGWindowMenuItem2.jdField_bChecked_of_type_Boolean = (this.squareTile == 1);
     localGWindowMenuItem2 = localGWindowMenuItem1.subMenu.addItem(new GWindowMenuItem(localGWindowMenuItem1.subMenu, "&3", null) {
       public void execute() { PlMapActors.access$102(PlMapActors.this, 3);
       }
     });
-    localGWindowMenuItem2.bChecked = (this.squareTile == 3);
+    localGWindowMenuItem2.jdField_bChecked_of_type_Boolean = (this.squareTile == 3);
     localGWindowMenuItem2 = localGWindowMenuItem1.subMenu.addItem(new GWindowMenuItem(localGWindowMenuItem1.subMenu, "&5", null) {
       public void execute() { PlMapActors.access$102(PlMapActors.this, 5);
       }
     });
-    localGWindowMenuItem2.bChecked = (this.squareTile == 5);
+    localGWindowMenuItem2.jdField_bChecked_of_type_Boolean = (this.squareTile == 5);
     localGWindowMenuItem2 = localGWindowMenuItem1.subMenu.addItem(new GWindowMenuItem(localGWindowMenuItem1.subMenu, "&7", null) {
       public void execute() { PlMapActors.access$102(PlMapActors.this, 7);
       }
     });
-    localGWindowMenuItem2.bChecked = (this.squareTile == 7);
+    localGWindowMenuItem2.jdField_bChecked_of_type_Boolean = (this.squareTile == 7);
     localGWindowMenuItem2 = localGWindowMenuItem1.subMenu.addItem(new GWindowMenuItem(localGWindowMenuItem1.subMenu, "&9", null) {
       public void execute() { PlMapActors.access$102(PlMapActors.this, 9);
       }
     });
-    localGWindowMenuItem2.bChecked = (this.squareTile == 9);
+    localGWindowMenuItem2.jdField_bChecked_of_type_Boolean = (this.squareTile == 9);
 
     paramGWindowMenuPopUp.addItem("-", null);
     paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, "&Paste From File...", null) {
@@ -1342,8 +1339,8 @@ public class PlMapActors extends Plugin
   }
 
   public void delete(Loc paramLoc) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < 0) || (i >= this.type.length) || (j < 0) || (j >= this.type[i].item.length))
     {
       return;
@@ -1352,8 +1349,8 @@ public class PlMapActors extends Plugin
       if (i == this.type.length - 3)
       {
         this.bTMapChanged = true;
-        int k = World.land().WORLD2PIXX(paramLoc.getPoint().x);
-        int m = World.land().WORLD2PIXY(paramLoc.getPoint().y);
+        int k = World.land().WORLD2PIXX(paramLoc.getPoint().jdField_x_of_type_Double);
+        int m = World.land().WORLD2PIXY(paramLoc.getPoint().jdField_y_of_type_Double);
         int n = 0;
         if (j == 0) n = 64;
         if (j == 1) n = 32;
@@ -1367,13 +1364,13 @@ public class PlMapActors extends Plugin
   }
 
   public void cut() {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     copy(false);
-    Actor[] arrayOfActor = builder.selectedActors();
+    Actor[] arrayOfActor = Plugin.builder.selectedActors();
     for (int i = 0; i < arrayOfActor.length; i++) {
       Actor localActor = arrayOfActor[i];
       if (localActor == null) break;
-      if ((Actor.isValid(localActor)) && (builder.isMiltiSelected(localActor))) {
+      if ((Actor.isValid(localActor)) && (Plugin.builder.isMiltiSelected(localActor))) {
         if ((localActor instanceof PAirdrome)) {
           PathAirdrome localPathAirdrome = (PathAirdrome)localActor.getOwner();
           if (localPathAirdrome.pointIndx((PAirdrome)localActor) == 0)
@@ -1383,26 +1380,26 @@ public class PlMapActors extends Plugin
         }
       }
     }
-    builder.selectedActorsValidate();
-    builder.repaint();
+    Plugin.builder.selectedActorsValidate();
+    Plugin.builder.repaint();
   }
   public void copy(boolean paramBoolean) {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     this._clipSpawns.clear();
     this._clipAirdroms.clear();
     this._clipLoc.clear();
     int i = 0;
-    this._clipP0.x = (this._clipP0.y = this._clipP0.z = 0.0D);
-    Actor[] arrayOfActor = builder.selectedActors();
+    this._clipP0.jdField_x_of_type_Double = (this._clipP0.jdField_y_of_type_Double = this._clipP0.jdField_z_of_type_Double = 0.0D);
+    Actor[] arrayOfActor = Plugin.builder.selectedActors();
     for (int j = 0; j < arrayOfActor.length; j++) {
       Actor localActor = arrayOfActor[j];
       if (localActor == null) break;
-      if ((Actor.isValid(localActor)) && (builder.isMiltiSelected(localActor)))
+      if ((Actor.isValid(localActor)) && (Plugin.builder.isMiltiSelected(localActor)))
       {
         Object localObject;
         if ((localActor instanceof PAirdrome)) {
           localObject = (PAirdrome)localActor;
-          this._clipP0.add(localActor.pos.getAbsPoint());
+          this._clipP0.add(localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
           i++;
           PathAirdrome localPathAirdrome = (PathAirdrome)((PAirdrome)localObject).getOwner();
           if (localPathAirdrome.pointIndx((PPoint)localObject) == 0)
@@ -1410,7 +1407,7 @@ public class PlMapActors extends Plugin
         }
         else {
           localObject = new Loc();
-          localActor.pos.getAbs((Loc)localObject);
+          localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs((Loc)localObject);
           this._clipSpawns.add(Spawn.get_WithSoftClass(getFullClassName(localActor)));
           this._clipLoc.add(localObject);
           this._clipP0.add(((Loc)localObject).getPoint());
@@ -1418,44 +1415,43 @@ public class PlMapActors extends Plugin
         }
       }
     }
-    if (i > 1) { this._clipP0.x /= i; this._clipP0.y /= i; this._clipP0.z /= i; }
+    if (i > 1) { this._clipP0.jdField_x_of_type_Double /= i; this._clipP0.jdField_y_of_type_Double /= i; this._clipP0.jdField_z_of_type_Double /= i; }
     if (paramBoolean)
-      builder.selectActorsClear();
-    builder.repaint();
+      Plugin.builder.selectActorsClear();
+    Plugin.builder.repaint();
   }
   public void paste() {
-    if (builder.isFreeView()) return;
-    builder.selectActorsClear();
+    if (Plugin.builder.isFreeView()) return;
+    Plugin.builder.selectActorsClear();
     int i = this._clipSpawns.size();
     if ((i == 0) && (this._clipAirdroms.size() == 0)) return;
-    Point3d localPoint3d1 = builder.mouseWorldPos();
-    Loc localLoc = new Loc();
+    Point3d localPoint3d1 = Plugin.builder.mouseWorldPos();
+    Loc localLoc1 = new Loc();
     Point3d localPoint3d2 = new Point3d();
-    Object localObject1;
-    Object localObject2;
+    Object localObject;
     for (int j = 0; j < i; j++) {
-      localObject1 = (Loc)this._clipLoc.get(j);
-      localPoint3d2.sub(((Loc)localObject1).getPoint(), this._clipP0);
+      Loc localLoc2 = (Loc)this._clipLoc.get(j);
+      localPoint3d2.sub(localLoc2.getPoint(), this._clipP0);
       localPoint3d2.add(localPoint3d1);
-      localLoc.set(localPoint3d2, ((Loc)localObject1).getOrient());
-      localObject2 = insert((ActorSpawn)this._clipSpawns.get(j), localLoc, false);
-      builder.selectActorsAdd((Actor)localObject2);
+      localLoc1.set(localPoint3d2, localLoc2.getOrient());
+      localObject = insert((ActorSpawn)this._clipSpawns.get(j), localLoc1, false);
+      Plugin.builder.selectActorsAdd((Actor)localObject);
     }
     i = this._clipAirdroms.size();
-    for (j = 0; j < i; j++) {
-      localObject1 = (String)this._clipAirdroms.get(j);
-      localObject2 = (PathAirdrome)CmdEnv.top().exec((String)localObject1);
-      int k = ((PathAirdrome)localObject2).points();
-      for (int m = 0; m < k; m++) {
-        PPoint localPPoint = ((PathAirdrome)localObject2).point(m);
-        localPPoint.pos.getAbs(localPoint3d2);
+    for (int k = 0; k < i; k++) {
+      localObject = (String)this._clipAirdroms.get(k);
+      PathAirdrome localPathAirdrome = (PathAirdrome)CmdEnv.top().exec((String)localObject);
+      int m = localPathAirdrome.points();
+      for (int n = 0; n < m; n++) {
+        PPoint localPPoint = localPathAirdrome.point(n);
+        localPPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d2);
         localPoint3d2.sub(this._clipP0);
         localPoint3d2.add(localPoint3d1);
-        localPPoint.pos.setAbs(localPoint3d2); localPPoint.pos.reset();
-        builder.selectActorsAdd(localPPoint);
+        localPPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d2); localPPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
+        Plugin.builder.selectActorsAdd(localPPoint);
       }
     }
-    builder.repaint();
+    Plugin.builder.repaint();
   }
 
   private void pasteFromFile(GWindowRoot paramGWindowRoot)
@@ -1474,33 +1470,32 @@ public class PlMapActors extends Plugin
 
   private void fillComboBox1()
   {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
     for (int i = 0; i < this.type.length; i++) {
-      builder.wSelect.comboBox1.add(this.type[i].name);
+      Plugin.builder.wSelect.comboBox1.add(this.type[i].name);
     }
-    builder.wSelect.comboBox1.setSelected(0, true, false);
+    Plugin.builder.wSelect.comboBox1.setSelected(0, true, false);
   }
   private void fillComboBox2(int paramInt1, int paramInt2) {
     if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
       return;
     }
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt1) {
+      Plugin.builder.wSelect.curFilledType = paramInt1;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.type[paramInt1].item.length; i++) {
-        builder.wSelect.comboBox2.add(this.type[paramInt1].item[i].name);
+        Plugin.builder.wSelect.comboBox2.add(this.type[paramInt1].item[i].name);
       }
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
   }
 
   public void syncSelector() {
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     int i = getFingerOfFullClassName(localActor);
-    int k;
     for (int j = 0; j < this.type.length; j++) {
-      for (k = 0; k < this.type[j].item.length; k++) {
+      for (int k = 0; k < this.type[j].item.length; k++) {
         if (i == this.type[j].item[k].fingerOfFullClassName) {
           fillComboBox2(j, k);
           return;
@@ -1509,29 +1504,29 @@ public class PlMapActors extends Plugin
     }
     if ((localActor instanceof Bridge)) {
       Bridge localBridge = (Bridge)localActor;
-      k = localBridge.type();
-      int m = 0;
-      switch (k) { case 2:
-        m = 0; break;
+      int m = localBridge.type();
+      int n = 0;
+      switch (m) { case 2:
+        n = 0; break;
       case 1:
-        m = 1; break;
+        n = 1; break;
       case 0:
-        m = 2;
+        n = 2;
       }
-      fillComboBox2(this.type.length - 4, m);
+      fillComboBox2(this.type.length - 4, n);
       return;
     }
   }
 
   public void configure() {
     this.matLabel = Mat.New("icons/label.mat");
-    builder.bMultiSelect = true;
-    if (this.sectFile == null)
+    Plugin.builder.bMultiSelect = true;
+    if (this.jdField_sectFile_of_type_JavaLangString == null)
       throw new RuntimeException("PlMapActors: field 'sectFile' not defined");
-    SectFile localSectFile = new SectFile(this.sectFile, 0);
+    SectFile localSectFile = new SectFile(this.jdField_sectFile_of_type_JavaLangString, 0);
     int i = localSectFile.sections();
     if (i <= 0) {
-      throw new RuntimeException("PlMapActors: file '" + this.sectFile + "' is empty");
+      throw new RuntimeException("PlMapActors: file '" + this.jdField_sectFile_of_type_JavaLangString + "' is empty");
     }
 
     int j = 0;
@@ -1541,59 +1536,59 @@ public class PlMapActors extends Plugin
       }
     }
     if (j <= 0) {
-      throw new RuntimeException("PlMapActors: No type groups in file '" + this.sectFile + "'");
+      throw new RuntimeException("PlMapActors: No type groups in file '" + this.jdField_sectFile_of_type_JavaLangString + "'");
     }
 
     this.type = new Type[j + 4];
-    k = localSectFile.sectionIndex("***");
-    for (int m = 0; m < j; m++) {
-      int n = (m >= j - 1 ? i : localSectFile.sectionIndex("***", k + 1)) - 1 - k;
+    int m = localSectFile.sectionIndex("***");
+    for (int n = 0; n < j; n++) {
+      int i1 = (n >= j - 1 ? i : localSectFile.sectionIndex("***", m + 1)) - 1 - m;
 
-      if (n <= 0) {
-        throw new RuntimeException("PlMapActors: Empty group in file '" + this.sectFile + "'");
+      if (i1 <= 0) {
+        throw new RuntimeException("PlMapActors: Empty group in file '" + this.jdField_sectFile_of_type_JavaLangString + "'");
       }
 
-      int i1 = localSectFile.varIndex(k, "Title");
-      if (i1 < 0) {
-        throw new RuntimeException("PlMapActors: No 'Title' in file '" + this.sectFile + "', section '***' (#" + k + ")");
+      int i2 = localSectFile.varIndex(m, "Title");
+      if (i2 < 0) {
+        throw new RuntimeException("PlMapActors: No 'Title' in file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '***' (#" + m + ")");
       }
 
-      String str1 = localSectFile.value(k, i1);
+      String str1 = localSectFile.value(m, i2);
 
-      Item[] arrayOfItem2 = new Item[n];
-      for (int i2 = 0; i2 < n; i2++) {
-        String str2 = localSectFile.sectionName(k + 1 + i2);
-        int i3 = str2.indexOf(' ');
-        if (i3 > 0) {
-          str2 = str2.substring(0, i3);
+      Item[] arrayOfItem2 = new Item[i1];
+      for (int i3 = 0; i3 < i1; i3++) {
+        String str2 = localSectFile.sectionName(m + 1 + i3);
+        int i4 = str2.indexOf(' ');
+        if (i4 > 0) {
+          str2 = str2.substring(0, i4);
         }
 
         String str3 = localSectFile.get(str2, "Title");
         if (str3 == null) {
           str3 = localSectFile.get(str2, "equals");
           if (str3 == null) {
-            throw new RuntimeException("PlMapActors: No 'Title' in file '" + this.sectFile + "', section '" + str2 + "'");
+            throw new RuntimeException("PlMapActors: No 'Title' in file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '" + str2 + "'");
           }
 
-          int i4 = localSectFile.sectionIndex(str3);
-          if (i4 < 0) {
-            throw new RuntimeException("PlMapActors: Unknown 'equals' in file '" + this.sectFile + "', section '" + str2 + "'");
+          int i5 = localSectFile.sectionIndex(str3);
+          if (i5 < 0) {
+            throw new RuntimeException("PlMapActors: Unknown 'equals' in file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '" + str2 + "'");
           }
 
-          str5 = localSectFile.sectionName(i4);
+          str5 = localSectFile.sectionName(i5);
           str3 = localSectFile.get(str5, "Title");
           if (str3 == null) {
-            throw new RuntimeException("PlMapActors: No 'Title' in file '" + this.sectFile + "', section '" + str5 + "'");
+            throw new RuntimeException("PlMapActors: No 'Title' in file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '" + str5 + "'");
           }
 
         }
 
         String str4 = str2;
         String str5 = "";
-        int i5 = str2.lastIndexOf('$');
-        if (i5 >= 0) {
-          str4 = str2.substring(0, i5);
-          str5 = str2.substring(i5 + 1);
+        int i6 = str2.lastIndexOf('$');
+        if (i6 >= 0) {
+          str4 = str2.substring(0, i6);
+          str5 = str2.substring(i6 + 1);
         }
 
         Class localClass = null;
@@ -1603,16 +1598,16 @@ public class PlMapActors extends Plugin
           throw new RuntimeException("PlMapActors: class '" + str4 + "' not found");
         }
 
-        if (i5 >= 0)
+        if (i6 >= 0)
           str2 = localClass.getName() + "$" + str5;
         else {
           str2 = localClass.getName();
         }
 
-        arrayOfItem2[i2] = new Item(str3, str2);
+        arrayOfItem2[i3] = new Item(str3, str2);
       }
-      this.type[m] = new Type(str1, arrayOfItem2);
-      k += 1 + n;
+      this.type[n] = new Type(str1, arrayOfItem2);
+      m += 1 + i1;
     }
 
     Item[] arrayOfItem1 = new Item[3];
@@ -1671,7 +1666,7 @@ public class PlMapActors extends Plugin
     while (localEntry != null) {
       Actor localActor = (Actor)localEntry.getKey();
       if ((Actor.isValid(localActor)) && (localActor.isDrawing()))
-        builder.selectActorsAdd(localActor);
+        Plugin.builder.selectActorsAdd(localActor);
       localEntry = this.allActors.nextEntry(localEntry);
     }
   }
@@ -1687,11 +1682,11 @@ public class PlMapActors extends Plugin
       }
       localEntry = this.allActors.nextEntry(localEntry);
     }
-    if ((Actor.isValid(builder.selectedActor())) && (!builder.selectedActor().isDrawing()))
-      builder.setSelected(null);
-    builder.selectedActorsValidate();
-    if (!builder.isFreeView())
-      builder.repaint(); 
+    if ((Actor.isValid(Plugin.builder.selectedActor())) && (!Plugin.builder.selectedActor().isDrawing()))
+      Plugin.builder.setSelected(null);
+    Plugin.builder.selectedActorsValidate();
+    if (!Plugin.builder.isFreeView())
+      Plugin.builder.repaint(); 
   }
 
   void viewType(int paramInt, boolean paramBoolean) {
@@ -1705,7 +1700,7 @@ public class PlMapActors extends Plugin
   }
   void viewType(int paramInt) {
     if (paramInt >= this.type.length - 4 - 1) return;
-    viewType(paramInt, this.viewType[paramInt].bChecked);
+    viewType(paramInt, this.viewType[paramInt].jdField_bChecked_of_type_Boolean);
   }
 
   public void viewTypeAll(boolean paramBoolean)
@@ -1713,14 +1708,14 @@ public class PlMapActors extends Plugin
     int i;
     if (paramBoolean)
       for (i = 0; i < this.type.length - 4; i++)
-        if (!this.viewType[i].bChecked) {
-          this.viewType[i].bChecked = true;
+        if (!this.viewType[i].jdField_bChecked_of_type_Boolean) {
+          this.viewType[i].jdField_bChecked_of_type_Boolean = true;
           viewType(i, true);
         }
     else {
       for (i = 0; i < this.type.length - 4; i++)
-        if (this.viewType[i].bChecked) {
-          this.viewType[i].bChecked = false;
+        if (this.viewType[i].jdField_bChecked_of_type_Boolean) {
+          this.viewType[i].jdField_bChecked_of_type_Boolean = false;
           viewType(i, false);
         }
     }
@@ -1730,23 +1725,23 @@ public class PlMapActors extends Plugin
 
   void viewBridge(boolean paramBoolean)
   {
-    builder.conf.bViewBridge = paramBoolean;
-    this.viewBridge.bChecked = builder.conf.bViewBridge;
+    Plugin.builder.conf.bViewBridge = paramBoolean;
+    this.viewBridge.jdField_bChecked_of_type_Boolean = Plugin.builder.conf.bViewBridge;
   }
-  void viewBridge() { viewBridge(!builder.conf.bViewBridge); }
+  void viewBridge() { viewBridge(!Plugin.builder.conf.bViewBridge); }
 
   void viewRunaway(boolean paramBoolean) {
-    builder.conf.bViewRunaway = paramBoolean;
-    this.viewRunaway.bChecked = builder.conf.bViewRunaway;
+    Plugin.builder.conf.bViewRunaway = paramBoolean;
+    this.viewRunaway.jdField_bChecked_of_type_Boolean = Plugin.builder.conf.bViewRunaway;
   }
-  void viewRunaway() { viewRunaway(!builder.conf.bViewRunaway);
+  void viewRunaway() { viewRunaway(!Plugin.builder.conf.bViewRunaway);
   }
 
   public void createGUI()
   {
     fillComboBox1();
     fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -1756,37 +1751,37 @@ public class PlMapActors extends Plugin
     });
     this.viewType = new ViewItem[this.type.length];
     for (int i = 0; i < this.type.length - 4; i++) {
-      ViewItem localViewItem = (ViewItem)builder.mDisplayFilter.subMenu.addItem(new ViewItem(i, builder.mDisplayFilter.subMenu, "show " + this.type[i].name, null));
+      ViewItem localViewItem = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, "show " + this.type[i].name, null));
 
-      localViewItem.bChecked = true;
+      localViewItem.jdField_bChecked_of_type_Boolean = true;
       this.viewType[i] = localViewItem;
       viewType(i, true);
     }
-    builder.mDisplayFilter.subMenu.addItem("-", null);
-    this.viewBridge = builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(builder.mDisplayFilter.subMenu, "show Bridge", null) {
+    Plugin.builder.mDisplayFilter.subMenu.addItem("-", null);
+    this.viewBridge = Plugin.builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, "show Bridge", null) {
       public void execute() {
         PlMapActors.this.viewBridge();
       }
     });
-    this.viewBridge.bChecked = builder.conf.bViewBridge;
-    this.viewRunaway = builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(builder.mDisplayFilter.subMenu, "show Runway", null) {
+    this.viewBridge.jdField_bChecked_of_type_Boolean = Plugin.builder.conf.bViewBridge;
+    this.viewRunaway = Plugin.builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, "show Runway", null) {
       public void execute() {
         PlMapActors.this.viewRunaway();
       }
     });
-    this.viewRunaway.bChecked = builder.conf.bViewRunaway;
-    builder.mDisplayFilter.subMenu.addItem("-", null);
-    builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(builder.mDisplayFilter.subMenu, "&Show All", null) {
+    this.viewRunaway.jdField_bChecked_of_type_Boolean = Plugin.builder.conf.bViewRunaway;
+    Plugin.builder.mDisplayFilter.subMenu.addItem("-", null);
+    Plugin.builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, "&Show All", null) {
       public void execute() {
         PlMapActors.this.viewTypeAll(true);
       }
     });
-    builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(builder.mDisplayFilter.subMenu, "&Hide All", null) {
+    Plugin.builder.mDisplayFilter.subMenu.addItem(new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, "&Hide All", null) {
       public void execute() {
         PlMapActors.this.viewTypeAll(false);
       }
     });
-    this.mLoad = builder.mFile.subMenu.addItem(1, new GWindowMenuItem(builder.mFile.subMenu, "Load", null)
+    this.mLoad = Plugin.builder.mFile.subMenu.addItem(1, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Load", null)
     {
       public void execute()
       {
@@ -1798,132 +1793,91 @@ public class PlMapActors extends Plugin
         }
       }
     });
-    this.mSave = builder.mFile.subMenu.addItem(2, new GWindowMenuItem(builder.mFile.subMenu, "Save", null)
+    this.mSave = Plugin.builder.mFile.subMenu.addItem(2, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Save", null)
     {
       public void execute()
       {
         PlMapActors.this.save();
       }
     });
-    builder.mFile.subMenu.addItem(3, "-", null);
-    this.mLoadAs = builder.mFile.subMenu.addItem(4, new GWindowMenuItem(builder.mFile.subMenu, "Load As ...", null)
+    Plugin.builder.mFile.subMenu.addItem(3, "-", null);
+    this.mLoadAs = Plugin.builder.mFile.subMenu.addItem(4, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Load As ...", null)
     {
       public void execute()
       {
-        if (PlMapActors.this.dlgLoadAs == null)
-          PlMapActors.access$502(PlMapActors.this, new GWindowFileOpen(this.root, true, "Load As ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) })
-          {
-            public void result(String paramString) {
-              if (paramString != null)
-                PlMapActors.this.loadAs("maps/" + paramString);
-            }
-          });
+        if (PlMapActors.this.dlgLoadAs == null) {
+          PlMapActors.access$502(PlMapActors.this, new PlMapActors.19(this, this.root, true, "Load As ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) }));
+        }
         else
+        {
           PlMapActors.this.dlgLoadAs.activateWindow();
+        }
       }
     });
-    this.mLoadSpawn = builder.mFile.subMenu.addItem(5, new GWindowMenuItem(builder.mFile.subMenu, "Load Spawn ...", null)
+    this.mLoadSpawn = Plugin.builder.mFile.subMenu.addItem(5, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Load Spawn ...", null)
     {
       public void execute()
       {
-        if (PlMapActors.this.dlgLoadSpawn == null)
-          PlMapActors.access$702(PlMapActors.this, new GWindowFileOpen(this.root, true, "Load Spawn ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) })
-          {
-            public void result(String paramString) {
-              if (paramString != null)
-                PlMapActors.this.loadSpawn("maps/" + paramString);
-            }
-          });
-        else PlMapActors.this.dlgLoadSpawn.activateWindow();
-      }
-    });
-    this.mSaveAs = builder.mFile.subMenu.addItem(6, new GWindowMenuItem(builder.mFile.subMenu, "Save As ...", null)
-    {
-      public void execute()
-      {
-        if (PlMapActors.this.dlgSaveAs == null)
-          PlMapActors.access$902(PlMapActors.this, new GWindowFileSaveAs(this.root, true, "Save As ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) })
-          {
-            public void result(String paramString)
-            {
-              if (paramString != null)
-                PlMapActors.this.saveAs("maps/" + paramString);
-            }
-          });
-        else PlMapActors.this.dlgSaveAs.activateWindow();
-      }
-    });
-    this.mSaveSpawn = builder.mFile.subMenu.addItem(7, new GWindowMenuItem(builder.mFile.subMenu, "Save As Spawn ...", null)
-    {
-      public void execute()
-      {
-        if (PlMapActors.this.dlgSaveSpawn == null)
-          PlMapActors.access$1102(PlMapActors.this, new GWindowFileSaveAs(this.root, true, "Save As Spawn ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) })
-          {
-            public void result(String paramString)
-            {
-              if (paramString != null)
-                PlMapActors.this.saveSpawn("maps/" + paramString);
-            }
-          });
-        else PlMapActors.this.dlgSaveSpawn.activateWindow();
-      }
-    });
-    builder.mFile.subMenu.addItem(8, "-", null);
-    this.mCreateBridges = builder.mFile.subMenu.addItem(9, new GWindowMenuItem(builder.mFile.subMenu, "CreateBridges ...", null)
-    {
-      public void execute()
-      {
-        new GWindowMessageBox(this.root, 20.0F, true, "CreateBridges ...", "Start process creating bridges ?", 1, 0.0F)
+        if (PlMapActors.this.dlgLoadSpawn == null) {
+          PlMapActors.access$702(PlMapActors.this, new PlMapActors.21(this, this.root, true, "Load Spawn ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) }));
+        }
+        else
         {
-          public void result(int paramInt)
-          {
-            if (paramInt == 3) {
-              PlMapActors.this.loadAs(null);
-              PlMapLoad.bDrawNumberBridge = true;
-            }
-          }
-        };
+          PlMapActors.this.dlgLoadSpawn.activateWindow();
+        }
       }
     });
-    builder.mFile.subMenu.addItem(10, "-", null);
-    builder.mFile.subMenu.addItem(11, new GWindowMenuItem(builder.mFile.subMenu, "Clear Roads ...", null)
+    this.mSaveAs = Plugin.builder.mFile.subMenu.addItem(6, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Save As ...", null)
+    {
+      public void execute()
+      {
+        if (PlMapActors.this.dlgSaveAs == null) {
+          PlMapActors.access$902(PlMapActors.this, new PlMapActors.23(this, this.root, true, "Save As ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) }));
+        }
+        else
+        {
+          PlMapActors.this.dlgSaveAs.activateWindow();
+        }
+      }
+    });
+    this.mSaveSpawn = Plugin.builder.mFile.subMenu.addItem(7, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Save As Spawn ...", null)
+    {
+      public void execute()
+      {
+        if (PlMapActors.this.dlgSaveSpawn == null) {
+          PlMapActors.access$1102(PlMapActors.this, new PlMapActors.25(this, this.root, true, "Save As Spawn ...", "maps", new GFileFilter[] { new GFileFilterName("All files", new String[] { "*" }) }));
+        }
+        else
+        {
+          PlMapActors.this.dlgSaveSpawn.activateWindow();
+        }
+      }
+    });
+    Plugin.builder.mFile.subMenu.addItem(8, "-", null);
+    this.mCreateBridges = Plugin.builder.mFile.subMenu.addItem(9, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "CreateBridges ...", null)
+    {
+      public void execute()
+      {
+        new PlMapActors.27(this, this.root, 20.0F, true, "CreateBridges ...", "Start process creating bridges ?", 1, 0.0F);
+      }
+    });
+    Plugin.builder.mFile.subMenu.addItem(10, "-", null);
+    Plugin.builder.mFile.subMenu.addItem(11, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Clear Roads ...", null)
     {
       public void execute() {
-        new GWindowMessageBox(this.root, 20.0F, true, "Clear Roads ...", "Start process clear roads ?", 1, 0.0F)
-        {
-          public void result(int paramInt)
-          {
-            if (paramInt == 3)
-              PlMapActors.this.doClearRoads();
-          }
-        };
+        new PlMapActors.29(this, this.root, 20.0F, true, "Clear Roads ...", "Start process clear roads ?", 1, 0.0F);
       }
     });
-    builder.mFile.subMenu.addItem(12, new GWindowMenuItem(builder.mFile.subMenu, "Remove Roads ...", null)
+    Plugin.builder.mFile.subMenu.addItem(12, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Remove Roads ...", null)
     {
       public void execute() {
-        new GWindowMessageBox(this.root, 20.0F, true, "Remove Roads ...", "Start process remove roads ?", 1, 0.0F)
-        {
-          public void result(int paramInt)
-          {
-            if (paramInt == 3)
-              PlMapActors.this.doRemoveRoads();
-          }
-        };
+        new PlMapActors.31(this, this.root, 20.0F, true, "Remove Roads ...", "Start process remove roads ?", 1, 0.0F);
       }
     });
-    builder.mFile.subMenu.addItem(13, new GWindowMenuItem(builder.mFile.subMenu, "Clear Water ...", null)
+    Plugin.builder.mFile.subMenu.addItem(13, new GWindowMenuItem(Plugin.builder.mFile.subMenu, "Clear Water ...", null)
     {
       public void execute() {
-        new GWindowMessageBox(this.root, 20.0F, true, "Clear Water ...", "Start process clear water ?", 1, 0.0F)
-        {
-          public void result(int paramInt)
-          {
-            if (paramInt == 3)
-              PlMapActors.this.doClearWater();
-          }
-        };
+        new PlMapActors.33(this, this.root, 20.0F, true, "Clear Water ...", "Start process clear water ?", 1, 0.0F);
       }
     });
   }
@@ -2194,20 +2148,20 @@ public class PlMapActors extends Plugin
 
   private void setQuare(int paramInt) {
     this.squareTile = (1 + paramInt * 2);
-    builder.tip("Set Square size = " + this.squareTile);
+    Plugin.builder.tip("Set Square size = " + this.squareTile);
   }
 
   private void setSelected(String paramString, int paramInt1, int paramInt2) {
-    builder.wSelect.comboBox1.setSelected(paramInt1, true, true);
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, true);
-    builder.tip(paramString);
+    Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, true);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, true);
+    Plugin.builder.tip(paramString);
   }
 
   private void bridgeCreate(Loc paramLoc)
   {
-    int i = builder.wSelect.comboBox2.getSelected();
-    int j = World.land().WORLD2PIXX(paramLoc.getPoint().x);
-    int k = World.land().WORLD2PIXY(paramLoc.getPoint().y);
+    int i = Plugin.builder.wSelect.comboBox2.getSelected();
+    int j = World.land().WORLD2PIXX(paramLoc.getPoint().jdField_x_of_type_Double);
+    int k = World.land().WORLD2PIXY(paramLoc.getPoint().jdField_y_of_type_Double);
     int m = 0;
     if (i == 0) m = 64;
     if (i == 1) m = 32;
@@ -2222,9 +2176,9 @@ public class PlMapActors extends Plugin
 
   private boolean setCurBridge()
   {
-    if ((builder.selectedActor() == null) || (!(builder.selectedActor() instanceof Bridge)))
+    if ((Plugin.builder.selectedActor() == null) || (!(Plugin.builder.selectedActor() instanceof Bridge)))
       return false;
-    this.curBridge = ((Bridge)builder.selectedActor());
+    this.curBridge = ((Bridge)Plugin.builder.selectedActor());
     this.indxBridge = PlMapLoad.bridgeActors.indexOf(this.curBridge);
     return (Actor.isValid(this.curBridge)) && (this.indxBridge >= 0);
   }
@@ -2235,8 +2189,8 @@ public class PlMapActors extends Plugin
     localBridge = new Bridge(paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramFloat);
     Property.set(localBridge, "builderSpawn", "");
     PlMapLoad.bridgeActors.set(this.indxBridge, localBridge);
-    builder.setSelected(localBridge);
-    builder.repaint();
+    Plugin.builder.setSelected(localBridge);
+    Plugin.builder.repaint();
     this.bBridgeChanged = true;
   }
 
@@ -2366,8 +2320,8 @@ public class PlMapActors extends Plugin
   }
 
   private void doClearWater() {
-    builder.selectActorsClear();
-    builder.setSelected(null);
+    Plugin.builder.selectActorsClear();
+    Plugin.builder.setSelected(null);
     Landscape localLandscape = World.land();
     ArrayList localArrayList = new ArrayList();
     Map.Entry localEntry = this.allActors.nextEntry(null);
@@ -2375,7 +2329,7 @@ public class PlMapActors extends Plugin
     while (localEntry != null) {
       Actor localActor = (Actor)localEntry.getKey();
       if ((Actor.isValid(localActor)) && ((localActor instanceof ActorMesh))) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
+        Point3d localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
         localObject = ((ActorMesh)localActor).mesh();
         double d1 = 0.0D;
         if ((localObject instanceof HierMesh)) {
@@ -2387,7 +2341,7 @@ public class PlMapActors extends Plugin
           d1 = Math.max(d2, d3);
         }
         d1 /= 2.0D;
-        if ((localLandscape.isWater(localPoint3d.x - d1, localPoint3d.y - d1)) || (localLandscape.isWater(localPoint3d.x - d1, localPoint3d.y + d1)) || (localLandscape.isWater(localPoint3d.x + d1, localPoint3d.y + d1)) || (localLandscape.isWater(localPoint3d.x + d1, localPoint3d.y - d1)))
+        if ((localLandscape.isWater(localPoint3d.jdField_x_of_type_Double - d1, localPoint3d.jdField_y_of_type_Double - d1)) || (localLandscape.isWater(localPoint3d.jdField_x_of_type_Double - d1, localPoint3d.jdField_y_of_type_Double + d1)) || (localLandscape.isWater(localPoint3d.jdField_x_of_type_Double + d1, localPoint3d.jdField_y_of_type_Double + d1)) || (localLandscape.isWater(localPoint3d.jdField_x_of_type_Double + d1, localPoint3d.jdField_y_of_type_Double - d1)))
         {
           localArrayList.add(localActor);
         }
@@ -2403,16 +2357,17 @@ public class PlMapActors extends Plugin
   }
 
   private void doRemoveRoads() {
-    builder.selectActorsClear();
-    builder.setSelected(null);
+    Plugin.builder.selectActorsClear();
+    Plugin.builder.setSelected(null);
     this.bTMapChanged = true;
     Landscape localLandscape = World.land();
     int i = Landscape.getSizeXpix();
     int j = Landscape.getSizeYpix();
     for (int k = 1; k < j - 1; k++) {
       int m = j - 1 - k;
+      int i1;
       for (int n = 1; n < i - 1; n++) {
-        int i1 = this.landMapT.intI(n, m);
+        i1 = this.landMapT.intI(n, m);
         if ((i1 & 0xE0) == 0)
           continue;
         i1 &= -225;
@@ -2420,21 +2375,23 @@ public class PlMapActors extends Plugin
         World.land(); Landscape.setPixelMapT(n, m, i1);
       }
       if (k % 5 == 0) {
-        n = k * 100 / j;
-        RTSConf.cur.mainWindow.setTitle("" + n + "%");
+        i1 = k * 100 / j;
+        RTSConf.cur.mainWindow.setTitle("" + i1 + "%");
       }
     }
     RTSConf.cur.mainWindow.setTitle("100% ");
   }
   private void doClearRoads() {
-    builder.selectActorsClear();
-    builder.setSelected(null);
+    Plugin.builder.selectActorsClear();
+    Plugin.builder.setSelected(null);
     Landscape localLandscape = World.land();
     int i = Landscape.getSizeXpix();
     int j = Landscape.getSizeYpix();
-    for (int k = 1; k < j - 1; k++) {
+    for (int k = 1; k < j - 1; k++)
+    {
+      int n;
       for (int m = 1; m < i - 1; m++) {
-        int n = j - 1 - k;
+        n = j - 1 - k;
         int i1 = this.landMapT.intI(m, n) & 0xE0;
         if (i1 != 0) {
           tryClearRoads(i1, m, k, -1, 1, j);
@@ -2444,8 +2401,8 @@ public class PlMapActors extends Plugin
         }
       }
       if (k % 5 == 0) {
-        m = k * 100 / j;
-        RTSConf.cur.mainWindow.setTitle("" + m + "%");
+        n = k * 100 / j;
+        RTSConf.cur.mainWindow.setTitle("" + n + "%");
       }
     }
     RTSConf.cur.mainWindow.setTitle("100% ");
@@ -2454,22 +2411,22 @@ public class PlMapActors extends Plugin
     int i = paramInt6 - 1 - paramInt3 - paramInt5;
     if ((this.landMapT.intI(paramInt2 + paramInt4, i) & 0xE0 & paramInt1) == 0)
       return;
-    this._clearRoadP0.x = (paramInt2 * 200.0F + 100.0F);
-    this._clearRoadP0.y = ((paramInt3 - 1) * 200.0F + 100.0F);
-    this._clearRoadP0.z = (World.land().HQ(this._clearRoadP0.x, this._clearRoadP0.y) + 1.0D);
-    this._clearRoadP1.x = ((paramInt2 + paramInt4) * 200.0F + 100.0F);
-    this._clearRoadP1.y = ((paramInt3 - 1 + paramInt5) * 200.0F + 100.0F);
-    this._clearRoadP1.z = (World.land().HQ(this._clearRoadP1.x, this._clearRoadP1.y) + 1.0D);
+    this._clearRoadP0.jdField_x_of_type_Double = (paramInt2 * 200.0F + 100.0F);
+    this._clearRoadP0.jdField_y_of_type_Double = ((paramInt3 - 1) * 200.0F + 100.0F);
+    this._clearRoadP0.jdField_z_of_type_Double = (World.land().HQ(this._clearRoadP0.jdField_x_of_type_Double, this._clearRoadP0.jdField_y_of_type_Double) + 1.0D);
+    this._clearRoadP1.jdField_x_of_type_Double = ((paramInt2 + paramInt4) * 200.0F + 100.0F);
+    this._clearRoadP1.jdField_y_of_type_Double = ((paramInt3 - 1 + paramInt5) * 200.0F + 100.0F);
+    this._clearRoadP1.jdField_z_of_type_Double = (World.land().HQ(this._clearRoadP1.jdField_x_of_type_Double, this._clearRoadP1.jdField_y_of_type_Double) + 1.0D);
 
-    Engine.drawEnv().getFiltered(this._clearRoadArray, this._clearRoadP0.x - 100.0D, this._clearRoadP0.y - 100.0D, this._clearRoadP0.x + 100.0D, this._clearRoadP0.y + 100.0D, 15, this._clearRoadFilter);
+    Engine.drawEnv().getFiltered(this._clearRoadArray, this._clearRoadP0.jdField_x_of_type_Double - 100.0D, this._clearRoadP0.jdField_y_of_type_Double - 100.0D, this._clearRoadP0.jdField_x_of_type_Double + 100.0D, this._clearRoadP0.jdField_y_of_type_Double + 100.0D, 15, this._clearRoadFilter);
 
-    Engine.drawEnv().getFiltered(this._clearRoadArray, this._clearRoadP1.x - 100.0D, this._clearRoadP1.y - 100.0D, this._clearRoadP1.x + 100.0D, this._clearRoadP1.y + 100.0D, 15, this._clearRoadFilter);
+    Engine.drawEnv().getFiltered(this._clearRoadArray, this._clearRoadP1.jdField_x_of_type_Double - 100.0D, this._clearRoadP1.jdField_y_of_type_Double - 100.0D, this._clearRoadP1.jdField_x_of_type_Double + 100.0D, this._clearRoadP1.jdField_y_of_type_Double + 100.0D, 15, this._clearRoadFilter);
 
     if (this._clearRoadArray.size() == 0) return;
     for (int j = 0; j < this._clearRoadArray.size(); j++) {
       Actor localActor = (Actor)this._clearRoadArray.get(j);
       if ((this.allActors.containsKey(localActor)) && ((localActor instanceof ActorMesh))) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
+        Point3d localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
         Mesh localMesh = ((ActorMesh)localActor).mesh();
         double d1 = 0.0D;
         if ((localMesh instanceof HierMesh)) {
@@ -2481,7 +2438,7 @@ public class PlMapActors extends Plugin
           double d3 = Math.max(Math.abs(this._clearRoadBound[1]), Math.abs(this._clearRoadBound[4])) + 2.0F;
           d1 = d2 * d2 + d3 * d3;
         }
-        if (intersectLineSphere(this._clearRoadP0.x, this._clearRoadP0.y, this._clearRoadP1.x, this._clearRoadP1.y, localPoint3d.x, localPoint3d.y, d1) < 0.0D)
+        if (intersectLineSphere(this._clearRoadP0.jdField_x_of_type_Double, this._clearRoadP0.jdField_y_of_type_Double, this._clearRoadP1.jdField_x_of_type_Double, this._clearRoadP1.jdField_y_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, d1) < 0.0D)
         {
           continue;
         }
@@ -2525,7 +2482,7 @@ public class PlMapActors extends Plugin
 
   private void doInsertPattern(GWindow paramGWindow)
   {
-    int i = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox2.getSelected();
     int j = tileType(i);
     if (j == -1) {
       System.out.println("Unknown type of ladscape");
@@ -2546,7 +2503,7 @@ public class PlMapActors extends Plugin
 
   private void doRemovePattern(GWindow paramGWindow)
   {
-    int i = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox2.getSelected();
     int j = tileType(i);
     if (j == -1) {
       System.out.println("Unknown type of ladscape");
@@ -2569,26 +2526,26 @@ public class PlMapActors extends Plugin
   {
     int i = 0;
     int j = paramArrayList.size();
-    this._changeOffsetXY.x = ((float)this.PIXEL * paramInt1);
-    this._changeOffsetXY.y = ((float)this.PIXEL * (paramInt2 - 1));
+    this._changeOffsetXY.jdField_x_of_type_Float = ((float)this.PIXEL * paramInt1);
+    this._changeOffsetXY.jdField_y_of_type_Float = ((float)this.PIXEL * (paramInt2 - 1));
     for (int k = 0; k < j; k++) {
       ItemPattern localItemPattern = (ItemPattern)paramArrayList.get(k);
       if (paramInt3 == 0 ? 
-        (localItemPattern.x < this.PIXELD2) && 
-        (localItemPattern.y < this.PIXELD2) : 
+        (localItemPattern.jdField_x_of_type_Float < this.PIXELD2) && 
+        (localItemPattern.jdField_y_of_type_Float < this.PIXELD2) : 
         paramInt3 == 1 ? 
-        (localItemPattern.x > this.PIXELD2) && 
-        (localItemPattern.y < this.PIXELD2) : 
+        (localItemPattern.jdField_x_of_type_Float > this.PIXELD2) && 
+        (localItemPattern.jdField_y_of_type_Float < this.PIXELD2) : 
         paramInt3 == 2 ? 
-        (localItemPattern.x < this.PIXELD2) && 
-        (localItemPattern.y > this.PIXELD2) : 
+        (localItemPattern.jdField_x_of_type_Float < this.PIXELD2) && 
+        (localItemPattern.jdField_y_of_type_Float > this.PIXELD2) : 
         (paramInt3 == 3) && (
-        (localItemPattern.x > this.PIXELD2) || 
-        (localItemPattern.y > this.PIXELD2)))
+        (localItemPattern.jdField_x_of_type_Float > this.PIXELD2) || 
+        (localItemPattern.jdField_y_of_type_Float > this.PIXELD2)))
         continue;
       if (paramBoolean)
       {
-        this._changeLoc.set(localItemPattern.x + this._changeOffsetXY.x, localItemPattern.y + this._changeOffsetXY.y, 0.0D, localItemPattern.getAzimut(), 0.0F, 0.0F);
+        this._changeLoc.set(localItemPattern.jdField_x_of_type_Float + this._changeOffsetXY.jdField_x_of_type_Float, localItemPattern.jdField_y_of_type_Float + this._changeOffsetXY.jdField_y_of_type_Float, 0.0D, localItemPattern.getAzimut(), 0.0F, 0.0F);
 
         insert(localItemPattern.spawn, this._changeLoc, false);
         i++;
@@ -2609,16 +2566,18 @@ public class PlMapActors extends Plugin
   private void changePattern(boolean paramBoolean, String paramString)
   {
     int i = 0;
-    builder.selectActorsClear();
-    builder.setSelected(null);
+    Plugin.builder.selectActorsClear();
+    Plugin.builder.setSelected(null);
     ArrayList[][] arrayOfArrayList = new ArrayList[this.TILE][this.TILE];
     loadPattern(paramString, arrayOfArrayList);
     Landscape localLandscape = World.land();
     int j = Landscape.getSizeXpix();
     int k = Landscape.getSizeYpix();
-    for (int m = 1; m < k - 1; m++) {
+    for (int m = 1; m < k - 1; m++)
+    {
+      int i1;
       for (int n = 1; n < j - 1; n++) {
-        int i1 = k - 1 - m;
+        i1 = k - 1 - m;
         int i2 = Landscape.getPixelMapT(n, i1) & 0x1F;
         if (i2 != this._changedPatternType)
         {
@@ -2639,8 +2598,8 @@ public class PlMapActors extends Plugin
           i += changeOnePattern(localArrayList, paramBoolean, n, m + 1, 3);
       }
       if (m % 5 == 0) {
-        n = m * 100 / k;
-        RTSConf.cur.mainWindow.setTitle("" + n + "% " + i);
+        i1 = m * 100 / k;
+        RTSConf.cur.mainWindow.setTitle("" + i1 + "% " + i);
       }
     }
     RTSConf.cur.mainWindow.setTitle("100% " + i);
@@ -2649,18 +2608,18 @@ public class PlMapActors extends Plugin
       str = " " + i + " pattern objects inserted as static";
     else
       str = " " + i + " pattern objects removed from static";
-    System.out.println(str); builder.tip(str);
+    System.out.println(str); Plugin.builder.tip(str);
   }
 
   public Actor findParrtenActor(ItemPattern paramItemPattern, Point3f paramPoint3f) {
-    double d1 = paramItemPattern.x + paramPoint3f.x;
-    double d2 = paramItemPattern.y + paramPoint3f.y;
+    double d1 = paramItemPattern.jdField_x_of_type_Float + paramPoint3f.jdField_x_of_type_Float;
+    double d2 = paramItemPattern.jdField_y_of_type_Float + paramPoint3f.jdField_y_of_type_Float;
     Map.Entry localEntry = this.allActors.nextEntry(null);
     while (localEntry != null) {
       Actor localActor = (Actor)localEntry.getKey();
       if (Actor.isValid(localActor)) {
-        double d3 = localActor.pos.getAbsPoint().x;
-        double d4 = localActor.pos.getAbsPoint().y;
+        double d3 = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double;
+        double d4 = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double;
         double d5 = (d1 - d3) * (d1 - d3) + (d2 - d4) * (d2 - d4);
         if ((d5 < 1.0D) && 
           (getFingerOfFullClassName(localActor) == paramItemPattern.finger)) {
@@ -2686,8 +2645,10 @@ public class PlMapActors extends Plugin
       }
       int k = 0;
       int m = 0;
+      int i1;
+      float f2;
+      float f3;
       float f4;
-      float f5;
       if (i != 0) {
         for (int n = 0; n < j; n++) {
           localDataInputStream.readInt(); localDataInputStream.readInt();
@@ -2704,14 +2665,14 @@ public class PlMapActors extends Plugin
           j = localDataInputStream.readInt();
           m = j;
           while (j-- > 0) {
-            int i1 = localDataInputStream.readInt();
+            i1 = localDataInputStream.readInt();
             float f1 = localDataInputStream.readFloat();
-            float f2 = localDataInputStream.readFloat();
+            f2 = localDataInputStream.readFloat();
+            f3 = localDataInputStream.readFloat();
             f4 = localDataInputStream.readFloat();
-            f5 = localDataInputStream.readFloat();
+            float f5 = localDataInputStream.readFloat();
             float f6 = localDataInputStream.readFloat();
-            float f7 = localDataInputStream.readFloat();
-            addPattern(i1, f1, f2, f5, paramArrayOfArrayList);
+            addPattern(i1, f1, f2, f4, paramArrayOfArrayList);
           }
         }
       }
@@ -2719,22 +2680,21 @@ public class PlMapActors extends Plugin
         j = localDataInputStream.readInt();
         k = j;
         int[] arrayOfInt = null;
-        int i2;
         if (j > 0) {
           arrayOfInt = new int[j];
-          for (i2 = 0; i2 < j; i2++) {
+          for (i1 = 0; i1 < j; i1++) {
             String str3 = localDataInputStream.readUTF();
-            arrayOfInt[i2] = Finger.Int(str3);
+            arrayOfInt[i1] = Finger.Int(str3);
             Spawn.get_WithSoftClass(str3);
           }
           j = localDataInputStream.readInt();
           m = j;
           while (j-- > 0) {
-            i2 = localDataInputStream.readInt();
-            float f3 = localDataInputStream.readFloat();
+            int i2 = localDataInputStream.readInt();
+            f2 = localDataInputStream.readFloat();
+            f3 = localDataInputStream.readFloat();
             f4 = localDataInputStream.readFloat();
-            f5 = localDataInputStream.readFloat();
-            addPattern(arrayOfInt[i2], f3, f4, f5, paramArrayOfArrayList);
+            addPattern(arrayOfInt[i2], f2, f3, f4, paramArrayOfArrayList);
           }
         }
 
@@ -2742,30 +2702,30 @@ public class PlMapActors extends Plugin
         k += j;
         if (j > 0) {
           arrayOfInt = new int[j];
-          for (i2 = 0; i2 < j; i2++) {
+          for (i1 = 0; i1 < j; i1++) {
             String str4 = localDataInputStream.readUTF();
-            arrayOfInt[i2] = Finger.Int(str4);
+            arrayOfInt[i1] = Finger.Int(str4);
             Spawn.get_WithSoftClass(str4);
           }
-          i2 = localDataInputStream.readInt();
-          while (i2-- > 0) {
-            int i3 = localDataInputStream.readInt();
-            f4 = (i3 & 0xFFFF) * 200.0F;
-            f5 = (i3 >> 16 & 0xFFFF) * 200.0F;
+          int i3 = localDataInputStream.readInt();
+          while (i3-- > 0) {
             int i4 = localDataInputStream.readInt();
+            f3 = (i4 & 0xFFFF) * 200.0F;
+            f4 = (i4 >> 16 & 0xFFFF) * 200.0F;
+            int i5 = localDataInputStream.readInt();
             m += j;
-            while (i4-- > 0) {
-              int i5 = localDataInputStream.readInt();
+            while (i5-- > 0) {
               int i6 = localDataInputStream.readInt();
-              int i7 = i5 & 0x7FFF;
-              if ((i7 < arrayOfInt.length) && (arrayOfInt[i7] != 0)) {
-                int i8 = (short)(i5 >> 16);
-                int i9 = (short)(i6 & 0xFFFF);
-                int i10 = (short)(i6 >> 16 & 0xFFFF);
-                float f8 = i8 * 360.0F / 32000.0F;
-                float f9 = i9 * 200.0F / 32000.0F + f4;
-                float f10 = i10 * 200.0F / 32000.0F + f5;
-                addPattern(arrayOfInt[i7], f9, f10, -f8, paramArrayOfArrayList);
+              int i7 = localDataInputStream.readInt();
+              int i8 = i6 & 0x7FFF;
+              if ((i8 < arrayOfInt.length) && (arrayOfInt[i8] != 0)) {
+                int i9 = (short)(i6 >> 16);
+                int i10 = (short)(i7 & 0xFFFF);
+                int i11 = (short)(i7 >> 16 & 0xFFFF);
+                float f7 = i9 * 360.0F / 32000.0F;
+                float f8 = i10 * 200.0F / 32000.0F + f3;
+                float f9 = i11 * 200.0F / 32000.0F + f4;
+                addPattern(arrayOfInt[i8], f8, f9, -f7, paramArrayOfArrayList);
               }
             }
           }
@@ -2850,7 +2810,7 @@ public class PlMapActors extends Plugin
 
     public void execute()
     {
-      this.bChecked = (!this.bChecked);
+      this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
       PlMapActors.this.viewType(this.indx);
     }
     public ViewItem(int paramGWindowMenu, GWindowMenu paramString1, String paramString2, String arg5) {

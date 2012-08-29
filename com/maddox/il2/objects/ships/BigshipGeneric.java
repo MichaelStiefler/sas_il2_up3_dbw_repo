@@ -6,7 +6,6 @@ import com.maddox.JGP.Matrix4d;
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.Aimer;
@@ -23,10 +22,8 @@ import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.StrengthProperties;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.air.Airdrome;
 import com.maddox.il2.ai.air.CellAirField;
 import com.maddox.il2.ai.air.CellObject;
-import com.maddox.il2.ai.air.Point_Stay;
 import com.maddox.il2.ai.ground.Aim;
 import com.maddox.il2.ai.ground.HunterInterface;
 import com.maddox.il2.ai.ground.NearestEnemies;
@@ -62,13 +59,8 @@ import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.VisibilityLong;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiStayPoint;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetServerParams;
-import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
@@ -79,12 +71,11 @@ import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetChannelInStream;
-import com.maddox.rts.NetEnv;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
-import com.maddox.rts.ObjIO;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -92,7 +83,6 @@ import com.maddox.rts.Time;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class BigshipGeneric extends ActorHMesh
@@ -101,15 +91,6 @@ public class BigshipGeneric extends ActorHMesh
   private static final int MAX_PARTS = 255;
   private static final int MAX_GUNS = 255;
   private static final int MAX_USER_ADDITIONAL_COLLISION_CHUNKS = 4;
-  public float CURRSPEED = 1.0F;
-
-  public boolean isTurning = false;
-  public boolean isTurningBackward = false;
-  public boolean mustRecomputePath = false;
-  public boolean mustSendSpeedToNet = false;
-
-  private final int REQUEST_LOC = 93;
-
   private ShipProperties prop = null;
   private static final int NETSEND_MIN_DELAY_MS_PARTSSTATE = 650;
   private static final int NETSEND_MAX_DELAY_MS_PARTSSTATE = 1100;
@@ -165,7 +146,7 @@ public class BigshipGeneric extends ActorHMesh
   private float sink2Depth;
   private float sink2Pitch;
   private float sink2Roll;
-  public int dying = 0;
+  private int dying = 0;
   static final int DYING_NONE = 0;
   static final int DYING_SINK1 = 1;
   static final int DYING_SINK2 = 2;
@@ -219,15 +200,6 @@ public class BigshipGeneric extends ActorHMesh
   public int towPortNum = -1;
   public HookNamed towHook;
   private static Vector3d tmpDir;
-  public static String[] ZUTI_RADAR_SHIPS;
-  public static String[] ZUTI_RADAR_SHIPS_SMALL;
-  public static String[] ZUTI_CARRIER_STRING;
-  public static String[] ZUTI_CARRIER_SUBCLASS_STRING;
-  public BornPlace zutiBornPlace = null;
-  private boolean zutiIsClassBussy = false;
-
-  private boolean zutiIsShipChief = false;
-  private Point3d zutiPosition = null;
 
   public ShipProperties getShipProp()
   {
@@ -325,111 +297,6 @@ public class BigshipGeneric extends ActorHMesh
     return -1;
   }
 
-  private void computeNewPath()
-  {
-    if ((this.path == null) || (this.dying != 0) || (Mission.isDogfight())) {
-      return;
-    }
-
-    Object localObject1 = (Segment)this.path.get(this.cachedSeg);
-
-    long l1 = 0L;
-
-    long l2 = Time.tickNext();
-    if ((Mission.isCoop()) || (Mission.isDogfight()))
-      l2 = NetServerParams.getServerTime();
-    Object localObject2;
-    if (((((Segment)localObject1).timeIn > l2) || (!this.isTurning)) && ((((Segment)localObject1).speedIn > this.CURRSPEED) || (((Segment)localObject1).speedOut > this.CURRSPEED)))
-    {
-      if (Mission.isCoop()) {
-        this.mustSendSpeedToNet = true;
-      }
-
-      float f1 = 0.0F;
-      if (l2 >= ((Segment)localObject1).timeIn)
-      {
-        long l3 = ((Segment)localObject1).timeOut - ((Segment)localObject1).timeIn;
-        long l5 = l2 - ((Segment)localObject1).timeIn;
-
-        float f2 = ((Segment)localObject1).speedOut - ((Segment)localObject1).speedIn;
-
-        f1 = ((Segment)localObject1).speedIn + f2 * (float)(l5 / l3);
-      }
-
-      if (f1 > this.CURRSPEED)
-        ((Segment)localObject1).speedIn = this.CURRSPEED;
-      else {
-        ((Segment)localObject1).speedIn = f1;
-      }
-      if (((Segment)localObject1).speedOut > this.CURRSPEED) {
-        ((Segment)localObject1).speedOut = this.CURRSPEED;
-      }
-
-      localObject2 = new Point3d();
-      ((Point3d)localObject2).x = this.initLoc.getX();
-      ((Point3d)localObject2).y = this.initLoc.getY();
-      ((Point3d)localObject2).z = this.initLoc.getZ();
-
-      ((Segment)localObject1).posIn.set((Tuple3d)localObject2);
-
-      if (((Segment)localObject1).timeIn < l2) {
-        ((Segment)localObject1).timeIn = l2;
-      }
-
-      double d = ((Segment)localObject1).posIn.distance(((Segment)localObject1).posOut);
-
-      l1 = ((Segment)localObject1).timeOut;
-
-      ((Segment)localObject1).timeOut = (((Segment)localObject1).timeIn + ()(1000.0D * (2.0D * d / Math.abs(((Segment)localObject1).speedOut + ((Segment)localObject1).speedIn))));
-
-      ((Segment)localObject1).length = (float)d;
-      ((Segment)localObject1).slidersOn = false;
-    }
-    else
-    {
-      l1 = ((Segment)localObject1).timeOut;
-    }
-
-    if ((this.isTurningBackward) && ((((Segment)localObject1).speedIn > this.CURRSPEED) || (((Segment)localObject1).speedOut > this.CURRSPEED)))
-    {
-      this.mustRecomputePath = true;
-    }
-
-    int i = this.cachedSeg;
-
-    i++;
-
-    while (i <= this.path.size() - 1)
-    {
-      localObject2 = (Segment)this.path.get(i);
-      long l4 = ((Segment)localObject2).timeIn - l1;
-      ((Segment)localObject2).timeIn = (((Segment)localObject1).timeOut + l4);
-      ((Segment)localObject2).posIn = ((Segment)localObject1).posOut;
-
-      if (((Segment)localObject2).speedIn > this.CURRSPEED)
-      {
-        if (Mission.isCoop()) {
-          this.mustSendSpeedToNet = true;
-        }
-
-        ((Segment)localObject2).speedIn = this.CURRSPEED;
-      }
-      if (((Segment)localObject2).speedOut > this.CURRSPEED)
-      {
-        if (Mission.isCoop()) {
-          this.mustSendSpeedToNet = true;
-        }
-
-        ((Segment)localObject2).speedOut = this.CURRSPEED;
-      }
-      l1 = ((Segment)localObject2).timeOut;
-      ((Segment)localObject2).timeOut = (((Segment)localObject2).timeIn + ()(1000.0D * (2.0D * ((Segment)localObject2).length / Math.abs(((Segment)localObject2).speedOut + ((Segment)localObject2).speedIn))));
-
-      localObject1 = localObject2;
-      i++;
-    }
-  }
-
   public void msgShot(Shot paramShot)
   {
     paramShot.bodyMaterial = 2;
@@ -472,8 +339,8 @@ public class BigshipGeneric extends ActorHMesh
     }
 
     tmpvd.set(paramShot.v);
-    this.pos.getAbs().transformInv(tmpvd);
-    Part.access$202(this.parts[i], tmpvd.y > 0.0D);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transformInv(tmpvd);
+    Part.access$202(this.parts[i], tmpvd.jdField_y_of_type_Double > 0.0D);
 
     float f4 = f3 / f2;
     Part.access$316(this.parts[i], f4);
@@ -482,36 +349,6 @@ public class BigshipGeneric extends ActorHMesh
       Part.access$402(this.parts[i], paramShot.initiator);
     }
     InjurePart(i, paramShot.initiator, true);
-
-    if ((!Mission.isDogfight()) && (this.path != null) && (this.parts[i].pro.isItLifeKeeper()) && (this.parts[i].damage > 0.2F))
-    {
-      computeSpeedReduction(this.parts[i].damage);
-
-      computeNewPath();
-    }
-  }
-
-  private void computeSpeedReduction(float paramFloat)
-  {
-    int i = (int)(paramFloat * 128.0F);
-    i--;
-    if (i < 0)
-    {
-      i = 0;
-    } else if (i > 127)
-    {
-      i = 127;
-    }
-
-    paramFloat = i / 128.0F;
-
-    float f = 0.4F * this.prop.SPEED + (1.0F - paramFloat) * 2.0F * this.prop.SPEED;
-
-    int j = Math.round(f);
-    f = j;
-
-    if (f < this.CURRSPEED)
-      this.CURRSPEED = f;
   }
 
   public void msgExplosion(Explosion paramExplosion)
@@ -542,15 +379,15 @@ public class BigshipGeneric extends ActorHMesh
       if (j >= 0) {
         float f2 = f1;
 
-        f2 *= Rnd(1.0F, 1.1F) * Mission.BigShipHpDiv();
+        f2 *= Rnd(1.0F, 1.1F);
 
         if (f2 >= this.parts[j].pro.stre.EXPLHIT_MIN_TNT)
         {
           i = j;
 
           p1.set(paramExplosion.p);
-          this.pos.getAbs().transformInv(p1);
-          Part.access$202(this.parts[j], p1.y < 0.0D);
+          this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transformInv(p1);
+          Part.access$202(this.parts[j], p1.jdField_y_of_type_Double < 0.0D);
 
           float f3 = f2 / this.parts[j].pro.stre.EXPLHIT_MAX_TNT;
           Part.access$316(this.parts[j], f3);
@@ -559,25 +396,16 @@ public class BigshipGeneric extends ActorHMesh
             Part.access$402(this.parts[j], paramExplosion.initiator);
           }
           InjurePart(j, paramExplosion.initiator, true);
-
-          if ((!Mission.isDogfight()) && (this.path != null) && (this.parts[j].pro.isItLifeKeeper()) && (this.parts[j].damage > 0.2F))
-          {
-            computeSpeedReduction(this.parts[j].damage);
-
-            computeNewPath();
-          }
-
         }
-
       }
 
     }
 
-    Loc localLoc = this.pos.getAbs();
+    Loc localLoc = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
 
     p1.set(paramExplosion.p);
-    this.pos.getAbs().transformInv(p1);
-    boolean bool = p1.y < 0.0D;
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transformInv(p1);
+    boolean bool = p1.jdField_y_of_type_Double < 0.0D;
 
     for (int k = 0; k < this.parts.length; k++) {
       if (k == i)
@@ -592,32 +420,23 @@ public class BigshipGeneric extends ActorHMesh
       localLoc.transform(p1);
       float f4 = this.parts[k].pro.partR;
 
-      float f5 = (float)(p1.distance(paramExplosion.p) - f4);
+      float f5 = paramExplosion.receivedTNT_1meter(p1, f4);
 
-      float f6 = paramExplosion.receivedTNT_1meter(p1, f4);
+      f5 *= Rnd(1.0F, 1.1F);
 
-      f6 *= Rnd(1.0F, 1.1F) * Mission.BigShipHpDiv();
-
-      if (f6 < this.parts[k].pro.stre.EXPLNEAR_MIN_TNT)
+      if (f5 < this.parts[k].pro.stre.EXPLNEAR_MIN_TNT)
       {
         continue;
       }
 
       Part.access$202(this.parts[k], bool);
 
-      float f7 = f6 / this.parts[k].pro.stre.EXPLNEAR_MAX_TNT;
-      Part.access$316(this.parts[k], f7);
+      float f6 = f5 / this.parts[k].pro.stre.EXPLNEAR_MAX_TNT;
+      Part.access$316(this.parts[k], f6);
       if ((isNetMirror()) && (paramExplosion.initiator != null)) {
         Part.access$402(this.parts[k], paramExplosion.initiator);
       }
       InjurePart(k, paramExplosion.initiator, true);
-
-      if ((Mission.isDogfight()) || (this.path == null) || (!this.parts[k].pro.isItLifeKeeper()) || (this.parts[k].damage <= 0.2F)) {
-        continue;
-      }
-      computeSpeedReduction(this.parts[k].damage);
-
-      computeNewPath();
     }
   }
 
@@ -706,6 +525,7 @@ public class BigshipGeneric extends ActorHMesh
     }
 
     int[] arrayOfInt = hierMesh().getSubTreesSpec(this.parts[paramInt].pro.baseChunkName);
+    int j;
     int m;
     for (int i = 0; i < arrayOfInt.length; i++)
     {
@@ -715,7 +535,7 @@ public class BigshipGeneric extends ActorHMesh
       {
         continue;
       }
-      for (int j = 0; j < this.parts.length; j++) {
+      for (j = 0; j < this.parts.length; j++) {
         if (j == paramInt) {
           continue;
         }
@@ -761,7 +581,7 @@ public class BigshipGeneric extends ActorHMesh
     }
     int k;
     if (this.pipes != null) {
-      i = 0;
+      j = 0;
 
       for (k = 0; k < this.pipes.length; k++) {
         if (this.pipes[k] == null) {
@@ -773,7 +593,7 @@ public class BigshipGeneric extends ActorHMesh
         else {
           m = this.pipes[k].part_idx;
           if (this.parts[m].state == 0) {
-            i = 1;
+            j = 1;
           }
           else {
             this.pipes[k].pipe._finish();
@@ -782,10 +602,10 @@ public class BigshipGeneric extends ActorHMesh
           }
         }
       }
-      if (i == 0) {
-        for (k = 0; k < this.pipes.length; k++) {
-          if (this.pipes[k] != null) {
-            this.pipes[k] = null;
+      if (j == 0) {
+        for (m = 0; m < this.pipes.length; m++) {
+          if (this.pipes[m] != null) {
+            this.pipes[m] = null;
           }
         }
         this.pipes = null;
@@ -794,14 +614,14 @@ public class BigshipGeneric extends ActorHMesh
     }
 
     if (this.dsmoks != null) {
-      for (i = 0; i < this.dsmoks.length; i++) {
-        if (this.dsmoks[i] == null) {
+      for (j = 0; j < this.dsmoks.length; j++) {
+        if (this.dsmoks[j] == null) {
           continue;
         }
-        if (this.dsmoks[i].pipe != null) {
+        if (this.dsmoks[j].pipe != null) {
           continue;
         }
-        k = this.dsmoks[i].part_idx;
+        k = this.dsmoks[j].part_idx;
         if (this.parts[k].state == 0) {
           continue;
         }
@@ -825,7 +645,7 @@ public class BigshipGeneric extends ActorHMesh
           else {
             str3 = str3 + "Huge";
           }
-          Pipe.access$802(this.dsmoks[i], Eff3DActor.New(this, null, localLoc, 1.0F, str3 + ".eff", 600.0F));
+          Pipe.access$802(this.dsmoks[j], Eff3DActor.New(this, null, localLoc, 1.0F, str3 + ".eff", 600.0F));
           Eff3DActor.New(this, null, localLoc, 1.0F, str3 + "Fire.eff", 120.0F);
         } else {
           str3 = str3 + "Ship";
@@ -844,7 +664,7 @@ public class BigshipGeneric extends ActorHMesh
           else {
             str3 = str3 + "Invulnerable";
           }
-          Pipe.access$802(this.dsmoks[i], Eff3DActor.New(this, null, localLoc, 1.1F, str3 + ".eff", -1.0F));
+          Pipe.access$802(this.dsmoks[j], Eff3DActor.New(this, null, localLoc, 1.1F, str3 + ".eff", -1.0F));
         }
       }
 
@@ -857,7 +677,7 @@ public class BigshipGeneric extends ActorHMesh
 
   void master_sendDrown(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
   {
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
 
@@ -898,7 +718,7 @@ public class BigshipGeneric extends ActorHMesh
 
       localNetMsgGuaranted.writeShort(i);
 
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -930,7 +750,6 @@ public class BigshipGeneric extends ActorHMesh
         i = 1;
         break;
       }
-
     }
 
     this.netsendPartsState_needtosend = true;
@@ -970,8 +789,8 @@ public class BigshipGeneric extends ActorHMesh
       for (float f2 = 0.0F; f2 < 360.0F; f2 += 30.0F) {
         float f3 = f1 * Geom.cosDeg(f2);
         float f4 = f1 * Geom.sinDeg(f2);
-        f3 += (float)paramPoint3d.x;
-        f4 += (float)paramPoint3d.y;
+        f3 += (float)paramPoint3d.jdField_x_of_type_Double;
+        f4 += (float)paramPoint3d.jdField_y_of_type_Double;
         if (!World.land().isWater(f3, f4)) {
           return 150.0F * (f1 / 355.0F);
         }
@@ -987,9 +806,9 @@ public class BigshipGeneric extends ActorHMesh
     else {
       setPosition();
     }
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
-    float f1 = computeSeaDepth(this.pos.getAbsPoint()) * Rnd(1.0F, 1.25F);
+    float f1 = computeSeaDepth(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint()) * Rnd(1.0F, 1.25F);
 
     if (f1 >= 400.0F) {
       f1 = 400.0F;
@@ -1043,7 +862,7 @@ public class BigshipGeneric extends ActorHMesh
     }
 
     this.tmInterpoStart = paramLong;
-    this.tmInterpoEnd = (this.tmInterpoStart + ()(f3 * 1000.0F) * 10L);
+    this.tmInterpoEnd = (this.tmInterpoStart + ()(f3 * 1000.0F));
 
     this.sink2Depth = (this.bodyDepth1 + f8);
     this.sink2Pitch = this.bodyPitch1;
@@ -1053,7 +872,7 @@ public class BigshipGeneric extends ActorHMesh
 
   private void showExplode()
   {
-    Explosions.Antiaircraft_Explode(this.pos.getAbsPoint());
+    Explosions.Antiaircraft_Explode(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
   }
 
   private void Die(Actor paramActor, long paramLong, boolean paramBoolean1, boolean paramBoolean2)
@@ -1063,8 +882,8 @@ public class BigshipGeneric extends ActorHMesh
     }
 
     if (paramLong < 0L) {
-      if (isNetMirror())
-      {
+      if (isNetMirror()) {
+        System.out.println("** bigship InternalError: mirror death");
         return;
       }
 
@@ -1091,7 +910,7 @@ public class BigshipGeneric extends ActorHMesh
     else {
       setPosition();
     }
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.timeOfDeath = paramLong;
 
@@ -1099,12 +918,8 @@ public class BigshipGeneric extends ActorHMesh
       showExplode();
     }
 
-    if ((paramBoolean1) && (isNetMaster())) {
+    if ((paramBoolean1) && (isNetMaster()))
       send_DeathCommand(paramActor, null);
-    }
-
-    if (this.airport != null)
-      this.airport.disableBornPlace();
   }
 
   public void destroy()
@@ -1126,7 +941,7 @@ public class BigshipGeneric extends ActorHMesh
   private boolean isAnyEnemyNear()
   {
     NearestEnemies.set(WeaponsMask());
-    Actor localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), 2000.0D, getArmy());
+    Actor localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), 2000.0D, getArmy());
 
     return localActor != null;
   }
@@ -1180,7 +995,7 @@ public class BigshipGeneric extends ActorHMesh
             FiringDevice.access$602(this.arms[i], null);
           }
           if (this.arms[i].gun != null) {
-            destroy(this.arms[i].gun);
+            ObjState.destroy(this.arms[i].gun);
             FiringDevice.access$1202(this.arms[i], null);
           }
           FiringDevice.access$702(this.arms[i], null);
@@ -1276,19 +1091,19 @@ public class BigshipGeneric extends ActorHMesh
 
       j = 0;
 
-      for (k = 0; k < localShipPartProperties.additCollisChunkName.length; k++) {
-        localShipPartProperties.additCollisChunkIdx[(j++)] = hierMesh().chunkFind(localShipPartProperties.additCollisChunkName[k]);
+      for (int m = 0; m < localShipPartProperties.additCollisChunkName.length; m++) {
+        localShipPartProperties.additCollisChunkIdx[(j++)] = hierMesh().chunkFind(localShipPartProperties.additCollisChunkName[m]);
 
-        int m = hierMesh().chunkFindCheck(localShipPartProperties.additCollisChunkName[k] + "_dmg");
+        n = hierMesh().chunkFindCheck(localShipPartProperties.additCollisChunkName[m] + "_dmg");
 
-        if (m >= 0) {
-          localShipPartProperties.additCollisChunkIdx[(j++)] = m;
+        if (n >= 0) {
+          localShipPartProperties.additCollisChunkIdx[(j++)] = n;
         }
       }
 
-      k = hierMesh().chunkFindCheck(localShipPartProperties.baseChunkName + "_dmg");
-      if (k >= 0) {
-        localShipPartProperties.additCollisChunkIdx[(j++)] = k;
+      int n = hierMesh().chunkFindCheck(localShipPartProperties.baseChunkName + "_dmg");
+      if (n >= 0) {
+        localShipPartProperties.additCollisChunkIdx[(j++)] = n;
       }
 
       if (j != localShipPartProperties.additCollisChunkIdx.length) {
@@ -1342,10 +1157,8 @@ public class BigshipGeneric extends ActorHMesh
       this.parts[i].pro = this.prop.propparts[i];
     }
 
-    for (i = 0; i < hierMesh().chunks(); i++) {
-      hierMesh().setCurChunk(i);
-      if (hierMesh().chunkName().equals("Red"))
-        continue;
+    for (int j = 0; j < hierMesh().chunks(); j++) {
+      hierMesh().setCurChunk(j);
       boolean bool = !hierMesh().chunkName().endsWith("_dmg");
       if (hierMesh().chunkName().startsWith("ShdwRcv")) {
         bool = false;
@@ -1383,12 +1196,6 @@ public class BigshipGeneric extends ActorHMesh
     super(paramShipProperties.meshName);
     this.prop = paramShipProperties;
 
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      hideTransparentRunwayRed();
-    }
-
-    this.CURRSPEED = this.prop.SPEED;
     initMeshBasedProperties();
 
     paramActorSpawnArg.setStationary(this);
@@ -1406,7 +1213,7 @@ public class BigshipGeneric extends ActorHMesh
     this.shipYaw = paramActorSpawnArg.orient.getYaw();
 
     setPosition();
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.parts = new Part[this.prop.propparts.length];
     for (int i = 0; i < this.parts.length; i++) {
@@ -1422,27 +1229,27 @@ public class BigshipGeneric extends ActorHMesh
     this.wakeupTmr = 0L;
     CreateGuns();
 
-    i = 0;
-    for (int j = 0; j < this.parts.length; j++) {
-      if ((this.parts[j].pro.isItLifeKeeper()) || (this.parts[j].pro.haveGun())) {
-        i++;
+    int j = 0;
+    for (int k = 0; k < this.parts.length; k++) {
+      if ((this.parts[k].pro.isItLifeKeeper()) || (this.parts[k].pro.haveGun())) {
+        j++;
       }
 
     }
 
-    if (i <= 0) {
+    if (j <= 0) {
       this.dsmoks = null;
     } else {
-      this.dsmoks = new Pipe[i];
-      i = 0;
-      for (j = 0; j < this.parts.length; j++) {
-        if ((!this.parts[j].pro.isItLifeKeeper()) && (!this.parts[j].pro.haveGun())) {
+      this.dsmoks = new Pipe[j];
+      j = 0;
+      for (int m = 0; m < this.parts.length; m++) {
+        if ((!this.parts[m].pro.isItLifeKeeper()) && (!this.parts[m].pro.haveGun())) {
           continue;
         }
-        this.dsmoks[i] = new Pipe();
-        Pipe.access$902(this.dsmoks[i], j);
-        Pipe.access$802(this.dsmoks[i], null);
-        i++;
+        this.dsmoks[j] = new Pipe();
+        Pipe.access$902(this.dsmoks[j], m);
+        Pipe.access$802(this.dsmoks[j], null);
+        j++;
       }
 
     }
@@ -1452,13 +1259,6 @@ public class BigshipGeneric extends ActorHMesh
     if ((!isNetMirror()) && (this.prop.nGuns > 0) && (this.DELAY_WAKEUP > 0.0F))
     {
       this.wakeupTmr = (-SecsToTicks(Rnd(2.0F, 7.0F)));
-    }
-
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      if (Engine.land().isWater(this.pos.getAbs().getX(), this.pos.getAbs().getY())) {
-        hierMesh().chunkVisible("Hull1", false);
-      }
     }
 
     createAirport();
@@ -1471,23 +1271,17 @@ public class BigshipGeneric extends ActorHMesh
 
   public BigshipGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
   {
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      hideTransparentRunwayRed();
-    }
-
-    this.zutiIsShipChief = true;
     try
     {
       int i = paramSectFile1.sectionIndex(paramString2);
-      String str = paramSectFile1.var(i, 0);
+      String str1 = paramSectFile1.var(i, 0);
 
-      Object localObject2 = Spawn.get(str);
-      if (localObject2 == null) {
-        throw new ActorException("Ship: Unknown class of ship (" + str + ")");
+      Object localObject1 = Spawn.get(str1);
+      if (localObject1 == null) {
+        throw new ActorException("Ship: Unknown class of ship (" + str1 + ")");
       }
 
-      this.prop = ((SPAWN)localObject2).proper;
+      this.prop = ((SPAWN)localObject1).proper;
       try
       {
         setMesh(this.prop.meshName);
@@ -1509,10 +1303,8 @@ public class BigshipGeneric extends ActorHMesh
       this.bodyDepth0 = (this.bodyPitch0 = this.bodyRoll0 = 0.0F);
       this.bodyDepth1 = (this.bodyPitch1 = this.bodyRoll1 = 0.0F);
 
-      this.CURRSPEED = (2.0F * this.prop.SPEED);
-
       setMovablePosition(NetServerParams.getServerTime());
-      this.pos.reset();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
       collide(true);
       drawing(true);
@@ -1526,14 +1318,14 @@ public class BigshipGeneric extends ActorHMesh
       int k = 0;
 
       for (int m = 0; m <= 10; m++) {
-        localObject3 = "Vapor";
+        String str2 = "Vapor";
         if (m > 0) {
-          localObject3 = (String)localObject3 + (m - 1);
+          str2 = str2 + (m - 1);
         }
-        if (mesh().hookFind((String)localObject3) >= 0)
+        if (mesh().hookFind(str2) >= 0)
           k++;
       }
-      Object localObject1;
+      Object localObject3;
       if (k <= 0) {
         this.pipes = null;
       } else {
@@ -1541,10 +1333,10 @@ public class BigshipGeneric extends ActorHMesh
 
         k = 0;
 
-        for (m = 0; m <= 10; m++) {
+        for (int i1 = 0; i1 <= 10; i1++) {
           localObject3 = "Vapor";
-          if (m > 0) {
-            localObject3 = (String)localObject3 + (m - 1);
+          if (i1 > 0) {
+            localObject3 = (String)localObject3 + (i1 - 1);
           }
           if (mesh().hookFind((String)localObject3) < 0)
           {
@@ -1552,24 +1344,28 @@ public class BigshipGeneric extends ActorHMesh
           }
           this.pipes[k] = new Pipe();
 
-          int i2 = hierMesh().hookParentChunk((String)localObject3);
-          if (i2 < 0) {
+          int i4 = hierMesh().hookParentChunk((String)localObject3);
+          if (i4 < 0) {
             System.out.println(" *** Bigship: unexpected error in vapor hook " + (String)localObject3);
 
             this.pipes = null;
             break;
           }
 
-          for (int i3 = 0; (i3 < this.parts.length) && 
-            (this.parts[i3].pro.baseChunkIdx != i2); i3++);
-          if (i3 >= this.parts.length) {
+          for (int i5 = 0; i5 < this.parts.length; i5++) {
+            if (this.parts[i5].pro.baseChunkIdx == i4)
+            {
+              break;
+            }
+          }
+          if (i5 >= this.parts.length) {
             System.out.println(" *** Bigship: vapor hook '" + (String)localObject3 + "' MUST be linked to baseChunk");
 
             this.pipes = null;
             break;
           }
 
-          Pipe.access$902(this.pipes[k], i3);
+          Pipe.access$902(this.pipes[k], i5);
 
           localObject1 = new HookNamed(this, (String)localObject3);
           Pipe.access$802(this.pipes[k], Eff3DActor.New(this, (Hook)localObject1, null, 1.0F, "Effects/Smokes/SmokePipeShip.eff", -1.0F));
@@ -1577,7 +1373,7 @@ public class BigshipGeneric extends ActorHMesh
           k++;
         }
       }
-       tmp1062_1061 = (this.wake[0] =  = null); this.wake[1] = tmp1062_1061; this.wake[2] = tmp1062_1061;
+       tmp968_967 = (this.wake[0] =  = null); this.wake[1] = tmp968_967; this.wake[2] = tmp968_967;
       this.tail = null;
       this.noseW = null;
       this.nose = null;
@@ -1591,20 +1387,20 @@ public class BigshipGeneric extends ActorHMesh
 
       if (mesh().hookFind("_Centre") >= 0)
       {
+        localObject3 = new Loc();
         Loc localLoc1 = new Loc();
-        Loc localLoc2 = new Loc();
         HookNamed localHookNamed = new HookNamed(this, "_Left");
-        localHookNamed.computePos(this, new Loc(), localLoc1);
-        localObject3 = new HookNamed(this, "_Right");
-        ((HookNamed)localObject3).computePos(this, new Loc(), localLoc2);
-        float f1 = (float)localLoc1.getPoint().distance(localLoc2.getPoint());
+        localHookNamed.computePos(this, new Loc(), (Loc)localObject3);
+        localObject2 = new HookNamed(this, "_Right");
+        ((HookNamed)localObject2).computePos(this, new Loc(), localLoc1);
+        float f1 = (float)((Loc)localObject3).getPoint().distance(localLoc1.getPoint());
         localObject1 = new HookNamedZ0(this, "_Centre");
         if (mesh().hookFind("_Prop") >= 0) {
           HookNamedZ0 localHookNamedZ0 = new HookNamedZ0(this, "_Prop");
 
-          Loc localLoc3 = new Loc(); ((HookNamed)localObject1).computePos(this, new Loc(), localLoc3);
-          Loc localLoc4 = new Loc(); localHookNamedZ0.computePos(this, new Loc(), localLoc4);
-          float f2 = (float)localLoc3.getPoint().distance(localLoc4.getPoint());
+          Loc localLoc2 = new Loc(); ((HookNamed)localObject1).computePos(this, new Loc(), localLoc2);
+          Loc localLoc3 = new Loc(); localHookNamedZ0.computePos(this, new Loc(), localLoc3);
+          float f2 = (float)localLoc2.getPoint().distance(localLoc3.getPoint());
 
           this.wake[0] = Eff3DActor.New(this, localHookNamedZ0, new Loc(-f2 * 0.33D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, k != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1.0F);
 
@@ -1629,11 +1425,11 @@ public class BigshipGeneric extends ActorHMesh
       SetEffectsIntens(0.0F);
 
       int n = Mission.cur().getUnitNetIdRemote(this);
-      Object localObject3 = Mission.cur().getNetMasterChannel();
-      if (localObject3 == null)
-        this.net = new Master(this);
+      Object localObject2 = Mission.cur().getNetMasterChannel();
+      if (localObject2 == null)
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
       else if (n != 0) {
-        this.net = new Mirror(this, (NetChannel)localObject3, n);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, (NetChannel)localObject2, n);
       }
 
       this.SKILL_IDX = Chief.new_SKILL_IDX;
@@ -1643,8 +1439,8 @@ public class BigshipGeneric extends ActorHMesh
       CreateGuns();
 
       n = 0;
-      for (int i1 = 0; i1 < this.parts.length; i1++) {
-        if ((this.parts[i1].pro.isItLifeKeeper()) || (this.parts[i1].pro.haveGun())) {
+      for (int i2 = 0; i2 < this.parts.length; i2++) {
+        if ((this.parts[i2].pro.isItLifeKeeper()) || (this.parts[i2].pro.haveGun())) {
           n++;
         }
 
@@ -1655,12 +1451,12 @@ public class BigshipGeneric extends ActorHMesh
       } else {
         this.dsmoks = new Pipe[n];
         n = 0;
-        for (i1 = 0; i1 < this.parts.length; i1++) {
-          if ((!this.parts[i1].pro.isItLifeKeeper()) && (!this.parts[i1].pro.haveGun())) {
+        for (int i3 = 0; i3 < this.parts.length; i3++) {
+          if ((!this.parts[i3].pro.isItLifeKeeper()) && (!this.parts[i3].pro.haveGun())) {
             continue;
           }
           this.dsmoks[n] = new Pipe();
-          Pipe.access$902(this.dsmoks[n], i1);
+          Pipe.access$902(this.dsmoks[n], i3);
           Pipe.access$802(this.dsmoks[n], null);
           n++;
         }
@@ -1675,14 +1471,6 @@ public class BigshipGeneric extends ActorHMesh
       }
 
       createAirport();
-
-      if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-      {
-        if (Engine.land().isWater(this.pos.getAbs().getX(), this.pos.getAbs().getY())) {
-          hierMesh().chunkVisible("Hull1", false);
-        }
-
-      }
 
       if (!interpEnd("move")) {
         interpPut(new Move(), "move", Time.current(), null);
@@ -1724,9 +1512,9 @@ public class BigshipGeneric extends ActorHMesh
       }
 
       if (i == 0) {
-        for (j = 0; j < this.pipes.length; j++) {
-          if (this.pipes[j] != null) {
-            this.pipes[j] = null;
+        for (int k = 0; k < this.pipes.length; k++) {
+          if (this.pipes[k] != null) {
+            this.pipes[k] = null;
           }
         }
         this.pipes = null;
@@ -1784,193 +1572,192 @@ public class BigshipGeneric extends ActorHMesh
     }
 
     this.path = new ArrayList();
-    Object localObject;
-    float f5;
+    float f7;
     for (int k = 0; k < j; k++) {
-      localObject = new StringTokenizer(paramSectFile.line(i, k));
-      float f2 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      float f3 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      f5 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
+      StringTokenizer localStringTokenizer = new StringTokenizer(paramSectFile.line(i, k));
+      float f1 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
+      float f2 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
+      float f4 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
 
       double d = 0.0D;
 
-      float f8 = 0.0F;
+      f7 = 0.0F;
 
-      if (((StringTokenizer)localObject).hasMoreTokens()) {
-        d = Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-        if (((StringTokenizer)localObject).hasMoreTokens()) {
-          Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-          if (((StringTokenizer)localObject).hasMoreTokens()) {
-            f8 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-            if (f8 <= 0.0F) {
-              f8 = this.prop.SPEED;
+      if (localStringTokenizer.hasMoreTokens()) {
+        d = Double.valueOf(localStringTokenizer.nextToken()).doubleValue();
+        if (localStringTokenizer.hasMoreTokens()) {
+          Double.valueOf(localStringTokenizer.nextToken()).doubleValue();
+          if (localStringTokenizer.hasMoreTokens()) {
+            f7 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
+            if (f7 <= 0.0F) {
+              f7 = this.prop.SPEED;
             }
           }
         }
       }
-      if ((f8 <= 0.0F) && ((k == 0) || (k == j - 1))) {
-        f8 = this.prop.SPEED;
+      if ((f7 <= 0.0F) && ((k == 0) || (k == j - 1))) {
+        f7 = this.prop.SPEED;
       }
       if (k >= j - 1) d = -1.0D;
 
-      Segment localSegment9 = new Segment(null);
-      localSegment9.posIn = new Point3d(f2, f3, 0.0D);
+      Segment localSegment7 = new Segment(null);
+      localSegment7.posIn = new Point3d(f1, f2, 0.0D);
 
       if (Math.abs(d) < 0.1D)
       {
-        localSegment9.timeIn = 0L;
+        localSegment7.timeIn = 0L;
       }
       else {
-        localSegment9.timeIn = ()(d * 60.0D * 1000.0D + (d > 0.0D ? 0.5D : -0.5D));
+        localSegment7.timeIn = ()(d * 60.0D * 1000.0D + (d > 0.0D ? 0.5D : -0.5D));
         if (k == 0)
         {
-          if (localSegment9.timeIn < 0L) {
-            localSegment9.timeIn = (-localSegment9.timeIn);
+          if (localSegment7.timeIn < 0L) {
+            localSegment7.timeIn = (-localSegment7.timeIn);
           }
         }
       }
 
-      localSegment9.speedIn = f8;
-      localSegment9.slidersOn = true;
-      this.path.add(localSegment9);
+      localSegment7.speedIn = f7;
+
+      this.path.add(localSegment7);
     }
 
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localObject = (Segment)this.path.get(k);
-      Segment localSegment3 = (Segment)this.path.get(k + 1);
-      ((Segment)localObject).length = (float)((Segment)localObject).posIn.distance(localSegment3.posIn);
+    for (int m = 0; m < this.path.size() - 1; m++) {
+      Segment localSegment1 = (Segment)this.path.get(m);
+      Segment localSegment2 = (Segment)this.path.get(m + 1);
+      localSegment1.length = (float)localSegment1.posIn.distance(localSegment2.posIn);
     }
 
-    k = 0;
-    float f1 = ((Segment)this.path.get(k)).length;
-    float f10;
-    while (k < this.path.size() - 1) {
-      int n = k + 1;
+    int n = 0;
+    float f3 = ((Segment)this.path.get(n)).length;
+    Segment localSegment8;
+    float f8;
+    while (n < this.path.size() - 1) {
+      int i2 = n + 1;
       while (true) {
-        Segment localSegment5 = (Segment)this.path.get(n);
+        Segment localSegment5 = (Segment)this.path.get(i2);
         if (localSegment5.speedIn > 0.0F) {
           break;
         }
-        f1 += localSegment5.length;
-        n++;
+        f3 += localSegment5.length;
+        i2++;
       }
 
-      if (n - k > 1) {
-        float f4 = ((Segment)this.path.get(k)).length;
-        f5 = ((Segment)this.path.get(k)).speedIn;
+      if (i2 - n > 1) {
+        float f5 = ((Segment)this.path.get(n)).length;
         float f6 = ((Segment)this.path.get(n)).speedIn;
-        for (int i2 = k + 1; i2 < n; i2++) {
-          Segment localSegment8 = (Segment)this.path.get(i2);
-          f10 = f4 / f1;
-          localSegment8.speedIn = (f5 * (1.0F - f10) + f6 * f10);
-          f1 += localSegment8.length;
+        f7 = ((Segment)this.path.get(i2)).speedIn;
+        for (i4 = n + 1; i4 < i2; i4++) {
+          localSegment8 = (Segment)this.path.get(i4);
+          f8 = f5 / f3;
+          localSegment8.speedIn = (f6 * (1.0F - f8) + f7 * f8);
+          f3 += localSegment8.length;
         }
       }
 
-      k = n;
+      n = i2;
     }
-    Segment localSegment2;
-    Segment localSegment4;
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localSegment2 = (Segment)this.path.get(k);
-      localSegment4 = (Segment)this.path.get(k + 1);
+    Segment localSegment6;
+    for (n = 0; n < this.path.size() - 1; n++) {
+      Segment localSegment3 = (Segment)this.path.get(n);
+      localSegment4 = (Segment)this.path.get(n + 1);
 
-      if ((localSegment2.timeIn > 0L) && (localSegment4.timeIn > 0L)) {
-        Segment localSegment6 = new Segment(null);
-        localSegment6.posIn = new Point3d(localSegment2.posIn);
+      if ((localSegment3.timeIn > 0L) && (localSegment4.timeIn > 0L)) {
+        localSegment6 = new Segment(null);
+        localSegment6.posIn = new Point3d(localSegment3.posIn);
         localSegment6.posIn.add(localSegment4.posIn);
         localSegment6.posIn.scale(0.5D);
         localSegment6.timeIn = 0L;
-        localSegment6.speedIn = ((localSegment2.speedIn + localSegment4.speedIn) * 0.5F);
-        this.path.add(k + 1, localSegment6);
+        localSegment6.speedIn = ((localSegment3.speedIn + localSegment4.speedIn) * 0.5F);
+        this.path.add(n + 1, localSegment6);
       }
 
     }
-
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localSegment2 = (Segment)this.path.get(k);
-      localSegment4 = (Segment)this.path.get(k + 1);
-      localSegment2.length = (float)localSegment2.posIn.distance(localSegment4.posIn);
-    }
-
-    Segment localSegment1 = (Segment)this.path.get(0);
-    int m = localSegment1.timeIn != 0L ? 1 : 0;
-    long l1 = localSegment1.timeIn;
 
     for (int i1 = 0; i1 < this.path.size() - 1; i1++) {
-      localSegment1 = (Segment)this.path.get(i1);
-      Segment localSegment7 = (Segment)this.path.get(i1 + 1);
+      localSegment4 = (Segment)this.path.get(i1);
+      localSegment6 = (Segment)this.path.get(i1 + 1);
+      localSegment4.length = (float)localSegment4.posIn.distance(localSegment6.posIn);
+    }
 
-      localSegment1.posOut = new Point3d(localSegment7.posIn);
-      localSegment7.posIn = localSegment1.posOut;
+    Segment localSegment4 = (Segment)this.path.get(0);
+    int i3 = localSegment4.timeIn != 0L ? 1 : 0;
+    long l1 = localSegment4.timeIn;
 
-      float f7 = localSegment1.speedIn;
-      float f9 = localSegment7.speedIn;
-      f10 = (f7 + f9) * 0.5F;
+    for (int i4 = 0; i4 < this.path.size() - 1; i4++) {
+      localSegment4 = (Segment)this.path.get(i4);
+      localSegment8 = (Segment)this.path.get(i4 + 1);
+
+      localSegment4.posOut = new Point3d(localSegment8.posIn);
+      localSegment8.posIn = localSegment4.posOut;
+
+      f8 = localSegment4.speedIn;
+      float f9 = localSegment8.speedIn;
+      float f10 = (f8 + f9) * 0.5F;
       float f11;
-      if (m != 0)
+      if (i3 != 0)
       {
-        localSegment1.speedIn = 0.0F;
-        localSegment1.speedOut = f9;
-        f11 = 2.0F * localSegment1.length / f9 * 1000.0F + 0.5F;
-        localSegment1.timeIn = l1;
-        localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-        l1 = localSegment1.timeOut;
-        m = 0;
+        localSegment4.speedIn = 0.0F;
+        localSegment4.speedOut = f9;
+        f11 = 2.0F * localSegment4.length / f9 * 1000.0F + 0.5F;
+        localSegment4.timeIn = l1;
+        localSegment4.timeOut = (localSegment4.timeIn + (int)f11);
+        l1 = localSegment4.timeOut;
+        i3 = 0;
       }
-      else if (localSegment7.timeIn == 0L)
+      else if (localSegment8.timeIn == 0L)
       {
-        localSegment1.speedIn = f7;
-        localSegment1.speedOut = f9;
-        f11 = localSegment1.length / f10 * 1000.0F + 0.5F;
-        localSegment1.timeIn = l1;
-        localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-        l1 = localSegment1.timeOut;
-        m = 0;
+        localSegment4.speedIn = f8;
+        localSegment4.speedOut = f9;
+        f11 = localSegment4.length / f10 * 1000.0F + 0.5F;
+        localSegment4.timeIn = l1;
+        localSegment4.timeOut = (localSegment4.timeIn + (int)f11);
+        l1 = localSegment4.timeOut;
+        i3 = 0;
       }
       else
       {
-        if (localSegment7.timeIn > 0L)
+        if (localSegment8.timeIn > 0L)
         {
-          f11 = localSegment1.length / f10 * 1000.0F + 0.5F;
+          f11 = localSegment4.length / f10 * 1000.0F + 0.5F;
           long l2 = l1 + (int)f11;
 
-          if (l2 >= localSegment7.timeIn)
+          if (l2 >= localSegment8.timeIn)
           {
-            localSegment7.timeIn = 0L;
+            localSegment8.timeIn = 0L;
           }
           else {
-            localSegment1.speedIn = f7;
-            localSegment1.speedOut = 0.0F;
-            f11 = 2.0F * localSegment1.length / f7 * 1000.0F + 0.5F;
-            localSegment1.timeIn = l1;
-            localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-            l1 = localSegment7.timeIn;
-            m = 1;
+            localSegment4.speedIn = f8;
+            localSegment4.speedOut = 0.0F;
+            f11 = 2.0F * localSegment4.length / f8 * 1000.0F + 0.5F;
+            localSegment4.timeIn = l1;
+            localSegment4.timeOut = (localSegment4.timeIn + (int)f11);
+            l1 = localSegment8.timeIn;
+            i3 = 1;
             continue;
           }
 
         }
 
-        if (localSegment7.timeIn == 0L)
+        if (localSegment8.timeIn == 0L)
         {
-          localSegment1.speedIn = f7;
-          localSegment1.speedOut = f9;
-          f11 = localSegment1.length / f10 * 1000.0F + 0.5F;
-          localSegment1.timeIn = l1;
-          localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-          l1 = localSegment1.timeOut;
-          m = 0;
+          localSegment4.speedIn = f8;
+          localSegment4.speedOut = f9;
+          f11 = localSegment4.length / f10 * 1000.0F + 0.5F;
+          localSegment4.timeIn = l1;
+          localSegment4.timeOut = (localSegment4.timeIn + (int)f11);
+          l1 = localSegment4.timeOut;
+          i3 = 0;
         }
         else
         {
-          localSegment1.speedIn = f7;
-          localSegment1.speedOut = 0.0F;
-          f11 = 2.0F * localSegment1.length / f7 * 1000.0F + 0.5F;
-          localSegment1.timeIn = l1;
-          localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-          l1 = localSegment1.timeOut + -localSegment7.timeIn;
-          m = 1;
+          localSegment4.speedIn = f8;
+          localSegment4.speedOut = 0.0F;
+          f11 = 2.0F * localSegment4.length / f8 * 1000.0F + 0.5F;
+          localSegment4.timeIn = l1;
+          localSegment4.timeOut = (localSegment4.timeIn + (int)f11);
+          l1 = localSegment4.timeOut + -localSegment8.timeIn;
+          i3 = 1;
         }
       }
 
@@ -1984,16 +1771,15 @@ public class BigshipGeneric extends ActorHMesh
     for (int i = 0; i < this.path.size(); i++) {
       Segment localSegment = (Segment)this.path.get(i);
       System.out.println(" " + i + ":  len=" + localSegment.length + " spdIn=" + localSegment.speedIn + " spdOut=" + localSegment.speedOut + " tmIn=" + localSegment.timeIn + " tmOut=" + localSegment.timeOut);
-      System.out.println("posIn=" + localSegment.posIn + " posOut=" + localSegment.posOut);
     }
     System.out.println("------------");
   }
 
   public void align()
   {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) - this.bodyDepth);
-    this.pos.setAbs(p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) - this.bodyDepth);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p);
   }
 
   private boolean computeInterpolatedDPR(long paramLong) {
@@ -2053,7 +1839,8 @@ public class BigshipGeneric extends ActorHMesh
       return;
     }
 
-    while (this.cachedSeg > 0) {
+    do
+    {
       localSegment = (Segment)this.path.get(--this.cachedSeg);
       if (paramLong >= localSegment.timeOut) {
         SetEffectsIntens(0.0F);
@@ -2066,6 +1853,7 @@ public class BigshipGeneric extends ActorHMesh
         return;
       }
     }
+    while (this.cachedSeg > 0);
 
     SetEffectsIntens(0.0F);
     setMovablePosition(0.0F);
@@ -2083,19 +1871,12 @@ public class BigshipGeneric extends ActorHMesh
     paramFloat *= f1;
     float f5 = f2 * paramFloat + f4 * paramFloat * paramFloat * 0.5F;
 
-    this.isTurning = false;
-    this.isTurningBackward = false;
-
     int i = this.cachedSeg;
     float f6 = this.prop.SLIDER_DIST - (localSegment.length - f5);
-    if (f6 <= 0.0F) {
+    if (f6 <= 0.0F)
       p1.interpolate(localSegment.posIn, localSegment.posOut, (f5 + this.prop.SLIDER_DIST) / localSegment.length);
-    }
-    else
-    {
-      this.isTurning = true;
-      while (true)
-      {
+    else {
+      while (true) {
         if (i + 1 >= this.path.size()) {
           p1.interpolate(localSegment.posIn, localSegment.posOut, 1.0F + f6 / localSegment.length);
           break;
@@ -2113,15 +1894,10 @@ public class BigshipGeneric extends ActorHMesh
     i = this.cachedSeg;
     localSegment = (Segment)this.path.get(i);
     f6 = this.prop.SLIDER_DIST - f5;
-    if ((f6 <= 0.0F) || (!localSegment.slidersOn)) {
+    if (f6 <= 0.0F)
       p2.interpolate(localSegment.posIn, localSegment.posOut, (f5 - this.prop.SLIDER_DIST) / localSegment.length);
-    }
-    else
-    {
-      this.isTurning = true;
-      this.isTurningBackward = true;
-      while (true)
-      {
+    else {
+      while (true) {
         if (i <= 0) {
           p2.interpolate(localSegment.posIn, localSegment.posOut, 0.0F - f6 / localSegment.length);
           break;
@@ -2136,12 +1912,6 @@ public class BigshipGeneric extends ActorHMesh
 
     }
 
-    if ((!Mission.isDogfight()) && (!this.isTurning) && (this.mustRecomputePath) && (f6 < -1.5D * this.prop.SLIDER_DIST))
-    {
-      computeNewPath();
-      this.mustRecomputePath = false;
-    }
-
     p.interpolate(p1, p2, 0.5F);
 
     tmpvd.sub(p1, p2);
@@ -2149,14 +1919,14 @@ public class BigshipGeneric extends ActorHMesh
       localSegment = (Segment)this.path.get(this.cachedSeg);
       tmpvd.sub(localSegment.posOut, localSegment.posIn);
     }
-    float f7 = (float)(Math.atan2(tmpvd.y, tmpvd.x) * 57.295779513082323D);
+    float f7 = (float)(Math.atan2(tmpvd.jdField_y_of_type_Double, tmpvd.jdField_x_of_type_Double) * 57.295779513082323D);
 
     setPosition(p, f7);
   }
 
   public void addRockingSpeed(Vector3d paramVector3d1, Vector3d paramVector3d2, Point3d paramPoint3d)
   {
-    this.tmpV.sub(paramPoint3d, this.pos.getAbsPoint());
+    this.tmpV.sub(paramPoint3d, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     this.o.transformInv(this.tmpV);
     this.tmpV.cross(this.W, this.tmpV);
     this.o.transform(this.tmpV);
@@ -2172,18 +1942,18 @@ public class BigshipGeneric extends ActorHMesh
     float f2 = 0.05F * (20.0F - Math.abs(this.bodyPitch));
     if (f2 < 0.0F) f2 = 0.0F;
     float f3 = this.rollAmp * f2 * (float)Math.sin(f1 * 2.0F * 3.141592653589793D);
-    this.W.x = (-this.rollWAmp * f2 * Math.cos(f1 * 2.0F * 3.141592653589793D));
+    this.W.jdField_x_of_type_Double = (-this.rollWAmp * f2 * Math.cos(f1 * 2.0F * 3.141592653589793D));
     f1 = (float)(NetServerParams.getServerTime() % this.pitchPeriod) / this.pitchPeriod;
     float f4 = this.pitchAmp * f2 * (float)Math.sin(f1 * 2.0F * 3.141592653589793D);
-    this.W.y = (-this.pitchWAmp * f2 * Math.cos(f1 * 2.0F * 3.141592653589793D));
+    this.W.jdField_y_of_type_Double = (-this.pitchWAmp * f2 * Math.cos(f1 * 2.0F * 3.141592653589793D));
 
     this.o.setYPR(this.shipYaw, this.bodyPitch + f4, this.bodyRoll + f3);
     this.N.set(0.0D, 0.0D, 1.0D);
     this.o.transform(this.N);
     this.initOr.setYPR(this.shipYaw, this.bodyPitch, this.bodyRoll);
 
-    paramPoint3d.z = (-this.bodyDepth);
-    this.pos.setAbs(paramPoint3d, this.o);
+    paramPoint3d.jdField_z_of_type_Double = (-this.bodyDepth);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d, this.o);
     this.initLoc.set(paramPoint3d, this.initOr);
   }
 
@@ -2192,10 +1962,10 @@ public class BigshipGeneric extends ActorHMesh
     this.o.setYPR(this.shipYaw, this.bodyPitch, this.bodyRoll);
     this.N.set(0.0D, 0.0D, 1.0D);
     this.o.transform(this.N);
-    this.pos.setAbs(this.o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.o);
 
     align();
-    this.initLoc.set(this.pos.getAbs());
+    this.initLoc.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
   }
 
   public int WeaponsMask()
@@ -2328,7 +2098,7 @@ public class BigshipGeneric extends ActorHMesh
       localNetMsgGuaranted.writeByte(68);
 
       localNetMsgGuaranted.writeLong(this.timeOfDeath);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
 
       long l1 = Time.tickNext();
       long l2 = 0L;
@@ -2414,9 +2184,9 @@ public class BigshipGeneric extends ActorHMesh
       }
 
       if (paramNetChannel == null)
-        this.net.post(localNetMsgGuaranted);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
       else
-        this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
     }
     catch (Exception localException)
     {
@@ -2434,7 +2204,7 @@ public class BigshipGeneric extends ActorHMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -2459,7 +2229,7 @@ public class BigshipGeneric extends ActorHMesh
 
     this.netsendFire_lasttimeMS = l1;
 
-    if (!this.net.isMirrored())
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())
     {
       for (i = 0; i < this.arms.length; i++) {
         FiringDevice.access$702(this.arms[i], null);
@@ -2494,10 +2264,10 @@ public class BigshipGeneric extends ActorHMesh
         {
           break;
         }
-        TmpTrackOrFireInfo.access$5502(netsendFire_tmpbuff[i], m);
-        TmpTrackOrFireInfo.access$5602(netsendFire_tmpbuff[i], this.arms[m].enemy);
-        TmpTrackOrFireInfo.access$5702(netsendFire_tmpbuff[i], this.arms[m].timeWhenFireS);
-        TmpTrackOrFireInfo.access$5902(netsendFire_tmpbuff[i], this.arms[m].shotpointIdx);
+        TmpTrackOrFireInfo.access$5402(netsendFire_tmpbuff[i], m);
+        TmpTrackOrFireInfo.access$5502(netsendFire_tmpbuff[i], this.arms[m].enemy);
+        TmpTrackOrFireInfo.access$5602(netsendFire_tmpbuff[i], this.arms[m].timeWhenFireS);
+        TmpTrackOrFireInfo.access$5802(netsendFire_tmpbuff[i], this.arms[m].shotpointIdx);
 
         FiringDevice.access$702(this.arms[m], null);
 
@@ -2529,7 +2299,7 @@ public class BigshipGeneric extends ActorHMesh
           continue;
         }
         localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].gun_idx);
-        localNetMsgFiltered.writeNetObj(netsendFire_tmpbuff[k].enemy.net);
+        localNetMsgFiltered.writeNetObj(netsendFire_tmpbuff[k].enemy.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].shotpointIdx);
         j--;
       }
@@ -2567,14 +2337,14 @@ public class BigshipGeneric extends ActorHMesh
 
         localNetMsgFiltered.writeByte(n);
         localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].gun_idx);
-        localNetMsgFiltered.writeNetObj(netsendFire_tmpbuff[k].enemy.net);
+        localNetMsgFiltered.writeNetObj(netsendFire_tmpbuff[k].enemy.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].shotpointIdx);
-        TmpTrackOrFireInfo.access$5602(netsendFire_tmpbuff[k], null);
+        TmpTrackOrFireInfo.access$5502(netsendFire_tmpbuff[k], null);
       }
 
       localNetMsgFiltered.setIncludeTime(true);
 
-      this.net.post(l1, localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(l1, localNetMsgFiltered);
     }
     catch (Exception localException) {
       System.out.println(localException.getMessage());
@@ -2604,7 +2374,7 @@ public class BigshipGeneric extends ActorHMesh
 
     this.netsendPartsState_needtosend = false;
 
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
 
@@ -2612,18 +2382,6 @@ public class BigshipGeneric extends ActorHMesh
     try {
       localNetMsgGuaranted.writeByte(83);
 
-      if (!Mission.isDogfight())
-      {
-        i = 127;
-        if ((this.path != null) && (this.CURRSPEED < this.prop.SPEED))
-        {
-          i = Math.round(this.CURRSPEED);
-          if (i < 0) i = 0;
-          if (i > 126) i = 126;
-        }
-
-        localNetMsgGuaranted.writeByte(i);
-      }
       int i = (this.parts.length + 3) / 4;
 
       int j = 0;
@@ -2639,7 +2397,7 @@ public class BigshipGeneric extends ActorHMesh
         localNetMsgGuaranted.writeByte(m);
       }
 
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     }
     catch (Exception localException) {
       System.out.println(localException.getMessage());
@@ -2652,7 +2410,7 @@ public class BigshipGeneric extends ActorHMesh
     if (!isNetMaster()) {
       return;
     }
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
     if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
@@ -2667,47 +2425,12 @@ public class BigshipGeneric extends ActorHMesh
     paramInt2 &= 255;
 
     FiringDevice.access$702(this.arms[paramInt1], paramActor);
-    FiringDevice.access$6002(this.arms[paramInt1], paramInt2);
+    FiringDevice.access$5902(this.arms[paramInt1], paramInt2);
 
     if (paramFloat < 0.0F)
-      FiringDevice.access$5802(this.arms[paramInt1], -1.0D);
+      FiringDevice.access$5702(this.arms[paramInt1], -1.0D);
     else
-      FiringDevice.access$5802(this.arms[paramInt1], paramFloat + NetServerParams.getServerTime() * 0.001D);
-  }
-
-  private void mirror_send_speed()
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
-      return;
-    }
-
-    if (!Mission.isCoop()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(86);
-
-      int i = 127;
-      if ((this.path != null) && (this.CURRSPEED < this.prop.SPEED))
-      {
-        i = Math.round(this.CURRSPEED);
-        if (i < 0) i = 0;
-        if (i > 126) i = 126;
-      }
-      localNetMsgGuaranted.writeByte(i);
-
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
+      FiringDevice.access$5702(this.arms[paramInt1], paramFloat + NetServerParams.getServerTime() * 0.001D);
   }
 
   private void mirror_send_bufferized_Damage()
@@ -2716,7 +2439,7 @@ public class BigshipGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream)) {
       return;
     }
 
@@ -2776,7 +2499,7 @@ public class BigshipGeneric extends ActorHMesh
 
         localNetMsgFiltered.writeByte(k);
         localNetMsgFiltered.writeByte(m);
-        localNetMsgFiltered.writeNetObj(localActor == null ? null : localActor.net);
+        localNetMsgFiltered.writeNetObj(localActor == null ? null : localActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
 
         i++;
 
@@ -2792,7 +2515,7 @@ public class BigshipGeneric extends ActorHMesh
 
       if (i > 0) {
         localNetMsgFiltered.setIncludeTime(false);
-        this.net.postTo(l1, this.net.masterChannel(), localNetMsgFiltered);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(l1, this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
       }
     }
     catch (Exception localException) {
@@ -2805,104 +2528,21 @@ public class BigshipGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
-  public void requestLocationOnCarrierDeck(NetUser paramNetUser, String paramString)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-    try
-    {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(93);
-      localNetMsgGuaranted.writeNetObj(paramNetUser);
-      localNetMsgGuaranted.writeUTF(paramString);
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void handleLocationRequest(NetUser paramNetUser, String paramString)
-  {
-    try
-    {
-      Class localClass = ObjIO.classForName(paramString);
-      Object localObject = localClass.newInstance();
-      Aircraft localAircraft = (Aircraft)localObject;
-
-      String str = Property.stringValue(localAircraft.getClass(), "FlightModel", null);
-      localAircraft.FM = new FlightModel(str);
-      localAircraft.FM.Gears.set(localAircraft.hierMesh());
-      Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), 1.0F);
-      localAircraft.FM.Gears.computePlaneLandPose(localAircraft.FM);
-      Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), 0.0F);
-
-      if (this.airport != null)
-      {
-        Loc localLoc = this.airport.requestCell(localAircraft);
-        postLocationToMirror(paramNetUser, localLoc);
-      }
-      localAircraft.FM = null;
-      localAircraft.destroy();
-      localAircraft = null;
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
-
-  private void postLocationToMirror(NetUser paramNetUser, Loc paramLoc)
-  {
-    try
-    {
-      NetChannel localNetChannel = null;
-      List localList = NetEnv.channels();
-      for (int i = 0; i < localList.size(); i++)
-      {
-        localNetChannel = (NetChannel)localList.get(i);
-        NetObj localNetObj = localNetChannel.getMirror(paramNetUser.idRemote());
-        if (paramNetUser == localNetObj)
-        {
-          break;
-        }
-        localNetChannel = null;
-      }
-
-      if (localNetChannel == null)
-        return;
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(93);
-      localNetMsgGuaranted.writeDouble(paramLoc.getX());
-      localNetMsgGuaranted.writeDouble(paramLoc.getY());
-      localNetMsgGuaranted.writeDouble(paramLoc.getZ());
-      localNetMsgGuaranted.writeFloat(paramLoc.getAzimut());
-      localNetMsgGuaranted.writeFloat(paramLoc.getTangage());
-      localNetMsgGuaranted.writeFloat(paramLoc.getKren());
-      this.net.postTo(localNetChannel, localNetMsgGuaranted);
-    }
-    catch (IOException localIOException)
-    {
-      localIOException.printStackTrace();
-    }
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel) throws IOException
+  public void netFirstUpdate(NetChannel paramNetChannel)
+    throws IOException
   {
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     localNetMsgGuaranted.writeByte(73);
 
     localNetMsgGuaranted.writeLong(-1L);
 
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
 
     if (this.dying == 0)
     {
@@ -2954,7 +2594,7 @@ public class BigshipGeneric extends ActorHMesh
 
     setGunAngles(localFiringDevice, f2, f3);
 
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
   }
 
   public Actor findEnemy(Aim paramAim)
@@ -2978,7 +2618,7 @@ public class BigshipGeneric extends ActorHMesh
       NearestEnemies.set(localShipPartProperties.WEAPONS_MASK, KmHourToMSec(100.0F), 9999.9004F);
     }
 
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), localShipPartProperties.ATTACK_MAX_RADIUS, getArmy());
+    localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), localShipPartProperties.ATTACK_MAX_RADIUS, getArmy());
 
     if (localActor == null) {
       return null;
@@ -2993,15 +2633,15 @@ public class BigshipGeneric extends ActorHMesh
 
     BulletProperties localBulletProperties = null;
 
-    if (localFiringDevice.gun.prop != null) {
-      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+    if (localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties != null) {
+      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
 
       if (i < 0)
       {
         return null;
       }
 
-      localBulletProperties = localFiringDevice.gun.prop.bullet[i];
+      localBulletProperties = localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[i];
     }
 
     int i = ((Prey)localActor).chooseShotpoint(localBulletProperties);
@@ -3080,7 +2720,7 @@ public class BigshipGeneric extends ActorHMesh
     FiringDevice localFiringDevice = GetFiringDevice(paramAim);
 
     if ((localFiringDevice.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (i < 0) {
         return 0;
       }
@@ -3108,7 +2748,7 @@ public class BigshipGeneric extends ActorHMesh
     float f2 = 0.05F;
 
     double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
+    double d2 = localPoint3d1.jdField_z_of_type_Double;
 
     localPoint3d1.sub(localPoint3d2);
     localPoint3d1.scale(Rnd(0.995D, 1.005D));
@@ -3116,7 +2756,7 @@ public class BigshipGeneric extends ActorHMesh
 
     if (f1 > 0.001F) {
       Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d3);
 
       tmpvd.sub(localPoint3d1, localPoint3d3);
       double d3 = tmpvd.length();
@@ -3129,7 +2769,7 @@ public class BigshipGeneric extends ActorHMesh
         float f8 = f7 * 0.01F;
 
         localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
+        double d4 = localPoint3d3.jdField_x_of_type_Double * localPoint3d3.jdField_x_of_type_Double + localPoint3d3.jdField_y_of_type_Double * localPoint3d3.jdField_y_of_type_Double + localPoint3d3.jdField_z_of_type_Double * localPoint3d3.jdField_z_of_type_Double;
 
         if (d4 > 0.01D) {
           float f9 = (float)tmpvd.dot(localPoint3d3);
@@ -3164,8 +2804,8 @@ public class BigshipGeneric extends ActorHMesh
 
     }
 
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
+    if (World.Sun().ToSun.jdField_z_of_type_Float < -0.15F) {
+      f5 = (-World.Sun().ToSun.jdField_z_of_type_Float - 0.15F) / 0.13F;
       if (f5 >= 1.0F) {
         f5 = 1.0F;
       }
@@ -3199,7 +2839,7 @@ public class BigshipGeneric extends ActorHMesh
       f4 = localShipPartProperties.GUN_MAX_PITCH_SPEED;
     }
 
-    this.o.add(localShipPartProperties.fireOrient, this.pos.getAbs().getOrient());
+    this.o.add(localShipPartProperties.fireOrient, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient());
     int j = paramAim.setRotationForTargeting(this, this.o, localPoint3d2, localFiringDevice.headYaw, localFiringDevice.gunPitch, localVector3d, f2, f1, localShipPartProperties.HEAD_YAW_RANGE, localShipPartProperties.GUN_MIN_PITCH, localShipPartProperties.GUN_MAX_PITCH, f3, f4, 0.0F);
 
     return j;
@@ -3239,7 +2879,7 @@ public class BigshipGeneric extends ActorHMesh
   {
     if (this.prop.propAirport != null) {
       this.prop.propAirport.firstInit(this);
-      this.draw = new TowStringMeshDraw(this.draw);
+      this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new TowStringMeshDraw(this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw);
       if (this.prop.propAirport.cellTO != null)
         this.cellTO = ((CellAirField)this.prop.propAirport.cellTO.getClone());
       if (this.prop.propAirport.cellLDG != null)
@@ -3263,7 +2903,7 @@ public class BigshipGeneric extends ActorHMesh
       requestDetowAircraft(this.towAircraft);
       return;
     }
-    if (this.pos.getAbsPoint().distance(this.towAircraft.pos.getAbsPoint()) > hierMesh().visibilityR()) {
+    if (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(this.towAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint()) > hierMesh().visibilityR()) {
       requestDetowAircraft(this.towAircraft);
       return;
     }
@@ -3299,41 +2939,41 @@ public class BigshipGeneric extends ActorHMesh
 
     for (int i = 0; i < arrayOfPoint3d.length / 2; i++)
     {
-      this.pos.getCurrent(localLoc1);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(localLoc1);
       localPoint3d3.set(arrayOfPoint3d[(i + i)]);
       localLoc1.transform(localPoint3d3);
 
       localPoint3d4.set(arrayOfPoint3d[(i + i + 1)]);
       localLoc1.transform(localPoint3d4);
 
-      paramAircraft.pos.getCurrent(localLoc2);
+      paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(localLoc2);
       localLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
       localHookNamed.computePos(paramAircraft, localLoc2, localLoc1);
       localPoint3d1.set(localLoc1.getPoint());
 
-      paramAircraft.pos.getPrev(localLoc2);
+      paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getPrev(localLoc2);
       localLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
       localHookNamed.computePos(paramAircraft, localLoc2, localLoc1);
       localPoint3d2.set(localLoc1.getPoint());
 
-      if (localPoint3d2.z >= localPoint3d3.z + 0.5D * (localPoint3d4.z - localPoint3d3.z) + 0.2D)
+      if (localPoint3d2.jdField_z_of_type_Double >= localPoint3d3.jdField_z_of_type_Double + 0.5D * (localPoint3d4.jdField_z_of_type_Double - localPoint3d3.jdField_z_of_type_Double) + 0.2D)
         continue;
-      Line2d localLine2d1 = new Line2d(new Point2d(localPoint3d3.x, localPoint3d3.y), new Point2d(localPoint3d4.x, localPoint3d4.y));
-      Line2d localLine2d2 = new Line2d(new Point2d(localPoint3d1.x, localPoint3d1.y), new Point2d(localPoint3d2.x, localPoint3d2.y));
+      Line2d localLine2d1 = new Line2d(new Point2d(localPoint3d3.jdField_x_of_type_Double, localPoint3d3.jdField_y_of_type_Double), new Point2d(localPoint3d4.jdField_x_of_type_Double, localPoint3d4.jdField_y_of_type_Double));
+      Line2d localLine2d2 = new Line2d(new Point2d(localPoint3d1.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double), new Point2d(localPoint3d2.jdField_x_of_type_Double, localPoint3d2.jdField_y_of_type_Double));
       try
       {
         Point2d localPoint2d = localLine2d1.crossPRE(localLine2d2);
-        double d1 = Math.min(localPoint3d3.x, localPoint3d4.x);
-        double d2 = Math.max(localPoint3d3.x, localPoint3d4.x);
-        double d3 = Math.min(localPoint3d3.y, localPoint3d4.y);
-        double d4 = Math.max(localPoint3d3.y, localPoint3d4.y);
+        double d1 = Math.min(localPoint3d3.jdField_x_of_type_Double, localPoint3d4.jdField_x_of_type_Double);
+        double d2 = Math.max(localPoint3d3.jdField_x_of_type_Double, localPoint3d4.jdField_x_of_type_Double);
+        double d3 = Math.min(localPoint3d3.jdField_y_of_type_Double, localPoint3d4.jdField_y_of_type_Double);
+        double d4 = Math.max(localPoint3d3.jdField_y_of_type_Double, localPoint3d4.jdField_y_of_type_Double);
 
-        if ((localPoint2d.x > d1) && (localPoint2d.x < d2) && (localPoint2d.y > d3) && (localPoint2d.y < d4)) {
-          d1 = Math.min(localPoint3d1.x, localPoint3d2.x);
-          d2 = Math.max(localPoint3d1.x, localPoint3d2.x);
-          d3 = Math.min(localPoint3d1.y, localPoint3d2.y);
-          d4 = Math.max(localPoint3d1.y, localPoint3d2.y);
-          if ((localPoint2d.x > d1) && (localPoint2d.x < d2) && (localPoint2d.y > d3) && (localPoint2d.y < d4))
+        if ((localPoint2d.jdField_x_of_type_Double > d1) && (localPoint2d.jdField_x_of_type_Double < d2) && (localPoint2d.jdField_y_of_type_Double > d3) && (localPoint2d.jdField_y_of_type_Double < d4)) {
+          d1 = Math.min(localPoint3d1.jdField_x_of_type_Double, localPoint3d2.jdField_x_of_type_Double);
+          d2 = Math.max(localPoint3d1.jdField_x_of_type_Double, localPoint3d2.jdField_x_of_type_Double);
+          d3 = Math.min(localPoint3d1.jdField_y_of_type_Double, localPoint3d2.jdField_y_of_type_Double);
+          d4 = Math.max(localPoint3d1.jdField_y_of_type_Double, localPoint3d2.jdField_y_of_type_Double);
+          if ((localPoint2d.jdField_x_of_type_Double > d1) && (localPoint2d.jdField_x_of_type_Double < d2) && (localPoint2d.jdField_y_of_type_Double > d3) && (localPoint2d.jdField_y_of_type_Double < d4))
           {
             this.towPortNum = i;
             this.towAircraft = paramAircraft;
@@ -3385,162 +3025,6 @@ public class BigshipGeneric extends ActorHMesh
     return tmpDir.length();
   }
 
-  private void zutiRefreshBornPlace()
-  {
-    if ((this.zutiBornPlace == null) || (this.zutiIsClassBussy)) {
-      return;
-    }
-    this.zutiIsClassBussy = true;
-
-    if (this.dying == 0)
-    {
-      Point3d localPoint3d = this.pos.getAbsPoint();
-      this.zutiBornPlace.place.set(localPoint3d.x, localPoint3d.y);
-
-      if (this.zutiBornPlace.zutiBpStayPoints != null)
-      {
-        for (int i = 0; i < this.zutiBornPlace.zutiBpStayPoints.size(); i++)
-        {
-          ZutiStayPoint localZutiStayPoint = (ZutiStayPoint)this.zutiBornPlace.zutiBpStayPoints.get(i);
-          localZutiStayPoint.PsVsShipRefresh(localPoint3d.x, localPoint3d.y, this.initOr.getYaw());
-        }
-      }
-
-    }
-    else if (this.dying > 0)
-    {
-      ZutiSupportMethods.removeBornPlace(this.zutiBornPlace);
-      this.zutiBornPlace = null;
-    }
-
-    this.zutiIsClassBussy = false;
-  }
-
-  private void zutiAssignStayPointsToBp()
-  {
-    if (this.zutiBornPlace == null) {
-      return;
-    }
-    double d1 = this.pos.getAbsPoint().x;
-    double d2 = this.pos.getAbsPoint().y;
-
-    this.zutiBornPlace.zutiBpStayPoints = new ArrayList();
-
-    double d3 = 22500.0D;
-    Point_Stay[][] arrayOfPoint_Stay = World.cur().airdrome.stay;
-
-    ArrayList localArrayList = new ArrayList();
-
-    for (int i = 0; i < arrayOfPoint_Stay.length; i++)
-    {
-      if (arrayOfPoint_Stay[i] == null)
-        continue;
-      localObject1 = arrayOfPoint_Stay[i][(arrayOfPoint_Stay[i].length - 1)];
-      double d4 = (((Point_Stay)localObject1).x - d1) * (((Point_Stay)localObject1).x - d1) + (((Point_Stay)localObject1).y - d2) * (((Point_Stay)localObject1).y - d2);
-      if (d4 > d3) {
-        continue;
-      }
-      localArrayList.add(localObject1);
-    }
-
-    i = localArrayList.size();
-    Object localObject1 = toString();
-
-    if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[0]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[1]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[2]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_CV2;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[3]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[4]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_CV9;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[5]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[6]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[18]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_CVE;
-    else if (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[7]) > 0)
-      i -= Mission.cur().zutiCarrierSpawnPoints_CVL;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[8]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[9]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[13]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[14]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_HMS;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[10]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[15]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_Akagi;
-    else if (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[11]) > 0)
-      i -= Mission.cur().zutiCarrierSpawnPoints_IJN;
-    Object localObject2;
-    for (int j = 0; j < i; j++)
-    {
-      localObject2 = (Point_Stay)localArrayList.get(j);
-      ((Point_Stay)localObject2).set(-1000000.0F, -1000000.0F);
-    }
-
-    if (i < 0) {
-      return;
-    }
-
-    for (j = i; j < localArrayList.size(); j++)
-    {
-      try
-      {
-        localObject2 = new ZutiStayPoint();
-        ((ZutiStayPoint)localObject2).pointStay = ((Point_Stay)localArrayList.get(j));
-        ((ZutiStayPoint)localObject2).PsVsShip(d1, d2, this.initOr.getYaw(), j, (String)localObject1);
-
-        if (this.zutiBornPlace == null) {
-          return;
-        }
-        this.zutiBornPlace.zutiBpStayPoints.add(localObject2);
-      } catch (Exception localException) {
-        System.out.println("BigshipGeneric zutiAssignStayPointsToBp error: " + localException.toString()); localException.printStackTrace();
-      }
-    }
-
-    this.zutiBornPlace.zutiSetBornPlaceStayPointsNumber(localArrayList.size() - i);
-  }
-
-  public void zutiAssignBornPlace()
-  {
-    double d1 = this.pos.getAbsPoint().x;
-    double d2 = this.pos.getAbsPoint().y;
-    double d3 = 1000000.0D;
-
-    Object localObject = null;
-
-    ArrayList localArrayList = World.cur().bornPlaces;
-    for (int i = 0; i < localArrayList.size(); i++)
-    {
-      BornPlace localBornPlace = (BornPlace)localArrayList.get(i);
-      if (localBornPlace.zutiAlreadyAssigned) {
-        continue;
-      }
-      double d4 = Math.sqrt(Math.pow(localBornPlace.place.x - d1, 2.0D) + Math.pow(localBornPlace.place.y - d2, 2.0D));
-
-      if ((d4 >= d3) || (localBornPlace.army != getArmy()))
-        continue;
-      d3 = d4;
-      localObject = localBornPlace;
-    }
-
-    if (d3 < 1000.0D)
-    {
-      this.zutiBornPlace = localObject;
-      localObject.zutiAlreadyAssigned = true;
-      zutiAssignStayPointsToBp();
-    }
-  }
-
-  public int zutiGetDying()
-  {
-    return this.dying;
-  }
-
-  public boolean zutiIsStatic()
-  {
-    return (this.path == null) || (this.path.size() <= 0);
-  }
-
-  public void showTransparentRunwayRed()
-  {
-    hierMesh().chunkVisible("Red", true);
-  }
-
-  public void hideTransparentRunwayRed() {
-    hierMesh().chunkVisible("Red", false);
-  }
-
   static
   {
     for (int i = 0; i < netsendFire_tmpbuff.length; i++) {
@@ -3563,14 +3047,6 @@ public class BigshipGeneric extends ActorHMesh
     tmpBitsState = new byte[32];
 
     tmpDir = new Vector3d();
-
-    ZUTI_RADAR_SHIPS = new String[] { "CV", "Marat", "Kirov", "BB", "Niobe", "Illmarinen", "Vainamoinen", "Tirpitz", "Aurora", "Carrier0", "Carrier1" };
-
-    ZUTI_RADAR_SHIPS_SMALL = new String[] { "Destroyer", "DD", "USSMcKean", "Italia0", "Italia1" };
-
-    ZUTI_CARRIER_STRING = new String[] { "CV", "Carrier" };
-
-    ZUTI_CARRIER_SUBCLASS_STRING = new String[] { "USSCVGeneric", "CV3", "CV2", "CV9", "CV11", "CVE", "Carrier1", "CVL", "HMS", "Carrier0", "Akagi", "IJN", "Generic", "Formidable", "Indomitable", "Hiryu", "Kaga", "Soryu", "IJNCVLGeneric" };
   }
 
   private static class TowStringMeshDraw extends ActorMeshDraw
@@ -3588,7 +3064,7 @@ public class BigshipGeneric extends ActorHMesh
       if (localBigshipGeneric.prop.propAirport == null) return;
       Point3d[] arrayOfPoint3d = localBigshipGeneric.prop.propAirport.towPRel;
       if (arrayOfPoint3d == null) return;
-      paramActor.pos.getRender(lRender);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(lRender);
       int i = arrayOfPoint3d.length / 2;
       for (int j = 0; j < i; j++)
         if (j != localBigshipGeneric.towPortNum) {
@@ -3598,12 +3074,12 @@ public class BigshipGeneric extends ActorHMesh
         } else if (Actor.isValid(localBigshipGeneric.towAircraft)) {
           lRender.transform(arrayOfPoint3d[(j * 2)], p0);
           l.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-          localBigshipGeneric.towHook.computePos(localBigshipGeneric.towAircraft, localBigshipGeneric.towAircraft.pos.getRender(), l);
+          localBigshipGeneric.towHook.computePos(localBigshipGeneric.towAircraft, localBigshipGeneric.towAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(), l);
           p1.set(l.getPoint());
           renderTow(localBigshipGeneric.prop.propAirport.towString);
           lRender.transform(arrayOfPoint3d[(j * 2 + 1)], p0);
           l.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-          localBigshipGeneric.towHook.computePos(localBigshipGeneric.towAircraft, localBigshipGeneric.towAircraft.pos.getRender(), l);
+          localBigshipGeneric.towHook.computePos(localBigshipGeneric.towAircraft, localBigshipGeneric.towAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(), l);
           p1.set(l.getPoint());
           renderTow(localBigshipGeneric.prop.propAirport.towString);
         }
@@ -3871,18 +3347,18 @@ public class BigshipGeneric extends ActorHMesh
 
         localShipPartProperties.baseChunkName = getS(paramSectFile, str1, "BaseChunk");
 
-        int k = 0;
-        while (paramSectFile.exist(str1, "AdditionalCollisionChunk" + k)) {
-          k++;
+        int m = 0;
+        while (paramSectFile.exist(str1, "AdditionalCollisionChunk" + m)) {
+          m++;
         }
-        if (k > 4) {
+        if (m > 4) {
           System.out.println("BigShip: Too many addcollischunks in '" + str1 + "'");
 
           throw new RuntimeException("Can't register BigShip object");
         }
-        localShipPartProperties.additCollisChunkName = new String[k];
-        for (int m = 0; m < k; m++) {
-          localShipPartProperties.additCollisChunkName[m] = getS(paramSectFile, str1, "AdditionalCollisionChunk" + m);
+        localShipPartProperties.additCollisChunkName = new String[m];
+        for (int n = 0; n < m; n++) {
+          localShipPartProperties.additCollisChunkName[n] = getS(paramSectFile, str1, "AdditionalCollisionChunk" + n);
         }
 
         String str2 = null;
@@ -3983,15 +3459,15 @@ public class BigshipGeneric extends ActorHMesh
       localShipProperties.WEAPONS_MASK = 0;
       localShipProperties.ATTACK_MAX_DISTANCE = 1.0F;
 
-      for (j = 0; j < localShipProperties.propparts.length; j++) {
-        if (!localShipProperties.propparts[j].haveGun())
+      for (int k = 0; k < localShipProperties.propparts.length; k++) {
+        if (!localShipProperties.propparts[k].haveGun())
         {
           continue;
         }
-        localShipProperties.WEAPONS_MASK |= localShipProperties.propparts[j].WEAPONS_MASK;
+        localShipProperties.WEAPONS_MASK |= localShipProperties.propparts[k].WEAPONS_MASK;
 
-        if (localShipProperties.ATTACK_MAX_DISTANCE < localShipProperties.propparts[j].ATTACK_MAX_DISTANCE) {
-          localShipProperties.ATTACK_MAX_DISTANCE = localShipProperties.propparts[j].ATTACK_MAX_DISTANCE;
+        if (localShipProperties.ATTACK_MAX_DISTANCE < localShipProperties.propparts[k].ATTACK_MAX_DISTANCE) {
+          localShipProperties.ATTACK_MAX_DISTANCE = localShipProperties.propparts[k].ATTACK_MAX_DISTANCE;
         }
 
       }
@@ -4032,14 +3508,14 @@ public class BigshipGeneric extends ActorHMesh
       BigshipGeneric localBigshipGeneric = null;
       try
       {
-        BigshipGeneric.access$6902(this.proper);
-        BigshipGeneric.access$7002(paramActorSpawnArg);
+        BigshipGeneric.access$6502(this.proper);
+        BigshipGeneric.access$6602(paramActorSpawnArg);
         localBigshipGeneric = (BigshipGeneric)this.cls.newInstance();
-        BigshipGeneric.access$6902(null);
-        BigshipGeneric.access$7002(null);
+        BigshipGeneric.access$6502(null);
+        BigshipGeneric.access$6602(null);
       } catch (Exception localException) {
-        BigshipGeneric.access$6902(null);
-        BigshipGeneric.access$7002(null);
+        BigshipGeneric.access$6502(null);
+        BigshipGeneric.access$6602(null);
         System.out.println(localException.getMessage());
         localException.printStackTrace();
         System.out.println("SPAWN: Can't create Ship object [class:" + this.cls.getName() + "]");
@@ -4057,33 +3533,18 @@ public class BigshipGeneric extends ActorHMesh
     public boolean netInput(NetMsgInput paramNetMsgInput)
       throws IOException
     {
-      int m;
-      int i3;
-      int i11;
       int i2;
+      int i1;
       if (paramNetMsgInput.isGuaranted())
       {
-        m = paramNetMsgInput.readUnsignedByte();
         NetMsgGuaranted localNetMsgGuaranted1;
-        switch (m)
-        {
-        case 93:
-          double d1 = paramNetMsgInput.readDouble();
-          double d2 = paramNetMsgInput.readDouble();
-          double d3 = paramNetMsgInput.readDouble();
-          float f2 = paramNetMsgInput.readFloat();
-          float f3 = paramNetMsgInput.readFloat();
-          float f4 = paramNetMsgInput.readFloat();
-          Loc localLoc = new Loc(d1, d2, d3, f2, f3, f4);
-          if (BigshipGeneric.this.airport != null)
-            BigshipGeneric.this.airport.setClientLoc(localLoc);
-          return true;
+        switch (paramNetMsgInput.readUnsignedByte()) {
         case 73:
           if (isMirrored()) {
             localNetMsgGuaranted1 = new NetMsgGuaranted(paramNetMsgInput, 0);
             post(localNetMsgGuaranted1);
           }
-          BigshipGeneric.access$5402(BigshipGeneric.this, paramNetMsgInput.readLong());
+          BigshipGeneric.access$5302(BigshipGeneric.this, paramNetMsgInput.readLong());
           if (BigshipGeneric.this.timeOfDeath < 0L)
           {
             if (BigshipGeneric.this.dying == 0) {
@@ -4107,12 +3568,13 @@ public class BigshipGeneric extends ActorHMesh
           BigshipGeneric.this.forgetAllAiming();
           BigshipGeneric.this.setDiedFlag(false);
 
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, 0L));
-          BigshipGeneric.access$3902(BigshipGeneric.this, BigshipGeneric.access$4002(BigshipGeneric.this, BigshipGeneric.access$4102(BigshipGeneric.this, 0.0F)));
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4402(BigshipGeneric.this, 0.0F)));
-          BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.access$4702(BigshipGeneric.this, 0.0F)));
+          BigshipGeneric.access$3602(BigshipGeneric.this, BigshipGeneric.access$3702(BigshipGeneric.this, 0L));
+          BigshipGeneric.access$3802(BigshipGeneric.this, BigshipGeneric.access$3902(BigshipGeneric.this, BigshipGeneric.access$4002(BigshipGeneric.this, 0.0F)));
+          BigshipGeneric.access$4102(BigshipGeneric.this, BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4302(BigshipGeneric.this, 0.0F)));
+          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, 0.0F)));
           BigshipGeneric.this.setPosition();
           BigshipGeneric.this.pos.reset();
+
           return true;
         case 83:
           if (isMirrored()) {
@@ -4120,55 +3582,41 @@ public class BigshipGeneric extends ActorHMesh
             post(localNetMsgGuaranted1);
           }
 
-          int n = paramNetMsgInput.available();
-
-          if (n > 0)
-          {
-            if (!Mission.isDogfight())
-            {
-              i3 = paramNetMsgInput.readUnsignedByte();
-              float f1 = i3;
-
-              if ((BigshipGeneric.this.path != null) && (i3 != 127) && (f1 < BigshipGeneric.this.CURRSPEED))
-              {
-                BigshipGeneric.this.CURRSPEED = f1;
-                BigshipGeneric.this.computeNewPath();
-              }
-              n--;
-            }
-          }
-          i3 = (BigshipGeneric.this.parts.length + 3) / 4;
-          if (n != i3) {
+          int m = paramNetMsgInput.available();
+          i2 = (BigshipGeneric.this.parts.length + 3) / 4;
+          if (m != i2) {
             System.out.println("*** net bigship S");
             return true;
           }
-          if (i3 <= 0) {
+          if (i2 <= 0) {
             System.out.println("*** net bigship S0");
             return true;
           }
 
-          int i4 = 0;
-          for (int i6 = 0; i6 < n; i6++) {
-            int i8 = paramNetMsgInput.readUnsignedByte();
-            for (int i10 = 0; (i10 < 4) && 
-              (i4 < BigshipGeneric.this.parts.length); i10++)
-            {
-              i11 = i8 >>> i10 * 2 & 0x3;
+          int i3 = 0;
+          for (int i5 = 0; i5 < m; i5++) {
+            int i7 = paramNetMsgInput.readUnsignedByte();
+            for (int i9 = 0; i9 < 4; i9++) {
+              if (i3 >= BigshipGeneric.this.parts.length)
+              {
+                break;
+              }
+              int i11 = i7 >>> i9 * 2 & 0x3;
 
-              if (i11 <= BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[i4])) {
-                i4++;
+              if (i11 <= BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[i3])) {
+                i3++;
               }
               else
               {
                 if (i11 == 2)
                 {
-                  BigshipGeneric.Part.access$302(BigshipGeneric.this.parts[i4], 0.0F);
-                  BigshipGeneric.Part.access$402(BigshipGeneric.this.parts[i4], null);
+                  BigshipGeneric.Part.access$302(BigshipGeneric.this.parts[i3], 0.0F);
+                  BigshipGeneric.Part.access$402(BigshipGeneric.this.parts[i3], null);
                 }
 
-                BigshipGeneric.Part.access$102(BigshipGeneric.this.parts[i4], i11);
-                BigshipGeneric.this.visualsInjurePart(i4, true);
-                i4++;
+                BigshipGeneric.Part.access$102(BigshipGeneric.this.parts[i3], i11);
+                BigshipGeneric.this.visualsInjurePart(i3, true);
+                i3++;
               }
             }
           }
@@ -4179,8 +3627,8 @@ public class BigshipGeneric extends ActorHMesh
             post(localNetMsgGuaranted2);
           }
 
-          int i1 = paramNetMsgInput.available();
-          if (i1 != 8) {
+          int n = paramNetMsgInput.available();
+          if (n != 8) {
             System.out.println("*** net bigship d");
             return true;
           }
@@ -4192,15 +3640,15 @@ public class BigshipGeneric extends ActorHMesh
 
           BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyDepth);
-          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyPitch);
-          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.bodyRoll);
+          BigshipGeneric.access$4102(BigshipGeneric.this, BigshipGeneric.this.bodyDepth);
+          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyPitch);
+          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyRoll);
 
-          BigshipGeneric.access$4502(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
+          BigshipGeneric.access$4402(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
+          BigshipGeneric.access$4502(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
           BigshipGeneric.access$4602(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$4702(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, NetServerParams.getServerTime()));
-          BigshipGeneric.access$3814(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
+          BigshipGeneric.access$3602(BigshipGeneric.this, BigshipGeneric.access$3702(BigshipGeneric.this, NetServerParams.getServerTime()));
+          BigshipGeneric.access$3714(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
 
           BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 
@@ -4211,11 +3659,11 @@ public class BigshipGeneric extends ActorHMesh
             post(localNetMsgGuaranted3);
           }
 
-          i3 = paramNetMsgInput.available();
-          if (i3 == 8 + NetMsgInput.netObjReferenceLen() + 8 + 8) {
-            i2 = 0;
-          } else if (i3 == 8 + NetMsgInput.netObjReferenceLen() + 8 + 8 + 8) {
-            i2 = 1;
+          i2 = paramNetMsgInput.available();
+          if (i2 == 8 + NetMsgInput.netObjReferenceLen() + 8 + 8) {
+            i1 = 0;
+          } else if (i2 == 8 + NetMsgInput.netObjReferenceLen() + 8 + 8 + 8) {
+            i1 = 1;
           } else {
             System.out.println("*** net bigship D");
             return true;
@@ -4226,10 +3674,10 @@ public class BigshipGeneric extends ActorHMesh
             return true;
           }
 
-          BigshipGeneric.access$5402(BigshipGeneric.this, paramNetMsgInput.readLong());
+          BigshipGeneric.access$5302(BigshipGeneric.this, paramNetMsgInput.readLong());
 
           if (Mission.isDeathmatch()) {
-            BigshipGeneric.access$5402(BigshipGeneric.this, NetServerParams.getServerTime());
+            BigshipGeneric.access$5302(BigshipGeneric.this, NetServerParams.getServerTime());
           }
 
           if (BigshipGeneric.this.timeOfDeath < 0L) {
@@ -4242,30 +3690,30 @@ public class BigshipGeneric extends ActorHMesh
 
           BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyDepth);
-          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyPitch);
-          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.bodyRoll);
+          BigshipGeneric.access$4102(BigshipGeneric.this, BigshipGeneric.this.bodyDepth);
+          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyPitch);
+          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyRoll);
 
-          BigshipGeneric.access$4502(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
+          BigshipGeneric.access$4402(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
+          BigshipGeneric.access$4502(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
           BigshipGeneric.access$4602(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$4702(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, NetServerParams.getServerTime()));
-          BigshipGeneric.access$3814(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
+          BigshipGeneric.access$3602(BigshipGeneric.this, BigshipGeneric.access$3702(BigshipGeneric.this, NetServerParams.getServerTime()));
+          BigshipGeneric.access$3714(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
 
           BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
 
-          BigshipGeneric.access$4902(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
+          BigshipGeneric.access$4802(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
+          BigshipGeneric.access$4902(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
           BigshipGeneric.access$5002(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$5102(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$5202(BigshipGeneric.this, BigshipGeneric.this.tmInterpoEnd);
-          BigshipGeneric.access$5214(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
+          BigshipGeneric.access$5102(BigshipGeneric.this, BigshipGeneric.this.tmInterpoEnd);
+          BigshipGeneric.access$5114(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
 
-          if (i2 != 0) {
+          if (i1 != 0) {
             long l = paramNetMsgInput.readLong();
             if (l > 0L) {
+              BigshipGeneric.access$3622(BigshipGeneric.this, l);
               BigshipGeneric.access$3722(BigshipGeneric.this, l);
-              BigshipGeneric.access$3822(BigshipGeneric.this, l);
-              BigshipGeneric.access$5222(BigshipGeneric.this, l);
+              BigshipGeneric.access$5122(BigshipGeneric.this, l);
               BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
             }
           }
@@ -4275,7 +3723,7 @@ public class BigshipGeneric extends ActorHMesh
           return true;
         }
 
-        System.out.println("**net bigship unknown cmd " + m);
+        System.out.println("**net bigship unknown cmd");
         return false;
       }
 
@@ -4285,49 +3733,52 @@ public class BigshipGeneric extends ActorHMesh
       if ((i & 0xE0) == 224) {
         j = 1 + NetMsgInput.netObjReferenceLen() + 1;
         k = 2 + NetMsgInput.netObjReferenceLen() + 1;
-        m = paramNetMsgInput.available();
+        i1 = paramNetMsgInput.available();
         i2 = i & 0x1F;
-        i3 = m - i2 * j;
-        int i5 = i3 / k;
-        if ((i5 < 0) || (i5 > 31) || (i2 > 31) || (i3 % k != 0))
+        int i4 = i1 - i2 * j;
+        int i6 = i4 / k;
+        if ((i6 < 0) || (i6 > 31) || (i2 > 31) || (i4 % k != 0))
         {
-          System.out.println("*** net big0 code:" + i + " szT:" + j + " szF:" + k + " len:" + m + " nT:" + i2 + " lenF:" + i3 + " nF:" + i5);
+          System.out.println("*** net big0 code:" + i + " szT:" + j + " szF:" + k + " len:" + i1 + " nT:" + i2 + " lenF:" + i4 + " nF:" + i6);
 
           return true;
         }
 
         if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, i2 + i5);
+          this.out.unLockAndSet(paramNetMsgInput, i2 + i6);
           this.out.setIncludeTime(true);
-          postReal(Message.currentRealTime(), this.out); } int i7;
+          postReal(Message.currentRealTime(), this.out);
+        }int i8;
         Object localObject;
-        while (true) { i2--; if (i2 < 0) break;
-          i7 = paramNetMsgInput.readUnsignedByte();
+        while (true) { i8 = paramNetMsgInput.readUnsignedByte();
 
           NetObj localNetObj2 = paramNetMsgInput.readNetObj();
           localObject = localNetObj2 == null ? null : ((ActorNet)localNetObj2).actor();
 
-          i11 = paramNetMsgInput.readUnsignedByte();
+          int i12 = paramNetMsgInput.readUnsignedByte();
 
-          BigshipGeneric.this.Track_Mirror(i7, (Actor)localObject, i11);
-        }
-        while (true)
-        {
-          i5--; if (i5 < 0) break;
-          i7 = paramNetMsgInput.readUnsignedByte();
-          int i9 = paramNetMsgInput.readUnsignedByte();
+          BigshipGeneric.this.Track_Mirror(i8, (Actor)localObject, i12);
+
+          i2--; if (i2 < 0)
+          {
+            break;
+          } } do {
+          i8 = paramNetMsgInput.readUnsignedByte();
+          int i10 = paramNetMsgInput.readUnsignedByte();
 
           localObject = paramNetMsgInput.readNetObj();
           Actor localActor2 = localObject == null ? null : ((ActorNet)localObject).actor();
 
-          double d4 = -2.0D + i7 / 255.0D * 7000.0D / 1000.0D;
+          double d1 = -2.0D + i8 / 255.0D * 7000.0D / 1000.0D;
 
-          double d5 = 0.001D * (Message.currentGameTime() - NetServerParams.getServerTime()) + d4;
+          double d2 = 0.001D * (Message.currentGameTime() - NetServerParams.getServerTime()) + d1;
 
-          int i12 = paramNetMsgInput.readUnsignedByte();
+          int i13 = paramNetMsgInput.readUnsignedByte();
 
-          BigshipGeneric.this.Fire_Mirror(i9, localActor2, i12, (float)d5);
-        }
+          BigshipGeneric.this.Fire_Mirror(i10, localActor2, i13, (float)d2);
+
+          i6--; } while (i6 >= 0);
+
         return true;
       }
 
@@ -4335,21 +3786,21 @@ public class BigshipGeneric extends ActorHMesh
       {
         j = 2 + NetMsgInput.netObjReferenceLen();
         k = paramNetMsgInput.available();
-        m = k / j;
+        i1 = k / j;
 
-        if ((m <= 0) || (m > 256) || (k % j != 0))
+        if ((i1 <= 0) || (i1 > 256) || (k % j != 0))
         {
-          System.out.println("*** net bigship2 n:" + m);
+          System.out.println("*** net bigship2 n:" + i1);
           return true;
         }
 
-        this.out.unLockAndSet(paramNetMsgInput, m);
+        this.out.unLockAndSet(paramNetMsgInput, i1);
         this.out.setIncludeTime(false);
         postRealTo(Message.currentRealTime(), masterChannel(), this.out);
         return true;
       }
 
-      System.out.println("**net bigship unknown ng cmd " + i);
+      System.out.println("**net bigship unknown ng cmd");
 
       return true;
     }
@@ -4366,46 +3817,17 @@ public class BigshipGeneric extends ActorHMesh
       super();
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput)
-      throws IOException
-    {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        i = paramNetMsgInput.readUnsignedByte();
-
-        if (i == 93)
-        {
-          NetUser localNetUser = (NetUser)paramNetMsgInput.readNetObj();
-          String str = paramNetMsgInput.readUTF();
-          BigshipGeneric.this.handleLocationRequest(localNetUser, str);
-          return true;
-        }
-        if (i != 86)
-        {
-          return false;
-        }
-        i = paramNetMsgInput.readUnsignedByte();
-        float f = i;
-
-        if ((BigshipGeneric.this.path != null) && (i != 127) && (f < BigshipGeneric.this.CURRSPEED))
-        {
-          BigshipGeneric.this.CURRSPEED = f;
-          if (Mission.isCoop())
-          {
-            BigshipGeneric.this.computeNewPath();
-
-            BigshipGeneric.access$2902(BigshipGeneric.this, true);
-          }
-        }
+    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
+      if (paramNetMsgInput.isGuaranted()) {
         return true;
       }
-
       if (paramNetMsgInput.readUnsignedByte() != 80) {
         return false;
       }
       if (BigshipGeneric.this.dying != 0) {
         return true;
       }
+
       int i = 2 + NetMsgInput.netObjReferenceLen();
       int j = paramNetMsgInput.available();
       int k = j / i;
@@ -4414,9 +3836,9 @@ public class BigshipGeneric extends ActorHMesh
         System.out.println("*** net bigship1 len:" + j);
         return true;
       }
-      while (true)
+
+      do
       {
-        k--; if (k < 0) break;
         int m = paramNetMsgInput.readUnsignedByte();
         if ((m < 0) || (m >= BigshipGeneric.this.parts.length))
         {
@@ -4428,14 +3850,12 @@ public class BigshipGeneric extends ActorHMesh
         NetObj localNetObj = paramNetMsgInput.readNetObj();
         Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
 
-        if (BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[m]) != 2)
-        {
+        if (BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[m]) != 2) {
           BigshipGeneric.Part.access$316(BigshipGeneric.this.parts[m], ((n & 0x7F) + 1) / 128.0F);
           BigshipGeneric.Part.access$202(BigshipGeneric.this.parts[m], (n & 0x80) != 0);
           BigshipGeneric.this.InjurePart(m, localActor, true);
         }
-
-      }
+        k--; } while (k >= 0);
 
       return true;
     }
@@ -4454,7 +3874,7 @@ public class BigshipGeneric extends ActorHMesh
       if (BigshipGeneric.this.dying == 0)
       {
         l = Time.tickNext();
-        if ((Mission.isCoop()) || (Mission.isDogfight())) {
+        if (Mission.isCoop()) {
           l = NetServerParams.getServerTime() + Time.tickLen();
         }
         if (BigshipGeneric.this.path != null) {
@@ -4483,15 +3903,15 @@ public class BigshipGeneric extends ActorHMesh
             }
           }
           if (BigshipGeneric.this.wakeupTmr > 0L) {
-            BigshipGeneric.access$2010(BigshipGeneric.this);
+            BigshipGeneric.access$2110(BigshipGeneric.this);
           }
-          else if (BigshipGeneric.access$2004(BigshipGeneric.this) == 0L) {
+          else if (BigshipGeneric.access$2104(BigshipGeneric.this) == 0L) {
             if (BigshipGeneric.this.isAnyEnemyNear())
             {
-              BigshipGeneric.access$2002(BigshipGeneric.this, BigshipGeneric.access$2500(BigshipGeneric.Rnd(BigshipGeneric.this.DELAY_WAKEUP, BigshipGeneric.this.DELAY_WAKEUP * 1.2F)));
+              BigshipGeneric.access$2102(BigshipGeneric.this, BigshipGeneric.access$2600(BigshipGeneric.Rnd(BigshipGeneric.this.DELAY_WAKEUP, BigshipGeneric.this.DELAY_WAKEUP * 1.2F)));
             }
             else {
-              BigshipGeneric.access$2002(BigshipGeneric.this, -BigshipGeneric.access$2500(BigshipGeneric.Rnd(4.0F, 7.0F)));
+              BigshipGeneric.access$2102(BigshipGeneric.this, -BigshipGeneric.access$2600(BigshipGeneric.Rnd(4.0F, 7.0F)));
             }
           }
 
@@ -4501,53 +3921,42 @@ public class BigshipGeneric extends ActorHMesh
           BigshipGeneric.this.send_bufferized_FireCommand();
         }
 
-        if (BigshipGeneric.this.isNetMirror()) {
+        if (BigshipGeneric.this.isNetMirror())
           BigshipGeneric.this.mirror_send_bufferized_Damage();
-
-          if ((Mission.isCoop()) && (BigshipGeneric.this.mustSendSpeedToNet == true))
-          {
-            BigshipGeneric.this.mirror_send_speed();
-
-            BigshipGeneric.this.mustSendSpeedToNet = false;
-          }
-        }
         else if (BigshipGeneric.this.netsendPartsState_needtosend) {
           BigshipGeneric.this.send_bufferized_PartsState();
         }
 
-        BigshipGeneric.this.zutiRefreshBornPlace();
         return true;
       }
 
       if (BigshipGeneric.this.dying == 3)
       {
-        BigshipGeneric.this.zutiRefreshBornPlace();
-
         if ((BigshipGeneric.this.path != null) || (!Mission.isDeathmatch()))
         {
           BigshipGeneric.this.eraseGuns();
           return false;
         }
 
-        if (BigshipGeneric.access$3310(BigshipGeneric.this) > 0L) {
+        if (BigshipGeneric.access$3210(BigshipGeneric.this) > 0L) {
           return true;
         }
 
         if (!BigshipGeneric.this.isNetMaster()) {
-          BigshipGeneric.access$3302(BigshipGeneric.this, 10000L);
+          BigshipGeneric.access$3202(BigshipGeneric.this, 10000L);
           return true;
         }
 
-        BigshipGeneric.access$2002(BigshipGeneric.this, 0L);
+        BigshipGeneric.access$2102(BigshipGeneric.this, 0L);
         BigshipGeneric.this.makeLive();
         BigshipGeneric.this.forgetAllAiming();
         BigshipGeneric.this.setDefaultLivePose();
         BigshipGeneric.this.setDiedFlag(false);
 
-        BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, 0L));
-        BigshipGeneric.access$3902(BigshipGeneric.this, BigshipGeneric.access$4002(BigshipGeneric.this, BigshipGeneric.access$4102(BigshipGeneric.this, 0.0F)));
-        BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4402(BigshipGeneric.this, 0.0F)));
-        BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.access$4702(BigshipGeneric.this, 0.0F)));
+        BigshipGeneric.access$3602(BigshipGeneric.this, BigshipGeneric.access$3702(BigshipGeneric.this, 0L));
+        BigshipGeneric.access$3802(BigshipGeneric.this, BigshipGeneric.access$3902(BigshipGeneric.this, BigshipGeneric.access$4002(BigshipGeneric.this, 0.0F)));
+        BigshipGeneric.access$4102(BigshipGeneric.this, BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4302(BigshipGeneric.this, 0.0F)));
+        BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, 0.0F)));
 
         BigshipGeneric.this.setPosition();
         BigshipGeneric.this.pos.reset();
@@ -4559,35 +3968,34 @@ public class BigshipGeneric extends ActorHMesh
       if (BigshipGeneric.this.netsendPartsState_needtosend) {
         BigshipGeneric.this.send_bufferized_PartsState();
       }
-
-      long l = NetServerParams.getServerTime();
+      long l = Time.tickNext();
 
       if (BigshipGeneric.this.dying == 1)
       {
         if (l >= BigshipGeneric.this.tmInterpoEnd) {
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyDepth1);
-          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyPitch1);
-          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.bodyRoll1);
+          BigshipGeneric.access$4102(BigshipGeneric.this, BigshipGeneric.this.bodyDepth1);
+          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyPitch1);
+          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyRoll1);
 
-          BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.this.sink2Depth);
-          BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.this.sink2Pitch);
-          BigshipGeneric.access$4702(BigshipGeneric.this, BigshipGeneric.this.sink2Roll);
+          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.sink2Depth);
+          BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.this.sink2Pitch);
+          BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.this.sink2Roll);
 
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.this.tmInterpoEnd);
-          BigshipGeneric.access$3802(BigshipGeneric.this, BigshipGeneric.this.sink2timeWhenStop);
+          BigshipGeneric.access$3602(BigshipGeneric.this, BigshipGeneric.this.tmInterpoEnd);
+          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.this.sink2timeWhenStop);
 
-          BigshipGeneric.this.dying = 2;
+          BigshipGeneric.access$1602(BigshipGeneric.this, 2);
         }
 
       }
       else if (l >= BigshipGeneric.this.tmInterpoEnd) {
-        BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.this.sink2Depth));
-        BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.this.sink2Pitch));
-        BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.access$4702(BigshipGeneric.this, BigshipGeneric.this.sink2Roll));
+        BigshipGeneric.access$4102(BigshipGeneric.this, BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.sink2Depth));
+        BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.this.sink2Pitch));
+        BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.this.sink2Roll));
 
-        BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, 0L));
+        BigshipGeneric.access$3602(BigshipGeneric.this, BigshipGeneric.access$3702(BigshipGeneric.this, 0L));
 
-        BigshipGeneric.this.dying = 3;
+        BigshipGeneric.access$1602(BigshipGeneric.this, 3);
       }
 
       if (((Time.tickCounter() & 0x63) == 0) && (BigshipGeneric.this.dsmoks != null)) {
@@ -4609,7 +4017,6 @@ public class BigshipGeneric extends ActorHMesh
         BigshipGeneric.this.setPosition();
       }
 
-      BigshipGeneric.this.zutiRefreshBornPlace();
       return true;
     }
   }
@@ -4641,7 +4048,6 @@ public class BigshipGeneric extends ActorHMesh
     public long timeOut;
     public float speedIn;
     public float speedOut;
-    public boolean slidersOn;
 
     private Segment()
     {

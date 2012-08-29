@@ -10,7 +10,7 @@ public class MGunMG81t extends MGunMG81s
 
     localGunProperties.bUseHookAsRel = false;
     localGunProperties.shells = null;
-    localGunProperties.shotFreq = 26.666666F;
+    localGunProperties.shotFreq = 20.0F;
 
     localGunProperties.maxDeltaAngle = 0.12F;
 

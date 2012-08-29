@@ -32,57 +32,57 @@ public class AxisAngle4f
   }
 
   public AxisAngle4f(Tuple3f paramTuple3f, float paramFloat) {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
+    this.jdField_x_of_type_Float = paramTuple3f.jdField_x_of_type_Float;
+    this.jdField_y_of_type_Float = paramTuple3f.jdField_y_of_type_Float;
+    this.jdField_z_of_type_Float = paramTuple3f.jdField_z_of_type_Float;
     this.angle = paramFloat;
   }
 
   public AxisAngle4f()
   {
-    this.x = 0.0F;
-    this.y = 0.0F;
-    this.z = 1.0F;
+    this.jdField_x_of_type_Float = 0.0F;
+    this.jdField_y_of_type_Float = 0.0F;
+    this.jdField_z_of_type_Float = 1.0F;
     this.angle = 0.0F;
   }
 
   public final void set(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
   {
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.z = paramFloat3;
+    this.jdField_x_of_type_Float = paramFloat1;
+    this.jdField_y_of_type_Float = paramFloat2;
+    this.jdField_z_of_type_Float = paramFloat3;
     this.angle = paramFloat4;
   }
 
   public final void set(float[] paramArrayOfFloat)
   {
-    this.x = paramArrayOfFloat[0];
-    this.y = paramArrayOfFloat[1];
-    this.z = paramArrayOfFloat[2];
+    this.jdField_x_of_type_Float = paramArrayOfFloat[0];
+    this.jdField_y_of_type_Float = paramArrayOfFloat[1];
+    this.jdField_z_of_type_Float = paramArrayOfFloat[2];
     this.angle = paramArrayOfFloat[3];
   }
 
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
-    this.x = paramAxisAngle4f.x;
-    this.y = paramAxisAngle4f.y;
-    this.z = paramAxisAngle4f.z;
+    this.jdField_x_of_type_Float = paramAxisAngle4f.jdField_x_of_type_Float;
+    this.jdField_y_of_type_Float = paramAxisAngle4f.jdField_y_of_type_Float;
+    this.jdField_z_of_type_Float = paramAxisAngle4f.jdField_z_of_type_Float;
     this.angle = paramAxisAngle4f.angle;
   }
 
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
-    this.x = (float)paramAxisAngle4d.x;
-    this.y = (float)paramAxisAngle4d.y;
-    this.z = (float)paramAxisAngle4d.z;
+    this.jdField_x_of_type_Float = (float)paramAxisAngle4d.x;
+    this.jdField_y_of_type_Float = (float)paramAxisAngle4d.y;
+    this.jdField_z_of_type_Float = (float)paramAxisAngle4d.z;
     this.angle = (float)paramAxisAngle4d.angle;
   }
 
   public final void get(float[] paramArrayOfFloat)
   {
-    paramArrayOfFloat[0] = this.x;
-    paramArrayOfFloat[1] = this.y;
-    paramArrayOfFloat[2] = this.z;
+    paramArrayOfFloat[0] = this.jdField_x_of_type_Float;
+    paramArrayOfFloat[1] = this.jdField_y_of_type_Float;
+    paramArrayOfFloat[2] = this.jdField_z_of_type_Float;
     paramArrayOfFloat[3] = this.angle;
   }
 
@@ -108,7 +108,7 @@ public class AxisAngle4f
 
   public final void set(Quat4f paramQuat4f)
   {
-    setFromQuat(paramQuat4f.x, paramQuat4f.y, paramQuat4f.z, paramQuat4f.w);
+    setFromQuat(paramQuat4f.jdField_x_of_type_Float, paramQuat4f.jdField_y_of_type_Float, paramQuat4f.jdField_z_of_type_Float, paramQuat4f.w);
   }
 
   public final void set(Quat4d paramQuat4d)
@@ -119,10 +119,10 @@ public class AxisAngle4f
   private void setFromMat(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7, double paramDouble8, double paramDouble9)
   {
     double d1 = (paramDouble1 + paramDouble5 + paramDouble9 - 1.0D) * 0.5D;
-    this.x = (float)(paramDouble8 - paramDouble6);
-    this.y = (float)(paramDouble3 - paramDouble7);
-    this.z = (float)(paramDouble4 - paramDouble2);
-    double d2 = 0.5D * Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    this.jdField_x_of_type_Float = (float)(paramDouble8 - paramDouble6);
+    this.jdField_y_of_type_Float = (float)(paramDouble3 - paramDouble7);
+    this.jdField_z_of_type_Float = (float)(paramDouble4 - paramDouble2);
+    double d2 = 0.5D * Math.sqrt(this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float);
     this.angle = (float)Math.atan2(d2, d1);
   }
 
@@ -130,19 +130,19 @@ public class AxisAngle4f
   {
     double d = Math.sqrt(paramDouble1 * paramDouble1 + paramDouble2 * paramDouble2 + paramDouble3 * paramDouble3);
     this.angle = (float)(2.0D * Math.atan2(d, paramDouble4));
-    this.x = (float)paramDouble1;
-    this.y = (float)paramDouble2;
-    this.z = (float)paramDouble3;
+    this.jdField_x_of_type_Float = (float)paramDouble1;
+    this.jdField_y_of_type_Float = (float)paramDouble2;
+    this.jdField_z_of_type_Float = (float)paramDouble3;
   }
 
   public String toString()
   {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.angle + ")";
+    return "(" + this.jdField_x_of_type_Float + ", " + this.jdField_y_of_type_Float + ", " + this.jdField_z_of_type_Float + ", " + this.angle + ")";
   }
 
   public boolean equals(AxisAngle4f paramAxisAngle4f)
   {
-    return (paramAxisAngle4f != null) && (this.x == paramAxisAngle4f.x) && (this.y == paramAxisAngle4f.y) && (this.z == paramAxisAngle4f.z) && (this.angle == paramAxisAngle4f.angle);
+    return (paramAxisAngle4f != null) && (this.jdField_x_of_type_Float == paramAxisAngle4f.jdField_x_of_type_Float) && (this.jdField_y_of_type_Float == paramAxisAngle4f.jdField_y_of_type_Float) && (this.jdField_z_of_type_Float == paramAxisAngle4f.jdField_z_of_type_Float) && (this.angle == paramAxisAngle4f.angle);
   }
 
   public boolean equals(Object paramObject)
@@ -152,12 +152,12 @@ public class AxisAngle4f
 
   public boolean epsilonEquals(AxisAngle4f paramAxisAngle4f, float paramFloat)
   {
-    return (Math.abs(paramAxisAngle4f.x - this.x) <= paramFloat) && (Math.abs(paramAxisAngle4f.y - this.y) <= paramFloat) && (Math.abs(paramAxisAngle4f.z - this.z) <= paramFloat) && (Math.abs(paramAxisAngle4f.angle - this.angle) <= paramFloat);
+    return (Math.abs(paramAxisAngle4f.jdField_x_of_type_Float - this.jdField_x_of_type_Float) <= paramFloat) && (Math.abs(paramAxisAngle4f.jdField_y_of_type_Float - this.jdField_y_of_type_Float) <= paramFloat) && (Math.abs(paramAxisAngle4f.jdField_z_of_type_Float - this.jdField_z_of_type_Float) <= paramFloat) && (Math.abs(paramAxisAngle4f.angle - this.angle) <= paramFloat);
   }
 
   public int hashCode()
   {
-    return Float.floatToIntBits(this.x) ^ Float.floatToIntBits(this.y) ^ Float.floatToIntBits(this.z) ^ Float.floatToIntBits(this.angle);
+    return Float.floatToIntBits(this.jdField_x_of_type_Float) ^ Float.floatToIntBits(this.jdField_y_of_type_Float) ^ Float.floatToIntBits(this.jdField_z_of_type_Float) ^ Float.floatToIntBits(this.angle);
   }
 
   public void set(Vector3f paramVector3f)
@@ -165,22 +165,22 @@ public class AxisAngle4f
     float f1 = paramVector3f.length();
     float f2;
     if (f1 != 0.0F) f2 = 1.0F / f1; else f2 = 0.0F;
-    this.x = (paramVector3f.x * f2);
-    this.y = (paramVector3f.y * f2);
-    this.z = (paramVector3f.z * f2);
+    this.jdField_x_of_type_Float = (paramVector3f.jdField_x_of_type_Float * f2);
+    this.jdField_y_of_type_Float = (paramVector3f.jdField_y_of_type_Float * f2);
+    this.jdField_z_of_type_Float = (paramVector3f.jdField_z_of_type_Float * f2);
     this.angle = f1;
   }
 
   public void get(Vector3f paramVector3f)
   {
     if (this.angle >= 0.0F) {
-      paramVector3f.x = (this.x * this.angle);
-      paramVector3f.y = (this.y * this.angle);
-      paramVector3f.z = (this.z * this.angle);
+      paramVector3f.jdField_x_of_type_Float = (this.jdField_x_of_type_Float * this.angle);
+      paramVector3f.jdField_y_of_type_Float = (this.jdField_y_of_type_Float * this.angle);
+      paramVector3f.jdField_z_of_type_Float = (this.jdField_z_of_type_Float * this.angle);
     } else {
-      paramVector3f.x = (-this.x * this.angle);
-      paramVector3f.y = (-this.y * this.angle);
-      paramVector3f.z = (-this.z * this.angle);
+      paramVector3f.jdField_x_of_type_Float = (-this.jdField_x_of_type_Float * this.angle);
+      paramVector3f.jdField_y_of_type_Float = (-this.jdField_y_of_type_Float * this.angle);
+      paramVector3f.jdField_z_of_type_Float = (-this.jdField_z_of_type_Float * this.angle);
     }
   }
 
@@ -189,7 +189,7 @@ public class AxisAngle4f
     float f1 = (float)Math.sin(this.angle);
     float f2 = (float)Math.cos(this.angle);
     float f3 = 1.0F - f2;
-    float f4 = this.x; float f5 = this.y; float f6 = this.z;
+    float f4 = this.jdField_x_of_type_Float; float f5 = this.jdField_y_of_type_Float; float f6 = this.jdField_z_of_type_Float;
     float f8 = f4 * f3;
     float f7 = f4 * f4;
     Mr.m00 = (f7 + f2 * (1.0F - f7));
@@ -213,31 +213,31 @@ public class AxisAngle4f
 
   private void makeMatrixRightHanded()
   {
-    double d1 = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    double d1 = Math.sqrt(this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float);
 
     d1 = 1.0D / d1;
-    this.x = (float)(this.x * d1);
-    this.y = (float)(this.y * d1);
-    this.z = (float)(this.z * d1);
+    this.jdField_x_of_type_Float = (float)(this.jdField_x_of_type_Float * d1);
+    this.jdField_y_of_type_Float = (float)(this.jdField_y_of_type_Float * d1);
+    this.jdField_z_of_type_Float = (float)(this.jdField_z_of_type_Float * d1);
     double d2 = Math.cos(this.angle);
     double d3 = Math.sin(this.angle);
     double d4 = 1.0D - d2;
-    Mr.m00 = (float)(d2 + this.x * this.x * d4);
-    Mr.m11 = (float)(d2 + this.y * this.y * d4);
-    Mr.m22 = (float)(d2 + this.z * this.z * d4);
+    Mr.m00 = (float)(d2 + this.jdField_x_of_type_Float * this.jdField_x_of_type_Float * d4);
+    Mr.m11 = (float)(d2 + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float * d4);
+    Mr.m22 = (float)(d2 + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float * d4);
 
-    double d5 = this.x * this.y * d4;
-    double d6 = this.z * d3;
+    double d5 = this.jdField_x_of_type_Float * this.jdField_y_of_type_Float * d4;
+    double d6 = this.jdField_z_of_type_Float * d3;
     Mr.m01 = (float)(d5 - d6);
     Mr.m10 = (float)(d5 + d6);
 
-    d5 = this.x * this.z * d4;
-    d6 = this.y * d3;
+    d5 = this.jdField_x_of_type_Float * this.jdField_z_of_type_Float * d4;
+    d6 = this.jdField_y_of_type_Float * d3;
     Mr.m02 = (float)(d5 + d6);
     Mr.m20 = (float)(d5 - d6);
 
-    d5 = this.y * this.z * d4;
-    d6 = this.x * d3;
+    d5 = this.jdField_y_of_type_Float * this.jdField_z_of_type_Float * d4;
+    d6 = this.jdField_x_of_type_Float * d3;
     Mr.m12 = (float)(d5 - d6);
     Mr.m21 = (float)(d5 + d6);
   }

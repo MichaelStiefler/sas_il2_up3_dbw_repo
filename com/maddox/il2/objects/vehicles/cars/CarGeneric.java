@@ -124,7 +124,7 @@ public abstract class CarGeneric extends ActorHMesh
   public static final Vector2d Rotate(Vector2d paramVector2d, float paramFloat) {
     float f1 = Geom.sinDeg(paramFloat);
     float f2 = Geom.cosDeg(paramFloat);
-    return new Vector2d(f2 * paramVector2d.x - f1 * paramVector2d.y, f1 * paramVector2d.x + f2 * paramVector2d.y);
+    return new Vector2d(f2 * paramVector2d.jdField_x_of_type_Double - f1 * paramVector2d.jdField_y_of_type_Double, f1 * paramVector2d.jdField_x_of_type_Double + f2 * paramVector2d.jdField_y_of_type_Double);
   }
 
   public void SetTimerToLaunchHumans()
@@ -147,7 +147,7 @@ public abstract class CarGeneric extends ActorHMesh
     ((Loc)localObject).set(0.0D, 0.0D, 0.0D, 170.0F - Rnd(0.0F, 130.0F), Rnd(-5.0F, 2.0F), 0.0F);
     localLoc1.set(0.0D, 0.0D, 0.0D, 190.0F + Rnd(0.0F, 130.0F), Rnd(-5.0F, 2.0F), 0.0F);
 
-    Loc localLoc2 = this.pos.getAbs();
+    Loc localLoc2 = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
 
     ((Loc)localObject).add(localLoc2);
     localLoc1.add(localLoc2);
@@ -192,9 +192,9 @@ public abstract class CarGeneric extends ActorHMesh
     this.collisionStage = 1;
     this.collidee = paramActor;
 
-    Point3d localPoint3d1 = this.pos.getAbsPoint();
-    Point3d localPoint3d2 = paramActor.pos.getAbsPoint();
-    this.collisVector.set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y);
+    Point3d localPoint3d1 = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Point3d localPoint3d2 = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    this.collisVector.set(localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double);
     if (this.collisVector.length() >= 1.0E-006D) {
       this.collisVector.normalize();
     } else {
@@ -233,7 +233,7 @@ public abstract class CarGeneric extends ActorHMesh
       return;
     }
 
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, false, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_TOP);
+    float f1 = Shot.panzerThickness(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), paramShot.v, false, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_TOP);
 
     f1 *= Rnd(0.93F, 1.07F);
 
@@ -334,10 +334,10 @@ public abstract class CarGeneric extends ActorHMesh
     }
 
     if (i != 0) {
-      localObject = this.pos.getAbsPoint();
-      localObject.z += this.heightAboveLandSurface - f;
-      this.pos.setAbs((Point3d)localObject);
-      this.pos.reset();
+      localObject = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+      localObject.jdField_z_of_type_Double += this.heightAboveLandSurface - f;
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs((Point3d)localObject);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     }
   }
 
@@ -381,8 +381,8 @@ public abstract class CarGeneric extends ActorHMesh
     if (isNetMaster()) {
       send_DeathCommand(paramActor);
 
-      Point3d localPoint3d = simplifyPos(this.pos.getAbsPoint());
-      Orient localOrient = simplifyOri(this.pos.getAbsOrient());
+      Point3d localPoint3d = simplifyPos(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+      Orient localOrient = simplifyOri(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient());
       setPosition(localPoint3d, localOrient);
     }
     MakeCrush();
@@ -420,8 +420,8 @@ public abstract class CarGeneric extends ActorHMesh
 
   private void setPosition(Point3d paramPoint3d, Orient paramOrient)
   {
-    this.pos.setAbs(paramPoint3d, paramOrient);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d, paramOrient);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   public Object getSwitchListener(Message paramMessage) {
@@ -461,9 +461,9 @@ public abstract class CarGeneric extends ActorHMesh
     int i = Mission.cur().getUnitNetIdRemote(this);
     NetChannel localNetChannel = Mission.cur().getNetMasterChannel();
     if (localNetChannel == null)
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     else if (i != 0)
-      this.net = new Mirror(this, localNetChannel, i);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, localNetChannel, i);
   }
 
   private void send_DeathRequest(Actor paramActor)
@@ -472,15 +472,15 @@ public abstract class CarGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -493,7 +493,7 @@ public abstract class CarGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
@@ -501,7 +501,7 @@ public abstract class CarGeneric extends ActorHMesh
       localNetMsgFiltered.unLockAndClear();
       localNetMsgFiltered.writeByte(67);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -510,7 +510,7 @@ public abstract class CarGeneric extends ActorHMesh
 
   private void send_AnByteAndPoseCommand(boolean paramBoolean, Actor paramActor, int paramInt)
   {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
+    if ((!isNetMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
@@ -519,9 +519,9 @@ public abstract class CarGeneric extends ActorHMesh
       localNetMsgGuaranted.writeByte(paramInt);
       sendPose(localNetMsgGuaranted);
       if (paramBoolean) {
-        localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
+        localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       }
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -541,7 +541,7 @@ public abstract class CarGeneric extends ActorHMesh
 
   private void send_MoveCommand(Moving paramMoving, float paramFloat)
   {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
+    if ((!isNetMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
@@ -554,7 +554,7 @@ public abstract class CarGeneric extends ActorHMesh
       if ((paramMoving.dstPos == null) || (paramMoving.moveTotTime <= 0L) || (paramMoving.normal == null)) {
         this.outCommand.writeByte(83);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } else {
         if (paramFloat > 0.0F)
           this.outCommand.writeByte(77);
@@ -562,8 +562,8 @@ public abstract class CarGeneric extends ActorHMesh
           this.outCommand.writeByte(109);
         }
         this.outCommand.write(packPos(paramMoving.dstPos));
-        this.outCommand.writeByte(packNormal(paramMoving.normal.z));
-        if (paramMoving.normal.z >= 0.0F) {
+        this.outCommand.writeByte(packNormal(paramMoving.normal.jdField_z_of_type_Float));
+        if (paramMoving.normal.jdField_z_of_type_Float >= 0.0F) {
           this.outCommand.writeByte(packNormal(paramMoving.normal.x));
           this.outCommand.writeByte(packNormal(paramMoving.normal.y));
         }
@@ -573,7 +573,7 @@ public abstract class CarGeneric extends ActorHMesh
         }
         this.outCommand.writeShort(i);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       }
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
@@ -593,9 +593,9 @@ public abstract class CarGeneric extends ActorHMesh
   }
   static byte[] packPos(Point3d paramPoint3d) {
     byte[] arrayOfByte = new byte[8];
-    int i = (int)(paramPoint3d.x * 20.0D + 0.5D);
-    int j = (int)(paramPoint3d.y * 20.0D + 0.5D);
-    int k = (int)(paramPoint3d.z * 10.0D + 0.5D);
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double * 20.0D + 0.5D);
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double * 20.0D + 0.5D);
+    int k = (int)(paramPoint3d.jdField_z_of_type_Double * 10.0D + 0.5D);
     arrayOfByte[0] = (byte)(i >> 0 & 0xFF);
     arrayOfByte[1] = (byte)(i >> 8 & 0xFF);
     arrayOfByte[2] = (byte)(i >> 16 & 0xFF);
@@ -662,8 +662,8 @@ public abstract class CarGeneric extends ActorHMesh
   private void sendPose(NetMsgGuaranted paramNetMsgGuaranted)
     throws IOException
   {
-    paramNetMsgGuaranted.write(packPos(this.pos.getAbsPoint()));
-    paramNetMsgGuaranted.write(packOri(this.pos.getAbsOrient()));
+    paramNetMsgGuaranted.write(packPos(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint()));
+    paramNetMsgGuaranted.write(packOri(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient()));
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -676,7 +676,7 @@ public abstract class CarGeneric extends ActorHMesh
     localNetMsgGuaranted.writeByte(i);
     sendPose(localNetMsgGuaranted);
 
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public void startMove()
@@ -838,7 +838,7 @@ public abstract class CarGeneric extends ActorHMesh
       World.onActorDied(this, paramActor);
     }
 
-    Explosions.Car_ExplodeCollapse(this.pos.getAbsPoint());
+    Explosions.Car_ExplodeCollapse(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
 
     destroy();
   }
@@ -871,9 +871,9 @@ public abstract class CarGeneric extends ActorHMesh
     }
 
     if (i != 0)
-      Explosions.Car_ExplodeCollapse(this.pos.getAbsPoint());
+      Explosions.Car_ExplodeCollapse(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     else {
-      Explosions.Car_ExplodeCollapse(this.pos.getAbsPoint());
+      Explosions.Car_ExplodeCollapse(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     }
 
     destroy();
@@ -881,7 +881,7 @@ public abstract class CarGeneric extends ActorHMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     if (paramFloat <= 0.0F) return 0.0F;
 
     if ((this.mov.moveCurTime < 0L) && (this.mov.rotatCurTime < 0L))
@@ -912,14 +912,14 @@ public abstract class CarGeneric extends ActorHMesh
     localPoint3d.set(this.mov.dstPos);
     double d = (paramFloat - f2) / f1;
 
-    p.x = (paramPoint3d.x * (1.0D - d) + localPoint3d.x * d);
-    p.y = (paramPoint3d.y * (1.0D - d) + localPoint3d.y * d);
+    p.jdField_x_of_type_Double = (paramPoint3d.jdField_x_of_type_Double * (1.0D - d) + localPoint3d.jdField_x_of_type_Double * d);
+    p.jdField_y_of_type_Double = (paramPoint3d.jdField_y_of_type_Double * (1.0D - d) + localPoint3d.jdField_y_of_type_Double * d);
 
-    if (this.mov.normal.z < 0.0F) {
-      p.z = (Engine.land().HQ(p.x, p.y) + HeightAboveLandSurface());
+    if (this.mov.normal.jdField_z_of_type_Float < 0.0F) {
+      p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + HeightAboveLandSurface());
     }
     else {
-      p.z = (paramPoint3d.z * (1.0D - d) + localPoint3d.z * d);
+      p.jdField_z_of_type_Double = (paramPoint3d.jdField_z_of_type_Double * (1.0D - d) + localPoint3d.jdField_z_of_type_Double * d);
     }
 
     paramPoint3d.set(p);
@@ -1122,8 +1122,8 @@ public abstract class CarGeneric extends ActorHMesh
       }
 
       if ((CarGeneric.this.timeHumanLaunch > 0L) && (Time.current() >= CarGeneric.this.timeHumanLaunch)) {
-        ChiefGround localChiefGround1 = (ChiefGround)this.actor.getOwner();
-        if (localChiefGround1.getCodeOfBridgeSegment((UnitInterface)this.actor) < 0) {
+        ChiefGround localChiefGround1 = (ChiefGround)this.jdField_actor_of_type_ComMaddoxIl2EngineActor.getOwner();
+        if (localChiefGround1.getCodeOfBridgeSegment((UnitInterface)this.jdField_actor_of_type_ComMaddoxIl2EngineActor) < 0) {
           CarGeneric.this.LaunchHumans();
           CarGeneric.access$802(CarGeneric.this, Time.current() + (int)CarGeneric.Rnd(12000.0F, 17000.0F));
         } else {
@@ -1144,7 +1144,7 @@ public abstract class CarGeneric extends ActorHMesh
         float f2 = -1.0F;
         UnitMove localUnitMove;
         if (CarGeneric.this.collisionStage == 0) {
-          localUnitMove = localChiefGround2.AskMoveCommand(this.actor, null, CarGeneric.this.obs);
+          localUnitMove = localChiefGround2.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, null, CarGeneric.this.obs);
         }
         else
         {
@@ -1158,8 +1158,8 @@ public abstract class CarGeneric extends ActorHMesh
             f3 = CarGeneric.Rnd(-70.0F, 70.0F);
             localVector2d = CarGeneric.Rotate(CarGeneric.this.collisVector, f3);
             localVector2d.scale(CarGeneric.this.prop.AFTER_COLLISION_DIST * CarGeneric.Rnd(0.87D, 1.75D));
-            CarGeneric.p.set(localVector2d.x, localVector2d.y, -1.0D);
-            localUnitMove = localChiefGround2.AskMoveCommand(this.actor, CarGeneric.p, CarGeneric.this.obs);
+            CarGeneric.p.set(localVector2d.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double, -1.0D);
+            localUnitMove = localChiefGround2.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, CarGeneric.p, CarGeneric.this.obs);
             CarGeneric.access$902(CarGeneric.this, 2);
             f2 = CarGeneric.this.prop.SPEED_BACK;
           }
@@ -1167,13 +1167,13 @@ public abstract class CarGeneric extends ActorHMesh
             f3 = CarGeneric.Rnd(0.0F, 359.98999F);
             localVector2d = CarGeneric.Rotate(CarGeneric.this.collisVector, f3);
             localVector2d.scale(CarGeneric.this.prop.AFTER_COLLISION_DIST * CarGeneric.Rnd(0.2D, 0.6D));
-            CarGeneric.p.set(localVector2d.x, localVector2d.y, 1.0D);
-            localUnitMove = localChiefGround2.AskMoveCommand(this.actor, CarGeneric.p, CarGeneric.this.obs);
+            CarGeneric.p.set(localVector2d.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double, 1.0D);
+            localUnitMove = localChiefGround2.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, CarGeneric.p, CarGeneric.this.obs);
             CarGeneric.access$902(CarGeneric.this, 0);
           }
         }
 
-        CarGeneric.this.mov.set(localUnitMove, this.actor, CarGeneric.this.prop.SPEED_MAX, f2, CarGeneric.this.prop.ROT_SPEED_MAX, CarGeneric.this.prop.ROT_INVIS_ANG);
+        CarGeneric.this.mov.set(localUnitMove, this.jdField_actor_of_type_ComMaddoxIl2EngineActor, CarGeneric.this.prop.SPEED_MAX, f2, CarGeneric.this.prop.ROT_SPEED_MAX, CarGeneric.this.prop.ROT_INVIS_ANG);
 
         if (CarGeneric.this.isNetMaster()) {
           CarGeneric.this.send_MoveCommand(CarGeneric.this.mov, f2);
@@ -1203,7 +1203,7 @@ public abstract class CarGeneric extends ActorHMesh
 
       }
 
-      CarGeneric.this.pos.getAbs(CarGeneric.o);
+      CarGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(CarGeneric.o);
       int j = 0;
 
       if (CarGeneric.this.mov.rotatCurTime > 0L) {
@@ -1224,33 +1224,33 @@ public abstract class CarGeneric extends ActorHMesh
 
         double d = 1.0D - CarGeneric.this.mov.moveCurTime / CarGeneric.this.mov.moveTotTime;
 
-        CarGeneric.p.x = (CarGeneric.this.mov.srcPos.x * (1.0D - d) + CarGeneric.this.mov.dstPos.x * d);
-        CarGeneric.p.y = (CarGeneric.this.mov.srcPos.y * (1.0D - d) + CarGeneric.this.mov.dstPos.y * d);
+        CarGeneric.p.jdField_x_of_type_Double = (CarGeneric.this.mov.srcPos.jdField_x_of_type_Double * (1.0D - d) + CarGeneric.this.mov.dstPos.jdField_x_of_type_Double * d);
+        CarGeneric.p.jdField_y_of_type_Double = (CarGeneric.this.mov.srcPos.jdField_y_of_type_Double * (1.0D - d) + CarGeneric.this.mov.dstPos.jdField_y_of_type_Double * d);
 
-        if (CarGeneric.this.mov.normal.z < 0.0F) {
-          CarGeneric.p.z = (Engine.land().HQ(CarGeneric.p.x, CarGeneric.p.y) + CarGeneric.this.HeightAboveLandSurface());
-          Engine.land().N(CarGeneric.p.x, CarGeneric.p.y, CarGeneric.n);
+        if (CarGeneric.this.mov.normal.jdField_z_of_type_Float < 0.0F) {
+          CarGeneric.p.jdField_z_of_type_Double = (Engine.land().HQ(CarGeneric.p.jdField_x_of_type_Double, CarGeneric.p.jdField_y_of_type_Double) + CarGeneric.this.HeightAboveLandSurface());
+          Engine.land().N(CarGeneric.p.jdField_x_of_type_Double, CarGeneric.p.jdField_y_of_type_Double, CarGeneric.n);
         }
         else {
-          CarGeneric.p.z = (CarGeneric.this.mov.srcPos.z * (1.0D - d) + CarGeneric.this.mov.dstPos.z * d);
+          CarGeneric.p.jdField_z_of_type_Double = (CarGeneric.this.mov.srcPos.jdField_z_of_type_Double * (1.0D - d) + CarGeneric.this.mov.dstPos.jdField_z_of_type_Double * d);
         }
         j = 0;
-        CarGeneric.this.pos.setAbs(CarGeneric.p);
+        CarGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(CarGeneric.p);
         if (CarGeneric.this.mov.moveCurTime <= 0L) {
           CarGeneric.this.mov.moveCurTime = -1L;
         }
       }
 
-      if (CarGeneric.this.mov.normal.z < 0.0F)
+      if (CarGeneric.this.mov.normal.jdField_z_of_type_Float < 0.0F)
       {
-        if (j != 0) Engine.land().N(CarGeneric.this.mov.srcPos.x, CarGeneric.this.mov.srcPos.y, CarGeneric.n);
+        if (j != 0) Engine.land().N(CarGeneric.this.mov.srcPos.jdField_x_of_type_Double, CarGeneric.this.mov.srcPos.jdField_y_of_type_Double, CarGeneric.n);
 
         CarGeneric.o.orient(CarGeneric.n);
       }
       else {
         CarGeneric.o.orient(CarGeneric.this.mov.normal);
       }
-      CarGeneric.this.pos.setAbs(CarGeneric.o);
+      CarGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(CarGeneric.o);
       return true;
     }
   }
@@ -1299,8 +1299,7 @@ public abstract class CarGeneric extends ActorHMesh
         if (CarGeneric.this.dying != 0) break;
         localObject1 = paramNetMsgInput.readNetObj();
         localObject2 = localObject1 == null ? null : ((ActorNet)localObject1).actor();
-        CarGeneric.this.DieMirror((Actor)localObject2, true);
-        break;
+        CarGeneric.this.DieMirror((Actor)localObject2, true); break;
       default:
         System.out.println("CarGeneric: Unknown G message (" + i + ")");
         return false;
@@ -1340,8 +1339,8 @@ public abstract class CarGeneric extends ActorHMesh
 
         Point3d localPoint3d = CarGeneric.readPackedPos(paramNetMsgInput);
         Vector3f localVector3f = new Vector3f(0.0F, 0.0F, 0.0F);
-        localVector3f.z = CarGeneric.readPackedNormal(paramNetMsgInput);
-        if (localVector3f.z >= 0.0F) {
+        localVector3f.jdField_z_of_type_Float = CarGeneric.readPackedNormal(paramNetMsgInput);
+        if (localVector3f.jdField_z_of_type_Float >= 0.0F) {
           localVector3f.x = CarGeneric.readPackedNormal(paramNetMsgInput);
           localVector3f.y = CarGeneric.readPackedNormal(paramNetMsgInput);
           float f1 = localVector3f.length();

@@ -55,7 +55,7 @@ public abstract class GWindowManager
   public void doCanvasResize(int paramInt1, int paramInt2) {
     this.root.C.size.set(paramInt1, paramInt2);
     this.root.C.clip.set(0.0F, 0.0F, paramInt1, paramInt2);
-    this.root.win.set(0.0F, 0.0F, paramInt1, paramInt2);
+    this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.set(0.0F, 0.0F, paramInt1, paramInt2);
     this.root.doResolutionChanged();
   }
 
@@ -103,7 +103,7 @@ public abstract class GWindowManager
     paramGWindowRoot.beforeCreate();
     paramGWindowRoot.C = paramGCanvas;
     paramGWindowRoot.manager = this;
-    paramGWindowRoot.win = new GRegion(0.0F, 0.0F, paramGCanvas.size.dx, paramGCanvas.size.dy);
+    paramGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion = new GRegion(0.0F, 0.0F, paramGCanvas.size.dx, paramGCanvas.size.dy);
     paramGWindowRoot.lookAndFeel = paramGWindowLookAndFeel;
     paramGWindowLookAndFeel.init(paramGWindowRoot);
     paramGWindowRoot.created();

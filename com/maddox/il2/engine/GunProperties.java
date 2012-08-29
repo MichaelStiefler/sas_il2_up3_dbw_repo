@@ -47,7 +47,7 @@ public class GunProperties
     }
     if (this.aimMinDist >= this.aimMaxDist) {
       this.aimMinDist = 10.0F;
-      this.aimMaxDist = 1000.0F;
+      this.aimMinDist = 1000.0F;
     }
 
     if (this.bulletsCluster < 1) {

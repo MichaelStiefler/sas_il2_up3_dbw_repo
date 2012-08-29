@@ -40,11 +40,11 @@ public class GWindowCheckBox extends GWindowDialogControl
 
   private void _setSize() {
     GSize localGSize = getMinSize();
-    this.win.dx = localGSize.dx;
-    this.win.dy = localGSize.dy;
-    if (this.metricWin != null) {
-      this.metricWin.dx = (this.win.dx / lookAndFeel().metric());
-      this.metricWin.dy = (this.win.dy / lookAndFeel().metric());
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = localGSize.dx;
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = localGSize.dy;
+    if (this.jdField_metricWin_of_type_ComMaddoxGwindowGRegion != null) {
+      this.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.dx = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / lookAndFeel().metric());
+      this.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / lookAndFeel().metric());
     }
   }
 

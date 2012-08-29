@@ -10,7 +10,6 @@ import com.maddox.il2.ai.ground.RoadSegment;
 import com.maddox.il2.ai.ground.UnitInterface;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorDraw;
-import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.ActorPosStatic;
 import com.maddox.il2.engine.Camera;
@@ -23,18 +22,9 @@ import com.maddox.il2.engine.Mesh;
 import com.maddox.il2.engine.MeshShared;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Render;
-import com.maddox.il2.game.Mission;
-import com.maddox.il2.net.NetMissionTrack;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.trains.Train;
 import com.maddox.rts.Message;
-import com.maddox.rts.NetChannel;
-import com.maddox.rts.NetChannelInStream;
-import com.maddox.rts.NetMsgFiltered;
-import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -46,10 +36,10 @@ public class LongBridge extends Actor
   public static final int BRIDGE_COUNTRY = 1;
   public static final int BRIDGE_RAIL = 2;
   private static final int N_BRIDGE_TYPES = 3;
-  private static final float BRIDGE_SEGM_MAX_LIFE = 240.0F;
-  private static final float BRIDGE_WOODSEGM_MAX_LIFE = 120.0F;
-  private static final float BRIDGE_SEGM_IGN_TNT = 100.0F;
-  private static final float BRIDGE_WOODSEGM_IGN_TNT = 10.0F;
+  private static final float BRIDGE_SEGM_MAX_LIFE = 24.0F;
+  private static final float BRIDGE_WOODSEGM_MAX_LIFE = 2.1F;
+  private static final float BRIDGE_SEGM_IGN_TNT = 0.05F;
+  private static final float BRIDGE_WOODSEGM_IGN_TNT = 0.033F;
   private int type;
   public int bodyMaterial;
   private int bridgeIdx;
@@ -70,7 +60,6 @@ public class LongBridge extends Actor
   private BridgeRoad[] bridgeRoad = new BridgeRoad[2];
   private ArrayList travellers;
   private Actor supervisor;
-  private String winterSuffix;
 
   public int type()
   {
@@ -109,9 +98,8 @@ public class LongBridge extends Actor
     return this.width;
   }
 
-  private String SegmentMeshName(boolean paramBoolean, int paramInt)
-  {
-    return "3do/bridges/" + (this.type == 1 ? "country" : this.type == 0 ? "highway" : "rail") + this.winterSuffix + "/" + ((this.dirOct & 0x1) == 0 ? "short/" : "long/") + (paramBoolean ? "mid/" : "end/") + (paramInt == 3 ? "mono3" : paramInt == 0 ? "mono1" : "mono2") + ".sim";
+  private String SegmentMeshName(boolean paramBoolean, int paramInt) {
+    return new String("3do/bridges/" + (this.type == 1 ? "country/" : this.type == 0 ? "highway/" : "rail/") + ((this.dirOct & 0x1) == 0 ? "short/" : "long/") + (paramBoolean ? "mid/" : "end/") + (paramInt == 3 ? "mono3" : paramInt == 0 ? "mono1" : "mono2") + ".sim");
   }
 
   private static int ComputeOctDirection(int paramInt1, int paramInt2)
@@ -162,9 +150,9 @@ public class LongBridge extends Actor
     float f4 = f1 + 0.5F + this.incX * f3;
     float f5 = f2 + 0.5F + this.incY * f3;
     Point3d localPoint3d = new Point3d();
-    localPoint3d.x = World.land().PIX2WORLDX(f4);
-    localPoint3d.y = World.land().PIX2WORLDY(f5);
-    localPoint3d.z = 0.0D;
+    localPoint3d.jdField_x_of_type_Double = World.land().PIX2WORLDX(f4);
+    localPoint3d.jdField_y_of_type_Double = World.land().PIX2WORLDY(f5);
+    localPoint3d.jdField_z_of_type_Double = 0.0D;
     return localPoint3d;
   }
 
@@ -181,8 +169,8 @@ public class LongBridge extends Actor
     paramPoint3d2.set(ComputeSegmentPos3d(0));
     paramPoint3d4.set(ComputeSegmentPos3d(1));
 
-    float f1 = (float)(paramPoint3d4.x - paramPoint3d2.x);
-    float f2 = (float)(paramPoint3d4.y - paramPoint3d2.y);
+    float f1 = (float)(paramPoint3d4.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double);
+    float f2 = (float)(paramPoint3d4.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double);
     float f3 = 1.0F / (float)Math.sqrt(f1 * f1 + f2 * f2);
 
     paramPoint3d1.set(ComputeSegmentPos3d(paramInt));
@@ -194,20 +182,20 @@ public class LongBridge extends Actor
     if (i != 0) {
       paramPoint3d3.set(paramPoint3d2);
       paramPoint3d3.add(f1 * f3 * this.lengthEnd, f2 * f3 * this.lengthEnd, 0.0D);
-      paramPoint3d2.z = 0.0D;
-      paramPoint3d3.z = this.heightEnd;
-      paramPoint3d4.z = this.height;
+      paramPoint3d2.jdField_z_of_type_Double = 0.0D;
+      paramPoint3d3.jdField_z_of_type_Double = this.heightEnd;
+      paramPoint3d4.jdField_z_of_type_Double = this.height;
     } else if (j != 0) {
       paramPoint3d3.set(paramPoint3d4);
       paramPoint3d3.sub(f1 * f3 * this.lengthEnd, f2 * f3 * this.lengthEnd, 0.0D);
-      paramPoint3d2.z = this.height;
-      paramPoint3d3.z = this.heightEnd;
-      paramPoint3d4.z = 0.0D;
+      paramPoint3d2.jdField_z_of_type_Double = this.height;
+      paramPoint3d3.jdField_z_of_type_Double = this.heightEnd;
+      paramPoint3d4.jdField_z_of_type_Double = 0.0D;
     } else {
       paramPoint3d3.set(paramPoint3d1);
-      paramPoint3d2.z = this.height;
-      paramPoint3d3.z = this.height;
-      paramPoint3d4.z = this.height;
+      paramPoint3d2.jdField_z_of_type_Double = this.height;
+      paramPoint3d3.jdField_z_of_type_Double = this.height;
+      paramPoint3d4.jdField_z_of_type_Double = this.height;
     }
   }
 
@@ -256,28 +244,28 @@ public class LongBridge extends Actor
   public void SetStateOfSegments(BitSet paramBitSet)
   {
     Object[] arrayOfObject = getOwnerAttached();
-    boolean bool1;
+
     for (int i = 0; i < arrayOfObject.length; i++) {
-      j = paramBitSet.get(i * 2 + 0);
-      bool1 = paramBitSet.get(i * 2 + 1);
-      if ((j != 0) && (i > 0)) {
+      bool1 = paramBitSet.get(i * 2 + 0);
+      j = paramBitSet.get(i * 2 + 1);
+      if ((bool1) && (i > 0)) {
         paramBitSet.set((i - 1) * 2 + 1);
       }
-      if ((bool1) && (i < arrayOfObject.length - 1)) {
+      if ((j != 0) && (i < arrayOfObject.length - 1)) {
         paramBitSet.set((i + 1) * 2 + 0);
       }
 
     }
 
-    i = 0;
+    boolean bool1 = false;
     for (int j = 0; j < arrayOfObject.length; j++) {
-      bool1 = paramBitSet.get(j * 2 + 0);
-      boolean bool2 = paramBitSet.get(j * 2 + 1);
-      if ((bool1) || (bool2)) i = 1;
-      ((BridgeSegment)arrayOfObject[j]).ForcePartState(0, !bool1);
-      ((BridgeSegment)arrayOfObject[j]).ForcePartState(1, !bool2);
+      boolean bool2 = paramBitSet.get(j * 2 + 0);
+      boolean bool3 = paramBitSet.get(j * 2 + 1);
+      if ((bool2) || (bool3)) bool1 = true;
+      ((BridgeSegment)arrayOfObject[j]).ForcePartState(0, !bool2);
+      ((BridgeSegment)arrayOfObject[j]).ForcePartState(1, !bool3);
     }
-    setDiedFlag(i);
+    setDiedFlag(bool1);
   }
 
   public void BeLive()
@@ -299,8 +287,8 @@ public class LongBridge extends Actor
       bool3 = true;
     }
     Orient localOrient = ComputeSegmentOrient(bool3);
-    paramBridgeSegment.pos.setAbs(localOrient);
-    paramBridgeSegment.pos.reset();
+    paramBridgeSegment.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localOrient);
+    paramBridgeSegment.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     paramBridgeSegment.setMesh(MeshShared.get(SegmentMeshName(bool2, i)));
 
@@ -362,10 +350,10 @@ public class LongBridge extends Actor
       ((BridgeSegment)arrayOfObject[i]).destroy();
     }
 
-    for (i = 0; i < 2; i++) {
-      if (Actor.isValid(this.bridgeRoad[i])) {
-        this.bridgeRoad[i].destroy();
-        this.bridgeRoad[i] = null;
+    for (int j = 0; j < 2; j++) {
+      if (Actor.isValid(this.bridgeRoad[j])) {
+        this.bridgeRoad[j].destroy();
+        this.bridgeRoad[j] = null;
       }
 
     }
@@ -415,51 +403,50 @@ public class LongBridge extends Actor
     int j = paramArrayList.size();
 
     ComputeSegmentKeyPoints(0, localPoint3d1, localPoint3d2, localPoint3d3, localPoint3d4);
-    paramArrayList.add(new RoadSegment((float)localPoint3d2.x, (float)localPoint3d2.y, (float)localPoint3d2.z, this.width * 0.5F, 0.0D, this.bridgeIdx, 0));
+    paramArrayList.add(new RoadSegment((float)localPoint3d2.jdField_x_of_type_Double, (float)localPoint3d2.jdField_y_of_type_Double, (float)localPoint3d2.jdField_z_of_type_Double, this.width * 0.5F, 0.0D, this.bridgeIdx, 0));
 
-    paramArrayList.add(new RoadSegment((float)localPoint3d3.x, (float)localPoint3d3.y, (float)localPoint3d3.z, this.width * 0.5F, 0.0D, this.bridgeIdx, 0));
+    paramArrayList.add(new RoadSegment((float)localPoint3d3.jdField_x_of_type_Double, (float)localPoint3d3.jdField_y_of_type_Double, (float)localPoint3d3.jdField_z_of_type_Double, this.width * 0.5F, 0.0D, this.bridgeIdx, 0));
 
     for (int k = 1; k < 1 + 2 * this.nMidCells; k++) {
       ComputeSegmentKeyPoints(k, localPoint3d1, localPoint3d2, localPoint3d3, localPoint3d4);
-      paramArrayList.add(new RoadSegment((float)localPoint3d2.x, (float)localPoint3d2.y, (float)localPoint3d2.z, this.width * 0.5F, 0.0D, this.bridgeIdx, k));
+      paramArrayList.add(new RoadSegment((float)localPoint3d2.jdField_x_of_type_Double, (float)localPoint3d2.jdField_y_of_type_Double, (float)localPoint3d2.jdField_z_of_type_Double, this.width * 0.5F, 0.0D, this.bridgeIdx, k));
     }
 
     ComputeSegmentKeyPoints(i, localPoint3d1, localPoint3d2, localPoint3d3, localPoint3d4);
-    paramArrayList.add(new RoadSegment((float)localPoint3d2.x, (float)localPoint3d2.y, (float)localPoint3d2.z, this.width * 0.5F, 0.0D, this.bridgeIdx, i));
+    paramArrayList.add(new RoadSegment((float)localPoint3d2.jdField_x_of_type_Double, (float)localPoint3d2.jdField_y_of_type_Double, (float)localPoint3d2.jdField_z_of_type_Double, this.width * 0.5F, 0.0D, this.bridgeIdx, i));
 
-    paramArrayList.add(new RoadSegment((float)localPoint3d3.x, (float)localPoint3d3.y, (float)localPoint3d3.z, this.width * 0.5F, 0.0D, this.bridgeIdx, i));
+    paramArrayList.add(new RoadSegment((float)localPoint3d3.jdField_x_of_type_Double, (float)localPoint3d3.jdField_y_of_type_Double, (float)localPoint3d3.jdField_z_of_type_Double, this.width * 0.5F, 0.0D, this.bridgeIdx, i));
 
-    paramArrayList.add(new RoadSegment((float)localPoint3d4.x, (float)localPoint3d4.y, (float)localPoint3d4.z, this.width * 0.5F, 0.0D, -1, -1));
+    paramArrayList.add(new RoadSegment((float)localPoint3d4.jdField_x_of_type_Double, (float)localPoint3d4.jdField_y_of_type_Double, (float)localPoint3d4.jdField_z_of_type_Double, this.width * 0.5F, 0.0D, -1, -1));
 
     Point3d localPoint3d6 = new Point3d(paramFloat1, paramFloat2, 0.0D);
 
     ComputeSegmentKeyPoints(i, localPoint3d1, localPoint3d2, localPoint3d3, localPoint3d4);
     Point3d localPoint3d5 = new Point3d(localPoint3d4);
-    localPoint3d5.z = 0.0D;
+    localPoint3d5.jdField_z_of_type_Double = 0.0D;
 
     ComputeSegmentKeyPoints(0, localPoint3d1, localPoint3d2, localPoint3d3, localPoint3d4);
-    localPoint3d2.z = 0.0D;
+    localPoint3d2.jdField_z_of_type_Double = 0.0D;
 
-    k = localPoint3d6.distanceSquared(localPoint3d5) < localPoint3d6.distanceSquared(localPoint3d2) ? 1 : 0;
+    int m = localPoint3d6.distanceSquared(localPoint3d5) < localPoint3d6.distanceSquared(localPoint3d2) ? 1 : 0;
 
-    if (k != 0) {
-      int m = 2 + this.nMidCells * 2 + 1 + 2;
-      Object localObject2;
+    if (m != 0) {
+      int n = 2 + this.nMidCells * 2 + 1 + 2;
       Object localObject3;
-      for (int n = 0; n < m / 2; n++) {
-        localObject2 = paramArrayList.get(j + n);
-        localObject3 = paramArrayList.get(j + m - 1 - n);
-        paramArrayList.set(j + n, localObject3);
-        paramArrayList.set(j + m - 1 - n, localObject2);
+      for (int i1 = 0; i1 < n / 2; i1++) {
+        Object localObject2 = paramArrayList.get(j + i1);
+        localObject3 = paramArrayList.get(j + n - 1 - i1);
+        paramArrayList.set(j + i1, localObject3);
+        paramArrayList.set(j + n - 1 - i1, localObject2);
       }
-      for (n = 0; n < m - 1; n++) {
-        localObject2 = (RoadSegment)(RoadSegment)paramArrayList.get(j + n);
-        localObject3 = (RoadSegment)(RoadSegment)paramArrayList.get(j + n + 1);
-        ((RoadSegment)localObject2).br = ((RoadSegment)localObject3).br;
-        ((RoadSegment)localObject2).brSg = ((RoadSegment)localObject3).brSg;
-        if (n == m - 2) {
-          ((RoadSegment)localObject3).br = null;
-          ((RoadSegment)localObject3).brSg = null;
+      for (int i2 = 0; i2 < n - 1; i2++) {
+        localObject3 = (RoadSegment)paramArrayList.get(j + i2);
+        RoadSegment localRoadSegment = (RoadSegment)paramArrayList.get(j + i2 + 1);
+        ((RoadSegment)localObject3).br = localRoadSegment.br;
+        ((RoadSegment)localObject3).brSg = localRoadSegment.brSg;
+        if (i2 == n - 2) {
+          localRoadSegment.br = null;
+          localRoadSegment.brSg = null;
         }
 
       }
@@ -507,14 +494,9 @@ public class LongBridge extends Actor
       System.out.println("LongBridge: wrong type " + this.type);
     }
 
-    this.winterSuffix = "";
     if (Config.isUSE_RENDER())
     {
       World.cur(); LandConf localLandConf = World.land().config;
-
-      if (localLandConf.camouflage.equals("WINTER")) {
-        this.winterSuffix = "_W";
-      }
       this.mat = Mat.New("maps/_Tex/" + (this.type == 1 ? localLandConf.road : this.type == 0 ? localLandConf.highway : localLandConf.rail) + ".mat");
     }
 
@@ -547,7 +529,7 @@ public class LongBridge extends Actor
       System.out.println("LongBridge: zero length");
     }
 
-    this.pos = new ActorPosStatic(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic(this);
 
     Object localObject1 = ComputeSegmentOrient(false);
 
@@ -556,19 +538,19 @@ public class LongBridge extends Actor
     localPoint3d1.add(localPoint3d2);
     localPoint3d1.scale(0.5D);
 
-    this.pos.setAbs(localPoint3d1, (Orient)localObject1);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d1, (Orient)localObject1);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.draw = new LongBridgeDraw(null);
     drawing(false);
     float f1;
     float f2;
     if (this.type != 1) {
-      f1 = 240.0F;
-      f2 = 100.0F;
+      f1 = 24.0F;
+      f2 = 0.05F;
     } else {
-      f1 = 120.0F;
-      f2 = 10.0F;
+      f1 = 2.1F;
+      f2 = 0.033F;
     }
 
     int k = 0;
@@ -625,83 +607,6 @@ public class LongBridge extends Actor
 
     this.bridgeRoad[0] = new BridgeRoad((Point3d)localObject2, f5, this.mat, this.type, this.begX, this.begY, this.incX, this.incY, this.offsetKoef);
     this.bridgeRoad[1] = new BridgeRoad(localPoint3d4, f5, this.mat, this.type, this.endX, this.endY, -this.incX, -this.incY, -this.offsetKoef);
-
-    this.net = null;
-    if ((Mission.cur() != null) && (
-      (!NetMissionTrack.isPlaying()) || (NetMissionTrack.playingOriginalVersion() > 102))) {
-      int i1 = Mission.cur().getUnitNetIdRemote(this);
-      NetChannel localNetChannel = Mission.cur().getNetMasterChannel();
-      if (localNetChannel == null) {
-        this.net = new Master(this);
-      }
-      else if (i1 != 0)
-        this.net = new Mirror(this, (NetChannel)localNetChannel, i1);
-    }
-  }
-
-  public void sendLifeChanged(int paramInt1, int paramInt2, int paramInt3, float paramFloat, Actor paramActor, boolean paramBoolean)
-  {
-    if (isNetMirror())
-      sendLifeChanged_mirror(paramInt1, paramInt2, paramInt3, paramFloat, paramActor, paramBoolean);
-  }
-
-  private void sendLifeChanged_mirror(int paramInt1, int paramInt2, int paramInt3, float paramFloat, Actor paramActor, boolean paramBoolean)
-  {
-    if ((!isNetMirror()) || ((this.net.masterChannel() instanceof NetChannelInStream)))
-      return;
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = null;
-      localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(80);
-      localNetMsgFiltered.writeByte(paramInt1);
-      localNetMsgFiltered.writeByte(paramInt2);
-      localNetMsgFiltered.writeByte(paramInt3);
-      localNetMsgFiltered.writeFloat(paramFloat);
-      localNetMsgFiltered.writeBoolean(paramBoolean);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(NetServerParams.getServerTime(), this.net.masterChannel(), localNetMsgFiltered);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4)
-    {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
-    {
-      super();
-    }
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        return true;
-      }
-      if (paramNetMsgInput.readUnsignedByte() != 80) {
-        return false;
-      }
-
-      int i = paramNetMsgInput.readUnsignedByte();
-      int j = paramNetMsgInput.readUnsignedByte();
-      int k = paramNetMsgInput.readUnsignedByte();
-      float f = paramNetMsgInput.readFloat();
-      boolean bool = paramNetMsgInput.readBoolean();
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      BridgeSegment localBridgeSegment = BridgeSegment.getByIdx(i, j);
-      localBridgeSegment.netLifeChanged(k, f, localActor, true);
-      return true;
-    }
   }
 
   private class LongBridgeDraw extends ActorDraw

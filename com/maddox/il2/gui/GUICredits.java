@@ -103,34 +103,34 @@ public class GUICredits extends GameState
     {
       if (GUICredits.this.text != null) {
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        GFont localGFont = this.root.C.font;
-        this.root.C.font = GUICredits.this.fontCredits;
+        GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = GUICredits.this.fontCredits;
         setCanvasColorBLACK();
-        this.root.C.clip.y += localGBevel.T.dy;
-        this.root.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
-        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, GUICredits.this.text, 0, GUICredits.this.text.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.root.C.font.height);
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.y += localGBevel.T.dy;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
+        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, GUICredits.this.text, 0, GUICredits.this.text.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height);
 
-        this.root.C.font = localGFont;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = localGFont;
       }
     }
 
     public void computeSize() {
       if (GUICredits.this.text != null) {
-        GFont localGFont = this.root.C.font;
-        this.root.C.font = GUICredits.this.fontCredits;
-        this.win.dx = this.parentWindow.win.dx;
+        GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = GUICredits.this.fontCredits;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        int i = computeLines(GUICredits.this.text, 0, GUICredits.this.text.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-        this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
-        if (this.win.dy > this.parentWindow.win.dy) {
-          this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-          i = computeLines(GUICredits.this.text, 0, GUICredits.this.text.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-          this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        int i = computeLines(GUICredits.this.text, 0, GUICredits.this.text.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) {
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW());
+          i = computeLines(GUICredits.this.text, 0, GUICredits.this.text.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
         }
-        this.root.C.font = localGFont;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = localGFont;
       } else {
-        this.win.dx = this.parentWindow.win.dx;
-        this.win.dy = this.parentWindow.win.dy;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       }
     }
   }
@@ -143,8 +143,8 @@ public class GUICredits extends GameState
 
     public void created()
     {
-      this.fixed = (GUICredits.this.wDescript = (GUICredits.Descript)create(new GUICredits.Descript(GUICredits.this)));
-      this.fixed.bNotify = true;
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = (GUICredits.this.wDescript = (GUICredits.Descript)create(new GUICredits.Descript(GUICredits.this)));
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient.bNotify = true;
       this.bNotify = true;
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
@@ -158,17 +158,17 @@ public class GUICredits extends GameState
         GUICredits.this.wDescript.computeSize();
       }
       super.resized();
-      if (this.vScroll.isVisible()) {
+      if (this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible()) {
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
       }
     }
 
     public void render() {
       setCanvasColorWHITE();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
     }
   }
 }

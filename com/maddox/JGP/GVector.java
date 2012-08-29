@@ -323,22 +323,22 @@ public class GVector
     int i = paramGMatrix1.getNumRow();
     int j = paramGMatrix3.getNumRow();
     double[] arrayOfDouble = new double[j];
-    double d1;
+
     for (int k = 0; k < j; k++) {
-      d1 = 0.0D;
-      double d2 = paramGMatrix2.getElement(k, k);
-      if (d2 != 0.0D) {
-        for (int n = 0; n < i; n++)
-          d1 += paramGMatrix1.getElement(n, k) * paramGVector.elementData[n];
-        d1 /= d2;
+      double d1 = 0.0D;
+      double d3 = paramGMatrix2.getElement(k, k);
+      if (d3 != 0.0D) {
+        for (int i1 = 0; i1 < i; i1++)
+          d1 += paramGMatrix1.getElement(i1, k) * paramGVector.elementData[i1];
+        d1 /= d3;
       }
       arrayOfDouble[k] = d1;
     }
-    for (k = 0; k < j; k++) {
-      d1 = 0.0D;
-      for (int m = 0; m < j; m++)
-        d1 += paramGMatrix3.getElement(k, m) * arrayOfDouble[m];
-      this.elementData[k] = d1;
+    for (int m = 0; m < j; m++) {
+      double d2 = 0.0D;
+      for (int n = 0; n < j; n++)
+        d2 += paramGMatrix3.getElement(m, n) * arrayOfDouble[n];
+      this.elementData[m] = d2;
     }
   }
 
@@ -354,28 +354,26 @@ public class GVector
       arrayOfDouble2[j] = arrayOfDouble3[(int)arrayOfDouble1[j]];
     }
 
-    j = -1;
-    double d;
-    int m;
-    for (int k = 0; k < i; k++) {
-      d = arrayOfDouble2[k];
-      if (0 <= j)
-        for (m = j; m <= k - 1; m++)
-          d -= paramGMatrix.getElement(k, m) * arrayOfDouble2[m];
-      else if (d != 0.0D)
+    int k = -1;
+    for (int m = 0; m < i; m++) {
+      double d1 = arrayOfDouble2[m];
+      if (0 <= k)
+        for (int i1 = k; i1 <= m - 1; i1++)
+          d1 -= paramGMatrix.getElement(m, i1) * arrayOfDouble2[i1];
+      else if (d1 != 0.0D)
       {
-        j = k;
+        k = m;
       }
-      arrayOfDouble2[k] = d;
+      arrayOfDouble2[m] = d1;
     }
 
-    for (k = i - 1; k >= 0; k--) {
-      d = arrayOfDouble2[k];
-      for (m = k + 1; m < i; m++) {
-        d -= paramGMatrix.getElement(k, m) * arrayOfDouble2[m];
+    for (int n = i - 1; n >= 0; n--) {
+      double d2 = arrayOfDouble2[n];
+      for (int i2 = n + 1; i2 < i; i2++) {
+        d2 -= paramGMatrix.getElement(n, i2) * arrayOfDouble2[i2];
       }
 
-      arrayOfDouble2[k] = (d / paramGMatrix.getElement(k, k));
+      arrayOfDouble2[n] = (d2 / paramGMatrix.getElement(n, n));
     }
   }
 

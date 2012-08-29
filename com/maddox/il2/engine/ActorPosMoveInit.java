@@ -5,8 +5,8 @@ public class ActorPosMoveInit extends ActorPosMove
   public void inValidate(boolean paramBoolean)
   {
     if (paramBoolean)
-      this.flg &= -2;
-    this.flg |= 2;
+      this.jdField_flg_of_type_Int &= -2;
+    this.jdField_flg_of_type_Int |= 2;
   }
 
   protected void validateRender() {
@@ -16,44 +16,44 @@ public class ActorPosMoveInit extends ActorPosMove
 
   protected void setBase(Actor paramActor, Hook paramHook, boolean paramBoolean1, boolean paramBoolean2)
   {
-    this.base = paramActor;
-    this.baseHook = paramHook;
+    this.jdField_base_of_type_ComMaddoxIl2EngineActor = paramActor;
+    this.jdField_baseHook_of_type_ComMaddoxIl2EngineHook = paramHook;
 
     inValidate(true);
   }
 
   public void resetAsBase() {
-    if (!Actor.isValid(this.base)) {
+    if (!Actor.isValid(this.jdField_base_of_type_ComMaddoxIl2EngineActor)) {
       reset();
       return;
     }
-    if ((this.flg & 0x1) == 0) validate();
-    if (this.baseHook != null) {
-      this.prevLabs.set(this.L);
-      this.baseHook.computePos(this.base, this.base.pos.getCurrent(), this.prevLabs);
+    if ((this.jdField_flg_of_type_Int & 0x1) == 0) validate();
+    if (this.jdField_baseHook_of_type_ComMaddoxIl2EngineHook != null) {
+      this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc.set(this.jdField_L_of_type_ComMaddoxIl2EngineLoc);
+      this.jdField_baseHook_of_type_ComMaddoxIl2EngineHook.computePos(this.jdField_base_of_type_ComMaddoxIl2EngineActor, this.jdField_base_of_type_ComMaddoxIl2EngineActor.pos.getCurrent(), this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc);
     } else {
-      this.prevLabs.add(this.L, this.base.pos.getCurrent());
+      this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc.add(this.jdField_L_of_type_ComMaddoxIl2EngineLoc, this.jdField_base_of_type_ComMaddoxIl2EngineActor.pos.getCurrent());
     }
-    this.curLabs.set(this.prevLabs);
-    if (this.baseHook != null) {
-      this.prevLabs.set(this.L);
-      this.baseHook.computePos(this.base, this.base.pos.getPrev(), this.prevLabs);
+    this.jdField_curLabs_of_type_ComMaddoxIl2EngineLoc.set(this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc);
+    if (this.jdField_baseHook_of_type_ComMaddoxIl2EngineHook != null) {
+      this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc.set(this.jdField_L_of_type_ComMaddoxIl2EngineLoc);
+      this.jdField_baseHook_of_type_ComMaddoxIl2EngineHook.computePos(this.jdField_base_of_type_ComMaddoxIl2EngineActor, this.jdField_base_of_type_ComMaddoxIl2EngineActor.pos.getPrev(), this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc);
     } else {
-      this.prevLabs.add(this.L, this.base.pos.getPrev());
+      this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc.add(this.jdField_L_of_type_ComMaddoxIl2EngineLoc, this.jdField_base_of_type_ComMaddoxIl2EngineActor.pos.getPrev());
     }
   }
 
   public void reset() {
     updateCurrent();
-    this.prevLabs.set(this.curLabs);
+    this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc.set(this.jdField_curLabs_of_type_ComMaddoxIl2EngineLoc);
   }
 
   protected void updateCurrent()
   {
-    this.prevLabs.set(this.curLabs);
-    if ((this.flg & 0x2) != 0) {
-      getAbs(this.curLabs);
-      this.flg &= -3;
+    this.jdField_prevLabs_of_type_ComMaddoxIl2EngineLoc.set(this.jdField_curLabs_of_type_ComMaddoxIl2EngineLoc);
+    if ((this.jdField_flg_of_type_Int & 0x2) != 0) {
+      getAbs(this.jdField_curLabs_of_type_ComMaddoxIl2EngineLoc);
+      this.jdField_flg_of_type_Int &= -3;
     }
   }
 

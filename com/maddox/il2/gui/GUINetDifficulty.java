@@ -12,12 +12,12 @@ public class GUINetDifficulty extends GUIDifficulty
   public void enterPush(GameState paramGameState)
   {
     if (Main.cur().netServerParams.isMirror()) {
-      this.bEnable = false;
+      this.jdField_bEnable_of_type_Boolean = false;
     }
     else if (paramGameState.id() == 69)
-      this.bEnable = (GUINetServerNGenSelect.cur.missions == 0);
+      this.jdField_bEnable_of_type_Boolean = (GUINetServerNGenSelect.cur.missions == 0);
     else {
-      this.bEnable = (paramGameState.id() == 38);
+      this.jdField_bEnable_of_type_Boolean = (paramGameState.id() == 38);
     }
 
     _enter();

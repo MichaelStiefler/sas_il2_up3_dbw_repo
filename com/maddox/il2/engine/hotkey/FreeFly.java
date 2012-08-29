@@ -79,33 +79,33 @@ public class FreeFly
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Azimut-") {
-      public void begin() { FreeFly.this.vO.x += -1.0D; } 
-      public void end() { FreeFly.this.vO.x -= -1.0D;
+      public void begin() { FreeFly.this.vO.jdField_x_of_type_Double += -1.0D; } 
+      public void end() { FreeFly.this.vO.jdField_x_of_type_Double -= -1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Azimut+") {
-      public void begin() { FreeFly.this.vO.x += 1.0D; } 
-      public void end() { FreeFly.this.vO.x -= 1.0D;
+      public void begin() { FreeFly.this.vO.jdField_x_of_type_Double += 1.0D; } 
+      public void end() { FreeFly.this.vO.jdField_x_of_type_Double -= 1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Tangage-") {
-      public void begin() { FreeFly.this.vO.y += -1.0D; } 
-      public void end() { FreeFly.this.vO.y -= -1.0D;
+      public void begin() { FreeFly.this.vO.jdField_y_of_type_Double += -1.0D; } 
+      public void end() { FreeFly.this.vO.jdField_y_of_type_Double -= -1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Tangage+") {
-      public void begin() { FreeFly.this.vO.y += 1.0D; } 
-      public void end() { FreeFly.this.vO.y -= 1.0D;
+      public void begin() { FreeFly.this.vO.jdField_y_of_type_Double += 1.0D; } 
+      public void end() { FreeFly.this.vO.jdField_y_of_type_Double -= 1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Kren-") {
-      public void begin() { FreeFly.this.vO.z += -1.0D; } 
-      public void end() { FreeFly.this.vO.z -= -1.0D;
+      public void begin() { FreeFly.this.vO.jdField_z_of_type_Double += -1.0D; } 
+      public void end() { FreeFly.this.vO.jdField_z_of_type_Double -= -1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Kren+") {
-      public void begin() { FreeFly.this.vO.z += 1.0D; } 
-      public void end() { FreeFly.this.vO.z -= 1.0D;
+      public void begin() { FreeFly.this.vO.jdField_z_of_type_Double += 1.0D; } 
+      public void end() { FreeFly.this.vO.jdField_z_of_type_Double -= 1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Speed-") {
@@ -146,9 +146,9 @@ public class FreeFly
     this.bRealTime = Config.cur.ini.get(str, "RealTime", this.bRealTime);
     this.koofAzimutView = Config.cur.ini.get(str, "AzimutView", this.koofAzimutView);
     this.koofTangageView = Config.cur.ini.get(str, "TangageView", this.koofTangageView);
-    this.speedO.x = Config.cur.ini.get(str, "SpeedAzimut", (float)this.speedO.x);
-    this.speedO.y = Config.cur.ini.get(str, "SpeedTangage", (float)this.speedO.y);
-    this.speedO.z = Config.cur.ini.get(str, "SpeedKren", (float)this.speedO.z);
+    this.speedO.jdField_x_of_type_Double = Config.cur.ini.get(str, "SpeedAzimut", (float)this.speedO.jdField_x_of_type_Double);
+    this.speedO.jdField_y_of_type_Double = Config.cur.ini.get(str, "SpeedTangage", (float)this.speedO.jdField_y_of_type_Double);
+    this.speedO.jdField_z_of_type_Double = Config.cur.ini.get(str, "SpeedKren", (float)this.speedO.jdField_z_of_type_Double);
     this.maxSpeed = Config.cur.ini.get(str, "MaxSpeed", (float)this.maxSpeed);
     this.aSpeed = Config.cur.ini.get(str, "Acselerate", (float)this.aSpeed);
     MsgAddListener.post(this.bRealTime ? 64 : 0, Mouse.adapter(), this, null);
@@ -162,9 +162,9 @@ public class FreeFly
   private void _initSave() { String str = this.envName + " Config";
     Config.cur.ini.setValue(str, "AzimutView", Float.toString(this.koofAzimutView));
     Config.cur.ini.setValue(str, "TangageView", Float.toString(this.koofTangageView));
-    Config.cur.ini.setValue(str, "SpeedAzimut", Float.toString((float)this.speedO.x));
-    Config.cur.ini.setValue(str, "SpeedTangage", Float.toString((float)this.speedO.y));
-    Config.cur.ini.setValue(str, "SpeedKren", Float.toString((float)this.speedO.z));
+    Config.cur.ini.setValue(str, "SpeedAzimut", Float.toString((float)this.speedO.jdField_x_of_type_Double));
+    Config.cur.ini.setValue(str, "SpeedTangage", Float.toString((float)this.speedO.jdField_y_of_type_Double));
+    Config.cur.ini.setValue(str, "SpeedKren", Float.toString((float)this.speedO.jdField_z_of_type_Double));
     Config.cur.ini.setValue(str, "MaxSpeed", Float.toString((float)this.maxSpeed));
     Config.cur.ini.setValue(str, "Acselerate", Float.toString((float)this.aSpeed)); }
 
@@ -184,8 +184,8 @@ public class FreeFly
       return this;
     }
     public ActorInterpolate() { if (FreeFly.this.bRealTime)
-        this.flags |= 8192;
-      this.flags |= 16384; }
+        this.jdField_flags_of_type_Int |= 8192;
+      this.jdField_flags_of_type_Int |= 16384; }
 
     protected void createActorHashCode() {
       makeActorRealHashCode();
@@ -226,16 +226,16 @@ public class FreeFly
 
       double d1 = FreeFly.this.speed * f;
       double d2 = Math.cos(FreeFly.this.DEG2RAD(FreeFly.this.aO.tangage())) * d1;
-      FreeFly.this.aP.y -= Math.sin(FreeFly.this.DEG2RAD(FreeFly.this.aO.azimut())) * d2;
-      FreeFly.this.aP.x += Math.cos(FreeFly.this.DEG2RAD(FreeFly.this.aO.azimut())) * d2;
-      FreeFly.this.aP.z += Math.sin(FreeFly.this.DEG2RAD(FreeFly.this.aO.tangage())) * d1;
+      FreeFly.this.aP.jdField_y_of_type_Double -= Math.sin(FreeFly.this.DEG2RAD(FreeFly.this.aO.azimut())) * d2;
+      FreeFly.this.aP.jdField_x_of_type_Double += Math.cos(FreeFly.this.DEG2RAD(FreeFly.this.aO.azimut())) * d2;
+      FreeFly.this.aP.jdField_z_of_type_Double += Math.sin(FreeFly.this.DEG2RAD(FreeFly.this.aO.tangage())) * d1;
       if (FreeFly.this.bClipOnLand) {
-        double d3 = Engine.land().HQ(FreeFly.this.aP.x, FreeFly.this.aP.y) + 1.0D;
-        if (FreeFly.this.aP.z < d3) {
-          FreeFly.this.aP.z = d3;
+        double d3 = Engine.land().HQ(FreeFly.this.aP.jdField_x_of_type_Double, FreeFly.this.aP.jdField_y_of_type_Double) + 1.0D;
+        if (FreeFly.this.aP.jdField_z_of_type_Double < d3) {
+          FreeFly.this.aP.jdField_z_of_type_Double = d3;
         }
       }
-      FreeFly.this.aO.increment((float)(FreeFly.this.vO.x * FreeFly.this.speedO.x * f), (float)(FreeFly.this.vO.y * FreeFly.this.speedO.y * f), (float)(FreeFly.this.vO.z * FreeFly.this.speedO.z * f));
+      FreeFly.this.aO.increment((float)(FreeFly.this.vO.jdField_x_of_type_Double * FreeFly.this.speedO.jdField_x_of_type_Double * f), (float)(FreeFly.this.vO.jdField_y_of_type_Double * FreeFly.this.speedO.jdField_y_of_type_Double * f), (float)(FreeFly.this.vO.jdField_z_of_type_Double * FreeFly.this.speedO.jdField_z_of_type_Double * f));
 
       FreeFly.this.o.set(FreeFly.this.aO);
 

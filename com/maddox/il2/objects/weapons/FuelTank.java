@@ -31,14 +31,14 @@ public class FuelTank extends Bomb
   protected void fill(float paramFloat)
   {
     setName("_fueltank_");
-    this.M = paramFloat;
+    this.jdField_M_of_type_Float = paramFloat;
     this.Fuel = (paramFloat * 0.9F);
   }
 
   public float getFuel(float paramFloat) {
     if (paramFloat > this.Fuel) paramFloat = this.Fuel;
     this.Fuel -= paramFloat;
-    this.M -= paramFloat;
+    this.jdField_M_of_type_Float -= paramFloat;
     return paramFloat;
   }
 }

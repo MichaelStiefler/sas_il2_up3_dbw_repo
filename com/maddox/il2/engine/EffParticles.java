@@ -10,10 +10,10 @@ public class EffParticles extends Eff3D
     return new EffParticlesActor(this, paramActorPos);
   }
   protected EffParticles() {
-    this.cppObj = cNew(); } 
+    this.jdField_cppObj_of_type_Int = cNew(); } 
   private native int cNew();
 
-  public EffParticles(int paramInt) { this.cppObj = paramInt; }
+  public EffParticles(int paramInt) { this.jdField_cppObj_of_type_Int = paramInt; }
 
   static {
     GObj.loadNative();

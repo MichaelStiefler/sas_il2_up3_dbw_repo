@@ -50,16 +50,16 @@ public class RocketX4 extends Rocket
     float f1 = Time.tickLenFs();
     float f2 = (float)getSpeed(null);
     f2 += (320.0F - f2) * 0.1F * f1;
-    this.pos.getAbs(p, or);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p, or);
     v.set(1.0D, 0.0D, 0.0D); or.transform(v);
     v.scale(f2);
     setSpeed(v);
-    p.x += v.x * f1;
-    p.y += v.y * f1;
-    p.z += v.z * f1;
+    p.jdField_x_of_type_Double += v.jdField_x_of_type_Double * f1;
+    p.jdField_y_of_type_Double += v.jdField_y_of_type_Double * f1;
+    p.jdField_z_of_type_Double += v.jdField_z_of_type_Double * f1;
 
     if ((isNet()) && (isNetMirror())) {
-      this.pos.setAbs(p, or);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, or);
       return false;
     }
 
@@ -68,41 +68,41 @@ public class RocketX4 extends Rocket
       {
         if ((this.fm instanceof Pilot)) {
           Pilot localPilot = (Pilot)this.fm;
-          if (localPilot.target != null) {
-            localPilot.target.Loc.get(pT);
+          if (localPilot.jdField_target_of_type_ComMaddoxIl2FmFlightModel != null) {
+            localPilot.jdField_target_of_type_ComMaddoxIl2FmFlightModel.Loc.get(pT);
             pT.sub(p);
             or.transformInv(pT);
-            if (pT.x > -10.0D) {
+            if (pT.jdField_x_of_type_Double > -10.0D) {
               double d = Aircraft.cvt(this.fm.Skill, 0.0F, 3.0F, 15.0F, 0.0F);
-              if (pT.y > d) {
-                ((TypeX4Carrier)this.fm.actor).typeX4CAdjSideMinus();
+              if (pT.jdField_y_of_type_Double > d) {
+                ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CAdjSideMinus();
               }
-              if (pT.y < -d) {
-                ((TypeX4Carrier)this.fm.actor).typeX4CAdjSidePlus();
+              if (pT.jdField_y_of_type_Double < -d) {
+                ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CAdjSidePlus();
               }
-              if (pT.z < -d) {
-                ((TypeX4Carrier)this.fm.actor).typeX4CAdjAttitudeMinus();
+              if (pT.jdField_z_of_type_Double < -d) {
+                ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CAdjAttitudeMinus();
               }
-              if (pT.z > d) {
-                ((TypeX4Carrier)this.fm.actor).typeX4CAdjAttitudePlus();
+              if (pT.jdField_z_of_type_Double > d) {
+                ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CAdjAttitudePlus();
               }
             }
           }
         }
       }
 
-      or.increment(50.0F * f1 * ((TypeX4Carrier)this.fm.actor).typeX4CgetdeltaAzimuth(), 50.0F * f1 * ((TypeX4Carrier)this.fm.actor).typeX4CgetdeltaTangage(), 0.0F);
+      or.increment(50.0F * f1 * ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CgetdeltaAzimuth(), 50.0F * f1 * ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CgetdeltaTangage(), 0.0F);
 
       or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
-      ((TypeX4Carrier)this.fm.actor).typeX4CResetControls();
+      ((TypeX4Carrier)this.fm.jdField_actor_of_type_ComMaddoxIl2EngineActor).typeX4CResetControls();
     }
 
-    this.pos.setAbs(p, or);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, or);
 
     if (Time.current() > this.tStart + 500L) {
       hunted = NearestTargets.getEnemy(0, -1, p, 800.0D, 0);
       if (Actor.isValid(hunted)) {
-        float f3 = (float)p.distance(hunted.pos.getAbsPoint());
+        float f3 = (float)p.distance(hunted.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
         if (((hunted instanceof Aircraft)) && ((f3 < 20.0F) || ((f3 < 40.0F) && (f3 > this.prevd) && (this.prevd != 1000.0F)))) {
           doExplosionAir();
           postDestroy();
@@ -132,10 +132,10 @@ public class RocketX4 extends Rocket
 
   public RocketX4(Actor paramActor, NetChannel paramNetChannel, int paramInt, Point3d paramPoint3d, Orient paramOrient, float paramFloat)
   {
-    this.net = new Mirror(this, paramNetChannel, paramInt);
-    this.pos.setAbs(paramPoint3d, paramOrient);
-    this.pos.reset();
-    this.pos.setBase(paramActor, null, true);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d, paramOrient);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, null, true);
     doStart(-1.0F);
     v.set(1.0D, 0.0D, 0.0D); paramOrient.transform(v);
     v.scale(paramFloat);
@@ -143,22 +143,22 @@ public class RocketX4 extends Rocket
     collide(false);
   }
 
-  public void start(float paramFloat, int paramInt)
+  public void start(float paramFloat)
   {
-    Actor localActor = this.pos.base();
+    Actor localActor = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base();
     if ((Actor.isValid(localActor)) && ((localActor instanceof Aircraft))) {
       if (localActor.isNetMirror()) {
         destroy();
         return;
       }
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
 
     doStart(paramFloat);
   }
 
   private void doStart(float paramFloat) {
-    super.start(-1.0F, 0);
+    super.start(-1.0F);
     this.fm = ((Aircraft)getOwner()).FM;
     this.tStart = Time.current();
     if (Config.isUSE_RENDER()) {
@@ -167,9 +167,9 @@ public class RocketX4 extends Rocket
       this.flame.drawing(false);
     }
 
-    this.pos.getAbs(p, or);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p, or);
     or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
-    this.pos.setAbs(p, or);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, or);
   }
   public void destroy() {
     if ((isNet()) && (isNetMirror()))
@@ -183,12 +183,12 @@ public class RocketX4 extends Rocket
 
   protected void doExplosion(Actor paramActor, String paramString)
   {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     MsgExplosion.send(paramActor, paramString, p, getOwner(), 45.0F, 2.0F, 1, 550.0F);
     super.doExplosion(paramActor, paramString);
   }
   protected void doExplosionAir() {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     MsgExplosion.send(null, null, p, getOwner(), 45.0F, 2.0F, 1, 550.0F);
     super.doExplosionAir();
   }
@@ -197,10 +197,10 @@ public class RocketX4 extends Rocket
     throws IOException
   {
     NetMsgSpawn localNetMsgSpawn = super.netReplicate(paramNetChannel);
-    localNetMsgSpawn.writeNetObj(getOwner().net);
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    localNetMsgSpawn.writeFloat((float)localPoint3d.x); localNetMsgSpawn.writeFloat((float)localPoint3d.y); localNetMsgSpawn.writeFloat((float)localPoint3d.z);
-    Orient localOrient = this.pos.getAbsOrient();
+    localNetMsgSpawn.writeNetObj(getOwner().jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    localNetMsgSpawn.writeFloat((float)localPoint3d.jdField_x_of_type_Double); localNetMsgSpawn.writeFloat((float)localPoint3d.jdField_y_of_type_Double); localNetMsgSpawn.writeFloat((float)localPoint3d.jdField_z_of_type_Double);
+    Orient localOrient = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
     localNetMsgSpawn.writeFloat(localOrient.azimut()); localNetMsgSpawn.writeFloat(localOrient.tangage());
     float f = (float)getSpeed(null);
     localNetMsgSpawn.writeFloat(f);
@@ -275,7 +275,7 @@ public class RocketX4 extends Rocket
           }
         }
       } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 
@@ -323,7 +323,7 @@ public class RocketX4 extends Rocket
           }
         }
       } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 
@@ -341,7 +341,7 @@ public class RocketX4 extends Rocket
         int j = (int)(RocketX4.or.tangage() * 32000.0F / 90.0F);
         this.out.writeShort(i); this.out.writeShort(j);
         post(Time.current(), this.out); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 

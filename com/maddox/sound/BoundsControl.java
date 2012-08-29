@@ -6,7 +6,7 @@ public class BoundsControl extends SoundControl
 {
   public void load(SectFile paramSectFile, String paramString)
   {
-    boolean bool = this.handle != 0;
+    boolean bool = this.jdField_handle_of_type_Int != 0;
     if (bool) {
       float f1 = paramSectFile.get(paramString, "minlo", 0.0F);
       float f2 = paramSectFile.get(paramString, "minhi", 0.0F);
@@ -15,8 +15,8 @@ public class BoundsControl extends SoundControl
       float f5 = paramSectFile.get(paramString, "value", 0.0F);
       float f6 = paramSectFile.get(paramString, "pmin", 0.0F);
       float f7 = paramSectFile.get(paramString, "pmax", 0.0F);
-      bool = jniSet(this.handle, f1, f2, f3, f4, f5, f6, f7);
-      if (!bool) printf("ERROR loading sound control " + paramString);
+      bool = jniSet(this.jdField_handle_of_type_Int, f1, f2, f3, f4, f5, f6, f7);
+      if (!bool) BaseObject.printf("ERROR loading sound control " + paramString);
     }
   }
 

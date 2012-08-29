@@ -23,9 +23,9 @@ public abstract class HotKeyCmdMouseMove extends HotKeyCmd
   }
 
   public final void doMove() {
-    this.bActive = true;
+    this.jdField_bActive_of_type_Boolean = true;
     move(this._dx, this._dy, this._dz);
-    this.bActive = false;
+    this.jdField_bActive_of_type_Boolean = false;
   }
 
   public HotKeyCmdMouseMove(boolean paramBoolean, String paramString) {

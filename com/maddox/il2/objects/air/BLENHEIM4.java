@@ -18,15 +18,15 @@ public class BLENHEIM4 extends BLENHEIM
 
     Property.set(localClass, "FlightModel", "FlightModels/Blenheim_MkIV.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 10, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_BombSpawn01", "_BombSpawn02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 10, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_BombSpawn01", "_BombSpawn02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 500", "MGunVikkersKt 2600", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 500", "MGunVikkersKt 2600", null, null });
 
-    weaponsRegister(localClass, "4x250", new String[] { "MGunBrowning303k 500", "MGunVikkersKt 2600", "BombGun250lbs 2", "BombGun250lbs 2" });
+    Aircraft.weaponsRegister(localClass, "4x250", new String[] { "MGunBrowning303k 500", "MGunVikkersKt 2600", "BombGun250lbs 2", "BombGun250lbs 2" });
 
-    weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning303k 500", "MGunVikkersKt 2600", "BombGun500lbs 1", "BombGun500lbs 1" });
+    Aircraft.weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning303k 500", "MGunVikkersKt 2600", "BombGun500lbs 1", "BombGun500lbs 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

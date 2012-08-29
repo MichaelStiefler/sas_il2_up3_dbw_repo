@@ -7,7 +7,6 @@ import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombWalterStarthilferakete;
@@ -23,11 +22,11 @@ public class ME_321 extends Scheme0
 
   public void msgCollision(Actor paramActor, String paramString1, String paramString2)
   {
-    if (((paramActor instanceof ActorLand)) && (this.FM.getVertSpeed() > -10.0F)) return;
+    if (((paramActor instanceof ActorLand)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getVertSpeed() > -10.0F)) return;
     super.msgCollision(paramActor, paramString1, paramString2);
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 0:
@@ -35,16 +34,16 @@ public class ME_321 extends Scheme0
     case 1:
       break;
     case 2:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
       break;
     case 4:
-      this.FM.turret[2].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
       break;
     case 5:
-      this.FM.turret[3].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
     }
   }
 
@@ -143,10 +142,10 @@ public class ME_321 extends Scheme0
 
   public void update(float paramFloat)
   {
-    this.FM.CT.GearControl = 1.0F;
-    this.FM.GearCX = 0.0F;
-    this.FM.Gears.lgear = true;
-    this.FM.Gears.rgear = true;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.GearControl = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.GearCX = 0.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.lgear = true;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.rgear = true;
     super.update(paramFloat);
   }
 
@@ -172,9 +171,9 @@ public class ME_321 extends Scheme0
     for (int i = 0; i < 4; i++)
       try {
         this.booster[i] = new BombWalterStarthilferakete();
-        this.booster[i].pos.setBase(this, findHook("_BoosterH" + (i + 1)), false);
+        this.booster[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, findHook("_BoosterH" + (i + 1)), false);
 
-        this.booster[i].pos.resetAsBase();
+        this.booster[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
         this.booster[i].drawing(true);
       }
@@ -270,11 +269,11 @@ public class ME_321 extends Scheme0
     Property.set(localClass, "gliderBoosters", 1);
     Property.set(localClass, "gliderFireOut", 30.0F);
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 1500", "MGunMG15t 1550", null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 1500", "MGunMG15t 1550", null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

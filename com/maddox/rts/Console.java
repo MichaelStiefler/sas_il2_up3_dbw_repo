@@ -264,10 +264,12 @@ public class Console
       PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(paramString, 0))));
 
       int i = this.bufHistoryCmd.size();
-      while (true) { i--; if (i < 0) break;
+      do {
         String str = (String)this.bufHistoryCmd.get(i);
         localPrintWriter.println(str);
-      }
+
+        i--; } while (i >= 0);
+
       localPrintWriter.close();
     } catch (IOException localIOException) {
       System.out.println("Console commands file: " + paramString + " create failed: " + localIOException.getMessage());
@@ -296,7 +298,7 @@ public class Console
     if (paramChar == '\n') {
       String str = this.outBuf.toString();
       for (int i = 0; i < this.outTypes.size(); i++)
-        ((ConsoleOut)(ConsoleOut)this.outTypes.get(i)).type(str);
+        ((ConsoleOut)this.outTypes.get(i)).type(str);
       this.outBuf = new StringBuffer();
 
       addHistoryOut(str);
@@ -307,12 +309,12 @@ public class Console
     if (this.outBuf.length() > 0) {
       String str = this.outBuf.toString();
       for (int j = 0; j < this.outTypes.size(); j++)
-        ((ConsoleOut)(ConsoleOut)this.outTypes.get(j)).type(str);
+        ((ConsoleOut)this.outTypes.get(j)).type(str);
       this.outBuf = new StringBuffer();
     }
 
     for (int i = 0; i < this.outTypes.size(); i++)
-      ((ConsoleOut)(ConsoleOut)this.outTypes.get(i)).flush();
+      ((ConsoleOut)this.outTypes.get(i)).flush();
   }
 
   protected void errWrite(char paramChar) {
@@ -320,7 +322,7 @@ public class Console
     if (paramChar == '\n') {
       String str = this.errBuf.toString();
       for (int i = 0; i < this.errTypes.size(); i++)
-        ((ConsoleOut)(ConsoleOut)this.errTypes.get(i)).type(str);
+        ((ConsoleOut)this.errTypes.get(i)).type(str);
       this.errBuf = new StringBuffer();
 
       addHistoryOut(str);
@@ -331,12 +333,12 @@ public class Console
     if (this.errBuf.length() > 0) {
       String str = this.errBuf.toString();
       for (int j = 0; j < this.errTypes.size(); j++)
-        ((ConsoleOut)(ConsoleOut)this.errTypes.get(j)).type(str);
+        ((ConsoleOut)this.errTypes.get(j)).type(str);
       this.errBuf = new StringBuffer();
     }
 
     for (int i = 0; i < this.errTypes.size(); i++)
-      ((ConsoleOut)(ConsoleOut)this.errTypes.get(i)).flush();
+      ((ConsoleOut)this.errTypes.get(i)).flush();
   }
 
   public void flush() {
@@ -360,85 +362,78 @@ public class Console
 
   public void msgKeyboardKey(int paramInt, boolean paramBoolean)
   {
-    if ((paramBoolean) && (isActive())) {
-      int i = this.editBuf.length();
-      Object localObject;
-      switch (paramInt) {
-      case 17:
-        this.bShowHistoryOut = (!this.bShowHistoryOut);
-        break;
-      case 37:
-        if (this.editPos <= 0) break; this.editPos -= 1; break;
-      case 39:
-        if (this.editPos >= i) break; this.editPos += 1; break;
-      case 8:
-        if (this.editPos <= 0) break;
-        this.editPos -= 1;
-        this.editBuf.deleteCharAt(this.editPos); break;
-      case 127:
-        if (this.editPos >= i) break;
-        this.editBuf.deleteCharAt(this.editPos); break;
-      case 36:
-        this.editPos = 0;
-        break;
-      case 35:
-        this.editPos = i;
-        break;
-      case 33:
-        if (this.startHistoryOut + this.pageHistoryOut >= historyOut().size()) break;
-        this.startHistoryOut += this.pageHistoryOut; break;
-      case 34:
-        this.startHistoryOut -= this.pageHistoryOut;
-        if (this.startHistoryOut >= 0) break;
-        this.startHistoryOut = 0; break;
-      case 38:
-      case 40:
-        localObject = historyCmd();
-        if (((List)localObject).size() > 0) {
-          if (paramInt == 38) {
-            if (this.curHistoryCmd < ((List)localObject).size())
-              this.curHistoryCmd += 1;
-            else
-              this.curHistoryCmd = 0;
-          }
-          else if (this.curHistoryCmd >= 0)
-            this.curHistoryCmd -= 1;
-          else {
-            this.curHistoryCmd = (((List)localObject).size() - 1);
-          }
-          if ((this.curHistoryCmd < 0) || (this.curHistoryCmd >= ((List)localObject).size()))
-          {
-            this.editBuf.delete(0, i);
-            this.editPos = 0;
-          } else {
-            this.editBuf.delete(0, i);
-            this.editBuf.append((String)(String)((List)localObject).get(this.curHistoryCmd));
-            i = this.editBuf.length();
-            if (this.editPos > i) {
-              this.editPos = i;
-            }
-          }
-        }
-        break;
-      case 10:
-        System.out.print(getPrompt() + this.editBuf.toString() + '\n');
-        if (i > 0) {
-          localObject = this.editBuf.toString();
-          doExec((String)localObject);
-          addHistoryCmd((String)localObject);
-          this.curHistoryCmd = -1;
-          this.editPos = 0;
-          this.editBuf.delete(0, i); } else {
-          if (this.exec == null) break;
-          this.exec.doExec(""); } break;
-      default:
-        this.curKey = -1;
-        return;
+    int i;
+    if ((paramBoolean) && (isActive()))
+      i = this.editBuf.length();
+    Object localObject;
+    switch (paramInt) {
+    case 17:
+      this.bShowHistoryOut = (!this.bShowHistoryOut);
+      break;
+    case 37:
+      if (this.editPos <= 0) break; this.editPos -= 1; break;
+    case 39:
+      if (this.editPos >= i) break; this.editPos += 1; break;
+    case 8:
+      if (this.editPos <= 0) break;
+      this.editPos -= 1;
+      this.editBuf.deleteCharAt(this.editPos); break;
+    case 127:
+      if (this.editPos >= i) break;
+      this.editBuf.deleteCharAt(this.editPos); break;
+    case 36:
+      this.editPos = 0;
+      break;
+    case 35:
+      this.editPos = i;
+      break;
+    case 33:
+      if (this.startHistoryOut + this.pageHistoryOut >= historyOut().size()) break;
+      this.startHistoryOut += this.pageHistoryOut; break;
+    case 34:
+      this.startHistoryOut -= this.pageHistoryOut;
+      if (this.startHistoryOut >= 0) break;
+      this.startHistoryOut = 0; break;
+    case 38:
+    case 40:
+      localObject = historyCmd();
+      if (((List)localObject).size() <= 0) break;
+      if (paramInt == 38) {
+        if (this.curHistoryCmd < ((List)localObject).size())
+          this.curHistoryCmd += 1;
+        else
+          this.curHistoryCmd = 0;
       }
+      else if (this.curHistoryCmd >= 0)
+        this.curHistoryCmd -= 1;
+      else {
+        this.curHistoryCmd = (((List)localObject).size() - 1);
+      }
+      if ((this.curHistoryCmd < 0) || (this.curHistoryCmd >= ((List)localObject).size()))
+      {
+        this.editBuf.delete(0, i);
+        this.editPos = 0;
+      } else {
+        this.editBuf.delete(0, i);
+        this.editBuf.append((String)((List)localObject).get(this.curHistoryCmd));
+        i = this.editBuf.length();
+        if (this.editPos <= i) break;
+        this.editPos = i; } break;
+    case 10:
+      System.out.print(getPrompt() + this.editBuf.toString() + '\n');
+      if (i > 0) {
+        localObject = this.editBuf.toString();
+        doExec((String)localObject);
+        addHistoryCmd((String)localObject);
+        this.curHistoryCmd = -1;
+        this.editPos = 0;
+        this.editBuf.delete(0, i); } else {
+        if (this.exec == null) break;
+        this.exec.doExec(""); } break;
+    default:
+      this.curKey = -1;
+      return;
 
-    }
-    else
-    {
       this.curKey = -1;
     }
   }

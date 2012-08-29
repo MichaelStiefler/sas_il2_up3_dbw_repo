@@ -25,7 +25,7 @@ public class FW_190D9 extends FW_190
   }
   protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
   public void moveSteering(float paramFloat) {
-    if (this.FM.CT.getGear() < 0.98F) return;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() < 0.98F) return;
     hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -paramFloat, 0.0F);
   }
 
@@ -34,7 +34,7 @@ public class FW_190D9 extends FW_190
     for (int i = 1; i < 13; i++) {
       hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10.0F * this.kangle, 0.0F);
     }
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
+    this.kangle = (0.95F * this.kangle + 0.05F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator());
     super.update(paramFloat);
   }
 
@@ -45,7 +45,7 @@ public class FW_190D9 extends FW_190
 
     Property.set(localClass, "iconFar_shortClassName", "FW190");
     Property.set(localClass, "meshName", "3DO/Plane/Fw-190D-9(Beta)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar06());
+    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
 
     Property.set(localClass, "yearService", 1944.6F);
     Property.set(localClass, "yearExpired", 1948.0F);
@@ -54,11 +54,11 @@ public class FW_190D9 extends FW_190
     Property.set(localClass, "cockpitClass", CockpitFW_190D9.class);
     Property.set(localClass, "LOSElevation", 0.764106F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON03", "_CANNON04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON03", "_CANNON04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG131si 750", "MGunMG131si 750", "MGunMG15120MGs 250", "MGunMG15120MGs 250" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG131si 750", "MGunMG131si 750", "MGunMG15120MGs 250", "MGunMG15120MGs 250" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

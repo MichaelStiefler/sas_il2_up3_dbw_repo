@@ -44,7 +44,7 @@ public class PlMapLabel extends Plugin
       int i = this.allActors.size();
       for (int j = 0; j < i; j++) {
         ActorLabel localActorLabel = (ActorLabel)this.allActors.get(j);
-        localPrintWriter.println("" + (int)localActorLabel.pos.getAbsPoint().x + " " + (int)localActorLabel.pos.getAbsPoint().y);
+        localPrintWriter.println("" + (int)localActorLabel.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double + " " + (int)localActorLabel.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
       }
       localPrintWriter.close();
       return true;
@@ -66,8 +66,8 @@ public class PlMapLabel extends Plugin
         if (str2 == null)
           break;
         NumberTokenizer localNumberTokenizer = new NumberTokenizer(str2);
-        localPoint3d.x = localNumberTokenizer.next(0);
-        localPoint3d.y = localNumberTokenizer.next(0);
+        localPoint3d.jdField_x_of_type_Double = localNumberTokenizer.next(0);
+        localPoint3d.jdField_y_of_type_Double = localNumberTokenizer.next(0);
         localPoint3d.z = 0.0D;
         ActorLabel localActorLabel = new ActorLabel(localPoint3d);
         insert(localActorLabel, false);
@@ -81,7 +81,7 @@ public class PlMapLabel extends Plugin
   public void mapLoaded()
   {
     deleteAll();
-    if (!builder.isLoadedLandscape()) return;
+    if (!Plugin.builder.isLoadedLandscape()) return;
     load();
   }
 
@@ -110,7 +110,7 @@ public class PlMapLabel extends Plugin
 
   public static void insert(Point3d paramPoint3d)
   {
-    PlMapLabel localPlMapLabel = (PlMapLabel)getPlugin("MapLabel");
+    PlMapLabel localPlMapLabel = (PlMapLabel)Plugin.getPlugin("MapLabel");
     localPlMapLabel._insert(paramPoint3d);
   }
 
@@ -120,7 +120,7 @@ public class PlMapLabel extends Plugin
   }
 
   public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
     if (i != this.startComboBox1)
       return;
     ActorLabel localActorLabel = new ActorLabel(paramLoc.getPoint());
@@ -128,54 +128,54 @@ public class PlMapLabel extends Plugin
   }
 
   private void insert(ActorLabel paramActorLabel, boolean paramBoolean) {
-    builder.align(paramActorLabel);
+    Plugin.builder.align(paramActorLabel);
     Property.set(paramActorLabel, "builderSpawn", "");
     Property.set(paramActorLabel, "builderPlugin", this);
     this.allActors.add(paramActorLabel);
     if (paramBoolean)
-      builder.setSelected(paramActorLabel);
+      Plugin.builder.setSelected(paramActorLabel);
   }
 
   public void renderMap2D() {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     Render.prepareStates();
     IconDraw.setColor(255, 255, 255, 255);
     for (int i = 0; i < this.allActors.size(); i++) {
       Actor localActor = (Actor)this.allActors.get(i);
-      if (builder.project2d(localActor.pos.getAbsPoint(), this.p2d))
-        if (builder.selectedActor() == localActor) {
+      if (Plugin.builder.project2d(localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2d))
+        if (Plugin.builder.selectedActor() == localActor) {
           IconDraw.setColor(255, 255, 0, 255);
-          IconDraw.render(localActor, this.p2d.x, this.p2d.y);
+          IconDraw.render(localActor, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
           IconDraw.setColor(255, 255, 255, 255);
         } else {
-          IconDraw.render(localActor, this.p2d.x, this.p2d.y);
+          IconDraw.render(localActor, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
         }
     }
   }
 
   public void configure()
   {
-    if (getPlugin("MapActors") == null)
+    if (Plugin.getPlugin("MapActors") == null)
       throw new RuntimeException("PlMisStatic: plugin 'MapActors' not found");
-    this.pluginActors = ((PlMapActors)getPlugin("MapActors"));
+    this.pluginActors = ((PlMapActors)Plugin.getPlugin("MapActors"));
   }
 
   private void fillComboBox2(int paramInt) {
     if (paramInt != this.startComboBox1)
       return;
-    if (builder.wSelect.curFilledType != paramInt) {
-      builder.wSelect.curFilledType = paramInt;
-      builder.wSelect.comboBox2.clear(false);
-      builder.wSelect.comboBox2.add("Label");
-      builder.wSelect.comboBox1.setSelected(paramInt, true, false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt) {
+      Plugin.builder.wSelect.curFilledType = paramInt;
+      Plugin.builder.wSelect.comboBox2.clear(false);
+      Plugin.builder.wSelect.comboBox2.add("Label");
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(0, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(0, true, false);
   }
 
   public void createGUI() {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add("Label");
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
+    Plugin.builder.wSelect.comboBox1.add("Label");
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -191,9 +191,9 @@ public class PlMapLabel extends Plugin
   }
 
   private void setSelected(String paramString, int paramInt1, int paramInt2) {
-    builder.wSelect.comboBox1.setSelected(paramInt1, true, true);
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, true);
-    builder.tip(paramString);
+    Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, true);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, true);
+    Plugin.builder.tip(paramString);
   }
   static {
     Property.set(PlMapLabel.class, "name", "MapLabel");

@@ -22,13 +22,13 @@ public class A5M4 extends A5M
 
     Property.set(localClass, "FlightModel", "FlightModels/A5M4.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 9, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalDev01", "_ExternalDev02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunVikkersKs 500", "MGunVikkersKs 500", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunVikkersKs 500", "MGunVikkersKs 500", null, null });
 
-    weaponsRegister(localClass, "1xdt", new String[] { "MGunVikkersKs 500", "MGunVikkersKs 500", "PylonA5MPLN1", "FuelTankGun_TankA5M" });
+    Aircraft.weaponsRegister(localClass, "1xdt", new String[] { "MGunVikkersKs 500", "MGunVikkersKs 500", "PylonA5MPLN1", "FuelTankGun_TankA5M" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

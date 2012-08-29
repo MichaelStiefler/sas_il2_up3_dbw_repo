@@ -20,20 +20,20 @@ public class PaintSchemeFCSPar07 extends PaintSchemeFCSPar01
         f = 0.9F;
       }
       if (paramInt3 < 10) {
-        changeMat(paramClass, paramHierMesh, "Overlay1", "psFCS01RUSCNUM" + i + paramInt1 + "0" + paramInt3 + j, "Russian/0" + paramInt3 + ".tga", f, f, f);
+        changeMat(paramHierMesh, "Overlay1", "psFCS01RUSCNUM" + i + paramInt1 + "0" + paramInt3 + j, "Russian/0" + paramInt3 + ".tga", f, f, f);
       }
       else
       {
         changeMat(paramHierMesh, "Overlay1", "psFCS01RUSCNUM" + i + paramInt1 + paramInt3 + j, "Russian/0" + paramInt3 / 10 + ".tga", "Russian/0" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
       }
 
-      changeMat(paramClass, paramHierMesh, "Overlay6", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
 
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
 
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
 
-      changeMat(paramClass, paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2]);
+      changeMat(paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2]);
     }
     else if (paramRegiment.country() != PaintScheme.countryNoName)
     {
@@ -45,7 +45,7 @@ public class PaintSchemeFCSPar07 extends PaintSchemeFCSPar01
       else
         f = 0.9F;
       if (paramInt3 < 10) {
-        changeMat(paramClass, paramHierMesh, "Overlay8", "psFCS01RUSCNUM" + i + paramInt1 + "0" + paramInt3 + j, "Russian/0" + paramInt3 + ".tga", f, f, f);
+        changeMat(paramHierMesh, "Overlay8", "psFCS01RUSCNUM" + i + paramInt1 + "0" + paramInt3 + j, "Russian/0" + paramInt3 + ".tga", f, f, f);
       }
       else
       {

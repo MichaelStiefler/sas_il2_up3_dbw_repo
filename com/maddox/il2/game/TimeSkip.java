@@ -47,7 +47,7 @@ public class TimeSkip
   {
     if (Actor.isAlive(World.getPlayerAircraft()))
     {
-      if (this.wayPoint != World.getPlayerFM().AP.way.curr())
+      if (this.wayPoint != World.getPlayerFM().jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr())
       {
         HUD.log("WaypointReached");
       }
@@ -65,7 +65,7 @@ public class TimeSkip
         }
 
       }
-      else if (World.getPlayerFM().M.fuel / World.getPlayerFM().M.maxFuel < 0.05D)
+      else if (World.getPlayerFM().jdField_M_of_type_ComMaddoxIl2FmMass.fuel / World.getPlayerFM().jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel < 0.05D)
       {
         HUD.log("FuelLow");
       }
@@ -93,7 +93,7 @@ public class TimeSkip
 
   private boolean checkStart()
   {
-    this.wayPoint = World.getPlayerFM().AP.way.curr();
+    this.wayPoint = World.getPlayerFM().jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr();
     if (this.wayPoint.Action != 0)
     {
       if (this.wayPoint.Action == 3)
@@ -106,7 +106,7 @@ public class TimeSkip
     {
       HUD.log("SAicraftDamaged");
     }
-    else if (World.getPlayerFM().M.fuel / World.getPlayerFM().M.maxFuel < 0.05D)
+    else if (World.getPlayerFM().jdField_M_of_type_ComMaddoxIl2FmMass.fuel / World.getPlayerFM().jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel < 0.05D)
     {
       HUD.log("SFuelLow");
     }
@@ -134,7 +134,7 @@ public class TimeSkip
       if (localActor.getArmy() == i)
         continue;
       Point3d localPoint3d2 = localActor.pos.getAbsPoint();
-      double d2 = (localPoint3d1.x - localPoint3d2.x) * (localPoint3d1.x - localPoint3d2.x) + (localPoint3d1.y - localPoint3d2.y) * (localPoint3d1.y - localPoint3d2.y);
+      double d2 = (localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double) * (localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double) + (localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double) * (localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double);
 
       if (d2 <= d1) {
         return true;

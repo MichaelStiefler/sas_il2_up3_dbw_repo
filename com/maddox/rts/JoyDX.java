@@ -93,15 +93,15 @@ public final class JoyDX
   {
     if (this.bCreated) {
       long l = Time.currentReal();
-      for (int i = 0; i < this.amount; tmp40_39++) {
+      for (int i = 0; tmp34_33 < this.amount; tmp34_33++) {
         if (bR_RU)
         {
-          int tmp40_39 = 0; this.param[1] = tmp40_39; this.param[0] = tmp40_39;
-        }while (nGetMsg(tmp40_39, this.param))
+          int tmp34_33 = 0; this.param[1] = tmp34_33; this.param[0] = tmp34_33;
+        }while (nGetMsg(tmp34_33, this.param))
         {
           if ((this.param[0] >= 0) && (this.param[0] <= 31)) {
-            if (this.param[1] == 1) RTSConf.cur.joy.setPress(l, tmp40_39, this.param[0] - 0); else
-              RTSConf.cur.joy.setRelease(l, tmp40_39, this.param[0] - 0);
+            if (this.param[1] == 1) RTSConf.cur.joy.setPress(l, tmp34_33, this.param[0] - 0); else
+              RTSConf.cur.joy.setRelease(l, tmp34_33, this.param[0] - 0);
           }
           else
           {
@@ -109,35 +109,35 @@ public final class JoyDX
               this.param[0] -= 6;
             }
             switch (this.param[0]) { case 32:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 0, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 0, this.param[1]); break;
             case 33:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 1, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 1, this.param[1]); break;
             case 34:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 2, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 2, this.param[1]); break;
             case 35:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 3, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 3, this.param[1]); break;
             case 36:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 4, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 4, this.param[1]); break;
             case 37:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 5, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 5, this.param[1]); break;
             case 38:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 6, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 6, this.param[1]); break;
             case 39:
-              RTSConf.cur.joy.setMove(l, tmp40_39, 7, this.param[1]); break;
+              RTSConf.cur.joy.setMove(l, tmp34_33, 7, this.param[1]); break;
             case 40:
-              RTSConf.cur.joy.setPov(l, tmp40_39, 0, this.param[1]); break;
+              RTSConf.cur.joy.setPov(l, tmp34_33, 0, this.param[1]); break;
             case 41:
-              RTSConf.cur.joy.setPov(l, tmp40_39, 1, this.param[1]); break;
+              RTSConf.cur.joy.setPov(l, tmp34_33, 1, this.param[1]); break;
             case 42:
-              RTSConf.cur.joy.setPov(l, tmp40_39, 2, this.param[1]); break;
+              RTSConf.cur.joy.setPov(l, tmp34_33, 2, this.param[1]); break;
             case 43:
-              RTSConf.cur.joy.setPov(l, tmp40_39, 3, this.param[1]); break;
+              RTSConf.cur.joy.setPov(l, tmp34_33, 3, this.param[1]); break;
             }
           }
 
           if (bR_RU)
           {
-            int tmp499_498 = 0; this.param[1] = tmp499_498; this.param[0] = tmp499_498;
+            int tmp483_482 = 0; this.param[1] = tmp483_482; this.param[0] = tmp483_482;
           }
         }
       }

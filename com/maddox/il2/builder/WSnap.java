@@ -26,11 +26,11 @@ public class WSnap extends GWindowFramed
   public void created() {
     this.bAlwaysOnTop = true;
     super.created();
-    this.title = Plugin.i18n("title.Snap");
-    this.clientWindow = create(new GWindowDialogClient());
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.clientWindow;
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, Plugin.i18n("Step"), null));
-    localGWindowDialogClient.addControl(this.wStep = new GWindowEditControl(localGWindowDialogClient, 9.0F, 1.0F, 6.0F, 1.3F, "") {
+    this.title = "Snap";
+    this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow = create(new GWindowDialogClient());
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow;
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 3.0F, 1.3F, "Step", null));
+    localGWindowDialogClient.addControl(this.wStep = new GWindowEditControl(localGWindowDialogClient, 5.0F, 1.0F, 6.0F, 1.3F, "") {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) try {
             WSnap.this.builder.snapStep = Double.parseDouble(getValue());
@@ -45,8 +45,8 @@ public class WSnap extends GWindowFramed
       }
     });
     this.wStep.setValue("" + this.builder.snapStep, false);
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Enable"), null));
-    localGWindowDialogClient.addControl(this.wEnable = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 3.0F, null) {
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 3.0F, 1.3F, "Enable", null));
+    localGWindowDialogClient.addControl(this.wEnable = new GWindowCheckBox(localGWindowDialogClient, 5.0F, 3.0F, null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2)
           WSnap.this.builder.bSnap = isChecked();

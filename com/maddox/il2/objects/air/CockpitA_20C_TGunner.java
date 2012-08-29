@@ -31,18 +31,18 @@ public class CockpitA_20C_TGunner extends CockpitGunner
     super.moveGun(paramOrient);
     float f1 = -paramOrient.getYaw();
     float f2 = paramOrient.getTangage();
-    this.mesh.chunkSetAngles("Turret1A", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("Turret1B", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1A", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1B", 0.0F, f2, 0.0F);
 
-    this.mesh.chunkSetAngles("Turret1C", 0.0F, cvt(f1, -45.0F, 45.0F, -45.0F, 45.0F), 0.0F);
-    this.mesh.chunkSetAngles("Turret1D", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1C", 0.0F, cvt(f1, -45.0F, 45.0F, -45.0F, 45.0F), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1D", 0.0F, f2, 0.0F);
     resetYPRmodifier();
     if (f1 < 0.0F)
-      xyz[0] = cvt(f1, -45.0F, 0.0F, 0.25F, 0.0F);
+      Cockpit.xyz[0] = cvt(f1, -45.0F, 0.0F, 0.25F, 0.0F);
     else {
-      xyz[0] = cvt(f1, 0.0F, 45.0F, 0.0F, 0.25F);
+      Cockpit.xyz[0] = cvt(f1, 0.0F, 45.0F, 0.0F, 0.25F);
     }
-    this.mesh.chunkSetLocate("Turret1E", xyz, ypr);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("Turret1E", Cockpit.xyz, Cockpit.ypr);
   }
 
   public void clipAnglesGun(Orient paramOrient) {
@@ -64,12 +64,12 @@ public class CockpitA_20C_TGunner extends CockpitGunner
 
   protected void interpTick() {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+      this.jdField_bGunFire_of_type_Boolean = false;
+    }this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
 
-    if (this.bGunFire) {
+    if (this.jdField_bGunFire_of_type_Boolean) {
       if (this.hook1 == null) {
         this.hook1 = new HookNamed(aircraft(), "_MGUN07");
       }
@@ -84,28 +84,28 @@ public class CockpitA_20C_TGunner extends CockpitGunner
   public void doGunFire(boolean paramBoolean)
   {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
+      this.jdField_bGunFire_of_type_Boolean = false;
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+    else this.jdField_bGunFire_of_type_Boolean = paramBoolean;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
   }
 
   public void reflectCockpitState()
   {
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
-      this.mesh.chunkVisible("Z_Holes1_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x4) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes1_D1", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0)
-      this.mesh.chunkVisible("Z_Holes2_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x10) != 0)
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes2_D1", true);
   }
 
   protected void reflectPlaneMats()
   {
     HierMesh localHierMesh = aircraft().hierMesh();
     Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Gloss1D0o", localMat);
   }
 
   public CockpitA_20C_TGunner()

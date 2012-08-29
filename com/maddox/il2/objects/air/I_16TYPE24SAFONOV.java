@@ -22,9 +22,9 @@ public class I_16TYPE24SAFONOV extends I_16
 
     Property.set(localClass, "FlightModel", "FlightModels/I-16type24(ofSafonov).fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02" });
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASsi 240", "MGunShKASsi 240", "MGunShVAKk 120", "MGunShVAKk 120" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASsi 240", "MGunShKASsi 240", "MGunShVAKk 120", "MGunShVAKk 120" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

@@ -148,52 +148,44 @@ public class HashMapInt
   {
     Entry[] arrayOfEntry = this.table;
     int i;
-    Entry localEntry;
+    Entry localEntry3;
     if (paramInt1 < paramInt3) {
       if ((paramInt2 < paramInt1) || (paramInt2 >= paramInt3))
         return paramInt3;
       for (i = paramInt2; i < paramInt3; i++) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
+        Entry localEntry1 = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
+        for (; localEntry1 != null; localEntry1 = localEntry1.next)
+          if (localEntry1.key == i)
+            break;
+        if (localEntry1 == null)
           return i;
       }
-      for (i = paramInt1; i < paramInt2; i++) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
-          return i;
+      for (int j = paramInt1; j < paramInt2; j++) {
+        localEntry3 = arrayOfEntry[((j & 0x7FFFFFFF) % arrayOfEntry.length)];
+        for (; localEntry3 != null; localEntry3 = localEntry3.next)
+          if (localEntry3.key == j)
+            break;
+        if (localEntry3 == null)
+          return j;
       }
     } else if (paramInt1 > paramInt3) {
       if ((paramInt2 > paramInt1) || (paramInt2 <= paramInt3))
         return paramInt3;
       for (i = paramInt2; i > paramInt3; i--) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
+        Entry localEntry2 = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
+        for (; localEntry2 != null; localEntry2 = localEntry2.next)
+          if (localEntry2.key == i)
+            break;
+        if (localEntry2 == null)
           return i;
       }
-      for (i = paramInt1; i > paramInt2; i--) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
-          return i;
+      for (int k = paramInt1; k > paramInt2; k--) {
+        localEntry3 = arrayOfEntry[((k & 0x7FFFFFFF) % arrayOfEntry.length)];
+        for (; localEntry3 != null; localEntry3 = localEntry3.next)
+          if (localEntry3.key == k)
+            break;
+        if (localEntry3 == null)
+          return k;
       }
     }
     return paramInt3;
@@ -224,7 +216,7 @@ public class HashMapInt
     this.table = arrayOfEntry2;
 
     for (int k = i; k-- > 0; )
-      for (localEntry1 = arrayOfEntry1[k]; localEntry1 != null; ) {
+      for (Entry localEntry1 = arrayOfEntry1[k]; localEntry1 != null; ) {
         Entry localEntry2 = localEntry1;
         localEntry1 = localEntry1.next;
 
@@ -232,7 +224,6 @@ public class HashMapInt
         localEntry2.next = arrayOfEntry2[m];
         arrayOfEntry2[m] = localEntry2;
       }
-    Entry localEntry1;
   }
 
   public Object put(int paramInt, Object paramObject)
@@ -244,7 +235,7 @@ public class HashMapInt
     j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
     for (Entry localEntry = arrayOfEntry[j]; localEntry != null; localEntry = localEntry.next) {
       if (localEntry.key == paramInt) {
-        Object localObject = localEntry.value;
+        localObject = localEntry.value;
         localEntry.value = paramObject;
         return localObject;
       }
@@ -259,8 +250,8 @@ public class HashMapInt
       j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
     }
 
-    localEntry = allocEntry(paramInt, paramObject, arrayOfEntry[j]);
-    arrayOfEntry[j] = localEntry;
+    Object localObject = allocEntry(paramInt, paramObject, arrayOfEntry[j]);
+    arrayOfEntry[j] = localObject;
     this.count += 1;
     return null;
   }
@@ -306,15 +297,16 @@ public class HashMapInt
     Entry[] arrayOfEntry = this.table;
     this.modCount += 1;
     int i = arrayOfEntry.length;
-    while (true) { i--; if (i < 0) break;
-      Object localObject = arrayOfEntry[i];
+    do { Object localObject = arrayOfEntry[i];
       while (localObject != null) {
         Entry localEntry = ((Entry)localObject).next;
         freeEntry((Entry)localObject);
         localObject = localEntry;
       }
       arrayOfEntry[i] = null;
-    }
+
+      i--; } while (i >= 0);
+
     this.count = 0;
   }
 
@@ -514,9 +506,10 @@ public class HashMapInt
       if (HashMapInt.this.modCount != this.expectedModCount) {
         throw new ConcurrentModificationException();
       }
-      while ((this.entry == null) && (this.index > 0)) {
+      do
         this.entry = this.table[(--this.index)];
-      }
+      while ((this.entry == null) && (this.index > 0));
+
       if (this.entry != null) {
         HashMapInt.Entry localEntry = this.lastReturned = this.entry;
         this.entry = localEntry.next;

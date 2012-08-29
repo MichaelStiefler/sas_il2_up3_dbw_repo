@@ -22,11 +22,11 @@ public class YAK_9TALBERT extends YAK_9TX
 
     Property.set(localClass, "FlightModel", "FlightModels/Yak-9T.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunNS37ki 30" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunNS37ki 30" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

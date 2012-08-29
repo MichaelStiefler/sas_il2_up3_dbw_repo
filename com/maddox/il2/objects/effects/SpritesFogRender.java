@@ -13,14 +13,14 @@ class SpritesFogRender extends Render
       this.resPreRender = 0;
       return;
     }
-    this.resPreRender = SpritesFog.actor.draw.preRender(SpritesFog.actor); }
+    this.resPreRender = SpritesFog.actor.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.preRender(SpritesFog.actor); }
 
   public void render()
   {
     if (this.resPreRender > 0)
     {
       Render.prepareStates();
-      SpritesFog.actor.draw.render(SpritesFog.actor);
+      SpritesFog.actor.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.render(SpritesFog.actor);
     }
   }
 

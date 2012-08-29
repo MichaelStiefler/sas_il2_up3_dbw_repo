@@ -17,22 +17,22 @@ public class GUILightBox extends GWindowCheckBox
     setCanvasColorWHITE();
     GTexRegion localGTexRegion = this.texDOWN;
     if (this.bChecked) localGTexRegion = this.texUP;
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, localGTexRegion);
+    draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGTexRegion);
   }
 
   public GSize getMinSize(GSize paramGSize) {
-    paramGSize.dx = this.win.dx;
-    paramGSize.dy = this.win.dy;
+    paramGSize.dx = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    paramGSize.dy = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     return paramGSize;
   }
 
   public void setPosC(float paramFloat1, float paramFloat2) {
-    super.setPos(paramFloat1 - this.win.dx / 2.0F, paramFloat2 - this.win.dy / 2.0F);
+    super.setPos(paramFloat1 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F, paramFloat2 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F);
   }
 
   public void resolutionChanged() {
-    this.win.dx = x1024(this.texUP.dx);
-    this.win.dy = y1024(this.texUP.dy);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = x1024(this.texUP.dx);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = y1024(this.texUP.dy);
   }
 
   public void created() {

@@ -16,21 +16,21 @@ public class CmdRawConsole extends Cmd
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
   {
     String str;
-    if (exist(paramMap, "LOG")) {
-      if (nargs(paramMap, "LOG") == 1) {
-        str = arg(paramMap, "LOG", 0);
+    if (Cmd.exist(paramMap, "LOG")) {
+      if (Cmd.nargs(paramMap, "LOG") == 1) {
+        str = Cmd.arg(paramMap, "LOG", 0);
         RTSConf.cur.console.log("on".equals(str));
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "LOG" + " is " + (RTSConf.cur.console.isLog() ? "on" : "off"));
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "LOG" + " is " + (RTSConf.cur.console.isLog() ? "on" : "off"));
       }
     }
 
-    if (exist(paramMap, "LOGFILE")) {
-      if (nargs(paramMap, "LOGFILE") == 1) {
-        str = arg(paramMap, "LOGFILE", 0);
+    if (Cmd.exist(paramMap, "LOGFILE")) {
+      if (Cmd.nargs(paramMap, "LOGFILE") == 1) {
+        str = Cmd.arg(paramMap, "LOGFILE", 0);
         RTSConf.cur.console.setLogFileName(str);
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "LOGFILE" + " is " + RTSConf.cur.console.logFileName());
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "LOGFILE" + " is " + RTSConf.cur.console.logFileName());
       }
     }
 
@@ -39,9 +39,9 @@ public class CmdRawConsole extends Cmd
 
   public CmdRawConsole()
   {
-    this.param.put("LOG", null);
-    this.param.put("LOGFILE", null);
-    this._properties.put("NAME", "console");
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOG", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOGFILE", null);
+    this.jdField__properties_of_type_JavaUtilHashMap.put("NAME", "console");
     this._levelAccess = 1;
   }
 }

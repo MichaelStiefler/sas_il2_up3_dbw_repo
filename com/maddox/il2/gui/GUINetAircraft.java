@@ -58,7 +58,7 @@ public class GUINetAircraft extends GameState
   public static Item getItem(int paramInt)
   {
     if (paramInt < 0) return null;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     if (paramInt >= localGUINetAircraft.wTable.items.size()) return null;
     return (Item)localGUINetAircraft.wTable.items.get(paramInt);
@@ -67,14 +67,14 @@ public class GUINetAircraft extends GameState
   protected static boolean isSelectedValid() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return false;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     return i < localGUINetAircraft.wTable.items.size();
   }
   protected static int selectedCockpitNum() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return 0;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     Item localItem = (Item)localGUINetAircraft.wTable.items.get(i);
     return localItem.iCockpitNum;
@@ -82,7 +82,7 @@ public class GUINetAircraft extends GameState
   protected static String selectedSpawnName() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return null;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     Item localItem = (Item)localGUINetAircraft.wTable.items.get(i);
     return localItem.wingName + localItem.iAircraft;
@@ -90,7 +90,7 @@ public class GUINetAircraft extends GameState
   protected static Regiment selectedRegiment() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return null;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     return ((Item)localGUINetAircraft.wTable.items.get(i)).reg;
   }
@@ -100,33 +100,33 @@ public class GUINetAircraft extends GameState
   protected static String selectedAircraftKeyName() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return null;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     return ((Item)localGUINetAircraft.wTable.items.get(i)).keyName;
   }
   protected static int selectedAircraftNumInWing() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return 0;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     return ((Item)localGUINetAircraft.wTable.items.get(i)).iAircraft;
   }
   protected static String selectedWingName() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return null;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     return ((Item)localGUINetAircraft.wTable.items.get(i)).wingName;
   }
   protected static Class selectedAircraftClass() {
     int i = ((NetUser)NetEnv.host()).getPlace();
     if (i < 0) return null;
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     return ((Item)localGUINetAircraft.wTable.items.get(i)).clsAircraft;
   }
   public static int serverPlace() {
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft.fillListItems();
     if (localGUINetAircraft.sectMission == null)
       return -1;
@@ -198,7 +198,7 @@ public class GUINetAircraft extends GameState
       if ((localObject instanceof Class)) {
         i2 = 1;
       } else {
-        arrayOfClass = (Class[])(Class[])localObject;
+        arrayOfClass = (Class[])localObject;
         i2 = arrayOfClass.length;
       }
 
@@ -223,21 +223,21 @@ public class GUINetAircraft extends GameState
         crewFunction[i9] = localSectFile.get("Aircraft", "CrewFunction" + i9, crewFunction[i9], 1, AircraftState.astateHUDPilotHits.length);
       }
 
-      int i7 = paramSectFile.get(str1, "Planes", 1, 1, 4);
-      for (int i8 = 0; i8 < i7; i8++)
-        for (i9 = 0; i9 < i2; i9++) {
-          if ((i9 > 0) && (CockpitPilot.class.isAssignableFrom(arrayOfClass[i9])))
+      i6 = paramSectFile.get(str1, "Planes", 1, 1, 4);
+      for (int i7 = 0; i7 < i6; i7++)
+        for (int i8 = 0; i8 < i2; i8++) {
+          if ((i8 > 0) && (CockpitPilot.class.isAssignableFrom(arrayOfClass[i8])))
             continue;
           Item localItem = new Item();
           localItem.indexInArmy = (k++);
           localItem.iSectWing = m;
-          localItem.iAircraft = i8;
-          localItem.iCockpitNum = i9;
+          localItem.iAircraft = i7;
+          localItem.iCockpitNum = i8;
           localItem.wingName = str1;
           localItem.keyName = str3;
           localItem.cocName = AircraftState.astateHUDPilotHits[1];
           if (arrayOfClass != null) {
-            int i10 = Property.intValue(arrayOfClass[i9], "astatePilotIndx", 0);
+            int i10 = Property.intValue(arrayOfClass[i8], "astatePilotIndx", 0);
             if (i10 < i5) {
               i10 = crewFunction[i10];
               if (i10 < AircraftState.astateHUDPilotHits.length) {
@@ -248,7 +248,7 @@ public class GUINetAircraft extends GameState
           localItem.cocName = I18N.hud_log(localItem.cocName);
           localItem.reg = localRegiment;
           localItem.clsAircraft = localClass;
-          localItem.number = localPaintScheme.typedName(localClass, localRegiment, i3, i4, i8);
+          localItem.number = localPaintScheme.typedName(localClass, localRegiment, i3, i4, i7);
           localItem.texture = localGTexture;
           this.wTable.items.add(localItem);
         }
@@ -280,7 +280,7 @@ public class GUINetAircraft extends GameState
 
   protected static void doFly()
   {
-    GUINetAircraft localGUINetAircraft = (GUINetAircraft)get(44);
+    GUINetAircraft localGUINetAircraft = (GUINetAircraft)GameState.get(44);
     localGUINetAircraft._doFly();
   }
 
@@ -417,29 +417,21 @@ public class GUINetAircraft extends GameState
 
     public void render() {
       super.render();
-
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(924.0F), 2.5F);
-      GUISeparate.draw(this, GColor.Gray, x1024(457.0F), y1024(686.0F), x1024(30.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(537.0F), y1024(686.0F), x1024(30.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(457.0F), y1024(640.0F), 1.0F, x1024(46.0F));
-      GUISeparate.draw(this, GColor.Gray, x1024(567.0F), y1024(640.0F), 1.0F, x1024(46.0F));
+      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(960.0F), 2.0F);
 
       setCanvasColor(GColor.Gray);
       setCanvasFont(0);
-
-      draw(x1024(680.0F), y1024(633.0F), x1024(176.0F), y1024(48.0F), 1, GUINetAircraft.this.i18n("netair.Arming"));
-      draw(x1024(427.0F), y1024(633.0F), x1024(170.0F), y1024(48.0F), 1, GUINetAircraft.this.i18n("netair.Fly"));
-      draw(x1024(15.0F), y1024(633.0F), x1024(140.0F), y1024(48.0F), 1, GUINetAircraft.this.i18n("netair.Brief"));
+      draw(x1024(96.0F), y1024(656.0F), x1024(128.0F), y1024(48.0F), 0, GUINetAircraft.this.i18n("netair.Brief"));
+      draw(x1024(528.0F), y1024(656.0F), x1024(176.0F), y1024(48.0F), 2, GUINetAircraft.this.i18n("netair.Arming"));
+      draw(x1024(768.0F), y1024(656.0F), x1024(160.0F), y1024(48.0F), 2, GUINetAircraft.this.i18n("netair.Fly"));
     }
 
-    public void setPosSize()
-    {
+    public void setPosSize() {
       set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
       GUINetAircraft.this.wTable.set1024PosSize(32.0F, 32.0F, 960.0F, 560.0F);
-
-      GUINetAircraft.this.bFly.setPosC(x1024(512.0F), y1024(689.0F));
-      GUINetAircraft.this.bPrev.setPosC(x1024(85.0F), y1024(689.0F));
-      GUINetAircraft.this.bLoodout.setPosC(x1024(768.0F), y1024(689.0F));
+      GUINetAircraft.this.bPrev.setPosC(x1024(56.0F), y1024(680.0F));
+      GUINetAircraft.this.bLoodout.setPosC(x1024(744.0F), y1024(680.0F));
+      GUINetAircraft.this.bFly.setPosC(x1024(968.0F), y1024(680.0F));
     }
   }
 
@@ -558,7 +550,7 @@ public class GUINetAircraft extends GameState
       addColumn(I18N.gui("netair.Number"), null);
       addColumn(I18N.gui("netair.Position"), null);
       addColumn(I18N.gui("netair.Player"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(1.0F);
       getColumn(1).setRelativeDx(4.0F);
       getColumn(2).setRelativeDx(4.0F);
@@ -571,7 +563,7 @@ public class GUINetAircraft extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

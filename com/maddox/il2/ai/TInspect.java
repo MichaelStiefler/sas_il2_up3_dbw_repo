@@ -7,24 +7,16 @@ import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiNetSendMethods;
-import com.maddox.il2.game.ZutiRadarObject;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.net.NetServerParams;
-import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.rts.NetEnv;
-import java.util.ArrayList;
 import java.util.List;
 
-public class TInspect extends Target
+class TInspect extends Target
 {
   String nameTarget;
   Actor actor;
   boolean bLanding;
-  public Point3d point;
+  Point3d point;
   double r;
   private static Point3d p = new Point3d();
   private static Vector3d v0 = new Vector3d();
@@ -48,7 +40,7 @@ public class TInspect extends Target
 
   protected boolean checkPeriodic()
   {
-    if ((Mission.isCoop()) || (Mission.isDogfight())) {
+    if (Mission.isCoop()) {
       localObject = Engine.targets();
       int i = ((List)localObject).size();
       int j = World.getMissionArmy();
@@ -69,15 +61,9 @@ public class TInspect extends Target
   protected boolean checkPeriodic(Actor paramActor) {
     checkActor();
     paramActor.pos.getAbs(p);
-    double d = p.z;
-    p.z = this.point.z;
-    if (p.distance(this.point) <= this.r)
-    {
-      boolean bool = Main.cur().mission.zutiRadar_ScoutCompleteRecon;
-      if ((bool) && (!ZutiRadarObject.isPlayerArmyScout(paramActor, World.getMissionArmy()))) {
-        return false;
-      }
-
+    double d = p.jdField_z_of_type_Double;
+    p.jdField_z_of_type_Double = this.point.jdField_z_of_type_Double;
+    if (p.distance(this.point) <= this.r) {
       Aircraft localAircraft = (Aircraft)paramActor;
       if (localAircraft.FM.isWasAirborne()) {
         if (this.bLanding) {
@@ -95,9 +81,6 @@ public class TInspect extends Target
         }
         setTaskCompleteFlag(true);
         setDiedFlag(true);
-
-        zutiTargetDied();
-
         return true;
       }
     }
@@ -106,7 +89,7 @@ public class TInspect extends Target
 
   protected boolean checkActorDied(Actor paramActor)
   {
-    if ((Mission.isCoop()) || (Mission.isDogfight())) {
+    if (Mission.isCoop()) {
       if (!(paramActor instanceof Aircraft)) return false;
       int i = World.getMissionArmy();
       if (paramActor.getArmy() != i) return false;
@@ -123,9 +106,6 @@ public class TInspect extends Target
       return false;
     }
     setDiedFlag(true);
-
-    zutiTargetDied();
-
     return true;
   }
   protected boolean checkTimeoutOff() {
@@ -139,39 +119,5 @@ public class TInspect extends Target
     this.nameTarget = paramString;
     World.land(); this.point = new Point3d(paramInt3, paramInt4, Landscape.HQ(paramInt3, paramInt4));
     this.r = paramInt5;
-  }
-
-  private void zutiTargetDied()
-  {
-    if (ZutiSupportMethods.ZUTI_DEAD_TARGETS == null) {
-      ZutiSupportMethods.ZUTI_DEAD_TARGETS = new ArrayList();
-    }
-    if (!ZutiSupportMethods.ZUTI_DEAD_TARGETS.contains(this)) {
-      ZutiSupportMethods.ZUTI_DEAD_TARGETS.add(this);
-    }
-    zutiSendRemoveMessageToClients();
-  }
-
-  private void zutiSendRemoveMessageToClients()
-  {
-    if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()))
-    {
-      if (this.actor == null)
-        ZutiSupportMethods.removeTarget(this.point.x, this.point.y);
-      else {
-        ZutiSupportMethods.removeTarget(this.actor.name());
-      }
-      List localList = NetEnv.hosts();
-      int i = localList.size();
-
-      for (int j = 0; j < i; j++)
-      {
-        NetUser localNetUser = (NetUser)localList.get(j);
-        if (this.actor != null)
-          ZutiNetSendMethods.removeTInspectTarget(localNetUser, this.point, this.actor.name());
-        else
-          ZutiNetSendMethods.removeTInspectTarget(localNetUser, this.point, "null");
-      }
-    }
   }
 }

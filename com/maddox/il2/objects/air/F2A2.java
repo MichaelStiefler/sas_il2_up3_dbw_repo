@@ -16,13 +16,13 @@ public class F2A2 extends F2A
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
     this.bChangedExts = true;
-    if (this.FM.isPlayers()) bChangedPit = true; 
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
     super.nextCUTLevel(paramString, paramInt, paramActor);
     this.bChangedExts = true;
-    if (this.FM.isPlayers()) bChangedPit = true;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true;
   }
 
   public void update(float paramFloat)
@@ -46,8 +46,8 @@ public class F2A2 extends F2A
   public void moveCockpitDoor(float paramFloat)
   {
     resetYPRmodifier();
-    xyz[0] = cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.725F);
-    hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
+    Aircraft.xyz[0] = Aircraft.cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.725F);
+    hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
     if (Config.isUSE_RENDER()) {
       if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) Main3D.cur3D().cockpits[0].onDoorMoved(paramFloat);
       setDoorSnd(paramFloat);
@@ -73,11 +73,11 @@ public class F2A2 extends F2A
     Property.set(localClass, "cockpitClass", CockpitF2A2.class);
     Property.set(localClass, "LOSElevation", 1.032F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

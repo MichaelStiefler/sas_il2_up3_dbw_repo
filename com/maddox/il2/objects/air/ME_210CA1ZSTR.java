@@ -16,18 +16,18 @@ public class ME_210CA1ZSTR extends ME_210
 
     Property.set(localClass, "iconFar_shortClassName", "Me-210");
     Property.set(localClass, "meshName", "3DO/Plane/Me-210Ca-1Zerstorer/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar05());
+    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
 
     Property.set(localClass, "yearService", 1943.0F);
     Property.set(localClass, "yearExpired", 1945.5F);
 
     Property.set(localClass, "FlightModel", "FlightModels/Me-210Ca-1.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 10, 10, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_CANNON03" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 10, 10, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_CANNON03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "MGunBofors40 29" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "MGunPaK40 42" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
   }
 }

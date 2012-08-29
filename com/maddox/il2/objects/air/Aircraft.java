@@ -13,7 +13,6 @@ import com.maddox.il2.ai.MsgExplosionListener;
 import com.maddox.il2.ai.MsgShotListener;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Regiment;
-import com.maddox.il2.ai.ScoreCounter;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.Squadron;
 import com.maddox.il2.ai.Wing;
@@ -76,15 +75,11 @@ import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.vehicles.artillery.RocketryRocket;
 import com.maddox.il2.objects.weapons.BallisticProjectile;
 import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.FuelTankGun;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.il2.objects.weapons.MGunAircraftGeneric;
 import com.maddox.il2.objects.weapons.Pylon;
-import com.maddox.il2.objects.weapons.PylonRO_WfrGr21;
-import com.maddox.il2.objects.weapons.PylonRO_WfrGr21Dual;
 import com.maddox.il2.objects.weapons.RocketGun;
-import com.maddox.il2.objects.weapons.RocketGunWfrGr21;
 import com.maddox.rts.Finger;
 import com.maddox.rts.HomePath;
 import com.maddox.rts.KryptoInputFilter;
@@ -214,8 +209,6 @@ public abstract class Aircraft extends NetAircraft
 
   protected static Loc tmpLocCell = new Loc();
 
-  private boolean wfrGr21dropped = false;
-
   protected static Vector3d v1 = new Vector3d();
   private static Vector3f v2 = new Vector3f();
   private static Vector3d Vd = new Vector3d();
@@ -230,14 +223,6 @@ public abstract class Aircraft extends NetAircraft
   public static Orient tmpOr = new Orient();
   private static int tmpBonesHit;
   private static boolean bWasAlive = true;
-
-  public float headingBug = 0.0F;
-  private static final String ygCode = "DWRKANUGMLFS";
-  public int idleTimeOnCarrier = 0;
-
-  private static final Class[] planesWithZBReceiver = { F4U.class, F4F.class, TBF.class, SBD.class, PBYX.class, F6F.class, F2A2.class, SEAFIRE3.class, SEAFIRE3F.class, Fulmar.class, Swordfish.class, MOSQUITO.class, B_25.class, A_20.class, B_17.class, B_24.class, B_29.class, BEAU.class, P_80.class, P_39.class, P_51.class, P_47.class, P_40.class, P_38.class, P_36.class, A_20.class, C_47.class };
-  public int armingSeed;
-  public RangeRandom armingRnd;
 
   public static String[] partNames()
   {
@@ -257,7 +242,7 @@ public abstract class Aircraft extends NetAircraft
 
   public boolean cut(String paramString)
   {
-    this.FM.dryFriction = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
     debugprintln("" + paramString + " goes off..");
 
     if (World.Rnd().nextFloat() < bailProbabilityOnCut(paramString)) {
@@ -280,33 +265,33 @@ public abstract class Aircraft extends NetAircraft
 
       for (int j = 0; j < 4; j++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(j + 0)])) {
-          this.FM.AS.changeTankEffectBase(j, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(j + 0)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeTankEffectBase(j, (Actor)localObject);
         }
       }
-      for (j = 0; j < this.FM.EI.getNum(); j++)
+      for (j = 0; j < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); j++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(j + 4)])) {
-          this.FM.AS.changeEngineEffectBase(j, (Actor)localObject);
-          this.FM.AS.changeSootEffectBase(j, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(j + 4)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeEngineEffectBase(j, (Actor)localObject);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeSootEffectBase(j, (Actor)localObject);
         }
       }
       for (j = 0; j < 6; j++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(j + 12)])) {
-          this.FM.AS.changeNavLightEffectBase(j, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(j + 12)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeNavLightEffectBase(j, (Actor)localObject);
         }
       }
       for (j = 0; j < 4; j++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(j + 18)])) {
-          this.FM.AS.changeLandingLightEffectBase(j, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(j + 18)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeLandingLightEffectBase(j, (Actor)localObject);
         }
       }
-      for (j = 0; j < this.FM.EI.getNum(); j++)
+      for (j = 0; j < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); j++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(j + 22)])) {
-          this.FM.AS.changeOilEffectBase(j, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(j + 22)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeOilEffectBase(j, (Actor)localObject);
         }
 
       }
@@ -316,7 +301,7 @@ public abstract class Aircraft extends NetAircraft
         Eff3DActor.New((Actor)localObject, null, null, 1.0F, Wreckage.SMOKE, 3.0F);
       }
 
-      Vd.set(this.FM.Vwld); ((Wreckage)localObject).setSpeed(Vd);
+      Vd.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d); ((Wreckage)localObject).setSpeed(Vd);
     }
     arrayOfInt = hierMesh().getSubTrees(paramString + "_D");
 
@@ -325,12 +310,12 @@ public abstract class Aircraft extends NetAircraft
     if (hierMesh().chunkFindCheck((String)localObject) >= 0) hierMesh().chunkVisible((String)localObject, true);
 
     for (i = 0; i < arrayOfInt.length; i++) {
-      for (int k = 3; k < this.FM.Gears.pnti.length; k++) {
+      for (int k = 3; k < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti.length; k++) {
         try {
-          if ((this.FM.Gears.pnti[k] != -1) && (arrayOfInt[i] == hierMesh().chunkByHookNamed(this.FM.Gears.pnti[k])))
-            this.FM.Gears.pnti[k] = -1;
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti[k] != -1) && (arrayOfInt[i] == hierMesh().chunkByHookNamed(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti[k])))
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti[k] = -1;
         } catch (Exception localException) {
-          System.out.println("FATAL ERROR: Gear pnti[] cut failed on tt[] = " + k + " - " + this.FM.Gears.pnti.length);
+          System.out.println("FATAL ERROR: Gear pnti[] cut failed on tt[] = " + k + " - " + this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti.length);
         }
       }
     }
@@ -397,15 +382,15 @@ public abstract class Aircraft extends NetAircraft
 
       for (int n = 0; n < 4; n++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(n + 0)])) {
-          this.FM.AS.changeTankEffectBase(n, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(n + 0)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeTankEffectBase(n, (Actor)localObject);
         }
       }
       for (n = 0; n < 4; n++)
       {
-        if (hierMesh().chunkName().startsWith(this.FM.AS.astateEffectChunks[(n + 4)])) {
-          this.FM.AS.changeEngineEffectBase(n, (Actor)localObject);
-          this.FM.AS.changeSootEffectBase(n, (Actor)localObject);
+        if (hierMesh().chunkName().startsWith(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEffectChunks[(n + 4)])) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeEngineEffectBase(n, (Actor)localObject);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.changeSootEffectBase(n, (Actor)localObject);
         }
 
       }
@@ -415,7 +400,7 @@ public abstract class Aircraft extends NetAircraft
         Eff3DActor.New((Actor)localObject, null, null, 1.0F, Wreckage.SMOKE, 3.0F);
       }
 
-      Vd.set(this.FM.Vwld);
+      Vd.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
       if (i < 0)
         ((Wreckage)localObject).setSpeed(Vd);
       else {
@@ -430,12 +415,12 @@ public abstract class Aircraft extends NetAircraft
     if (hierMesh().chunkFindCheck(str) >= 0) hierMesh().chunkVisible(str, true);
 
     for (m = 0; m < arrayOfInt.length; m++) {
-      for (int i1 = 3; i1 < this.FM.Gears.pnti.length; i1++) {
+      for (int i1 = 3; i1 < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti.length; i1++) {
         try {
-          if ((this.FM.Gears.pnti[i1] != -1) && (arrayOfInt[m] == hierMesh().chunkByHookNamed(this.FM.Gears.pnti[i1])))
-            this.FM.Gears.pnti[i1] = -1;
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti[i1] != -1) && (arrayOfInt[m] == hierMesh().chunkByHookNamed(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti[i1])))
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti[i1] = -1;
         } catch (Exception localException) {
-          System.out.println("FATAL ERROR: Gear pnti[] cut failed on tt[] = " + i1 + " - " + this.FM.Gears.pnti.length);
+          System.out.println("FATAL ERROR: Gear pnti[] cut failed on tt[] = " + i1 + " - " + this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.pnti.length);
         }
       }
     }
@@ -448,28 +433,28 @@ public abstract class Aircraft extends NetAircraft
   }
 
   protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor) {
-    this.FM.dryFriction = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
     switch (paramInt1) {
     case 2:
       if (isEnablePostEndAction(0.0D))
         postEndAction(0.0D, paramActor, 2, null);
       return false;
     case 3:
-      if (this.FM.EI.engines.length <= 0) break;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines.length <= 0) break;
       hitProp(0, paramInt2, paramActor);
-      this.FM.EI.engines[0].setEngineStuck(paramActor); break;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].setEngineStuck(paramActor); break;
     case 4:
-      if (this.FM.EI.engines.length <= 1) break;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines.length <= 1) break;
       hitProp(1, paramInt2, paramActor);
-      this.FM.EI.engines[1].setEngineStuck(paramActor); break;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].setEngineStuck(paramActor); break;
     case 5:
-      if (this.FM.EI.engines.length <= 2) break;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines.length <= 2) break;
       hitProp(2, paramInt2, paramActor);
-      this.FM.EI.engines[2].setEngineStuck(paramActor); break;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[2].setEngineStuck(paramActor); break;
     case 6:
-      if (this.FM.EI.engines.length <= 3) break;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines.length <= 3) break;
       hitProp(3, paramInt2, paramActor);
-      this.FM.EI.engines[3].setEngineStuck(paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[3].setEngineStuck(paramActor);
     }
 
     return cut(partNames[paramInt1]);
@@ -506,7 +491,7 @@ public abstract class Aircraft extends NetAircraft
     String str2 = paramString;
     int j = (paramString.charAt(i - 2) == '_') && (Character.toUpperCase(paramString.charAt(i - 1)) == 'D') && (Character.isDigit(paramString.charAt(i))) ? 1 : 0;
 
-    this.FM.dryFriction = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
     String str1;
     String str3;
     if (j != 0) {
@@ -537,7 +522,7 @@ public abstract class Aircraft extends NetAircraft
       return;
     }
     int k = part(paramString);
-    this.FM.hit(k);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.hit(k);
 
     localHierMesh.chunkVisible(str2, false);
     localHierMesh.chunkVisible(str3, true);
@@ -556,15 +541,15 @@ public abstract class Aircraft extends NetAircraft
       if (!isNetMaster())
         netPutHits(true, null, paramInt1, paramInt2, i, paramActor);
       netPutHits(false, null, paramInt1, paramInt2, i, paramActor);
-      if ((paramActor != this) && (this.FM.isPlayers()) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt2 != 0) && (paramInt1 > 3))
+      if ((paramActor != this) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt2 != 0) && (paramInt1 > 3))
       {
         if (paramString.startsWith("Wing")) {
-          if (!this.FM.isSentBuryNote())
+          if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isSentBuryNote())
             Chat.sendLogRnd(3, "gore_blowwing", (Aircraft)paramActor, this);
-          this.FM.setSentWingNote(true);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSentWingNote(true);
         }
         else if ((paramString.startsWith("Tail")) && 
-          (!this.FM.isSentBuryNote())) {
+          (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isSentBuryNote())) {
           Chat.sendLogRnd(3, "gore_blowtail", (Aircraft)paramActor, this);
         }
       }
@@ -574,7 +559,7 @@ public abstract class Aircraft extends NetAircraft
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor)
   {
-    this.FM.dryFriction = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
     debugprintln("Detected NCL in " + paramString + "..");
     if ((this == World.getPlayerAircraft()) && (!World.cur().diffCur.Vulnerability)) return;
 
@@ -592,13 +577,13 @@ public abstract class Aircraft extends NetAircraft
 
     int k = part(paramString);
     if (cutFM(k, paramInt, paramActor)) {
-      this.FM.cut(k, paramInt, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(k, paramInt, paramActor);
       netPutCut(k, paramInt, paramActor);
 
-      if ((this.FM.isPlayers()) && (this != paramActor) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt == 2) && (!this.FM.isSentWingNote()) && (!this.FM.isSentBuryNote()) && ((k == 34) || (k == 37) || (k == 33) || (k == 36)))
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && (this != paramActor) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt == 2) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isSentWingNote()) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isSentBuryNote()) && ((k == 34) || (k == 37) || (k == 33) || (k == 36)))
       {
         Chat.sendLogRnd(3, "gore_sawwing", (Aircraft)paramActor, this);
-        this.FM.setSentWingNote(true);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSentWingNote(true);
       }
     }
   }
@@ -622,10 +607,10 @@ public abstract class Aircraft extends NetAircraft
     EndActionParam localEndActionParam = (EndActionParam)paramObject;
 
     if (isAlive()) {
-      if ((this.FM.isPlayers()) && (!this.FM.isSentBuryNote())) {
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isSentBuryNote())) {
         switch (paramInt) {
         case 2:
-          if ((!Actor.isAlive(localEndActionParam.initiator)) || (!(localEndActionParam.initiator instanceof Aircraft)) || (!((Aircraft)localEndActionParam.initiator).isNetPlayer()) || (this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) <= 100.0D))
+          if ((!Actor.isAlive(localEndActionParam.initiator)) || (!(localEndActionParam.initiator instanceof Aircraft)) || (!((Aircraft)localEndActionParam.initiator).isNetPlayer()) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) <= 100.0D))
           {
             break;
           }
@@ -642,38 +627,38 @@ public abstract class Aircraft extends NetAircraft
           sfxSmokeState(0, 0, false);
         }
         doExplosion();
-        for (int i = 0; i < this.FM.AS.astateEngineStates.length; i++) {
-          this.FM.AS.hitEngine(this, i, 1000);
+        for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates.length; i++) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(this, i, 1000);
         }
-        for (i = 0; i < this.FM.AS.astateTankStates.length; i++) {
-          this.FM.AS.hitTank(this, i, 1000);
+        for (int j = 0; j < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateTankStates.length; j++) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, j, 1000);
         }
         float f1 = 50.0F;
         Actor localActor = null;
         String str = null;
-        if ((this.FM.Gears.onGround()) && (this.FM.Vrel.lengthSquared() < 70.0D)) {
+        if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vrel_of_type_ComMaddoxJGPVector3d.lengthSquared() < 70.0D)) {
           f1 = 0.0F;
         } else {
-          Point3d localPoint3d1 = new Point3d(this.FM.Loc);
-          Point3d localPoint3d2 = new Point3d(this.FM.Loc);
+          Point3d localPoint3d1 = new Point3d(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+          Point3d localPoint3d2 = new Point3d(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
           Point3d localPoint3d3 = new Point3d();
-          this.FM.Vrel.set(this.FM.Vwld);
-          this.FM.Vrel.normalize();
-          this.FM.Vrel.scale(20.0D);
-          localPoint3d2.add(this.FM.Vrel);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vrel_of_type_ComMaddoxJGPVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vrel_of_type_ComMaddoxJGPVector3d.normalize();
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vrel_of_type_ComMaddoxJGPVector3d.scale(20.0D);
+          localPoint3d2.add(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vrel_of_type_ComMaddoxJGPVector3d);
           localActor = Engine.collideEnv().getLine(localPoint3d1, localPoint3d2, false, this, localPoint3d3);
           if ((Actor.isAlive(localActor)) && ((localActor instanceof ActorHMesh))) {
             Mesh localMesh = ((ActorMesh)localActor).mesh();
-            Loc localLoc = localActor.pos.getAbs();
+            Loc localLoc = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
             float f4 = localMesh.detectCollisionLine(localLoc, localPoint3d1, localPoint3d2);
             if (f4 >= 0.0F) str = Mesh.collisionChunk(0);
             if (((localActor instanceof BigshipGeneric)) || ((localActor instanceof ShipGeneric))) {
-              float f5 = 0.018F * (float)this.FM.Vwld.length();
+              float f5 = 0.018F * (float)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.length();
               if (f5 > 1.0F) f5 = 1.0F;
               if (f5 < 0.1F) f5 = 0.1F;
-              float f6 = this.FM.M.fuel;
+              float f6 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel;
               if (f6 > 300.0F) f6 = 300.0F;
-              f1 = f5 * (50.0F + 0.7F * this.FM.CT.getWeaponMass() + 0.3F * f6);
+              f1 = f5 * (50.0F + 0.7F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getWeaponMass() + 0.3F * f6);
             }
           }
         }
@@ -684,15 +669,15 @@ public abstract class Aircraft extends NetAircraft
         if (f3 < 70.0F) f3 = 70.0F;
         if (f3 > 350.0F) f3 = 350.0F;
 
-        MsgExplosion.send(localActor, str, this.FM.Loc, this, f1, 0.9F * f1, 0, f2);
-        MsgExplosion.send(localActor, str, this.FM.Loc, this, 0.5F * f1, 0.25F * f1, 1, f3);
+        MsgExplosion.send(localActor, str, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this, f1, 0.9F * f1, 0, f2);
+        MsgExplosion.send(localActor, str, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this, 0.5F * f1, 0.25F * f1, 1, f3);
       case 3:
         explode();
       }
 
-      for (int j = 0; j < Math.min(this.FM.crew, 9); j++) {
-        if (!this.FM.AS.isPilotDead(j))
-          this.FM.AS.hitPilot(this.FM.actor, j, 100);
+      for (int k = 0; k < Math.min(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.crew, 9); k++) {
+        if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(k))
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitPilot(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor, k, 100);
       }
       setDamager(localEndActionParam.initiator, 4);
       World.onActorDied(this, getDamager());
@@ -702,20 +687,20 @@ public abstract class Aircraft extends NetAircraft
 
   protected void doExplosion()
   {
-    if (this.FM.Loc.z < Engine.cur.land.HQ_Air(this.FM.Loc.x, this.FM.Loc.y) + 3.0D) {
-      World.cur(); if (World.land().isWater(this.FM.Loc.x, this.FM.Loc.y)) {
-        Explosions.AirDrop_Water(this.FM.Loc);
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double < Engine.cur.land.HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) + 3.0D) {
+      World.cur(); if (World.land().isWater(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double)) {
+        Explosions.AirDrop_Water(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
       } else {
-        Explosions.AirDrop_Land(this.FM.Loc);
-        Loc localLoc = new Loc(this.FM.Loc);
-        World.cur(); localLoc.getPoint().z = World.land().HQ(this.FM.Loc.x, this.FM.Loc.y);
+        Explosions.AirDrop_Land(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+        Loc localLoc = new Loc(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+        World.cur(); localLoc.getPoint().jdField_z_of_type_Double = World.land().HQ(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double);
         Eff3DActor.New(localLoc, 1.0F, "EFFECTS/Smokes/SmokeBoiling.eff", 1200.0F);
         Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Aircraft/FireGND.eff", 1200.0F);
         Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Aircraft/BlackHeavyGND.eff", 1200.0F);
       }
     }
     else {
-      Explosions.ExplodeFuel(this.FM.Loc);
+      Explosions.ExplodeFuel(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
     }
   }
 
@@ -724,16 +709,16 @@ public abstract class Aircraft extends NetAircraft
     int i = (Engine.collideEnv().isDoCollision()) && (World.getPlayerAircraft() != this) ? 1 : 0;
 
     if ((paramActor instanceof BigshipGeneric)) {
-      this.FM.Gears.bFlatTopGearCheck = true;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.bFlatTopGearCheck = true;
       if ((i != 0) && ((Time.tickCounter() + hashCode() & 0xF) != 0))
         paramArrayOfBoolean[0] = false;
-    } else if ((i != 0) && ((Time.tickCounter() & 0xF) != 0) && ((paramActor instanceof Aircraft)) && (this.FM.Gears.isUnderDeck())) {
-      paramArrayOfBoolean[0] = (!((Aircraft)paramActor).FM.Gears.isUnderDeck() ? 1 : false);
+    } else if ((i != 0) && ((Time.tickCounter() & 0xF) != 0) && ((paramActor instanceof Aircraft)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.isUnderDeck())) {
+      paramArrayOfBoolean[0] = (!((Aircraft)paramActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.isUnderDeck() ? 1 : false);
     }
 
     if ((Engine.collideEnv().isDoCollision()) && ((paramActor instanceof Aircraft)) && (Mission.isCoop()) && (paramActor.isNetMirror()))
     {
-      if ((isMirrorUnderDeck()) || (this.FM.Gears.isUnderDeck()) || (Time.tickCounter() <= 2))
+      if ((isMirrorUnderDeck()) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.isUnderDeck()) || (Time.tickCounter() <= 2))
         paramArrayOfBoolean[0] = false;
     }
   }
@@ -751,7 +736,7 @@ public abstract class Aircraft extends NetAircraft
     if (this == World.getPlayerAircraft()) {
       TimeSkip.airAction(1);
     }
-    this.FM.dryFriction = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
     int i;
     if (paramString1.startsWith("Pilot")) {
       if ((this == World.getPlayerAircraft()) && (!World.cur().diffCur.Vulnerability)) return;
@@ -775,8 +760,8 @@ public abstract class Aircraft extends NetAircraft
       nextDMGLevels(3, 0, paramString1, this);
       return;
     }if ((paramActor instanceof Paratrooper)) {
-      this.FM.getSpeed(v1); paramActor.getSpeed(Vd);
-      Vd.x -= v1.x; Vd.y -= v1.y; Vd.z -= v1.z;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed(v1); paramActor.getSpeed(Vd);
+      Vd.jdField_x_of_type_Double -= v1.jdField_x_of_type_Double; Vd.jdField_y_of_type_Double -= v1.jdField_y_of_type_Double; Vd.jdField_z_of_type_Double -= v1.jdField_z_of_type_Double;
       if (Vd.length() > 30.0D) {
         setDamager(paramActor, 4);
         nextDMGLevels(4, 0, paramString1, paramActor);
@@ -792,34 +777,34 @@ public abstract class Aircraft extends NetAircraft
       Vector3d localVector3d1 = new Vector3d();
       Vector3d localVector3d2 = new Vector3d();
 
-      this.pos.getAbs(localLoc);
-      ((Point3d)localObject).set(paramActor.pos.getAbsPoint());
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc);
+      ((Point3d)localObject).set(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       localLoc.transformInv((Point3d)localObject);
-      int j = ((Point3d)localObject).y > 0.0D ? 1 : 0;
+      int j = ((Point3d)localObject).jdField_y_of_type_Double > 0.0D ? 1 : 0;
 
       localVector3d1.set(0.0D, j != 0 ? hierMesh().collisionR() : -hierMesh().collisionR(), 0.0D);
 
       localLoc.transform(localVector3d1);
 
-      ((Point3d)localObject).set(this.FM.Loc);
+      ((Point3d)localObject).set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
 
       ((Point3d)localObject).add(localVector3d1);
 
-      paramActor.pos.getAbs(localLoc);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc);
       localLoc.transformInv((Point3d)localObject);
 
-      localVector3d1.set(this.FM.Vwld);
+      localVector3d1.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
 
-      paramActor.pos.speed(localVector3d2);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.speed(localVector3d2);
 
       localVector3d1.sub(localVector3d2);
 
       localLoc.transformInv(localVector3d1);
 
-      localVector3d1.z += (j != 0 ? 1.0D : -1.0D) * this.FM.getW().x * hierMesh().collisionR();
+      localVector3d1.jdField_z_of_type_Double += (j != 0 ? 1.0D : -1.0D) * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_x_of_type_Double * hierMesh().collisionR();
 
-      if (localVector3d1.x * localVector3d1.x + localVector3d1.y * localVector3d1.y < 4.0D) {
-        if (((Point3d)localObject).y * localVector3d1.z > 0.0D)
+      if (localVector3d1.jdField_x_of_type_Double * localVector3d1.jdField_x_of_type_Double + localVector3d1.jdField_y_of_type_Double * localVector3d1.jdField_y_of_type_Double < 4.0D) {
+        if (((Point3d)localObject).jdField_y_of_type_Double * localVector3d1.jdField_z_of_type_Double > 0.0D)
         {
           localRocketryRocket.sendRocketStateChange('a', this);
         }
@@ -831,16 +816,16 @@ public abstract class Aircraft extends NetAircraft
       localRocketryRocket.sendRocketStateChange(j != 0 ? 'l' : 'r', this);
     }
 
-    if ((this.FM.turnOffCollisions) && (
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turnOffCollisions) && (
       (paramString1.startsWith("Wing")) || (paramString1.startsWith("Arone")) || (paramString1.startsWith("Keel")) || (paramString1.startsWith("Rudder")) || (paramString1.startsWith("Stab")) || (paramString1.startsWith("Vator")) || (paramString1.startsWith("Nose")) || (paramString1.startsWith("Tail"))))
     {
       return;
     }
 
     if (((paramActor instanceof Aircraft)) && (Actor.isValid(paramActor)) && (getArmy() == paramActor.getArmy())) {
-      double d = Engine.cur.land.HQ(this.FM.Loc.x, this.FM.Loc.y);
+      double d = Engine.cur.land.HQ(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double);
       localObject = (Aircraft)paramActor;
-      if ((this.FM.Loc.z - 2.0F * this.FM.Gears.H < d) && (((Aircraft)localObject).FM.Loc.z - 2.0F * ((Aircraft)localObject).FM.Gears.H < d)) {
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - 2.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H < d) && (((Aircraft)localObject).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - 2.0F * ((Aircraft)localObject).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H < d)) {
         setDamagerExclude(paramActor);
       }
     }
@@ -848,17 +833,17 @@ public abstract class Aircraft extends NetAircraft
       (hierMesh().chunkFindCheck(paramString1) != -1)) {
       hierMesh().setCurChunk(paramString1);
       hierMesh().getChunkLocObj(tmpLoc1);
-      Vd.set(this.FM.Vwld);
-      this.FM.Or.transformInv(Vd);
+      Vd.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transformInv(Vd);
 
       Vd.normalize();
       Vd.negate();
-      Vd.scale(2000.0F / this.FM.M.mass);
+      Vd.scale(2000.0F / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.mass);
       Vd.cross(tmpLoc1.getPoint(), Vd);
 
-      this.FM.getW().x += (float)Vd.x;
-      this.FM.getW().y += (float)Vd.y;
-      this.FM.getW().z += (float)Vd.z;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_x_of_type_Double += (float)Vd.jdField_x_of_type_Double;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_y_of_type_Double += (float)Vd.jdField_y_of_type_Double;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_z_of_type_Double += (float)Vd.jdField_z_of_type_Double;
     }
 
     setDamager(paramActor, 4);
@@ -872,7 +857,7 @@ public abstract class Aircraft extends NetAircraft
 
     float f2 = 1.0F;
 
-    this.pos.getTime(Time.current(), tmpLocExp);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), tmpLocExp);
     tmpLocExp.get(Pd);
     paramExplosion.computeSplintersHit(Pd, f1, 1.0F, arrayOfFloat);
 
@@ -883,13 +868,14 @@ public abstract class Aircraft extends NetAircraft
 
     int i = (int)(arrayOfFloat[0] * 2.0F + 0.5F);
 
-    if (i <= 0) {
+    if (i <= 0)
       return;
-    }
-    while (i > 192) {
+    do
+    {
       i = (int)(i * 0.5F);
       f2 *= 2.0F;
     }
+    while (i > 192);
 
     for (int k = 0; k < i; k++) {
       tmpP1.set(paramExplosion.p);
@@ -919,9 +905,9 @@ public abstract class Aircraft extends NetAircraft
         else {
           localShot.powerType = 0;
         }
-        localShot.v.x = (float)(tmpP2.x - tmpP1.x);
-        localShot.v.y = (float)(tmpP2.y - tmpP1.y);
-        localShot.v.z = (float)(tmpP2.z - tmpP1.z);
+        localShot.v.jdField_x_of_type_Double = (float)(tmpP2.jdField_x_of_type_Double - tmpP1.jdField_x_of_type_Double);
+        localShot.v.jdField_y_of_type_Double = (float)(tmpP2.jdField_y_of_type_Double - tmpP1.jdField_y_of_type_Double);
+        localShot.v.jdField_z_of_type_Double = (float)(tmpP2.jdField_z_of_type_Double - tmpP1.jdField_z_of_type_Double);
         localShot.v.normalize();
         if (World.Rnd().nextFloat() < 0.02F)
           localShot.v.scale(arrayOfFloat[1] * World.Rnd().nextFloat(0.1F, 10.0F));
@@ -939,7 +925,7 @@ public abstract class Aircraft extends NetAircraft
     if (this == World.getPlayerAircraft())
       TimeSkip.airAction(3);
     setExplosion(paramExplosion);
-    this.FM.dryFriction = 1.0F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
     if ((paramExplosion.power <= 0.0F) || ((paramExplosion.chunkName != null) && (paramExplosion.chunkName.equals(partNames[43]))))
     {
       debugprintln("Splash hit from " + ((paramExplosion.initiator instanceof Aircraft) ? ((Aircraft)paramExplosion.initiator).typedName() : paramExplosion.initiator.name()) + " in " + paramExplosion.chunkName + " is Nill..");
@@ -961,16 +947,16 @@ public abstract class Aircraft extends NetAircraft
 
     if (paramExplosion.chunkName != null) {
       if ((paramExplosion.chunkName.startsWith("Wing")) && (paramExplosion.chunkName.endsWith("_D3"))) {
-        this.FM.setCapableOfACM(false);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setCapableOfACM(false);
       }
       if ((paramExplosion.chunkName.startsWith("Wing")) && (paramExplosion.power > 0.017F)) {
         if (paramExplosion.chunkName.startsWith("WingL")) {
           debugprintln("Large Shockwave Hits the Left Wing - Wing Stalls.");
-          this.FM.AS.setFMSFX(paramExplosion.initiator, 2, 20);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setFMSFX(paramExplosion.initiator, 2, 20);
         }
         if (paramExplosion.chunkName.startsWith("WingR")) {
           debugprintln("Large Shockwave Hits the Right Wing - Wing Stalls.");
-          this.FM.AS.setFMSFX(paramExplosion.initiator, 3, 20);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setFMSFX(paramExplosion.initiator, 3, 20);
         }
       }
     }
@@ -984,21 +970,21 @@ public abstract class Aircraft extends NetAircraft
     }
     if (f3 <= 5.000001E-007F) return;
 
-    debugprintln("Splash hit from " + ((paramExplosion.initiator instanceof Aircraft) ? ((Aircraft)paramExplosion.initiator).typedName() : paramExplosion.initiator.name()) + " in " + paramExplosion.chunkName + " for " + (int)(100.0F * f3 / (0.01F + 3.0F * this.FM.Sq.getToughness(part(paramExplosion.chunkName)))) + " % ( " + f3 + " kg)..");
+    debugprintln("Splash hit from " + ((paramExplosion.initiator instanceof Aircraft) ? ((Aircraft)paramExplosion.initiator).typedName() : paramExplosion.initiator.name()) + " in " + paramExplosion.chunkName + " for " + (int)(100.0F * f3 / (0.01F + 3.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramExplosion.chunkName)))) + " % ( " + f3 + " kg)..");
 
     if (paramExplosion.chunkName == null) {
       f3 /= 0.01F;
     } else {
       if ((paramExplosion.chunkName.endsWith("_D0")) && (!paramExplosion.chunkName.startsWith("Gear"))) {
         if (f3 > 0.01F)
-          f3 = 1.0F + (f3 - 0.01F) / this.FM.Sq.getToughness(part(paramExplosion.chunkName));
+          f3 = 1.0F + (f3 - 0.01F) / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramExplosion.chunkName));
         else
           f3 /= 0.01F;
       }
       else {
-        f3 /= this.FM.Sq.getToughness(part(paramExplosion.chunkName));
+        f3 /= this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramExplosion.chunkName));
       }
-      f3 += this.FM.Sq.eAbsorber[part(paramExplosion.chunkName)];
+      f3 += this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.eAbsorber[part(paramExplosion.chunkName)];
     }
     if (f3 >= 1.0F) setDamager(paramExplosion.initiator, (int)f3);
     int i;
@@ -1028,7 +1014,7 @@ public abstract class Aircraft extends NetAircraft
       }
     }
     if (paramExplosion.chunkName != null) {
-      this.FM.Sq.eAbsorber[part(paramExplosion.chunkName)] = (f3 - (int)f3);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.eAbsorber[part(paramExplosion.chunkName)] = (f3 - (int)f3);
     }
 
     if (f3 > 8.0F) {
@@ -1050,8 +1036,8 @@ public abstract class Aircraft extends NetAircraft
 
     }
 
-    if ((bWasAlive) && (this.FM.isTakenMortalDamage()) && ((getDamager() instanceof Aircraft)) && 
-      (this.FM.actor.getArmy() != getDamager().getArmy()) && (World.Rnd().nextInt(0, 99) < 66)) {
+    if ((bWasAlive) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage()) && ((getDamager() instanceof Aircraft)) && 
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.getArmy() != getDamager().getArmy()) && (World.Rnd().nextInt(0, 99) < 66)) {
       if (!this.buried) Voice.speakNiceKill((Aircraft)getDamager());
       this.buried = true;
     }
@@ -1079,27 +1065,27 @@ public abstract class Aircraft extends NetAircraft
 
   protected void doRicochet(Shot paramShot)
   {
-    v1.x *= World.Rnd().nextFloat(0.25F, 1.0F);
-    v1.y *= World.Rnd().nextFloat(-1.0F, -0.25F);
-    v1.z *= World.Rnd().nextFloat(-1.0F, -0.25F);
+    v1.jdField_x_of_type_Double *= World.Rnd().nextFloat(0.25F, 1.0F);
+    v1.jdField_y_of_type_Double *= World.Rnd().nextFloat(-1.0F, -0.25F);
+    v1.jdField_z_of_type_Double *= World.Rnd().nextFloat(-1.0F, -0.25F);
     v1.normalize();
     v1.scale(World.Rnd().nextFloat(10.0F, 600.0F));
-    this.FM.Or.transform(v1);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transform(v1);
     doRicochet(paramShot.p, v1);
     paramShot.power = 0.0F;
   }
   protected void doRicochetBack(Shot paramShot) {
-    v1.x *= -1.0D;
-    v1.y *= -1.0D;
-    v1.z *= -1.0D;
+    v1.jdField_x_of_type_Double *= -1.0D;
+    v1.jdField_y_of_type_Double *= -1.0D;
+    v1.jdField_z_of_type_Double *= -1.0D;
     v1.scale(World.Rnd().nextFloat(0.25F, 1.0F));
-    this.FM.Or.transform(v1);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transform(v1);
     doRicochet(paramShot.p, v1);
   }
   protected void doRicochet(Point3d paramPoint3d, Vector3d paramVector3d) {
     BallisticProjectile localBallisticProjectile = new BallisticProjectile(paramPoint3d, paramVector3d, 1.0F);
     Eff3DActor.New(localBallisticProjectile, null, null, 4.0F, "3DO/Effects/Tracers/TrailRicochet.eff", 1.0F);
-    this.pos.getAbs(tmpLoc1);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(tmpLoc1);
     tmpLoc1.transformInv(paramPoint3d);
     Eff3DActor.New(this, null, new Loc(paramPoint3d), 1.0F, "3DO/Effects/Fireworks/12mmRicochet.eff", 0.2F);
     Eff3DActor.New(this, null, new Loc(paramPoint3d), 0.5F, "3DO/Effects/Fireworks/20_Sparks.eff", -1.0F);
@@ -1114,17 +1100,17 @@ public abstract class Aircraft extends NetAircraft
       paramShot.mass = 0.0F;
     }
 
-    if (bWasAlive) bWasAlive = !this.FM.isTakenMortalDamage();
+    if (bWasAlive) bWasAlive = !this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage();
 
-    v1.sub(paramShot.v, this.FM.Vwld);
+    v1.sub(paramShot.v, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
     double d = v1.length();
     paramShot.power = ((float)(paramShot.mass * d * d) * 0.5F);
     if (paramShot.powerType == 0) paramShot.power *= 0.666F;
-    this.FM.Or.transformInv(v1);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transformInv(v1);
     v1.normalize();
 
     tmpLoc1.set(paramShot.p);
-    this.pos.getAbs(tmpLoc2); this.pos.getCurrent(tmpLoc3); tmpLoc3.interpolate(tmpLoc2, paramShot.tickOffset);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(tmpLoc2); this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(tmpLoc3); tmpLoc3.interpolate(tmpLoc2, paramShot.tickOffset);
     tmpLoc1.sub(tmpLoc3);
     tmpLoc1.get(Pd);
 
@@ -1140,9 +1126,9 @@ public abstract class Aircraft extends NetAircraft
 
     if ((Config.isUSE_RENDER()) && (World.cur().isArcade())) {
       ActorSimpleMesh localActorSimpleMesh = new ActorSimpleMesh("3DO/Arms/MatrixXX/mono.sim");
-      localActorSimpleMesh.pos.setBase(this, null, false);
+      localActorSimpleMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, null, false);
       tmpOr.setAT0(v1);
-      localActorSimpleMesh.pos.setRel(Pd, tmpOr);
+      localActorSimpleMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(Pd, tmpOr);
       float f = (float)Math.sqrt(Math.sqrt(paramShot.mass));
       localActorSimpleMesh.mesh().setScaleXYZ(0.75F * f, f, f);
       localActorSimpleMesh.drawing(true);
@@ -1161,21 +1147,21 @@ public abstract class Aircraft extends NetAircraft
       paramExplosion.chunkName = partNames[43];
     }
 
-    if (bWasAlive) bWasAlive = !this.FM.isTakenMortalDamage();
+    if (bWasAlive) bWasAlive = !this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage();
   }
 
   protected void msgSndShot(float paramFloat, double paramDouble1, double paramDouble2, double paramDouble3)
   {
     if (!Config.isUSE_RENDER()) return;
-    _tmpPoint.set(paramDouble1, paramDouble2, paramDouble3);
-    sfxHit(paramFloat, _tmpPoint);
+    Actor._tmpPoint.set(paramDouble1, paramDouble2, paramDouble3);
+    sfxHit(paramFloat, Actor._tmpPoint);
 
     if ((isNet()) && 
-      (this.FM.isPlayers()) && ((this.FM instanceof RealFlightModel))) {
-      this.FM.dryFriction = 1.0F;
-      ((RealFlightModel)this.FM).producedShakeLevel = 1.0F;
-      float f = 2000.0F * paramFloat / this.FM.M.mass;
-      this.FM.getW().add(World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f));
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel))) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
+      ((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).producedShakeLevel = 1.0F;
+      float f = 2000.0F * paramFloat / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.mass;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().add(World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f));
     }
   }
 
@@ -1188,12 +1174,12 @@ public abstract class Aircraft extends NetAircraft
     setShot(paramShot);
 
     if (!isNet()) {
-      this.FM.dryFriction = 1.0F;
-      if ((this.FM.isPlayers()) && ((this.FM instanceof RealFlightModel))) {
-        ((RealFlightModel)this.FM).producedShakeLevel = 1.0F;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.dryFriction = 1.0F;
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel))) {
+        ((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).producedShakeLevel = 1.0F;
       }
-      float f1 = 2000.0F * paramShot.mass / this.FM.M.mass;
-      this.FM.getW().add(World.Rnd().nextFloat(-f1, f1), World.Rnd().nextFloat(-f1, f1), World.Rnd().nextFloat(-f1, f1));
+      float f1 = 2000.0F * paramShot.mass / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.mass;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().add(World.Rnd().nextFloat(-f1, f1), World.Rnd().nextFloat(-f1, f1), World.Rnd().nextFloat(-f1, f1));
     }
 
     if (paramShot.chunkName == null) return;
@@ -1202,18 +1188,18 @@ public abstract class Aircraft extends NetAircraft
       return;
     }
 
-    if ((paramShot.chunkName.startsWith("Wing")) && ((paramShot.chunkName.endsWith("_D3")) || ((paramShot.chunkName.endsWith("_D2")) && (this.FM.Skill >= 2))))
+    if ((paramShot.chunkName.startsWith("Wing")) && ((paramShot.chunkName.endsWith("_D3")) || ((paramShot.chunkName.endsWith("_D2")) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Skill_of_type_Int >= 2))))
     {
-      this.FM.setCapableOfACM(false);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setCapableOfACM(false);
     }
-    if (((this.FM instanceof Pilot)) && (World.Rnd().nextInt(-1, 8) < this.FM.Skill)) ((Pilot)this.FM).setAsDanger(paramShot.initiator);
+    if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) && (World.Rnd().nextInt(-1, 8) < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Skill_of_type_Int)) ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setAsDanger(paramShot.initiator);
 
     if ((Config.isUSE_RENDER()) && 
-      ((this.FM instanceof RealFlightModel)))
+      ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)))
     {
-      _tmpPoint.set(this.pos.getAbsPoint());
-      _tmpPoint.sub(paramShot.p);
-      msgSndShot(paramShot.mass, _tmpPoint.x, _tmpPoint.y, _tmpPoint.z);
+      Actor._tmpPoint.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+      Actor._tmpPoint.sub(paramShot.p);
+      msgSndShot(paramShot.mass, Actor._tmpPoint.jdField_x_of_type_Double, Actor._tmpPoint.jdField_y_of_type_Double, Actor._tmpPoint.jdField_z_of_type_Double);
     }
 
     paramShot.bodyMaterial = 2;
@@ -1282,25 +1268,25 @@ public abstract class Aircraft extends NetAircraft
       }
 
       float f2 = paramShot.powerToTNT();
-      debugprintln("Bullet hit from " + ((paramShot.initiator instanceof Aircraft) ? ((Aircraft)paramShot.initiator).typedName() : paramShot.initiator.name()) + " in " + paramShot.chunkName + " for " + (int)(100.0F * f2 / (0.01F + 3.0F * this.FM.Sq.getToughness(part(paramShot.chunkName)))) + " %..");
+      debugprintln("Bullet hit from " + ((paramShot.initiator instanceof Aircraft) ? ((Aircraft)paramShot.initiator).typedName() : paramShot.initiator.name()) + " in " + paramShot.chunkName + " for " + (int)(100.0F * f2 / (0.01F + 3.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramShot.chunkName)))) + " %..");
 
       paramShot.bodyMaterial = 2;
-      if (((this.FM instanceof Pilot)) && (World.Rnd().nextInt(-1, 8) < this.FM.Skill)) ((Pilot)this.FM).setAsDanger(paramShot.initiator);
+      if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) && (World.Rnd().nextInt(-1, 8) < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Skill_of_type_Int)) ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setAsDanger(paramShot.initiator);
 
       if (f2 <= 5.000001E-007F) return;
 
       if ((paramShot.chunkName.endsWith("_D0")) && (!paramShot.chunkName.startsWith("Gear"))) {
         if (f2 > 0.01F)
-          f2 = 1.0F + (f2 - 0.01F) / this.FM.Sq.getToughness(part(paramShot.chunkName));
+          f2 = 1.0F + (f2 - 0.01F) / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramShot.chunkName));
         else
           f2 /= 0.01F;
       }
       else {
-        f2 /= this.FM.Sq.getToughness(part(paramShot.chunkName));
+        f2 /= this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramShot.chunkName));
       }
-      f2 += this.FM.Sq.eAbsorber[part(paramShot.chunkName)];
+      f2 += this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.eAbsorber[part(paramShot.chunkName)];
       int k = (int)f2;
-      this.FM.Sq.eAbsorber[part(paramShot.chunkName)] = (f2 - k);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.eAbsorber[part(paramShot.chunkName)] = (f2 - k);
       if (k > 0) {
         setDamager(paramShot.initiator, k);
         if (paramShot.chunkName.startsWith("Pilot")) {
@@ -1316,8 +1302,8 @@ public abstract class Aircraft extends NetAircraft
       nextDMGLevels(k, 2, paramShot.chunkName, paramShot.initiator);
     }
 
-    if ((bWasAlive) && (this.FM.isTakenMortalDamage()) && ((getDamager() instanceof Aircraft)) && 
-      (this.FM.actor.getArmy() != getDamager().getArmy()) && (World.Rnd().nextInt(0, 99) < 66)) {
+    if ((bWasAlive) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage()) && ((getDamager() instanceof Aircraft)) && 
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.getArmy() != getDamager().getArmy()) && (World.Rnd().nextInt(0, 99) < 66)) {
       if (!this.buried) Voice.speakNiceKill((Aircraft)getDamager());
       this.buried = true;
     }
@@ -1350,17 +1336,17 @@ public abstract class Aircraft extends NetAircraft
 
     if ((paramString.endsWith("_D0")) && (!paramString.startsWith("Gear"))) {
       if (f > 0.01F)
-        f = 1.0F + (f - 0.01F) / this.FM.Sq.getToughness(part(paramString));
+        f = 1.0F + (f - 0.01F) / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramString));
       else
         f /= 0.01F;
     }
     else {
-      f /= this.FM.Sq.getToughness(part(paramString));
+      f /= this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.getToughness(part(paramString));
     }
-    f += this.FM.Sq.eAbsorber[part(paramString)];
+    f += this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.eAbsorber[part(paramString)];
 
     int i = (int)f;
-    this.FM.Sq.eAbsorber[part(paramString)] = (f - i);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.eAbsorber[part(paramString)] = (f - i);
     if (i > 0) setDamager(paramShot.initiator, i);
     nextDMGLevels(i, 2, paramString, paramShot.initiator);
   }
@@ -1379,8 +1365,8 @@ public abstract class Aircraft extends NetAircraft
     }
 
     debuggunnery("*** Pilot " + paramInt1 + " hit for " + i + "% (" + (int)paramShot.power + " J)");
-    this.FM.AS.hitPilot(paramShot.initiator, paramInt1, i);
-    if ((this.FM.AS.astatePilotStates[paramInt1] > 95) && (paramInt2 == 0))
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitPilot(paramShot.initiator, paramInt1, i);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[paramInt1] > 95) && (paramInt2 == 0))
       debuggunnery("*** Headshot!.");
   }
 
@@ -1437,22 +1423,20 @@ public abstract class Aircraft extends NetAircraft
     String str = paramBulletEmitter.getHookName();
     if (str == null) return;
 
-    BulletEmitter[] arrayOfBulletEmitter1 = this.FM.CT.Weapons[paramInt];
+    BulletEmitter[] arrayOfBulletEmitter1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[paramInt];
     int i;
     if (arrayOfBulletEmitter1 == null) i = 0; else i = arrayOfBulletEmitter1.length;
     BulletEmitter[] arrayOfBulletEmitter2 = new BulletEmitter[i + 1];
     for (int j = 0; j < i; j++) arrayOfBulletEmitter2[j] = arrayOfBulletEmitter1[j];
     arrayOfBulletEmitter2[j] = paramBulletEmitter;
-    this.FM.CT.Weapons[paramInt] = arrayOfBulletEmitter2;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[paramInt] = arrayOfBulletEmitter2;
     if (paramBulletEmitter.isEnablePause()) this.bGunPodsExist = true; 
   }
 
   public void detachGun(int paramInt)
   {
-    if ((this.FM == null) || (this.FM.CT == null) || (this.FM.CT.Weapons == null))
-      return;
-    for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
+    for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; i++) {
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (arrayOfBulletEmitter != null)
         for (int j = 0; j < arrayOfBulletEmitter.length; j++)
           arrayOfBulletEmitter[j] = arrayOfBulletEmitter[j].detach(hierMesh(), paramInt);
@@ -1460,8 +1444,8 @@ public abstract class Aircraft extends NetAircraft
   }
 
   public Gun getGunByHookName(String paramString) {
-    for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
+    for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; i++) {
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (arrayOfBulletEmitter != null) {
         for (int j = 0; j < arrayOfBulletEmitter.length; j++) {
           if ((arrayOfBulletEmitter[j] instanceof Gun)) {
@@ -1481,8 +1465,8 @@ public abstract class Aircraft extends NetAircraft
     return GunEmpty.get();
   }
   public BulletEmitter getBulletEmitterByHookName(String paramString) {
-    for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
+    for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; i++) {
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (arrayOfBulletEmitter != null) {
         for (int j = 0; j < arrayOfBulletEmitter.length; j++)
           if (paramString.equals(arrayOfBulletEmitter[j].getHookName()))
@@ -1551,10 +1535,10 @@ public abstract class Aircraft extends NetAircraft
   protected void moveFan(float paramFloat) {
     int i = 0;
 
-    for (int j = 0; j < this.FM.EI.getNum(); j++) {
+    for (int j = 0; j < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); j++) {
       if (this.oldProp[j] < 2)
       {
-        i = Math.abs((int)(this.FM.EI.engines[j].getw() * 0.06F));
+        i = Math.abs((int)(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw() * 0.06F));
         if (i >= 1) i = 1;
         if ((i != this.oldProp[j]) && 
           (hierMesh().isChunkVisible(Props[j][this.oldProp[j]]))) {
@@ -1566,9 +1550,9 @@ public abstract class Aircraft extends NetAircraft
       }
 
       if (i == 0) {
-        this.propPos[j] = ((this.propPos[j] + 57.299999F * this.FM.EI.engines[j].getw() * paramFloat) % 360.0F);
+        this.propPos[j] = ((this.propPos[j] + 57.299999F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw() * paramFloat) % 360.0F);
       } else {
-        float f = 57.299999F * this.FM.EI.engines[j].getw();
+        float f = 57.299999F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw();
         f %= 2880.0F;
         f /= 2880.0F;
         if (f <= 0.5F)
@@ -1584,23 +1568,23 @@ public abstract class Aircraft extends NetAircraft
   }
 
   public void hitProp(int paramInt1, int paramInt2, Actor paramActor) {
-    if ((paramInt1 > this.FM.EI.getNum() - 1) || (this.oldProp[paramInt1] == 2)) return;
+    if ((paramInt1 > this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() - 1) || (this.oldProp[paramInt1] == 2)) return;
     super.hitProp(paramInt1, paramInt2, paramActor);
-    this.FM.cut(part("Engine" + (paramInt1 + 1)), paramInt2, paramActor);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(part("Engine" + (paramInt1 + 1)), paramInt2, paramActor);
     if ((isChunkAnyDamageVisible("Prop" + (paramInt1 + 1))) || (isChunkAnyDamageVisible("PropRot" + (paramInt1 + 1)))) {
       hierMesh().chunkVisible(Props[paramInt1][0], false);
       hierMesh().chunkVisible(Props[paramInt1][1], false);
       hierMesh().chunkVisible(Props[paramInt1][2], true);
     }
-    this.FM.EI.engines[paramInt1].setFricCoeffT(1.0F);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[paramInt1].setFricCoeffT(1.0F);
     this.oldProp[paramInt1] = 2;
   }
 
   public void updateLLights()
   {
-    this.pos.getRender(_tmpLoc);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(Actor._tmpLoc);
     if (this.lLight == null) {
-      if (_tmpLoc.getX() < 1.0D) return;
+      if (Actor._tmpLoc.getX() < 1.0D) return;
       this.lLight = new LightPointWorld[] { null, null, null, null };
       for (i = 0; i < 4; i++) {
         this.lLight[i] = new LightPointWorld();
@@ -1614,15 +1598,15 @@ public abstract class Aircraft extends NetAircraft
     }
 
     for (int i = 0; i < 4; i++)
-      if (this.FM.AS.astateLandingLightEffects[i] != null) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateLandingLightEffects[i] != null) {
         lLightLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-        this.lLightHook[i].computePos(this, _tmpLoc, lLightLoc1);
+        this.lLightHook[i].computePos(this, Actor._tmpLoc, lLightLoc1);
         lLightLoc1.get(lLightP1);
         lLightLoc1.set(1000.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-        this.lLightHook[i].computePos(this, _tmpLoc, lLightLoc1);
+        this.lLightHook[i].computePos(this, Actor._tmpLoc, lLightLoc1);
         lLightLoc1.get(lLightP2);
         Engine.land(); if (Landscape.rayHitHQ(lLightP1, lLightP2, lLightPL)) {
-          lLightPL.z += 1.0D;
+          lLightPL.jdField_z_of_type_Double += 1.0D;
           lLightP2.interpolate(lLightP1, lLightPL, 0.95F);
           this.lLight[i].setPos(lLightP2);
           float f1 = (float)lLightP1.distance(lLightPL);
@@ -1640,9 +1624,9 @@ public abstract class Aircraft extends NetAircraft
 
   public boolean isUnderWater()
   {
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    if (!Engine.land().isWater(localPoint3d.x, localPoint3d.y)) return false;
-    return localPoint3d.z < 0.0D;
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    if (!Engine.land().isWater(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double)) return false;
+    return localPoint3d.jdField_z_of_type_Double < 0.0D;
   }
 
   public void update(float paramFloat)
@@ -1652,12 +1636,12 @@ public abstract class Aircraft extends NetAircraft
     if (this == World.getPlayerAircraft()) {
       if (isUnderWater())
         World.doPlayerUnderWater();
-      EventLog.flyPlayer(this.pos.getAbsPoint());
+      EventLog.flyPlayer(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       if ((this instanceof TypeBomber)) {
         ((TypeBomber)this).typeBomberUpdate(paramFloat);
       }
     }
-    Controls localControls = this.FM.CT;
+    Controls localControls = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls;
     moveFan(paramFloat);
 
     if (localControls.bHasGearControl) {
@@ -1720,8 +1704,8 @@ public abstract class Aircraft extends NetAircraft
       }
     }
 
-    f = this.FM.Gears.getSteeringAngle(); if (Math.abs(this.Steering_ - f) > this.EpsSmooth_) moveSteering(this.Steering_ = f);
-    if (this.FM.Gears.nearGround())
+    f = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.getSteeringAngle(); if (Math.abs(this.Steering_ - f) > this.EpsSmooth_) moveSteering(this.Steering_ = f);
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.nearGround())
       moveWheelSink();
   }
 
@@ -1736,18 +1720,18 @@ public abstract class Aircraft extends NetAircraft
     }
     switch (paramInt) { case 0:
     default:
-      this.FM = new Pilot(paramString); break;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel = new Pilot(paramString); break;
     case 1:
-      this.FM = new RealFlightModel(paramString); break;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel = new RealFlightModel(paramString); break;
     case 2:
-      this.FM = new FlightModel(paramString);
-      this.FM.AP = new Autopilotage();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel = new FlightModel(paramString);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AP = new Autopilotage();
     }
 
-    this.FM.actor = this;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor = this;
 
-    this.FM.AS.set(this, (paramBoolean) && (!NetMissionTrack.isPlaying()));
-    this.FM.EI.setNotMirror((paramBoolean) && (!NetMissionTrack.isPlaying()));
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.set(this, (paramBoolean) && (!NetMissionTrack.isPlaying()));
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setNotMirror((paramBoolean) && (!NetMissionTrack.isPlaying()));
 
     SectFile localSectFile = FlightModelMain.sectFile(paramString);
     int i = 0;
@@ -1757,14 +1741,14 @@ public abstract class Aircraft extends NetAircraft
     else if (str.compareToIgnoreCase("HYDRAULIC") == 0) i = 2;
     else
       System.out.println("ERROR: Invalid feed type" + str);
-    this.FM.set(hierMesh());
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.set(hierMesh());
     forceGear(getClass(), hierMesh(), 1.0F);
-    this.FM.Gears.computePlaneLandPose(this.FM);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.computePlaneLandPose(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel);
     forceGear(getClass(), hierMesh(), 0.0F);
-    this.FM.EI.set(this);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.set(this);
     initSound(localSectFile);
     sfxInit(i);
-    interpPut(this.FM, "FlightModel", Time.current(), null);
+    interpPut(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel, "FlightModel", Time.current(), null);
   }
 
   public void checkTurretSkill()
@@ -1773,7 +1757,7 @@ public abstract class Aircraft extends NetAircraft
 
   public void destroy()
   {
-    if ((isAlive()) && (Mission.isPlaying()) && (name().charAt(0) != ' ') && (this.FM != null)) {
+    if ((isAlive()) && (Mission.isPlaying()) && (name().charAt(0) != ' ')) {
       Front.checkAircraftCaptured(this);
       World.onActorDied(this, World.remover);
     }
@@ -1808,19 +1792,16 @@ public abstract class Aircraft extends NetAircraft
     collide(true);
     drawing(true);
     dreamFire(true);
-
-    this.armingSeed = World.Rnd().nextInt(0, 65535);
-    this.armingRnd = new RangeRandom(this.armingSeed);
   }
 
   private void checkLoadingCountry()
   {
     this._loadingCountry = null;
-    if (loadingCountry == null) return;
+    if (NetAircraft.loadingCountry == null) return;
     Class localClass = getClass();
-    if ((Property.value(localClass, "PaintScheme_" + loadingCountry) != null) && (Property.stringValue(localClass, "meshName_" + loadingCountry, null) != null))
+    if ((Property.value(localClass, "PaintScheme_" + NetAircraft.loadingCountry) != null) && (Property.stringValue(localClass, "meshName_" + NetAircraft.loadingCountry, null) != null))
     {
-      this._loadingCountry = loadingCountry;
+      this._loadingCountry = NetAircraft.loadingCountry;
     }
   }
 
@@ -1871,7 +1852,7 @@ public abstract class Aircraft extends NetAircraft
   {
     PaintScheme localPaintScheme = getPropertyPaintScheme(getClass(), this._loadingCountry);
     if (localPaintScheme != null) {
-      localPaintScheme.prepare(this, this.bPaintShemeNumberOn);
+      localPaintScheme.prepare(this, this.jdField_bPaintShemeNumberOn_of_type_Boolean);
       this.typedName = localPaintScheme.typedName(this);
       correctTypedName();
     }
@@ -1880,7 +1861,7 @@ public abstract class Aircraft extends NetAircraft
   public void preparePaintScheme(int paramInt) {
     PaintScheme localPaintScheme = getPropertyPaintScheme(getClass(), this._loadingCountry);
     if (localPaintScheme != null) {
-      localPaintScheme.prepareNum(this, paramInt, this.bPaintShemeNumberOn);
+      localPaintScheme.prepareNum(this, paramInt, this.jdField_bPaintShemeNumberOn_of_type_Boolean);
       this.typedName = localPaintScheme.typedNameNum(this, paramInt);
       correctTypedName();
     }
@@ -1908,48 +1889,38 @@ public abstract class Aircraft extends NetAircraft
     if (paramString2 == null)
     {
       switch (World.cur().camouflage) { case 0:
-        localObject1 = "summer"; break;
+        localObject = "summer"; break;
       case 1:
-        localObject1 = "winter"; break;
+        localObject = "winter"; break;
       case 2:
-        localObject1 = "desert"; break;
-      case 3:
-        localObject1 = "pacific"; break;
-      case 4:
-        localObject1 = "eto"; break;
-      case 5:
-        localObject1 = "mto"; break;
-      case 6:
-        localObject1 = "cbi"; break;
+        localObject = "desert"; break;
       default:
-        localObject1 = "summer";
+        localObject = "summer";
       }
-      if (!existSFSFile(str1 + (String)localObject1 + "/skin1o.tga")) {
-        localObject1 = "summer";
-        if (!existSFSFile(str1 + (String)localObject1 + "/skin1o.tga"))
+      if (!existSFSFile(str1 + (String)localObject + "/skin1o.tga")) {
+        localObject = "summer";
+        if (!existSFSFile(str1 + (String)localObject + "/skin1o.tga"))
           return;
       }
-      paramString2 = str1 + (String)localObject1;
+      paramString2 = str1 + (String)localObject;
     }
 
-    Object localObject1 = { paramString2 + "/skin1o.tga", paramString2 + "/skin1p.tga", paramString2 + "/skin1q.tga" };
+    Object localObject = { paramString2 + "/skin1o.tga", paramString2 + "/skin1p.tga", paramString2 + "/skin1q.tga" };
 
     int[] arrayOfInt = new int[4];
     for (int i = 0; i < _skinMat.length; i++) {
       int j = paramHierMesh.materialFind(_skinMat[i]);
       if (j < 0)
         continue;
-      Mat localMat = paramHierMesh.material(j);
+      Mat localMat1 = paramHierMesh.material(j);
       int k = 0;
-      Object localObject2;
-      int n;
       for (int m = 0; m < 4; m++) {
         arrayOfInt[m] = -1;
-        if (localMat.isValidLayer(m)) {
-          localMat.setLayer(m);
-          localObject2 = localMat.get('\000');
-          for (n = 0; n < 3; n++) {
-            if (((String)localObject2).regionMatches(true, ((String)localObject2).length() - 10, _curSkin[n], 0, 10)) {
+        if (localMat1.isValidLayer(m)) {
+          localMat1.setLayer(m);
+          str2 = localMat1.get('\000');
+          for (int n = 0; n < 3; n++) {
+            if (str2.regionMatches(true, str2.length() - 10, _curSkin[n], 0, 10)) {
               arrayOfInt[m] = n;
               k = 1;
               break;
@@ -1960,25 +1931,26 @@ public abstract class Aircraft extends NetAircraft
       if (k == 0)
         continue;
       String str2 = paramString2 + "/" + _skinMat[i] + ".mat";
-
+      Mat localMat2;
+      int i1;
       if (FObj.Exist(str2)) {
-        localObject2 = (Mat)FObj.Get(str2);
+        localMat2 = (Mat)FObj.Get(str2);
       } else {
-        localObject2 = (Mat)localMat.Clone();
-        ((Mat)localObject2).Rename(str2);
-        for (n = 0; n < 4; n++) {
-          if (arrayOfInt[n] >= 0) {
-            ((Mat)localObject2).setLayer(n);
-            ((Mat)localObject2).set('\000', localObject1[arrayOfInt[n]]);
+        localMat2 = (Mat)localMat1.Clone();
+        localMat2.Rename(str2);
+        for (i1 = 0; i1 < 4; i1++) {
+          if (arrayOfInt[i1] >= 0) {
+            localMat2.setLayer(i1);
+            localMat2.set('\000', localObject[arrayOfInt[i1]]);
           }
         }
       }
       if (paramArrayOfMat != null) {
-        for (n = 0; n < 4; n++)
-          if (arrayOfInt[n] >= 0)
-            paramArrayOfMat[arrayOfInt[n]] = localObject2;
+        for (i1 = 0; i1 < 4; i1++)
+          if (arrayOfInt[i1] >= 0)
+            paramArrayOfMat[arrayOfInt[i1]] = localMat2;
       }
-      paramHierMesh.materialReplace(_skinMat[i], (Mat)localObject2);
+      paramHierMesh.materialReplace(_skinMat[i], localMat2);
     }
   }
 
@@ -2088,27 +2060,27 @@ public abstract class Aircraft extends NetAircraft
 
   public double getSpeed(Vector3d paramVector3d)
   {
-    if (this.FM == null) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel == null) {
       if (paramVector3d != null) paramVector3d.set(0.0D, 0.0D, 0.0D);
       return 0.0D;
     }
-    if (paramVector3d != null) paramVector3d.set(this.FM.Vwld);
-    return this.FM.Vwld.length();
+    if (paramVector3d != null) paramVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
+    return this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.length();
   }
 
   public void setSpeed(Vector3d paramVector3d)
   {
     super.setSpeed(paramVector3d);
 
-    this.FM.Vwld.set(paramVector3d);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(paramVector3d);
   }
 
   public void setOnGround(Point3d paramPoint3d, Orient paramOrient, Vector3d paramVector3d) {
-    this.FM.CT.setLanded();
-    forceGear(getClass(), hierMesh(), this.FM.CT.getGear());
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setLanded();
+    forceGear(getClass(), hierMesh(), this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear());
     if ((paramPoint3d != null) && (paramOrient != null)) {
-      this.pos.setAbs(paramPoint3d, paramOrient);
-      this.pos.reset();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d, paramOrient);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     }
     if (paramVector3d != null)
       setSpeed(paramVector3d);
@@ -2127,16 +2099,16 @@ public abstract class Aircraft extends NetAircraft
     }
 
     if (paramSectFile.exist(paramString, "Skill" + paramInt1))
-      this.FM.setSkill(paramSectFile.get(paramString, "Skill" + paramInt1, 1));
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSkill(paramSectFile.get(paramString, "Skill" + paramInt1, 1));
     else {
-      this.FM.setSkill(paramSectFile.get(paramString, "Skill", 1));
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSkill(paramSectFile.get(paramString, "Skill", 1));
     }
-    this.FM.M.fuel = (paramSectFile.get(paramString, "Fuel", 100.0F, 0.0F, 100.0F) * 0.01F * this.FM.M.maxFuel);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel = (paramSectFile.get(paramString, "Fuel", 100.0F, 0.0F, 100.0F) * 0.01F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel);
 
     if (paramSectFile.exist(paramString, "numberOn" + paramInt1)) {
-      this.bPaintShemeNumberOn = (paramSectFile.get(paramString, "numberOn" + paramInt1, 1, 0, 1) == 1);
+      this.jdField_bPaintShemeNumberOn_of_type_Boolean = (paramSectFile.get(paramString, "numberOn" + paramInt1, 1, 0, 1) == 1);
     }
-    this.FM.AS.bIsEnableToBailout = (paramSectFile.get(paramString, "Parachute", 1, 0, 1) == 1);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsEnableToBailout = (paramSectFile.get(paramString, "Parachute", 1, 0, 1) == 1);
 
     if (Mission.isServer()) {
       createNetObject(null, 0);
@@ -2145,9 +2117,9 @@ public abstract class Aircraft extends NetAircraft
       createNetObject(paramNetChannel, paramInt2);
     }
 
-    if (this.net != null) {
-      ((NetAircraft.AircraftNet)this.net).netName = name();
-      ((NetAircraft.AircraftNet)this.net).netUser = null;
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet != null) {
+      ((NetAircraft.AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netName = name();
+      ((NetAircraft.AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser = null;
     }
 
     String str1 = paramString + "_weapons";
@@ -2171,22 +2143,21 @@ public abstract class Aircraft extends NetAircraft
         }
       }
     } else {
-      this.thisWeaponsName = paramSectFile.get(paramString, "weapons", (String)null);
-      if (this.thisWeaponsName != null) {
-        weaponsLoad(this, this.thisWeaponsName);
+      this.jdField_thisWeaponsName_of_type_JavaLangString = paramSectFile.get(paramString, "weapons", (String)null);
+      if (this.jdField_thisWeaponsName_of_type_JavaLangString != null) {
+        weaponsLoad(this, this.jdField_thisWeaponsName_of_type_JavaLangString);
       }
     }
 
     if (this == World.getPlayerAircraft())
       createCockpits();
     onAircraftLoaded();
-    this.FM.Gears.zutiCheckPlaneForSkisAndWinterCamo(getClass().toString());
   }
 
   private static String dumpName(String paramString) {
     int i = paramString.length() - 1;
-    while ((i >= 0) && (Character.isDigit(paramString.charAt(i)))) i--;
-    i++;
+    for (; i >= 0; i--) if (!Character.isDigit(paramString.charAt(i)))
+        break; i++;
     return paramString.substring(0, i) + "Dump" + paramString.substring(i);
   }
 
@@ -2203,19 +2174,12 @@ public abstract class Aircraft extends NetAircraft
   public int WeaponsMask() {
     return -1;
   }
-
-  public int HitbyMask() {
-    try {
-      return this.FM.Vwld.length() < 2.0D ? -1 : -25;
-    }
-    catch (NullPointerException localNullPointerException) {
-    }
-    return 0;
+  public int HitbyMask() { return this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.length() < 2.0D ? -1 : -25;
   }
 
   public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
   {
-    if (this.FM.isTakenMortalDamage()) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage()) {
       return -1;
     }
 
@@ -2263,14 +2227,14 @@ public abstract class Aircraft extends NetAircraft
   }
 
   public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.FM.isTakenMortalDamage()) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage()) {
       return -1;
     }
     return 0;
   }
 
   public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.FM.isTakenMortalDamage()) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage()) {
       return false;
     }
 
@@ -2348,14 +2312,14 @@ public abstract class Aircraft extends NetAircraft
       if ((localObject1 instanceof Class)) {
         paramLong = Finger.incLong(paramLong, ((Class)localObject1).getName());
       } else {
-        Class[] arrayOfClass = (Class[])(Class[])localObject1;
+        Class[] arrayOfClass = (Class[])localObject1;
         for (int j = 0; j < arrayOfClass.length; j++) {
           paramLong = Finger.incLong(paramLong, arrayOfClass[j].getName());
         }
       }
     }
-    for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
+    for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; i++) {
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (arrayOfBulletEmitter != null) {
         for (int k = 0; k < arrayOfBulletEmitter.length; k++) {
           BulletEmitter localBulletEmitter = arrayOfBulletEmitter[k];
@@ -2421,7 +2385,7 @@ public abstract class Aircraft extends NetAircraft
     Property.set(paramClass, "weaponTriggers", paramArrayOfInt);
   }
   public static int[] getWeaponTriggersRegistered(Class paramClass) {
-    return (int[])(int[])Property.value(paramClass, "weaponTriggers", null);
+    return (int[])Property.value(paramClass, "weaponTriggers", null);
   }
   protected static void weaponHooksRegister(Class paramClass, String[] paramArrayOfString) {
     if (paramArrayOfString.length != getWeaponTriggersRegistered(paramClass).length)
@@ -2429,7 +2393,7 @@ public abstract class Aircraft extends NetAircraft
     Property.set(paramClass, "weaponHooks", paramArrayOfString);
   }
   public static String[] getWeaponHooksRegistered(Class paramClass) {
-    return (String[])(String[])Property.value(paramClass, "weaponHooks", null);
+    return (String[])Property.value(paramClass, "weaponHooks", null);
   }
 
   protected static void weaponsRegister(Class paramClass, String paramString, String[] paramArrayOfString)
@@ -2456,7 +2420,7 @@ public abstract class Aircraft extends NetAircraft
   }
   public static _WeaponSlot[] getWeaponSlotsRegistered(Class paramClass, String paramString) {
     HashMapInt localHashMapInt = weaponsMapProperty(paramClass);
-    return (_WeaponSlot[])(_WeaponSlot[])localHashMapInt.get(Finger.Int(paramString));
+    return (_WeaponSlot[])localHashMapInt.get(Finger.Int(paramString));
   }
   public static boolean weaponsExist(Class paramClass, String paramString) {
     Object localObject = Property.value(paramClass, "weaponsMap", null);
@@ -2464,50 +2428,8 @@ public abstract class Aircraft extends NetAircraft
       return false;
     HashMapInt localHashMapInt = (HashMapInt)localObject;
     int i = Finger.Int(paramString);
-    boolean bool = isWeaponDateOk(paramClass, paramString);
-    return (localHashMapInt.containsKey(i)) && (bool);
+    return localHashMapInt.containsKey(i);
   }
-
-  public static boolean isWeaponDateOk(Class paramClass, String paramString)
-  {
-    HashMapInt localHashMapInt = weaponsMapProperty(paramClass);
-    int i = Finger.Int(paramString);
-    if (!localHashMapInt.containsKey(i)) {
-      return true;
-    }
-    int j = Mission.getMissionDate(false);
-    if (j == 0) {
-      return true;
-    }
-    String str = "";
-    try
-    {
-      str = paramClass.toString().substring(paramClass.toString().lastIndexOf(".") + 1, paramClass.toString().length());
-    }
-    catch (Exception localException)
-    {
-      return true;
-    }
-
-    String[] arrayOfString = getWeaponHooksRegistered(paramClass);
-    _WeaponSlot[] arrayOf_WeaponSlot = (_WeaponSlot[])(_WeaponSlot[])localHashMapInt.get(i);
-    for (int k = 0; k < arrayOfString.length; k++)
-    {
-      if (arrayOf_WeaponSlot[k] == null)
-        continue;
-      int m = Property.intValue(arrayOf_WeaponSlot[k].clazz, "dateOfUse_" + str, 0);
-      if (m == 0)
-        m = Property.intValue(arrayOf_WeaponSlot[k].clazz, "dateOfUse", 0);
-      if (m == 0)
-        continue;
-      if (j < m) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   protected void weaponsLoad(String paramString) throws Exception {
     weaponsLoad(this, paramString);
   }
@@ -2527,7 +2449,7 @@ public abstract class Aircraft extends NetAircraft
   }
   protected static void weaponsLoad(Aircraft paramAircraft, int paramInt, HashMapInt paramHashMapInt) throws Exception {
     String[] arrayOfString = getWeaponHooksRegistered(paramAircraft.getClass());
-    _WeaponSlot[] arrayOf_WeaponSlot = (_WeaponSlot[])(_WeaponSlot[])paramHashMapInt.get(paramInt);
+    _WeaponSlot[] arrayOf_WeaponSlot = (_WeaponSlot[])paramHashMapInt.get(paramInt);
     for (int i = 0; i < arrayOfString.length; i++)
       if (arrayOf_WeaponSlot[i] != null)
         if (paramAircraft.mesh().hookFind(arrayOfString[i]) != -1) {
@@ -2551,63 +2473,63 @@ public abstract class Aircraft extends NetAircraft
 
           switch (arrayOf_WeaponSlot[i].trigger) {
           case 0:
-            if (!(localBulletEmitter instanceof MGunAircraftGeneric)) break;
+            if (!(localBulletEmitter instanceof MGunAircraftGeneric)) continue;
             if (World.getPlayerAircraft() == paramAircraft) {
-              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(World.cur().userCoverMashineGun, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F));
-            }
-            else if ((paramAircraft.isNet()) && (paramAircraft.isNetPlayer())) {
-              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F));
-            }
-            else
-            {
-              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, 0.0F);
-            }
-            break;
-          case 1:
-            if (!(localBulletEmitter instanceof MGunAircraftGeneric)) break;
-            if (World.getPlayerAircraft() == paramAircraft) {
-              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(World.cur().userCoverCannon, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F));
-            }
-            else if ((paramAircraft.isNet()) && (paramAircraft.isNetPlayer())) {
-              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F));
-            }
-            else
-            {
-              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, 0.0F);
-            }
-            break;
-          case 2:
-            if (!(localBulletEmitter instanceof RocketGun)) break;
-            if (World.getPlayerAircraft() == paramAircraft) {
-              ((RocketGun)localBulletEmitter).setRocketTimeLife(World.cur().userRocketDelay);
-              ((RocketGun)localBulletEmitter).setConvDistance(World.cur().userCoverRocket, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
-            }
-            else if ((paramAircraft.isNet()) && (paramAircraft.isNetPlayer())) {
-              ((RocketGun)localBulletEmitter).setConvDistance(400.0F, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F) - 2.81F);
-            }
-            else if ((paramAircraft instanceof TypeFighter)) {
-              ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -1.8F);
-            }
-            else if (((RocketGun)localBulletEmitter).bulletMassa() > 10.0F) {
-              if ((paramAircraft instanceof IL_2)) ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -2.0F); else {
-                ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -1.65F);
-              }
-            }
-            else if ((paramAircraft instanceof IL_2)) { ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -2.1F); } else {
-              ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -1.9F);
+              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(World.cur().userCoverMashineGun, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F)); continue;
             }
 
-            ((RocketGun)localBulletEmitter).setSpreadRnd(paramAircraft.armingRnd.nextInt());
+            if ((paramAircraft.isNet()) && (paramAircraft.isNetPlayer())) {
+              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F)); continue;
+            }
+
+            ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, 0.0F);
+
+            break;
+          case 1:
+            if (!(localBulletEmitter instanceof MGunAircraftGeneric)) continue;
+            if (World.getPlayerAircraft() == paramAircraft) {
+              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(World.cur().userCoverCannon, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F)); continue;
+            }
+
+            if ((paramAircraft.isNet()) && (paramAircraft.isNetPlayer())) {
+              ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F)); continue;
+            }
+
+            ((MGunAircraftGeneric)localBulletEmitter).setConvDistance(400.0F, 0.0F);
+
+            break;
+          case 2:
+            if (!(localBulletEmitter instanceof RocketGun)) continue;
+            if (World.getPlayerAircraft() == paramAircraft) {
+              ((RocketGun)localBulletEmitter).setRocketTimeLife(World.cur().userRocketDelay);
+              ((RocketGun)localBulletEmitter).setConvDistance(World.cur().userCoverRocket, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F) - 2.81F); continue;
+            }
+
+            if ((paramAircraft.isNet()) && (paramAircraft.isNetPlayer())) {
+              ((RocketGun)localBulletEmitter).setConvDistance(400.0F, Property.floatValue(paramAircraft.getClass(), "LOSElevation", 0.75F) - 2.81F); continue;
+            }
+
+            if ((paramAircraft instanceof TypeFighter)) {
+              ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -1.8F); continue;
+            }
+            if (((RocketGun)localBulletEmitter).bulletMassa() > 10.0F) {
+              if ((paramAircraft instanceof IL_2)) { ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -2.0F); continue; }
+              ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -1.65F); continue;
+            }
+
+            if ((paramAircraft instanceof IL_2)) { ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -2.1F); continue; }
+            ((RocketGun)localBulletEmitter).setConvDistance(400.0F, -1.9F);
+
             break;
           case 3:
             if ((!(localBulletEmitter instanceof BombGun)) || 
-              (World.getPlayerAircraft() != paramAircraft)) break;
+              (World.getPlayerAircraft() != paramAircraft)) continue;
             ((BombGun)localBulletEmitter).setBombDelay(World.cur().userBombDelay); break;
+          default:
+            break;
           }
-
         }
-        else
-        {
+        else {
           System.err.println("Hook '" + arrayOfString[i] + "' NOT found in mesh of " + paramAircraft.getClass());
         }
   }
@@ -2631,8 +2553,8 @@ public abstract class Aircraft extends NetAircraft
   }
 
   public void hideWingWeapons(boolean paramBoolean) {
-    for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
+    for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; i++) {
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (arrayOfBulletEmitter != null)
         for (int j = 0; j < arrayOfBulletEmitter.length; j++)
           if ((arrayOfBulletEmitter[j] instanceof BombGun))
@@ -2663,7 +2585,7 @@ public abstract class Aircraft extends NetAircraft
         localException1.printStackTrace();
       }
     } else {
-      localObject2 = (Class[])(Class[])localObject1;
+      localObject2 = (Class[])localObject1;
       try {
         Main3D.cur3D().cockpits = new Cockpit[localObject2.length];
         for (int i = 0; i < localObject2.length; i++)
@@ -2691,14 +2613,15 @@ public abstract class Aircraft extends NetAircraft
 
   private void explode()
   {
-    if (this.FM.Wingman != null) this.FM.Wingman.Leader = this.FM.Leader;
-    if (this.FM.Leader != null) this.FM.Leader.Wingman = this.FM.Wingman;
-    this.FM.Wingman = null; this.FM.Leader = null;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel != null) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel != null) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel = null; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = null;
     HierMesh localHierMesh = hierMesh();
     int j = -1;
     float f = 30.0F;
-    for (int i = 9; (i >= 0) && 
-      ((j = localHierMesh.chunkFindCheck("CF_D" + i)) < 0); i--);
+    for (int i = 9; i >= 0; i--)
+      if ((j = localHierMesh.chunkFindCheck("CF_D" + i)) >= 0)
+        break;
     int[] arrayOfInt2 = hideSubTrees("");
     if (arrayOfInt2 == null) return;
     int[] arrayOfInt1 = arrayOfInt2;
@@ -2716,9 +2639,9 @@ public abstract class Aircraft extends NetAircraft
       }
       getSpeed(Vd);
 
-      Vd.x += f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
-      Vd.y += f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
-      Vd.z += f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
+      Vd.jdField_x_of_type_Double += f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
+      Vd.jdField_y_of_type_Double += f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
+      Vd.jdField_z_of_type_Double += f * (World.Rnd().nextDouble(0.0D, 1.0D) - 0.5D);
 
       localWreckage.setSpeed(Vd);
     }
@@ -2794,16 +2717,16 @@ public abstract class Aircraft extends NetAircraft
   }
 
   public void hitDaSilk() {
-    this.FM.AS.hitDaSilk();
-    this.FM.setReadyToDie(true);
-    if (this.FM.Loc.z - Engine.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y) > 20.0D) Voice.speakBailOut(this);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitDaSilk();
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setReadyToDie(true);
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) > 20.0D) Voice.speakBailOut(this);
   }
 
   protected void killPilot(Actor paramActor, int paramInt)
   {
-    this.FM.AS.hitPilot(paramActor, paramInt, 100);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitPilot(paramActor, paramInt, 100);
   }
-  public void doWoundPilot(int paramInt, float paramFloat) {
+  public void doKillPilot(int paramInt) {
   }
   public void doMurderPilot(int paramInt) {
   }
@@ -2828,34 +2751,34 @@ public abstract class Aircraft extends NetAircraft
   public void doSetSootState(int paramInt1, int paramInt2)
   {
     for (int i = 0; i < 2; i++) {
-      if (this.FM.AS.astateSootEffects[paramInt1][i] != null) {
-        Eff3DActor.finish(this.FM.AS.astateSootEffects[paramInt1][i]);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][i] != null) {
+        Eff3DActor.finish(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][i]);
       }
-      this.FM.AS.astateSootEffects[paramInt1][i] = null;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][i] = null;
     }
     switch (paramInt2) {
     case 0:
       break;
     case 1:
-      this.FM.AS.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
-      this.FM.AS.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "ES_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "ES_02"), null, 1.0F, "3DO/Effects/Aircraft/BlackSmallTSPD.eff", -1.0F);
       break;
     case 3:
-      this.FM.AS.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
     case 2:
-      this.FM.AS.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboZippo.eff", -1.0F);
       break;
     case 5:
-      this.FM.AS.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 3.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][0] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 3.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1.0F);
     case 4:
-      this.FM.AS.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateSootEffects[paramInt1][1] = Eff3DActor.New(this, findHook("_Engine" + (paramInt1 + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/BlackMediumTSPD.eff", -1.0F);
     }
   }
 
   public void onAircraftLoaded()
   {
-    if ((this.FM instanceof Maneuver)) {
-      Maneuver localManeuver = (Maneuver)this.FM;
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) {
+      Maneuver localManeuver = (Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       localManeuver.takeIntoAccount[0] = 1.0F;
       localManeuver.takeIntoAccount[1] = 1.0F;
       localManeuver.takeIntoAccount[2] = 0.7F;
@@ -3002,7 +2925,7 @@ public abstract class Aircraft extends NetAircraft
 
   public void setCockpitState(int paramInt)
   {
-    if ((this.FM.isPlayers()) && (World.cur().diffCur.Vulnerability) && 
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && (World.cur().diffCur.Vulnerability) && 
       (Actor.isValid(Main3D.cur3D().cockpitCur)))
       Main3D.cur3D().cockpitCur.doReflectCockitState();
   }
@@ -3019,7 +2942,7 @@ public abstract class Aircraft extends NetAircraft
       return localCellAirPlane;
     localCellAirPlane = (CellAirPlane)Property.value(getClass(), "CellObject", (Object)null);
     if (localCellAirPlane == null) {
-      tmpLocCell.set(0.0D, 0.0D, this.FM.Gears.H, 0.0F, this.FM.Gears.Pitch, 0.0F);
+      tmpLocCell.set(0.0D, 0.0D, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H, 0.0F, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.Pitch, 0.0F);
       localCellAirPlane = new CellAirPlane(new CellObject[1][1], hierMesh(), tmpLocCell, 1.0D);
       localCellAirPlane.blurSiluet8x();
       localCellAirPlane.clampCells();
@@ -3037,171 +2960,6 @@ public abstract class Aircraft extends NetAircraft
     localCellAirPlane.blurSiluet8x();
     localCellAirPlane.clampCells();
     return localCellAirPlane;
-  }
-
-  private boolean zutiIsAircraftSpeedGreaterThanCarrierSpeed()
-  {
-    if (this.FM.brakeShoeLastCarrier != null)
-    {
-      if ((this.FM.brakeShoeLastCarrier instanceof BigshipGeneric))
-      {
-        Property localProperty = Property.get(this.FM.brakeShoeLastCarrier.getClass(), "speed");
-        if (localProperty == null) {
-          return false;
-        }
-        double d = this.FM.getSpeed() - localProperty.doubleValue();
-
-        return Math.abs(d) > 1.0D;
-      }
-    }
-
-    return false;
-  }
-
-  public boolean dropExternalStores(boolean paramBoolean)
-  {
-    int i = 0;
-
-    for (int j = 0; j < this.FM.CT.Weapons.length; j++)
-    {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[j];
-      if (arrayOfBulletEmitter == null) {
-        continue;
-      }
-      for (int k = 0; k < arrayOfBulletEmitter.length; k++)
-      {
-        BulletEmitter localBulletEmitter = arrayOfBulletEmitter[k];
-        if ((!(localBulletEmitter instanceof BombGun)) || ((localBulletEmitter instanceof FuelTankGun)))
-          continue;
-        ((BombGun)localBulletEmitter).setArmingTime(268435455L);
-
-        if (localBulletEmitter.countBullets() <= 0)
-          continue;
-        i = 1;
-        localBulletEmitter.shots(99);
-        if (!localBulletEmitter.getHookName().startsWith("_BombSpawn"))
-          continue;
-        this.FM.CT.BayDoorControl = 1.0F;
-      }
-
-    }
-
-    if (i == 0)
-    {
-      return dropWfrGr21();
-    }
-    return i;
-  }
-
-  private boolean dropWfrGr21()
-  {
-    if (!this.wfrGr21dropped)
-    {
-      Object[] arrayOfObject = this.pos.getBaseAttached();
-      int i;
-      Object localObject1;
-      if (arrayOfObject != null)
-      {
-        for (i = 0; i < arrayOfObject.length; i++)
-        {
-          if ((arrayOfObject[i] instanceof PylonRO_WfrGr21))
-          {
-            localObject1 = (PylonRO_WfrGr21)arrayOfObject[i];
-            ((PylonRO_WfrGr21)localObject1).drawing(false);
-            ((PylonRO_WfrGr21)localObject1).visibilityAsBase(false);
-            this.wfrGr21dropped = true;
-            if (World.getPlayerAircraft() == this)
-              World.cur().scoreCounter.playerDroppedExternalStores(2);
-          }
-          if (!(arrayOfObject[i] instanceof PylonRO_WfrGr21Dual))
-            continue;
-          localObject1 = (PylonRO_WfrGr21Dual)arrayOfObject[i];
-          ((PylonRO_WfrGr21Dual)localObject1).drawing(false);
-          ((PylonRO_WfrGr21Dual)localObject1).visibilityAsBase(false);
-          this.wfrGr21dropped = true;
-          if (World.getPlayerAircraft() == this) {
-            World.cur().scoreCounter.playerDroppedExternalStores(4);
-          }
-        }
-      }
-
-      if (this.wfrGr21dropped)
-      {
-        for (i = 0; i < this.FM.CT.Weapons.length; i++)
-        {
-          localObject1 = this.FM.CT.Weapons[i];
-          if (localObject1 == null)
-            continue;
-          for (int j = 0; j < localObject1.length; j++)
-          {
-            localObject2 = localObject1[j];
-            if ((localObject2 instanceof RocketGunWfrGr21))
-            {
-              RocketGunWfrGr21 localRocketGunWfrGr21 = (RocketGunWfrGr21)localObject2;
-              this.FM.CT.Weapons[i][j] = GunEmpty.get();
-              localRocketGunWfrGr21.setHookToRel(true);
-              localRocketGunWfrGr21.shots(0);
-              localRocketGunWfrGr21.hide(true);
-              localObject2 = GunEmpty.get();
-              localRocketGunWfrGr21.doDestroy();
-            }
-            if ((!(localObject2 instanceof PylonRO_WfrGr21)) && (!(localObject2 instanceof PylonRO_WfrGr21Dual)))
-              continue;
-            ((Pylon)localObject2).destroy();
-            this.FM.CT.Weapons[i][j] = GunEmpty.get();
-            localObject2 = GunEmpty.get();
-          }
-
-        }
-
-        sfxHit(1.0F, new Point3d(0.0D, 0.0D, -1.0D));
-
-        Vector3d localVector3d1 = new Vector3d();
-        localVector3d1.set(this.FM.Vwld);
-        localVector3d1.z -= 6.0D;
-
-        localObject1 = new Wreckage(this, hierMesh().chunkFind("WfrGr21L"));
-        localVector3d1.x += Math.random() + 0.5D;
-        localVector3d1.y += Math.random() + 0.5D;
-        localVector3d1.z += Math.random() + 0.5D;
-        ((Wreckage)localObject1).setSpeed(localVector3d1);
-        ((Wreckage)localObject1).collide(true);
-
-        Vector3d localVector3d2 = new Vector3d();
-        localVector3d2.set(this.FM.Vwld);
-        localVector3d2.z -= 7.0D;
-
-        Object localObject2 = new Wreckage(this, hierMesh().chunkFind("WfrGr21R"));
-        localVector3d2.x += Math.random() + 0.5D;
-        localVector3d2.y += Math.random() + 0.5D;
-        localVector3d2.z += Math.random() + 0.5D;
-        ((Wreckage)localObject2).setSpeed(localVector3d2);
-        ((Wreckage)localObject2).collide(true);
-        return true;
-      }
-      return false;
-    }
-
-    return false;
-  }
-
-  public void blisterRemoved(int paramInt)
-  {
-  }
-
-  public static boolean hasPlaneZBReceiver(Aircraft paramAircraft)
-  {
-    for (int i = 0; i < planesWithZBReceiver.length; i++)
-    {
-      if (!planesWithZBReceiver[i].isInstance(paramAircraft))
-        continue;
-      String str = paramAircraft.getRegiment().country();
-      if ((str.equals(PaintScheme.countryBritain)) || (str.equals(PaintScheme.countryUSA)) || (str.equals(PaintScheme.countryNewZealand)))
-      {
-        return true;
-      }
-    }
-    return false;
   }
 
   static class CacheItem

@@ -24,17 +24,17 @@ public class GUISwitch3 extends GUISwitchN
   public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
   {
     if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
-    int i = this.state;
-    if (this.states == 2) {
+    int i = this.jdField_state_of_type_Int;
+    if (this.jdField_states_of_type_Int == 2) {
       i = (i + 1) % 2;
     }
-    else if (paramFloat2 > this.win.dy / 2.0F) {
-      i = this.state - 1;
-      if (i < 0) i = this.state; 
+    else if (paramFloat2 > this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F) {
+      i = this.jdField_state_of_type_Int - 1;
+      if (i < 0) i = this.jdField_state_of_type_Int; 
     }
     else {
-      i = this.state + 1;
-      if (i >= this.states) i = this.state;
+      i = this.jdField_state_of_type_Int + 1;
+      if (i >= this.jdField_states_of_type_Int) i = this.jdField_state_of_type_Int;
     }
 
     setState(i, true);
@@ -42,7 +42,7 @@ public class GUISwitch3 extends GUISwitchN
 
   public void render() {
     setCanvasColorWHITE();
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, st[this.pos[this.state]]);
+    draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, st[this.pos[this.jdField_state_of_type_Int]]);
   }
 
   public void created() {

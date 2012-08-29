@@ -19,10 +19,6 @@ import com.maddox.il2.engine.TTFont;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.il2.game.order.Order;
-import com.maddox.il2.game.order.OrderAnyone_Help_Me;
-import com.maddox.il2.game.order.OrderVector_To_Home_Base;
-import com.maddox.il2.game.order.OrderVector_To_Target;
-import com.maddox.il2.game.order.OrdersTree;
 import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetUserStat;
@@ -54,9 +50,7 @@ public class HUD
   private Main3D main3d;
   private int viewDX;
   private int viewDY;
-  long timeLoadLimit = 0L;
-  int cnt;
-  private String[][] renderSpeedSubstrings = { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
+  private String[][] renderSpeedSubstrings = { { null, null, null }, { null, null, null }, { null, null, null } };
 
   private int iDrawSpeed = 1;
 
@@ -157,30 +151,6 @@ public class HUD
     int j = -1073741569;
     int k = (int)(World.getPlayerFM().Or.getYaw() + 0.5F);
     k = k > 90 ? 450 - k : 90 - k;
-
-    int i1 = 0;
-    float f = World.getPlayerFM().getLoadDiff();
-
-    if ((f <= World.getPlayerFM().getLimitLoad() * 0.25F) && (f > World.getPlayerFM().getLimitLoad() * 0.1F)) {
-      i1 = 1;
-      this.cnt = 0;
-      this.timeLoadLimit = 0L;
-    }
-    else if ((f <= World.getPlayerFM().getLimitLoad() * 0.1F) && (Time.current() < this.timeLoadLimit)) {
-      i1 = 0;
-    }
-    else if ((f <= World.getPlayerFM().getLimitLoad() * 0.1F) && (Time.current() >= this.timeLoadLimit)) {
-      i1 = 1;
-
-      this.cnt += 1;
-      if (this.cnt == 22) {
-        this.timeLoadLimit = (125L + Time.current());
-        this.cnt = 0;
-      }
-    } else {
-      this.cnt = 0;
-      this.timeLoadLimit = 0L;
-    }
     String str;
     int m;
     int n;
@@ -189,17 +159,17 @@ public class HUD
     default:
       str = ".si";
       m = (int)(World.getPlayerFM().getAltitude() * 0.1F) * 10;
-      n = (int)(3.6F * Pitot.Indicator((float)World.getPlayerFM().Loc.z, World.getPlayerFM().getSpeed()) * 0.1F) * 10;
+      n = (int)(3.6F * Pitot.Indicator((float)World.getPlayerFM().jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double, World.getPlayerFM().getSpeed()) * 0.1F) * 10;
       break;
     case 2:
       str = ".gb";
       m = (int)(3.28084F * World.getPlayerFM().getAltitude() * 0.02F) * 50;
-      n = (int)(1.943845F * Pitot.Indicator((float)World.getPlayerFM().Loc.z, World.getPlayerFM().getSpeed()) * 0.1F) * 10;
+      n = (int)(1.943845F * Pitot.Indicator((float)World.getPlayerFM().jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double, World.getPlayerFM().getSpeed()) * 0.1F) * 10;
       break;
     case 3:
       str = ".us";
       m = (int)(3.28084F * World.getPlayerFM().getAltitude() * 0.02F) * 50;
-      n = (int)(2.236936F * Pitot.Indicator((float)World.getPlayerFM().Loc.z, World.getPlayerFM().getSpeed()) * 0.1F) * 10;
+      n = (int)(2.236936F * Pitot.Indicator((float)World.getPlayerFM().jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double, World.getPlayerFM().getSpeed()) * 0.1F) * 10;
     }
 
     if (this.iDrawSpeed != this.lastDrawSpeed) {
@@ -207,40 +177,27 @@ public class HUD
         this.renderSpeedSubstrings[0][0] = this.resLog.getString("HDG");
         this.renderSpeedSubstrings[1][0] = this.resLog.getString("ALT");
         this.renderSpeedSubstrings[2][0] = this.resLog.getString("SPD");
-
-        this.renderSpeedSubstrings[3][0] = this.resLog.getString("G");
-
         this.renderSpeedSubstrings[0][1] = this.resLog.getString("HDG" + str);
         this.renderSpeedSubstrings[1][1] = this.resLog.getString("ALT" + str);
         this.renderSpeedSubstrings[2][1] = this.resLog.getString("SPD" + str);
-        this.renderSpeedSubstrings[3][1] = this.resLog.getString("Ga");
       } catch (Exception localException) {
         this.renderSpeedSubstrings[0][0] = "HDG";
         this.renderSpeedSubstrings[1][0] = "ALT";
         this.renderSpeedSubstrings[2][0] = "SPD";
-
-        this.renderSpeedSubstrings[3][0] = "G";
-
         this.renderSpeedSubstrings[0][1] = "";
         this.renderSpeedSubstrings[1][1] = "";
         this.renderSpeedSubstrings[2][1] = "";
-        this.renderSpeedSubstrings[3][1] = "";
       }
     }
 
     localTTFont.output(j, 5.0F, 5.0F, 0.0F, this.renderSpeedSubstrings[0][0] + " " + k + " " + this.renderSpeedSubstrings[0][1]);
-
-    if (i1 != 0)
-      localTTFont.output(j, 5.0F, 5 + i + i + i, 0.0F, this.renderSpeedSubstrings[3][0]);
     if (World.cur().diffCur.NoSpeedBar) {
       return;
     }
     localTTFont.output(j, 5.0F, 5 + i, 0.0F, this.renderSpeedSubstrings[1][0] + " " + m + " " + this.renderSpeedSubstrings[1][1]);
     localTTFont.output(j, 5.0F, 5 + i + i, 0.0F, this.renderSpeedSubstrings[2][0] + " " + n + " " + this.renderSpeedSubstrings[2][1]);
   }
-
-  public void clearSpeed()
-  {
+  public void clearSpeed() {
     this.iDrawSpeed = 1; } 
   private void initSpeed() { this.iDrawSpeed = 1;
   }
@@ -294,78 +251,26 @@ public class HUD
     int m = k;
     int n = 0;
     int i1 = 0;
-
-    int i2 = 0;
-    boolean bool = false;
-
-    for (int i3 = 0; i3 < this.order.length; i3++) {
-      if (this.orderStr[i3] != null)
-      {
-        if ((this.order[i3] instanceof OrderAnyone_Help_Me)) {
-          i2 = 1;
-        }
-        if (Main3D.cur3D().ordersTree.frequency() == null) {
-          bool = true;
-        }
+    for (int i2 = 0; i2 < this.order.length; i2++) {
+      if (this.orderStr[i2] != null) {
         if (str != null)
-          drawOrder(str, i, m, i1 == 0 ? -1 : i1, n, bool);
-        i1 = i3;
-        str = this.orderStr[i3];
+          drawOrder(str, i, m, i1 == 0 ? -1 : i1, n);
+        i1 = i2;
+        str = this.orderStr[i2];
         m = k;
-        n = this.order[i3].attrib();
-
-        if ((((this.order[i3] instanceof OrderVector_To_Home_Base)) || ((this.order[i3] instanceof OrderVector_To_Target))) && (Main.cur().mission.zutiRadar_DisableVectoring))
-        {
-          bool = true;
-        }
-        else bool = false;
+        n = this.order[i2].attrib();
       }
-
       k -= j;
     }
-
-    if (Main3D.cur3D().ordersTree.frequency() == null) {
-      bool = true;
-    }
-    if (str != null) {
-      drawOrder(str, i, m, 0, n, bool);
-    }
-    if (i2 != 0)
-    {
-      String[] arrayOfString = Main3D.cur3D().ordersTree.getShipIDs();
-      for (int i4 = 0; i4 < arrayOfString.length; i4++)
-      {
-        if ((i4 == 0) && (arrayOfString[i4] != null))
-        {
-          k -= j;
-          k -= j;
-          drawShipIDs(this.resOrder.getString("ShipIDs"), i, k);
-          k -= j;
-        }
-        if (arrayOfString[i4] == null)
-          continue;
-        drawShipIDs(arrayOfString[i4], i, k);
-        k -= j;
-      }
-    }
+    if (str != null)
+      drawOrder(str, i, m, 0, n);
   }
 
-  private void drawShipIDs(String paramString, int paramInt1, int paramInt2)
-  {
-    int i = -16776961;
-    TTFont localTTFont = TTFont.font[1];
-    localTTFont.output(i, paramInt1, paramInt2, 0.0F, paramString);
-  }
-
-  private void drawOrder(String paramString, int paramInt1, int paramInt2, int paramInt3, int paramInt4, boolean paramBoolean) {
+  private void drawOrder(String paramString, int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
     int i = -16776961;
     if ((paramInt4 & 0x1) != 0) i = -16777089;
     else if ((paramInt4 & 0x2) != 0) i = -16744449;
     TTFont localTTFont = TTFont.font[1];
-
-    if (paramBoolean) {
-      i = 2139062143;
-    }
     if (paramInt3 >= 0) localTTFont.output(i, paramInt1, paramInt2, 0.0F, "" + paramInt3 + ". " + paramString); else
       localTTFont.output(i, paramInt1, paramInt2, 0.0F, paramString);
   }
@@ -393,11 +298,10 @@ public class HUD
     if (paramInt2 < 1) return;
     if (paramInt2 > 2) return;
     if (paramArrayOfInt == null) {
-      return;
-    }
-    TTFont localTTFont = TTFont.font[1];
-    for (int i = 0; (i < paramArrayOfInt.length) && (paramArrayOfInt[i] != 0); i++) {
-      Object localObject = com.maddox.il2.objects.sounds.Voice.vbStr[paramArrayOfInt[i]];
+      return; } TTFont localTTFont = TTFont.font[1];
+    int i = 0;
+    Object localObject;
+    do { localObject = com.maddox.il2.objects.sounds.Voice.vbStr[paramArrayOfInt[i]];
       try {
         String str1 = this.resMsg.getString((String)localObject);
         if (str1 != null)
@@ -412,12 +316,12 @@ public class HUD
         if (this.msgLines.size() == 0) {
           this.msgLines.add(new MsgLine(str2, j, paramInt1, paramInt2, Time.current()));
         } else {
-          MsgLine localMsgLine2 = (MsgLine)this.msgLines.get(this.msgLines.size() - 1);
-          if ((localMsgLine2.iActor == paramInt1) && (localMsgLine2.army == paramInt2) && (!paramBoolean)) {
-            int k = localMsgLine2.len + this.msgSpaceLen + j;
+          MsgLine localMsgLine = (MsgLine)this.msgLines.get(this.msgLines.size() - 1);
+          if ((localMsgLine.iActor == paramInt1) && (localMsgLine.army == paramInt2) && (!paramBoolean)) {
+            int k = localMsgLine.len + this.msgSpaceLen + j;
             if (k < this.msgDX) {
-              localMsgLine2.msg = (localMsgLine2.msg + " " + str2);
-              localMsgLine2.len = k;
+              localMsgLine.msg = (localMsgLine.msg + " " + str2);
+              localMsgLine.len = k;
             } else {
               this.msgLines.add(new MsgLine(str2, j, paramInt1, paramInt2, 0L));
             }
@@ -427,11 +331,13 @@ public class HUD
         }
         paramBoolean = false;
       }
-    }
+      i++; if (i >= paramArrayOfInt.length) break;  }
+    while (paramArrayOfInt[i] != 0);
+
     while (this.msgLines.size() > this.msgSIZE) {
       this.msgLines.remove(0);
-      MsgLine localMsgLine1 = (MsgLine)this.msgLines.get(0);
-      localMsgLine1.time0 = Time.current();
+      localObject = (MsgLine)this.msgLines.get(0);
+      ((MsgLine)localObject).time0 = Time.current();
     }
   }
 
@@ -847,12 +753,13 @@ public class HUD
       localTTFont1.output(i2 | i3 << 8, j - k, m, 0.0F, this.logRightBottom);
     }
 
-    if (this.logLen == 0) return;
-    while ((this.logLen > 0) && 
-      (l >= this.logTime[this.logPtr] + 10000L)) {
+    if (this.logLen == 0) return; do
+    {
+      if (l < this.logTime[this.logPtr] + 10000L) break;
       this.logPtr = ((this.logPtr + 1) % 3);
       this.logLen -= 1;
     }
+    while (this.logLen > 0);
 
     if (this.logLen == 0) return;
 
@@ -981,12 +888,6 @@ public class HUD
 
     TTFont localTTFont1 = TTFont.font[1];
     TTFont localTTFont2 = TTFont.font[3];
-
-    if (Main.cur().netServerParams.netStat_DisableStatistics)
-    {
-      return;
-    }
-
     int i = localTTFont1.height() - localTTFont1.descender();
     int j = y1024(740.0F);
     int k = 0;
@@ -997,74 +898,39 @@ public class HUD
     int i3 = 0;
     for (int i4 = this.pageSizeNetStat * this.pageNetStat; (i4 < this.pageSizeNetStat * (this.pageNetStat + 1)) && (i4 < this.statUsers.size()); i4++) {
       StatUser localStatUser1 = (StatUser)this.statUsers.get(i4);
-      i6 = 0;
-      if (Main.cur().netServerParams.netStat_ShowPilotNumber)
-      {
-        i6 = (int)localTTFont1.width(localStatUser1.sNum);
-        if (k < i6) k = i6;
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotPing)
-      {
-        i6 = (int)localTTFont2.width(localStatUser1.sPing);
-        if (m < i6) m = i6;
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotName)
-      {
-        i6 = (int)localTTFont1.width(localStatUser1.user.uniqueName());
-        if (n < i6) n = i6;
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotScore)
-      {
-        i6 = (int)localTTFont1.width(localStatUser1.sScore);
-        if (i1 < i6) i1 = i6;
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotArmy)
-      {
-        i6 = (int)localTTFont1.width(localStatUser1.sArmy);
-        if (i2 < i6) i2 = i6;
-      }
-      if (!Main.cur().netServerParams.netStat_ShowPilotACDesignation)
-        continue;
+      i6 = (int)localTTFont1.width(localStatUser1.sNum);
+      if (k < i6) k = i6;
+      i6 = (int)localTTFont2.width(localStatUser1.sPing);
+      if (m < i6) m = i6;
+      i6 = (int)localTTFont1.width(localStatUser1.user.uniqueName());
+      if (n < i6) n = i6;
+      i6 = (int)localTTFont1.width(localStatUser1.sScore);
+      if (i1 < i6) i1 = i6;
+      i6 = (int)localTTFont1.width(localStatUser1.sArmy);
+      if (i2 < i6) i2 = i6;
       i6 = (int)localTTFont1.width(localStatUser1.sAircraft);
       if (i3 >= i6) continue; i3 = i6;
     }
-
-    i4 = x1024(40.0F) + k;
-    int i5 = i4 + m + x1024(16.0F);
-    int i6 = i5 + n + x1024(16.0F);
-    int i7 = i6 + i1 + x1024(16.0F);
-    if (Mission.isCoop()) i7 = i6;
-    int i8 = i7 + i2 + x1024(16.0F);
-    int i9 = i8 + i3 + x1024(16.0F);
-    int i10 = j;
-    for (int i11 = this.pageSizeNetStat * this.pageNetStat; (i11 < this.pageSizeNetStat * (this.pageNetStat + 1)) && (i11 < this.statUsers.size()); i11++) {
-      StatUser localStatUser2 = (StatUser)this.statUsers.get(i11);
-      i10 -= i;
-      int i12 = Army.color(localStatUser2.iArmy);
-
-      if (!Main.cur().netServerParams.netStat_ShowPilotArmy) {
-        i12 = -1;
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotNumber) {
-        localTTFont1.output(i12, i4 - localTTFont1.width(localStatUser2.sNum), i10, 0.0F, localStatUser2.sNum);
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotPing) {
-        localTTFont2.output(-1, i5 - localTTFont2.width(localStatUser2.sPing) - x1024(4.0F), i10, 0.0F, localStatUser2.sPing);
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotName) {
-        localTTFont1.output(i12, i5, i10, 0.0F, localStatUser2.user.uniqueName());
-      }
-      if ((!Mission.isCoop()) && (Main.cur().netServerParams.netStat_ShowPilotScore)) {
-        localTTFont1.output(i12, i6, i10, 0.0F, localStatUser2.sScore);
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotArmy) {
-        localTTFont1.output(i12, i7, i10, 0.0F, localStatUser2.sArmy);
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotACDesignation) {
-        localTTFont1.output(i12, i8, i10, 0.0F, localStatUser2.sAircraft);
-      }
-      if (Main.cur().netServerParams.netStat_ShowPilotACType)
-        localTTFont1.output(i12, i9, i10, 0.0F, localStatUser2.sAircraftType);
+    int i5 = x1024(40.0F) + k;
+    int i6 = i5 + m + x1024(16.0F);
+    int i7 = i6 + n + x1024(16.0F);
+    int i8 = i7 + i1 + x1024(16.0F);
+    if (Mission.isCoop()) i8 = i7;
+    int i9 = i8 + i2 + x1024(16.0F);
+    int i10 = i9 + i3 + x1024(16.0F);
+    int i11 = j;
+    for (int i12 = this.pageSizeNetStat * this.pageNetStat; (i12 < this.pageSizeNetStat * (this.pageNetStat + 1)) && (i12 < this.statUsers.size()); i12++) {
+      StatUser localStatUser2 = (StatUser)this.statUsers.get(i12);
+      i11 -= i;
+      int i13 = Army.color(localStatUser2.iArmy);
+      localTTFont1.output(i13, i5 - localTTFont1.width(localStatUser2.sNum), i11, 0.0F, localStatUser2.sNum);
+      localTTFont2.output(-1, i6 - localTTFont2.width(localStatUser2.sPing) - x1024(4.0F), i11, 0.0F, localStatUser2.sPing);
+      localTTFont1.output(i13, i6, i11, 0.0F, localStatUser2.user.uniqueName());
+      if (!Mission.isCoop())
+        localTTFont1.output(i13, i7, i11, 0.0F, localStatUser2.sScore);
+      localTTFont1.output(i13, i8, i11, 0.0F, localStatUser2.sArmy);
+      localTTFont1.output(i13, i9, i11, 0.0F, localStatUser2.sAircraft);
+      localTTFont1.output(i13, i10, i11, 0.0F, localStatUser2.sAircraftType);
     }
   }
 
@@ -1120,7 +986,6 @@ public class HUD
       return;
     this.spriteLeft.preRender();
     this.spriteRight.preRender();
-
     this.meshNeedle1.preRender();
     this.meshNeedle2.preRender();
     this.meshNeedle3.preRender();
@@ -1150,20 +1015,20 @@ public class HUD
 
     Render.drawTile(768.0F * f3, 0.0F, 256.0F * f3, 256.0F * f4, 0.0F, this.spriteRight, -1, 0.0F, 1.0F, 1.0F, -1.0F);
 
-    Point3d localPoint3d = World.getPlayerAircraft().pos.getAbsPoint();
-    Orient localOrient1 = World.getPlayerAircraft().pos.getAbsOrient();
+    Point3d localPoint3d = World.getPlayerAircraft().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Orient localOrient1 = World.getPlayerAircraft().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
 
-    float f5 = (float)(localPoint3d.z - World.land().HQ(localPoint3d.x, localPoint3d.y));
-    this._p.x = (172.0F * f3); this._p.y = (84.0F * f4);
+    float f5 = (float)(localPoint3d.jdField_z_of_type_Double - World.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double));
+    this._p.jdField_x_of_type_Double = (172.0F * f3); this._p.jdField_y_of_type_Double = (84.0F * f4);
     this._o.set(cvt(f5, 0.0F, 10000.0F, 0.0F, 3600.0F), 0.0F, 0.0F);
     this.meshNeedle2.setPos(this._p, this._o);
     this.meshNeedle2.render();
     this._o.set(cvt(f5, 0.0F, 10000.0F, 0.0F, 360.0F), 0.0F, 0.0F);
     this.meshNeedle1.setPos(this._p, this._o);
     this.meshNeedle1.render();
-    String str1 = "" + (int)(f5 + 0.5D);
-    float f7 = this.fntLcd.width(str1);
-    this.fntLcd.output(-1, 208.0F * f3 - f7, 70.0F * f4, 0.0F, str1);
+    String str = "" + (int)(f5 + 0.5D);
+    float f6 = this.fntLcd.width(str);
+    this.fntLcd.output(-1, 208.0F * f3 - f6, 70.0F * f4, 0.0F, str);
 
     if (f5 > 90.0F) this.meshNeedle5.setScale(90.0F * f3); else {
       this.meshNeedle5.setScaleXYZ(90.0F * f3, 90.0F * f3, cvt(f5, 0.0F, 90.0F, 13.0F, 90.0F) * f3);
@@ -1172,26 +1037,26 @@ public class HUD
     f5 = (float)World.getPlayerAircraft().getSpeed(null);
     f5 *= 3.6F;
     this._o.set(cvt(f5, 0.0F, 900.0F, 0.0F, 270.0F) + 180.0F, 0.0F, 0.0F);
-    this._p.x = (83.0F * f3); this._p.y = (167.0F * f4);
+    this._p.jdField_x_of_type_Double = (83.0F * f3); this._p.jdField_y_of_type_Double = (167.0F * f4);
     this.meshNeedle2.setPos(this._p, this._o);
     this.meshNeedle2.render();
-    str1 = "" + (int)(f5 + 0.5D);
-    f7 = this.fntLcd.width(str1);
-    this.fntLcd.output(-1, 104.0F * f3 - f7, 135.0F * f4, 0.0F, str1);
+    str = "" + (int)(f5 + 0.5D);
+    f6 = this.fntLcd.width(str);
+    this.fntLcd.output(-1, 104.0F * f3 - f6, 135.0F * f4, 0.0F, str);
 
     f5 = localOrient1.azimut() + 90.0F;
     while (f5 < 0.0F) f5 += 360.0F;
     f5 %= 360.0F;
     this._o.set(f5, 0.0F, 0.0F);
-    this._p.x = (939.0F * f3); this._p.y = (167.0F * f4);
+    this._p.jdField_x_of_type_Double = (939.0F * f3); this._p.jdField_y_of_type_Double = (167.0F * f4);
     this.meshNeedle3.setPos(this._p, this._o);
     this.meshNeedle3.render();
-    str1 = "" + (int)(f5 + 0.5D);
-    f7 = this.fntLcd.width(str1);
-    this.fntLcd.output(-1, 960.0F * f3 - f7, 216.0F * f4, 0.0F, str1);
+    str = "" + (int)(f5 + 0.5D);
+    f6 = this.fntLcd.width(str);
+    this.fntLcd.output(-1, 960.0F * f3 - f6, 216.0F * f4, 0.0F, str);
 
-    Orient localOrient2 = this.main3d.camera3D.pos.getAbsOrient();
-    this._p.x = (511.0F * f3); this._p.y = (96.0F * f4);
+    Orient localOrient2 = this.main3d.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
+    this._p.jdField_x_of_type_Double = (511.0F * f3); this._p.jdField_y_of_type_Double = (96.0F * f4);
 
     if (localOrient2.tangage() < 0.0F) {
       this._o1.set(localOrient2);
@@ -1217,7 +1082,7 @@ public class HUD
       this.meshNeedle5.render();
     }
 
-    this._p.x = (851.0F * f3); this._p.y = (84.0F * f4);
+    this._p.jdField_x_of_type_Double = (851.0F * f3); this._p.jdField_y_of_type_Double = (84.0F * f4);
     this._o1.set(localOrient1);
     this._o1.set(0.0F, -this._o1.tangage(), this._o1.kren());
     this._o1.increment(0.0F, 0.0F, 90.0F);
@@ -1228,17 +1093,6 @@ public class HUD
     this._o.set(0.0F, 0.0F, 0.0F);
     this.meshNeedleMask.setPos(this._p, this._o);
     this.meshNeedleMask.render();
-
-    int i = (int)(World.getPlayerFM().getOverload() * 10.0F);
-    float f6 = i / 10.0F;
-    String str2 = "" + f6;
-    float f8 = this.fntLcd.width(str2);
-    if (World.getPlayerFM().getLoadDiff() < World.getPlayerFM().getLimitLoad() * 0.25F)
-      this.fntLcd.output(-16776961, 215.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
-    else if (i < 0)
-      this.fntLcd.output(-16777216, 215.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
-    else
-      this.fntLcd.output(-1, 215.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
   }
 
   private float cvt(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5)
@@ -1259,7 +1113,6 @@ public class HUD
     this.meshNeedle5 = new Mesh("gui/game/hud/needle5/mono.sim");
     this.meshNeedle6 = new Mesh("gui/game/hud/needle6/mono.sim");
     this.meshNeedleMask = new Mesh("gui/game/hud/needlemask/mono.sim");
-
     this.fntLcd = TTFont.get("lcdnova");
     setScales();
   }

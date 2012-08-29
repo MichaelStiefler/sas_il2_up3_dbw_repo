@@ -73,10 +73,10 @@ Socket localSocket = null;
                 } else {
                   k++;
                 }
-                continue;
-              }k++;
+              } else {
+                k++;
+              }
             }
-
             if ((str2 != null) && (str2.length() > 0)) {
               System.out.print(str2);
             }
@@ -96,22 +96,23 @@ Socket localSocket = null;
       System.out.println("IL2 remote console");
       System.out.println("For end console enter 'quit'");
       localPrintWriter.println("server");
-      while ((bReady) && ((localObject = localBufferedReader.readLine()) != null)) {
+      do {
         if ("quit".equals(localObject)) {
           localPrintWriter.println("<QUIT QUIT>");
           localPrintWriter.flush();
+          break;
         }
-        else {
-          localPrintWriter.println(UnicodeTo8bit.save((String)localObject, false));
-          localPrintWriter.flush();
-          if ("exit".equals(localObject))
-            break;
-        }
-      }
+        localPrintWriter.println(UnicodeTo8bit.save((String)localObject, false));
+        localPrintWriter.flush();
+        if ("exit".equals(localObject))
+          break;
+        if (!bReady) break; 
+      }while ((localObject = localBufferedReader.readLine()) != null);
     }
     catch (Exception localException2)
     {
     }
+
     bReady = false;
     try
     {

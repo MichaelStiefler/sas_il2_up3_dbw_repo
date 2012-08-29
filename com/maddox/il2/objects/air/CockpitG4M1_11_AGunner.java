@@ -36,9 +36,9 @@ public class CockpitG4M1_11_AGunner extends CockpitGunner
   {
     HierMesh localHierMesh = aircraft().hierMesh();
     Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Gloss1D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Matt1D0o", localMat);
   }
 
   public void moveGun(Orient paramOrient)
@@ -46,8 +46,8 @@ public class CockpitG4M1_11_AGunner extends CockpitGunner
     super.moveGun(paramOrient);
     float f1 = -paramOrient.getYaw();
     float f2 = paramOrient.getTangage();
-    this.mesh.chunkSetAngles("Turret2A", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("Turret2B", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret2A", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret2B", 0.0F, f2, 0.0F);
 
     if ((Math.abs(f1) > 2.0F) || (Math.abs(f2) > 2.0F)) {
       this.a2 = (float)Math.toDegrees(Math.atan2(f1, f2));
@@ -66,8 +66,8 @@ public class CockpitG4M1_11_AGunner extends CockpitGunner
     if (f2 > 33.0F) {
       f2 = 33.0F;
     }
-    this.mesh.chunkSetAngles("Turret2C", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("Turret2D", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret2C", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret2D", 0.0F, f2, 0.0F);
   }
 
   public void clipAnglesGun(Orient paramOrient) {
@@ -87,28 +87,28 @@ public class CockpitG4M1_11_AGunner extends CockpitGunner
 
   protected void interpTick() {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+      this.jdField_bGunFire_of_type_Boolean = false;
+    }this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
 
     this.cockPos = (0.5F * this.cockPos + 0.5F * this.a2);
-    this.mesh.chunkSetAngles("Turret2E", 0.0F, this.cockPos, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret2E", 0.0F, this.cockPos, 0.0F);
 
-    this.mesh.chunkSetAngles("Rudder1_D0", 0.0F, -30.0F * this.fm.CT.getRudder(), 0.0F);
-    this.mesh.chunkSetAngles("VatorL_D0", 0.0F, -30.0F * this.fm.CT.getElevator(), 0.0F);
-    this.mesh.chunkSetAngles("VatorR_D0", 0.0F, -30.0F * this.fm.CT.getElevator(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Rudder1_D0", 0.0F, -30.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("VatorL_D0", 0.0F, -30.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("VatorR_D0", 0.0F, -30.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator(), 0.0F);
   }
 
   public void doGunFire(boolean paramBoolean)
   {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
+      this.jdField_bGunFire_of_type_Boolean = false;
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+    else this.jdField_bGunFire_of_type_Boolean = paramBoolean;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
   }
 
   public CockpitG4M1_11_AGunner() {

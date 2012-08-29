@@ -5,7 +5,6 @@ import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.MsgShot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
@@ -28,7 +27,7 @@ public class BombSD4HL extends Bomb
 
     MsgShot.send(paramActor, paramString, localPoint3d, new Vector3f(0.0F, 0.0F, -600.0F), this.M, getOwner(), f1, 1, 0.0D);
 
-    Explosions.generate(paramActor, localPoint3d, f1, i, f2, !Mission.isNet());
+    Explosions.generate(paramActor, localPoint3d, f1, i, f2);
 
     destroy();
   }

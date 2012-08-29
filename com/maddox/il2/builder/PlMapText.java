@@ -69,7 +69,7 @@ public class PlMapText extends Plugin
         if (localActorText.bLevel[0] != 0) k |= 1;
         if (localActorText.bLevel[1] != 0) k |= 2;
         if (localActorText.bLevel[2] != 0) k |= 4;
-        localPrintWriter.println("" + (int)localActorText.pos.getAbsPoint().x + " " + (int)localActorText.pos.getAbsPoint().y + " " + k + " " + localActorText.align + " " + localActorText.getFont() + " " + localActorText.color + " " + localActorText.getText());
+        localPrintWriter.println("" + (int)localActorText.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double + " " + (int)localActorText.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double + " " + k + " " + localActorText.align + " " + localActorText.getFont() + " " + localActorText.color + " " + localActorText.getText());
       }
 
       localPrintWriter.close();
@@ -92,8 +92,8 @@ public class PlMapText extends Plugin
         if (str2 == null)
           break;
         NumberTokenizer localNumberTokenizer = new NumberTokenizer(str2);
-        localPoint3d.x = localNumberTokenizer.next(0);
-        localPoint3d.y = localNumberTokenizer.next(0);
+        localPoint3d.jdField_x_of_type_Double = localNumberTokenizer.next(0);
+        localPoint3d.jdField_y_of_type_Double = localNumberTokenizer.next(0);
         localPoint3d.z = 0.0D;
         int i = localNumberTokenizer.next(7, 1, 7);
         int j = localNumberTokenizer.next(1, 0, 2);
@@ -102,9 +102,9 @@ public class PlMapText extends Plugin
         String str3 = localNumberTokenizer.nextToken("");
         int n = 0;
         int i1 = str3.length() - 1;
-        while ((n < i1) && (str3.charAt(n) <= ' ')) n++;
-        while ((n < i1) && (str3.charAt(i1) <= ' ')) i1--;
-        if (n == i1) return;
+        for (; n < i1; n++) if (str3.charAt(n) > ' ')
+            break; for (; n < i1; i1--) if (str3.charAt(i1) > ' ')
+            break; if (n == i1) return;
         if ((n != 0) || (i1 != str3.length() - 1))
           str3 = str3.substring(n, i1 + 1);
         ActorText localActorText = new ActorText(localPoint3d);
@@ -126,7 +126,7 @@ public class PlMapText extends Plugin
 
   public void mapLoaded() {
     deleteAll();
-    if (!builder.isLoadedLandscape()) return;
+    if (!Plugin.builder.isLoadedLandscape()) return;
     load();
   }
 
@@ -148,12 +148,12 @@ public class PlMapText extends Plugin
     int i = this.allActors.size();
     for (int j = 0; j < i; j++) {
       ActorText localActorText = (ActorText)this.allActors.get(j);
-      builder.selectActorsAdd(localActorText);
+      Plugin.builder.selectActorsAdd(localActorText);
     }
   }
 
   public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
     if (i != this.startComboBox1)
       return;
     ActorText localActorText = new ActorText(paramLoc.getPoint());
@@ -161,24 +161,24 @@ public class PlMapText extends Plugin
   }
 
   private void insert(ActorText paramActorText, boolean paramBoolean) {
-    builder.align(paramActorText);
+    Plugin.builder.align(paramActorText);
     Property.set(paramActorText, "builderSpawn", "");
     Property.set(paramActorText, "builderPlugin", this);
     this.allActors.add(paramActorText);
     if (paramBoolean)
-      builder.setSelected(paramActorText);
+      Plugin.builder.setSelected(paramActorText);
   }
 
   public void renderMap2D() {
-    if (builder.isFreeView()) return;
-    if (builder.isView3D()) return;
+    if (Plugin.builder.isFreeView()) return;
+    if (Plugin.builder.isView3D()) return;
     if (!this.viewType.bChecked) return;
-    double d = builder.camera2D.worldScale;
+    double d = Plugin.builder.camera2D.worldScale;
     int i = 1;
     if (d < 0.01D) i = 0;
     else if (d > 0.05D) i = 2;
     ActorText.setRenderLevel(i);
-    ActorText.setRenderClip(0.0D, 0.0D, builder.clientWindow.win.dx, builder.clientWindow.win.dy);
+    ActorText.setRenderClip(0.0D, 0.0D, Plugin.builder.clientWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, Plugin.builder.clientWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
 
     int j = this.allActors.size();
     for (int k = 0; k < j; k++) {
@@ -189,9 +189,9 @@ public class PlMapText extends Plugin
 
   public void syncSelector()
   {
-    ActorText localActorText = (ActorText)builder.selectedActor();
+    ActorText localActorText = (ActorText)Plugin.builder.selectedActor();
     fillComboBox2(this.startComboBox1);
-    builder.wSelect.tabsClient.addTab(1, this.tabText);
+    Plugin.builder.wSelect.tabsClient.addTab(1, this.tabText);
     this.wText.setValue(localActorText.getText(), false);
     this.wFont.setSelected(localActorText.getFont(), true, false);
     this.wAlign.setSelected(localActorText.align, true, false);
@@ -213,21 +213,21 @@ public class PlMapText extends Plugin
 
   public void configure()
   {
-    if (getPlugin("MapActors") == null)
+    if (Plugin.getPlugin("MapActors") == null)
       throw new RuntimeException("PlMisStatic: plugin 'MapActors' not found");
-    this.pluginActors = ((PlMapActors)getPlugin("MapActors"));
+    this.pluginActors = ((PlMapActors)Plugin.getPlugin("MapActors"));
   }
 
   private void fillComboBox2(int paramInt) {
     if (paramInt != this.startComboBox1)
       return;
-    if (builder.wSelect.curFilledType != paramInt) {
-      builder.wSelect.curFilledType = paramInt;
-      builder.wSelect.comboBox2.clear(false);
-      builder.wSelect.comboBox2.add("Text");
-      builder.wSelect.comboBox1.setSelected(paramInt, true, false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt) {
+      Plugin.builder.wSelect.curFilledType = paramInt;
+      Plugin.builder.wSelect.comboBox2.clear(false);
+      Plugin.builder.wSelect.comboBox2.add("Text");
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(0, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(0, true, false);
   }
 
   public void viewTypeAll(boolean paramBoolean) {
@@ -236,9 +236,9 @@ public class PlMapText extends Plugin
   }
 
   public void createGUI() {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add("Text");
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
+    Plugin.builder.wSelect.comboBox1.add("Text");
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -246,26 +246,26 @@ public class PlMapText extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginActors.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginActors.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
     if (i >= 0) {
-      this.viewType = builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(builder.mDisplayFilter.subMenu, "show Text", null)
+      this.viewType = Plugin.builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, "show Text", null)
       {
         public void execute() {
-          this.bChecked = (!this.bChecked);
+          this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
           PlMapText.this.updateView();
         }
       });
       this.viewType.bChecked = true;
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
-    this.tabText = builder.wSelect.tabsClient.createTab("Text", localGWindowDialogClient);
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient());
+    this.tabText = Plugin.builder.wSelect.tabsClient.createTab("Text", localGWindowDialogClient);
 
     localGWindowDialogClient.addControl(this.wText = new GWindowEditControl(localGWindowDialogClient, 1.0F, 1.0F, 16.0F, 1.3F, "") {
       public void created() { super.created(); }

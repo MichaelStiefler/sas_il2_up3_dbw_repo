@@ -43,8 +43,8 @@ public class GUIComboCfgInt extends GWindowComboControl
     this.cfg.reset();
     int i = this.cfg.countStates();
     int j = this.cfg.firstState();
-    if (this.posEnable == null)
-      this.posEnable = new boolean[i];
+    if (this.jdField_posEnable_of_type_ArrayOfBoolean == null)
+      this.jdField_posEnable_of_type_ArrayOfBoolean = new boolean[i];
     for (int k = 0; k < i; k++) {
       if (paramBoolean) {
         if (this.i18nPref == null) {
@@ -58,7 +58,7 @@ public class GUIComboCfgInt extends GWindowComboControl
             add(str1);
         }
       }
-      this.posEnable[k] = this.cfg.isEnabledState(k + j);
+      this.jdField_posEnable_of_type_ArrayOfBoolean[k] = this.cfg.isEnabledState(k + j);
     }
     setEnable(this.cfg.isEnabled());
   }

@@ -12,7 +12,6 @@ import com.maddox.il2.engine.Render;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.ActorSimpleMesh;
-import com.maddox.il2.objects.air.Cockpit;
 import com.maddox.il2.objects.sounds.SfxZip;
 import com.maddox.rts.Destroy;
 import com.maddox.rts.MsgAction;
@@ -51,22 +50,21 @@ public class Zip
       };
       return;
     }
-    this.temp.z -= 100.0D;
+    this.temp.jdField_z_of_type_Double -= 100.0D;
     this.light2.setPos(this.temp);
     this.light2.setEmit(5.0F, 100.0F);
     this.light2.setColor(1.0F, 1.0F, 1.0F);
-    this.temp.z = (this.height * 0.3F);
+    this.temp.jdField_z_of_type_Double = (this.height * 0.3F);
     new SfxZip(this.temp);
     this.light1.setPos(this.temp);
     this.light1.setEmit(50.0F, 2000.0F);
     this.light1.setColor(1.0F, 1.0F, 1.0F);
-    this.temp.z = 0.0D;
-    this.zipMesh.pos.setAbs(this.temp);
-    this.zipMesh.pos.reset();
+    this.temp.jdField_z_of_type_Double = 0.0D;
+    this.zipMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.temp);
+    this.zipMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     this.zipMesh.mesh().setScale(this.height * 0.001F);
     this.zipMesh.mesh().setFrame(this.rnd.nextInt(0, 4));
     this.zipMesh.drawing(true);
-    Cockpit.lightningStrike(this.temp);
     new MsgAction(0.5D) {
       public void doAction() {
         Zip.this.zipPsss();

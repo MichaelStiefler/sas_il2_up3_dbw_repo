@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -11,13 +10,13 @@ import java.io.IOException;
 
 public class U_2VS extends U_2
 {
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 0:
       break;
     case 1:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
     }
   }
 
@@ -27,12 +26,12 @@ public class U_2VS extends U_2
       hierMesh().chunkVisible("Pilot1_D0", false);
       hierMesh().chunkVisible("Head1_D0", false);
       hierMesh().chunkVisible("Pilot1_D1", true);
-      if (this.FM.AS.bIsAboutToBailout) break;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsAboutToBailout) break;
       hierMesh().chunkVisible("Gore1_D0", true); break;
     case 1:
       hierMesh().chunkVisible("Pilot2_D0", false);
       hierMesh().chunkVisible("Pilot2_D1", true);
-      if (this.FM.AS.bIsAboutToBailout) break;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsAboutToBailout) break;
       hierMesh().chunkVisible("Gore2_D0", true);
     }
   }
@@ -103,23 +102,23 @@ public class U_2VS extends U_2
 
     Property.set(localClass, "FlightModel", "FlightModels/U-2VS.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 10, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBt 250", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunUBt 250", null, null, null, null });
 
-    weaponsRegister(localClass, "2ao10", new String[] { "MGunUBt 250", "BombGunAO10 1", "BombGunAO10 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2ao10", new String[] { "MGunUBt 250", "BombGunAO10 1", "BombGunAO10 1", null, null });
 
-    weaponsRegister(localClass, "4ao10", new String[] { "MGunUBt 250", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1" });
+    Aircraft.weaponsRegister(localClass, "4ao10", new String[] { "MGunUBt 250", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1" });
 
-    weaponsRegister(localClass, "2fab50", new String[] { "MGunUBt 250", "BombGunFAB50", "BombGunFAB50", null, null });
+    Aircraft.weaponsRegister(localClass, "2fab50", new String[] { "MGunUBt 250", "BombGunFAB50", "BombGunFAB50", null, null });
 
-    weaponsRegister(localClass, "4fab50", new String[] { "MGunUBt 250", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
+    Aircraft.weaponsRegister(localClass, "4fab50", new String[] { "MGunUBt 250", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50", "BombGunFAB50" });
 
-    weaponsRegister(localClass, "2fab100", new String[] { "MGunUBt 250", "BombGunFAB100", "BombGunFAB100", null, null });
+    Aircraft.weaponsRegister(localClass, "2fab100", new String[] { "MGunUBt 250", "BombGunFAB100", "BombGunFAB100", null, null });
 
-    weaponsRegister(localClass, "2x4", new String[] { "MGunUBt 250", "BombGunFAB100", "BombGunFAB100", "BombGunFAB50", "BombGunFAB50" });
+    Aircraft.weaponsRegister(localClass, "2x4", new String[] { "MGunUBt 250", "BombGunFAB100", "BombGunFAB100", "BombGunFAB50", "BombGunFAB50" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

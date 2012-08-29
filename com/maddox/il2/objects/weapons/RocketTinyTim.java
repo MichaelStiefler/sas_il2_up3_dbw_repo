@@ -35,10 +35,10 @@ public class RocketTinyTim extends Rocket
 
         if (Config.isUSE_RENDER()) {
           newSound(this.soundName, true);
-          Eff3DActor.setIntesity(this.smoke, 1.0F);
-          Eff3DActor.setIntesity(this.sprite, 1.0F);
-          this.flame.drawing(true);
-          this.light.light.setEmit(2.0F, 100.0F);
+          Eff3DActor.setIntesity(this.jdField_smoke_of_type_ComMaddoxIl2EngineEff3DActor, 1.0F);
+          Eff3DActor.setIntesity(this.jdField_sprite_of_type_ComMaddoxIl2EngineEff3DActor, 1.0F);
+          this.jdField_flame_of_type_ComMaddoxIl2EngineActor.drawing(true);
+          this.jdField_light_of_type_ComMaddoxIl2EngineLightPointActor.light.setEmit(2.0F, 100.0F);
         }
       } else {
         Ballistics.update(this, this.M, 0.07068583F, 0.0F, true);
@@ -49,9 +49,9 @@ public class RocketTinyTim extends Rocket
     return super.interpolateStep();
   }
 
-  public void start(float paramFloat, int paramInt)
+  public void start(float paramFloat)
   {
-    super.start(-1.0F, paramInt);
+    super.start(-1.0F);
     FlightModel localFlightModel = ((Aircraft)getOwner()).FM;
     this.tOrient.set(localFlightModel.Or);
     this.speed.set(localFlightModel.Vwld);
@@ -59,11 +59,11 @@ public class RocketTinyTim extends Rocket
     this.tEStart = (Time.current() + World.Rnd().nextLong(900L, 1100L));
     if (Config.isUSE_RENDER()) {
       breakSounds();
-      Eff3DActor.setIntesity(this.smoke, 0.0F);
-      Eff3DActor.setIntesity(this.sprite, 0.0F);
+      Eff3DActor.setIntesity(this.jdField_smoke_of_type_ComMaddoxIl2EngineEff3DActor, 0.0F);
+      Eff3DActor.setIntesity(this.jdField_sprite_of_type_ComMaddoxIl2EngineEff3DActor, 0.0F);
 
-      this.flame.drawing(false);
-      this.light.light.setEmit(0.0F, 0.0F);
+      this.jdField_flame_of_type_ComMaddoxIl2EngineActor.drawing(false);
+      this.jdField_light_of_type_ComMaddoxIl2EngineLightPointActor.light.setEmit(0.0F, 0.0F);
     }
   }
 

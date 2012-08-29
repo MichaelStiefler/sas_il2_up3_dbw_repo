@@ -20,36 +20,36 @@ public class CmdSocks extends Cmd
   {
     int i = 1;
 
-    if (exist(paramMap, "ON")) {
+    if (Cmd.exist(paramMap, "ON")) {
       SocksUdpSocket.setProxyEnable(true);
       i = 0;
-    } else if (exist(paramMap, "OFF")) {
+    } else if (Cmd.exist(paramMap, "OFF")) {
       SocksUdpSocket.setProxyEnable(false);
       i = 0;
     }
-    if (exist(paramMap, "HOST")) {
-      if (nargs(paramMap, "HOST") > 0)
-        SocksUdpSocket.setProxyHost(arg(paramMap, "HOST", 0));
+    if (Cmd.exist(paramMap, "HOST")) {
+      if (Cmd.nargs(paramMap, "HOST") > 0)
+        SocksUdpSocket.setProxyHost(Cmd.arg(paramMap, "HOST", 0));
       else {
         SocksUdpSocket.setProxyHost(null);
       }
       i = 0;
     }
-    if ((exist(paramMap, "PORT")) && (nargs(paramMap, "PORT") > 0)) {
-      SocksUdpSocket.setProxyPort(arg(paramMap, "PORT", 0, 1080));
+    if ((Cmd.exist(paramMap, "PORT")) && (Cmd.nargs(paramMap, "PORT") > 0)) {
+      SocksUdpSocket.setProxyPort(Cmd.arg(paramMap, "PORT", 0, 1080));
       i = 0;
     }
-    if (exist(paramMap, "USER")) {
-      if (nargs(paramMap, "USER") > 0)
-        SocksUdpSocket.setProxyUser(arg(paramMap, "USER", 0));
+    if (Cmd.exist(paramMap, "USER")) {
+      if (Cmd.nargs(paramMap, "USER") > 0)
+        SocksUdpSocket.setProxyUser(Cmd.arg(paramMap, "USER", 0));
       else {
         SocksUdpSocket.setProxyUser(null);
       }
       i = 0;
     }
-    if (exist(paramMap, "PWD")) {
-      if (nargs(paramMap, "PWD") > 0)
-        SocksUdpSocket.setProxyPassword(arg(paramMap, "PWD", 0));
+    if (Cmd.exist(paramMap, "PWD")) {
+      if (Cmd.nargs(paramMap, "PWD") > 0)
+        SocksUdpSocket.setProxyPassword(Cmd.arg(paramMap, "PWD", 0));
       else {
         SocksUdpSocket.setProxyPassword(null);
       }
@@ -68,12 +68,12 @@ public class CmdSocks extends Cmd
   }
 
   public CmdSocks() {
-    this.param.put("HOST", null);
-    this.param.put("PORT", null);
-    this.param.put("USER", null);
-    this.param.put("PWD", null);
-    this.param.put("ON", null);
-    this.param.put("OFF", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HOST", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PORT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("USER", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PWD", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ON", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("OFF", null);
     this._properties.put("NAME", "socks");
     this._levelAccess = 1;
   }

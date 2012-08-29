@@ -7,8 +7,6 @@ import com.maddox.il2.ai.MsgShotListener;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
-import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.MsgAction;
@@ -43,56 +41,24 @@ public class OilTank extends Wagon
         float f1 = 180.0F;
         int i = 0;
         float f2 = 120.0F;
-        MsgExplosion.send((Actor)paramObject, "Body", localPoint3d, (Actor)this.obj2, 0.0F, f1, i, f2);
-      }
-    };
-    new MsgAction(2.2D, this)
-    {
-      public void doAction(Object paramObject)
-      {
-        Wagon localWagon = (Wagon)paramObject;
-
-        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/SmokeOilTank1.eff", 30.0F);
-
-        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/SmokeOilTank3.eff", 35.0F);
-      }
-    };
-    new MsgAction(34.0D, this)
-    {
-      public void doAction(Object paramObject)
-      {
-        Wagon localWagon = (Wagon)paramObject;
-        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/SmokeOilTank2.eff", 156.0F);
-      }
-    };
+        MsgExplosion.send((Actor)paramObject, "Body", localPoint3d, (Actor)this.obj2, 0.0F, f1, i, f2); } } ;
   }
 
-  public OilTank(Train paramTrain)
-  {
+  public OilTank(Train paramTrain) {
     super(paramTrain, getMeshName(0), getMeshName(1));
-
-    this.life = 0.02F;
-    this.ignoreTNT = 0.35F;
-    this.killTNT = 2.8F;
+    this.life = 0.01F;
+    this.ignoreTNT = 0.2F;
+    this.killTNT = 1.2F;
     this.bodyMaterial = 2;
   }
 
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
-    {
+  private static String getMeshName(int paramInt) {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/OilTank" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/OilTank" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()

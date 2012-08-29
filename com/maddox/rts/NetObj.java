@@ -147,7 +147,7 @@ public abstract class NetObj
     throws IOException
   {
     paramNetMsgGuaranted.checkLock();
-    paramNetMsgGuaranted._sender = this;
+    paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj = this;
     if ((paramNetMsgGuaranted instanceof NetMsgSpawn)) {
       if ((!paramNetChannel.isSortGuaranted()) && (paramNetChannel.isMirrored(this)))
         return;
@@ -165,7 +165,7 @@ public abstract class NetObj
     throws IOException
   {
     paramNetMsgGuaranted.checkLock();
-    paramNetMsgGuaranted._sender = this;
+    paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj = this;
     List localList = NetEnv.channels();
     int i = localList.size();
     NetChannel localNetChannel1;
@@ -227,7 +227,7 @@ public abstract class NetObj
     paramNetMsgFiltered.checkLock();
     paramNetMsgFiltered._time = paramLong;
     paramNetMsgFiltered._timeStamp = (timeStamp++);
-    paramNetMsgFiltered._sender = this;
+    paramNetMsgFiltered.jdField__sender_of_type_ComMaddoxRtsNetObj = this;
     paramNetChannel.putMessage(paramNetMsgFiltered);
   }
 
@@ -243,7 +243,7 @@ public abstract class NetObj
     paramNetMsgFiltered.checkLock();
     paramNetMsgFiltered._time = paramLong;
     paramNetMsgFiltered._timeStamp = (timeStamp++);
-    paramNetMsgFiltered._sender = this;
+    paramNetMsgFiltered.jdField__sender_of_type_ComMaddoxRtsNetObj = this;
     List localList = NetEnv.channels();
     int i = localList.size();
     for (int j = 0; j < i; j++) {

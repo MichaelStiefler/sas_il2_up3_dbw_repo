@@ -17,7 +17,7 @@ public class MIG_3U extends MIG_3
   public void update(float paramFloat) { hierMesh().chunkSetAngles("FlapWater_D0", 0.0F, 0.0F, 40.5F * this.kangle);
     hierMesh().chunkSetAngles("FlapOil_D0", 0.0F, 0.0F, 12.5F * this.kangle);
 
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
+    this.kangle = (0.95F * this.kangle + 0.05F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator());
     super.update(paramFloat);
   }
 
@@ -45,18 +45,18 @@ public class MIG_3U extends MIG_3
 
     if (((paramShot.chunkName.startsWith("CF")) || (paramShot.chunkName.startsWith("Tail"))) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 2);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 2);
     if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 2, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 2, 1);
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 3, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 3, 1);
     if ((paramShot.chunkName.startsWith("Engine1")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 2);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 2);
     }
     super.msgShot(paramShot);
   }
@@ -64,9 +64,9 @@ public class MIG_3U extends MIG_3
   protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
   {
     switch (paramInt1) { case 33:
-      this.FM.AS.hitTank(this, 2, 7); return super.cutFM(34, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, 2, 7); return super.cutFM(34, paramInt2, paramActor);
     case 36:
-      this.FM.AS.hitTank(this, 3, 7); return super.cutFM(37, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, 3, 7); return super.cutFM(37, paramInt2, paramActor);
     }
     return super.cutFM(paramInt1, paramInt2, paramActor);
   }
@@ -86,11 +86,11 @@ public class MIG_3U extends MIG_3
     Property.set(localClass, "cockpitClass", CockpitMIG_3U.class);
     Property.set(localClass, "LOSElevation", 0.906F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 150", "MGunShVAKs 150" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 150", "MGunShVAKs 150" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

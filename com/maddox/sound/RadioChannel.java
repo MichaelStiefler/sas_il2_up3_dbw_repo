@@ -263,9 +263,7 @@ public class RadioChannel extends NetObj
             postTo(paramNetMsgInput.channel(), (NetMsgGuaranted)localObject3);
           }
 
-          if (tstMode > 0) System.out.println("activation : " + bool);
-
-          break;
+          if (tstMode <= 0) break; System.out.println("activation : " + bool); break;
         case 4:
           setActive(paramNetMsgInput.readBoolean());
 

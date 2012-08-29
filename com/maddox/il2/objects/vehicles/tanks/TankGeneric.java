@@ -70,6 +70,7 @@ import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -84,7 +85,7 @@ public abstract class TankGeneric extends ActorHMesh
 {
   private static float[] Thicknesses = null;
   private static float[] Energies = null;
-  private static float[][] NumShots_Thickness_Energy = (float[][])null;
+  private static float[][] NumShots_Thickness_Energy = null;
 
   private TankProperties prop = null;
   private int codeName;
@@ -139,13 +140,13 @@ public abstract class TankGeneric extends ActorHMesh
     paramInt = Finger.incInt(paramInt, this.codeOfUnderlyingBridgeSegment);
     if (this.mov != null) {
       paramInt = Finger.incInt(paramInt, this.mov.rotatingInPlace);
-      paramInt = Finger.incInt(paramInt, this.mov.srcPos.x);
-      paramInt = Finger.incInt(paramInt, this.mov.srcPos.y);
-      paramInt = Finger.incInt(paramInt, this.mov.srcPos.z);
+      paramInt = Finger.incInt(paramInt, this.mov.srcPos.jdField_x_of_type_Double);
+      paramInt = Finger.incInt(paramInt, this.mov.srcPos.jdField_y_of_type_Double);
+      paramInt = Finger.incInt(paramInt, this.mov.srcPos.jdField_z_of_type_Double);
       if (this.mov.dstPos != null) {
-        paramInt = Finger.incInt(paramInt, this.mov.dstPos.x);
-        paramInt = Finger.incInt(paramInt, this.mov.dstPos.y);
-        paramInt = Finger.incInt(paramInt, this.mov.dstPos.z);
+        paramInt = Finger.incInt(paramInt, this.mov.dstPos.jdField_x_of_type_Double);
+        paramInt = Finger.incInt(paramInt, this.mov.dstPos.jdField_y_of_type_Double);
+        paramInt = Finger.incInt(paramInt, this.mov.dstPos.jdField_z_of_type_Double);
       }
     }
     if (this.aime != null) {
@@ -180,7 +181,7 @@ public abstract class TankGeneric extends ActorHMesh
   public static final Vector2d Rotate(Vector2d paramVector2d, float paramFloat) {
     float f1 = Geom.sinDeg(paramFloat);
     float f2 = Geom.cosDeg(paramFloat);
-    return new Vector2d(f2 * paramVector2d.x - f1 * paramVector2d.y, f1 * paramVector2d.x + f2 * paramVector2d.y);
+    return new Vector2d(f2 * paramVector2d.jdField_x_of_type_Double - f1 * paramVector2d.jdField_y_of_type_Double, f1 * paramVector2d.jdField_x_of_type_Double + f2 * paramVector2d.jdField_y_of_type_Double);
   }
 
   protected final boolean Head360()
@@ -226,9 +227,9 @@ public abstract class TankGeneric extends ActorHMesh
     this.collisionStage = 1;
     this.collidee = paramActor;
 
-    Point3d localPoint3d1 = this.pos.getAbsPoint();
-    Point3d localPoint3d2 = paramActor.pos.getAbsPoint();
-    this.collisVector.set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y);
+    Point3d localPoint3d1 = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Point3d localPoint3d2 = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    this.collisVector.set(localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double);
     if (this.collisVector.length() >= 1.0E-006D) {
       this.collisVector.normalize();
     } else {
@@ -264,7 +265,7 @@ public abstract class TankGeneric extends ActorHMesh
       return;
     }
 
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
+    float f1 = Shot.panzerThickness(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
 
     f1 *= Rnd(0.93F, 1.07F);
 
@@ -280,7 +281,7 @@ public abstract class TankGeneric extends ActorHMesh
       return false;
     }
 
-    paramActorMesh.pos.getAbs(p);
+    paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
     float[] arrayOfFloat = new float[2];
     paramExplosion.computeSplintersHit(p, paramActorMesh.mesh().collisionR(), paramFloat3, arrayOfFloat);
 
@@ -290,7 +291,7 @@ public abstract class TankGeneric extends ActorHMesh
       return false;
     }
 
-    Vector3d localVector3d = new Vector3d(p.x - paramExplosion.p.x, p.y - paramExplosion.p.y, p.z - paramExplosion.p.z);
+    Vector3d localVector3d = new Vector3d(p.jdField_x_of_type_Double - paramExplosion.p.jdField_x_of_type_Double, p.jdField_y_of_type_Double - paramExplosion.p.jdField_y_of_type_Double, p.jdField_z_of_type_Double - paramExplosion.p.jdField_z_of_type_Double);
 
     double d = localVector3d.length();
     if (d < 0.001000000047497451D)
@@ -299,9 +300,9 @@ public abstract class TankGeneric extends ActorHMesh
       localVector3d.scale(1.0D / d);
     }
 
-    float f1 = Shot.panzerThickness(paramActorMesh.pos.getAbsOrient(), localVector3d, false, paramFloat5, paramFloat6, paramFloat7, paramFloat8, paramFloat9, paramFloat10);
+    float f1 = Shot.panzerThickness(paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), localVector3d, false, paramFloat5, paramFloat6, paramFloat7, paramFloat8, paramFloat9, paramFloat10);
 
-    float f2 = Shot.panzerThickness(paramActorMesh.pos.getAbsOrient(), localVector3d, true, paramFloat5, paramFloat6, paramFloat7, paramFloat8, paramFloat9, paramFloat10);
+    float f2 = Shot.panzerThickness(paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), localVector3d, true, paramFloat5, paramFloat6, paramFloat7, paramFloat8, paramFloat9, paramFloat10);
 
     int j = (int)(i * paramFloat4 + 0.5F);
     int k = i - j;
@@ -397,8 +398,8 @@ public abstract class TankGeneric extends ActorHMesh
   private void MakeCrush() {
     this.dying = 2;
 
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    long l = ()(localPoint3d.x % 2.1D * 221.0D + localPoint3d.y % 3.1D * 211.0D * 211.0D);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    long l = ()(localPoint3d.jdField_x_of_type_Double % 2.1D * 221.0D + localPoint3d.jdField_y_of_type_Double % 3.1D * 211.0D * 211.0D);
     RangeRandom localRangeRandom = new RangeRandom(l);
 
     float[] arrayOfFloat1 = new float[3];
@@ -431,7 +432,7 @@ public abstract class TankGeneric extends ActorHMesh
     {
       mesh().makeAllMaterialsDarker(0.22F, 0.35F);
       this.heightAboveLandSurface2 = this.heightAboveLandSurface;
-      localPoint3d.z -= localRangeRandom.nextFloat(0.3F, 0.6F);
+      localPoint3d.jdField_z_of_type_Double -= localRangeRandom.nextFloat(0.3F, 0.6F);
     } else {
       setMesh(this.prop.meshName2);
 
@@ -444,11 +445,11 @@ public abstract class TankGeneric extends ActorHMesh
         this.heightAboveLandSurface2 = (float)(-localMatrix4d.m23);
       }
 
-      localPoint3d.z += this.heightAboveLandSurface2 - this.heightAboveLandSurface;
+      localPoint3d.jdField_z_of_type_Double += this.heightAboveLandSurface2 - this.heightAboveLandSurface;
     }
 
-    this.pos.setAbs(localPoint3d);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   private void Die(Actor paramActor, boolean paramBoolean)
@@ -463,7 +464,7 @@ public abstract class TankGeneric extends ActorHMesh
       this.aime = null;
     }
     if (this.gun != null) {
-      destroy(this.gun);
+      ObjState.destroy(this.gun);
       this.gun = null;
     }
 
@@ -499,8 +500,8 @@ public abstract class TankGeneric extends ActorHMesh
       if (isNetMaster()) {
         send_DeathCommand(paramActor);
 
-        Point3d localPoint3d = simplifyPos(this.pos.getAbsPoint());
-        Orient localOrient = simplifyOri(this.pos.getAbsOrient());
+        Point3d localPoint3d = simplifyPos(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+        Orient localOrient = simplifyOri(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient());
         float f1 = simplifyAng(this.headYaw);
         float f2 = simplifyAng(this.gunPitch);
         setPosition(localPoint3d, localOrient, f1, f2);
@@ -527,7 +528,7 @@ public abstract class TankGeneric extends ActorHMesh
       this.aime = null;
     }
     if (this.gun != null) {
-      destroy(this.gun);
+      ObjState.destroy(this.gun);
       this.gun = null;
     }
 
@@ -563,7 +564,7 @@ public abstract class TankGeneric extends ActorHMesh
       this.aime = null;
     }
     if (this.gun != null) {
-      destroy(this.gun);
+      ObjState.destroy(this.gun);
       this.gun = null;
     }
     super.destroy();
@@ -577,8 +578,8 @@ public abstract class TankGeneric extends ActorHMesh
     hierMesh().chunkSetAngles("Head", this.headYaw, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Gun", -this.gunPitch, 0.0F, 0.0F);
 
-    this.pos.setAbs(paramPoint3d, paramOrient);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d, paramOrient);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   public Object getSwitchListener(Message paramMessage) {
@@ -662,9 +663,9 @@ public abstract class TankGeneric extends ActorHMesh
       int j = Mission.cur().getUnitNetIdRemote(this);
       localObject = Mission.cur().getNetMasterChannel();
       if (localObject == null)
-        this.net = new Master(this);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
       else if (j != 0) {
-        this.net = new Mirror(this, (NetChannel)localObject, j);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, (NetChannel)localObject, j);
       }
 
     }
@@ -695,15 +696,15 @@ public abstract class TankGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -716,14 +717,14 @@ public abstract class TankGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(67);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -732,7 +733,7 @@ public abstract class TankGeneric extends ActorHMesh
 
   private void send_FireCommand(Actor paramActor, int paramInt, float paramFloat)
   {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
+    if ((!isNetMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
@@ -746,10 +747,10 @@ public abstract class TankGeneric extends ActorHMesh
       try {
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(84);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException1) {
         System.out.println(localException1.getMessage());
         localException1.printStackTrace();
@@ -759,10 +760,10 @@ public abstract class TankGeneric extends ActorHMesh
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(70);
         this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException2) {
         System.out.println(localException2.getMessage());
         localException2.printStackTrace();
@@ -771,7 +772,7 @@ public abstract class TankGeneric extends ActorHMesh
 
   private void send_AnByteAndPoseCommand(boolean paramBoolean, Actor paramActor, int paramInt)
   {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
+    if ((!isNetMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
@@ -780,9 +781,9 @@ public abstract class TankGeneric extends ActorHMesh
       localNetMsgGuaranted.writeByte(paramInt);
       sendPose(localNetMsgGuaranted);
       if (paramBoolean) {
-        localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
+        localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       }
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -802,7 +803,7 @@ public abstract class TankGeneric extends ActorHMesh
 
   private void send_MoveCommand(Moving paramMoving, float paramFloat)
   {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
+    if ((!isNetMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
@@ -815,7 +816,7 @@ public abstract class TankGeneric extends ActorHMesh
       if ((paramMoving.dstPos == null) || (paramMoving.moveTotTime <= 0L) || (paramMoving.normal == null)) {
         this.outCommand.writeByte(83);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } else {
         if (paramFloat > 0.0F)
           this.outCommand.writeByte(77);
@@ -823,8 +824,8 @@ public abstract class TankGeneric extends ActorHMesh
           this.outCommand.writeByte(109);
         }
         this.outCommand.write(packPos(paramMoving.dstPos));
-        this.outCommand.writeByte(packNormal(paramMoving.normal.z));
-        if (paramMoving.normal.z >= 0.0F) {
+        this.outCommand.writeByte(packNormal(paramMoving.normal.jdField_z_of_type_Float));
+        if (paramMoving.normal.jdField_z_of_type_Float >= 0.0F) {
           this.outCommand.writeByte(packNormal(paramMoving.normal.x));
           this.outCommand.writeByte(packNormal(paramMoving.normal.y));
         }
@@ -834,7 +835,7 @@ public abstract class TankGeneric extends ActorHMesh
         }
         this.outCommand.writeShort(i);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       }
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
@@ -857,9 +858,9 @@ public abstract class TankGeneric extends ActorHMesh
   }
   static byte[] packPos(Point3d paramPoint3d) {
     byte[] arrayOfByte = new byte[8];
-    int i = (int)(paramPoint3d.x * 20.0D + 0.5D);
-    int j = (int)(paramPoint3d.y * 20.0D + 0.5D);
-    int k = (int)(paramPoint3d.z * 10.0D + 0.5D);
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double * 20.0D + 0.5D);
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double * 20.0D + 0.5D);
+    int k = (int)(paramPoint3d.jdField_z_of_type_Double * 10.0D + 0.5D);
     arrayOfByte[0] = (byte)(i >> 0 & 0xFF);
     arrayOfByte[1] = (byte)(i >> 8 & 0xFF);
     arrayOfByte[2] = (byte)(i >> 16 & 0xFF);
@@ -935,8 +936,8 @@ public abstract class TankGeneric extends ActorHMesh
   private void sendPose(NetMsgGuaranted paramNetMsgGuaranted)
     throws IOException
   {
-    paramNetMsgGuaranted.write(packPos(this.pos.getAbsPoint()));
-    paramNetMsgGuaranted.write(packOri(this.pos.getAbsOrient()));
+    paramNetMsgGuaranted.write(packPos(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint()));
+    paramNetMsgGuaranted.write(packOri(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient()));
     paramNetMsgGuaranted.writeByte(packAng(this.headYaw));
     paramNetMsgGuaranted.writeByte(packAng(this.gunPitch));
   }
@@ -951,7 +952,7 @@ public abstract class TankGeneric extends ActorHMesh
     localNetMsgGuaranted.writeByte(i);
     sendPose(localNetMsgGuaranted);
 
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public void startMove()
@@ -1148,7 +1149,7 @@ public abstract class TankGeneric extends ActorHMesh
       World.onActorDied(this, paramActor);
     }
 
-    Explosions.Tank_ExplodeCollapse(this.pos.getAbsPoint());
+    Explosions.Tank_ExplodeCollapse(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
 
     destroy();
   }
@@ -1181,9 +1182,9 @@ public abstract class TankGeneric extends ActorHMesh
     }
 
     if (i != 0)
-      Explosions.Tank_ExplodeCollapse(this.pos.getAbsPoint());
+      Explosions.Tank_ExplodeCollapse(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     else {
-      Explosions.Tank_ExplodeCollapse(this.pos.getAbsPoint());
+      Explosions.Tank_ExplodeCollapse(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     }
 
     destroy();
@@ -1191,7 +1192,7 @@ public abstract class TankGeneric extends ActorHMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     if (paramFloat <= 0.0F) return 0.0F;
 
     if ((this.mov.moveCurTime < 0L) && (this.mov.rotatCurTime < 0L))
@@ -1222,14 +1223,14 @@ public abstract class TankGeneric extends ActorHMesh
     localPoint3d.set(this.mov.dstPos);
     double d = (paramFloat - f2) / f1;
 
-    p.x = (paramPoint3d.x * (1.0D - d) + localPoint3d.x * d);
-    p.y = (paramPoint3d.y * (1.0D - d) + localPoint3d.y * d);
+    p.jdField_x_of_type_Double = (paramPoint3d.jdField_x_of_type_Double * (1.0D - d) + localPoint3d.jdField_x_of_type_Double * d);
+    p.jdField_y_of_type_Double = (paramPoint3d.jdField_y_of_type_Double * (1.0D - d) + localPoint3d.jdField_y_of_type_Double * d);
 
-    if (this.mov.normal.z < 0.0F) {
-      p.z = (Engine.land().HQ(p.x, p.y) + HeightAboveLandSurface());
+    if (this.mov.normal.jdField_z_of_type_Float < 0.0F) {
+      p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + HeightAboveLandSurface());
     }
     else {
-      p.z = (paramPoint3d.z * (1.0D - d) + localPoint3d.z * d);
+      p.jdField_z_of_type_Double = (paramPoint3d.jdField_z_of_type_Double * (1.0D - d) + localPoint3d.jdField_z_of_type_Double * d);
     }
 
     paramPoint3d.set(p);
@@ -1278,30 +1279,27 @@ public abstract class TankGeneric extends ActorHMesh
       this.gunPitch = paramAim.anglesPitch.getDeg(f1);
       hierMesh().chunkSetAngles("Head", this.headYaw, 0.0F, 0.0F);
       hierMesh().chunkSetAngles("Gun", -this.gunPitch, 0.0F, 0.0F);
-      this.pos.inValidate(false);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
 
       return;
     }
 
     float f2 = paramAim.anglesYaw.getDeg(f1);
-    this.pos.getAbs(o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(o);
     o.setYaw(f2);
 
-    if ((this.mov != null) && (this.mov.normal != null))
-    {
-      if (this.mov.normal.z < 0.0F) {
-        Engine.land().N(this.mov.srcPos.x, this.mov.srcPos.y, n);
-        o.orient(n);
-      } else {
-        o.orient(this.mov.normal);
-      }
+    if (this.mov.normal.jdField_z_of_type_Float < 0.0F) {
+      Engine.land().N(this.mov.srcPos.jdField_x_of_type_Double, this.mov.srcPos.jdField_y_of_type_Double, n);
+      o.orient(n);
+    } else {
+      o.orient(this.mov.normal);
     }
-    this.pos.setAbs(o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(o);
 
     this.gunPitch = paramAim.anglesPitch.getDeg(f1);
     hierMesh().chunkSetAngles("Gun", -this.gunPitch, 0.0F, 0.0F);
 
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
   }
 
   public Actor findEnemy(Aim paramAim)
@@ -1319,7 +1317,7 @@ public abstract class TankGeneric extends ActorHMesh
         return null;
       }
 
-      localActor = ((ChiefGround)localObject).GetNearestEnemy(this.pos.getAbsPoint(), AttackMaxDistance(), WeaponsMask(), this.prop.ATTACK_FAST_TARGETS ? -1.0F : KmHourToMSec(100.0F));
+      localActor = ((ChiefGround)localObject).GetNearestEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), AttackMaxDistance(), WeaponsMask(), this.prop.ATTACK_FAST_TARGETS ? -1.0F : KmHourToMSec(100.0F));
     }
 
     if (localActor == null) {
@@ -1328,15 +1326,15 @@ public abstract class TankGeneric extends ActorHMesh
 
     localObject = null;
 
-    if (this.gun.prop != null) {
-      i = ((Prey)localActor).chooseBulletType(this.gun.prop.bullet);
+    if (this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties != null) {
+      i = ((Prey)localActor).chooseBulletType(this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
 
       if (i < 0)
       {
         return null;
       }
 
-      localObject = this.gun.prop.bullet[i];
+      localObject = this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[i];
     }
 
     int i = ((Prey)localActor).chooseShotpoint((BulletProperties)localObject);
@@ -1420,7 +1418,7 @@ public abstract class TankGeneric extends ActorHMesh
     }
 
     if ((this.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(this.gun.prop.bullet);
+      int i = ((Prey)paramActor).chooseBulletType(this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (i < 0) {
         return 0;
       }
@@ -1447,7 +1445,7 @@ public abstract class TankGeneric extends ActorHMesh
     float f2 = 0.19F;
 
     double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
+    double d2 = localPoint3d1.jdField_z_of_type_Double;
 
     localPoint3d1.sub(localPoint3d2);
     localPoint3d1.scale(Rnd(0.95D, 1.05D));
@@ -1455,7 +1453,7 @@ public abstract class TankGeneric extends ActorHMesh
 
     if (f1 > 0.001F) {
       Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d3);
 
       tmpv.sub(localPoint3d1, localPoint3d3);
       double d3 = tmpv.length();
@@ -1468,7 +1466,7 @@ public abstract class TankGeneric extends ActorHMesh
         float f9 = f8 * 0.02F;
 
         localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
+        double d4 = localPoint3d3.jdField_x_of_type_Double * localPoint3d3.jdField_x_of_type_Double + localPoint3d3.jdField_y_of_type_Double * localPoint3d3.jdField_y_of_type_Double + localPoint3d3.jdField_z_of_type_Double * localPoint3d3.jdField_z_of_type_Double;
 
         if (d4 > 0.01D) {
           float f10 = (float)tmpv.dot(localPoint3d3);
@@ -1501,8 +1499,8 @@ public abstract class TankGeneric extends ActorHMesh
 
     }
 
-    if (World.Sun().ToSun.z < -0.15F) {
-      f6 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
+    if (World.Sun().ToSun.jdField_z_of_type_Float < -0.15F) {
+      f6 = (-World.Sun().ToSun.jdField_z_of_type_Float - 0.15F) / 0.13F;
       if (f6 >= 1.0F) {
         f6 = 1.0F;
       }
@@ -1537,7 +1535,7 @@ public abstract class TankGeneric extends ActorHMesh
       f5 = this.prop.ROT_SPEED_MAX;
     }
 
-    Orient localOrient = this.pos.getAbs().getOrient();
+    Orient localOrient = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient();
 
     f7 = 0.0F;
     if (!Head360()) {
@@ -1713,7 +1711,7 @@ public abstract class TankGeneric extends ActorHMesh
       localTankProperties.DELAY_AFTER_SHOOT = getF(paramSectFile, paramString, "DelayAfterShoot", 0.0F, 999.0F);
       localTankProperties.CHAINFIRE_TIME = getF(paramSectFile, paramString, "ChainfireTime", 0.0F, 600.0F);
 
-      localTankProperties.ATTACK_FAST_TARGETS = false;
+      localTankProperties.ATTACK_FAST_TARGETS = true;
       float f3 = paramSectFile.get(paramString, "FireFastTargets", -9865.3447F);
       if (f3 != -9865.3447F) {
         localTankProperties.ATTACK_FAST_TARGETS = (f3 > 0.5F);
@@ -1843,15 +1841,15 @@ public abstract class TankGeneric extends ActorHMesh
           TankGeneric.this.mov.rotatCurTime -= 1L;
 
           float f1 = 1.0F - (float)TankGeneric.this.mov.rotatCurTime / (float)TankGeneric.this.mov.rotatTotTime;
-          TankGeneric.this.pos.getAbs(TankGeneric.o);
+          TankGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(TankGeneric.o);
           TankGeneric.o.setYaw(TankGeneric.this.mov.angles.getDeg(f1));
 
-          if (TankGeneric.this.mov.normal.z < 0.0F) {
-            Engine.land().N(TankGeneric.this.mov.srcPos.x, TankGeneric.this.mov.srcPos.y, TankGeneric.n);
+          if (TankGeneric.this.mov.normal.jdField_z_of_type_Float < 0.0F) {
+            Engine.land().N(TankGeneric.this.mov.srcPos.jdField_x_of_type_Double, TankGeneric.this.mov.srcPos.jdField_y_of_type_Double, TankGeneric.n);
             TankGeneric.o.orient(TankGeneric.n);
           } else {
             TankGeneric.o.orient(TankGeneric.this.mov.normal);
-          }TankGeneric.this.pos.setAbs(TankGeneric.o);
+          }TankGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(TankGeneric.o);
         }
 
         return true;
@@ -1871,12 +1869,12 @@ public abstract class TankGeneric extends ActorHMesh
         if (TankGeneric.this.collisionStage == 0) {
           if (TankGeneric.this.prop.meshName2 != null)
           {
-            TankGeneric.p.x = TankGeneric.Rnd(-0.3D, 0.3D);
-            TankGeneric.p.y = TankGeneric.Rnd(-0.3D, 0.3D);
-            TankGeneric.p.z = 1.0D;
-            localUnitMove = localChiefGround.AskMoveCommand(this.actor, TankGeneric.p, TankGeneric.this.obs);
+            TankGeneric.p.jdField_x_of_type_Double = TankGeneric.Rnd(-0.3D, 0.3D);
+            TankGeneric.p.jdField_y_of_type_Double = TankGeneric.Rnd(-0.3D, 0.3D);
+            TankGeneric.p.jdField_z_of_type_Double = 1.0D;
+            localUnitMove = localChiefGround.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, TankGeneric.p, TankGeneric.this.obs);
           } else {
-            localUnitMove = localChiefGround.AskMoveCommand(this.actor, null, TankGeneric.this.obs);
+            localUnitMove = localChiefGround.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, null, TankGeneric.this.obs);
           }
         }
         else
@@ -1891,8 +1889,8 @@ public abstract class TankGeneric extends ActorHMesh
             f4 = TankGeneric.Rnd(-70.0F, 70.0F);
             localVector2d = TankGeneric.Rotate(TankGeneric.this.collisVector, f4);
             localVector2d.scale(TankGeneric.this.prop.AFTER_COLLISION_DIST * TankGeneric.Rnd(0.87D, 1.75D));
-            TankGeneric.p.set(localVector2d.x, localVector2d.y, -1.0D);
-            localUnitMove = localChiefGround.AskMoveCommand(this.actor, TankGeneric.p, TankGeneric.this.obs);
+            TankGeneric.p.set(localVector2d.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double, -1.0D);
+            localUnitMove = localChiefGround.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, TankGeneric.p, TankGeneric.this.obs);
             TankGeneric.access$1602(TankGeneric.this, 2);
             f3 = TankGeneric.this.prop.SPEED_BACK;
           }
@@ -1900,13 +1898,13 @@ public abstract class TankGeneric extends ActorHMesh
             f4 = TankGeneric.Rnd(0.0F, 359.98999F);
             localVector2d = TankGeneric.Rotate(TankGeneric.this.collisVector, f4);
             localVector2d.scale(TankGeneric.this.prop.AFTER_COLLISION_DIST * TankGeneric.Rnd(0.2D, 0.6D));
-            TankGeneric.p.set(localVector2d.x, localVector2d.y, 1.0D);
-            localUnitMove = localChiefGround.AskMoveCommand(this.actor, TankGeneric.p, TankGeneric.this.obs);
+            TankGeneric.p.set(localVector2d.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double, 1.0D);
+            localUnitMove = localChiefGround.AskMoveCommand(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, TankGeneric.p, TankGeneric.this.obs);
             TankGeneric.access$1602(TankGeneric.this, 0);
           }
         }
 
-        TankGeneric.this.mov.set(localUnitMove, this.actor, TankGeneric.this.prop.SPEED_MAX, f3, TankGeneric.this.prop.ROT_SPEED_MAX, TankGeneric.this.prop.ROT_INVIS_ANG);
+        TankGeneric.this.mov.set(localUnitMove, this.jdField_actor_of_type_ComMaddoxIl2EngineActor, TankGeneric.this.prop.SPEED_MAX, f3, TankGeneric.this.prop.ROT_SPEED_MAX, TankGeneric.this.prop.ROT_INVIS_ANG);
 
         if (TankGeneric.this.StayWhenFire()) {
           if (TankGeneric.this.Head360()) {
@@ -1954,7 +1952,7 @@ public abstract class TankGeneric extends ActorHMesh
 
       }
 
-      TankGeneric.this.pos.getAbs(TankGeneric.o);
+      TankGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(TankGeneric.o);
       int j = 0;
 
       if (TankGeneric.this.mov.rotatCurTime > 0L) {
@@ -1975,33 +1973,33 @@ public abstract class TankGeneric extends ActorHMesh
 
         double d = 1.0D - TankGeneric.this.mov.moveCurTime / TankGeneric.this.mov.moveTotTime;
 
-        TankGeneric.p.x = (TankGeneric.this.mov.srcPos.x * (1.0D - d) + TankGeneric.this.mov.dstPos.x * d);
-        TankGeneric.p.y = (TankGeneric.this.mov.srcPos.y * (1.0D - d) + TankGeneric.this.mov.dstPos.y * d);
+        TankGeneric.p.jdField_x_of_type_Double = (TankGeneric.this.mov.srcPos.jdField_x_of_type_Double * (1.0D - d) + TankGeneric.this.mov.dstPos.jdField_x_of_type_Double * d);
+        TankGeneric.p.jdField_y_of_type_Double = (TankGeneric.this.mov.srcPos.jdField_y_of_type_Double * (1.0D - d) + TankGeneric.this.mov.dstPos.jdField_y_of_type_Double * d);
 
-        if (TankGeneric.this.mov.normal.z < 0.0F) {
-          TankGeneric.p.z = (Engine.land().HQ(TankGeneric.p.x, TankGeneric.p.y) + TankGeneric.this.HeightAboveLandSurface());
-          Engine.land().N(TankGeneric.p.x, TankGeneric.p.y, TankGeneric.n);
+        if (TankGeneric.this.mov.normal.jdField_z_of_type_Float < 0.0F) {
+          TankGeneric.p.jdField_z_of_type_Double = (Engine.land().HQ(TankGeneric.p.jdField_x_of_type_Double, TankGeneric.p.jdField_y_of_type_Double) + TankGeneric.this.HeightAboveLandSurface());
+          Engine.land().N(TankGeneric.p.jdField_x_of_type_Double, TankGeneric.p.jdField_y_of_type_Double, TankGeneric.n);
         }
         else {
-          TankGeneric.p.z = (TankGeneric.this.mov.srcPos.z * (1.0D - d) + TankGeneric.this.mov.dstPos.z * d);
+          TankGeneric.p.jdField_z_of_type_Double = (TankGeneric.this.mov.srcPos.jdField_z_of_type_Double * (1.0D - d) + TankGeneric.this.mov.dstPos.jdField_z_of_type_Double * d);
         }
         j = 0;
-        TankGeneric.this.pos.setAbs(TankGeneric.p);
+        TankGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(TankGeneric.p);
         if (TankGeneric.this.mov.moveCurTime <= 0L) {
           TankGeneric.this.mov.moveCurTime = -1L;
         }
       }
 
-      if (TankGeneric.this.mov.normal.z < 0.0F)
+      if (TankGeneric.this.mov.normal.jdField_z_of_type_Float < 0.0F)
       {
-        if (j != 0) Engine.land().N(TankGeneric.this.mov.srcPos.x, TankGeneric.this.mov.srcPos.y, TankGeneric.n);
+        if (j != 0) Engine.land().N(TankGeneric.this.mov.srcPos.jdField_x_of_type_Double, TankGeneric.this.mov.srcPos.jdField_y_of_type_Double, TankGeneric.n);
 
         TankGeneric.o.orient(TankGeneric.n);
       }
       else {
         TankGeneric.o.orient(TankGeneric.this.mov.normal);
       }
-      TankGeneric.this.pos.setAbs(TankGeneric.o);
+      TankGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(TankGeneric.o);
       return true;
     }
   }
@@ -2052,8 +2050,7 @@ public abstract class TankGeneric extends ActorHMesh
         if (TankGeneric.this.dying != 0) break;
         localObject1 = paramNetMsgInput.readNetObj();
         localObject2 = localObject1 == null ? null : ((ActorNet)localObject1).actor();
-        TankGeneric.this.DieMirror((Actor)localObject2, true);
-        break;
+        TankGeneric.this.DieMirror((Actor)localObject2, true); break;
       default:
         System.out.println("TankGeneric: Unknown G message (" + i + ")");
         return false;
@@ -2129,8 +2126,8 @@ public abstract class TankGeneric extends ActorHMesh
 
         localObject = TankGeneric.readPackedPos(paramNetMsgInput);
         Vector3f localVector3f = new Vector3f(0.0F, 0.0F, 0.0F);
-        localVector3f.z = TankGeneric.readPackedNormal(paramNetMsgInput);
-        if (localVector3f.z >= 0.0F) {
+        localVector3f.jdField_z_of_type_Float = TankGeneric.readPackedNormal(paramNetMsgInput);
+        if (localVector3f.jdField_z_of_type_Float >= 0.0F) {
           localVector3f.x = TankGeneric.readPackedNormal(paramNetMsgInput);
           localVector3f.y = TankGeneric.readPackedNormal(paramNetMsgInput);
           f2 = localVector3f.length();

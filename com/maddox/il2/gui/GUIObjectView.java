@@ -94,8 +94,8 @@ public class GUIObjectView extends GameState
 
     if (this.wTable.countRows() > 0) {
       this.wTable.setSelect(GUIObjectInspector.s_object, 0);
-      if (this.wTable.vSB.isVisible())
-        this.wTable.vSB.setPos(GUIObjectInspector.s_scroll, true); 
+      if (this.wTable.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible())
+        this.wTable.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(GUIObjectInspector.s_scroll, true); 
     }
   }
 
@@ -275,23 +275,23 @@ public class GUIObjectView extends GameState
             GUIObjectInspector.s_object = 0;
             GUIObjectInspector.s_scroll = 0.0F;
             GUIObjectView.this.wTable.setSelect(GUIObjectInspector.s_object, 0);
-            if (GUIObjectView.this.wTable.vSB.isVisible())
-              GUIObjectView.this.wTable.vSB.setPos(GUIObjectInspector.s_scroll, true);
+            if (GUIObjectView.this.wTable.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible())
+              GUIObjectView.this.wTable.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(GUIObjectInspector.s_scroll, true);
           }
         }
         return true;
       }
 
       if (paramGWindow == GUIObjectView.this.wText) {
-        GUIObjectInspector.s_object = GUIObjectView.this.wTable.selectRow;
-        GUIObjectInspector.s_scroll = GUIObjectView.this.wTable.vSB.pos();
+        GUIObjectInspector.s_object = GUIObjectView.this.wTable.jdField_selectRow_of_type_Int;
+        GUIObjectInspector.s_scroll = GUIObjectView.this.wTable.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.pos();
         Main.stateStack().change(22);
         return true;
       }
 
       if (paramGWindow == GUIObjectView.this.wPrev) {
-        GUIObjectInspector.s_object = GUIObjectView.this.wTable.selectRow;
-        GUIObjectInspector.s_scroll = GUIObjectView.this.wTable.vSB.pos();
+        GUIObjectInspector.s_object = GUIObjectView.this.wTable.jdField_selectRow_of_type_Int;
+        GUIObjectInspector.s_scroll = GUIObjectView.this.wTable.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.pos();
         Main.stateStack().change(22);
         Main.stateStack().pop();
         return true;
@@ -368,13 +368,13 @@ public class GUIObjectView extends GameState
       super.afterCreated();
       this.bColumnsSizable = false;
       addColumn(I18N.gui("obj.ObjectTypesList"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       this.bNotify = true;
       this.wClient.bNotify = true;
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {
@@ -391,8 +391,8 @@ public class GUIObjectView extends GameState
     public WRenders() {
     }
     public void mouseMove(float paramFloat1, float paramFloat2) {
-      float f1 = this.root.mouseStep.dx;
-      float f2 = this.root.mouseStep.dy;
+      float f1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx;
+      float f2 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy;
       if (Mouse.adapter().isInvert())
       {
         f2 = -f2;
@@ -418,13 +418,13 @@ public class GUIObjectView extends GameState
     public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
     {
       if ((paramInt == 1) && (paramBoolean)) {
-        this.mouseCursor = 0;
+        this.jdField_mouseCursor_of_type_Int = 0;
         mouseCapture(true);
         this.MODE_SCALE = true;
         this.MODE_ROTATE = false;
       }
       if ((paramInt == 0) && (paramBoolean)) {
-        this.mouseCursor = 0;
+        this.jdField_mouseCursor_of_type_Int = 0;
         mouseCapture(true);
         this.MODE_ROTATE = true;
         this.MODE_SCALE = false;
@@ -437,7 +437,7 @@ public class GUIObjectView extends GameState
 
       if (!paramBoolean)
       {
-        this.mouseCursor = 1;
+        this.jdField_mouseCursor_of_type_Int = 1;
         mouseCapture(false);
       }
     }
@@ -473,12 +473,12 @@ public class GUIObjectView extends GameState
       checkMesh();
       if (Actor.isValid(this.actorMesh)) {
         if ((this.animateMeshA != 0.0F) || (this.animateMeshT != 0.0F)) {
-          this.actorMesh.pos.getAbs(GUIObjectView.this._orient);
-          GUIObjectView.this._orient.set(GUIObjectView.this._orient.azimut() + this.animateMeshA * GUIObjectView.this.wRenders.root.deltaTimeSec, GUIObjectView.this._orient.tangage() + this.animateMeshT * GUIObjectView.this.wRenders.root.deltaTimeSec, 0.0F);
+          this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(GUIObjectView.this._orient);
+          GUIObjectView.this._orient.set(GUIObjectView.this._orient.azimut() + this.animateMeshA * GUIObjectView.this.wRenders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, GUIObjectView.this._orient.tangage() + this.animateMeshT * GUIObjectView.this.wRenders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, 0.0F);
 
-          this.actorMesh.pos.setAbs(GUIObjectView.this._orient);
+          this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(GUIObjectView.this._orient);
 
-          this.actorMesh.pos.reset();
+          this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         }
         this.worldMesh.draw.preRender(this.worldMesh);
         this.isShadow = ((this.actorMesh.draw.preRender(this.actorMesh) & 0x4) != 0);
@@ -534,7 +534,7 @@ public class GUIObjectView extends GameState
         }
 
         GUIObjectView.this._o.transform(GUIObjectView.this._point);
-        this.camera3D.pos.setAbs(GUIObjectView.this._point, GUIObjectView.this._o);
+        this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(GUIObjectView.this._point, GUIObjectView.this._o);
         return;
       }
 
@@ -571,7 +571,7 @@ public class GUIObjectView extends GameState
           localObject = new Matrix4d();
           ((ActorSimpleMesh)this.actorMesh).mesh().hookMatrix(k, (Matrix4d)localObject);
           d2 = -((Matrix4d)localObject).m23;
-          ((ActorSimpleMesh)this.actorMesh).pos.setAbs(new Point3d(0.0D, 0.0D, d2));
+          ((ActorSimpleMesh)this.actorMesh).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(0.0D, 0.0D, d2));
         }
       }
       else
@@ -591,7 +591,7 @@ public class GUIObjectView extends GameState
           localObject = new Matrix4d();
           ((ActorSimpleHMesh)this.actorMesh).mesh().hookMatrix(k, (Matrix4d)localObject);
           d3 = -((Matrix4d)localObject).m23;
-          ((ActorSimpleHMesh)this.actorMesh).pos.setAbs(new Point3d(0.0D, 0.0D, d3));
+          ((ActorSimpleHMesh)this.actorMesh).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(0.0D, 0.0D, d3));
         }
 
         if (!GUIObjectView.this.bGround) {
@@ -642,9 +642,9 @@ public class GUIObjectView extends GameState
       }
 
       GUIObjectView.this._o.transform(GUIObjectView.this._point);
-      this.camera3D.pos.setAbs(GUIObjectView.this._point, GUIObjectView.this._o);
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(GUIObjectView.this._point, GUIObjectView.this._o);
 
-      this.camera3D.pos.reset();
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       if (GUIObjectView.this.bGround)
         this.animateMeshT = 0.0F;
     }

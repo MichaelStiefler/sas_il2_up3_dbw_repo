@@ -19,11 +19,11 @@ public class KI_46_RECCE extends KI_46
 
     Property.set(localClass, "FlightModel", "FlightModels/Ki-46-IIIRecce.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0 });
-    weaponHooksRegister(localClass, new String[] { "_Clip04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_Clip04" });
 
-    weaponsRegister(localClass, "default", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { null });
 
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

@@ -327,7 +327,7 @@ public abstract class Actor extends ObjState
     if (this.pos == null) return;
     if (Engine.land() == null) return;
     this.pos.getAbs(_tmpPoint);
-    _tmpPoint.z = (Engine.land().HQ(_tmpPoint.x, _tmpPoint.y) + paramDouble);
+    _tmpPoint.jdField_z_of_type_Double = (Engine.land().HQ(_tmpPoint.x, _tmpPoint.y) + paramDouble);
     this.pos.setAbs(_tmpPoint);
     if (paramBoolean)
       this.pos.reset();
@@ -483,15 +483,15 @@ public abstract class Actor extends ObjState
   public Acoustics acoustics()
   {
     Actor localActor = this;
-    while ((localActor != null) && 
-      (localActor.acoustics == null))
-    {
-      if (localActor.pos != null) {
-        localActor = localActor.pos.base(); continue;
+    while (localActor != null) {
+      if (localActor.acoustics != null)
+        break;
+      if (localActor.pos != null)
+        localActor = localActor.pos.base();
+      else {
+        localActor = null;
       }
-      localActor = null;
     }
-
     if (localActor != null) return localActor.acoustics;
     return Engine.worldAcoustics();
   }
@@ -499,15 +499,15 @@ public abstract class Actor extends ObjState
   public Actor actorAcoustics()
   {
     Actor localActor = this;
-    while ((localActor != null) && 
-      (localActor.acoustics == null))
-    {
-      if (localActor.pos != null) {
-        localActor = localActor.pos.base(); continue;
+    while (localActor != null) {
+      if (localActor.acoustics != null)
+        break;
+      if (localActor.pos != null)
+        localActor = localActor.pos.base();
+      else {
+        localActor = null;
       }
-      localActor = null;
     }
-
     return localActor;
   }
 
@@ -661,7 +661,7 @@ public abstract class Actor extends ObjState
     }
     setOwner(null);
 
-    destroy(this.net);
+    ObjState.destroy(this.net);
 
     if (this.interp != null) {
       this.interp.destroy();
@@ -669,7 +669,7 @@ public abstract class Actor extends ObjState
       InterpolateAdapter.adapter().removeListener(this);
     }
 
-    destroy(this.draw);
+    ObjState.destroy(this.draw);
 
     if (this.name != null)
       Engine.cur.name2Actor.remove(this.name);
@@ -710,7 +710,7 @@ public abstract class Actor extends ObjState
     i = ((i + 180) % 360 + 15) / 30;
     if (i == 0) i = 12;
     float f2 = (float)_V1.length() + 0.1F;
-    float f3 = (float)(paramActor.pos.getAbsPoint().z - this.pos.getAbsPoint().z) / f2;
+    float f3 = (float)(paramActor.pos.getAbsPoint().jdField_z_of_type_Double - this.pos.getAbsPoint().jdField_z_of_type_Double) / f2;
     if (f3 > 0.4F) i += 12;
     else if (f3 < -0.4F) i += 24;
     return i;

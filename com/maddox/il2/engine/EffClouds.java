@@ -57,55 +57,55 @@ public class EffClouds extends GObj
 
   public void setType(int paramInt)
   {
-    if (this.cppObj == 0) {
+    if (this.jdField_cppObj_of_type_Int == 0) {
       setRainSound(0);
       return;
     }
     this.type = paramInt;
-    SetType(this.cppObj, paramInt);
+    SetType(this.jdField_cppObj_of_type_Int, paramInt);
     setRainSound(paramInt);
   }
 
   public void setHeight(float paramFloat) {
-    if (this.cppObj == 0) return;
+    if (this.jdField_cppObj_of_type_Int == 0) return;
     this.height = paramFloat;
-    SetHeight(this.cppObj, paramFloat);
+    SetHeight(this.jdField_cppObj_of_type_Int, paramFloat);
   }
 
   public boolean getRandomCloudPos(Point3d paramPoint3d) {
-    if (this.cppObj == 0) return false;
-    boolean bool = GetRandomCloudPos(this.cppObj, farr3);
+    if (this.jdField_cppObj_of_type_Int == 0) return false;
+    boolean bool = GetRandomCloudPos(this.jdField_cppObj_of_type_Int, farr3);
     if (!bool) return false;
-    paramPoint3d.x = farr3[0]; paramPoint3d.y = farr3[1]; paramPoint3d.z = farr3[2];
+    paramPoint3d.jdField_x_of_type_Double = farr3[0]; paramPoint3d.jdField_y_of_type_Double = farr3[1]; paramPoint3d.jdField_z_of_type_Double = farr3[2];
     return true;
   }
 
   public float getVisibility(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    return GetVisibility(this.cppObj, (float)paramPoint3d1.x, (float)paramPoint3d1.y, (float)paramPoint3d1.z, (float)paramPoint3d2.x, (float)paramPoint3d2.y, (float)paramPoint3d2.z);
+    return GetVisibility(this.jdField_cppObj_of_type_Int, (float)paramPoint3d1.jdField_x_of_type_Double, (float)paramPoint3d1.jdField_y_of_type_Double, (float)paramPoint3d1.jdField_z_of_type_Double, (float)paramPoint3d2.jdField_x_of_type_Double, (float)paramPoint3d2.jdField_y_of_type_Double, (float)paramPoint3d2.jdField_z_of_type_Double);
   }
 
   public int preRender()
   {
-    if ((!this.bShow) || (this.cppObj == 0)) return 0;
-    return PreRender(this.cppObj);
+    if ((!this.bShow) || (this.jdField_cppObj_of_type_Int == 0)) return 0;
+    return PreRender(this.jdField_cppObj_of_type_Int);
   }
 
   public void render() {
-    if ((!this.bShow) || (this.cppObj == 0)) return;
-    Render(this.cppObj);
+    if ((!this.bShow) || (this.jdField_cppObj_of_type_Int == 0)) return;
+    Render(this.jdField_cppObj_of_type_Int);
   }
 
   public void destroy() {
     setRainSound(0);
     if (!isDestroyed()) {
-      Destroy(this.cppObj);
-      this.cppObj = 0;
+      Destroy(this.jdField_cppObj_of_type_Int);
+      this.jdField_cppObj_of_type_Int = 0;
     }
   }
 
   public boolean isDestroyed() {
-    return this.cppObj == 0;
+    return this.jdField_cppObj_of_type_Int == 0;
   }
   public EffClouds(boolean paramBoolean, int paramInt, float paramFloat) {
     super(0);
@@ -113,8 +113,8 @@ public class EffClouds extends GObj
     this.type = paramInt;
     int i = paramInt;
     if (paramBoolean) i |= 16;
-    this.cppObj = Load(i, paramFloat);
-    if (this.cppObj == 0) throw new GObjException("EffClouds not created");
+    this.jdField_cppObj_of_type_Int = Load(i, paramFloat);
+    if (this.jdField_cppObj_of_type_Int == 0) throw new GObjException("EffClouds not created");
     setRainSound(paramInt);
   }
 

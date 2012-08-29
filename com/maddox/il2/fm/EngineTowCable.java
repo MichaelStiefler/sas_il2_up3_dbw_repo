@@ -20,10 +20,10 @@ public class EngineTowCable extends Engines
     a = 0.0F;
     if (Time.current() < this.fireOutTime) a += this.boostThrust;
     if (this.traktor == null) return this.plough.M.mass * (this.plough.Gears.onGround ? 0.0F : 1.0E-018F);
-    tmpv.sub(this.traktor.Loc, this.plough.Loc);
+    tmpv.sub(this.traktor.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this.plough.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
     this.plough.Or.transformInv(tmpv);
-    if (tmpv.x > this.stringLength) {
-      a += ((float)tmpv.x - this.stringLength) * ((float)tmpv.x - this.stringLength) * this.stringKx;
+    if (tmpv.jdField_x_of_type_Double > this.stringLength) {
+      a += ((float)tmpv.jdField_x_of_type_Double - this.stringLength) * ((float)tmpv.jdField_x_of_type_Double - this.stringLength) * this.stringKx;
     }
     return a;
   }

@@ -10,9 +10,9 @@ public class AnimateMove extends Animate
   public double setup(Animator paramAnimator, Loc paramLoc, double paramDouble1, double paramDouble2, double paramDouble3)
   {
     Point3d localPoint3d = paramLoc.getPoint();
-    float f = (float)(-Math.atan2(paramDouble2 - localPoint3d.y, paramDouble1 - localPoint3d.x) * 180.0D / 3.141592653589793D);
+    float f = (float)(-Math.atan2(paramDouble2 - localPoint3d.jdField_y_of_type_Double, paramDouble1 - localPoint3d.jdField_x_of_type_Double) * 180.0D / 3.141592653589793D);
     paramLoc.getOrient().set(f, paramLoc.getTangage(), paramLoc.getKren());
-    return Math.sqrt((paramDouble1 - localPoint3d.x) * (paramDouble1 - localPoint3d.x) + (paramDouble2 - localPoint3d.y) * (paramDouble2 - localPoint3d.y)) * paramDouble3;
+    return Math.sqrt((paramDouble1 - localPoint3d.jdField_x_of_type_Double) * (paramDouble1 - localPoint3d.jdField_x_of_type_Double) + (paramDouble2 - localPoint3d.jdField_y_of_type_Double) * (paramDouble2 - localPoint3d.jdField_y_of_type_Double)) * paramDouble3;
   }
 
   public double fullStepLen(Animator paramAnimator, double paramDouble) {
@@ -20,17 +20,17 @@ public class AnimateMove extends Animate
   }
 
   public void fullStep(Animator paramAnimator, Loc paramLoc, double paramDouble) {
-    paramLoc.getPoint().z = 0.0D;
-    locRel.getPoint().x = fullStepLen(paramAnimator, paramDouble);
-    locRes.add(locRel, paramLoc);
-    paramLoc.set(locRes);
+    paramLoc.getPoint().jdField_z_of_type_Double = 0.0D;
+    locRel.getPoint().jdField_x_of_type_Double = fullStepLen(paramAnimator, paramDouble);
+    Animate.locRes.add(locRel, paramLoc);
+    paramLoc.set(Animate.locRes);
   }
 
   public void step(Animator paramAnimator, Loc paramLoc, Hook paramHook, double paramDouble1, double paramDouble2)
   {
-    paramLoc.getPoint().z = 0.0D;
-    locRel.getPoint().x = (fullStepLen(paramAnimator, paramDouble1) * paramDouble2);
-    locRes.add(locRel, paramLoc);
+    paramLoc.getPoint().jdField_z_of_type_Double = 0.0D;
+    locRel.getPoint().jdField_x_of_type_Double = (fullStepLen(paramAnimator, paramDouble1) * paramDouble2);
+    Animate.locRes.add(locRel, paramLoc);
     Actor localActor = paramAnimator.actor;
     step(((AnimatedActor)localActor).getAnimatedMesh(), paramDouble2);
     setPos(localActor, paramHook);

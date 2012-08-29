@@ -43,7 +43,7 @@ public class GWindowEditBox extends GWindowDialogControl
   public void setEnable(boolean paramBoolean)
   {
     super.setEnable(paramBoolean);
-    if (!this.bEnable) {
+    if (!this.jdField_bEnable_of_type_Boolean) {
       this.bControlDown = false;
       this.bShiftDown = false;
       this.bShowCaret = false;
@@ -214,21 +214,21 @@ public class GWindowEditBox extends GWindowDialogControl
 
   public void editCopy() {
     if ((this.bAllSelected) || (!this.bCanEdit))
-      this.root.C.copyToClipboard(this.value.toString());
+      this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.copyToClipboard(this.value.toString());
   }
 
   public void editPaste() {
     if (this.bCanEdit) {
       if (this.bAllSelected)
         clear();
-      insert(this.root.C.pasteFromClipboard());
+      insert(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.pasteFromClipboard());
     }
   }
 
   public void editCut() {
     if (this.bCanEdit) {
       if (this.bAllSelected) {
-        this.root.C.copyToClipboard(this.value.toString());
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.copyToClipboard(this.value.toString());
         this.bAllSelected = false;
         clear();
       }
@@ -238,7 +238,7 @@ public class GWindowEditBox extends GWindowDialogControl
 
   public void keyboardChar(char paramChar)
   {
-    if ((this.bEnable) && (this.bCanEdit) && (!this.bControlDown)) {
+    if ((this.jdField_bEnable_of_type_Boolean) && (this.bCanEdit) && (!this.bControlDown)) {
       if ((paramChar == '\t') && (!this.bCanEditTab))
         return;
       if (this.bAllSelected)
@@ -258,7 +258,7 @@ public class GWindowEditBox extends GWindowDialogControl
 
   public void keyboardKey(int paramInt, boolean paramBoolean)
   {
-    if (!this.bEnable) {
+    if (!this.jdField_bEnable_of_type_Boolean) {
       super.keyboardKey(paramInt, paramBoolean);
       return;
     }
@@ -379,7 +379,7 @@ public class GWindowEditBox extends GWindowDialogControl
   }
 
   public void close(boolean paramBoolean) {
-    if ((this.bEnable) && (this.bChangePending)) {
+    if ((this.jdField_bEnable_of_type_Boolean) && (this.bChangePending)) {
       this.bChangePending = false;
       notify(2, 0);
     }
@@ -387,13 +387,13 @@ public class GWindowEditBox extends GWindowDialogControl
   }
 
   public void keyFocusEnter() {
-    if ((this.bEnable) && (this.bSelectOnFocus))
+    if ((this.jdField_bEnable_of_type_Boolean) && (this.bSelectOnFocus))
       selectAll();
     super.keyFocusEnter();
   }
 
   public void keyFocusExit() {
-    if (this.bEnable) {
+    if (this.jdField_bEnable_of_type_Boolean) {
       this.bAllSelected = false;
       if (this.bChangePending) {
         this.bChangePending = false;
@@ -407,9 +407,9 @@ public class GWindowEditBox extends GWindowDialogControl
 
   public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
     super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if ((!this.bEnable) || (!this.bCanEdit) || (paramInt != 0) || (!paramBoolean)) return;
+    if ((!this.jdField_bEnable_of_type_Boolean) || (!this.bCanEdit) || (paramInt != 0) || (!paramBoolean)) return;
     paramFloat1 -= this.offsetX;
-    GFont localGFont = this.root.textFonts[this.font];
+    GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.font];
     this.caretOffset = localGFont.len(getValue(), paramFloat1, true, false);
     startShowCaret();
     this.bAllSelected = false;
@@ -417,7 +417,7 @@ public class GWindowEditBox extends GWindowDialogControl
 
   public void mouseDoubleClick(int paramInt, float paramFloat1, float paramFloat2) {
     super.mouseDoubleClick(paramInt, paramFloat1, paramFloat2);
-    if ((this.bEnable) && (paramInt == 0))
+    if ((this.jdField_bEnable_of_type_Boolean) && (paramInt == 0))
       selectAll();
   }
 
@@ -436,7 +436,7 @@ public class GWindowEditBox extends GWindowDialogControl
       this.bAllSelected = false;
       return;
     }
-    float f = this.root.deltaTimeSec;
+    float f = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec;
     this.caretTimeout -= f;
     if (this.caretTimeout <= 0.0F) {
       this.bShowCaret = (!this.bShowCaret);

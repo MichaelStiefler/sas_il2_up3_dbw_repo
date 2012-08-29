@@ -19,11 +19,11 @@ public class YAK_15 extends YAK
     paramHierMesh.chunkSetAngles("GearC99_D0", 0.0F, -85.0F * paramFloat, 0.0F);
     paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, cvt(paramFloat, 0.1F, 0.6F, 0.0F, -85.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(paramFloat, 0.1F, 0.6F, 0.0F, -83.5F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, Aircraft.cvt(paramFloat, 0.1F, 0.6F, 0.0F, -85.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(paramFloat, 0.1F, 0.6F, 0.0F, -83.5F), 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, cvt(paramFloat, 0.4F, 0.9F, 0.0F, -85.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(paramFloat, 0.4F, 0.9F, 0.0F, -83.5F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, Aircraft.cvt(paramFloat, 0.4F, 0.9F, 0.0F, -85.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(paramFloat, 0.4F, 0.9F, 0.0F, -83.5F), 0.0F);
   }
   protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
   public void moveSteering(float paramFloat) {
@@ -36,7 +36,7 @@ public class YAK_15 extends YAK
       if (paramString.startsWith("xxCannon01")) {
         if (getEnergyPastArmor(9.8F, paramShot) > 0.0F) {
           debuggunnery("Armament: Cannon (0) Disabled..");
-          this.FM.AS.setJamBullets(1, 0);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(1, 0);
           getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325001F), paramShot);
         }
         return;
@@ -44,7 +44,7 @@ public class YAK_15 extends YAK
       if (paramString.startsWith("xxCannon02")) {
         if (getEnergyPastArmor(9.8F, paramShot) > 0.0F) {
           debuggunnery("Armament: Cannon (0) Disabled..");
-          this.FM.AS.setJamBullets(1, 1);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(1, 1);
           getEnergyPastArmor(World.Rnd().nextFloat(0.5F, 23.325001F), paramShot);
         }
         return;
@@ -56,15 +56,15 @@ public class YAK_15 extends YAK
   public void update(float paramFloat)
   {
     if ((Config.isUSE_RENDER()) && 
-      (this.FM.AS.isMaster())) {
-      if ((this.FM.EI.engines[0].getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6)) {
-        if (this.FM.EI.engines[0].getPowerOutput() > 0.95F)
-          this.FM.AS.setSootState(this, 0, 3);
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())) {
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getPowerOutput() > 0.8F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getStage() == 6)) {
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getPowerOutput() > 0.95F)
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setSootState(this, 0, 3);
         else
-          this.FM.AS.setSootState(this, 0, 2);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setSootState(this, 0, 2);
       }
       else {
-        this.FM.AS.setSootState(this, 0, 0);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setSootState(this, 0, 0);
       }
     }
 
@@ -89,11 +89,11 @@ public class YAK_15 extends YAK
     Property.set(localClass, "cockpitClass", CockpitYAK_15.class);
     Property.set(localClass, "LOSElevation", 1.0989F);
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunVYaki 60", "MGunVYaki 60" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunVYaki 60", "MGunVYaki 60" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

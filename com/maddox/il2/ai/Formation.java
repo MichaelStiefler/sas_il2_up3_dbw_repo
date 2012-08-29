@@ -9,14 +9,12 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.A6M;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.B5N;
 import com.maddox.il2.objects.air.BF_109;
 import com.maddox.il2.objects.air.BF_110;
 import com.maddox.il2.objects.air.B_17;
-import com.maddox.il2.objects.air.B_24;
 import com.maddox.il2.objects.air.B_25;
 import com.maddox.il2.objects.air.B_29;
 import com.maddox.il2.objects.air.D3A;
@@ -24,7 +22,6 @@ import com.maddox.il2.objects.air.FW_190;
 import com.maddox.il2.objects.air.G4M;
 import com.maddox.il2.objects.air.H8K;
 import com.maddox.il2.objects.air.HE_111H2;
-import com.maddox.il2.objects.air.Hurricane;
 import com.maddox.il2.objects.air.IL_2;
 import com.maddox.il2.objects.air.JU_88;
 import com.maddox.il2.objects.air.KI_43;
@@ -35,16 +32,12 @@ import com.maddox.il2.objects.air.ME_323;
 import com.maddox.il2.objects.air.N1K;
 import com.maddox.il2.objects.air.PE_2;
 import com.maddox.il2.objects.air.PE_8;
-import com.maddox.il2.objects.air.P_38;
-import com.maddox.il2.objects.air.P_47;
-import com.maddox.il2.objects.air.P_51;
 import com.maddox.il2.objects.air.SBD;
 import com.maddox.il2.objects.air.SPITFIRE;
 import com.maddox.il2.objects.air.Scheme1;
 import com.maddox.il2.objects.air.TA_152H1;
 import com.maddox.il2.objects.air.TBF;
 import com.maddox.il2.objects.air.TB_3;
-import com.maddox.il2.objects.air.TEMPEST;
 import com.maddox.il2.objects.air.TU_2;
 import com.maddox.il2.objects.air.YAK;
 
@@ -59,7 +52,6 @@ public class Formation
   public static final byte F_VIC = 6;
   public static final byte F_FINGERFOUR = 7;
   public static final byte F_DIAMOND = 8;
-  public static final byte F_LINE = 9;
   private static final Vector3f WR = new Vector3f(100.0F, 100.0F, 0.0F);
 
   private static final Vector3d dd = new Vector3d();
@@ -83,24 +75,17 @@ public class Formation
   }
 
   public static final void gather(FlightModel paramFlightModel, byte paramByte) {
-    gather(paramFlightModel, paramByte, paramFlightModel.Offset);
+    gather(paramFlightModel, paramByte, paramFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d);
   }
 
-  public static final void gather(FlightModel paramFlightModel, byte paramByte, Vector3d paramVector3d)
-  {
-    gather(paramFlightModel, paramByte, paramVector3d, Mission.curYear());
-  }
-
-  public static final void gather(FlightModel paramFlightModel, byte paramByte, Vector3d paramVector3d, int paramInt)
-  {
-    Aircraft localAircraft = (Aircraft)paramFlightModel.actor;
+  public static final void gather(FlightModel paramFlightModel, byte paramByte, Vector3d paramVector3d) {
+    Aircraft localAircraft = (Aircraft)paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor;
     FlightModel localFlightModel = paramFlightModel;
     int i = ((Maneuver)paramFlightModel).Group.numInGroup(localAircraft);
     float f = paramFlightModel.formationScale;
     switch (paramByte) {
     case 0:
-      if (((localAircraft instanceof BF_109)) || ((localAircraft instanceof BF_110)) || ((localAircraft instanceof FW_190)) || (((localAircraft instanceof SPITFIRE)) && (paramInt > 1941)) || (((localAircraft instanceof Hurricane)) && (paramInt > 1941)) || ((localAircraft instanceof P_38)) || ((localAircraft instanceof P_47)) || ((localAircraft instanceof P_51)) || ((localAircraft instanceof TEMPEST)))
-      {
+      if (((localAircraft instanceof BF_109)) || ((localAircraft instanceof BF_110)) || ((localAircraft instanceof FW_190)) || ((localAircraft instanceof SPITFIRE))) {
         gather(paramFlightModel, 7, paramVector3d);
         return;
       }
@@ -130,18 +115,18 @@ public class Formation
       gather(paramFlightModel, 2, paramVector3d);
       return;
     case 1:
-      gather(paramFlightModel, paramFlightModel.formationType, paramVector3d);
+      gather(paramFlightModel, paramFlightModel.jdField_formationType_of_type_Byte, paramVector3d);
       return;
     case 2:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       paramVector3d.set(25.0D, 25.0D, 0.0D);
       break;
     case 3:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       paramVector3d.set(25.0D, -25.0D, 0.0D);
       break;
     case 4:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       if (i == 0)
         paramVector3d.set(25.0D, 75.0D, 0.0D);
       else {
@@ -149,7 +134,7 @@ public class Formation
       }
       break;
     case 5:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       if (i == 0)
         paramVector3d.set(120.0D, 0.0D, 15.0D);
       else {
@@ -158,7 +143,7 @@ public class Formation
       paramVector3d.scale(f);
       return;
     case 6:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       switch (i) {
       case 0:
         paramVector3d.set(55.0D, 55.0D, 0.0D);
@@ -175,7 +160,7 @@ public class Formation
 
       break;
     case 7:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       switch (i) {
       case 0:
         paramVector3d.set(25.0D, 25.0D, 0.0D);
@@ -192,7 +177,7 @@ public class Formation
 
       break;
     case 8:
-      paramFlightModel.formationType = paramByte;
+      paramFlightModel.jdField_formationType_of_type_Byte = paramByte;
       switch (i) {
       case 0:
         paramVector3d.set(75.0D, 30.0D, 0.0D);
@@ -207,16 +192,6 @@ public class Formation
         paramVector3d.set(25.0D, 25.0D, 0.0D);
       }
 
-      break;
-    case 9:
-      paramFlightModel.formationType = paramByte;
-      if (i == 0)
-        paramVector3d.set(120.0D, 0.0D, 0.0D);
-      else {
-        paramVector3d.set(80.0D, 0.0D, 0.0D);
-      }
-      paramVector3d.scale(f);
-      return;
     }
 
     paramVector3d.scale(f * scaleCoeff(localAircraft));
@@ -224,48 +199,31 @@ public class Formation
 
   public static final void leaderOffset(FlightModel paramFlightModel, byte paramByte, Vector3d paramVector3d)
   {
-    Aircraft localAircraft = (Aircraft)paramFlightModel.actor;
-    Wing localWing = (Wing)paramFlightModel.actor.getOwner();
+    Aircraft localAircraft = (Aircraft)paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor;
+    Wing localWing = (Wing)paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.getOwner();
     int i;
     if (localWing != null) i = localWing.indexInSquadron(); else i = 0;
-    if (((localAircraft instanceof B_17)) || ((localAircraft instanceof B_24)) || ((localAircraft instanceof B_29))) {
-      switch (i) {
-      case 0:
-        paramVector3d.set(300.0D, -150.0D, 0.0D);
-        break;
-      case 1:
-        paramVector3d.set(100.0D, -80.0D, -30.0D);
-        break;
-      case 2:
-        paramVector3d.set(100.0D, 80.0D, 25.0D);
-        break;
-      case 3:
-        paramVector3d.set(200.0D, 0.0D, 50.0D);
-      }
-    }
-    else {
-      switch (i) {
-      case 0:
-        paramVector3d.set(300.0D, -150.0D, 0.0D);
-        break;
-      case 1:
-        if (paramByte != 2)
-          paramVector3d.set(100.0D, 100.0D, 0.0D);
-        else
-          paramVector3d.set(200.0D, 200.0D, 0.0D);
-        break;
-      case 2:
-        if ((paramByte != 3) && (paramByte != 6))
-          paramVector3d.set(150.0D, -150.0D, 0.0D);
-        else
-          paramVector3d.set(210.0D, -210.0D, 0.0D);
-        break;
-      case 3:
-        if (paramByte != 5)
-          paramVector3d.set(150.0D, 0.0D, 0.0D);
-        else {
-          paramVector3d.set(300.0D, 0.0D, 0.0D);
-        }
+    switch (i) {
+    case 0:
+      paramVector3d.set(300.0D, -150.0D, 0.0D);
+      break;
+    case 1:
+      if (paramByte != 2)
+        paramVector3d.set(100.0D, 100.0D, 0.0D);
+      else
+        paramVector3d.set(200.0D, 200.0D, 0.0D);
+      break;
+    case 2:
+      if ((paramByte != 3) && (paramByte != 6))
+        paramVector3d.set(150.0D, -150.0D, 0.0D);
+      else
+        paramVector3d.set(210.0D, -210.0D, 0.0D);
+      break;
+    case 3:
+      if (paramByte != 5)
+        paramVector3d.set(150.0D, 0.0D, 0.0D);
+      else {
+        paramVector3d.set(300.0D, 0.0D, 0.0D);
       }
     }
     paramVector3d.scale(0.7D * scaleCoeff(localAircraft));
@@ -274,17 +232,17 @@ public class Formation
   private static final void gen(Aircraft[] paramArrayOfAircraft, Vector3f paramVector3f)
   {
     dd.set(paramVector3f);
-    paramArrayOfAircraft[0].pos.getAbsOrient().transform(dd);
+    paramArrayOfAircraft[0].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().transform(dd);
     int j = 0;
     for (int i = 1; i < paramArrayOfAircraft.length; i++)
       if (Actor.isValid(paramArrayOfAircraft[i])) {
-        paramArrayOfAircraft[i].FM.Offset.set(paramVector3f);
+        paramArrayOfAircraft[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d.set(paramVector3f);
 
-        paramArrayOfAircraft[i].FM.Leader = paramArrayOfAircraft[j].FM;
-        paramArrayOfAircraft[j].FM.Wingman = paramArrayOfAircraft[i].FM;
-        paramArrayOfAircraft[j].pos.getAbs(Pd);
+        paramArrayOfAircraft[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Leader = paramArrayOfAircraft[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+        paramArrayOfAircraft[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Wingman = paramArrayOfAircraft[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+        paramArrayOfAircraft[j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Pd);
         Pd.sub(dd);
-        paramArrayOfAircraft[i].pos.setAbs(Pd);
+        paramArrayOfAircraft[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Pd);
         j = i;
       }
   }

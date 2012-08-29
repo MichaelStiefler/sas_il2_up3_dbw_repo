@@ -18,8 +18,7 @@ public class LocomotiveTrailorVerm extends Wagon
   protected void explode(Actor paramActor) {
     new MsgAction(0.0D, this) {
       public void doAction(Object paramObject) { Wagon localWagon = (Wagon)paramObject;
-
-        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/SmokeTrailorFC.eff", 12.0F);
+        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Select1"), null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", 12.0F);
       }
     };
     new MsgAction(7.0D, new Wagon.Pair(this, this, paramActor)) {
@@ -35,29 +34,19 @@ public class LocomotiveTrailorVerm extends Wagon
 
   public LocomotiveTrailorVerm(Train paramTrain) {
     super(paramTrain, getMeshName(0), getMeshName(1));
-
-    this.life = 0.015F;
-    this.ignoreTNT = 0.29F;
-    this.killTNT = 1.9F;
+    this.life = 0.008F;
+    this.ignoreTNT = 0.2F;
+    this.killTNT = 1.1F;
     this.bodyMaterial = 2;
   }
 
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
-    {
+  private static String getMeshName(int paramInt) {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/PrvzB_B" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/PrvzB_B" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()

@@ -120,7 +120,7 @@ public abstract class AeroanchoredGeneric extends ActorMesh
       return;
     }
 
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, false, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY);
+    float f1 = Shot.panzerThickness(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), paramShot.v, false, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY, this.prop.PANZER_BODY);
 
     f1 *= Rnd(0.93F, 1.07F);
 
@@ -266,13 +266,13 @@ public abstract class AeroanchoredGeneric extends ActorMesh
   }
 
   private void Align() {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.z = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.heightAboveLandSurface);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
     o.orient(n);
-    this.pos.setAbs(p, o);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   public void align()
@@ -301,9 +301,9 @@ public abstract class AeroanchoredGeneric extends ActorMesh
     }
 
     if (!this.balloon.dead) {
-      this.pos.getAbs(p);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
       float f1 = this.prop.HEIGHT;
-      float f2 = computeTopPossibleHeight(p.x, p.y);
+      float f2 = computeTopPossibleHeight(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double);
       this.balloonActor = new Balloon(this, f1, f2, this.rope.dead);
     }
   }
@@ -484,7 +484,7 @@ public abstract class AeroanchoredGeneric extends ActorMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     return paramFloat <= 0.0F ? 0.0F : paramFloat;
   }
 
@@ -504,8 +504,8 @@ public abstract class AeroanchoredGeneric extends ActorMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(paramInt);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -520,7 +520,7 @@ public abstract class AeroanchoredGeneric extends ActorMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -535,7 +535,7 @@ public abstract class AeroanchoredGeneric extends ActorMesh
     int i = (this.anchor.dead ? 0 : 1) + (this.rope.dead ? 0 : 2) + (this.balloon.dead ? 0 : 4);
     localNetMsgGuaranted.writeByte(i);
 
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   private void mirrorsend_DamageIfNeed()
@@ -564,7 +564,7 @@ public abstract class AeroanchoredGeneric extends ActorMesh
     PartState.access$102(paramPartState, 0.0F);
     PartState.access$202(paramPartState, null);
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream)) {
       return;
     }
 
@@ -579,9 +579,9 @@ public abstract class AeroanchoredGeneric extends ActorMesh
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(paramInt);
       localNetMsgFiltered.writeByte(i);
-      localNetMsgFiltered.writeNetObj(localActor == null ? null : localActor.net);
+      localNetMsgFiltered.writeNetObj(localActor == null ? null : localActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -722,10 +722,10 @@ public abstract class AeroanchoredGeneric extends ActorMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public static class SPAWN

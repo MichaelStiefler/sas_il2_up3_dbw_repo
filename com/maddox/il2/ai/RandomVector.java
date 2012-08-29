@@ -36,7 +36,7 @@ public class RandomVector
     int i = paramInt + 1 & 0xFF;
 
     tmp.interpolate(vectors[paramInt], vectors[i], f);
-    paramVector3d.set(tmp.x, tmp.y, tmp.z);
+    paramVector3d.set(tmp.jdField_x_of_type_Float, tmp.jdField_y_of_type_Float, tmp.jdField_z_of_type_Float);
   }
 
   public static void getTimed(long paramLong, Vector3d paramVector3d, int paramInt)
@@ -49,7 +49,7 @@ public class RandomVector
     int i = paramInt + 1 & 0xFF;
 
     tmp.interpolate(vectors[paramInt], vectors[i], f);
-    paramVector3d.set(tmp.x, tmp.y, tmp.z);
+    paramVector3d.set(tmp.jdField_x_of_type_Float, tmp.jdField_y_of_type_Float, tmp.jdField_z_of_type_Float);
   }
 
   public static void getTimedStepped(int paramInt1, long paramLong, Vector3d paramVector3d, int paramInt2)
@@ -62,7 +62,7 @@ public class RandomVector
     int i = paramInt2 + paramInt1 & 0xFF;
 
     tmp.interpolate(vectors[paramInt2], vectors[i], f);
-    paramVector3d.set(tmp.x, tmp.y, tmp.z);
+    paramVector3d.set(tmp.jdField_x_of_type_Float, tmp.jdField_y_of_type_Float, tmp.jdField_z_of_type_Float);
   }
 
   static

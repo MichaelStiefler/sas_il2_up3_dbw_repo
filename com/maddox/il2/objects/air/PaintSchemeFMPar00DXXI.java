@@ -48,7 +48,7 @@ public class PaintSchemeFMPar00DXXI extends PaintSchemeFMPar01
         return;
       }
 
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
       return;
     }
 
@@ -72,12 +72,12 @@ public class PaintSchemeFMPar00DXXI extends PaintSchemeFMPar01
       }
       else
       {
-        changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
       }
     }
     else if (paramClass.isAssignableFrom(DXXI_SARJA3_SARVANTO.class))
     {
-      changeMat(paramClass, paramHierMesh, "Overlay8", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "null", "null.tga", 1.0F, 1.0F, 1.0F);
 
       changeMat(paramHierMesh, "Overlay2", "psFM01FINACID97", "Finnish/FR-9.tga", "Finnish/sn7.tga", 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 
@@ -86,10 +86,10 @@ public class PaintSchemeFMPar00DXXI extends PaintSchemeFMPar01
     else if ((paramRegiment.country() != PaintScheme.countryFinland) && (paramRegiment.country() != PaintScheme.countryNoName))
     {
       if (paramInt1 == 3) {
-        changeMat(paramClass, paramHierMesh, "Overlay8", "psFM01FINCNUM" + i + paramInt1 + "_" + (char)(65 + (paramInt3 % 10 - 1)), "Finnish/" + (char)(65 + (paramInt3 % 10 - 1)) + ".tga", 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay8", "psFM01FINCNUM" + i + paramInt1 + "_" + (char)(65 + (paramInt3 % 10 - 1)), "Finnish/" + (char)(65 + (paramInt3 % 10 - 1)) + ".tga", 1.0F, 1.0F, 1.0F);
       }
       else if (paramInt3 < 10) {
-        changeMat(paramClass, paramHierMesh, "Overlay8", "psFM01FINCNUM" + i + paramInt1 + "0" + paramInt3, "Finnish/0" + paramInt3 + ".tga", 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay8", "psFM01FINCNUM" + i + paramInt1 + "0" + paramInt3, "Finnish/0" + paramInt3 + ".tga", 1.0F, 1.0F, 1.0F);
       }
       else
       {

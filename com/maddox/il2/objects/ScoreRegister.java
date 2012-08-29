@@ -4,7 +4,6 @@ import com.maddox.il2.ai.ScoreCounter;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.BF_109G6GRAF;
 import com.maddox.il2.objects.air.BF_109G6HARTMANN;
-import com.maddox.il2.objects.air.DXXI_SARJA3_SARVANTO;
 import com.maddox.il2.objects.air.I_16TYPE24SAFONOV;
 import com.maddox.il2.objects.air.ME_262A1ANOWOTNY;
 import com.maddox.il2.objects.air.MIG_3POKRYSHKIN;
@@ -33,7 +32,6 @@ import com.maddox.il2.objects.ships.Ship.IJNAkagiCV;
 import com.maddox.il2.objects.ships.Ship.IJNAkizukiDD42;
 import com.maddox.il2.objects.ships.Ship.IJNAmatsukazeDD41;
 import com.maddox.il2.objects.ships.Ship.IJNAmatsukazeDD43;
-import com.maddox.il2.objects.ships.Ship.IJNAmatsukazeDD43WithBeacon;
 import com.maddox.il2.objects.ships.Ship.IJNAmatsukazeDD45;
 import com.maddox.il2.objects.ships.Ship.IJNArashiDD41;
 import com.maddox.il2.objects.ships.Ship.IJNBBGeneric;
@@ -56,7 +54,6 @@ import com.maddox.il2.objects.ships.Ship.MBoat;
 import com.maddox.il2.objects.ships.Ship.Marat;
 import com.maddox.il2.objects.ships.Ship.Murgesku;
 import com.maddox.il2.objects.ships.Ship.Niobe;
-import com.maddox.il2.objects.ships.Ship.NiobeWithBeacon;
 import com.maddox.il2.objects.ships.Ship.Tanker;
 import com.maddox.il2.objects.ships.Ship.Tral;
 import com.maddox.il2.objects.ships.Ship.Tramp;
@@ -97,7 +94,6 @@ import com.maddox.il2.objects.vehicles.artillery.STank;
 import com.maddox.il2.objects.vehicles.artillery.SWagon;
 import com.maddox.il2.objects.vehicles.cars.CarGeneric;
 import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
-import com.maddox.il2.objects.vehicles.radios.BeaconGeneric;
 import com.maddox.il2.objects.vehicles.stationary.Stationary.IS2;
 import com.maddox.il2.objects.vehicles.stationary.Stationary.KV1;
 import com.maddox.il2.objects.vehicles.stationary.Stationary.PzVA;
@@ -141,7 +137,6 @@ public class ScoreRegister
     ScoreCounter.register(P_39NPOKRYSHKIN.class, 0, 150.0D, 500.0D);
     ScoreCounter.register(P_39Q15RECHKALOV.class, 0, 150.0D, 500.0D);
     ScoreCounter.register(YAK_9TALBERT.class, 0, 150.0D, 500.0D);
-    ScoreCounter.register(DXXI_SARJA3_SARVANTO.class, 0, 150.0D, 500.0D);
 
     ScoreCounter.register(Aircraft.class, 0, 100.0D, 400.0D);
 
@@ -203,7 +198,6 @@ public class ScoreRegister
     ScoreCounter.register(Ship.Kirov.class, 7, 700.0D, 1400.0D);
     ScoreCounter.register(Ship.Tramp.class, 7, 200.0D, 400.0D);
     ScoreCounter.register(Ship.Niobe.class, 7, 600.0D, 1200.0D);
-    ScoreCounter.register(Ship.NiobeWithBeacon.class, 7, 600.0D, 1200.0D);
 
     ScoreCounter.register(Ship.Tanker.class, 7, 200.0D, 400.0D);
     ScoreCounter.register(Ship.Illmarinen.class, 7, 500.0D, 1000.0D);
@@ -249,7 +243,6 @@ public class ScoreRegister
     ScoreCounter.register(Ship.IJNNowakiDD41.class, 7, 300.0D, 800.0D);
     ScoreCounter.register(Ship.IJNYukikazeDD41.class, 7, 300.0D, 800.0D);
     ScoreCounter.register(Ship.IJNAmatsukazeDD43.class, 7, 300.0D, 800.0D);
-    ScoreCounter.register(Ship.IJNAmatsukazeDD43WithBeacon.class, 7, 300.0D, 800.0D);
     ScoreCounter.register(Ship.IJNNowakiDD43.class, 7, 300.0D, 800.0D);
     ScoreCounter.register(Ship.IJNYukikazeDD43.class, 7, 300.0D, 800.0D);
     ScoreCounter.register(Ship.IJNAmatsukazeDD45.class, 7, 300.0D, 800.0D);
@@ -257,8 +250,6 @@ public class ScoreRegister
     ScoreCounter.register(Ship.IJNFishJunk.class, 7, 200.0D, 400.0D);
     ScoreCounter.register(Ship.IJNFishJunkA.class, 7, 250.0D, 600.0D);
     ScoreCounter.register(Ship.DaihatsuLC.class, 7, 30.0D, 100.0D);
-
-    ScoreCounter.register(BeaconGeneric.class, 9, 35.0D, 200.0D);
 
     ScoreCounter.register(LongBridge.class, 5, 100.0D, 500.0D);
   }

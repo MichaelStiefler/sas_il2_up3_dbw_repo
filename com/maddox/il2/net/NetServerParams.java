@@ -80,7 +80,6 @@ public class NetServerParams extends NetObj
   public static final int MSG_SYNC_ASK = 4;
   public static final int MSG_SYNC_START = 5;
   public static final int MSG_TIME = 6;
-  public static final int MSG_MDS_TIME = 7;
   public static final int MSG_CHECK_BEGIN = 8;
   public static final int MSG_CHECK_FIRST = 8;
   public static final int MSG_CHECK_SECOND = 9;
@@ -117,30 +116,6 @@ public class NetServerParams extends NetObj
   private long serverClockOffset0 = 0L;
   private long lastServerTime = 0L;
 
-  public boolean netStat_DisableStatistics = false;
-  public boolean netStat_ShowPilotNumber = true;
-  public boolean netStat_ShowPilotPing = true;
-  public boolean netStat_ShowPilotName = true;
-  public boolean netStat_ShowPilotScore = true;
-  public boolean netStat_ShowPilotArmy = true;
-  public boolean netStat_ShowPilotACDesignation = true;
-  public boolean netStat_ShowPilotACType = true;
-
-  public int reflyKIADelay = 0;
-  public int maxAllowedKIA = -1;
-  public float reflyKIADelayMultiplier = 0.0F;
-  public boolean reflyDisabled = false;
-
-  public boolean allowMorseAsText = true;
-
-  public boolean filterUserNames = false;
-
-  private static long previousTime = 0L;
-  private static final int ZUTI_RESYNC_INTERVAL = 2000;
-  private long previousDeltaTime = 0L;
-  private int syncCounter = 0;
-  private static boolean inSync = false;
-
   long _lastCheckMaxLag = -1L;
 
   private int checkRuntime = 0;
@@ -151,31 +126,9 @@ public class NetServerParams extends NetObj
 
   private int checkSecond2 = 0;
 
-  public static boolean isSynched()
-  {
-    if (Main.cur().netServerParams.isMaster())
-      return true;
-    return inSync;
-  }
-
   public static long getServerTime()
   {
     long l1;
-    if ((Main.cur() != null) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isDogfight()))
-    {
-      if ((NetMissionTrack.isPlaying()) || ((Main.cur().netServerParams.isMirror()) && (!Time.isPaused())))
-      {
-        l1 = Time.current() + Main.cur().netServerParams.serverDeltaTime;
-        if (l1 > previousTime)
-        {
-          previousTime = l1;
-          return l1;
-        }
-        return previousTime;
-      }
-
-    }
-
     if (NetMissionTrack.isPlaying()) {
       if ((Main.cur() != null) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isCoop()))
       {
@@ -338,7 +291,7 @@ public class NetServerParams extends NetObj
       localNetMsgGuaranted.writeByte(this.maxUsers);
       localNetMsgGuaranted.write255(this.serverName);
       post(localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -372,7 +325,7 @@ public class NetServerParams extends NetObj
         ((NetMsgGuaranted)localObject).writeByte(1);
         ((NetMsgGuaranted)localObject).writeByte(this.syncStamp);
         post((NetMsgGuaranted)localObject); } catch (Exception localException1) {
-        printDebug(localException1);
+        NetObj.printDebug(localException1);
       }
     if (!isMaster())
       try {
@@ -380,7 +333,7 @@ public class NetServerParams extends NetObj
         localNetMsgGuaranted.writeByte(2);
         localNetMsgGuaranted.writeNetObj(NetEnv.host());
         postTo(masterChannel(), localNetMsgGuaranted); } catch (Exception localException2) {
-        printDebug(localException2);
+        NetObj.printDebug(localException2);
       }
   }
 
@@ -388,7 +341,6 @@ public class NetServerParams extends NetObj
     paramNetMsgInput.reset();
     int i = paramNetMsgInput.readByte();
     int n;
-    Object localObject;
     switch (i) {
     case 0:
       int j = paramNetMsgInput.readInt();
@@ -410,8 +362,8 @@ public class NetServerParams extends NetObj
     case 2:
       if (isMaster()) {
         NetUser localNetUser1 = (NetUser)paramNetMsgInput.readNetObj();
-        if (localNetUser1 != null)
-          localNetUser1.syncCoopStart = this.syncStamp;
+        if (localNetUser1 == null) break;
+        localNetUser1.syncCoopStart = this.syncStamp;
       } else {
         postTo(masterChannel(), new NetMsgGuaranted(paramNetMsgInput, 1));
       }
@@ -428,33 +380,30 @@ public class NetServerParams extends NetObj
         this.syncStamp = n;
         this.syncTime = (i1 + Message.currentRealTime());
       } else {
-        long l2 = i1 + Message.currentRealTime();
-        if (this.syncTime > l2)
-          this.syncTime = l2;
+        long l = i1 + Message.currentRealTime();
+        if (this.syncTime > l)
+          this.syncTime = l;
       }
-      if (isMirrored()) {
-        this.outMsgF.unLockAndClear();
-        this.outMsgF.writeByte(3);
-        this.outMsgF.writeByte(this.syncStamp);
-        this.outMsgF.writeInt((int)(this.syncTime - Time.currentReal()));
-        postReal(Time.currentReal(), this.outMsgF);
-      }
-
-      break;
+      if (!isMirrored()) break;
+      this.outMsgF.unLockAndClear();
+      this.outMsgF.writeByte(3);
+      this.outMsgF.writeByte(this.syncStamp);
+      this.outMsgF.writeInt((int)(this.syncTime - Time.currentReal()));
+      postReal(Time.currentReal(), this.outMsgF); break;
     case 4:
       if (isMaster()) {
         n = paramNetMsgInput.readUnsignedByte();
         NetUser localNetUser2 = (NetUser)paramNetMsgInput.readNetObj();
-        if ((localNetUser2 != null) && (n == this.syncStamp)) {
-          localNetUser2.syncCoopStart = this.syncStamp;
-          localObject = NetEnv.hosts();
-          for (int i2 = 0; i2 < ((List)localObject).size(); i2++)
-            if (((NetUser)((List)localObject).get(i2)).syncCoopStart != this.syncStamp)
-              return true;
-          this.bDoSync = false;
-          doStartCoopGame();
-        }
-      } else {
+        if ((localNetUser2 == null) || (n != this.syncStamp)) break;
+        localNetUser2.syncCoopStart = this.syncStamp;
+        List localList = NetEnv.hosts();
+        for (int i2 = 0; i2 < localList.size(); i2++)
+          if (((NetUser)localList.get(i2)).syncCoopStart != this.syncStamp)
+            return true;
+        this.bDoSync = false;
+        doStartCoopGame();
+      }
+      else {
         postTo(masterChannel(), new NetMsgGuaranted(paramNetMsgInput, 1));
       }
       break;
@@ -468,42 +417,8 @@ public class NetServerParams extends NetObj
         NetMsgGuaranted localNetMsgGuaranted1 = new NetMsgGuaranted();
         localNetMsgGuaranted1.writeByte(6);
         localNetMsgGuaranted1.writeLong(this.serverDeltaTime);
-        postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted1); } catch (Exception localException1) {
-        printDebug(localException1);
-      }
-
-    case 7:
-      if ((inSync) && (!NetMissionTrack.isRecording())) {
-        return true;
-      }
-      this.serverDeltaTime = (((NetUser)NetEnv.host()).ping / 2 + paramNetMsgInput.readLong() - Time.current());
-
-      long l1 = Math.abs(this.previousDeltaTime - this.serverDeltaTime);
-
-      if (l1 < 500L)
-      {
-        this.syncCounter += 1;
-        if ((this.syncCounter > 4) && (l1 < this.syncCounter * 2))
-        {
-          inSync = true;
-        }
-      }
-      else {
-        this.syncCounter = 0;
-      }this.previousDeltaTime = this.serverDeltaTime;
-
-      if (!NetMissionTrack.isRecording())
-        break;
-      try
-      {
-        localObject = new NetMsgGuaranted();
-        ((NetMsgGuaranted)localObject).writeByte(7);
-        ((NetMsgGuaranted)localObject).writeLong(this.serverDeltaTime);
-        postTo(NetMissionTrack.netChannelOut(), (NetMsgGuaranted)localObject);
-      }
-      catch (Exception localException2)
-      {
-        NetObj.printDebug(localException2);
+        postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted1); } catch (Exception localException) {
+        NetObj.printDebug(localException);
       }
 
     default:
@@ -512,32 +427,8 @@ public class NetServerParams extends NetObj
     return true;
   }
 
-  public void netUpdate()
-  {
-    long l1;
-    if (!NetMissionTrack.isPlaying())
-    {
-      if ((isMaster()) && (isDogfight()))
-      {
-        l1 = Time.current();
-        if (l1 > this.serverDeltaTime_lastUpdate + 2000L)
-        {
-          this.serverDeltaTime_lastUpdate = l1;
-          try
-          {
-            NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted();
-            localNetMsgGuaranted2.writeByte(7);
-            localNetMsgGuaranted2.writeLong(this.serverDeltaTime_lastUpdate);
-            post(localNetMsgGuaranted2);
-          }
-          catch (IOException localIOException)
-          {
-            NetObj.printDebug(localIOException);
-          }
-        }
-
-      }
-
+  public void netUpdate() {
+    if (!NetMissionTrack.isPlaying()) {
       doCheckMaxLag();
       if (isMaster()) {
         checkUpdate();
@@ -545,38 +436,20 @@ public class NetServerParams extends NetObj
     }
     if ((isMirror()) && (isCoop()) && (!Time.isPaused()) && (NetMissionTrack.isRecording()) && (!NetMissionTrack.isPlaying()))
     {
-      l1 = Time.current();
+      long l1 = Time.current();
       if (l1 > this.serverDeltaTime_lastUpdate + 3000L) {
         this.serverDeltaTime_lastUpdate = l1;
         try {
-          NetMsgGuaranted localNetMsgGuaranted3 = new NetMsgGuaranted();
-          localNetMsgGuaranted3.writeByte(6);
+          NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
+          localNetMsgGuaranted.writeByte(6);
           long l2 = Main.cur().netServerParams.masterChannel().remoteClockOffset();
           long l3 = l2 - Main.cur().netServerParams.serverClockOffset0;
-          localNetMsgGuaranted3.writeLong(l3);
-          postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted3); } catch (Exception localException3) {
-          printDebug(localException3);
+          localNetMsgGuaranted.writeLong(l3);
+          postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted); } catch (Exception localException2) {
+          NetObj.printDebug(localException2);
         }
       }
-
     }
-
-    if ((isMirror()) && (isDogfight()) && (!Time.isPaused()) && (NetMissionTrack.isRecording()) && (!NetMissionTrack.isPlaying()))
-    {
-      try
-      {
-        NetMsgGuaranted localNetMsgGuaranted1 = new NetMsgGuaranted();
-        localNetMsgGuaranted1.writeByte(7);
-        localNetMsgGuaranted1.writeLong(Time.current() + Main.cur().netServerParams.serverDeltaTime);
-        postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted1);
-      }
-      catch (Exception localException1)
-      {
-        NetObj.printDebug(localException1);
-      }
-
-    }
-
     if ((!this.bDoSync) && (!this.bCheckStartSync)) return;
     if (isMaster())
     {
@@ -641,8 +514,8 @@ public class NetServerParams extends NetObj
         this.outMsgF.writeByte(3);
         this.outMsgF.writeByte(this.syncStamp);
         this.outMsgF.writeInt((int)(this.syncTime - Time.currentReal()));
-        postReal(Time.currentReal(), this.outMsgF); } catch (Exception localException2) {
-        printDebug(localException2);
+        postReal(Time.currentReal(), this.outMsgF); } catch (Exception localException1) {
+        NetObj.printDebug(localException1);
       }
     }
   }
@@ -657,7 +530,7 @@ public class NetServerParams extends NetObj
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(5);
         post(localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 
@@ -720,11 +593,11 @@ public class NetServerParams extends NetObj
             if (((localActor instanceof Aircraft)) && (Actor.isAlive(localActor))) {
               Aircraft localAircraft = (Aircraft)localActor;
               if (localAircraft.isNetPlayer()) {
-                if (!localAircraft.FM.isWasAirborne()) {
+                if (!localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isWasAirborne()) {
                   i = 0;
                   break;
                 }
-                if (!localAircraft.FM.isStationedOnGround()) {
+                if (!localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isStationedOnGround()) {
                   i = 0;
                   break;
                 }
@@ -744,23 +617,24 @@ public class NetServerParams extends NetObj
     ArrayList localArrayList = new ArrayList();
     Map.Entry localEntry = Engine.name2Actor().nextEntry(null);
     while (localEntry != null) {
-      Actor localActor1 = (Actor)localEntry.getValue();
-      if (((localActor1 instanceof Aircraft)) && 
-        (localActor1.name().charAt(0) == ' ')) {
-        localArrayList.add(localActor1);
+      Actor localActor = (Actor)localEntry.getValue();
+      if (((localActor instanceof Aircraft)) && 
+        (localActor.name().charAt(0) == ' ')) {
+        localArrayList.add(localActor);
       }
       localEntry = Engine.name2Actor().nextEntry(localEntry);
     }
-    Aircraft localAircraft;
+    Object localObject1;
+    Object localObject2;
     for (int i = 0; i < localArrayList.size(); i++) {
-      localAircraft = (Aircraft)localArrayList.get(i);
-      String str = localAircraft.name().substring(1);
-      if (Actor.getByName(str) != null) {
-        localAircraft.destroy();
+      localObject1 = (Aircraft)localArrayList.get(i);
+      localObject2 = ((Aircraft)localObject1).name().substring(1);
+      if (Actor.getByName((String)localObject2) != null) {
+        ((Aircraft)localObject1).destroy();
       } else {
-        localAircraft.setName(str);
-        localAircraft.collide(true);
-        localAircraft.restoreLinksInCoopWing();
+        ((Aircraft)localObject1).setName((String)localObject2);
+        ((Aircraft)localObject1).collide(true);
+        ((Aircraft)localObject1).restoreLinksInCoopWing();
       }
     }
     if (World.isPlayerGunner()) {
@@ -771,17 +645,17 @@ public class NetServerParams extends NetObj
 
     localEntry = Engine.name2Actor().nextEntry(null);
     while (localEntry != null) {
-      Actor localActor2 = (Actor)localEntry.getValue();
-      if ((localActor2 instanceof Aircraft)) {
-        localAircraft = (Aircraft)localActor2;
-        if ((!localAircraft.isNetPlayer()) && (!localAircraft.isNet()))
-          localArrayList.add(localActor2);
+      localObject1 = (Actor)localEntry.getValue();
+      if ((localObject1 instanceof Aircraft)) {
+        localObject2 = (Aircraft)localObject1;
+        if ((!((Aircraft)localObject2).isNetPlayer()) && (!((Aircraft)localObject2).isNet()))
+          localArrayList.add(localObject1);
       }
       localEntry = Engine.name2Actor().nextEntry(localEntry);
     }
     for (int j = 0; j < localArrayList.size(); j++) {
-      localAircraft = (Aircraft)localArrayList.get(j);
-      localAircraft.destroy();
+      localObject2 = (Aircraft)localArrayList.get(j);
+      ((Aircraft)localObject2).destroy();
     }
   }
 
@@ -815,7 +689,7 @@ public class NetServerParams extends NetObj
         Actor localActor = (Actor)((List)localObject).get(j);
         if ((!(localActor instanceof Aircraft)) || 
           (!Actor.isAlive(localActor)) || 
-          (localActor.net == null) || (localActor.net.isMaster())) continue;
+          (localActor.net.isMaster())) continue;
         NetUser localNetUser = ((Aircraft)localActor).netUser();
         if (localNetUser != null) {
           if (localNetUser.netMaxLag == null)
@@ -857,33 +731,9 @@ public class NetServerParams extends NetObj
     this.checkRuntime = Config.cur.ini.get("NET", "checkRuntime", 0, 0, 2);
     this.eventlogHouse = Config.cur.ini.get("game", "eventlogHouse", false);
     this.eventlogClient = Config.cur.ini.get("game", "eventlogClient", -1);
-
-    this.netStat_DisableStatistics = Config.cur.ini.get("NET", "disableNetStatStatistics", false);
-    this.netStat_ShowPilotNumber = Config.cur.ini.get("NET", "showPilotNumber", true);
-    this.netStat_ShowPilotPing = Config.cur.ini.get("NET", "showPilotPing", true);
-    this.netStat_ShowPilotName = Config.cur.ini.get("NET", "showPilotName", true);
-    this.netStat_ShowPilotScore = Config.cur.ini.get("NET", "showPilotScore", true);
-    this.netStat_ShowPilotArmy = Config.cur.ini.get("NET", "showPilotArmy", true);
-    this.netStat_ShowPilotACDesignation = Config.cur.ini.get("NET", "showPilotACDesignation", true);
-    this.netStat_ShowPilotACType = Config.cur.ini.get("NET", "showPilotACType", true);
-    this.filterUserNames = Config.cur.ini.get("NET", "filterUserNames", false);
-
-    this.reflyKIADelay = Config.cur.ini.get("NET", "reflyKIADelay", 0);
-    this.maxAllowedKIA = Config.cur.ini.get("NET", "maxAllowedKIA", -1);
-    this.reflyKIADelayMultiplier = Config.cur.ini.get("NET", "reflyKIADelayMultiplier", 0.0F);
-    this.reflyDisabled = Config.cur.ini.get("NET", "reflyDisabled", false);
-    this.allowMorseAsText = Config.cur.ini.get("NET", "allowMorseAsText", true);
   }
-
   public NetServerParams(NetChannel paramNetChannel, int paramInt, NetHost paramNetHost) {
     super(null, paramNetChannel, paramInt);
-
-    previousTime = 0L;
-    this.serverDeltaTime_lastUpdate = 0L;
-    inSync = false;
-    this.syncCounter = 0;
-    this.previousDeltaTime = 0L;
-
     this.host = paramNetHost;
     Main.cur().netServerParams = this;
     this.outMsgF = new NetMsgFiltered();
@@ -903,23 +753,6 @@ public class NetServerParams extends NetObj
     localNetMsgSpawn.writeFloat(this.nearMaxLagTime);
     localNetMsgSpawn.writeFloat(this.cheaterWarningDelay);
     localNetMsgSpawn.writeInt(this.cheaterWarningNum);
-
-    localNetMsgSpawn.writeBoolean(this.netStat_DisableStatistics);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotNumber);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotPing);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotName);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotScore);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotArmy);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotACDesignation);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotACType);
-    localNetMsgSpawn.writeBoolean(this.filterUserNames);
-
-    localNetMsgSpawn.writeInt(this.reflyKIADelay);
-    localNetMsgSpawn.writeInt(this.maxAllowedKIA);
-    localNetMsgSpawn.writeFloat(this.reflyKIADelayMultiplier);
-    localNetMsgSpawn.writeBoolean(this.reflyDisabled);
-    localNetMsgSpawn.writeBoolean(this.allowMorseAsText);
-
     if (((paramNetChannel instanceof NetChannelOutStream)) && (isCoop())) {
       if (NetMissionTrack.isPlaying()) {
         localNetMsgSpawn.writeLong(this.serverDeltaTime);
@@ -944,7 +777,7 @@ public class NetServerParams extends NetObj
       paramInt = localSFSInputStream.crc(paramInt);
       localSFSInputStream.close();
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
       return 0;
     }
     return paramInt;
@@ -1025,21 +858,21 @@ public class NetServerParams extends NetObj
       break;
     case 10:
       i = paramNetMsgInput.readInt();
-      localObject = (NetUser)NetEnv.host();
-      Aircraft localAircraft = ((NetUser)localObject).findAircraft();
+      NetUser localNetUser = (NetUser)NetEnv.host();
+      Aircraft localAircraft = localNetUser.findAircraft();
       if (!Actor.isValid(localAircraft)) break;
       i = Finger.incInt(i, World.cur().diffCur.get());
       j = (int)localAircraft.finger(i) + SFSInputStream.oo; break;
     default:
       return false;
     }
-    Object localObject = new NetMsgGuaranted();
-    ((NetMsgGuaranted)localObject).writeByte(paramInt);
-    ((NetMsgGuaranted)localObject).writeNetObj(NetEnv.host());
-    ((NetMsgGuaranted)localObject).writeInt(j);
+    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
+    localNetMsgGuaranted.writeByte(paramInt);
+    localNetMsgGuaranted.writeNetObj(NetEnv.host());
+    localNetMsgGuaranted.writeInt(j);
     if (paramInt == 9)
-      ((NetMsgGuaranted)localObject).writeInt(this.checkSecond2);
-    postTo(paramNetMsgInput.channel(), (NetMsgGuaranted)localObject);
+      localNetMsgGuaranted.writeInt(this.checkSecond2);
+    postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
     return true;
   }
 
@@ -1082,28 +915,26 @@ public class NetServerParams extends NetObj
 
     List localList = NetEnv.hosts();
     int i = localList.size();
-    Object localObject;
     for (int j = 0; j < i; j++) {
-      localObject = (NetUser)localList.get(j);
-      if (!this.checkUsers.containsKey(localObject)) {
-        this.checkUsers.put(localObject, new CheckUser((NetUser)localObject));
-      }
+      NetUser localNetUser1 = (NetUser)localList.get(j);
+      if (!this.checkUsers.containsKey(localNetUser1))
+        this.checkUsers.put(localNetUser1, new CheckUser(localNetUser1));
     }
-
+    Object localObject;
     if (i != this.checkUsers.size()) {
       while (true) {
-        j = 0;
+        int k = 0;
         localObject = this.checkUsers.nextEntry(null);
         while (localObject != null) {
-          NetUser localNetUser = (NetUser)((Map.Entry)localObject).getKey();
-          if (localNetUser.isDestroyed()) {
-            this.checkUsers.remove(localNetUser);
-            j = 1;
+          NetUser localNetUser2 = (NetUser)((Map.Entry)localObject).getKey();
+          if (localNetUser2.isDestroyed()) {
+            this.checkUsers.remove(localNetUser2);
+            k = 1;
             break;
           }
           localObject = this.checkUsers.nextEntry((Map.Entry)localObject);
         }
-        if (j == 0) {
+        if (k == 0) {
           break;
         }
       }
@@ -1116,16 +947,6 @@ public class NetServerParams extends NetObj
       ((CheckUser)localObject).checkUpdate(l);
       localEntry = this.checkUsers.nextEntry(localEntry);
     }
-  }
-
-  public void zutiResetServerTime()
-  {
-    this.serverDeltaTime = 0L;
-    this.serverDeltaTime_lastUpdate = 0L;
-    inSync = false;
-    this.syncCounter = 0;
-    this.previousDeltaTime = 0L;
-    previousTime = 0L;
   }
 
   static
@@ -1146,7 +967,6 @@ public class NetServerParams extends NetObj
       throws IOException
     {
       int i = 0;
-      Object localObject;
       switch (paramInt) {
       case 8:
         if (NetServerParams.this.checkKey == 0)
@@ -1164,12 +984,12 @@ public class NetServerParams extends NetObj
         if (i == 0) break;
         this.state += 1; break;
       case 10:
-        localObject = this.user.findAircraft();
-        if (Actor.isValid((Actor)localObject)) {
+        Aircraft localAircraft = this.user.findAircraft();
+        if (Actor.isValid(localAircraft)) {
           int k = Finger.incInt(this.publicKey, this.diff);
-          i = paramNetMsgInput.readInt() == (int)((Aircraft)localObject).finger(k) + SFSInputStream.oo ? 1 : 0;
+          i = paramNetMsgInput.readInt() == (int)localAircraft.finger(k) + SFSInputStream.oo ? 1 : 0;
           if (i != 0)
-            this.classAircraft = localObject.getClass();
+            this.classAircraft = localAircraft.getClass();
           else
             this.classAircraft = null;
         } else {
@@ -1184,9 +1004,9 @@ public class NetServerParams extends NetObj
       if (i == 0) {
         NetChannel localNetChannel = paramNetMsgInput.channel();
         if (!localNetChannel.isDestroying()) {
-          localObject = "Timeout ";
-          localObject = (String)localObject + (paramInt - 8);
-          localNetChannel.destroy((String)localObject);
+          String str = "Timeout ";
+          str = str + (paramInt - 8);
+          localNetChannel.destroy(str);
         }
       }
       return true;
@@ -1226,17 +1046,17 @@ public class NetServerParams extends NetObj
         }
 
         if (i != 0) {
-          localObject = new NetMsgGuaranted();
-          ((NetMsgGuaranted)localObject).writeByte(this.state);
-          ((NetMsgGuaranted)localObject).writeNetObj(this.user);
-          ((NetMsgGuaranted)localObject).writeInt(i);
+          NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
+          localNetMsgGuaranted.writeByte(this.state);
+          localNetMsgGuaranted.writeNetObj(this.user);
+          localNetMsgGuaranted.writeInt(i);
           if (this.state == 9) {
             if (NetServerParams.this.checkRuntime == 2)
-              ((NetMsgGuaranted)localObject).writeInt(i);
+              localNetMsgGuaranted.writeInt(i);
             else
-              ((NetMsgGuaranted)localObject).writeInt(0);
+              localNetMsgGuaranted.writeInt(0);
           }
-          NetServerParams.this.postTo(this.user.masterChannel(), (NetMsgGuaranted)localObject);
+          NetServerParams.this.postTo(this.user.masterChannel(), localNetMsgGuaranted);
           this.timeSended = paramLong;
         }
       }
@@ -1274,25 +1094,6 @@ public class NetServerParams extends NetObj
         NetServerParams.access$902(localNetServerParams, paramNetMsgInput.readFloat());
         NetServerParams.access$1002(localNetServerParams, paramNetMsgInput.readFloat());
         NetServerParams.access$1102(localNetServerParams, paramNetMsgInput.readInt());
-
-        if ((!NetMissionTrack.isPlaying()) || (NetMissionTrack.playingOriginalVersion() > 102)) {
-          localNetServerParams.netStat_DisableStatistics = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotNumber = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotPing = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotName = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotScore = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotArmy = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotACDesignation = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotACType = paramNetMsgInput.readBoolean();
-          localNetServerParams.filterUserNames = paramNetMsgInput.readBoolean();
-
-          localNetServerParams.reflyKIADelay = paramNetMsgInput.readInt();
-          localNetServerParams.maxAllowedKIA = paramNetMsgInput.readInt();
-          localNetServerParams.reflyKIADelayMultiplier = paramNetMsgInput.readFloat();
-          localNetServerParams.reflyDisabled = paramNetMsgInput.readBoolean();
-          localNetServerParams.allowMorseAsText = paramNetMsgInput.readBoolean();
-        }
-
         if ((paramNetMsgInput.channel() instanceof NetChannelInStream)) {
           NetServerParams.access$402(localNetServerParams, World.cur().diffCur.get());
           if (paramNetMsgInput.available() >= 8)

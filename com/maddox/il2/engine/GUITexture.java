@@ -27,11 +27,11 @@ public class GUITexture extends GTexture
       localGUITexture.mat = Mat.New(paramString);
       if (localGUITexture.mat != null) {
         localGUITexture.mat.setLayer(0);
-        localGUITexture.size = new GSize(localGUITexture.mat.get(2), localGUITexture.mat.get(3));
-        localGUITexture.scalex = (1.0F / localGUITexture.size.dx);
-        localGUITexture.scaley = (1.0F / localGUITexture.size.dy);
+        localGUITexture.jdField_size_of_type_ComMaddoxGwindowGSize = new GSize(localGUITexture.mat.get(2), localGUITexture.mat.get(3));
+        localGUITexture.scalex = (1.0F / localGUITexture.jdField_size_of_type_ComMaddoxGwindowGSize.dx);
+        localGUITexture.scaley = (1.0F / localGUITexture.jdField_size_of_type_ComMaddoxGwindowGSize.dy);
       } else {
-        localGUITexture.size = new GSize(1.0F, 1.0F);
+        localGUITexture.jdField_size_of_type_ComMaddoxGwindowGSize = new GSize(1.0F, 1.0F);
       }
       return localGUITexture;
     }

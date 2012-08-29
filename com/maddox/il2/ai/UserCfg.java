@@ -168,35 +168,36 @@ public class UserCfg
     HotKeyEnv localHotKeyEnv = HotKeyEnv.env("hotkeys");
     HashMapInt localHashMapInt = localHotKeyEnv.all();
     HashMapIntEntry localHashMapIntEntry = localHashMapInt.nextEntry(null);
-    Object localObject;
+    Object localObject1;
     while (localHashMapIntEntry != null) {
       i = localHashMapIntEntry.getKey();
-      localObject = (String)(String)localHashMapIntEntry.getValue();
-      if ("pause".equals(localObject))
+      localObject1 = (String)localHashMapIntEntry.getValue();
+      if ("pause".equals(localObject1))
         localArrayList.add(new Integer(i));
       localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
     }
     for (int i = 0; i < localArrayList.size(); i++) {
-      localObject = (Integer)localArrayList.get(i);
-      localHashMapInt.remove(((Integer)localObject).intValue());
+      localObject1 = (Integer)localArrayList.get(i);
+      localHashMapInt.remove(((Integer)localObject1).intValue());
     }
     localArrayList.clear();
 
     localHotKeyEnv = HotKeyEnv.env("timeCompression");
     localHashMapInt = localHotKeyEnv.all();
     localHashMapIntEntry = localHashMapInt.nextEntry(null);
+    Object localObject2;
     while (localHashMapIntEntry != null) {
-      i = localHashMapIntEntry.getKey();
-      localObject = (String)(String)localHashMapIntEntry.getValue();
-      if ("timeSpeedPause".equals(localObject))
-        localArrayList.add(new Integer(i));
+      j = localHashMapIntEntry.getKey();
+      localObject2 = (String)localHashMapIntEntry.getValue();
+      if ("timeSpeedPause".equals(localObject2))
+        localArrayList.add(new Integer(j));
       localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
     }
 
-    for (i = 0; i < localArrayList.size(); i++) {
-      localObject = (Integer)localArrayList.get(i);
-      int j = ((Integer)localObject).intValue();
-      HotKeyEnv.env("hotkeys").all().put(j, "pause");
+    for (int j = 0; j < localArrayList.size(); j++) {
+      localObject2 = (Integer)localArrayList.get(j);
+      int k = ((Integer)localObject2).intValue();
+      HotKeyEnv.env("hotkeys").all().put(k, "pause");
     }
   }
 

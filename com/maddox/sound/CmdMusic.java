@@ -44,17 +44,17 @@ public class CmdMusic extends Cmd
 
   public CmdMusic()
   {
-    this.param.put("PATH", null);
-    this.param.put("RAND", null);
-    this.param.put("FILE", null);
-    this.param.put("LIST", null);
-    this.param.put("PLAY", null);
-    this.param.put("STOP", null);
-    this.param.put("BREAK", null);
-    this.param.put("VOL", null);
-    this.param.put("PUSH", null);
-    this.param.put("POP", null);
-    this.param.put("APPLY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PATH", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("RAND", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FILE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LIST", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PLAY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("STOP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BREAK", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("VOL", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PUSH", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("POP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("APPLY", null);
     this._properties.put("NAME", "music");
     this._levelAccess = 1;
     if (musFX == null) musFX = new SoundFX("cmdmusic");
@@ -207,11 +207,11 @@ public class CmdMusic extends Cmd
 
   public static void setList(Map paramMap)
   {
-    if (nargs(paramMap, "LIST") == 0)
+    if (Cmd.nargs(paramMap, "LIST") == 0)
       return;
-    list = new String[nargs(paramMap, "LIST")];
+    list = new String[Cmd.nargs(paramMap, "LIST")];
     for (int i = 0; i < list.length; i++)
-      list[i] = arg(paramMap, "LIST", i);
+      list[i] = Cmd.arg(paramMap, "LIST", i);
     index = 0;
     setFile(list[0], true);
   }
@@ -219,11 +219,6 @@ public class CmdMusic extends Cmd
   public static void setVolume(float paramFloat)
   {
     vol = paramFloat;
-  }
-
-  public static void setCurrentVolume(float paramFloat)
-  {
-    musFX.setVolume(paramFloat);
   }
 
   public static boolean playState()
@@ -316,7 +311,7 @@ public class CmdMusic extends Cmd
       System.out.println("  state  : " + (bPlaying ? "PLAYING" : "STOPPED"));
     }
     else if (paramMap.containsKey("_$$")) {
-      System.out.println("Unknown command :" + arg(paramMap, "_$$", 0));
+      System.out.println("Unknown command :" + Cmd.arg(paramMap, "_$$", 0));
     } else {
       if (paramMap.containsKey("PLAY")) play();
       if (paramMap.containsKey("STOP")) stop();
@@ -325,36 +320,36 @@ public class CmdMusic extends Cmd
       if (paramMap.containsKey("POP")) pop();
       if (paramMap.containsKey("APPLY")) apply();
       if (paramMap.containsKey("PATH")) {
-        if (arg(paramMap, "PATH", 0) == null) { System.out.println("ERROR: path name expected");
+        if (Cmd.arg(paramMap, "PATH", 0) == null) { System.out.println("ERROR: path name expected");
         } else {
           bList = false;
-          setPath(arg(paramMap, "PATH", 0), false);
+          setPath(Cmd.arg(paramMap, "PATH", 0), false);
         }
       }
       else if (paramMap.containsKey("RAND")) {
-        if (arg(paramMap, "RAND", 0) == null) { System.out.println("ERROR: path name expected");
+        if (Cmd.arg(paramMap, "RAND", 0) == null) { System.out.println("ERROR: path name expected");
         } else {
           bList = false;
-          setPath(arg(paramMap, "RAND", 0), true);
+          setPath(Cmd.arg(paramMap, "RAND", 0), true);
         }
       }
       else if (paramMap.containsKey("FILE")) {
-        if (arg(paramMap, "FILE", 0) == null) { System.out.println("ERROR: file name expected");
+        if (Cmd.arg(paramMap, "FILE", 0) == null) { System.out.println("ERROR: file name expected");
         } else {
           pathRandName = null;
           bList = false;
-          setFile(arg(paramMap, "FILE", 0) + ".wav", false);
+          setFile(Cmd.arg(paramMap, "FILE", 0) + ".wav", false);
         }
       }
       else if (paramMap.containsKey("LIST")) {
-        if (arg(paramMap, "LIST", 0) == null) { System.out.println("ERROR: list names expected");
+        if (Cmd.arg(paramMap, "LIST", 0) == null) { System.out.println("ERROR: list names expected");
         } else {
           bList = true;
           setList(paramMap);
         }
       }
       if (paramMap.containsKey("VOL")) {
-        String str = arg(paramMap, "PLAY", 0);
+        String str = Cmd.arg(paramMap, "PLAY", 0);
         if (str == null) { System.out.println("ERROR: volume gain (0..1) expected");
         } else {
           float f = Float.parseFloat(str);

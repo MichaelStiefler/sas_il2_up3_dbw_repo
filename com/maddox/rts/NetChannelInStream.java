@@ -29,37 +29,37 @@ public class NetChannelInStream extends NetChannel
 
   public void destroy()
   {
-    if ((this.state & 0x80000000) != 0) return;
+    if ((this.jdField_state_of_type_Int & 0x80000000) != 0) return;
 
-    NetObj localNetObj1 = (NetObj)NetEnv.cur().objects.get(9);
+    NetObj localNetObj1 = (NetObj)NetEnv.cur().jdField_objects_of_type_ComMaddoxUtilHashMapInt.get(9);
     if ((localNetObj1 != null) && (!this.bDestroyGo)) {
       this.bDestroyGo = true;
       localNetObj1.msgNetDelChannel(this);
       this.bDestroyGo = false;
-      if ((this.state & 0x80000000) != 0) return;
+      if ((this.jdField_state_of_type_Int & 0x80000000) != 0) return;
     }
-    this.state |= -2147483648;
+    this.jdField_state_of_type_Int |= -2147483648;
 
-    while (!this.objects.isEmpty()) {
-      localObject1 = this.objects.nextEntry(null);
+    while (!this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.isEmpty()) {
+      localObject1 = this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.nextEntry(null);
       if (localObject1 == null) break;
       localObject2 = (NetObj)((HashMapIntEntry)localObject1).getValue();
       int i = ((HashMapIntEntry)localObject1).getKey();
-      destroyNetObj((NetObj)localObject2);
-      if (this.objects.containsKey(i)) {
-        this.objects.remove(i);
+      NetChannel.destroyNetObj((NetObj)localObject2);
+      if (this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.containsKey(i)) {
+        this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.remove(i);
       }
     }
-    while (!this.mirrored.isEmpty()) {
-      localObject1 = this.mirrored.nextEntry(null);
+    while (!this.jdField_mirrored_of_type_ComMaddoxUtilHashMapExt.isEmpty()) {
+      localObject1 = this.jdField_mirrored_of_type_ComMaddoxUtilHashMapExt.nextEntry(null);
       if (localObject1 == null) break;
       localObject2 = (NetObj)((Map.Entry)localObject1).getKey();
       localObject2.countMirrors -= 1;
-      this.mirrored.remove(localObject2);
+      this.jdField_mirrored_of_type_ComMaddoxUtilHashMapExt.remove(localObject2);
       MsgNet.postRealDelChannel(localObject2, this);
     }
 
-    Object localObject1 = NetEnv.cur().objects;
+    Object localObject1 = NetEnv.cur().jdField_objects_of_type_ComMaddoxUtilHashMapInt;
     Object localObject2 = ((HashMapInt)localObject1).nextEntry(null);
     while (localObject2 != null) {
       NetObj localNetObj2 = (NetObj)((HashMapIntEntry)localObject2).getValue();
@@ -97,7 +97,7 @@ public class NetChannelInStream extends NetChannel
   }
 
   protected boolean update() {
-    if (this.state < 0) return false;
+    if (this.jdField_state_of_type_Int < 0) return false;
     if (this.bGameTime) return true;
     return _update();
   }
@@ -108,7 +108,7 @@ public class NetChannelInStream extends NetChannel
   }
 
   private boolean _update() {
-    if (this.state < 0) return false;
+    if (this.jdField_state_of_type_Int < 0) return false;
 
     if (this.bPause) return true;
 
@@ -122,7 +122,7 @@ public class NetChannelInStream extends NetChannel
 
     int i = 0;
     try {
-      while ((!this.bPause) && (!this.bQueueSync)) {
+      do {
         if (!this.bGameTime)
           this.lastPacketTime = Time.currentReal();
         else if (this.lastPacketTime > Time.current())
@@ -146,7 +146,7 @@ public class NetChannelInStream extends NetChannel
           boolean bool = this.bGameTime;
           while (this.ng > 0) {
             localObject = getMessage(this.packet);
-            if (syncMessage == getMessageObj)
+            if (syncMessage == NetChannel.getMessageObj)
               this.bQueueSync = true;
             this.receiveGMsgSequenceNum_ = (this.receiveGMsgSequenceNum_ + 1 & 0xFFFF);
             receivedGuarantedMsg((NetMsgInput)localObject, this.receiveGMsgSequenceNum_);
@@ -163,9 +163,9 @@ public class NetChannelInStream extends NetChannel
           while (this.packet.available() > 0) {
             localObject = getMessage(this.packet, this.lastPacketTime);
             if (localObject != null) {
-              statIn(true, getMessageObj, (NetMsgInput)localObject);
-              if (!this.bGameTime) MsgNet.postReal(getMessageTime, getMessageObj, (NetMsgInput)localObject); else
-                MsgNet.postGame(getMessageTime, getMessageObj, (NetMsgInput)localObject);
+              statIn(true, NetChannel.getMessageObj, (NetMsgInput)localObject);
+              if (!this.bGameTime) MsgNet.postReal(NetChannel.getMessageTime, NetChannel.getMessageObj, (NetMsgInput)localObject); else
+                MsgNet.postGame(NetChannel.getMessageTime, NetChannel.getMessageObj, (NetMsgInput)localObject);
             }
           }
           i = 1;
@@ -185,8 +185,12 @@ public class NetChannelInStream extends NetChannel
           break;
         }
         this.lastPacketTime += k;
-      }
-    } catch (Exception localException) {
+
+        if (this.bPause) break; 
+      }while (!this.bQueueSync);
+    }
+    catch (Exception localException)
+    {
       localException.printStackTrace();
       destroy(localException.toString());
       return false;
@@ -214,29 +218,29 @@ public class NetChannelInStream extends NetChannel
     this.remotePort = 0;
     this.lastPacketTime = Time.currentReal();
     this.packet.setData(this, false, null, 0, 0);
-    this.state = 1;
+    this.jdField_state_of_type_Int = 1;
   }
 
   protected void putMessageSpawn(NetMsgSpawn paramNetMsgSpawn) throws IOException
   {
-    if ((paramNetMsgSpawn._sender instanceof NetChannelCallbackStream)) {
-      ((NetChannelCallbackStream)paramNetMsgSpawn._sender).netChannelCallback(this, paramNetMsgSpawn);
+    if ((paramNetMsgSpawn.jdField__sender_of_type_ComMaddoxRtsNetObj instanceof NetChannelCallbackStream)) {
+      ((NetChannelCallbackStream)paramNetMsgSpawn.jdField__sender_of_type_ComMaddoxRtsNetObj).netChannelCallback(this, paramNetMsgSpawn);
       return;
     }
     throw new NetException("putMessageSpawn NOT supported");
   }
 
   protected void putMessageDestroy(NetMsgDestroy paramNetMsgDestroy) throws IOException {
-    if ((paramNetMsgDestroy._sender instanceof NetChannelCallbackStream)) {
-      ((NetChannelCallbackStream)paramNetMsgDestroy._sender).netChannelCallback(this, paramNetMsgDestroy);
+    if ((paramNetMsgDestroy.jdField__sender_of_type_ComMaddoxRtsNetObj instanceof NetChannelCallbackStream)) {
+      ((NetChannelCallbackStream)paramNetMsgDestroy.jdField__sender_of_type_ComMaddoxRtsNetObj).netChannelCallback(this, paramNetMsgDestroy);
       return;
     }
     throw new NetException("putMessageDestroy NOT supported");
   }
 
   protected void putMessage(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    if ((paramNetMsgGuaranted._sender instanceof NetChannelCallbackStream)) {
-      ((NetChannelCallbackStream)paramNetMsgGuaranted._sender).netChannelCallback(this, paramNetMsgGuaranted);
+    if ((paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj instanceof NetChannelCallbackStream)) {
+      ((NetChannelCallbackStream)paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj).netChannelCallback(this, paramNetMsgGuaranted);
       return;
     }
     throw new NetException("putMessage NOT supported");

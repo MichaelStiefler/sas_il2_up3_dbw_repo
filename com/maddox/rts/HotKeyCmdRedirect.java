@@ -21,9 +21,9 @@ public abstract class HotKeyCmdRedirect extends HotKeyCmd
   }
 
   public final void doRedirect() {
-    this.bActive = true;
+    this.jdField_bActive_of_type_Boolean = true;
     redirect(this._r);
-    this.bActive = false;
+    this.jdField_bActive_of_type_Boolean = false;
   }
 
   public HotKeyCmdRedirect(boolean paramBoolean, String paramString, int paramInt) {

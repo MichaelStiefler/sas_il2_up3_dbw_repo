@@ -31,7 +31,7 @@ public abstract class P_39 extends Scheme1
   {
     super.rareAction(paramFloat, paramBoolean);
 
-    if (this.FM.getAltitude() < 3000.0F)
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F)
       hierMesh().chunkVisible("HMask1_D0", false);
     else
       hierMesh().chunkVisible("HMask1_D0", hierMesh().isChunkVisible("Pilot1_D0"));
@@ -60,7 +60,7 @@ public abstract class P_39 extends Scheme1
   protected void moveRudder(float paramFloat)
   {
     hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -31.0F * paramFloat, 0.0F);
-    if (this.FM.CT.getGear() == 1.0F)
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() == 1.0F)
       hierMesh().chunkSetAngles("GearC2_D0", -40.0F * paramFloat, 0.0F, 0.0F);
   }
 
@@ -76,56 +76,56 @@ public abstract class P_39 extends Scheme1
 
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 1);
     }
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
     }
     if (paramShot.chunkName.startsWith("CF")) {
       if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.3F) {
-        this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
       }
 
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x10);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x10);
       }
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x20);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x20);
       }
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x4);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x4);
       }
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x8);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x8);
       }
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x40);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x40);
       }
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x1);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x1);
       }
       if (World.Rnd().nextFloat() < 0.03F) {
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x2);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x2);
       }
 
     }
 
     if ((paramShot.chunkName.startsWith("Engine1")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.06F) && (Pd.z > 0.4799999892711639D)) {
-      this.FM.AS.setJamBullets(0, 0);
-      this.FM.AS.setJamBullets(0, 1);
+      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.06F) && (Aircraft.Pd.jdField_z_of_type_Double > 0.4799999892711639D)) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(0, 0);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(0, 1);
     }
 
     if ((paramShot.chunkName.startsWith("Oil")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)) {
-      this.FM.AS.hitOil(paramShot.initiator, 0);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitOil(paramShot.initiator, 0);
     }
     if (paramShot.chunkName.startsWith("Pilot")) {
-      if (paramShot.power * Math.abs(v1.x) > 12070.0D) {
-        this.FM.AS.hitPilot(paramShot.initiator, 0, (int)(paramShot.mass * 1000.0F * 0.5F));
+      if (paramShot.power * Math.abs(Aircraft.v1.x) > 12070.0D) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitPilot(paramShot.initiator, 0, (int)(paramShot.mass * 1000.0F * 0.5F));
       }
-      if (Pd.z > 1.011749982833862D) {
+      if (Aircraft.Pd.jdField_z_of_type_Double > 1.011749982833862D) {
         killPilot(paramShot.initiator, 0);
         if ((paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
       }

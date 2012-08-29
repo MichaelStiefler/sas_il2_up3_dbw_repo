@@ -27,7 +27,7 @@ public class HashMapXY16Hash
     int i = 0;
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry.getValue();
+      HashMapExt localHashMapExt = (HashMapExt)localHashMapIntEntry.getValue();
       i += localHashMapExt.capacity();
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }
@@ -38,7 +38,7 @@ public class HashMapXY16Hash
     int i = 0;
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry.getValue();
+      HashMapExt localHashMapExt = (HashMapExt)localHashMapIntEntry.getValue();
       i += localHashMapExt.size();
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }
@@ -48,7 +48,7 @@ public class HashMapXY16Hash
   public void allValues(List paramList) {
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry.getValue();
+      HashMapExt localHashMapExt = (HashMapExt)localHashMapIntEntry.getValue();
       paramList.add(localHashMapExt);
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }
@@ -86,7 +86,7 @@ public class HashMapXY16Hash
   public void clear() {
     HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry.getValue();
+      HashMapExt localHashMapExt = (HashMapExt)localHashMapIntEntry.getValue();
       localHashMapExt.clear();
       localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
     }

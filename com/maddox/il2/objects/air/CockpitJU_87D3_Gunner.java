@@ -22,23 +22,23 @@ public class CockpitJU_87D3_Gunner extends CockpitGunner
     super.moveGun(paramOrient);
     float f1 = paramOrient.getYaw();
     float f2 = -paramOrient.getTangage();
-    this.mesh.chunkSetAngles("TurretA", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("TurretB", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("TurretA", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("TurretB", 0.0F, f2, 0.0F);
 
-    this.mesh.chunkSetAngles("Hose", -0.333F * Math.abs(f2) - 3.0F, 0.5F * f1, 0.0F);
-    this.mesh.chunkSetAngles("PatronsL", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("PatronsL_add", 0.0F, cvt(f1, -25.0F, 0.0F, -91.0F, 0.0F), 0.0F);
-    this.mesh.chunkSetAngles("PatronsR", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("PatronsR_add", 0.0F, cvt(f1, 0.0F, 25.0F, 0.0F, 91.0F), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Hose", -0.333F * Math.abs(f2) - 3.0F, 0.5F * f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("PatronsL", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("PatronsL_add", 0.0F, cvt(f1, -25.0F, 0.0F, -91.0F, 0.0F), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("PatronsR", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("PatronsR_add", 0.0F, cvt(f1, 0.0F, 25.0F, 0.0F, 91.0F), 0.0F);
     if (f2 < -30.0F - 5.0F * f1)
-      this.mesh.chunkVisible("PatronsL_add", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("PatronsL_add", false);
     else {
-      this.mesh.chunkVisible("PatronsL_add", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("PatronsL_add", true);
     }
     if (f2 < -30.0F + 5.0F * f1)
-      this.mesh.chunkVisible("PatronsR_add", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("PatronsR_add", false);
     else
-      this.mesh.chunkVisible("PatronsR_add", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("PatronsR_add", true);
   }
 
   public void clipAnglesGun(Orient paramOrient)
@@ -59,12 +59,12 @@ public class CockpitJU_87D3_Gunner extends CockpitGunner
 
   protected void interpTick() {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[10] = this.bGunFire;
+      this.jdField_bGunFire_of_type_Boolean = false;
+    }this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[10] = this.jdField_bGunFire_of_type_Boolean;
 
-    if (this.bGunFire) {
+    if (this.jdField_bGunFire_of_type_Boolean) {
       if (this.hook1 == null) {
         this.hook1 = new HookNamed(aircraft(), "_MGUN03");
       }
@@ -79,12 +79,12 @@ public class CockpitJU_87D3_Gunner extends CockpitGunner
   public void doGunFire(boolean paramBoolean)
   {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
+      this.jdField_bGunFire_of_type_Boolean = false;
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[10] = this.bGunFire;
+    else this.jdField_bGunFire_of_type_Boolean = paramBoolean;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[10] = this.jdField_bGunFire_of_type_Boolean;
   }
 
   public CockpitJU_87D3_Gunner() {
@@ -95,41 +95,41 @@ public class CockpitJU_87D3_Gunner extends CockpitGunner
   {
     HierMesh localHierMesh = aircraft().hierMesh();
     Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Gloss1D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Matt1D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D1o"));
-    this.mesh.materialReplace("Matt1D1o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Matt1D1o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D2o"));
-    this.mesh.materialReplace("Matt1D2o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Matt1D2o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Overlay1"));
-    this.mesh.materialReplace("Overlay1", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Overlay1", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Overlay2"));
-    this.mesh.materialReplace("Overlay2", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Overlay2", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Overlay3"));
-    this.mesh.materialReplace("Overlay3", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Overlay3", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Overlay4"));
-    this.mesh.materialReplace("Overlay4", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Overlay4", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Overlay7"));
-    this.mesh.materialReplace("Overlay7", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Overlay7", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("OverlayD1o"));
-    this.mesh.materialReplace("OverlayD1o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("OverlayD1o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("OverlayD2o"));
-    this.mesh.materialReplace("OverlayD2o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("OverlayD2o", localMat);
   }
 
   protected void reflectPlaneToModel()
   {
     HierMesh localHierMesh = aircraft().hierMesh();
-    this.mesh.chunkVisible("Tail1_D0", localHierMesh.isChunkVisible("Tail1_D0"));
-    this.mesh.chunkVisible("Tail1_D1", localHierMesh.isChunkVisible("Tail1_D1"));
-    this.mesh.chunkVisible("Tail1_D2", localHierMesh.isChunkVisible("Tail1_D2"));
-    this.mesh.chunkVisible("Tail1_D3", localHierMesh.isChunkVisible("Tail1_D3"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Tail1_D0", localHierMesh.isChunkVisible("Tail1_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Tail1_D1", localHierMesh.isChunkVisible("Tail1_D1"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Tail1_D2", localHierMesh.isChunkVisible("Tail1_D2"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Tail1_D3", localHierMesh.isChunkVisible("Tail1_D3"));
   }
 
   public void reflectWorldToInstruments(float paramFloat)
   {
-    if (this.fm == null) return;
+    if (this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel == null) return;
     if (this.bNeedSetUp) {
       reflectPlaneMats();
       this.bNeedSetUp = false;
@@ -144,8 +144,8 @@ public class CockpitJU_87D3_Gunner extends CockpitGunner
 
     public boolean tick()
     {
-      CockpitJU_87D3_Gunner.this.fm = World.getPlayerFM();
-      if (CockpitJU_87D3_Gunner.this.fm == null) return true;
+      CockpitJU_87D3_Gunner.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel = World.getPlayerFM();
+      if (CockpitJU_87D3_Gunner.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel == null) return true;
       if (CockpitJU_87D3_Gunner.this.bNeedSetUp) {
         CockpitJU_87D3_Gunner.this.reflectPlaneMats();
         CockpitJU_87D3_Gunner.access$002(CockpitJU_87D3_Gunner.this, false);

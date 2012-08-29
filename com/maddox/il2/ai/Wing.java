@@ -131,7 +131,7 @@ public class Wing extends Chief
     localSquadron.wing[indexInSquadron()] = this;
     setArmy(localSquadron.getArmy());
 
-    Aircraft.loadingCountry = localSquadron.regiment().country();
+    Aircraft.jdField_loadingCountry_of_type_JavaLangString = localSquadron.regiment().country();
 
     int k = paramSectFile.get(paramString, "Planes", 1, 1, 4);
     try
@@ -152,20 +152,19 @@ public class Wing extends Chief
       setArmy(this.airc[0].getArmy());
       Formation.generate(this.airc);
 
-      for (m = 0; m < k; m++) {
-        this.airc[m].FM.AP.way = new Way(this.way);
+      for (int n = 0; n < k; n++) {
+        this.airc[n].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AP.way = new Way(this.way);
       }
-
-      if (((Mission.isSingle()) || (((Mission.isCoop()) || (Mission.isDogfight())) && (Mission.isServer()))) && (!NetMissionTrack.isPlaying()))
+      if (((Mission.isSingle()) || ((Mission.isCoop()) && (Mission.isServer()))) && (!NetMissionTrack.isPlaying()))
       {
         AirGroup localAirGroup = new AirGroup(this.airc[0].getSquadron(), this.way);
-        for (int n = 0; n < k; n++) localAirGroup.addAircraft(this.airc[n]);
+        for (int i1 = 0; i1 < k; i1++) localAirGroup.addAircraft(this.airc[i1]);
         AirGroupList.addAirGroup(War.Groups, this.airc[0].getArmy() - 1 & 0x1, localAirGroup);
       }
 
-      Aircraft.loadingCountry = null;
+      Aircraft.jdField_loadingCountry_of_type_JavaLangString = null;
     } catch (Exception localException) {
-      Aircraft.loadingCountry = null;
+      Aircraft.jdField_loadingCountry_of_type_JavaLangString = null;
       destroy();
       throw localException;
     }
@@ -177,7 +176,7 @@ public class Wing extends Chief
     if (paramWay.size() == 1) {
       localWayPoint1 = paramWay.get(0);
       localWayPoint1.getP(tmpPoint0);
-      paramAircraft.pos.setAbs(tmpPoint0);
+      paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(tmpPoint0);
       tmpSpeed.set(localWayPoint1.Speed, 0.0D, 0.0D);
       paramAircraft.setSpeed(tmpSpeed);
     } else {
@@ -187,12 +186,12 @@ public class Wing extends Chief
       localWayPoint2.getP(tmpPoint1);
       tmpSpeed.sub(tmpPoint1, tmpPoint0);
       tmpSpeed.normalize();
-      _tmpOrient.setAT0(tmpSpeed);
+      Actor._tmpOrient.setAT0(tmpSpeed);
       tmpSpeed.scale(localWayPoint1.Speed);
-      paramAircraft.pos.setAbs(tmpPoint0, _tmpOrient);
+      paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(tmpPoint0, Actor._tmpOrient);
       paramAircraft.setSpeed(tmpSpeed);
     }
-    paramAircraft.pos.reset();
+    paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   public void setOnAirport()
@@ -216,7 +215,7 @@ public class Wing extends Chief
       if (i == 0) {
         localObject = Airport.nearest(tmpPoint0, getArmy(), 3);
         if (localObject != null) {
-          double d = ((Airport)localObject).pos.getAbsPoint().distance(tmpPoint0);
+          double d = ((Airport)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(tmpPoint0);
           if (d < 1250.0D)
             ((Airport)localObject).setTakeoff(tmpPoint0, this.airc);
           else
@@ -230,12 +229,12 @@ public class Wing extends Chief
         if (!Actor.isValid(this.airc[i]))
           continue;
         if (this.airc[i] == World.getPlayerAircraft()) {
-          this.airc[i].FM.EI.setCurControlAll(true);
-          this.airc[i].FM.EI.setEngineRunning();
-          this.airc[i].FM.CT.setPowerControl(0.75F);
+          this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(true);
+          this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
+          this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.setPowerControl(0.75F);
         }
-        this.airc[i].FM.setStationedOnGround(false);
-        this.airc[i].FM.setWasAirborne(true);
+        this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setStationedOnGround(false);
+        this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setWasAirborne(true);
       }
     }
   }
@@ -244,11 +243,11 @@ public class Wing extends Chief
   {
     for (int i = 0; i < this.airc.length; i++)
       if (this.airc[i] != null) {
-        this.airc[i].pos.getAbs(pGround, oGround);
-        pGround.z = (World.land().HQ(pGround.x, pGround.y) + this.airc[i].FM.Gears.H);
-        Engine.land().N(pGround.x, pGround.y, vGround);
+        this.airc[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(pGround, oGround);
+        pGround.z = (World.land().HQ(pGround.jdField_x_of_type_Double, pGround.jdField_y_of_type_Double) + this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H);
+        Engine.land().N(pGround.jdField_x_of_type_Double, pGround.jdField_y_of_type_Double, vGround);
         oGround.orient(vGround);
-        oGround.increment(0.0F, this.airc[i].FM.Gears.Pitch, 0.0F);
+        oGround.increment(0.0F, this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.Pitch, 0.0F);
         this.airc[i].setOnGround(pGround, oGround, zeroSpeed);
       }
   }

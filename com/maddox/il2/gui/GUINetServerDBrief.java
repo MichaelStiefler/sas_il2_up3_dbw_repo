@@ -13,7 +13,6 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.net.BornPlace;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetUserRegiment;
 import com.maddox.il2.net.USGS;
@@ -25,7 +24,6 @@ import com.maddox.rts.NetEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.sound.AudioDevice;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class GUINetServerDBrief extends GUIBriefing
@@ -35,12 +33,12 @@ public class GUINetServerDBrief extends GUIBriefing
     super.enter(paramGameState);
     if ((paramGameState != null) && ((paramGameState.id() == 42) || (paramGameState.id() == 38)))
     {
-      if (this.briefSound != null) {
+      if (this.jdField_briefSound_of_type_JavaLangString != null) {
         String str = Main.cur().currentMissionFile.get("MAIN", "briefSound" + ((NetUser)NetEnv.host()).getArmy());
         if (str != null)
-          this.briefSound = str;
+          this.jdField_briefSound_of_type_JavaLangString = str;
         CmdEnv.top().exec("music PUSH");
-        CmdEnv.top().exec("music LIST " + this.briefSound);
+        CmdEnv.top().exec("music LIST " + this.jdField_briefSound_of_type_JavaLangString);
         CmdEnv.top().exec("music PLAY");
       }
     }
@@ -49,17 +47,17 @@ public class GUINetServerDBrief extends GUIBriefing
   public void leave(GameState paramGameState) {
     if ((paramGameState != null) && (paramGameState.id() == 42))
     {
-      if (this.briefSound != null) {
+      if (this.jdField_briefSound_of_type_JavaLangString != null) {
         CmdEnv.top().exec("music POP");
         CmdEnv.top().exec("music STOP");
-        this.briefSound = null;
+        this.jdField_briefSound_of_type_JavaLangString = null;
       }
     }
     super.leave(paramGameState);
   }
   public void leavePop(GameState paramGameState) {
     if ((paramGameState != null) && (paramGameState.id() == 2) && 
-      (this.briefSound != null)) {
+      (this.jdField_briefSound_of_type_JavaLangString != null)) {
       CmdEnv.top().exec("music POP");
       CmdEnv.top().exec("music PLAY");
     }
@@ -72,80 +70,69 @@ public class GUINetServerDBrief extends GUIBriefing
     prepareTextDescription(Army.amountNet());
   }
   protected String textDescription() {
-    if (this.textArmyDescription == null) return null;
+    if (this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString == null) return null;
     NetUser localNetUser = (NetUser)NetEnv.host();
     int i = localNetUser.getBornPlace();
     if (i < 0)
-      return this.textArmyDescription[0];
+      return this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString[0];
     BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(i);
-    return this.textArmyDescription[localBornPlace.army];
+    return this.jdField_textArmyDescription_of_type_ArrayOfJavaLangString[localBornPlace.army];
   }
 
-  private boolean isValidBornPlace()
-  {
+  private boolean isValidArming() {
+    UserCfg localUserCfg = World.cur().userCfg;
+    if (localUserCfg.netRegiment == null) return false;
+    if ((((NetUser)NetEnv.host()).netUserRegiment.isEmpty()) && (Actor.getByName(localUserCfg.netRegiment) == null))
+      return false;
+    if (localUserCfg.netAirName == null) return false;
+    if (Property.value(localUserCfg.netAirName, "airClass", null) == null) return false;
+    if (localUserCfg.getWeapon(localUserCfg.netAirName) == null) return false; try
+    {
+      Class localClass1 = (Class)Property.value(localUserCfg.netAirName, "airClass", null);
+
+      NetUser localNetUser = (NetUser)NetEnv.host();
+      int i = localNetUser.getBornPlace();
+      BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(i);
+      if (localBornPlace.airNames != null) {
+        ArrayList localArrayList = localBornPlace.airNames;
+        int j = 0;
+        for (int k = 0; k < localArrayList.size(); k++) {
+          String str = (String)localArrayList.get(k);
+          Class localClass2 = (Class)Property.value(str, "airClass", null);
+          if ((localClass2 == null) || 
+            (localClass1 != localClass2)) continue;
+          j = 1;
+          break;
+        }
+
+        if (j == 0)
+          return false;
+      }
+      return Aircraft.weaponsExist(localClass1, localUserCfg.getWeapon(localUserCfg.netAirName)); } catch (Exception localException) {
+    }
+    return false;
+  }
+
+  private boolean isValidBornPlace() {
     NetUser localNetUser = (NetUser)NetEnv.host();
     int i = localNetUser.getBornPlace();
     if ((i < 0) || (i >= World.cur().bornPlaces.size())) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.BornPlace"), i18n("brief.BornPlaceSelect"), 3, 0.0F);
+      new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("brief.BornPlace"), i18n("brief.BornPlaceSelect"), 3, 0.0F);
 
       return false;
     }
     int j = localNetUser.getAirdromeStay();
     if (j < 0) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.StayPlace"), i18n("brief.StayPlaceWait"), 3, 0.0F);
+      new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("brief.StayPlace"), i18n("brief.StayPlaceWait"), 3, 0.0F);
 
       return false;
     }
     return true;
   }
 
-  private boolean isValidAircraftForServer()
-  {
-    if (Main.cur().netServerParams == null)
-      return true;
-    if (!Main.cur().netServerParams.isMaster()) {
-      return true;
-    }
-    NetUser localNetUser = (NetUser)NetEnv.host();
-
-    if (localNetUser == null) {
-      return true;
-    }
-    try
-    {
-      UserCfg localUserCfg = World.cur().userCfg;
-      localNetUser.checkReplicateSkin(localUserCfg.netAirName);
-      String str = localUserCfg.netAirName;
-
-      BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(localNetUser.getBornPlace());
-      if (localBornPlace != null)
-      {
-        if ((!localBornPlace.zutiEnablePlaneLimits) || (localBornPlace.zutiIsAcAvailable(str)))
-          return true;
-      }
-    } catch (Exception localException) {
-      System.out.println("isValidAircraftForServer exception: " + localException.toString());
-    }return false;
-  }
-
-  protected void doNext()
-  {
-    if (!isValidBornPlace()) {
+  protected void doNext() {
+    if (!isValidBornPlace())
       return;
-    }
-    if (!isValidAircraftForServer())
-    {
-      GUIAirArming.stateId = 2;
-      Main.stateStack().push(55);
-      return;
-    }
-
-    if (!isCarrierDeckFree((NetUser)NetEnv.host()))
-    {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.CarrierDeckFull"), i18n("brief.CarrierDeckFullWait"), 3, 0.0F);
-
-      return;
-    }
     if (!isValidArming()) {
       GUIAirArming.stateId = 2;
       Main.stateStack().push(55);
@@ -190,21 +177,19 @@ public class GUINetServerDBrief extends GUIBriefing
   }
 
   protected void clientRender() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-    localDialogClient.draw(localDialogClient.x1024(15.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(140.0F), localDialogClient.y1024(48.0F), 1, (USGS.isUsed()) || (Main.cur().netGameSpy != null) ? i18n("main.Quit") : i18n("brief.MainMenu"));
+    GUIBriefingGeneric.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIBriefingGeneric$DialogClient;
+    localDialogClient.draw(localDialogClient.x1024(164.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(140.0F), localDialogClient.y1024(48.0F), 0, (USGS.isUsed()) || (Main.cur().netGameSpy != null) ? i18n("main.Quit") : i18n("brief.MainMenu"));
 
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Difficulty"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Arming"));
+    localDialogClient.draw(localDialogClient.x1024(256.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 2, i18n("brief.Difficulty"));
+    localDialogClient.draw(localDialogClient.x1024(528.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 2, i18n("brief.Arming"));
     super.clientRender();
   }
   protected void clientSetPosSize() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-
-    this.bLoodout.setPosC(localDialogClient.x1024(768.0F), localDialogClient.y1024(689.0F));
+    GUIBriefingGeneric.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIBriefingGeneric$DialogClient;
+    this.bLoodout.setPosC(localDialogClient.x1024(742.0F), localDialogClient.y1024(680.0F));
   }
 
-  public GUINetServerDBrief(GWindowRoot paramGWindowRoot)
-  {
+  public GUINetServerDBrief(GWindowRoot paramGWindowRoot) {
     super(39);
     init(paramGWindowRoot);
   }

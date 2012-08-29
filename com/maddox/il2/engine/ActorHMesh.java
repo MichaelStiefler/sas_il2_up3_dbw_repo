@@ -36,13 +36,13 @@ public abstract class ActorHMesh extends ActorMesh
   public void getChunkLocAbs(Loc paramLoc)
   {
     this.hmesh.getChunkLocObj(paramLoc);
-    paramLoc.add(this.pos.getAbs());
+    paramLoc.add(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
   }
 
   public void getChunkLocTimeAbs(Loc paramLoc)
   {
     this.hmesh.getChunkLocObj(paramLoc);
-    this.pos.getTime(Time.current(), _L);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), _L);
     paramLoc.add(_L);
   }
 
@@ -70,32 +70,32 @@ public abstract class ActorHMesh extends ActorMesh
     super(paramActorPos);
   }
   public void setMesh(String paramString) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
+    int i = (mesh() != null) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) ? 1 : 0;
     if (paramString.endsWith(".sim")) {
       this.hmesh = null;
       super.setMesh(paramString);
     } else {
-      this.mesh = null;
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineMesh = null;
       this.hmesh = new HierMesh(paramString);
     }
     if (i != 0)
-      this.pos.actorChanged(); 
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.actorChanged(); 
   }
 
   public void setMesh(Mesh paramMesh) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
-    this.mesh = paramMesh;
+    int i = (mesh() != null) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) ? 1 : 0;
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineMesh = paramMesh;
     this.hmesh = null;
     if (i != 0)
-      this.pos.actorChanged(); 
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.actorChanged(); 
   }
 
   protected void setMesh(HierMesh paramHierMesh) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
+    int i = (mesh() != null) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) ? 1 : 0;
     this.hmesh = paramHierMesh;
-    this.mesh = null;
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineMesh = null;
     if (i != 0)
-      this.pos.actorChanged();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.actorChanged();
   }
 
   public ActorHMesh(String paramString) {

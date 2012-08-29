@@ -12,8 +12,8 @@ public class FMMath extends Interpolate
 
   public boolean isTick(int paramInt1, int paramInt2)
   {
-    if (this.actor == null) return false;
-    return (Time.tickCounter() + this.actor.hashCode()) % paramInt1 == paramInt2;
+    if (this.jdField_actor_of_type_ComMaddoxIl2EngineActor == null) return false;
+    return (Time.tickCounter() + this.jdField_actor_of_type_ComMaddoxIl2EngineActor.hashCode()) % paramInt1 == paramInt2;
   }
 
   public static final float DEG2RAD(float paramFloat) {

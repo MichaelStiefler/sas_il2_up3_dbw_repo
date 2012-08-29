@@ -22,10 +22,10 @@ public class ActorLabel extends Actor
   }
   public ActorLabel(Point3d paramPoint3d) {
     this.flags |= 8192;
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
     IconDraw.create(this);
     if (paramPoint3d != null) {
-      this.pos.setAbs(paramPoint3d);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
       align();
     }
     drawing(true);

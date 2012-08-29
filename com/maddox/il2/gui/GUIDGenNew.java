@@ -66,7 +66,7 @@ public class GUIDGenNew extends GameState
     if (paramGameState.id() == 58) {
       Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
       if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
         {
           public void result(int paramInt)
           {
@@ -209,11 +209,11 @@ public class GUIDGenNew extends GameState
 
   private String fullFileNameCampaignIni()
   {
-    Camp localCamp = (Camp)this.campaigns.get(this.wTable.selectRow);
+    Camp localCamp = (Camp)this.campaigns.get(this.wTable.jdField_selectRow_of_type_Int);
     return "missions/campaign/" + this.cdgen.branch() + "/" + dirNameCampaign() + "/campaign.ini";
   }
   private String dirNameCampaign() {
-    Camp localCamp = (Camp)this.campaigns.get(this.wTable.selectRow);
+    Camp localCamp = (Camp)this.campaigns.get(this.wTable.jdField_selectRow_of_type_Int);
     String str = "DGen_" + this.cdgen.prefix() + "_" + localCamp.key + World.cur().userCfg.sId + this.cdgen.rank();
     return str;
   }
@@ -225,10 +225,10 @@ public class GUIDGenNew extends GameState
     while (true) {
       int i = paramString.indexOf(",");
       if (i < 0) break;
-      if (i + 1 <= paramString.length() - 1)
-        paramString = paramString.substring(0, i) + "_" + paramString.substring(i + 1);
-      else
-        paramString = paramString.substring(0, i) + "_";
+      if (i + 1 <= paramString.length() - 1) {
+        paramString = paramString.substring(0, i) + "_" + paramString.substring(i + 1); continue;
+      }
+      paramString = paramString.substring(0, i) + "_";
     }
     return paramString;
   }
@@ -251,7 +251,7 @@ public class GUIDGenNew extends GameState
 
       localPrintWriter.println(str2 + "," + str3 + "," + str4 + "," + World.cur().userCfg.yearBirth);
 
-      localPrintWriter.println(((Regiment)(Regiment)this.regimentList.get(this.wSquadron.getSelected())).name());
+      localPrintWriter.println(((Regiment)this.regimentList.get(this.wSquadron.getSelected())).name());
       localObject1 = RTSConf.cur.locale.getLanguage();
       str5 = "English";
       if ("ru".equalsIgnoreCase((String)localObject1)) str5 = "Russian";
@@ -265,7 +265,7 @@ public class GUIDGenNew extends GameState
       localPrintWriter.println("dir=missions\\campaign\\" + this.cdgen.branch() + "\\" + dirNameCampaign());
       localPrintWriter.println("Language=" + str5);
       localPrintWriter.println("instant=false");
-      for (int i = this.wTable.selectRow; i < this.campaigns.size(); i++) {
+      for (int i = this.wTable.jdField_selectRow_of_type_Int; i < this.campaigns.size(); i++) {
         localObject2 = (Camp)this.campaigns.get(i);
         localPrintWriter.println(((Camp)localObject2).key + " " + ((Camp)localObject2).air.get(((Camp)localObject2).select));
       }
@@ -278,7 +278,7 @@ public class GUIDGenNew extends GameState
 
     World.cur().userCfg.saveConf();
 
-    Camp localCamp = (Camp)this.campaigns.get(this.wTable.selectRow);
+    Camp localCamp = (Camp)this.campaigns.get(this.wTable.jdField_selectRow_of_type_Int);
     this.cdgen.doExternalCampaignGenerator(localCamp.key);
 
     Object localObject1 = null;
@@ -319,7 +319,7 @@ public class GUIDGenNew extends GameState
     }
     Main.cur().currentMissionFile = ((Campaign)localObject1).nextMission();
     if (Main.cur().currentMissionFile == null) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+      new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
       {
         public void result(int paramInt)
         {
@@ -371,12 +371,12 @@ public class GUIDGenNew extends GameState
     this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
 
     this.wPBirth = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wPBirth.maxLength = 74;
+    this.wPBirth.jdField_maxLength_of_type_Int = 74;
     if ("ja".equals(Locale.getDefault().getLanguage()))
-      this.wPBirth.maxLength /= 6;
+      this.wPBirth.jdField_maxLength_of_type_Int /= 6;
     this.wYBirth = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
     this.wYBirth.bNumericOnly = true;
-    this.wYBirth.maxLength = 4;
+    this.wYBirth.jdField_maxLength_of_type_Int = 4;
     this.wSquadron = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F)));
     this.wSquadron.setEditable(false);
 
@@ -407,18 +407,8 @@ public class GUIDGenNew extends GameState
       if (paramGWindow == GUIDGenNew.this.bStart) {
         String str = GUIDGenNew.this.fullFileNameCampaignIni();
         if (GUIDGenNew.this.exestFile(str)) {
-          new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, GUIDGenNew.this.i18n("campnew.Confirm"), GUIDGenNew.this.i18n("campnew.Exist"), 1, 0.0F)
-          {
-            public void result(int paramInt)
-            {
-              if (paramInt == 3) {
-                GUIDGenNew.this.delCampaign();
-                GUIDGenNew.this.doGenerateCampaign();
-              } else {
-                GUIDGenNew.this.client.activateWindow();
-              }
-            }
-          };
+          new GUIDGenNew.4(this, Main3D.cur3D().guiManager.root, 20.0F, true, GUIDGenNew.this.i18n("campnew.Confirm"), GUIDGenNew.this.i18n("campnew.Exist"), 1, 0.0F);
+
           return true;
         }
         GUIDGenNew.this.doGenerateCampaign();
@@ -439,8 +429,8 @@ public class GUIDGenNew extends GameState
       draw(x1024(96.0F), y1024(658.0F), x1024(240.0F), y1024(48.0F), 0, GUIDGenNew.this.i18n("dgennew.MainMenu"));
       draw(x1024(400.0F), y1024(658.0F), x1024(240.0F), y1024(48.0F), 2, GUIDGenNew.this.i18n("dgennew.Generate"));
 
-      if ((GUIDGenNew.this.campaigns.size() > 0) && (GUIDGenNew.this.wTable.selectRow >= 0)) {
-        draw(x1024(32.0F), y1024(576.0F), x1024(674.0F), y1024(32.0F), 0, GUIDGenNew.this.i18n("dgennew.First") + " " + ((GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(GUIDGenNew.this.wTable.selectRow)).info);
+      if ((GUIDGenNew.this.campaigns.size() > 0) && (GUIDGenNew.this.wTable.jdField_selectRow_of_type_Int >= 0)) {
+        draw(x1024(32.0F), y1024(576.0F), x1024(674.0F), y1024(32.0F), 0, GUIDGenNew.this.i18n("dgennew.First") + " " + ((GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(GUIDGenNew.this.wTable.jdField_selectRow_of_type_Int)).info);
       }
 
       GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(674.0F), 2.0F);
@@ -480,21 +470,14 @@ public class GUIDGenNew extends GameState
       if (!isCellEditable(paramInt1, paramInt2)) return null;
 
       this.indxCamp = paramInt1;
-      1 local1;
-      GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.wClient.create(local1 = new GWindowComboControl() {
-        GUIDGenNew.Camp camp = (GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(GUIDGenNew.Table.this.indxCamp);
+      GUIDGenNew.2 local2;
+      GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.jdField_wClient_of_type_ComMaddoxGwindowGWindowTable$Client.create(local2 = new GUIDGenNew.2(this));
 
-        public boolean notify(int paramInt1, int paramInt2) { boolean bool = super.notify(paramInt1, paramInt2);
-          if (paramInt1 == 2)
-            this.camp.select = paramInt2;
-          return bool;
-        }
-      });
-      local1.setEditable(false);
+      local2.setEditable(false);
       GUIDGenNew.Camp localCamp = (GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(paramInt1);
       for (int i = 0; i < localCamp.air.size(); i++)
-        local1.add((String)localCamp.airInfo.get(i));
-      local1.setSelected(localCamp.select, true, false);
+        local2.add((String)localCamp.airInfo.get(i));
+      local2.setSelected(localCamp.select, true, false);
       return localGWindowCellEdit;
     }
 
@@ -537,16 +520,16 @@ public class GUIDGenNew extends GameState
       this.bSelectRow = true;
       addColumn(I18N.gui("dgennew.Operation"), null);
       addColumn(I18N.gui("dgennew.Plane"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(20.0F);
       getColumn(1).setRelativeDx(10.0F);
       alignColumns();
       this.bNotify = true;
-      this.wClient.bNotify = true;
+      this.jdField_wClient_of_type_ComMaddoxGwindowGWindowTable$Client.bNotify = true;
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

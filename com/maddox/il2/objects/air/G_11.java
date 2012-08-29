@@ -92,11 +92,11 @@ public class G_11 extends Scheme0
     Property.set(localClass, "gliderStringKx", 30.0F);
     Property.set(localClass, "gliderStringFactor", 1.8F);
 
-    weaponTriggersRegister(localClass, new int[] { 3 });
-    weaponHooksRegister(localClass, new String[] { "_BombSpawn01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_BombSpawn01" });
 
-    weaponsRegister(localClass, "default", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { null });
 
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

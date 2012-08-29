@@ -64,73 +64,68 @@ public class GUIArming extends GameState
       this.playerSlot = -1;
       int j = localSectFile.sectionIndex("Wing");
       int k = localSectFile.vars(j);
-      Object localObject;
-      int n;
+      int i2;
       for (int m = 0; m < k; m++) {
-        localObject = localSectFile.var(j, m);
-        if (((String)localObject).startsWith(str2)) {
-          n = ((String)localObject).charAt(((String)localObject).length() - 1) - '0';
-          if (((String)localObject).equals(str1)) this.playerSlot = n;
-          int i1 = localSectFile.get((String)localObject, "Planes", 0, 0, 4);
-          Slot localSlot = new Slot();
-          this.slot[n] = localSlot;
-          localSlot.wingName = ((String)localObject);
-          localSlot.players = i1;
-          localSlot.fuel = localSectFile.get((String)localObject, "Fuel", 100, 0, 100);
-          String str4 = localSectFile.get((String)localObject, "Class", (String)null);
-          localSlot.planeClass = ObjIO.classForName(str4);
-          localSlot.planeKey = Property.stringValue(localSlot.planeClass, "keyName", null);
-          String str5 = localSectFile.get((String)localObject, "weapons", (String)null);
-          localSlot.weapons = Aircraft.getWeaponsRegistered(localSlot.planeClass);
-          localSlot.weapon = 0;
-          for (int i2 = 0; i2 < localSlot.weapons.length; i2++) {
-            if (localSlot.weapons[i2].equals(str5)) {
-              localSlot.weapon = i2;
+        String str4 = localSectFile.var(j, m);
+        if (str4.startsWith(str2)) {
+          int i1 = str4.charAt(str4.length() - 1) - '0';
+          if (str4.equals(str1)) this.playerSlot = i1;
+          i2 = localSectFile.get(str4, "Planes", 0, 0, 4);
+          Slot localSlot2 = new Slot();
+          this.slot[i1] = localSlot2;
+          localSlot2.wingName = str4;
+          localSlot2.players = i2;
+          localSlot2.fuel = localSectFile.get(str4, "Fuel", 100, 0, 100);
+          String str5 = localSectFile.get(str4, "Class", (String)null);
+          localSlot2.planeClass = ObjIO.classForName(str5);
+          localSlot2.planeKey = Property.stringValue(localSlot2.planeClass, "keyName", null);
+          String str6 = localSectFile.get(str4, "weapons", (String)null);
+          localSlot2.weapons = Aircraft.getWeaponsRegistered(localSlot2.planeClass);
+          localSlot2.weapon = 0;
+          for (int i3 = 0; i3 < localSlot2.weapons.length; i3++) {
+            if (localSlot2.weapons[i3].equals(str6)) {
+              localSlot2.weapon = i3;
               break;
             }
           }
         }
       }
-      for (m = 0; m < 4; m++)
-        if (this.slot[m] == null) {
-          this.pAircraft[m].setEnable(false);
-          this.cWeapon[m].clear(false);
+      for (int n = 0; n < 4; n++)
+        if (this.slot[n] == null) {
+          this.pAircraft[n].setEnable(false);
+          this.cWeapon[n].clear(false);
         }
         else {
-          localObject = this.slot[m];
+          Slot localSlot1 = this.slot[n];
           if (World.cur().isWeaponsConstant()) {
-            ((Slot)localObject).bEnable = false;
+            localSlot1.bEnable = false;
           }
           else if (this.bSingleMission) {
-            ((Slot)localObject).bEnable = true;
+            localSlot1.bEnable = true;
           }
           else if (this.playerNum == 0) {
             if (this.playerSlot == 0)
-              ((Slot)localObject).bEnable = true;
+              localSlot1.bEnable = true;
             else
-              ((Slot)localObject).bEnable = (this.playerSlot == m);
+              localSlot1.bEnable = (this.playerSlot == n);
           }
-          else ((Slot)localObject).bEnable = false;
+          else localSlot1.bEnable = false;
 
-          this.pAircraft[m].cap = new GCaption(((Slot)localObject).players + " * " + I18N.plane(((Slot)localObject).planeKey));
-          if (m == this.playerSlot)
-            this.pAircraft[m].color = 255;
+          this.pAircraft[n].cap = new GCaption(localSlot1.players + " * " + I18N.plane(localSlot1.planeKey));
+          if (n == this.playerSlot)
+            this.pAircraft[n].jdField_color_of_type_Int = 255;
           else
-            this.pAircraft[m].color = 0;
-          this.pAircraft[m].setEnable(true);
+            this.pAircraft[n].jdField_color_of_type_Int = 0;
+          this.pAircraft[n].setEnable(true);
 
-          this.cWeapon[m].clear(false);
-          if (((Slot)localObject).bEnable) {
-            for (n = 0; n < ((Slot)localObject).weapons.length; n++)
-            {
-              if (!Aircraft.isWeaponDateOk(((Slot)localObject).planeClass, localObject.weapons[n]))
-                continue;
-              this.cWeapon[m].add(I18N.weapons(((Slot)localObject).planeKey, localObject.weapons[n]));
-            }
-            this.cWeapon[m].setSelected(((Slot)localObject).weapon, true, false);
+          this.cWeapon[n].clear(false);
+          if (localSlot1.bEnable) {
+            for (i2 = 0; i2 < localSlot1.weapons.length; i2++)
+              this.cWeapon[n].add(I18N.weapons(localSlot1.planeKey, localSlot1.weapons[i2]));
+            this.cWeapon[n].setSelected(localSlot1.weapon, true, false);
           } else {
-            this.cWeapon[m].add(I18N.weapons(((Slot)localObject).planeKey, localObject.weapons[localObject.weapon]));
-            this.cWeapon[m].setSelected(0, true, false);
+            this.cWeapon[n].add(I18N.weapons(localSlot1.planeKey, localSlot1.weapons[localSlot1.weapon]));
+            this.cWeapon[n].setSelected(0, true, false);
           }
         }
     }

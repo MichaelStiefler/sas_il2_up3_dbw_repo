@@ -5,6 +5,7 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.BulletGeneric;
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.Loc;
@@ -17,28 +18,24 @@ import com.maddox.rts.MsgAction;
 public class BulletAircraftGeneric extends Bullet
 {
   protected int bulletss;
-  Vector3d Wind;
   private static final int[] fv = { 1, 1, 5, 15, 52, 87, 123, 160, 196, 233, 269, 333 };
 
   public void move(float paramFloat)
   {
-    if (this.gun == null) return;
+    if (this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric == null) return;
 
-    Point3d localPoint3d = this.p1; this.p1 = this.p0; this.p0 = localPoint3d;
-    dspeed.scale(this.gun.bulletKV[indx()] * paramFloat * 1.0F * fv(this.speed.length()) / this.speed.length(), this.speed);
+    Point3d localPoint3d = this.jdField_p1_of_type_ComMaddoxJGPPoint3d; this.jdField_p1_of_type_ComMaddoxJGPPoint3d = this.jdField_p0_of_type_ComMaddoxJGPPoint3d; this.jdField_p0_of_type_ComMaddoxJGPPoint3d = localPoint3d;
+    BulletGeneric.dspeed.scale(this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.bulletKV[indx()] * paramFloat * 1.0F * fv(this.jdField_speed_of_type_ComMaddoxJGPVector3d.length()) / this.jdField_speed_of_type_ComMaddoxJGPVector3d.length(), this.jdField_speed_of_type_ComMaddoxJGPVector3d);
 
-    dspeed.z += this.gun.bulletAG[indx()] * paramFloat;
-    this.speed.add(dspeed);
-    this.p1.scaleAdd(paramFloat, this.speed, this.p0);
-
-    this.p1.x += this.Wind.x * paramFloat;
-    this.p1.y += this.Wind.y * paramFloat;
+    BulletGeneric.dspeed.z += this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.bulletAG[indx()] * paramFloat;
+    this.jdField_speed_of_type_ComMaddoxJGPVector3d.add(BulletGeneric.dspeed);
+    this.jdField_p1_of_type_ComMaddoxJGPPoint3d.scaleAdd(paramFloat, this.jdField_speed_of_type_ComMaddoxJGPVector3d, this.jdField_p0_of_type_ComMaddoxJGPPoint3d);
   }
 
   public void timeOut()
   {
     if (gun() != null)
-      Explosions.generateExplosion(null, this.p1, gun().prop.bullet[indx()].power, gun().prop.bullet[indx()].powerType, gun().prop.bullet[indx()].powerRadius, 0.0D);
+      Explosions.generateExplosion(null, this.jdField_p1_of_type_ComMaddoxJGPPoint3d, gun().prop.bullet[indx()].power, gun().prop.bullet[indx()].powerType, gun().prop.bullet[indx()].powerRadius, 0.0D);
   }
 
   public void destroy()
@@ -65,12 +62,9 @@ public class BulletAircraftGeneric extends Bullet
     };
   }
 
-  public BulletAircraftGeneric(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
+  public BulletAircraftGeneric(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong)
   {
-    super(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
-
-    this.Wind = new Vector3d();
-    this.Wind = paramVector3d1;
+    super(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong);
 
     if ((Mission.isPlaying()) && (!NetMissionTrack.isPlaying()) && (Actor.isValid(owner())) && (Actor.isValid(gun())) && ((gun() instanceof MGunAircraftGeneric)) && (owner() == World.getPlayerAircraft()) && (World.cur().diffCur.Limited_Ammo))
     {

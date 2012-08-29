@@ -2,7 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
 
-public abstract class Scheme6 extends AircraftLH
+public abstract class Scheme6 extends Aircraft
 {
   protected void moveRudder(float paramFloat)
   {

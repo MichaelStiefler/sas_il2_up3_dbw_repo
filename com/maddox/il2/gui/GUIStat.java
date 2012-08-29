@@ -42,7 +42,6 @@ public class GUIStat extends GameState
   GTexRegion texArtillery;
   GTexRegion texBridge;
   GTexRegion texAirStatic;
-  GTexRegion texRadarRadio;
   private GRegion _clipReg = new GRegion();
 
   protected void updateScrollSizes()
@@ -109,9 +108,9 @@ public class GUIStat extends GameState
     this.texStat = new GTexRegion("GUI/game/staticelements.mat", 0.0F, 112.0F, 64.0F, 80.0F);
 
     this.airScroll = new ScrollClient(this.dialogClient);
-    this.airScroll.fixed = ((GWindowDialogClient)this.airScroll.create(this.airFixed = new FixedClient(true)));
+    this.airScroll.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = ((GWindowDialogClient)this.airScroll.create(this.airFixed = new FixedClient(true)));
     this.groundScroll = new ScrollClient(this.dialogClient);
-    this.groundScroll.fixed = ((GWindowDialogClient)this.groundScroll.create(this.groundFixed = new FixedClient(false)));
+    this.groundScroll.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = ((GWindowDialogClient)this.groundScroll.create(this.groundFixed = new FixedClient(false)));
 
     this.bSave = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
     this.bRefly = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
@@ -138,7 +137,6 @@ public class GUIStat extends GameState
     this.texArtillery = new GTexRegion(localGTexture, 208.0F, 192.0F, 48.0F, 32.0F);
     this.texBridge = new GTexRegion(localGTexture, 208.0F, 224.0F, 48.0F, 32.0F);
     this.texAirStatic = new GTexRegion(localGTexture, 160.0F, 224.0F, 48.0F, 32.0F);
-    this.texRadarRadio = new GTexRegion(localGTexture, 160.0F, 192.0F, 48.0F, 32.0F);
   }
 
   public GUIStat(int paramInt) {
@@ -187,14 +185,14 @@ public class GUIStat extends GameState
     {
       GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
       setCanvasColorWHITE();
-      localGUILookAndFeel.drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGUILookAndFeel.bevelComboDown, localGUILookAndFeel.basicelements);
+      localGUILookAndFeel.drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGUILookAndFeel.bevelComboDown, localGUILookAndFeel.basicelements);
     }
     public void doChildrensRender(boolean paramBoolean) {
       GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
       GUIStat.this._clipReg.x = localGUILookAndFeel.bevelComboDown.L.dx;
       GUIStat.this._clipReg.y = localGUILookAndFeel.bevelComboDown.T.dy;
-      GUIStat.this._clipReg.dx = (this.win.dx - localGUILookAndFeel.bevelComboDown.L.dx - localGUILookAndFeel.bevelComboDown.R.dx);
-      GUIStat.this._clipReg.dy = (this.win.dy - localGUILookAndFeel.bevelComboDown.T.dy - localGUILookAndFeel.bevelComboDown.B.dy);
+      GUIStat.this._clipReg.dx = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGUILookAndFeel.bevelComboDown.L.dx - localGUILookAndFeel.bevelComboDown.R.dx);
+      GUIStat.this._clipReg.dy = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGUILookAndFeel.bevelComboDown.T.dy - localGUILookAndFeel.bevelComboDown.B.dy);
       if (pushClipRegion(GUIStat.this._clipReg)) {
         super.doChildrensRender(paramBoolean);
         popClip();
@@ -227,27 +225,27 @@ public class GUIStat extends GameState
           i -= 100;
           if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), x1024(48.0F), GUIStat.this.texAir[GUIStat.this.iArmy][2]);
           if (i <= 0) continue; j++;
-          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; continue; }
-          f4 += f2 + 48.0F;
+          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; } else {
+            f4 += f2 + 48.0F;
+          }
         }
-
         while (i >= 10) {
           i -= 10;
           if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), x1024(48.0F), GUIStat.this.texAir[GUIStat.this.iArmy][1]);
           if (i <= 0) continue; j++;
-          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; continue; }
-          f4 += f2 + 48.0F;
+          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; } else {
+            f4 += f2 + 48.0F;
+          }
         }
-
         while (i > 0) {
           i--;
           if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), y1024(48.0F), GUIStat.this.texAir[GUIStat.this.iArmy][0]);
           if (i <= 0) continue; j++;
-          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; continue; }
-          f4 += f2 + 48.0F;
+          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; } else {
+            f4 += f2 + 48.0F;
+          }
         }
-      }
-      else {
+      } else {
         i = Scores.enemyGroundKill;
         j = 0;
         if (Scores.arrayEnemyGroundKill != null)
@@ -268,9 +266,7 @@ public class GUIStat extends GameState
             case 5:
               localGTexRegion = GUIStat.this.texBridge; break;
             case 8:
-              localGTexRegion = GUIStat.this.texAirStatic; break;
-            case 9:
-              localGTexRegion = GUIStat.this.texRadarRadio;
+              localGTexRegion = GUIStat.this.texAirStatic;
             }
             if (localGTexRegion != null) {
               i--;

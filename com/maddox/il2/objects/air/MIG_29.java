@@ -16,13 +16,13 @@ public class MIG_29 extends MIG_3
     Property.set(localClass, "FlightModel", "FlightModels/MiG-29.fmd");
     Property.set(localClass, "cockpitClass", CockpitMIG_3.class);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN04", "_MGUN05", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN04", "_MGUN05", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 250", "MGunShVAKs 250", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 250", "MGunShVAKs 250", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2xBK", new String[] { "MGunShVAKs 250", "MGunShVAKs 250", "MGunUBk 250", "MGunUBk 250", null, null, null, null, "PylonMiG_3_BK", "PylonMiG_3_BK", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2xBK", new String[] { "MGunShVAKs 250", "MGunShVAKs 250", "MGunUBk 250", "MGunUBk 250", null, null, null, null, "PylonMiG_3_BK", "PylonMiG_3_BK", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

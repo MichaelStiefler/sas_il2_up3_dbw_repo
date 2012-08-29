@@ -7,10 +7,10 @@ public class EffSmokeTrail extends Eff3D
     return new EffSmokeTrailActor(this, paramLoc);
   }
   protected EffSmokeTrail() {
-    this.cppObj = cNew(); } 
+    this.jdField_cppObj_of_type_Int = cNew(); } 
   private native int cNew();
 
-  public EffSmokeTrail(int paramInt) { this.cppObj = paramInt; }
+  public EffSmokeTrail(int paramInt) { this.jdField_cppObj_of_type_Int = paramInt; }
 
   static {
     GObj.loadNative();

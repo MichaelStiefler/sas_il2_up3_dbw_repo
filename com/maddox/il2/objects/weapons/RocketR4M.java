@@ -6,12 +6,12 @@ import com.maddox.rts.Property;
 
 public class RocketR4M extends Rocket
 {
-  public void start(float paramFloat, int paramInt)
+  public void start(float paramFloat)
   {
     setMesh("3DO/Arms/R4M-OPEN/mono.sim");
-    super.start(paramFloat, paramInt);
-    this.speed.normalize();
-    this.speed.scale(525.0D);
+    super.start(paramFloat);
+    this.jdField_speed_of_type_ComMaddoxJGPVector3d.normalize();
+    this.jdField_speed_of_type_ComMaddoxJGPVector3d.scale(525.0D);
     this.noGDelay = -1L;
   }
 

@@ -25,9 +25,9 @@ public abstract class CannonMidrangeGeneric extends Gun
     return this.bulletTypeIdx;
   }
 
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
+  public Bullet createNextBullet(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong)
   {
-    return new BulletParabolaGeneric(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
+    return new BulletParabolaGeneric(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong);
   }
 
   public static void autocomputeSplintersRadiuses(BulletProperties[] paramArrayOfBulletProperties) {
@@ -128,19 +128,19 @@ public abstract class CannonMidrangeGeneric extends Gun
 
   public float TravelTime(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    float f1 = (float)(paramPoint3d2.z - paramPoint3d1.z);
-    if (Math.abs(f1) > this.prop.aimMaxDist) {
+    float f1 = (float)(paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double);
+    if (Math.abs(f1) > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMaxDist) {
       return -1.0F;
     }
 
-    float f4 = (float)(paramPoint3d2.x - paramPoint3d1.x);
-    float f5 = (float)(paramPoint3d2.y - paramPoint3d1.y);
+    float f4 = (float)(paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    float f5 = (float)(paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
     float f6 = (float)Math.sqrt(f4 * f4 + f5 * f5);
-    if (f6 > this.prop.aimMaxDist) {
+    if (f6 > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMaxDist) {
       return -1.0F;
     }
-    if ((f6 < this.prop.aimMinDist) && 
-      (Math.abs(f1) < this.prop.aimMinDist)) {
+    if ((f6 < this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMinDist) && 
+      (Math.abs(f1) < this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMinDist)) {
       return -1.0F;
     }
 
@@ -148,7 +148,7 @@ public abstract class CannonMidrangeGeneric extends Gun
     float f3 = f1;
 
     f4 = -Atmosphere.g() / 2.0F;
-    f5 = this.prop.bullet[this.bulletTypeIdx].speed;
+    f5 = this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[this.bulletTypeIdx].speed;
 
     f6 = f4 * f4;
     float f7 = -(2.0F * f3 * f4 + f5 * f5);
@@ -179,11 +179,11 @@ public abstract class CannonMidrangeGeneric extends Gun
 
   public boolean FireDirection(Point3d paramPoint3d1, Point3d paramPoint3d2, Vector3d paramVector3d)
   {
-    float f1 = (float)(paramPoint3d2.x - paramPoint3d1.x);
-    float f2 = (float)(paramPoint3d2.y - paramPoint3d1.y);
-    float f3 = (float)(paramPoint3d2.z - paramPoint3d1.z);
+    float f1 = (float)(paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    float f2 = (float)(paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
+    float f3 = (float)(paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double);
     float f4 = (float)Math.sqrt(f1 * f1 + f2 * f2);
-    float f5 = (float)(paramPoint3d2.z - paramPoint3d1.z);
+    float f5 = (float)(paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double);
 
     if (Math.abs(f4) < 0.01D) {
       paramVector3d.set(0.0D, 0.0D, 1.0D);
@@ -196,15 +196,15 @@ public abstract class CannonMidrangeGeneric extends Gun
     paramVector3d.set(f1, f2, 0.0D);
     paramVector3d.scale(1.0F / f4);
 
-    float f6 = this.prop.bullet[this.bulletTypeIdx].speed;
+    float f6 = this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[this.bulletTypeIdx].speed;
 
     if (this.timeToFly >= 1.0E-004F) {
       float f9 = -Atmosphere.g() / 2.0F;
       float f8 = (f5 - f9 * this.timeToFly * this.timeToFly) / this.timeToFly;
       float f7 = f4 / this.timeToFly;
-      paramVector3d.x *= f7;
-      paramVector3d.y *= f7;
-      paramVector3d.z = f8;
+      paramVector3d.jdField_x_of_type_Double *= f7;
+      paramVector3d.jdField_y_of_type_Double *= f7;
+      paramVector3d.jdField_z_of_type_Double = f8;
       paramVector3d.normalize();
     } else {
       return false;

@@ -225,76 +225,76 @@ public class GUISetup3D1 extends GameState
           ((ComboCfg)this.cfg[i]).reset();
         }
       }
-      i = this.state.length;
-      int j = 0;
-      if (this.posEnable != null) {
-        for (; j < i; j++) {
-          int[] arrayOfInt1 = this.state[j];
-          this.posEnable[j] = true;
-          for (int m = 0; m < this.cfg.length; m++)
+      int j = this.state.length;
+      int k = 0;
+      if (this.jdField_posEnable_of_type_ArrayOfBoolean != null) {
+        for (; k < j; k++) {
+          int[] arrayOfInt1 = this.state[k];
+          this.jdField_posEnable_of_type_ArrayOfBoolean[k] = true;
+          for (int n = 0; n < this.cfg.length; n++)
           {
             Object localObject1;
-            if ((this.cfg[m] instanceof CfgFlags)) {
-              localObject1 = (CfgFlags)this.cfg[m];
+            if ((this.cfg[n] instanceof CfgFlags)) {
+              localObject1 = (CfgFlags)this.cfg[n];
               if (!((CfgFlags)localObject1).isEnabledFlag(0))
-                this.posEnable[j] = false;
-            } else if ((this.cfg[m] instanceof CfgInt)) {
-              localObject1 = (CfgInt)this.cfg[m];
-              if (!((CfgInt)localObject1).isEnabledState(arrayOfInt1[m]))
-                this.posEnable[j] = false;
+                this.jdField_posEnable_of_type_ArrayOfBoolean[k] = false;
+            } else if ((this.cfg[n] instanceof CfgInt)) {
+              localObject1 = (CfgInt)this.cfg[n];
+              if (!((CfgInt)localObject1).isEnabledState(arrayOfInt1[n]))
+                this.jdField_posEnable_of_type_ArrayOfBoolean[k] = false;
             }
           }
         }
       }
-      j = 0;
-      int k = 1;
-      for (; j < i; j++) {
-        k = 1;
-        int[] arrayOfInt2 = this.state[j];
-        for (int n = 0; n < this.cfg.length; n++)
+      k = 0;
+      int m = 1;
+      for (; k < j; k++) {
+        m = 1;
+        int[] arrayOfInt2 = this.state[k];
+        for (int i1 = 0; i1 < this.cfg.length; i1++)
         {
           Object localObject2;
-          if ((this.cfg[n] instanceof CfgFlags)) {
-            localObject2 = (CfgFlags)this.cfg[n];
-            k = ((CfgFlags)localObject2).get(0) == (arrayOfInt2[n] != 0) ? 1 : 0;
+          if ((this.cfg[i1] instanceof CfgFlags)) {
+            localObject2 = (CfgFlags)this.cfg[i1];
+            m = ((CfgFlags)localObject2).get(0) == (arrayOfInt2[i1] != 0) ? 1 : 0;
           }
           else
           {
-            int i1;
             int i2;
-            if ((this.cfg[n] instanceof CfgInt)) {
-              localObject2 = (CfgInt)this.cfg[n];
-              i1 = ((CfgInt)localObject2).get();
-              i2 = arrayOfInt2[n];
-              while ((i2 > 0) && (!((CfgInt)localObject2).isEnabledState(i2)))
-                i2--;
-              k = i1 == i2 ? 1 : 0;
+            int i3;
+            if ((this.cfg[i1] instanceof CfgInt)) {
+              localObject2 = (CfgInt)this.cfg[i1];
+              i2 = ((CfgInt)localObject2).get();
+              i3 = arrayOfInt2[i1];
+              while ((i3 > 0) && (!((CfgInt)localObject2).isEnabledState(i3)))
+                i3--;
+              m = i2 == i3 ? 1 : 0;
             } else {
-              localObject2 = (ComboCfg)this.cfg[n];
-              i1 = ((ComboCfg)localObject2).getSelected();
-              i2 = arrayOfInt2[n];
-              while ((i2 > 0) && (localObject2.posEnable[i2] == 0))
-                i2--;
-              k = i1 == i2 ? 1 : 0;
+              localObject2 = (ComboCfg)this.cfg[i1];
+              i2 = ((ComboCfg)localObject2).getSelected();
+              i3 = arrayOfInt2[i1];
+              while ((i3 > 0) && (localObject2.jdField_posEnable_of_type_ArrayOfBoolean[i3] == 0))
+                i3--;
+              m = i2 == i3 ? 1 : 0;
             }
           }
-          if (k == 0)
+          if (m == 0)
             break;
         }
-        if (k != 0)
+        if (m != 0)
           break;
       }
-      if (j == i)
-        j = i - 1;
-      if (this.posEnable != null) {
-        while ((j > 0) && 
-          (this.posEnable[j] == 0))
-        {
-          j--;
+      if (k == j)
+        k = j - 1;
+      if (this.jdField_posEnable_of_type_ArrayOfBoolean != null) {
+        while (k > 0) {
+          if (this.jdField_posEnable_of_type_ArrayOfBoolean[k] != 0)
+            break;
+          k--;
         }
       }
-      setSelected(j, true, false);
-      return k;
+      setSelected(k, true, false);
+      return m;
     }
 
     public int apply() {
@@ -322,7 +322,7 @@ public class GUISetup3D1 extends GameState
           } else {
             localObject = (ComboCfg)this.cfg[k];
             m = arrayOfInt[k];
-            while ((m > 0) && (localObject.posEnable[m] == 0))
+            while ((m > 0) && (localObject.jdField_posEnable_of_type_ArrayOfBoolean[m] == 0))
               m--;
             ((ComboCfg)localObject).setSelected(m, true, false);
             i |= ((ComboCfg)localObject).apply();
@@ -341,7 +341,7 @@ public class GUISetup3D1 extends GameState
       for (int i = 0; i < localObject.length; i++)
         add(localObject[i]);
       if (!(paramArrayOfInt[0] instanceof ComboCfg))
-        this.posEnable = new boolean[localObject.length];
+        this.jdField_posEnable_of_type_ArrayOfBoolean = new boolean[localObject.length];
       reset();
     }
   }

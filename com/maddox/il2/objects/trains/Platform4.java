@@ -30,6 +30,7 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.weapons.CannonMidrangeGeneric;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.il2.objects.weapons.MachineGunFlak30_20mm;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
@@ -61,20 +62,12 @@ public class Platform4 extends Wagon
 
   private static String getMeshName(int paramInt)
   {
-    String str;
-    switch (World.cur().camouflage)
-    {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/Platform4" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/Platform4" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()
@@ -118,7 +111,7 @@ public class Platform4 extends Wagon
     FiringDevice.access$202(paramFiringDevice, paramFloat2);
     hierMesh().chunkSetAngles("Head" + paramFiringDevice.id, paramFiringDevice.headYaw, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Gun" + paramFiringDevice.id, -paramFiringDevice.gunPitch, 0.0F, 0.0F);
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
   }
 
   private void eraseGuns()
@@ -131,7 +124,7 @@ public class Platform4 extends Wagon
             FiringDevice.access$002(this.arms[i], null);
           }
           if (this.arms[i].gun != null) {
-            destroy(this.arms[i].gun);
+            ObjState.destroy(this.arms[i].gun);
             FiringDevice.access$402(this.arms[i], null);
           }
           FiringDevice.access$502(this.arms[i], null);
@@ -255,7 +248,7 @@ public class Platform4 extends Wagon
 
     NearestEnemies.set(WeaponsMask());
 
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), AttackMaxDistance(), getArmy());
+    localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), AttackMaxDistance(), getArmy());
 
     if (localActor == null) {
       return null;
@@ -270,15 +263,15 @@ public class Platform4 extends Wagon
 
     BulletProperties localBulletProperties = null;
 
-    if (localFiringDevice.gun.prop != null) {
-      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+    if (localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties != null) {
+      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
 
       if (i < 0)
       {
         return null;
       }
 
-      localBulletProperties = localFiringDevice.gun.prop.bullet[i];
+      localBulletProperties = localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[i];
     }
 
     int i = ((Prey)localActor).chooseShotpoint(localBulletProperties);
@@ -363,7 +356,7 @@ public class Platform4 extends Wagon
     FiringDevice localFiringDevice = GetFiringDevice(paramAim);
 
     if ((localFiringDevice.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (i < 0) {
         return 0;
       }
@@ -389,7 +382,7 @@ public class Platform4 extends Wagon
     float f2 = 0.19F;
 
     double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
+    double d2 = localPoint3d1.jdField_z_of_type_Double;
 
     localPoint3d1.sub(localPoint3d2);
     localPoint3d1.scale(Rnd(0.98D, 1.02D));
@@ -397,7 +390,7 @@ public class Platform4 extends Wagon
 
     if (f1 > 0.001F) {
       Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d3);
 
       tmpv.sub(localPoint3d1, localPoint3d3);
       double d3 = tmpv.length();
@@ -410,7 +403,7 @@ public class Platform4 extends Wagon
         float f8 = f7 * 0.01F;
 
         localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
+        double d4 = localPoint3d3.jdField_x_of_type_Double * localPoint3d3.jdField_x_of_type_Double + localPoint3d3.jdField_y_of_type_Double * localPoint3d3.jdField_y_of_type_Double + localPoint3d3.jdField_z_of_type_Double * localPoint3d3.jdField_z_of_type_Double;
 
         if (d4 > 0.01D) {
           float f9 = (float)tmpv.dot(localPoint3d3);
@@ -444,8 +437,8 @@ public class Platform4 extends Wagon
 
     }
 
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
+    if (World.Sun().ToSun.jdField_z_of_type_Float < -0.15F) {
+      f5 = (-World.Sun().ToSun.jdField_z_of_type_Float - 0.15F) / 0.13F;
       if (f5 >= 1.0F) {
         f5 = 1.0F;
       }
@@ -477,7 +470,7 @@ public class Platform4 extends Wagon
       f4 = 18.0F;
     }
 
-    int j = paramAim.setRotationForTargeting(this, this.pos.getAbs().getOrient(), localPoint3d2, localFiringDevice.headYaw, localFiringDevice.gunPitch, localVector3d, f2, f1, this.HEAD_YAW_RANGE, -10.0F, 89.0F, f3, f4, 0.0F);
+    int j = paramAim.setRotationForTargeting(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient(), localPoint3d2, localFiringDevice.headYaw, localFiringDevice.gunPitch, localVector3d, f2, f1, this.HEAD_YAW_RANGE, -10.0F, 89.0F, f3, f4, 0.0F);
 
     return j;
   }

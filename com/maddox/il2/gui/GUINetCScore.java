@@ -47,8 +47,7 @@ public class GUINetCScore extends GameState
         localItem1 = new Item();
         localItem1.score = d;
         localItem1.army = j;
-        localArrayList.add(localItem1);
-        break;
+        localArrayList.add(localItem1); break;
       }
 
       if ((localItem.reg.getArmy() != j) && (j != 0)) {
@@ -149,11 +148,12 @@ public class GUINetCScore extends GameState
           Main.stateStack().change(Main.cur().netServerParams.bNGEN ? 69 : 38);
         } else {
           GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-          if (localGUINetClientGuard != null)
-            localGUINetClientGuard.dlgDestroy(new GUINetClientGuard.DestroyExec() {
-              public void destroy(GUINetClientGuard paramGUINetClientGuard) { paramGUINetClientGuard.destroy(true); }
-            });
+          if (localGUINetClientGuard != null) {
+            localGUINetClientGuard.dlgDestroy(new GUINetCScore.1(this));
+          }
+
         }
+
         return true;
       }
 
@@ -278,7 +278,7 @@ public class GUINetCScore extends GameState
       addColumn(I18N.gui("netcs.Position"), null);
       addColumn(I18N.gui("netcs.Player"), null);
       addColumn(I18N.gui("netcs.Score"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(1.0F);
       getColumn(1).setRelativeDx(4.0F);
       getColumn(2).setRelativeDx(4.0F);
@@ -292,7 +292,7 @@ public class GUINetCScore extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

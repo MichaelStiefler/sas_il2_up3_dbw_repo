@@ -13,9 +13,9 @@ public class LA_5 extends LA_X
     super.rareAction(paramFloat, paramBoolean);
     if (paramBoolean)
       for (int i = 0; i < 4; i++) {
-        if ((this.FM.AS.astateTankStates[i] <= 0) || (this.FM.AS.astateTankStates[i] >= 5) || 
+        if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateTankStates[i] <= 0) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateTankStates[i] >= 5) || 
           (World.Rnd().nextFloat() >= 0.1F)) continue;
-        this.FM.AS.repairTank(i);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.repairTank(i);
       }
   }
 
@@ -35,17 +35,17 @@ public class LA_5 extends LA_X
     Property.set(localClass, "cockpitClass", CockpitLA_5.class);
     Property.set(localClass, "LOSElevation", 0.750618F);
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1, 3, 3, 9, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, null, null });
 
-    weaponsRegister(localClass, "2xFAB50", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2xFAB50", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
 
-    weaponsRegister(localClass, "2xFAB100", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2xFAB100", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
 
-    weaponsRegister(localClass, "2xDROPTANK", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
+    Aircraft.weaponsRegister(localClass, "2xDROPTANK", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

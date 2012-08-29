@@ -16,8 +16,6 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.EnginesInterface;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.rts.MsgDestroy;
 import com.maddox.rts.Time;
@@ -53,13 +51,13 @@ public class Airdrome
     this.poiNum = 0;
     this.aLines = new AiardromeLine[512];
     this.lineNum = 0;
-    this.airdromeWay = new Point_Any[512];
+    this.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any = new Point_Any[512];
     this.testParkPoint = new Point3d();
     this.airdromeList = new ArrayList();
 
     for (int i = 0; i < 512; i++) this.aPoints[i] = new AiardromePoint();
-    for (i = 0; i < 512; i++) this.aLines[i] = new AiardromeLine();
-    for (i = 0; i < 512; i++) this.airdromeWay[i] = new Point_Any(0.0F, 0.0F);
+    for (int j = 0; j < 512; j++) this.aLines[j] = new AiardromeLine();
+    for (int k = 0; k < 512; k++) this.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[k] = new Point_Any(0.0F, 0.0F);
   }
 
   private void freeStayPoint(Point_Any paramPoint_Any)
@@ -82,9 +80,9 @@ public class Airdrome
     this.poiNum = 0;
     this.lineNum = 0;
 
-    Vrun.x = (float)paramPilot.Vwld.x;
-    Vrun.y = (float)paramPilot.Vwld.y;
-    Point_Null localPoint_Null = new Point_Null((float)paramPilot.Loc.x, (float)paramPilot.Loc.y);
+    Vrun.jdField_x_of_type_Float = (float)paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double;
+    Vrun.jdField_y_of_type_Float = (float)paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_y_of_type_Double;
+    Point_Null localPoint_Null = new Point_Null((float)paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, (float)paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double);
 
     int m = -1; int n = -1;
     int i1 = -1; int i2 = -1;
@@ -116,8 +114,8 @@ public class Airdrome
       if (this.stay[i].length >= 2) {
         f1 = localPoint_Null.distance(this.stay[i][1]);
         if ((f1 < 2000.0F) && (this.stayHold[i] == 0)) {
-          Engine.land(); this.testParkPoint.set(this.stay[i][1].x, this.stay[i][1].y, Landscape.HQ_Air(this.stay[i][1].x, this.stay[i][1].y));
-          Engine.collideEnv().getSphere(this.airdromeList, this.testParkPoint, 1.5F * paramPilot.actor.collisionR() + 10.0F);
+          Engine.land(); this.testParkPoint.set(this.stay[i][1].jdField_x_of_type_Float, this.stay[i][1].jdField_y_of_type_Float, Landscape.HQ_Air(this.stay[i][1].jdField_x_of_type_Float, this.stay[i][1].jdField_y_of_type_Float));
+          Engine.collideEnv().getSphere(this.airdromeList, this.testParkPoint, 1.5F * paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor.collisionR() + 10.0F);
           i5 = this.airdromeList.size();
           this.airdromeList.clear();
           if (i5 == 0) {
@@ -170,8 +168,8 @@ public class Airdrome
       }
 
       for (i = 0; i < this.poiNum; i++) {
-        Engine.land(); this.testParkPoint.set(this.aPoints[i].poi.x, this.aPoints[i].poi.y, Landscape.HQ_Air(this.aPoints[i].poi.x, this.aPoints[i].poi.y));
-        Engine.collideEnv().getSphere(this.airdromeList, this.testParkPoint, 1.2F * paramPilot.actor.collisionR() + 3.0F);
+        Engine.land(); this.testParkPoint.set(this.aPoints[i].poi.jdField_x_of_type_Float, this.aPoints[i].poi.jdField_y_of_type_Float, Landscape.HQ_Air(this.aPoints[i].poi.jdField_x_of_type_Float, this.aPoints[i].poi.jdField_y_of_type_Float));
+        Engine.collideEnv().getSphere(this.airdromeList, this.testParkPoint, 1.2F * paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor.collisionR() + 3.0F);
         i5 = this.airdromeList.size();
         if ((i5 == 1) && ((this.airdromeList.get(0) instanceof Aircraft))) i5 = 0;
         this.airdromeList.clear();
@@ -196,15 +194,15 @@ public class Airdrome
                   k = 0;
                   while ((i9 > 0) || (k > 128))
                   {
-                    this.airdromeWay[(k++)] = this.aPoints[i9].poi;
+                    this.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[(k++)] = this.aPoints[i9].poi;
                     i9 = this.aPoints[i9].from;
                   }
 
-                  this.airdromeWay[(k++)] = this.aPoints[0].poi;
-                  paramPilot.airdromeWay = new Point_Any[k];
+                  this.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[(k++)] = this.aPoints[0].poi;
+                  paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any = new Point_Any[k];
                   for (int i10 = 0; i10 < k; i10++) {
-                    paramPilot.airdromeWay[i10] = new Point_Any(0.0F, 0.0F);
-                    paramPilot.airdromeWay[i10].set(this.airdromeWay[(k - i10 - 1)]);
+                    paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[i10] = new Point_Any(0.0F, 0.0F);
+                    paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[i10].set(this.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[(k - i10 - 1)]);
                   }
                   return;
                 }
@@ -220,59 +218,59 @@ public class Airdrome
           break;
       }
     }
-    World.cur(); if (paramPilot.actor != World.getPlayerAircraft()) {
-      MsgDestroy.Post(Time.current() + 30000L, paramPilot.actor);
+    World.cur(); if (paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor != World.getPlayerAircraft()) {
+      MsgDestroy.Post(Time.current() + 30000L, paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       paramPilot.setStationedOnGround(true);
     }
     if (this.poiNum > 0) {
-      paramPilot.airdromeWay = new Point_Any[this.poiNum];
-      for (i = 0; i < this.poiNum; i++) paramPilot.airdromeWay[i] = this.aPoints[i].poi;
+      paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any = new Point_Any[this.poiNum];
+      for (i = 0; i < this.poiNum; i++) paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[i] = this.aPoints[i].poi;
     }
   }
 
   private Point_Any getNext(Pilot paramPilot)
   {
-    if (paramPilot.airdromeWay == null) return null;
-    if (paramPilot.airdromeWay.length == 0) return null;
-    if (paramPilot.curAirdromePoi >= paramPilot.airdromeWay.length) return null;
-    return paramPilot.airdromeWay[(paramPilot.curAirdromePoi++)];
+    if (paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any == null) return null;
+    if (paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any.length == 0) return null;
+    if (paramPilot.jdField_curAirdromePoi_of_type_Int >= paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any.length) return null;
+    return paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any[(paramPilot.jdField_curAirdromePoi_of_type_Int++)];
   }
 
   public void update(Pilot paramPilot, float paramFloat)
   {
-    if ((!paramPilot.isCapableOfTaxiing()) || (paramPilot.EI.getThrustOutput() < 0.01F)) {
-      paramPilot.TaxiMode = false;
+    if ((!paramPilot.isCapableOfTaxiing()) || (paramPilot.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getThrustOutput() < 0.01F)) {
+      paramPilot.jdField_TaxiMode_of_type_Boolean = false;
       paramPilot.set_task(3);
       paramPilot.set_maneuver(49);
       paramPilot.AP.setStabAll(false);
       return;
     }
     if (paramPilot.AS.isPilotDead(0)) {
-      paramPilot.TaxiMode = false;
+      paramPilot.jdField_TaxiMode_of_type_Boolean = false;
       paramPilot.setSpeedMode(8);
       paramPilot.smConstPower = 0.0F;
-      if (Airport.distToNearestAirport(paramPilot.Loc) > 900.0D)
-        ((Aircraft)paramPilot.actor).postEndAction(6000.0D, paramPilot.actor, 3, null);
+      if (Airport.distToNearestAirport(paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d) > 900.0D)
+        ((Aircraft)paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor).postEndAction(6000.0D, paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor, 3, null);
       else
-        MsgDestroy.Post(Time.current() + 300000L, paramPilot.actor);
+        MsgDestroy.Post(Time.current() + 300000L, paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       return;
     }
 
-    P.x = paramPilot.Loc.x;
-    P.y = paramPilot.Loc.y;
+    P.jdField_x_of_type_Double = paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double;
+    P.jdField_y_of_type_Double = paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double;
 
-    Vcur.x = (float)paramPilot.Vwld.x;
-    Vcur.y = (float)paramPilot.Vwld.y;
+    Vcur.jdField_x_of_type_Float = (float)paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double;
+    Vcur.jdField_y_of_type_Float = (float)paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_y_of_type_Double;
     paramPilot.super_update(paramFloat);
-    P.z = paramPilot.Loc.z;
-    if (paramPilot.wayCurPos == null) {
+    P.jdField_z_of_type_Double = paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double;
+    if (paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any == null) {
       findTheWay(paramPilot);
-      paramPilot.wayPrevPos = (paramPilot.wayCurPos = getNext(paramPilot));
+      paramPilot.jdField_wayPrevPos_of_type_ComMaddoxIl2AiAirPoint_Any = (paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any = getNext(paramPilot));
     }
-    if (paramPilot.wayCurPos != null) {
-      Point_Any localPoint_Any1 = paramPilot.wayCurPos;
-      Point_Any localPoint_Any2 = paramPilot.wayPrevPos;
-      Pcur.set((float)P.x, (float)P.y);
+    if (paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any != null) {
+      Point_Any localPoint_Any1 = paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any;
+      Point_Any localPoint_Any2 = paramPilot.jdField_wayPrevPos_of_type_ComMaddoxIl2AiAirPoint_Any;
+      Pcur.set((float)P.jdField_x_of_type_Double, (float)P.jdField_y_of_type_Double);
       float f1 = Pcur.distance(localPoint_Any1);
       float f2 = Pcur.distance(localPoint_Any2);
 
@@ -281,41 +279,35 @@ public class Airdrome
 
       float f3 = 5.0F + 0.1F * f1;
       if (f3 > 12.0F) f3 = 12.0F;
-      if (f3 > 0.9F * paramPilot.VminFLAPS) f3 = 0.9F * paramPilot.VminFLAPS;
-      if (((paramPilot.curAirdromePoi < paramPilot.airdromeWay.length) && (f1 < 15.0F)) || (f1 < 4.0F))
+      if (f3 > 0.9F * paramPilot.jdField_VminFLAPS_of_type_Float) f3 = 0.9F * paramPilot.jdField_VminFLAPS_of_type_Float;
+      if (((paramPilot.jdField_curAirdromePoi_of_type_Int < paramPilot.jdField_airdromeWay_of_type_ArrayOfComMaddoxIl2AiAirPoint_Any.length) && (f1 < 15.0F)) || (f1 < 4.0F))
       {
         f3 = 0.0F;
         Point_Any localPoint_Any3 = getNext(paramPilot);
         if (localPoint_Any3 == null) {
-          paramPilot.CT.setPowerControl(0.0F);
-          paramPilot.Loc.set(P);
-          if (paramPilot.finished) return;
-          paramPilot.finished = true;
+          paramPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.setPowerControl(0.0F);
+          paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.set(P);
+          if (paramPilot.jdField_finished_of_type_Boolean) return;
+          paramPilot.jdField_finished_of_type_Boolean = true;
 
           int i = 1000;
-          if (paramPilot.wayCurPos != null) i = 2400000;
-          paramPilot.actor.collide(true);
-          paramPilot.Vwld.set(0.0D, 0.0D, 0.0D);
-          paramPilot.CT.setPowerControl(0.0F);
-          paramPilot.EI.setCurControlAll(true);
-          paramPilot.EI.setEngineStops();
-          paramPilot.TaxiMode = false;
-          World.cur(); if (paramPilot.actor != World.getPlayerAircraft())
-          {
-            if ((Mission.isDogfight()) && (Main.cur().mission.zutiMisc_DespawnAIPlanesAfterLanding))
-            {
-              MsgDestroy.Post(Time.current() + 4000L, paramPilot.actor);
-            }
-            else
-              MsgDestroy.Post(Time.current() + i, paramPilot.actor);
+          if (paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any != null) i = 2400000;
+          paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor.collide(true);
+          paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(0.0D, 0.0D, 0.0D);
+          paramPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.setPowerControl(0.0F);
+          paramPilot.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(true);
+          paramPilot.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineStops();
+          paramPilot.jdField_TaxiMode_of_type_Boolean = false;
+          World.cur(); if (paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor != World.getPlayerAircraft()) {
+            MsgDestroy.Post(Time.current() + i, paramPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor);
           }
           paramPilot.setStationedOnGround(true);
           paramPilot.set_maneuver(1);
           paramPilot.setSpeedMode(8);
           return;
         }
-        paramPilot.wayPrevPos = paramPilot.wayCurPos;
-        paramPilot.wayCurPos = localPoint_Any3;
+        paramPilot.jdField_wayPrevPos_of_type_ComMaddoxIl2AiAirPoint_Any = paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any;
+        paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any = localPoint_Any3;
       }
       V_to.scale(f3);
 
@@ -329,17 +321,17 @@ public class Airdrome
       }
       Vcur.add(Vdiff);
 
-      tmpOr.setYPR(Pilot.RAD2DEG(Vcur.direction()), paramPilot.Or.getPitch(), 0.0F);
-      paramPilot.Or.interpolate(tmpOr, 0.2F);
-      paramPilot.Vwld.x = Vcur.x;
-      paramPilot.Vwld.y = Vcur.y;
-      P.x += Vcur.x * paramFloat;
-      P.y += Vcur.y * paramFloat;
+      tmpOr.setYPR(Pilot.RAD2DEG(Vcur.direction()), paramPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getPitch(), 0.0F);
+      paramPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.interpolate(tmpOr, 0.2F);
+      paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double = Vcur.jdField_x_of_type_Float;
+      paramPilot.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_y_of_type_Double = Vcur.jdField_y_of_type_Float;
+      P.jdField_x_of_type_Double += Vcur.jdField_x_of_type_Float * paramFloat;
+      P.jdField_y_of_type_Double += Vcur.jdField_y_of_type_Float * paramFloat;
     } else {
-      paramPilot.TaxiMode = false;
-      paramPilot.wayPrevPos = (paramPilot.wayCurPos = new Point_Null((float)paramPilot.Loc.x, (float)paramPilot.Loc.y));
+      paramPilot.jdField_TaxiMode_of_type_Boolean = false;
+      paramPilot.jdField_wayPrevPos_of_type_ComMaddoxIl2AiAirPoint_Any = (paramPilot.jdField_wayCurPos_of_type_ComMaddoxIl2AiAirPoint_Any = new Point_Null((float)paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, (float)paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double));
     }
-    paramPilot.Loc.set(P);
+    paramPilot.jdField_Loc_of_type_ComMaddoxJGPPoint3d.set(P);
   }
 
   class AiardromeLine

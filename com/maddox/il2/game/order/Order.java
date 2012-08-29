@@ -39,7 +39,7 @@ public class Order
     Aircraft localAircraft2;
     if (localAircraft1.aircIndex() < 3) localAircraft2 = localAircraft1.getWing().airc[(localAircraft1.aircIndex() + 1)]; else
       localAircraft2 = null;
-    if ((!Actor.isAlive(localAircraft2)) || (!(localAircraft2.FM instanceof Maneuver)) || (!((Maneuver)localAircraft2.FM).isOk()))
+    if ((!Actor.isAlive(localAircraft2)) || (!(localAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) || (!((Maneuver)localAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isOk()))
     {
       return null;
     }return localAircraft2;

@@ -15,10 +15,10 @@ public class A6M5B extends A6M
     if (paramString.startsWith("xx")) {
       if (paramString.startsWith("xxarmorg")) {
         getEnergyPastArmor(World.Rnd().nextFloat(44.0F, 46.0F), paramShot);
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x2);
-        debugprintln(this, "*** Armor Glass: Hit..");
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitState(paramShot.initiator, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState | 0x2);
+        Aircraft.debugprintln(this, "*** Armor Glass: Hit..");
         if (paramShot.power <= 0.0F) {
-          debugprintln(this, "*** Armor Glass: Bullet Stopped..");
+          Aircraft.debugprintln(this, "*** Armor Glass: Bullet Stopped..");
           if (World.Rnd().nextFloat() < 0.5F) {
             doRicochetBack(paramShot);
           }
@@ -28,7 +28,7 @@ public class A6M5B extends A6M
       if (paramString.startsWith("xxammor")) {
         if (World.Rnd().nextFloat() < 0.01F) {
           debuggunnery("Armament: Machine Gun Chain Broken..");
-          this.FM.AS.setJamBullets(0, 0);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(0, 0);
         }
         return;
       }
@@ -36,13 +36,13 @@ public class A6M5B extends A6M
         int i = paramString.charAt(6) - '1';
         if (i < 3) {
           if ((getEnergyPastArmor(0.1F, paramShot) > 0.0F) && (World.Rnd().nextFloat() < 0.45F)) {
-            if (this.FM.AS.astateTankStates[i] == 0) {
+            if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateTankStates[i] == 0) {
               debuggunnery("Fuel Tank (" + i + "): Pierced..");
-              this.FM.AS.hitTank(paramShot.initiator, i, 2);
-              this.FM.AS.doSetTankState(paramShot.initiator, i, 2);
+              this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, i, 2);
+              this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.doSetTankState(paramShot.initiator, i, 2);
             }
             if ((paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.995F)) {
-              this.FM.AS.hitTank(paramShot.initiator, i, 1);
+              this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, i, 1);
               debuggunnery("Fuel Tank (" + i + "): Hit..");
             }
           }
@@ -72,19 +72,19 @@ public class A6M5B extends A6M
     Property.set(localClass, "cockpitClass", CockpitA6M5b.class);
     Property.set(localClass, "LOSElevation", 1.01885F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 1, 9, 9, 3, 9, 9, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalBomb02", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb03", "_ExternalBomb04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1, 1, 9, 9, 3, 9, 9, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalBomb02", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb03", "_ExternalBomb04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xwdt", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", "FuelTankGun_Tank0Wooden", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1xwdt", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", "FuelTankGun_Tank0Wooden", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xdt", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", "FuelTankGun_Tank0", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1xdt", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", "FuelTankGun_Tank0", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1x250", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", null, "PylonA6MPLN1", "BombGun250kg", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1x250", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", null, "PylonA6MPLN1", "BombGun250kg", null, null, null, null });
 
-    weaponsRegister(localClass, "2x60", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, "PylonA6MPLN2", "PylonA6MPLN2", "BombGun50kg", "BombGun50kg" });
+    Aircraft.weaponsRegister(localClass, "2x60", new String[] { "MGunMG131s 230", "MGunMGFFk 125", "MGunMGFFk 125", null, null, null, "PylonA6MPLN2", "PylonA6MPLN2", "BombGun50kg", "BombGun50kg" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }
 }

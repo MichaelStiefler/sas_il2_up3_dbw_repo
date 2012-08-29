@@ -7,7 +7,7 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
 
-public abstract class Scheme2 extends AircraftLH
+public abstract class Scheme2 extends Aircraft
 {
   protected void moveRudder(float paramFloat)
   {
@@ -40,10 +40,10 @@ public abstract class Scheme2 extends AircraftLH
     switch (paramInt1) {
     case 3:
     case 33:
-      if (World.Rnd().nextInt(0, 99) >= 25) break; this.FM.AS.hitEngine(this, 0, 4); break;
+      if (World.Rnd().nextInt(0, 99) >= 25) break; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(this, 0, 4); break;
     case 4:
     case 36:
-      if (World.Rnd().nextInt(0, 99) >= 25) break; this.FM.AS.hitEngine(this, 1, 4);
+      if (World.Rnd().nextInt(0, 99) >= 25) break; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(this, 1, 4);
     }
 
     return super.cutFM(paramInt1, paramInt2, paramActor);

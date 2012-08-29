@@ -25,9 +25,6 @@ public class BldConfig
   public boolean[] bShowArmy = new boolean[Builder.armyAmount()];
   public int iWaterLevel = 191;
 
-  public float defFullDX = 32.0F;
-  public float defFullDY = 24.0F;
-
   public void save()
   {
     this.confFile.set(this.confSection, this);
@@ -43,6 +40,6 @@ public class BldConfig
 
   static
   {
-    ObjIO.fields(class$com$maddox$il2$builder$BldConfig, new String[] { "iconSize", "bSaveViewHLand", "bShowLandscape", "iLightLand", "iLightDestruction", "bShowGrid", "bAnimateCamera", "bActorOnLand", "bViewBridge", "bViewRunaway", "bShowName", "bShowTime", "bShowArmy", "iWaterLevel", "defFullDX", "defFullDY" });
+    ObjIO.fields(class$com$maddox$il2$builder$BldConfig, new String[] { "iconSize", "bSaveViewHLand", "bShowLandscape", "iLightLand", "iLightDestruction", "bShowGrid", "bAnimateCamera", "bActorOnLand", "bViewBridge", "bViewRunaway", "bShowName", "bShowTime", "bShowArmy", "iWaterLevel" });
   }
 }

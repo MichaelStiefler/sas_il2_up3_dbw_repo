@@ -75,19 +75,19 @@ public class PlMisTarget extends Plugin
   }
 
   public void renderMap2DBefore() {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     if (!this.viewType.bChecked) return;
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     int i = this.allActors.size();
     for (int j = 0; j < i; j++) {
       ActorTarget localActorTarget = (ActorTarget)this.allActors.get(j);
       if ((!Actor.isValid(localActorTarget.getTarget())) || 
-        (!builder.project2d(localActorTarget.pos.getAbsPoint(), this.p2d)) || (!builder.project2d(localActorTarget.getTarget().pos.getAbsPoint(), this.p2dt)))
+        (!Plugin.builder.project2d(localActorTarget.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2d)) || (!Plugin.builder.project2d(localActorTarget.getTarget().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2dt)))
         continue;
       if (this.p2d.distance(this.p2dt) > 4.0D) {
         int k = targetColor(localActorTarget.importance, localActorTarget == localActor);
-        this.line2XYZ[0] = (float)this.p2d.x; this.line2XYZ[1] = (float)this.p2d.y; this.line2XYZ[2] = 0.0F;
-        this.line2XYZ[3] = (float)this.p2dt.x; this.line2XYZ[4] = (float)this.p2dt.y; this.line2XYZ[5] = 0.0F;
+        this.line2XYZ[0] = (float)this.p2d.jdField_x_of_type_Double; this.line2XYZ[1] = (float)this.p2d.jdField_y_of_type_Double; this.line2XYZ[2] = 0.0F;
+        this.line2XYZ[3] = (float)this.p2dt.jdField_x_of_type_Double; this.line2XYZ[4] = (float)this.p2dt.jdField_y_of_type_Double; this.line2XYZ[5] = 0.0F;
         Render.drawBeginLines(-1);
         Render.drawLines(this.line2XYZ, 2, 1.0F, k, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
 
@@ -98,31 +98,31 @@ public class PlMisTarget extends Plugin
 
   public void renderMap2DAfter()
   {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     if (!this.viewType.bChecked) return;
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     int i = this.allActors.size();
     for (int j = 0; j < i; j++) {
       ActorTarget localActorTarget = (ActorTarget)this.allActors.get(j);
-      if (builder.project2d(localActorTarget.pos.getAbsPoint(), this.p2d)) {
+      if (Plugin.builder.project2d(localActorTarget.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2d)) {
         int k = targetColor(localActorTarget.importance, localActorTarget == localActor);
         IconDraw.setColor(k);
         if ((Actor.isValid(localActorTarget.getTarget())) && 
-          (builder.project2d(localActorTarget.getTarget().pos.getAbsPoint(), this.p2dt)) && 
+          (Plugin.builder.project2d(localActorTarget.getTarget().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2dt)) && 
           (this.p2d.distance(this.p2dt) > 4.0D)) {
-          Render.drawTile((float)(this.p2dt.x - builder.conf.iconSize / 2), (float)(this.p2dt.y - builder.conf.iconSize / 2), builder.conf.iconSize, builder.conf.iconSize, 0.0F, Plugin.targetIcon, k, 0.0F, 1.0F, 1.0F, -1.0F);
+          Render.drawTile((float)(this.p2dt.jdField_x_of_type_Double - Plugin.builder.conf.iconSize / 2), (float)(this.p2dt.jdField_y_of_type_Double - Plugin.builder.conf.iconSize / 2), Plugin.builder.conf.iconSize, Plugin.builder.conf.iconSize, 0.0F, Plugin.targetIcon, k, 0.0F, 1.0F, 1.0F, -1.0F);
         }
 
-        IconDraw.render(localActorTarget, this.p2d.x, this.p2d.y);
+        IconDraw.render(localActorTarget, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
         if ((localActorTarget.type != 3) && (localActorTarget.type != 6) && (localActorTarget.type != 1)) {
           continue;
         }
-        localActorTarget.pos.getAbs(this.p3d);
-        this.p3d.x += localActorTarget.r;
-        if (builder.project2d(this.p3d, this.p2dt)) {
-          double d = this.p2dt.x - this.p2d.x;
-          if (d > builder.conf.iconSize / 3)
-            drawCircle(this.p2d.x, this.p2d.y, d, k);
+        localActorTarget.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.p3d);
+        this.p3d.jdField_x_of_type_Double += localActorTarget.r;
+        if (Plugin.builder.project2d(this.p3d, this.p2dt)) {
+          double d = this.p2dt.jdField_x_of_type_Double - this.p2d.jdField_x_of_type_Double;
+          if (d > Plugin.builder.conf.iconSize / 3)
+            drawCircle(this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double, d, k);
         }
       }
     }
@@ -163,11 +163,11 @@ public class PlMisTarget extends Plugin
         } else {
           str = localActorTarget.target.name();
         }
-        Point3d localPoint3d = localActorTarget.target.pos.getAbsPoint();
-        n = (int)localPoint3d.x;
-        i1 = (int)localPoint3d.y;
+        Point3d localPoint3d = localActorTarget.target.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+        n = (int)localPoint3d.jdField_x_of_type_Double;
+        i1 = (int)localPoint3d.jdField_y_of_type_Double;
       }
-      paramSectFile.lineAdd(j, "" + localActorTarget.type + " " + localActorTarget.importance + " " + (localActorTarget.bTimeout ? "1 " : "0 ") + localActorTarget.timeout + " " + localActorTarget.destructLevel + (localActorTarget.bLanding ? 1 : 0) + " " + (int)localActorTarget.pos.getAbsPoint().x + " " + (int)localActorTarget.pos.getAbsPoint().y + " " + localActorTarget.r + (str.length() > 0 ? " " + m + " " + str + " " + n + " " + i1 : ""));
+      paramSectFile.lineAdd(j, "" + localActorTarget.type + " " + localActorTarget.importance + " " + (localActorTarget.bTimeout ? "1 " : "0 ") + localActorTarget.timeout + " " + localActorTarget.destructLevel + (localActorTarget.bLanding ? 1 : 0) + " " + (int)localActorTarget.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double + " " + (int)localActorTarget.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double + " " + localActorTarget.r + (str.length() > 0 ? " " + m + " " + str + " " + n + " " + i1 : ""));
     }
 
     return true;
@@ -189,8 +189,8 @@ public class PlMisTarget extends Plugin
         i2 /= 10;
         if (i2 < 0) i2 = 0;
         if (i2 > 100) i2 = 100;
-        localPoint3d.x = localNumberTokenizer.next(0);
-        localPoint3d.y = localNumberTokenizer.next(0);
+        localPoint3d.jdField_x_of_type_Double = localNumberTokenizer.next(0);
+        localPoint3d.jdField_y_of_type_Double = localNumberTokenizer.next(0);
         int i3 = localNumberTokenizer.next(0);
         if ((m == 3) || (m == 6) || (m == 1))
         {
@@ -256,12 +256,12 @@ public class PlMisTarget extends Plugin
 
       }
 
-      builder.align(localActorTarget1);
+      Plugin.builder.align(localActorTarget1);
       Property.set(localActorTarget1, "builderSpawn", "");
       Property.set(localActorTarget1, "builderPlugin", this);
       this.allActors.add(localActorTarget1);
       if (paramBoolean)
-        builder.setSelected(localActorTarget1);
+        Plugin.builder.setSelected(localActorTarget1);
       PlMission.setChanged();
       return localActorTarget1; } catch (Exception localException) {
     }
@@ -269,8 +269,8 @@ public class PlMisTarget extends Plugin
   }
 
   public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if (i != this.startComboBox1)
       return;
     if ((j < 0) || (j >= this.item.length))
@@ -279,7 +279,7 @@ public class PlMisTarget extends Plugin
   }
 
   public void changeType() {
-    builder.setSelected(null);
+    Plugin.builder.setSelected(null);
   }
 
   private void updateView() {
@@ -292,23 +292,23 @@ public class PlMisTarget extends Plugin
 
   public void configure()
   {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisTarget: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
   }
 
   private void fillComboBox2(int paramInt) {
     if (paramInt != this.startComboBox1)
       return;
-    if (builder.wSelect.curFilledType != paramInt) {
-      builder.wSelect.curFilledType = paramInt;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt) {
+      Plugin.builder.wSelect.curFilledType = paramInt;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.item.length; i++)
-        builder.wSelect.comboBox2.add(i18n(this.item[i].name));
-      builder.wSelect.comboBox1.setSelected(paramInt, true, false);
+        Plugin.builder.wSelect.comboBox2.add(Plugin.i18n(this.item[i].name));
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(0, true, false);
-    builder.wSelect.setMesh(null, true);
+    Plugin.builder.wSelect.comboBox2.setSelected(0, true, false);
+    Plugin.builder.wSelect.setMesh(null, true);
   }
 
   public void viewTypeAll(boolean paramBoolean) {
@@ -319,11 +319,11 @@ public class PlMisTarget extends Plugin
   public String[] actorInfo(Actor paramActor) {
     ActorTarget localActorTarget = (ActorTarget)paramActor;
     switch (localActorTarget.importance) { case 0:
-      this._actorInfo[0] = (i18n("Primary") + " " + i18n(this.item[localActorTarget.type].name)); break;
+      this._actorInfo[0] = (Plugin.i18n("Primary") + " " + Plugin.i18n(this.item[localActorTarget.type].name)); break;
     case 1:
-      this._actorInfo[0] = (i18n("Secondary") + " " + i18n(this.item[localActorTarget.type].name)); break;
+      this._actorInfo[0] = (Plugin.i18n("Secondary") + " " + Plugin.i18n(this.item[localActorTarget.type].name)); break;
     case 2:
-      this._actorInfo[0] = (i18n("Secret") + " " + i18n(this.item[localActorTarget.type].name));
+      this._actorInfo[0] = (Plugin.i18n("Secret") + " " + Plugin.i18n(this.item[localActorTarget.type].name));
     }
     if ((Actor.isValid(localActorTarget.getTarget())) && ((localActorTarget.getTarget() instanceof PPoint))) {
       Path localPath = (Path)localActorTarget.getTarget().getOwner();
@@ -341,21 +341,21 @@ public class PlMisTarget extends Plugin
 
   public void syncSelector()
   {
-    ActorTarget localActorTarget = (ActorTarget)builder.selectedActor();
+    ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
     fillComboBox2(this.startComboBox1);
-    builder.wSelect.comboBox2.setSelected(localActorTarget.type, true, false);
-    builder.wSelect.tabsClient.addTab(1, this.tabTarget);
-    this.wType.cap.set(i18n(this.item[localActorTarget.type].name));
+    Plugin.builder.wSelect.comboBox2.setSelected(localActorTarget.type, true, false);
+    Plugin.builder.wSelect.tabsClient.addTab(1, this.tabTarget);
+    this.wType.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(Plugin.i18n(this.item[localActorTarget.type].name));
     float f = 3.0F;
     if ((Actor.isValid(localActorTarget.getTarget())) && ((localActorTarget.getTarget() instanceof PPoint))) {
       this.wTarget.showWindow();
       Path localPath = (Path)localActorTarget.getTarget().getOwner();
       if ((localPath instanceof PathAir))
-        this.wTarget.cap.set(((PathAir)localPath).typedName);
+        this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(((PathAir)localPath).typedName);
       else if ((localPath instanceof PathChief))
-        this.wTarget.cap.set(Property.stringValue(localPath, "i18nName", ""));
+        this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(Property.stringValue(localPath, "i18nName", ""));
       else
-        this.wTarget.cap.set(localPath.name());
+        this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(localPath.name());
       f += 2.0F;
     } else {
       this.wTarget.hideWindow();
@@ -365,15 +365,15 @@ public class PlMisTarget extends Plugin
       this.wBTimeout.hideWindow();
     } else {
       this.wBTimeout.showWindow();
-      this.wBTimeout.setMetricPos(this.wBTimeout.metricWin.x, f);
+      this.wBTimeout.setMetricPos(this.wBTimeout.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
     }
 
     this.wBTimeout.setChecked(localActorTarget.bTimeout, false);
-    this.wLTimeout.setMetricPos(this.wLTimeout.metricWin.x, f);
+    this.wLTimeout.setMetricPos(this.wLTimeout.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
     this.wTimeoutH.setEnable(localActorTarget.bTimeout);
     this.wTimeoutM.setEnable(localActorTarget.bTimeout);
-    this.wTimeoutH.setMetricPos(this.wTimeoutH.metricWin.x, f);
-    this.wTimeoutM.setMetricPos(this.wTimeoutM.metricWin.x, f);
+    this.wTimeoutH.setMetricPos(this.wTimeoutH.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
+    this.wTimeoutM.setMetricPos(this.wTimeoutM.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
     this.wTimeoutH.setValue("" + localActorTarget.timeout / 60 % 24, false);
     this.wTimeoutM.setValue("" + localActorTarget.timeout % 60, false);
     f += 2.0F;
@@ -381,7 +381,7 @@ public class PlMisTarget extends Plugin
     {
       this.wR.setPos(localActorTarget.r / 50, false);
       this.wR.showWindow();
-      this.wR.setMetricPos(this.wR.metricWin.x, f);
+      this.wR.setMetricPos(this.wR.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
       f += 2.0F;
     } else {
       this.wR.hideWindow();
@@ -389,15 +389,15 @@ public class PlMisTarget extends Plugin
     if (localActorTarget.type == 3) {
       this.wBLanding.showWindow();
       this.wLLanding.showWindow();
-      this.wBLanding.setMetricPos(this.wBLanding.metricWin.x, f);
-      this.wLLanding.setMetricPos(this.wLLanding.metricWin.x, f);
+      this.wBLanding.setMetricPos(this.wBLanding.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
+      this.wLLanding.setMetricPos(this.wLLanding.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
       this.wBLanding.setChecked(localActorTarget.bLanding, false);
       f += 2.0F;
     } else {
       this.wBLanding.hideWindow();
       this.wLLanding.hideWindow();
     }
-    this.wImportance.setMetricPos(this.wImportance.metricWin.x, f);
+    this.wImportance.setMetricPos(this.wImportance.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
     this.wImportance.setSelected(localActorTarget.importance, true, false);
     f += 2.0F;
 
@@ -408,9 +408,9 @@ public class PlMisTarget extends Plugin
     } else {
       this.wLDestruct.showWindow();
       this.wDestruct.showWindow();
-      this.wLDestruct.setMetricPos(this.wLDestruct.metricWin.x, f);
+      this.wLDestruct.setMetricPos(this.wLDestruct.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
       f += 2.0F;
-      this.wDestruct.setMetricPos(this.wDestruct.metricWin.x, f);
+      this.wDestruct.setMetricPos(this.wDestruct.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
       f += 2.0F;
       int i;
       if (localActorTarget.destructLevel < 12) i = 0;
@@ -429,23 +429,23 @@ public class PlMisTarget extends Plugin
       }
     }
 
-    this.wLArmy.setMetricPos(this.wLArmy.metricWin.x, f);
+    this.wLArmy.setMetricPos(this.wLArmy.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
     f += 2.0F;
-    this.wArmy.setMetricPos(this.wArmy.metricWin.x, f);
+    this.wArmy.setMetricPos(this.wArmy.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.x, f);
     if (Actor.isValid(Path.player)) {
       this.wArmy.setSelected(Path.player.getArmy() - 1, true, false);
-      this.wArmy.bEnable = false;
+      this.wArmy.jdField_bEnable_of_type_Boolean = false;
     } else {
       this.wArmy.setSelected(PlMission.cur.missionArmy - 1, true, false);
-      this.wArmy.bEnable = true;
+      this.wArmy.jdField_bEnable_of_type_Boolean = true;
     }
   }
 
   public void createGUI()
   {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add(i18n("tTarget"));
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
+    Plugin.builder.wSelect.comboBox1.add(Plugin.i18n("tTarget"));
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -453,28 +453,28 @@ public class PlMisTarget extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginMission.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
     if (i >= 0) {
-      this.viewType = builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(builder.mDisplayFilter.subMenu, i18n("showTarget"), null)
+      this.viewType = Plugin.builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("showTarget"), null)
       {
         public void execute() {
-          this.bChecked = (!this.bChecked);
+          this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
           PlMisTarget.this.updateView();
         }
       });
       this.viewType.bChecked = true;
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
-    this.tabTarget = builder.wSelect.tabsClient.createTab(i18n("tTarget"), localGWindowDialogClient);
-    localGWindowDialogClient.addLabel(this.wType = new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 15.0F, 1.3F, i18n("lType"), null));
-    localGWindowDialogClient.addLabel(this.wTarget = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 15.0F, 1.3F, i18n("tTarget"), null));
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient());
+    this.tabTarget = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("tTarget"), localGWindowDialogClient);
+    localGWindowDialogClient.addLabel(this.wType = new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 15.0F, 1.3F, Plugin.i18n("lType"), null));
+    localGWindowDialogClient.addLabel(this.wTarget = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 15.0F, 1.3F, Plugin.i18n("tTarget"), null));
     localGWindowDialogClient.addControl(this.wBTimeout = new GWindowCheckBox(localGWindowDialogClient, 1.0F, 5.0F, null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 != 2) return false;
@@ -486,7 +486,7 @@ public class PlMisTarget extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLTimeout = new GWindowLabel(localGWindowDialogClient, 3.0F, 5.0F, 5.0F, 1.3F, i18n("TimeOut"), null));
+    localGWindowDialogClient.addLabel(this.wLTimeout = new GWindowLabel(localGWindowDialogClient, 3.0F, 5.0F, 5.0F, 1.3F, Plugin.i18n("TimeOut"), null));
     localGWindowDialogClient.addControl(this.wTimeoutH = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 2.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -531,7 +531,7 @@ public class PlMisTarget extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLLanding = new GWindowLabel(localGWindowDialogClient, 3.0F, 9.0F, 7.0F, 1.3F, i18n("landing"), null));
+    localGWindowDialogClient.addLabel(this.wLLanding = new GWindowLabel(localGWindowDialogClient, 3.0F, 9.0F, 7.0F, 1.3F, Plugin.i18n("landing"), null));
     localGWindowDialogClient.addControl(this.wImportance = new GWindowComboControl(localGWindowDialogClient, 1.0F, 11.0F, 10.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -547,7 +547,7 @@ public class PlMisTarget extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLDestruct = new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 12.0F, 1.3F, i18n("DestructLevel"), null));
+    localGWindowDialogClient.addLabel(this.wLDestruct = new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 12.0F, 1.3F, Plugin.i18n("DestructLevel"), null));
     localGWindowDialogClient.addControl(this.wDestruct = new GWindowComboControl(localGWindowDialogClient, 1.0F, 15.0F, 10.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -569,7 +569,7 @@ public class PlMisTarget extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLArmy = new GWindowLabel(localGWindowDialogClient, 1.0F, 15.0F, 12.0F, 1.3F, i18n("AppliesArmy"), null));
+    localGWindowDialogClient.addLabel(this.wLArmy = new GWindowLabel(localGWindowDialogClient, 1.0F, 15.0F, 12.0F, 1.3F, Plugin.i18n("AppliesArmy"), null));
     localGWindowDialogClient.addControl(this.wArmy = new GWindowComboControl(localGWindowDialogClient, 1.0F, 17.0F, 10.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -585,7 +585,7 @@ public class PlMisTarget extends Plugin
   }
 
   private void getTimeOut() {
-    ActorTarget localActorTarget = (ActorTarget)builder.selectedActor();
+    ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
     String str = this.wTimeoutH.getValue();
     double d1 = 0.0D;
     try { d1 = Double.parseDouble(str); } catch (Exception localException1) {

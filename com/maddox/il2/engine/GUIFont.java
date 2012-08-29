@@ -16,11 +16,11 @@ public class GUIFont extends GFont
     }
     if ((paramString == null) || (paramString.length() == 0)) {
       paramGSize.dx = 0.0F;
-      paramGSize.dy = this.height;
+      paramGSize.dy = this.jdField_height_of_type_Float;
       return;
     }
     paramGSize.dx = this.fnt.width(paramString);
-    paramGSize.dy = this.height;
+    paramGSize.dy = this.jdField_height_of_type_Float;
   }
   public void size(String paramString, int paramInt1, int paramInt2, GSize paramGSize) {
     if (this.fnt == null) {
@@ -30,11 +30,11 @@ public class GUIFont extends GFont
     }
     if ((paramString == null) || (paramString.length() == 0)) {
       paramGSize.dx = 0.0F;
-      paramGSize.dy = this.height;
+      paramGSize.dy = this.jdField_height_of_type_Float;
       return;
     }
     paramGSize.dx = this.fnt.width(paramString, paramInt1, paramInt2);
-    paramGSize.dy = this.height;
+    paramGSize.dy = this.jdField_height_of_type_Float;
   }
   public void size(char[] paramArrayOfChar, int paramInt1, int paramInt2, GSize paramGSize) {
     if (this.fnt == null) {
@@ -44,11 +44,11 @@ public class GUIFont extends GFont
     }
     if ((paramArrayOfChar == null) || (paramArrayOfChar.length == 0)) {
       paramGSize.dx = 0.0F;
-      paramGSize.dy = this.height;
+      paramGSize.dy = this.jdField_height_of_type_Float;
       return;
     }
     paramGSize.dx = this.fnt.width(paramArrayOfChar, paramInt1, paramInt2);
-    paramGSize.dy = this.height;
+    paramGSize.dy = this.jdField_height_of_type_Float;
   }
 
   public int len(String paramString, float paramFloat, boolean paramBoolean1, boolean paramBoolean2) {
@@ -78,7 +78,7 @@ public class GUIFont extends GFont
 
   public void resolutionChanged() {
     if (this.fnt != null) {
-      this.height = this.fnt.height();
+      this.jdField_height_of_type_Float = this.fnt.height();
       this.descender = this.fnt.descender();
     }
   }

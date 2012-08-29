@@ -50,8 +50,8 @@ public class ActorTarget extends Actor
   }
   public ActorTarget(Point3d paramPoint3d, int paramInt1, String paramString, int paramInt2) {
     this.flags |= 8192;
-    this.pos = new ActorPosMove(this);
-    this.pos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
     align();
     drawing(true);
     this.type = paramInt1;
@@ -106,29 +106,29 @@ public class ActorTarget extends Actor
       }
     }
     switch (paramInt1) { case 0:
-      if ((this.target instanceof PAir)) this.icon = IconDraw.get("icons/tdestroyair.mat"); else
-        this.icon = IconDraw.get("icons/tdestroychief.mat");
+      if ((this.target instanceof PAir)) this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdestroyair.mat"); else
+        this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdestroychief.mat");
       break;
     case 1:
-      this.icon = IconDraw.get("icons/tdestroyground.mat");
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdestroyground.mat");
       this.r = 500;
       break;
     case 2:
-      this.icon = IconDraw.get("icons/tdestroybridge.mat"); break;
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdestroybridge.mat"); break;
     case 3:
-      this.icon = IconDraw.get("icons/tinspect.mat");
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tinspect.mat");
       this.r = 500;
       break;
     case 4:
-      this.icon = IconDraw.get("icons/tescort.mat"); break;
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tescort.mat"); break;
     case 5:
-      this.icon = IconDraw.get("icons/tdefence.mat"); break;
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdefence.mat"); break;
     case 6:
-      this.icon = IconDraw.get("icons/tdefenceground.mat");
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdefenceground.mat");
       this.r = 500;
       break;
     case 7:
-      this.icon = IconDraw.get("icons/tdefencebridge.mat"); }
+      this.jdField_icon_of_type_ComMaddoxIl2EngineMat = IconDraw.get("icons/tdefencebridge.mat"); }
   }
 
   protected void createActorHashCode() {
@@ -138,8 +138,8 @@ public class ActorTarget extends Actor
   private Actor selectBridge(double paramDouble)
   {
     _Actor = null; _maxLen2 = paramDouble * paramDouble;
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.x - paramDouble, localPoint3d.y - paramDouble, localPoint3d.x + paramDouble, localPoint3d.y + paramDouble, 2, _selectBridge);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.jdField_x_of_type_Double - paramDouble, localPoint3d.jdField_y_of_type_Double - paramDouble, localPoint3d.jdField_x_of_type_Double + paramDouble, localPoint3d.jdField_y_of_type_Double + paramDouble, 2, _selectBridge);
 
     Actor localActor = _Actor; _Actor = null;
     return localActor;
@@ -148,8 +148,8 @@ public class ActorTarget extends Actor
   private Actor selectAir(double paramDouble)
   {
     _Actor = null; _maxLen2 = paramDouble * paramDouble;
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.x - paramDouble, localPoint3d.y - paramDouble, localPoint3d.x + paramDouble, localPoint3d.y + paramDouble, 12, _selectAir);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.jdField_x_of_type_Double - paramDouble, localPoint3d.jdField_y_of_type_Double - paramDouble, localPoint3d.jdField_x_of_type_Double + paramDouble, localPoint3d.jdField_y_of_type_Double + paramDouble, 12, _selectAir);
 
     Actor localActor = _Actor; _Actor = null;
     return localActor;
@@ -158,8 +158,8 @@ public class ActorTarget extends Actor
   private Actor selectChief(double paramDouble)
   {
     _Actor = null; _maxLen2 = paramDouble * paramDouble;
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.x - paramDouble, localPoint3d.y - paramDouble, localPoint3d.x + paramDouble, localPoint3d.y + paramDouble, 12, _selectChief);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.jdField_x_of_type_Double - paramDouble, localPoint3d.jdField_y_of_type_Double - paramDouble, localPoint3d.jdField_x_of_type_Double + paramDouble, localPoint3d.jdField_y_of_type_Double + paramDouble, 12, _selectChief);
 
     Actor localActor = _Actor; _Actor = null;
     return localActor;
@@ -168,8 +168,8 @@ public class ActorTarget extends Actor
   private Actor selectMoved(double paramDouble)
   {
     _Actor = null; _maxLen2 = paramDouble * paramDouble;
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.x - paramDouble, localPoint3d.y - paramDouble, localPoint3d.x + paramDouble, localPoint3d.y + paramDouble, 12, _selectMoved);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    Engine.drawEnv().getFiltered((AbstractCollection)null, localPoint3d.jdField_x_of_type_Double - paramDouble, localPoint3d.jdField_y_of_type_Double - paramDouble, localPoint3d.jdField_x_of_type_Double + paramDouble, localPoint3d.jdField_y_of_type_Double + paramDouble, 12, _selectMoved);
 
     Actor localActor = _Actor; _Actor = null;
     return localActor;

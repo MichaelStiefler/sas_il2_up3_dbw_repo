@@ -21,15 +21,15 @@ public class BF_109K4C3 extends BF_109
 
   public void update(float paramFloat)
   {
-    if (this.FM.getSpeed() > 5.0F) {
-      hierMesh().chunkSetAngles("SlatL_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F), 0.0F);
-      hierMesh().chunkSetAngles("SlatR_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F), 0.0F);
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed() > 5.0F) {
+      hierMesh().chunkSetAngles("SlatL_D0", 0.0F, Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F), 0.0F);
+      hierMesh().chunkSetAngles("SlatR_D0", 0.0F, Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F), 0.0F);
     }
     hierMesh().chunkSetAngles("Flap01L_D0", 0.0F, -20.0F * this.kangle, 0.0F);
     hierMesh().chunkSetAngles("Flap01U_D0", 0.0F, 20.0F * this.kangle, 0.0F);
     hierMesh().chunkSetAngles("Flap02L_D0", 0.0F, -20.0F * this.kangle, 0.0F);
     hierMesh().chunkSetAngles("Flap02U_D0", 0.0F, 20.0F * this.kangle, 0.0F);
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
+    this.kangle = (0.95F * this.kangle + 0.05F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator());
     if (this.kangle > 1.0F) this.kangle = 1.0F;
     super.update(paramFloat);
   }
@@ -90,7 +90,7 @@ public class BF_109K4C3 extends BF_109
   }
 
   public void moveSteering(float paramFloat) {
-    if (this.FM.CT.getGear() < 0.98F) return;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() < 0.98F) return;
     hierMesh().chunkSetAngles("GearC2_D0", 90.0F, -paramFloat, 0.0F);
   }
 
@@ -110,21 +110,21 @@ public class BF_109K4C3 extends BF_109
     Property.set(localClass, "cockpitClass", CockpitBF_109K4.class);
     Property.set(localClass, "LOSElevation", 0.7498F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 1, 1, 1, 1, 1, 9, 9, 9, 9, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_CANNON05", "_ExternalDev01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 1, 1, 1, 1, 1, 9, 9, 9, 9, 3, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_CANNON05", "_ExternalDev01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "R1-SC250", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, "PylonETC900", null, null, null, "BombGunSC250 1", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "R1-SC250", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, "PylonETC900", null, null, null, "BombGunSC250 1", null, null, null, null });
 
-    weaponsRegister(localClass, "R1-SC500", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, "PylonETC900", null, null, null, "BombGunSC500 1", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "R1-SC500", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, "PylonETC900", null, null, null, "BombGunSC500 1", null, null, null, null });
 
-    weaponsRegister(localClass, "R3-DROPTANK", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, "PylonETC900", "FuelTankGun_Type_D", null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "R3-DROPTANK", new String[] { "MGunMG131si 300", "MGunMG131si 300", null, "MGunMK108ki 65", null, null, null, null, "PylonETC900", "FuelTankGun_Type_D", null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "R5-MK108", new String[] { "MGunMG131si 300", "MGunMG131si 300", "MGunMK108ki 65", null, null, null, "MGunMK108kh 60", "MGunMK108kh 60", null, null, "PylonMk108", "PylonMk108", null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "R5-MK108", new String[] { "MGunMG131si 300", "MGunMG131si 300", "MGunMK108ki 65", null, null, null, "MGunMK108kh 60", "MGunMK108kh 60", null, null, "PylonMk108", "PylonMk108", null, null, null, null, null });
 
-    weaponsRegister(localClass, "R6-MG151-20", new String[] { "MGunMG131si 300", "MGunMG131si 300", "MGunMK108ki 65", null, "MGunMG15120MGkh 135", "MGunMG15120MGkh 135", null, null, null, null, "PylonMG15120", "PylonMG15120", null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "R6-MG151-20", new String[] { "MGunMG131si 300", "MGunMG131si 300", "MGunMK108ki 65", null, "MGunMG15120MGkh 135", "MGunMG15120MGkh 135", null, null, null, null, "PylonMG15120", "PylonMG15120", null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

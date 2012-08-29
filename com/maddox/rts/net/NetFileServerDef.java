@@ -208,7 +208,7 @@ public class NetFileServerDef extends NetObj
         localOut.bufSize = Compress.code(compressMethod(), localOut.buf, i);
         localOut.bufCur = 0;
       } catch (Exception localException1) {
-        printDebug(localException1);
+        NetObj.printDebug(localException1);
         return 4;
       }
       return 2;
@@ -227,7 +227,7 @@ public class NetFileServerDef extends NetObj
         localOut.f.read(commonBuf(localOut.bufSize), 0, localOut.bufSize);
         localOut.ptr += localOut.bufSize;
       } catch (Exception localException2) {
-        printDebug(localException2);
+        NetObj.printDebug(localException2);
         return 4;
       }
     }
@@ -297,7 +297,7 @@ public class NetFileServerDef extends NetObj
         try {
           localIn.f.write(localIn.buf, 0, j);
         } catch (Exception localException2) {
-          printDebug(localException2);
+          NetObj.printDebug(localException2);
           return -3;
         }
         localIn.localSize += j;
@@ -308,7 +308,7 @@ public class NetFileServerDef extends NetObj
       try {
         localIn.f.write(commonBuf(i), 0, i);
       } catch (Exception localException1) {
-        printDebug(localException1);
+        NetObj.printDebug(localException1);
         return -3;
       }
       localIn.localSize += i;

@@ -17,17 +17,17 @@ public class MIG_9_I_300 extends MIG_9
   {
     super.update(paramFloat);
 
-    if ((this.FM.AS.isMaster()) && 
-      (this.FM.CT.Weapons[1] != null) && (this.FM.CT.Weapons[1][0] != null)) {
-      if (this.FM.CT.Weapons[1][0].countBullets() < this.nCN37) {
-        if (World.Rnd().nextFloat() < cvt(this.FM.getAltitude(), 3000.0F, 7000.0F, 0.0F, 0.1F)) {
-          this.FM.EI.engines[0].setEngineStops(this);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AS.isMaster()) && 
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[1] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[1][0] != null)) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[1][0].countBullets() < this.nCN37) {
+        if (World.Rnd().nextFloat() < Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude(), 3000.0F, 7000.0F, 0.0F, 0.1F)) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].setEngineStops(this);
         }
-        if (World.Rnd().nextFloat() < cvt(this.FM.getAltitude(), 3000.0F, 7000.0F, 0.0F, 0.1F)) {
-          this.FM.EI.engines[1].setEngineStops(this);
+        if (World.Rnd().nextFloat() < Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude(), 3000.0F, 7000.0F, 0.0F, 0.1F)) {
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].setEngineStops(this);
         }
       }
-      this.nCN37 = this.FM.CT.Weapons[1][0].countBullets();
+      this.nCN37 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[1][0].countBullets();
     }
   }
 
@@ -49,11 +49,11 @@ public class MIG_9_I_300 extends MIG_9
     Property.set(localClass, "cockpitClass", CockpitMIG_9.class);
     Property.set(localClass, "LOSElevation", 0.75635F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunVYak 80", "MGunVYak 80", "MGunN57ki 21" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunVYak 80", "MGunVYak 80", "MGunN57ki 21" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null });
   }
 }

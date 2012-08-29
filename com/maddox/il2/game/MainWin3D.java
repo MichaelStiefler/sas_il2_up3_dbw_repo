@@ -37,7 +37,7 @@ public class MainWin3D extends Main3D
 
   public static MainWin3D curWin3D()
   {
-    return (MainWin3D)cur();
+    return (MainWin3D)Main.cur();
   }
 
   private void checkFocus()
@@ -121,18 +121,18 @@ public class MainWin3D extends Main3D
           boolean bool;
           String str;
           synchronized (this.oCommandSync) {
-            bool = this.bCommand;
+            bool = this.jdField_bCommand_of_type_Boolean;
             str = this.sCommand;
-            this.bCommand = false;
+            this.jdField_bCommand_of_type_Boolean = false;
           }
           if (bool) {
-            if (this.consoleServer != null) this.consoleServer.bEnableType = false;
+            if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = false;
             System.out.println(RTSConf.cur.console._getPrompt() + str);
-            if (this.consoleServer != null) this.consoleServer.bEnableType = true;
+            if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = true;
 
             RTSConf.cur.console.getEnv().exec(str);
 
-            if (this.consoleServer != null) this.consoleServer.typeNum();
+            if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.typeNum();
           }
 
           RTSConf.cur.loopMsgs();
@@ -206,7 +206,7 @@ public class MainWin3D extends Main3D
     public void doExec(String paramString)
     {
       RTSConf.cur.console.getEnv().exec(paramString);
-      if (MainWin3D.this.consoleServer != null) MainWin3D.this.consoleServer.typeNum(); 
+      if (MainWin3D.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) MainWin3D.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.typeNum(); 
     }
 
     public String getPrompt() {

@@ -2,7 +2,6 @@ package com.maddox.il2.game;
 
 import com.maddox.rts.LDRres;
 import com.maddox.rts.RTSConf;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class I18N
@@ -20,7 +19,6 @@ public class I18N
   static Res gwindow;
   static Res hud_log;
   static Res credits;
-  private static final String[] COUNTRY_KEYS = { "de", "fi", "fr", "gb", "hu", "it", "ja", "nn", "pl", "ro", "sk", "ru", "us", "un", "um", "ra", "rz", "rn", "in", "du" };
 
   public static String army(String paramString)
   {
@@ -87,59 +85,30 @@ public class I18N
     return credits.get(paramString);
   }
 
-  public static String getCountryKey(String paramString)
-  {
-    ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-    for (int i = 0; i < COUNTRY_KEYS.length; i++)
-    {
-      String str = COUNTRY_KEYS[i];
-      try
-      {
-        if (localResourceBundle.getString(str).equals(paramString)) {
-          return str;
-        }
-      }
-      catch (MissingResourceException localMissingResourceException)
-      {
-      }
-    }
-    return null;
-  }
-
   static class Res
   {
-    private String myName;
     ResourceBundle res;
 
     String get(String paramString)
     {
       if (this.res == null) return paramString; try
       {
-        return this.res.getString(paramString);
+        return this.res.getString(paramString); } catch (Exception localException) {
       }
-      catch (Exception localException)
-      {
-      }
-
       return paramString;
     }
     boolean isExist(String paramString) {
       if (this.res == null) return false; try
       {
         this.res.getString(paramString);
-        return true;
+        return true; } catch (Exception localException) {
       }
-      catch (Exception localException)
-      {
-      }
-
       return false;
     }
 
     Res(String paramString) {
       try {
         this.res = ResourceBundle.getBundle(paramString, RTSConf.cur.locale, LDRres.loader());
-        this.myName = paramString;
       }
       catch (Exception localException)
       {

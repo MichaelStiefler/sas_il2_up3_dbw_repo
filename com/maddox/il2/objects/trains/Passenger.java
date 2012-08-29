@@ -13,29 +13,19 @@ public class Passenger extends Wagon
 
   public Passenger(Train paramTrain) {
     super(paramTrain, getMeshName(0), getMeshName(1));
-
-    this.life = 0.015F;
-    this.ignoreTNT = 0.42F;
-    this.killTNT = 1.5F;
+    this.life = 0.003F;
+    this.ignoreTNT = 0.32F;
+    this.killTNT = 1.3F;
     this.bodyMaterial = 3;
   }
 
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
-    {
+  private static String getMeshName(int paramInt) {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/Wagon" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/Wagon" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()

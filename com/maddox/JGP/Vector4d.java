@@ -31,7 +31,7 @@ public class Vector4d extends Tuple4d
 
   public final double lengthSquared()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+    return this.jdField_x_of_type_Double * this.jdField_x_of_type_Double + this.jdField_y_of_type_Double * this.jdField_y_of_type_Double + this.jdField_z_of_type_Double * this.jdField_z_of_type_Double + this.jdField_w_of_type_Double * this.jdField_w_of_type_Double;
   }
 
   public final double length()
@@ -41,7 +41,7 @@ public class Vector4d extends Tuple4d
 
   public final double dot(Tuple4d paramTuple4d)
   {
-    return this.x * paramTuple4d.x + this.y * paramTuple4d.y + this.z * paramTuple4d.z + this.w * paramTuple4d.w;
+    return this.jdField_x_of_type_Double * paramTuple4d.jdField_x_of_type_Double + this.jdField_y_of_type_Double * paramTuple4d.jdField_y_of_type_Double + this.jdField_z_of_type_Double * paramTuple4d.jdField_z_of_type_Double + this.jdField_w_of_type_Double * paramTuple4d.jdField_w_of_type_Double;
   }
 
   public final void normalize(Tuple4d paramTuple4d)
@@ -54,10 +54,10 @@ public class Vector4d extends Tuple4d
   {
     double d = length();
 
-    this.x /= d;
-    this.y /= d;
-    this.z /= d;
-    this.w /= d;
+    this.jdField_x_of_type_Double /= d;
+    this.jdField_y_of_type_Double /= d;
+    this.jdField_z_of_type_Double /= d;
+    this.jdField_w_of_type_Double /= d;
   }
 
   public final double angle(Vector4d paramVector4d)

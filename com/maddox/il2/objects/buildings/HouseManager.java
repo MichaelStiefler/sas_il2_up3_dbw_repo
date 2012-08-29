@@ -36,20 +36,20 @@ public class HouseManager extends Actor
   }
 
   public void fullUpdateChannel(NetChannel paramNetChannel) {
-    ((HouseNet)this.net).fullUpdateChannel(paramNetChannel);
+    ((HouseNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).fullUpdateChannel(paramNetChannel);
   }
   public void onHouseDie(House paramHouse, Actor paramActor) {
     for (int i = 0; i < this.houses; i++)
       if (this.house[i] == paramHouse) {
-        ((HouseNet)this.net).postDie(i, paramActor, null);
+        ((HouseNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).postDie(i, paramActor, null);
         return;
       }
   }
 
   private void createNetObj(NetChannel paramNetChannel, int paramInt)
   {
-    if (paramNetChannel == null) this.net = new HouseNet(this); else
-      this.net = new HouseNet(this, paramNetChannel, paramInt);
+    if (paramNetChannel == null) this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new HouseNet(this); else
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new HouseNet(this, paramNetChannel, paramInt);
   }
 
   public HouseManager(SectFile paramSectFile, String paramString, NetChannel paramNetChannel, int paramInt) {
@@ -80,8 +80,6 @@ public class HouseManager extends Actor
       localActorSpawnArg.orient = localOrient;
       try {
         House localHouse = (House)localActorSpawn.actorSpawn(localActorSpawnArg);
-
-        localHouse.setName(str);
         if (m == 0) {
           localHouse.setDiedFlag(true);
         } else {
@@ -101,10 +99,6 @@ public class HouseManager extends Actor
     if (Actor.isValid(World.cur().houseManager))
       World.cur().houseManager.destroy();
     World.cur().houseManager = this;
-  }
-
-  public House[] zutiGetHouses() {
-    return this.house;
   }
 
   class HouseNet extends ActorNet
@@ -129,7 +123,7 @@ public class HouseManager extends Actor
           postTo(paramNetChannel, localNetMsgGuaranted);
         }
       } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 
@@ -180,7 +174,7 @@ public class HouseManager extends Actor
         localNetMsgGuaranted.writeInt(paramInt);
         localNetMsgGuaranted.writeNetObj(paramActor.net);
         postExclude(paramNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 

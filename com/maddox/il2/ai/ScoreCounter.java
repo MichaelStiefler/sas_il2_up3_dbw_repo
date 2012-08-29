@@ -36,8 +36,6 @@ public class ScoreCounter
   public int nPlayerDitches;
   public boolean bLanded;
   public boolean bPlayerStateUnknown;
-  public boolean bPlayerDroppedExternalStores;
-  public int externalStoresValue;
   public long timeStart;
   public int player_is;
   public float todStart;
@@ -58,9 +56,6 @@ public class ScoreCounter
     this.bLanded = false;
     this.bPlayerStateUnknown = false;
 
-    this.bPlayerDroppedExternalStores = false;
-    this.externalStoresValue = 0;
-
     this.timeStart = -1L;
     this.player_is = 0;
 
@@ -72,13 +67,6 @@ public class ScoreCounter
   public void playerParatrooper() {
     this.bPlayerParatrooper = true;
   }
-
-  public void playerDroppedExternalStores(int paramInt)
-  {
-    this.bPlayerDroppedExternalStores = true;
-    this.externalStoresValue = paramInt;
-  }
-
   public void playerTakeoff() {
     this.nPlayerTakeoffs += 1;
     this.bLandedFarAirdrome = false;
@@ -149,9 +137,7 @@ public class ScoreCounter
     case 7:
       HUD.log("EnemyShipDestroyed"); break;
     case 8:
-      HUD.log("EnemyStaticAircraftDestroyed"); break;
-    case 9:
-      HUD.log("EnemyRadioDestroyed"); }
+      HUD.log("EnemyStaticAircraftDestroyed"); }
   }
 
   public void friendDestroyed(Actor paramActor) {
@@ -175,9 +161,7 @@ public class ScoreCounter
     case 7:
       HUD.log("FriendShipDestroyed"); break;
     case 8:
-      HUD.log("FriendStaticAircraftDestroyed"); break;
-    case 9:
-      HUD.log("FriendRadioDestroyed"); }
+      HUD.log("FriendStaticAircraftDestroyed"); }
   }
 
   public int getRegisteredType(Actor paramActor)
@@ -264,8 +248,6 @@ public class ScoreCounter
     this.player_is = 0;
     this.bCrossCountry = false;
     this.bLanded = false;
-    this.bPlayerDroppedExternalStores = false;
-    this.externalStoresValue = 0;
   }
 
   public static void register(Class paramClass, int paramInt, double paramDouble1, double paramDouble2) {

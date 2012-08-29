@@ -31,95 +31,95 @@ public class GUIWindowManager extends GWindowManager
   public void setUseGMeshs(boolean paramBoolean) { if (this.bUseGMeshs == paramBoolean) return;
     this.bUseGMeshs = paramBoolean;
     this.render.useClearDepth(this.bUseGMeshs);
-    ((GUICanvas)this.root.C).bClearZ = this.bUseGMeshs; }
+    ((GUICanvas)this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C).bClearZ = this.bUseGMeshs; }
 
   public void setTimeGameActive(boolean paramBoolean)
   {
-    if (this.bTimeActive) {
-      this.bTimeGameActive = paramBoolean;
+    if (this.jdField_bTimeActive_of_type_Boolean) {
+      this.jdField_bTimeGameActive_of_type_Boolean = paramBoolean;
     }
     else if (Time.isEnableChangePause())
       Time.setPause(!paramBoolean);
   }
 
   public void setKeyboardGameActive(boolean paramBoolean) {
-    if (this.bKeyboardActive) this.bKeyboardGameActive = paramBoolean; else
+    if (this.jdField_bKeyboardActive_of_type_Boolean) this.jdField_bKeyboardGameActive_of_type_Boolean = paramBoolean; else
       Keyboard.adapter().setEnable(paramBoolean); 
   }
 
   public void setMouseGameActive(boolean paramBoolean) {
-    if (this.bMouseActive) this.bMouseGameActive = paramBoolean; else
+    if (this.jdField_bMouseActive_of_type_Boolean) this.jdField_bMouseGameActive_of_type_Boolean = paramBoolean; else
       Mouse.adapter().setEnable(paramBoolean); 
   }
 
   public void setJoyGameActive(boolean paramBoolean) {
-    if (this.bJoyActive) this.bJoyGameActive = paramBoolean; else
+    if (this.jdField_bJoyActive_of_type_Boolean) this.jdField_bJoyGameActive_of_type_Boolean = paramBoolean; else
       Joy.adapter().setEnable(paramBoolean);
   }
 
   public void activateTime(boolean paramBoolean) {
-    if (this.bTimeActive == paramBoolean) return;
+    if (this.jdField_bTimeActive_of_type_Boolean == paramBoolean) return;
     if (paramBoolean) {
-      this.bTimeGameActive = (!Time.isPaused());
+      this.jdField_bTimeGameActive_of_type_Boolean = (!Time.isPaused());
       RTSConf.cur.time.setEnableChangePause0(false);
     } else {
       RTSConf.cur.time.setEnableChangePause0(true);
       if (Time.isEnableChangePause())
-        Time.setPause(!this.bTimeGameActive);
+        Time.setPause(!this.jdField_bTimeGameActive_of_type_Boolean);
     }
-    this.bTimeActive = paramBoolean;
+    this.jdField_bTimeActive_of_type_Boolean = paramBoolean;
   }
 
   public void activateKeyboard(boolean paramBoolean) {
-    if (this.bKeyboardActive == paramBoolean) return;
+    if (this.jdField_bKeyboardActive_of_type_Boolean == paramBoolean) return;
     if (paramBoolean) {
       if (!Keyboard.adapter().isEnable()) {
         Keyboard.adapter().setEnable(true);
-        this.bKeyboardGameActive = false;
+        this.jdField_bKeyboardGameActive_of_type_Boolean = false;
       } else {
-        this.bKeyboardGameActive = true;
+        this.jdField_bKeyboardGameActive_of_type_Boolean = true;
       }
     }
-    else Keyboard.adapter().setEnable(this.bKeyboardGameActive);
+    else Keyboard.adapter().setEnable(this.jdField_bKeyboardGameActive_of_type_Boolean);
 
-    this.bKeyboardActive = paramBoolean;
+    this.jdField_bKeyboardActive_of_type_Boolean = paramBoolean;
   }
 
   public void activateMouse(boolean paramBoolean) {
-    if (this.bMouseActive == paramBoolean) return;
+    if (this.jdField_bMouseActive_of_type_Boolean == paramBoolean) return;
     if (paramBoolean) {
       if (!Mouse.adapter().isEnable()) {
         Mouse.adapter().setEnable(true);
-        this.bMouseGameActive = false;
+        this.jdField_bMouseGameActive_of_type_Boolean = false;
       } else {
-        this.bMouseGameActive = true;
+        this.jdField_bMouseGameActive_of_type_Boolean = true;
       }
-      this.bMouseActive = true;
+      this.jdField_bMouseActive_of_type_Boolean = true;
       Mouse.adapter().getPos(this._startMousePos);
       msgMouseAbsMove(this._startMousePos[0], this._startMousePos[1], this._startMousePos[2]);
     } else {
-      Mouse.adapter().setEnable(this.bMouseGameActive);
-      this.bMouseActive = false;
+      Mouse.adapter().setEnable(this.jdField_bMouseGameActive_of_type_Boolean);
+      this.jdField_bMouseActive_of_type_Boolean = false;
     }
   }
 
   public void activateJoy(boolean paramBoolean)
   {
-    if (this.bJoyActive == paramBoolean) return;
+    if (this.jdField_bJoyActive_of_type_Boolean == paramBoolean) return;
     if (paramBoolean) {
       RTSConf.cur.joy.setFocus(this);
       if (!Joy.adapter().isEnable()) {
         Joy.adapter().setEnable(true);
-        this.bJoyGameActive = false;
+        this.jdField_bJoyGameActive_of_type_Boolean = false;
       } else {
-        this.bJoyGameActive = true;
+        this.jdField_bJoyGameActive_of_type_Boolean = true;
       }
     } else {
       RTSConf.cur.joy.setFocus(null);
-      Joy.adapter().setEnable(this.bJoyGameActive);
+      Joy.adapter().setEnable(this.jdField_bJoyGameActive_of_type_Boolean);
     }
 
-    this.bJoyActive = paramBoolean;
+    this.jdField_bJoyActive_of_type_Boolean = paramBoolean;
   }
 
   public void msgKeyboardKey(int paramInt, boolean paramBoolean) {
@@ -138,7 +138,7 @@ public class GUIWindowManager extends GWindowManager
     doMouseMove(paramInt1, -paramInt2, paramInt3);
   }
   public void msgMouseAbsMove(int paramInt1, int paramInt2, int paramInt3) {
-    doMouseAbsMove(paramInt1 - this.render.getViewPortX0(), (int)this.root.C.size.dy - paramInt2 - 1 + this.render.getViewPortY0(), paramInt3);
+    doMouseAbsMove(paramInt1 - this.render.getViewPortX0(), (int)this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.size.dy - paramInt2 - 1 + this.render.getViewPortY0(), paramInt3);
   }
 
   public void msgJoyButton(int paramInt1, int paramInt2, boolean paramBoolean) {
@@ -187,8 +187,8 @@ public class GUIWindowManager extends GWindowManager
 
     protected void setCameraPos()
     {
-      if (this.camera != null)
-        this.camera.pos.setAbs(new Point3d(0.0D, 0.0D, 1000.0D), new Orient(0.0F, 90.0F, 0.0F)); 
+      if (this.jdField_camera_of_type_ComMaddoxIl2EngineCamera != null)
+        this.jdField_camera_of_type_ComMaddoxIl2EngineCamera.pos.setAbs(new Point3d(0.0D, 0.0D, 1000.0D), new Orient(0.0F, 90.0F, 0.0F)); 
     }
 
     protected void contextResize(int paramInt1, int paramInt2) {

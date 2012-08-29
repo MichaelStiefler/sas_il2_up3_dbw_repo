@@ -69,7 +69,7 @@ public class I_16TYPE5_SPB extends I_16
     switch (paramInt1)
     {
     case 19:
-      this.FM.Gears.hitCentreGear();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.hitCentreGear();
     }
 
     return super.cutFM(paramInt1, paramInt2, paramActor);
@@ -79,14 +79,14 @@ public class I_16TYPE5_SPB extends I_16
   {
     if ((paramString.startsWith("xxtank1")) && (getEnergyPastArmor(0.1F, paramShot) > 0.0F) && (World.Rnd().nextFloat() < 0.3F))
     {
-      if (this.FM.AS.astateTankStates[0] == 0) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateTankStates[0] == 0) {
         Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
 
-        this.FM.AS.hitTank(paramShot.initiator, 0, 2);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 2);
       }
       if ((paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.75F))
       {
-        this.FM.AS.hitTank(paramShot.initiator, 0, 2);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 2);
         Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
       }
     }
@@ -99,8 +99,8 @@ public class I_16TYPE5_SPB extends I_16
     if ((this.bailingOut) && (paramFloat >= 1.0F) && (!this.canopyForward))
     {
       this.canopyForward = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceCockpitDoor(0.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
     }
     else if (this.canopyForward)
     {
@@ -137,9 +137,9 @@ public class I_16TYPE5_SPB extends I_16
     {
       super.hitDaSilk();
     }
-    else if ((this.FM.isPlayers()) || (isNetPlayer()))
+    else if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) || (isNetPlayer()))
     {
-      if ((this.FM.CT.getCockpitDoor() == 1.0D) && (!this.bailingOut))
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() == 1.0D) && (!this.bailingOut))
       {
         this.bailingOut = true;
         this.okToJump = true;
@@ -147,14 +147,14 @@ public class I_16TYPE5_SPB extends I_16
         super.hitDaSilk();
       }
     }
-    else if (!this.FM.AS.isPilotDead(0))
+    else if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(0))
     {
-      if ((this.FM.CT.getCockpitDoor() < 1.0D) && (!this.bailingOut))
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() < 1.0D) && (!this.bailingOut))
       {
         this.bailingOut = true;
-        this.FM.AS.setCockpitDoor(this, 1);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
       }
-      else if ((this.FM.CT.getCockpitDoor() == 1.0D) && (!this.bailingOut))
+      else if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() == 1.0D) && (!this.bailingOut))
       {
         this.bailingOut = true;
         this.okToJump = true;
@@ -164,11 +164,11 @@ public class I_16TYPE5_SPB extends I_16
 
     }
 
-    if ((!this.sideDoorOpened) && (this.FM.AS.bIsAboutToBailout) && (!this.FM.AS.isPilotDead(0)))
+    if ((!this.sideDoorOpened) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsAboutToBailout) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(0)))
     {
       this.sideDoorOpened = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceCockpitDoor(0.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
     }
   }
 
@@ -208,38 +208,38 @@ public class I_16TYPE5_SPB extends I_16
     if (this.bNeedSetup)
       checkAsDrone();
     int i = aircIndex();
-    if ((this.FM instanceof Maneuver))
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver))
     {
       if (typeDockableIsDocked()) {
-        if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode()))
+        if ((!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) || (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode()))
         {
-          ((Maneuver)this.FM).unblock();
-          ((Maneuver)this.FM).set_maneuver(48);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).unblock();
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(48);
           for (int j = 0; j < i; j++)
-            ((Maneuver)this.FM).push(48);
-          if (this.FM.AP.way.curr().Action != 3) {
-            ((Maneuver)this.FM).AP.way.setCur(((Aircraft)this.queen_).FM.AP.way.Cur());
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).push(48);
+          if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action != 3) {
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur());
           }
-          ((Pilot)this.FM).setDumbTime(3000L);
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(3000L);
         }
-        if (this.FM.M.fuel < this.FM.M.maxFuel)
-          this.FM.M.fuel += 0.06F * paramFloat;
-      } else if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode()))
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel)
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel += 0.06F * paramFloat;
+      } else if ((!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) || (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode()))
       {
-        if (this.FM.EI.engines[0].getStage() == 0)
-          this.FM.EI.setEngineRunning();
-        if ((this.dtime > 0L) && (((Maneuver)this.FM).Group != null)) {
-          ((Maneuver)this.FM).Group.leaderGroup = null;
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Pilot)this.FM).setDumbTime(3000L);
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getStage() == 0)
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
+        if ((this.dtime > 0L) && (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group != null)) {
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group.leaderGroup = null;
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(3000L);
           if (Time.current() > this.dtime + 3000L) {
             this.dtime = -1L;
-            ((Maneuver)this.FM).clear_stack();
-            ((Maneuver)this.FM).set_maneuver(0);
-            ((Pilot)this.FM).setDumbTime(0L);
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).clear_stack();
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(0);
+            ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(0L);
           }
-        } else if (this.FM.AP.way.curr().Action == 0) {
-          Maneuver localManeuver = (Maneuver)this.FM;
+        } else if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 0) {
+          Maneuver localManeuver = (Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
           if ((localManeuver.Group != null) && (localManeuver.Group.airc[0] == this) && (localManeuver.Group.clientGroup != null))
           {
             localManeuver.Group.setGroupTask(2);
@@ -269,11 +269,11 @@ public class I_16TYPE5_SPB extends I_16
     if (Config.isUSE_RENDER())
     {
       super.moveFan(paramFloat);
-      float f1 = this.FM.CT.getAileron();
-      float f2 = this.FM.CT.getElevator();
-      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 12.0F * f1, cvt(f2, -1.0F, 1.0F, -12.0F, 18.0F));
-      hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - (cvt(f2, -1.0F, 0.0F, -36.0F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 32.0F)));
-      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + cvt(f2, -1.0F, 0.0F, -62.0F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 44.0F));
+      float f1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getAileron();
+      float f2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator();
+      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 12.0F * f1, Aircraft.cvt(f2, -1.0F, 1.0F, -12.0F, 18.0F));
+      hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, Aircraft.cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - (Aircraft.cvt(f2, -1.0F, 0.0F, -36.0F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 32.0F)));
+      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + Aircraft.cvt(f2, -1.0F, 0.0F, -62.0F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 44.0F));
     }
   }
 
@@ -281,7 +281,7 @@ public class I_16TYPE5_SPB extends I_16
   {
     super.rareAction(paramFloat, paramBoolean);
 
-    if ((!this.oneTimeCheckDone) && (!this.FM.isPlayers()) && (!isNetPlayer()))
+    if ((!this.oneTimeCheckDone) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) && (!isNetPlayer()))
     {
       if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
       {
@@ -290,36 +290,36 @@ public class I_16TYPE5_SPB extends I_16
         {
           if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.25F)
           {
-            this.FM.CT.cockpitDoorControl = 1.0F;
-            this.FM.AS.setCockpitDoor(this, 1);
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl = 1.0F;
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
           }
 
         }
         else if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
         {
-          this.FM.CT.cockpitDoorControl = 1.0F;
-          this.FM.AS.setCockpitDoor(this, 1);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.cockpitDoorControl = 1.0F;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
         }
       }
 
     }
 
-    if ((paramBoolean) && (this.FM.AP.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).FM.Or.getKren()) < 3.0F))
+    if ((paramBoolean) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.getKren()) < 3.0F))
     {
-      if (this.FM.isPlayers()) {
-        if (((this.FM instanceof RealFlightModel)) && (!((RealFlightModel)this.FM).isRealMode()))
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) {
+        if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) && (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode()))
         {
           typeDockableAttemptDetach();
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Maneuver)this.FM).setCheckStrike(false);
-          this.FM.Vwld.z -= 5.0D;
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setCheckStrike(false);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double -= 5.0D;
           this.dtime = Time.current();
         }
       } else {
         typeDockableAttemptDetach();
-        ((Maneuver)this.FM).set_maneuver(22);
-        ((Maneuver)this.FM).setCheckStrike(false);
-        this.FM.Vwld.z -= 5.0D;
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+        ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setCheckStrike(false);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double -= 5.0D;
         this.dtime = Time.current();
       }
     }
@@ -370,9 +370,9 @@ public class I_16TYPE5_SPB extends I_16
 
   private void checkAsDrone() {
     if (this.target_ == null) {
-      if (this.FM.AP.way.curr().getTarget() == null)
-        this.FM.AP.way.next();
-      this.target_ = this.FM.AP.way.curr().getTarget();
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget() == null)
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
+      this.target_ = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget();
       if ((Actor.isValid(this.target_)) && ((this.target_ instanceof Wing))) {
         Wing localWing = (Wing)this.target_;
         int i = aircIndex();
@@ -408,7 +408,7 @@ public class I_16TYPE5_SPB extends I_16
   }
 
   public void typeDockableAttemptAttach() {
-    if ((this.FM.AS.isMaster()) && 
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && 
       (!typeDockableIsDocked())) {
       Aircraft localAircraft = War.getNearestFriend(this);
       if ((localAircraft instanceof TB_3_4M_34R_SPB))
@@ -418,7 +418,7 @@ public class I_16TYPE5_SPB extends I_16
 
   public void typeDockableAttemptDetach()
   {
-    if ((this.FM.AS.isMaster()) && (typeDockableIsDocked()) && (Actor.isValid(this.queen_)))
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && (typeDockableIsDocked()) && (Actor.isValid(this.queen_)))
     {
       ((TypeDockable)this.queen_).typeDockableRequestDetach(this);
     }
@@ -452,14 +452,14 @@ public class I_16TYPE5_SPB extends I_16
     this.dockport_ = paramInt;
     this.queen_last = this.queen_;
     this.queen_time = 0L;
-    this.FM.EI.setEngineRunning();
-    this.FM.CT.setGearAirborne();
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setGearAirborne();
     moveGear(0.0F);
-    FlightModel localFlightModel = ((Aircraft)this.queen_).FM;
-    if ((aircIndex() == 0) && ((this.FM instanceof Maneuver)) && ((localFlightModel instanceof Maneuver)))
+    FlightModel localFlightModel = ((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+    if ((aircIndex() == 0) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) && ((localFlightModel instanceof Maneuver)))
     {
       Maneuver localManeuver1 = (Maneuver)localFlightModel;
-      Maneuver localManeuver2 = (Maneuver)this.FM;
+      Maneuver localManeuver2 = (Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if ((localManeuver1.Group != null) && (localManeuver2.Group != null) && (localManeuver2.Group.numInGroup(this) == localManeuver2.Group.nOfAirc - 1))
       {
         AirGroup localAirGroup = new AirGroup(localManeuver2.Group);
@@ -526,14 +526,14 @@ public class I_16TYPE5_SPB extends I_16
 
     Property.set(localClass, "LOSElevation", 0.82595F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 9, 9 });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 9, 9 });
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null });
 
-    weaponsRegister(localClass, "2xFAB250", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB250 1", "BombGunFAB250 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2xFAB250", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB250 1", "BombGunFAB250 1", null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

@@ -48,9 +48,9 @@ public final class KeyboardWin
       while (nGetMsg(this.param)) {
         long l = Time.realFromRawClamp(this.param[2]);
         switch (this.param[0]) { case 0:
-          if (this.bOnlyChars) break; RTSConf.cur.keyboard.setPress(l, this.param[1]); break;
+          if (this.bOnlyChars) continue; RTSConf.cur.keyboard.setPress(l, this.param[1]); break;
         case 1:
-          if (this.bOnlyChars) break; RTSConf.cur.keyboard.setRelease(l, this.param[1]); break;
+          if (this.bOnlyChars) continue; RTSConf.cur.keyboard.setRelease(l, this.param[1]); break;
         case 2:
           RTSConf.cur.keyboard.setChar(l, this.param[1]);
         }

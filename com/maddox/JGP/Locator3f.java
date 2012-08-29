@@ -66,9 +66,9 @@ public class Locator3f
   {
     return this.O.getRoll();
   }
-  public float getX() { return this.P.x; } 
-  public float getY() { return this.P.y; } 
-  public float getZ() { return this.P.z; }
+  public float getX() { return this.P.jdField_x_of_type_Float; } 
+  public float getY() { return this.P.jdField_y_of_type_Float; } 
+  public float getZ() { return this.P.jdField_z_of_type_Float; }
 
   public void get(Tuple3f paramTuple3f) {
     paramTuple3f.set(this.P);
@@ -84,7 +84,7 @@ public class Locator3f
 
   public void get(float[] paramArrayOfFloat)
   {
-    paramArrayOfFloat[0] = this.P.x; paramArrayOfFloat[1] = this.P.y; paramArrayOfFloat[2] = this.P.z;
+    paramArrayOfFloat[0] = this.P.jdField_x_of_type_Float; paramArrayOfFloat[1] = this.P.jdField_y_of_type_Float; paramArrayOfFloat[2] = this.P.jdField_z_of_type_Float;
     paramArrayOfFloat[3] = this.O.getYaw(); paramArrayOfFloat[4] = this.O.getPitch(); paramArrayOfFloat[5] = this.O.getRoll();
   }
 
@@ -119,9 +119,9 @@ public class Locator3f
   {
     this.O.getMatrix(M3);
     paramMatrix4f.set(M3);
-    paramMatrix4f.m03 = this.P.x;
-    paramMatrix4f.m13 = this.P.y;
-    paramMatrix4f.m23 = this.P.z;
+    paramMatrix4f.m03 = this.P.jdField_x_of_type_Float;
+    paramMatrix4f.m13 = this.P.jdField_y_of_type_Float;
+    paramMatrix4f.m23 = this.P.jdField_z_of_type_Float;
   }
 
   public void getOrientMatrix(Matrix3f paramMatrix3f)
@@ -215,6 +215,7 @@ public class Locator3f
     Locator3f localLocator3f1 = new Locator3f();
     Locator3f localLocator3f2 = new Locator3f();
     Locator3f localLocator3f3 = new Locator3f();
+
     Vector3f localVector3f = new Vector3f();
 
     localLocator3f1.set(1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);

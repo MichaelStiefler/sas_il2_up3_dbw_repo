@@ -150,19 +150,18 @@ public class Statics extends Actor
 
       System.out.println("Load bridges");
       int j = localDataInputStream.readInt();
-      int i2;
-      float f3;
-      Object localObject;
+      int i3;
+      float f1;
       for (int k = 0; k < j; k++) {
-        m = localDataInputStream.readInt();
-        int n = localDataInputStream.readInt();
-        i2 = localDataInputStream.readInt();
-        int i4 = localDataInputStream.readInt();
-        int i6 = localDataInputStream.readInt();
-        f3 = localDataInputStream.readFloat();
-        localObject = new Bridge(k, i6, m, n, i2, i4, f3);
+        int m = localDataInputStream.readInt();
+        n = localDataInputStream.readInt();
+        int i1 = localDataInputStream.readInt();
+        i3 = localDataInputStream.readInt();
+        int i5 = localDataInputStream.readInt();
+        f1 = localDataInputStream.readFloat();
+        Bridge localBridge = new Bridge(k, i5, m, n, i1, i3, f1);
         if (paramList != null) {
-          paramList.add(localObject);
+          paramList.add(localBridge);
         }
       }
       System.out.println("Load static objects");
@@ -172,32 +171,33 @@ public class Statics extends Actor
       j = localDataInputStream.readInt();
       this.spawns = null;
       if (j > 0) {
-        m = -1;
+        n = -1;
         ActorSpawnArg localActorSpawnArg = new ActorSpawnArg();
         this.spawns = new ActorSpawn[j];
-        for (i2 = 0; i2 < j; i2++) {
+        for (i3 = 0; i3 < j; i3++) {
           String str3 = localDataInputStream.readUTF();
           if ("com.maddox.il2.objects.air.Runaway".equals(str3))
-            m = i2;
-          this.spawns[i2] = ((ActorSpawn)Spawn.get_WithSoftClass(str3));
+            n = i3;
+          this.spawns[i3] = ((ActorSpawn)Spawn.get_WithSoftClass(str3));
         }
         j = localDataInputStream.readInt();
         while (j-- > 0) {
-          i2 = localDataInputStream.readInt();
-          float f1 = localDataInputStream.readFloat();
+          int i6 = localDataInputStream.readInt();
+          f1 = localDataInputStream.readFloat();
           float f2 = localDataInputStream.readFloat();
-          f3 = localDataInputStream.readFloat();
+          float f3 = localDataInputStream.readFloat();
           this._loc.set(f1, f2, 0.0D, f3, 0.0F, 0.0F);
-          if (m == i2) {
+          Object localObject;
+          if (n == i6) {
             localObject = new Loc(this._loc);
             localArrayList.add(localObject);
           }
-          if ((i2 < this.spawns.length) && (this.spawns[i2] != null)) {
+          if ((i6 < this.spawns.length) && (this.spawns[i6] != null)) {
             localActorSpawnArg.clear();
             localActorSpawnArg.point = this._loc.getPoint();
             localActorSpawnArg.orient = this._loc.getOrient();
             try {
-              localObject = this.spawns[i2].actorSpawn(localActorSpawnArg);
+              localObject = this.spawns[i6].actorSpawn(localActorSpawnArg);
               if ((localObject instanceof ActorLandMesh)) {
                 ActorLandMesh localActorLandMesh = (ActorLandMesh)localObject;
                 localActorLandMesh.mesh().setPos(localActorLandMesh.pos.getAbs());
@@ -214,34 +214,36 @@ public class Statics extends Actor
 
       j = localDataInputStream.readInt();
       this.spawns = null;
-      int m = -1;
-      int i3;
-      int i5;
+      int n = -1;
+      int i4;
+      int i7;
       int i8;
+      int i11;
+      int i10;
       if (j > 0) {
         this.spawns = new ActorSpawn[j];
         this.spawnIsPlate = new boolean[j];
         this.uniformMaxDist = new float[j];
         this.cacheActors = new ArrayList[j];
         this._loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-        for (int i1 = 0; i1 < j; i1++) {
+        for (int i2 = 0; i2 < j; i2++) {
           String str2 = localDataInputStream.readUTF();
           if (str2.indexOf("TreeLine") >= 0)
-            m = i1;
-          this.spawns[i1] = ((ActorSpawn)Spawn.get_WithSoftClass(str2));
-          this.cacheActors[i1] = new ArrayList();
+            n = i2;
+          this.spawns[i2] = ((ActorSpawn)Spawn.get_WithSoftClass(str2));
+          this.cacheActors[i2] = new ArrayList();
           try
           {
             this._spawnArg.point = this._loc.getPoint();
             this._spawnArg.orient = this._loc.getOrient();
-            Actor localActor = this.spawns[i1].actorSpawn(this._spawnArg);
-            cachePut(i1, localActor);
-            this.spawnIsPlate[i1] = (localActor instanceof Plate);
+            Actor localActor = this.spawns[i2].actorSpawn(this._spawnArg);
+            cachePut(i2, localActor);
+            this.spawnIsPlate[i2] = (localActor instanceof Plate);
             if ((localActor instanceof ActorMesh)) {
-              this.uniformMaxDist[i1] = ((ActorMesh)localActor).mesh().getUniformMaxDist();
-              localActor.draw.uniformMaxDist = this.uniformMaxDist[i1];
+              this.uniformMaxDist[i2] = ((ActorMesh)localActor).mesh().getUniformMaxDist();
+              localActor.draw.uniformMaxDist = this.uniformMaxDist[i2];
             } else {
-              this.uniformMaxDist[i1] = 0.0F;
+              this.uniformMaxDist[i2] = 0.0F;
             }
           } catch (Exception localException2) {
             System.out.println(localException2.getMessage());
@@ -249,69 +251,68 @@ public class Statics extends Actor
           }
         }
 
-        i1 = localDataInputStream.readInt();
-        this.allBlocks = new HashMapInt((int)(i1 / 0.75F));
-        int i9;
-        int i12;
-        while (i1-- > 0) {
-          i3 = localDataInputStream.readInt();
-          i5 = i3 & 0xFFFF;
-          int i7 = i3 >> 16 & 0xFFFF;
-          i9 = localDataInputStream.readInt();
+        i4 = localDataInputStream.readInt();
+        this.allBlocks = new HashMapInt((int)(i4 / 0.75F));
+        int i14;
+        while (i4-- > 0) {
+          i7 = localDataInputStream.readInt();
+          i8 = i7 & 0xFFFF;
+          int i9 = i7 >> 16 & 0xFFFF;
+          i11 = localDataInputStream.readInt();
           Block localBlock1 = new Block();
-          localBlock1.code = new int[i9 * 2];
+          localBlock1.code = new int[i11 * 2];
           float f4 = 0.0F;
-          for (i12 = 0; i12 < i9; i12++) {
-            int i13 = localDataInputStream.readInt();
-            if ((i13 & 0x7FFF) >= this.spawns.length)
-              i13 = 0;
-            localBlock1.code[(i12 * 2 + 0)] = i13;
-            localBlock1.code[(i12 * 2 + 1)] = localDataInputStream.readInt();
-            if (this.spawnIsPlate[(i13 & 0x7FFF)] != 0)
+          for (i14 = 0; i14 < i11; i14++) {
+            int i15 = localDataInputStream.readInt();
+            if ((i15 & 0x7FFF) >= this.spawns.length)
+              i15 = 0;
+            localBlock1.code[(i14 * 2 + 0)] = i15;
+            localBlock1.code[(i14 * 2 + 1)] = localDataInputStream.readInt();
+            if (this.spawnIsPlate[(i15 & 0x7FFF)] != 0)
               localBlock1.bExistPlate = true;
-            float f5 = this.uniformMaxDist[(i13 & 0x7FFF)];
+            float f5 = this.uniformMaxDist[(i15 & 0x7FFF)];
             if (f4 < f5)
               f4 = f5;
           }
-          this.allBlocks.put(key(i7, i5), localBlock1);
-          Engine.drawEnv().setUniformMaxDist(i5, i7, f4);
+          this.allBlocks.put(key(i9, i8), localBlock1);
+          Engine.drawEnv().setUniformMaxDist(i8, i9, f4);
           if (localBlock1.bExistPlate) {
             this.bCheckPlate = false;
-            this._updateX[0] = i5;
-            this._updateY[0] = i7;
+            this._updateX[0] = i8;
+            this._updateY[0] = i9;
             _msgDreamGlobal(true, 1, 0, this._updateX, this._updateY);
             this.bCheckPlate = true;
           }
         }
         if (Config.isUSE_RENDER())
         {
-          i3 = Landscape.getSizeXpix();
-          i5 = Landscape.getSizeYpix();
-          int[] arrayOfInt = new int[i3 + 31 >> 5];
-          int i10;
-          for (i9 = 0; i9 < i5; i9++) {
-            for (i10 = 0; i10 < arrayOfInt.length; i10++) arrayOfInt[i10] = 0;
-            i10 = 0;
-            for (int i11 = 0; i11 < i3; i10++) {
-              if (this.allBlocks.containsKey(key(i9, i11)))
-                arrayOfInt[(i10 >> 5)] |= 1 << (i10 & 0x1F);
-              i11++;
+          i7 = Landscape.getSizeXpix();
+          i8 = Landscape.getSizeYpix();
+          int[] arrayOfInt = new int[i7 + 31 >> 5];
+          int i12;
+          for (i11 = 0; i11 < i8; i11++) {
+            for (i12 = 0; i12 < arrayOfInt.length; i12++) arrayOfInt[i12] = 0;
+            int i13 = 0;
+            for (i14 = 0; i14 < i7; i13++) {
+              if (this.allBlocks.containsKey(key(i11, i14)))
+                arrayOfInt[(i13 >> 5)] |= 1 << (i13 & 0x1F);
+              i14++;
             }
 
-            Landscape.MarkStaticActorsCells(0, i9, i3, 1, 200, arrayOfInt);
+            Landscape.MarkStaticActorsCells(0, i11, i7, 1, 200, arrayOfInt);
           }
 
-          i3 = Landscape.getSizeXpix();
-          i5 = Landscape.getSizeYpix();
-          i8 = 0;
-          for (i9 = 0; i9 < i5; i9++) {
-            for (i10 = 0; i10 < i3; i10++) {
-              if (this.allBlocks.containsKey(key(i9, i10))) {
-                Block localBlock2 = (Block)this.allBlocks.get(key(i9, i10));
-                Landscape.MarkActorCellWithTrees(m, i10, i9, localBlock2.code, localBlock2.code.length);
-                for (i12 = 0; i12 < localBlock2.code.length; i12 += 2) {
-                  if ((localBlock2.code[i12] & 0x7FFF) == m) {
-                    i8++;
+          i7 = Landscape.getSizeXpix();
+          i8 = Landscape.getSizeYpix();
+          i10 = 0;
+          for (i11 = 0; i11 < i8; i11++) {
+            for (i12 = 0; i12 < i7; i12++) {
+              if (this.allBlocks.containsKey(key(i11, i12))) {
+                Block localBlock2 = (Block)this.allBlocks.get(key(i11, i12));
+                Landscape.MarkActorCellWithTrees(n, i12, i11, localBlock2.code, localBlock2.code.length);
+                for (i14 = 0; i14 < localBlock2.code.length; i14 += 2) {
+                  if ((localBlock2.code[i14] & 0x7FFF) == n) {
+                    i10++;
                   }
                 }
               }
@@ -324,29 +325,29 @@ public class Statics extends Actor
       {
         j = localDataInputStream.readInt();
         localAirdrome.runw = new Point_Runaway[j][];
-        for (i3 = 0; i3 < j; i3++) {
-          i5 = localDataInputStream.readInt();
-          localAirdrome.runw[i3] = new Point_Runaway[i5];
-          for (i8 = 0; i8 < i5; i8++) {
-            localAirdrome.runw[i3][i8] = new Point_Runaway(localDataInputStream.readFloat(), localDataInputStream.readFloat());
+        for (i4 = 0; i4 < j; i4++) {
+          i7 = localDataInputStream.readInt();
+          localAirdrome.runw[i4] = new Point_Runaway[i7];
+          for (i8 = 0; i8 < i7; i8++) {
+            localAirdrome.runw[i4][i8] = new Point_Runaway(localDataInputStream.readFloat(), localDataInputStream.readFloat());
           }
         }
         j = localDataInputStream.readInt();
         localAirdrome.taxi = new Point_Taxi[j][];
-        for (i3 = 0; i3 < j; i3++) {
-          i5 = localDataInputStream.readInt();
-          localAirdrome.taxi[i3] = new Point_Taxi[i5];
-          for (i8 = 0; i8 < i5; i8++) {
-            localAirdrome.taxi[i3][i8] = new Point_Taxi(localDataInputStream.readFloat(), localDataInputStream.readFloat());
+        for (i7 = 0; i7 < j; i7++) {
+          i8 = localDataInputStream.readInt();
+          localAirdrome.taxi[i7] = new Point_Taxi[i8];
+          for (i10 = 0; i10 < i8; i10++) {
+            localAirdrome.taxi[i7][i10] = new Point_Taxi(localDataInputStream.readFloat(), localDataInputStream.readFloat());
           }
         }
         j = localDataInputStream.readInt();
         localAirdrome.stay = new Point_Stay[j][];
-        for (i3 = 0; i3 < j; i3++) {
-          i5 = localDataInputStream.readInt();
-          localAirdrome.stay[i3] = new Point_Stay[i5];
-          for (i8 = 0; i8 < i5; i8++)
-            localAirdrome.stay[i3][i8] = new Point_Stay(localDataInputStream.readFloat(), localDataInputStream.readFloat());
+        for (i8 = 0; i8 < j; i8++) {
+          i10 = localDataInputStream.readInt();
+          localAirdrome.stay[i8] = new Point_Stay[i10];
+          for (i11 = 0; i11 < i10; i11++)
+            localAirdrome.stay[i8][i11] = new Point_Stay(localDataInputStream.readFloat(), localDataInputStream.readFloat());
         }
         localAirdrome.stayHold = new boolean[localAirdrome.stay.length];
       }
@@ -514,8 +515,8 @@ public class Statics extends Actor
               if (localBitSet1.get(m)) {
                 int n = m / 8;
                 int i1 = m % 8;
-                int tmp150_148 = n;
-                byte[] tmp150_146 = arrayOfByte; tmp150_146[tmp150_148] = (byte)(tmp150_146[tmp150_148] | 1 << i1);
+                int tmp149_147 = n;
+                byte[] tmp149_145 = arrayOfByte; tmp149_145[tmp149_147] = (byte)(tmp149_145[tmp149_147] | 1 << i1);
               }
             }
             localNetMsgGuaranted.write(arrayOfByte);
@@ -626,7 +627,7 @@ public class Statics extends Actor
       int i = localHashMapIntEntry.getKey();
       byte[] arrayOfByte = null;
       if (this.allStates0 != null)
-        arrayOfByte = (byte[])(byte[])this.allStates0.get(i);
+        arrayOfByte = (byte[])this.allStates0.get(i);
       if (arrayOfByte == null) {
         if (localBlock.isDestructed())
           putMsgHouseSync(paramNetChannel, i, localBlock);
@@ -697,11 +698,9 @@ public class Statics extends Actor
       return;
     int m = 0;
     int n = localBlock.actor.length;
-    while ((m < n) && 
-      (localBlock.actor[m] != paramHouse)) {
-      m++;
-    }
-
+    for (; m < n; m++)
+      if (localBlock.actor[m] == paramHouse)
+        break;
     if (m >= n)
       return;
     ActorNet localActorNet = null;
@@ -963,7 +962,7 @@ public class Statics extends Actor
   {
     boolean bExistPlate = false;
     int[] code;
-    public Actor[] actor;
+    Actor[] actor;
 
     public int amountObjects()
     {
@@ -1010,13 +1009,13 @@ public class Statics extends Actor
           n = 1 << (k & 0xFF);
           if (!Actor.isAlive(this.actor[k]))
           {
-            int tmp88_86 = m;
-            byte[] tmp88_85 = paramArrayOfByte; tmp88_85[tmp88_86] = (byte)(tmp88_85[tmp88_86] | n);
+            int tmp85_83 = m;
+            byte[] tmp85_82 = paramArrayOfByte; tmp85_82[tmp85_83] = (byte)(tmp85_82[tmp85_83] | n);
           }
           else
           {
-            int tmp101_99 = m;
-            byte[] tmp101_98 = paramArrayOfByte; tmp101_98[tmp101_99] = (byte)(tmp101_98[tmp101_99] & (n ^ 0xFFFFFFFF));
+            int tmp98_96 = m;
+            byte[] tmp98_95 = paramArrayOfByte; tmp98_95[tmp98_96] = (byte)(tmp98_95[tmp98_96] & (n ^ 0xFFFFFFFF));
           }
         }
       else for (k = 0; k < i; k++) {
@@ -1024,13 +1023,13 @@ public class Statics extends Actor
           n = 1 << (k & 0xFF);
           if ((this.code[(k * 2)] & 0x8000) != 0)
           {
-            int tmp163_161 = m;
-            byte[] tmp163_160 = paramArrayOfByte; tmp163_160[tmp163_161] = (byte)(tmp163_160[tmp163_161] | n);
+            int tmp160_158 = m;
+            byte[] tmp160_157 = paramArrayOfByte; tmp160_157[tmp160_158] = (byte)(tmp160_157[tmp160_158] | n);
           }
           else
           {
-            int tmp176_174 = m;
-            byte[] tmp176_173 = paramArrayOfByte; tmp176_173[tmp176_174] = (byte)(tmp176_173[tmp176_174] & (n ^ 0xFFFFFFFF));
+            int tmp173_171 = m;
+            byte[] tmp173_170 = paramArrayOfByte; tmp173_170[tmp173_171] = (byte)(tmp173_170[tmp173_171] & (n ^ 0xFFFFFFFF));
           }
         }
       return paramArrayOfByte;
@@ -1153,7 +1152,7 @@ public class Statics extends Actor
         for (j = 0; j < i; j++)
           if (!this.actor[j].isAlive()) {
             Point3d localPoint3d = this.actor[j].pos.getAbsPoint();
-            if ((localPoint3d.x - paramFloat3) * (localPoint3d.x - paramFloat3) + (localPoint3d.y - paramFloat4) * (localPoint3d.y - paramFloat4) <= paramFloat5)
+            if ((localPoint3d.jdField_x_of_type_Double - paramFloat3) * (localPoint3d.jdField_x_of_type_Double - paramFloat3) + (localPoint3d.jdField_y_of_type_Double - paramFloat4) * (localPoint3d.jdField_y_of_type_Double - paramFloat4) <= paramFloat5)
               this.actor[j].setDiedFlag(false);
           }
       }

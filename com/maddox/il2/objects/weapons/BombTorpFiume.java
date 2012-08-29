@@ -2,7 +2,7 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombTorpFiume extends Torpedo
+public class BombTorpFiume extends TorpedoLtfFiume
 {
   static
   {
@@ -17,12 +17,5 @@ public class BombTorpFiume extends Torpedo
     Property.set(localClass, "velocity", 21.6F);
     Property.set(localClass, "traveltime", 138.88879F);
     Property.set(localClass, "startingspeed", 0.0F);
-
-    Property.set(localClass, "impactAngleMin", 24.0F);
-    Property.set(localClass, "impactAngleMax", 31.5F);
-    Property.set(localClass, "impactSpeed", 107.0F);
-    Property.set(localClass, "armingTime", 3.5F);
-    Property.set(localClass, "dropAltitude", 100.0F);
-    Property.set(localClass, "dropSpeed", 300.0F);
   }
 }

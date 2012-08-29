@@ -17,8 +17,8 @@ public class CmdHost extends Cmd
 
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
   {
-    if ((nargs(paramMap, "_$$") == 1) && (paramCmdEnv.levelAccess() == 0)) {
-      String str1 = arg(paramMap, "_$$", 0);
+    if ((Cmd.nargs(paramMap, "_$$") == 1) && (paramCmdEnv.levelAccess() == 0)) {
+      String str1 = Cmd.arg(paramMap, "_$$", 0);
       if ((str1 != null) && (str1.length() > 0)) {
         if ((str1.charAt(0) >= '0') && (str1.charAt(0) <= '9')) {
           ERR_HARD("Bad host name");
@@ -28,7 +28,7 @@ public class CmdHost extends Cmd
         return str1;
       }
     }
-    boolean bool = exist(paramMap, "PATH");
+    boolean bool = Cmd.exist(paramMap, "PATH");
     INFO_HARD("localhost: " + NetEnv.host().shortName());
     List localList = NetEnv.hosts();
     int i = localList.size();

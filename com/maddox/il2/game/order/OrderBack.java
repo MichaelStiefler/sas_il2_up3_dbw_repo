@@ -4,8 +4,8 @@ public class OrderBack extends Order
 {
   public void preRun()
   {
-    if (this.orders.upOrders != null)
-      this.orders.upOrders.run();
+    if (this.jdField_orders_of_type_ComMaddoxIl2GameOrderOrders.upOrders != null)
+      this.jdField_orders_of_type_ComMaddoxIl2GameOrderOrders.upOrders.run();
     else
       OrdersTree.curOrdersTree.unactivate();
   }

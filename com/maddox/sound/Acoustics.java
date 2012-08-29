@@ -35,7 +35,7 @@ public class Acoustics extends BaseObject
 
   public Acoustics(AcousticsPreset paramAcousticsPreset)
   {
-    if (enabled) {
+    if (BaseObject.enabled) {
       this.handle = jniCreate();
       load(paramAcousticsPreset.ini);
     }
@@ -99,7 +99,7 @@ public class Acoustics extends BaseObject
 
   public boolean load(SectFile paramSectFile)
   {
-    if (!enabled) return true;
+    if (!BaseObject.enabled) return true;
     if (!paramSectFile.sectionExist("common")) {
       errmsg("invalid acoustics preset format.");
       return false;

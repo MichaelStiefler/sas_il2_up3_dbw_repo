@@ -98,7 +98,6 @@ public class VoiceFX
       curFX = null;
     }
     int i;
-    VoiceFX localVoiceFX2;
     if ((curSync == null) && 
       (queue.size() > 0)) {
       i = 0;
@@ -110,34 +109,36 @@ public class VoiceFX
         if (localVoiceFX1.voice != curSync.voice) break;
         localVoiceFX1.playVoice();
         while (localVoiceFX1.subFX.size() > 0) {
-          localVoiceFX2 = (VoiceFX)localVoiceFX1.subFX.get(0);
+          VoiceFX localVoiceFX2 = (VoiceFX)localVoiceFX1.subFX.get(0);
           curSync.subFX.add(localVoiceFX2);
           localVoiceFX1.subFX.remove(0);
         }
         queue.remove(0);
       }
+
     }
-    int j;
+
     if (async.size() > 0) {
       i = 0;
-      for (j = 0; j < 9; j++) {
+      for (int j = 0; j < 9; j++) {
         if (!voices[j].isPlaying()) continue; i++;
       }
-      for (j = 0; j < async.size(); ) {
-        localVoiceFX2 = (VoiceFX)async.get(j);
+      for (int m = 0; m < async.size(); ) {
+        localVoiceFX3 = (VoiceFX)async.get(m);
         if (i > 2) break;
-        if (localVoiceFX2.time < l1) {
-          localVoiceFX2.playVoice();
-          async.remove(j);
+        if (localVoiceFX3.time < l1) {
+          localVoiceFX3.playVoice();
+          async.remove(m);
           i++;
-          while (async.size() > j) {
-            localVoiceFX3 = (VoiceFX)async.get(j);
-            if (localVoiceFX2.voice != localVoiceFX3.voice) break;
-            localVoiceFX3.playVoice();
-            async.remove(j);
+          while (async.size() > m) {
+            VoiceFX localVoiceFX4 = (VoiceFX)async.get(m);
+            if (localVoiceFX3.voice != localVoiceFX4.voice) break;
+            localVoiceFX4.playVoice();
+            async.remove(m);
           }
+        } else {
+          m++;
         }
-        j++;
       }
     }
   }

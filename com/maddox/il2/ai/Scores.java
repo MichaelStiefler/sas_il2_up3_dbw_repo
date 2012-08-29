@@ -20,21 +20,20 @@ public class Scores
     enemyGroundKill = 0;
     scoreUp = 0.0D;
     ArrayList localArrayList2 = new ArrayList();
-    ScoreItem localScoreItem;
     for (int i = 0; i < localArrayList1.size(); i++) {
-      localScoreItem = (ScoreItem)localArrayList1.get(i);
-      if (localScoreItem.type == 0) {
+      ScoreItem localScoreItem1 = (ScoreItem)localArrayList1.get(i);
+      if (localScoreItem1.type == 0) {
         enemyAirKill += 1;
       } else {
         enemyGroundKill += 1;
-        localArrayList2.add(localScoreItem);
+        localArrayList2.add(localScoreItem1);
       }
-      scoreUp += localScoreItem.score;
+      scoreUp += localScoreItem1.score;
     }
     if (enemyGroundKill > 0) {
       arrayEnemyGroundKill = new int[enemyGroundKill];
-      for (i = 0; i < enemyGroundKill; i++)
-        arrayEnemyGroundKill[i] = ((ScoreItem)localArrayList2.get(i)).type;
+      for (j = 0; j < enemyGroundKill; j++)
+        arrayEnemyGroundKill[j] = ((ScoreItem)localArrayList2.get(j)).type;
     } else {
       arrayEnemyGroundKill = null;
     }
@@ -42,27 +41,24 @@ public class Scores
     friendlyKill = 0;
     scoreDown = 0.0D;
     localArrayList1 = localScoreCounter.friendItems;
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localScoreItem = (ScoreItem)localArrayList1.get(i);
+    for (int j = 0; j < localArrayList1.size(); j++) {
+      ScoreItem localScoreItem2 = (ScoreItem)localArrayList1.get(j);
       friendlyKill += 1;
-      scoreDown += localScoreItem.score;
+      scoreDown += localScoreItem2.score;
     }
 
     localArrayList1 = localScoreCounter.targetOnItems;
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localScoreItem = (ScoreItem)localArrayList1.get(i);
-      scoreUp += localScoreItem.score;
+    for (int k = 0; k < localArrayList1.size(); k++) {
+      ScoreItem localScoreItem3 = (ScoreItem)localArrayList1.get(k);
+      scoreUp += localScoreItem3.score;
     }
 
     localArrayList1 = localScoreCounter.targetOffItems;
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localScoreItem = (ScoreItem)localArrayList1.get(i);
-      scoreDown += localScoreItem.score;
+    for (int m = 0; m < localArrayList1.size(); m++) {
+      ScoreItem localScoreItem4 = (ScoreItem)localArrayList1.get(m);
+      scoreDown += localScoreItem4.score;
     }
 
-    if (localScoreCounter.bPlayerDroppedExternalStores) {
-      scoreDown += localScoreCounter.externalStoresValue;
-    }
     if (localScoreCounter.bPlayerDead)
       scoreUp /= 10.0D;
     else if (localScoreCounter.bPlayerCaptured)

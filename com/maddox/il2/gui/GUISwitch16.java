@@ -26,7 +26,7 @@ public class GUISwitch16 extends GUISwitchN
   public void render()
   {
     setCanvasColorWHITE();
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, st[this.pos[this.state]]);
+    draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, st[this.pos[this.state]]);
   }
 
   public void created() {

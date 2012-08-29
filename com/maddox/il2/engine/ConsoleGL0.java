@@ -42,7 +42,8 @@ public class ConsoleGL0
         long l1 = Time.real() + paramLong;
         while (true) {
           long l2 = Time.real();
-          if (l2 >= l1) break; 
+          if (l2 >= l1)
+            break; 
         }
       }
     } catch (Exception localException) {

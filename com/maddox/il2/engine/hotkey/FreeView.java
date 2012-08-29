@@ -106,7 +106,7 @@ public class FreeView
     adapter._setActor(paramActor);
   }
   private void _setActor(Actor paramActor) { if (this.interpolator != null) {
-      if (this.interpolator.actor == paramActor) {
+      if (this.interpolator.jdField_actor_of_type_ComMaddoxIl2EngineActor == paramActor) {
         this.interpolator.bActive = true;
         return;
       }
@@ -123,7 +123,7 @@ public class FreeView
   }
   private Actor _getActor() { if ((this.interpolator != null) && 
       (this.interpolator.bActive)) {
-      return this.interpolator.actor;
+      return this.interpolator.jdField_actor_of_type_ComMaddoxIl2EngineActor;
     }
     return null; }
 
@@ -188,11 +188,11 @@ public class FreeView
         FreeView.this.o.transform(FreeView.this.p);
         FreeView.this.pAbs.add(FreeView.this.p);
         double d = Engine.land().HQ(FreeView.this.pAbs.x, FreeView.this.pAbs.y) + 1.0D;
-        if (FreeView.this.pAbs.z < d)
-          FreeView.this.pAbs.z = d;
-        this.actor.pos.setAbs(FreeView.this.pAbs, FreeView.this.o);
+        if (FreeView.this.pAbs.jdField_z_of_type_Double < d)
+          FreeView.this.pAbs.jdField_z_of_type_Double = d;
+        this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.setAbs(FreeView.this.pAbs, FreeView.this.o);
       } else {
-        this.actor.pos.setAbs(FreeView.this.o);
+        this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.setAbs(FreeView.this.o);
       }
       return true;
     }

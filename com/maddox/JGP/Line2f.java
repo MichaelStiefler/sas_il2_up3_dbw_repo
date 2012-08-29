@@ -11,7 +11,7 @@ public class Line2f
 
   public Line2f()
   {
-    this.N.x = 1.0F; this.C = 0.0F;
+    this.N.jdField_x_of_type_Float = 1.0F; this.C = 0.0F;
   }
 
   public Line2f(Line2f paramLine2f)
@@ -31,15 +31,15 @@ public class Line2f
 
   public final void set(Point2f paramPoint2f1, Point2f paramPoint2f2)
   {
-    this.N.x = (paramPoint2f1.y - paramPoint2f2.y);
-    this.N.y = (paramPoint2f2.x - paramPoint2f1.x);
+    this.N.jdField_x_of_type_Float = (paramPoint2f1.jdField_y_of_type_Float - paramPoint2f2.jdField_y_of_type_Float);
+    this.N.jdField_y_of_type_Float = (paramPoint2f2.jdField_x_of_type_Float - paramPoint2f1.jdField_x_of_type_Float);
     this.N.normalize();
     this.C = (-this.N.dot(paramPoint2f1));
   }
 
   public final void set(Point2f paramPoint2f, Vector2f paramVector2f)
   {
-    this.N.x = paramVector2f.x; this.N.y = paramVector2f.y;
+    this.N.jdField_x_of_type_Float = paramVector2f.jdField_x_of_type_Float; this.N.jdField_y_of_type_Float = paramVector2f.jdField_y_of_type_Float;
     this.N.normalize();
     this.C = (-this.N.dot(paramPoint2f));
   }
@@ -70,17 +70,17 @@ public class Line2f
   {
     this.tmpP.set(paramPoint3f1);
     this.tmpP.scale(-2.0F * deviation(this.tmpP), this.N);
-    paramPoint3f1.x += this.tmpP.x;
-    paramPoint3f1.y += this.tmpP.y;
-    paramPoint3f2.z = paramPoint3f1.z;
+    paramPoint3f2.jdField_x_of_type_Float = (paramPoint3f1.jdField_x_of_type_Float + this.tmpP.jdField_x_of_type_Float);
+    paramPoint3f2.jdField_y_of_type_Float = (paramPoint3f1.jdField_y_of_type_Float + this.tmpP.jdField_y_of_type_Float);
+    paramPoint3f2.jdField_z_of_type_Float = paramPoint3f1.jdField_z_of_type_Float;
   }
 
   public final void mirror(Point3f paramPoint3f)
   {
     this.tmpP.set(paramPoint3f);
     this.tmpP.scale(-2.0F * deviation(this.tmpP), this.N);
-    paramPoint3f.x += this.tmpP.x;
-    paramPoint3f.y += this.tmpP.y;
+    paramPoint3f.jdField_x_of_type_Float += this.tmpP.jdField_x_of_type_Float;
+    paramPoint3f.jdField_y_of_type_Float += this.tmpP.jdField_y_of_type_Float;
   }
 
   public final void project(Point2f paramPoint2f1, Point2f paramPoint2f2)
@@ -103,39 +103,39 @@ public class Line2f
 
   public final Point2f cross(Line2f paramLine2f) throws JGPException
   {
-    float[] arrayOfFloat = { this.N.x, this.N.y, -this.C, paramLine2f.N.x, paramLine2f.N.y, -paramLine2f.C };
+    float[] arrayOfFloat = { this.N.jdField_x_of_type_Float, this.N.jdField_y_of_type_Float, -this.C, paramLine2f.N.jdField_x_of_type_Float, paramLine2f.N.jdField_y_of_type_Float, -paramLine2f.C };
 
     return NSolvef.Solve2f(arrayOfFloat);
   }
 
   public final void crossXc(float paramFloat, Point2f paramPoint2f)
   {
-    paramPoint2f.x = paramFloat;
-    float f = (-this.N.x * paramFloat - this.C) / this.N.y;
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.y = f; return; }
-    paramPoint2f.y = 1.0E+036F;
+    paramPoint2f.jdField_x_of_type_Float = paramFloat;
+    float f = (-this.N.jdField_x_of_type_Float * paramFloat - this.C) / this.N.jdField_y_of_type_Float;
+    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.jdField_y_of_type_Float = f; return; }
+    paramPoint2f.jdField_y_of_type_Float = 1.0E+036F;
   }
 
   public final void crossYc(float paramFloat, Point2f paramPoint2f)
   {
-    paramPoint2f.y = paramFloat;
-    float f = (-this.N.y * paramFloat - this.C) / this.N.x;
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.x = f; return; }
-    paramPoint2f.x = 1.0E+036F;
+    paramPoint2f.jdField_y_of_type_Float = paramFloat;
+    float f = (-this.N.jdField_y_of_type_Float * paramFloat - this.C) / this.N.jdField_x_of_type_Float;
+    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.jdField_x_of_type_Float = f; return; }
+    paramPoint2f.jdField_x_of_type_Float = 1.0E+036F;
   }
 
   public final void crossXsubYc(float paramFloat, Point2f paramPoint2f)
   {
-    float f = (-this.N.y * paramFloat - this.C) / (this.N.x + this.N.y);
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.x = f; paramPoint2f.y = (f + paramFloat); return; }
-    paramPoint2f.x = (paramPoint2f.y = 1.0E+036F);
+    float f = (-this.N.jdField_y_of_type_Float * paramFloat - this.C) / (this.N.jdField_x_of_type_Float + this.N.jdField_y_of_type_Float);
+    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.jdField_x_of_type_Float = f; paramPoint2f.jdField_y_of_type_Float = (f + paramFloat); return; }
+    paramPoint2f.jdField_x_of_type_Float = (paramPoint2f.jdField_y_of_type_Float = 1.0E+036F);
   }
 
   public final void crossXaddYc(float paramFloat, Point2f paramPoint2f)
   {
-    float f = (this.N.y * paramFloat + this.C) / (this.N.y - this.N.x);
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.x = f; paramPoint2f.y = (paramFloat - f); return; }
-    paramPoint2f.x = (paramPoint2f.y = 1.0E+036F);
+    float f = (this.N.jdField_y_of_type_Float * paramFloat + this.C) / (this.N.jdField_y_of_type_Float - this.N.jdField_x_of_type_Float);
+    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.jdField_x_of_type_Float = f; paramPoint2f.jdField_y_of_type_Float = (paramFloat - f); return; }
+    paramPoint2f.jdField_x_of_type_Float = (paramPoint2f.jdField_y_of_type_Float = 1.0E+036F);
   }
 
   public final boolean crossed(Line2f paramLine2f)
@@ -160,6 +160,6 @@ public class Line2f
 
   public String toString()
   {
-    return "( " + this.N.x + "," + this.N.y + "; " + this.C + " )";
+    return "( " + this.N.jdField_x_of_type_Float + "," + this.N.jdField_y_of_type_Float + "; " + this.C + " )";
   }
 }

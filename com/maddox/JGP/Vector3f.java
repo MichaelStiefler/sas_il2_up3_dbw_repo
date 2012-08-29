@@ -31,7 +31,7 @@ public class Vector3f extends Tuple3f
 
   public final float lengthSquared()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z;
+    return this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float;
   }
 
   public final float length()
@@ -41,12 +41,12 @@ public class Vector3f extends Tuple3f
 
   public final void cross(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
-    set(paramTuple3f1.y * paramTuple3f2.z - paramTuple3f1.z * paramTuple3f2.y, paramTuple3f1.z * paramTuple3f2.x - paramTuple3f1.x * paramTuple3f2.z, paramTuple3f1.x * paramTuple3f2.y - paramTuple3f1.y * paramTuple3f2.x);
+    set(paramTuple3f1.jdField_y_of_type_Float * paramTuple3f2.jdField_z_of_type_Float - paramTuple3f1.jdField_z_of_type_Float * paramTuple3f2.jdField_y_of_type_Float, paramTuple3f1.jdField_z_of_type_Float * paramTuple3f2.jdField_x_of_type_Float - paramTuple3f1.jdField_x_of_type_Float * paramTuple3f2.jdField_z_of_type_Float, paramTuple3f1.jdField_x_of_type_Float * paramTuple3f2.jdField_y_of_type_Float - paramTuple3f1.jdField_y_of_type_Float * paramTuple3f2.jdField_x_of_type_Float);
   }
 
   public final float dot(Tuple3f paramTuple3f)
   {
-    return this.x * paramTuple3f.x + this.y * paramTuple3f.y + this.z * paramTuple3f.z;
+    return this.jdField_x_of_type_Float * paramTuple3f.jdField_x_of_type_Float + this.jdField_y_of_type_Float * paramTuple3f.jdField_y_of_type_Float + this.jdField_z_of_type_Float * paramTuple3f.jdField_z_of_type_Float;
   }
 
   public final float normalize(Tuple3f paramTuple3f)
@@ -58,17 +58,17 @@ public class Vector3f extends Tuple3f
   public final float normalize()
   {
     float f = Math.max(length(), 1.0E-035F);
-    this.x /= f;
-    this.y /= f;
-    this.z /= f;
+    this.jdField_x_of_type_Float /= f;
+    this.jdField_y_of_type_Float /= f;
+    this.jdField_z_of_type_Float /= f;
     return f;
   }
 
   public final float angle(Vector3f paramVector3f)
   {
-    double d1 = this.y * paramVector3f.z - this.z * paramVector3f.y;
-    double d2 = this.z * paramVector3f.x - this.x * paramVector3f.z;
-    double d3 = this.x * paramVector3f.y - this.y * paramVector3f.x;
+    double d1 = this.jdField_y_of_type_Float * paramVector3f.jdField_z_of_type_Float - this.jdField_z_of_type_Float * paramVector3f.jdField_y_of_type_Float;
+    double d2 = this.jdField_z_of_type_Float * paramVector3f.jdField_x_of_type_Float - this.jdField_x_of_type_Float * paramVector3f.jdField_z_of_type_Float;
+    double d3 = this.jdField_x_of_type_Float * paramVector3f.jdField_y_of_type_Float - this.jdField_y_of_type_Float * paramVector3f.jdField_x_of_type_Float;
     double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
 
     return (float)Math.abs(Math.atan2(d4, dot(paramVector3f)));

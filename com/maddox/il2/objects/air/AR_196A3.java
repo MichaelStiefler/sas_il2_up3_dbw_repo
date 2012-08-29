@@ -13,11 +13,11 @@ public class AR_196A3 extends AR_196
   {
     super.update(paramFloat);
     for (int i = 0; i < 3; i++) for (int j = 0; j < 2; j++)
-        if (this.FM.Gears.clpGearEff[i][j] != null) {
-          tmpp.set(this.FM.Gears.clpGearEff[i][j].pos.getAbsPoint());
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j] != null) {
+          tmpp.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
           tmpp.z = 0.01D;
-          this.FM.Gears.clpGearEff[i][j].pos.setAbs(tmpp);
-          this.FM.Gears.clpGearEff[i][j].pos.reset();
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(tmpp);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         }
   }
 
@@ -36,13 +36,13 @@ public class AR_196A3 extends AR_196
     Property.set(localClass, "yearService", 1938.5F);
     Property.set(localClass, "yearExpired", 1945.5F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 1, 10, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_CANNON02", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1, 1, 10, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_CANNON02", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17si 500", "MGunMGFFki 60", "MGunMGFFki 60", "MGunMG15t 525", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG17si 500", "MGunMGFFki 60", "MGunMGFFki 60", "MGunMG15t 525", null, null });
 
-    weaponsRegister(localClass, "2sc50", new String[] { "MGunMG17si 500", "MGunMGFFki 60", "MGunMGFFki 60", "MGunMG15t 525", "BombGunSC50 1", "BombGunSC50 1" });
+    Aircraft.weaponsRegister(localClass, "2sc50", new String[] { "MGunMG17si 500", "MGunMGFFki 60", "MGunMGFFki 60", "MGunMG15t 525", "BombGunSC50 1", "BombGunSC50 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

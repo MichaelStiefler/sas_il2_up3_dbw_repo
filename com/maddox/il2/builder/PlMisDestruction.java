@@ -1,7 +1,6 @@
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowDialogClient;
 import com.maddox.gwindow.GWindowFramed;
 import com.maddox.gwindow.GWindowHSliderInt;
@@ -72,7 +71,7 @@ public class PlMisDestruction extends Plugin
 
   public boolean isActive()
   {
-    if (builder.isFreeView()) return false;
+    if (Plugin.builder.isFreeView()) return false;
     if (this.tiles == null) return false;
     return this.mDialog.bChecked;
   }
@@ -80,7 +79,7 @@ public class PlMisDestruction extends Plugin
   private void tilesDel()
   {
     if (this.tiles == null) return;
-    this.tiles = ((Tile[][])null);
+    this.tiles = null;
   }
   private void tilesNew() {
     tilesDel();
@@ -131,7 +130,7 @@ public class PlMisDestruction extends Plugin
     int j = this.tiles.length;
     float f1 = 12800.0F;
     float f2 = (float)(f1 * localCameraOrtho2D.worldScale);
-    int k = builder.conf.iLightDestruction << 24 | 0xFFFFFF;
+    int k = Plugin.builder.conf.iLightDestruction << 24 | 0xFFFFFF;
     for (int m = 0; m < j; m++) {
       float f3 = (float)((m * f1 - localCameraOrtho2D.worldYOffset) * localCameraOrtho2D.worldScale);
       if (f3 > localCameraOrtho2D.top) break;
@@ -183,8 +182,8 @@ public class PlMisDestruction extends Plugin
   private void fill(Point3d paramPoint3d, int paramInt) {
     Statics localStatics = World.cur().statics;
     HashMapInt localHashMapInt = localStatics.allBlocks();
-    int i = (int)(paramPoint3d.x / 200.0D);
-    int j = (int)(paramPoint3d.y / 200.0D);
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double / 200.0D);
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double / 200.0D);
     paramInt |= 1;
     int k = i - paramInt / 2;
     int m = j - paramInt / 2;
@@ -228,15 +227,15 @@ public class PlMisDestruction extends Plugin
   public void endFill(Point3d paramPoint3d) {
   }
   public void configure() {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisDestruction: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
   }
 
   public Actor selectNear(Point3d paramPoint3d, double paramDouble)
   {
     this._selectFilter.reset(paramDouble * paramDouble);
-    Engine.drawEnv().getFiltered((AbstractCollection)null, paramPoint3d.x - paramDouble, paramPoint3d.y - paramDouble, paramPoint3d.x + paramDouble, paramPoint3d.y + paramDouble, 15, this._selectFilter);
+    Engine.drawEnv().getFiltered((AbstractCollection)null, paramPoint3d.jdField_x_of_type_Double - paramDouble, paramPoint3d.jdField_y_of_type_Double - paramDouble, paramPoint3d.jdField_x_of_type_Double + paramDouble, paramPoint3d.jdField_y_of_type_Double + paramDouble, 15, this._selectFilter);
 
     return this._selectFilter.get();
   }
@@ -248,18 +247,18 @@ public class PlMisDestruction extends Plugin
     if (this.findedActor == null) return;
     if ((this.findedActor instanceof Bridge)) {
       if (Actor.isAlive(this.findedActor))
-        paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("De&stroyBridge"), i18n("TIPDestroyBridge")) {
+        paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, Plugin.i18n("De&stroyBridge"), Plugin.i18n("TIPDestroyBridge")) {
           public void execute() { PlMisDestruction.this.doBridge(true); }
         });
-      else paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("Re&storeBridge"), i18n("TIPRestoreBridge")) {
+      else paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, Plugin.i18n("Re&storeBridge"), Plugin.i18n("TIPRestoreBridge")) {
           public void execute() { PlMisDestruction.this.doBridge(false); }
         });
     }
     else if (Actor.isAlive(this.findedActor))
-      paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("De&stroyObject"), i18n("TIPDestroyObject")) {
+      paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, Plugin.i18n("De&stroyObject"), Plugin.i18n("TIPDestroyObject")) {
         public void execute() { PlMisDestruction.this.doHouse(true); }
       });
-    else paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("Re&storeObject"), i18n("TIPRestoreObject")) {
+    else paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, Plugin.i18n("Re&storeObject"), Plugin.i18n("TIPRestoreObject")) {
         public void execute() { PlMisDestruction.this.doHouse(false); }
       });
   }
@@ -267,8 +266,8 @@ public class PlMisDestruction extends Plugin
   private void doHouse(boolean paramBoolean)
   {
     Point3d localPoint3d = this.findedActor.pos.getAbsPoint();
-    int i = (int)(localPoint3d.x / 64.0D / 200.0D);
-    int j = (int)(localPoint3d.y / 64.0D / 200.0D);
+    int i = (int)(localPoint3d.jdField_x_of_type_Double / 64.0D / 200.0D);
+    int j = (int)(localPoint3d.jdField_y_of_type_Double / 64.0D / 200.0D);
     Tile localTile = this.tiles[j][i];
     if (localTile == null) return;
     localTile.bChanged = true;
@@ -304,7 +303,7 @@ public class PlMisDestruction extends Plugin
   {
     this.baseTileMat = Mat.New("3do/builder/tile.mat");
 
-    this.mDialog = builder.mView.subMenu.addItem(2, new GWindowMenuItem(builder.mView.subMenu, i18n("De&struction"), i18n("TIPDestruction"))
+    this.mDialog = Plugin.builder.mView.subMenu.addItem(2, new GWindowMenuItem(Plugin.builder.mView.subMenu, Plugin.i18n("De&struction"), Plugin.i18n("TIPDestruction"))
     {
       public void execute() {
         if (PlMisDestruction.this.wDialog.isVisible()) PlMisDestruction.this.wDialog.hideWindow();
@@ -346,44 +345,26 @@ public class PlMisDestruction extends Plugin
       this.clientWindow = create(localGWindowDialogClient = new GWindowDialogClient());
       GWindowLabel localGWindowLabel;
       localGWindowDialogClient.addLabel(localGWindowLabel = new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 11.0F, 1.3F, Plugin.i18n("DestLight"), null));
-      localGWindowLabel.align = 2;
+      localGWindowLabel.jdField_align_of_type_Int = 2;
       localGWindowDialogClient.addLabel(localGWindowLabel = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 11.0F, 1.3F, Plugin.i18n("DestSize"), null));
-      localGWindowLabel.align = 2;
+      localGWindowLabel.jdField_align_of_type_Int = 2;
       localGWindowDialogClient.addLabel(localGWindowLabel = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 11.0F, 1.3F, Plugin.i18n("DestValue"), null));
-      localGWindowLabel.align = 2;
+      localGWindowLabel.jdField_align_of_type_Int = 2;
       if (Plugin.builder.conf.iLightDestruction < 0) Plugin.builder.conf.iLightDestruction = 0;
       if (Plugin.builder.conf.iLightDestruction > 255) Plugin.builder.conf.iLightDestruction = 255;
-      localGWindowDialogClient.addControl(this.wLight = new GWindowHSliderInt(localGWindowDialogClient, 0, 256, Plugin.builder.conf.iLightDestruction, 13.0F, 1.0F, 10.0F) {
-        public boolean notify(int paramInt1, int paramInt2) {
-          Plugin.builder.conf.iLightDestruction = pos();
-          return super.notify(paramInt1, paramInt2);
-        }
-        public void created() { this.bSlidingNotify = true;
-        }
-      });
-      this.wLight.toolTip = Plugin.i18n("TIPDestLight");
+      localGWindowDialogClient.addControl(this.wLight = new PlMisDestruction.5(this, localGWindowDialogClient, 0, 256, Plugin.builder.conf.iLightDestruction, 13.0F, 1.0F, 10.0F));
+
+      this.wLight.jdField_toolTip_of_type_JavaLangString = Plugin.i18n("TIPDestLight");
       this.wLight.resized();
 
-      localGWindowDialogClient.addControl(this.wSize = new GWindowHSliderInt(localGWindowDialogClient, 0, 7, 0, 13.0F, 3.0F, 10.0F) {
-        public boolean notify(int paramInt1, int paramInt2) {
-          PlMisDestruction.access$402(PlMisDestruction.this, (int)Math.pow(2.0D, pos()));
-          return super.notify(paramInt1, paramInt2);
-        }
-        public void created() { this.bSlidingNotify = true;
-        }
-      });
-      this.wSize.toolTip = Plugin.i18n("TIPDestSize");
+      localGWindowDialogClient.addControl(this.wSize = new PlMisDestruction.6(this, localGWindowDialogClient, 0, 7, 0, 13.0F, 3.0F, 10.0F));
+
+      this.wSize.jdField_toolTip_of_type_JavaLangString = Plugin.i18n("TIPDestSize");
       this.wSize.resized();
 
-      localGWindowDialogClient.addControl(this.wValue = new GWindowHSliderInt(localGWindowDialogClient, 0, 256, PlMisDestruction.this.fillValue, 13.0F, 5.0F, 10.0F) {
-        public boolean notify(int paramInt1, int paramInt2) {
-          PlMisDestruction.access$502(PlMisDestruction.this, pos());
-          return super.notify(paramInt1, paramInt2);
-        }
-        public void created() { this.bSlidingNotify = true;
-        }
-      });
-      this.wValue.toolTip = Plugin.i18n("TIPDestValue");
+      localGWindowDialogClient.addControl(this.wValue = new PlMisDestruction.7(this, localGWindowDialogClient, 0, 256, PlMisDestruction.this.fillValue, 13.0F, 5.0F, 10.0F));
+
+      this.wValue.jdField_toolTip_of_type_JavaLangString = Plugin.i18n("TIPDestValue");
       this.wValue.resized();
     }
     public void afterCreated() {

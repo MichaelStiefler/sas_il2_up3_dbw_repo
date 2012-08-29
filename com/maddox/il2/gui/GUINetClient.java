@@ -56,14 +56,8 @@ public class GUINetClient extends GameState
 
       if (paramGWindow == GUINetClient.this.bExit) {
         GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-        localGUINetClientGuard.dlgDestroy(new GUINetClientGuard.DestroyExec() {
-          public void destroy(GUINetClientGuard paramGUINetClientGuard) { if ((USGS.isUsed()) || (Main.cur().netGameSpy != null))
-            {
-              Main.doGameExit();
-            }
-            else paramGUINetClientGuard.destroy(true);
-          }
-        });
+        localGUINetClientGuard.dlgDestroy(new GUINetClient.1(this));
+
         return true;
       }
       return super.notify(paramGWindow, paramInt1, paramInt2);

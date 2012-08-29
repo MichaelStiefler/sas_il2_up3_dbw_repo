@@ -68,12 +68,12 @@ public class EventLog
   {
     if (Mission.isDogfight()) return;
     if (lastFly != null) {
-      double d = (lastFly.x - paramPoint3d.x) * (lastFly.x - paramPoint3d.x) + (lastFly.y - paramPoint3d.y) * (lastFly.y - paramPoint3d.y);
+      double d = (lastFly.x - paramPoint3d.jdField_x_of_type_Double) * (lastFly.x - paramPoint3d.jdField_x_of_type_Double) + (lastFly.y - paramPoint3d.jdField_y_of_type_Double) * (lastFly.y - paramPoint3d.jdField_y_of_type_Double);
 
       if (d < 250000.0D)
         return;
     }
-    lastFly = new Action(11, null, -1, null, -1, 0, (float)paramPoint3d.x, (float)paramPoint3d.y);
+    lastFly = new Action(11, null, -1, null, -1, 0, (float)paramPoint3d.jdField_x_of_type_Double, (float)paramPoint3d.jdField_y_of_type_Double);
   }
 
   public static void resetGameClear() {
@@ -414,10 +414,10 @@ public class EventLog
     else if (Mission.isSingle())
       str = "Player";
     if (str == null) return;
-    type(0, World.getTimeofDay(), name(paramAircraft), str, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(0, World.getTimeofDay(), name(paramAircraft), str, paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
     if (!Mission.isDogfight())
-      new Action(0, name(paramAircraft), 0, str, -1, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
+      new Action(0, name(paramAircraft), 0, str, -1, paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static void onTryOccupied(String paramString, NetUser paramNetUser, int paramInt)
@@ -437,7 +437,7 @@ public class EventLog
     if (((paramActor1 instanceof House)) && 
       (Main.cur().netServerParams != null) && (Main.cur().netServerParams.eventlogHouse())) {
       House localHouse = (House)paramActor1;
-      type(4, World.getTimeofDay(), localHouse.getMeshLiveName(), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, false);
+      type(4, World.getTimeofDay(), localHouse.getMeshLiveName(), name(paramActor2), 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, false);
 
       return;
     }
@@ -447,27 +447,27 @@ public class EventLog
     if (World.cur().scoreCounter.getRegisteredType(paramActor1) < 0) return;
 
     if (paramActor2 == World.remover) {
-      type(26, World.getTimeofDay(), name(paramActor1), "", 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+      type(26, World.getTimeofDay(), name(paramActor1), "", 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
     }
     else if ((paramActor1 == paramActor2) || (!Actor.isValid(paramActor2)) || (!paramActor2.isNamed())) {
-      type(2, World.getTimeofDay(), name(paramActor1), "", 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+      type(2, World.getTimeofDay(), name(paramActor1), "", 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
       if (!Mission.isDogfight()) {
-        new Action(2, name(paramActor1), World.cur().scoreCounter.getRegisteredType(paramActor1), null, -1, 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
+        new Action(2, name(paramActor1), World.cur().scoreCounter.getRegisteredType(paramActor1), null, -1, 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
       }
     }
     else if ((paramActor1 instanceof Aircraft)) {
-      type(3, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+      type(3, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
       if (!Mission.isDogfight())
-        new Action(3, name(paramActor1), 0, name(paramActor2), World.cur().scoreCounter.getRegisteredType(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
+        new Action(3, name(paramActor1), 0, name(paramActor2), World.cur().scoreCounter.getRegisteredType(paramActor2), 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
     }
     else
     {
-      type(4, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+      type(4, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
       if (!Mission.isDogfight())
-        new Action(4, name(paramActor1), World.cur().scoreCounter.getRegisteredType(paramActor1), name(paramActor2), World.cur().scoreCounter.getRegisteredType(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
+        new Action(4, name(paramActor1), World.cur().scoreCounter.getRegisteredType(paramActor1), name(paramActor2), World.cur().scoreCounter.getRegisteredType(paramActor2), 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
     }
   }
 
@@ -475,10 +475,10 @@ public class EventLog
   {
     if (!Mission.isPlaying()) return;
     if (paramAircraft.isNetMirror()) return;
-    type(5, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(5, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
     if (!Mission.isDogfight())
-      new Action(5, name(paramAircraft), 0, null, -1, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
+      new Action(5, name(paramAircraft), 0, null, -1, paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static void onPilotKilled(Aircraft paramAircraft, int paramInt, Actor paramActor)
@@ -488,89 +488,89 @@ public class EventLog
     String str = null;
     if (Actor.isValid(paramActor))
       str = name(paramActor);
-    type(6, World.getTimeofDay(), name(paramAircraft), str == null ? "" : str, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(6, World.getTimeofDay(), name(paramAircraft), str == null ? "" : str, paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
     if (!Mission.isDogfight())
-      new Action(6, name(paramAircraft), 0, str, -1, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
+      new Action(6, name(paramAircraft), 0, str, -1, paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static void onPilotKilled(Actor paramActor, String paramString, int paramInt)
   {
     if (!Mission.isPlaying()) return;
 
-    type(6, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
+    type(6, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
     if (!Mission.isDogfight())
-      new Action(6, paramString, 0, null, -1, paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y);
+      new Action(6, paramString, 0, null, -1, paramInt, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static void onAirLanded(Aircraft paramAircraft)
   {
     if (!Mission.isPlaying()) return;
     if (paramAircraft.isNetMirror()) return;
-    type(7, World.getTimeofDay(), name(paramAircraft), "", 0, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(7, World.getTimeofDay(), name(paramAircraft), "", 0, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
     if (!Mission.isDogfight())
-      new Action(7, name(paramAircraft), 0, null, -1, 0, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
+      new Action(7, name(paramAircraft), 0, null, -1, 0, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static void onAirInflight(Aircraft paramAircraft)
   {
     if (!Mission.isPlaying()) return;
     if (paramAircraft.isNetMirror()) return;
-    type(24, World.getTimeofDay(), name(paramAircraft), "", 0, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(24, World.getTimeofDay(), name(paramAircraft), "", 0, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onCaptured(Actor paramActor, String paramString, int paramInt)
   {
     if (!Mission.isPlaying()) return;
     if (paramActor.isNetMirror()) return;
-    type(8, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
+    type(8, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onCaptured(Aircraft paramAircraft, int paramInt) {
     if (!Mission.isPlaying()) return;
     if (paramAircraft.isNetMirror()) return;
-    type(8, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(8, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onPilotWounded(Aircraft paramAircraft, int paramInt) {
     if (!Mission.isPlaying()) return;
     if (paramAircraft.isNetMirror()) return;
-    type(9, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(9, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onPilotHeavilyWounded(Aircraft paramAircraft, int paramInt) {
     if (!Mission.isPlaying()) return;
     if (paramAircraft.isNetMirror()) return;
-    type(10, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
+    type(10, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onParaKilled(Actor paramActor1, String paramString, int paramInt, Actor paramActor2) {
     if (!Mission.isPlaying()) return;
     if (paramActor1.isNetMirror()) return;
-    type(12, World.getTimeofDay(), paramString, name(paramActor2), paramInt, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+    type(12, World.getTimeofDay(), paramString, name(paramActor2), paramInt, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
 
     if (!Mission.isDogfight())
-      new Action(6, paramString, 0, null, -1, paramInt, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
+      new Action(6, paramString, 0, null, -1, paramInt, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static void onChuteKilled(Actor paramActor1, String paramString, int paramInt, Actor paramActor2) {
     if (!Mission.isPlaying()) return;
     if (paramActor1.isNetMirror()) return;
-    type(13, World.getTimeofDay(), paramString, name(paramActor2), paramInt, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+    type(13, World.getTimeofDay(), paramString, name(paramActor2), paramInt, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onToggleSmoke(Actor paramActor, boolean paramBoolean) {
     if (!Mission.isPlaying()) return;
     if (paramActor.isNetMirror()) return;
-    type(paramBoolean ? 14 : 15, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
+    type(paramBoolean ? 14 : 15, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onToggleLandingLight(Actor paramActor, boolean paramBoolean) {
     if (!Mission.isPlaying()) return;
     if (paramActor.isNetMirror()) return;
-    type(paramBoolean ? 16 : 17, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
+    type(paramBoolean ? 16 : 17, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onWeaponsLoad(Actor paramActor, String paramString, int paramInt) {
@@ -580,21 +580,21 @@ public class EventLog
   public static void onParaLanded(Actor paramActor, String paramString, int paramInt) {
     if (!Mission.isPlaying()) return;
     if (paramActor.isNetMirror()) return;
-    type(19, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
+    type(19, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onDamagedGround(Actor paramActor) {
     if (!Actor.isValid(paramActor)) return;
     if (!Mission.isPlaying()) return;
     if (paramActor.isNetMirror()) return;
-    type(20, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
+    type(20, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onDamaged(Actor paramActor1, Actor paramActor2) {
     if (!Actor.isValid(paramActor1)) return;
     if (!Mission.isPlaying()) return;
     if (paramActor1.isNetMirror()) return;
-    type(21, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
+    type(21, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, (float)paramActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double, true);
   }
 
   public static void onDisconnected(String paramString) {

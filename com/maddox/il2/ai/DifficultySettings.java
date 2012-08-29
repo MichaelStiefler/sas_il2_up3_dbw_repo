@@ -27,18 +27,11 @@ public class DifficultySettings
   public boolean NoSpeedBar;
   public boolean ComplexEManagement;
   public boolean NewCloudsRender;
-  public boolean Reliability;
-  public boolean G_Limits;
-  public boolean RealisticPilotVulnerability;
-  public boolean RealisticNavigationInstruments;
-  public boolean No_Player_Icon;
-  public boolean No_Fog_Of_War_Icons;
-  public static final int REALISTIC_MASK = Integer.parseInt("1111111111111111111111111111111", 2);
-  public static final int EASY_MASK = Integer.parseInt("1000001000000101000000000000000", 2);
-  public static final int NORMAL_MASK = Integer.parseInt("0001111100101101111110011111111", 2);
+  public static final int REALISTIC_MASK = Integer.parseInt("1111111111111111111111111", 2);
+  public static final int EASY_MASK = Integer.parseInt("1000000101000000000000000", 2);
+  public static final int NORMAL_MASK = Integer.parseInt("1100101101111110011111111", 2);
 
-  public DifficultySettings()
-  {
+  public DifficultySettings() {
     set(-1);
 
     this.Cockpit_Always_On = false;
@@ -49,15 +42,15 @@ public class DifficultySettings
   }
 
   public boolean isRealistic() {
-    return ((get() | 0x40000000) ^ REALISTIC_MASK) == 0;
+    return ((get() | 0x1000000) ^ REALISTIC_MASK) == 0;
   }
 
   public boolean isNormal() {
-    return ((get() | 0x40000000) ^ NORMAL_MASK) == 0;
+    return ((get() | 0x1000000) ^ NORMAL_MASK) == 0;
   }
 
   public boolean isEasy() {
-    return ((get() | 0x40000000) ^ EASY_MASK) == 0;
+    return ((get() | 0x1000000) ^ EASY_MASK) == 0;
   }
 
   public boolean isCustom() {
@@ -119,18 +112,9 @@ public class DifficultySettings
     this.ComplexEManagement = ((paramInt & 0x800000) != 0);
 
     this.NewCloudsRender = ((paramInt & 0x1000000) != 0);
-
-    this.Reliability = ((paramInt & 0x2000000) != 0);
-    this.G_Limits = ((paramInt & 0x4000000) != 0);
-    this.RealisticPilotVulnerability = ((paramInt & 0x8000000) != 0);
-    this.RealisticNavigationInstruments = ((paramInt & 0x10000000) != 0);
-
-    this.No_Player_Icon = ((paramInt & 0x20000000) != 0);
-    this.No_Fog_Of_War_Icons = ((paramInt & 0x40000000) != 0);
   }
 
-  public int get()
-  {
+  public int get() {
     int i = 0;
     if (this.Wind_N_Turbulence) i |= 1;
     if (this.Flutter_Effect) i |= 2;
@@ -164,14 +148,6 @@ public class DifficultySettings
     if (this.ComplexEManagement) i |= 8388608;
 
     if (this.NewCloudsRender) i |= 16777216;
-
-    if (this.Reliability) i |= 33554432;
-    if (this.G_Limits) i |= 67108864;
-    if (this.RealisticPilotVulnerability) i |= 134217728;
-    if (this.RealisticNavigationInstruments) i |= 268435456;
-
-    if (this.No_Player_Icon) i |= 536870912;
-    if (this.No_Fog_Of_War_Icons) i |= 1073741824;
 
     return i;
   }

@@ -53,7 +53,7 @@ public class GWindowRoot extends GWindow
     this._findWindowUnder = this;
     this._findTest.set(paramFloat1, paramFloat2);
     this._findOrg.set(0.0F, 0.0F);
-    this._findClip.set(this.win);
+    this._findClip.set(this.jdField_win_of_type_ComMaddoxGwindowGRegion);
     findWindowUnder(this, paramFloat1, paramFloat2);
     return this._findWindowUnder;
   }
@@ -63,8 +63,8 @@ public class GWindowRoot extends GWindow
     GRegion localGRegion = this._findClip;
     float f1 = localGPoint.x;
     float f2 = localGPoint.y;
-    localGPoint.add(paramGWindow.win.x, paramGWindow.win.y);
-    paramFloat1 -= paramGWindow.win.x; paramFloat2 -= paramGWindow.win.y;
+    localGPoint.add(paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.x, paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.y);
+    paramFloat1 -= paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.x; paramFloat2 -= paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.y;
     float f3 = localGRegion.x;
     float f4 = localGRegion.y;
     float f5 = localGRegion.dx;
@@ -73,43 +73,46 @@ public class GWindowRoot extends GWindow
     if (paramGWindow.bClip) {
       float f7 = localGRegion.x - localGPoint.x;
       if (f7 < 0.0F) {
-        localGRegion.dx += f7; if (localGRegion.dx <= 0.0F) break label569; localGRegion.x = localGPoint.x;
+        localGRegion.dx += f7; if (localGRegion.dx <= 0.0F) break label575; localGRegion.x = localGPoint.x;
         f7 = 0.0F;
       }
-      f7 = localGRegion.dx + f7 - paramGWindow.win.dx;
+      f7 = localGRegion.dx + f7 - paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
       if (f7 > 0.0F) {
-        localGRegion.dx -= f7; if (localGRegion.dx <= 0.0F) break label569; 
+        localGRegion.dx -= f7; if (localGRegion.dx <= 0.0F) break label575; 
       }
       f7 = localGRegion.y - localGPoint.y;
       if (f7 < 0.0F) {
-        localGRegion.dy += f7; if (localGRegion.dy <= 0.0F) break label569; localGRegion.y = localGPoint.y;
+        localGRegion.dy += f7; if (localGRegion.dy <= 0.0F) break label575; localGRegion.y = localGPoint.y;
         f7 = 0.0F;
       }
-      f7 = localGRegion.dy + f7 - paramGWindow.win.dy;
+      f7 = localGRegion.dy + f7 - paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       if (f7 > 0.0F) {
-        localGRegion.dy -= f7; if (localGRegion.dy <= 0.0F) break label569; 
+        localGRegion.dy -= f7; if (localGRegion.dy <= 0.0F) break label575; 
       }
       if ((this._findTest.x >= localGRegion.x) && (this._findTest.x < localGRegion.x + localGRegion.dx) && (this._findTest.y >= localGRegion.y) && (this._findTest.y < localGRegion.y + localGRegion.dy) && (!paramGWindow.isMousePassThrough(paramFloat1, paramFloat2)))
       {
         this._findWindowUnder = paramGWindow;
       }
     } else {
-      localGRegion.set(this.root.win);
-      if ((this._findTest.x >= localGPoint.x) && (this._findTest.x < localGPoint.x + paramGWindow.win.dx) && (this._findTest.y >= localGPoint.y) && (this._findTest.y < localGPoint.y + paramGWindow.win.dy) && (!paramGWindow.isMousePassThrough(paramFloat1, paramFloat2)))
+      localGRegion.set(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion);
+      if ((this._findTest.x >= localGPoint.x) && (this._findTest.x < localGPoint.x + paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) && (this._findTest.y >= localGPoint.y) && (this._findTest.y < localGPoint.y + paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) && (!paramGWindow.isMousePassThrough(paramFloat1, paramFloat2)))
       {
         this._findWindowUnder = paramGWindow;
       }
     }
-    if (paramGWindow.childWindow != null) {
-      int i = paramGWindow.childWindow.size();
-      for (int j = 0; j < i; j++) {
-        GWindow localGWindow = (GWindow)paramGWindow.childWindow.get(j);
+    if (paramGWindow.jdField_childWindow_of_type_JavaUtilArrayList != null) {
+      int i = paramGWindow.jdField_childWindow_of_type_JavaUtilArrayList.size();
+      int j = 0;
+      while (true) { GWindow localGWindow = (GWindow)paramGWindow.jdField_childWindow_of_type_JavaUtilArrayList.get(j);
         findWindowUnder(localGWindow, paramFloat1, paramFloat2);
+
+        j++; if (j >= i) break;
+
       }
 
     }
 
-    label569: localGRegion.set(f3, f4, f5, f6);
+    label575: localGRegion.set(f3, f4, f5, f6);
     localGPoint.set(f1, f2);
   }
 
@@ -158,14 +161,14 @@ public class GWindowRoot extends GWindow
     this.mousePosZ = paramFloat3;
     this.mouseStep.set(this.mousePos.x - this.mouseOldPos.x, this.mousePos.y - this.mouseOldPos.y);
     this.mouseStepZ = (this.mousePosZ - this.mouseOldPosZ);
-    Object localObject;
+    GWindow localGWindow1;
     for (int i = 0; i < this.mouseListeners.size(); i++) {
-      localObject = (GWindow)this.mouseListeners.get(i);
-      if (!((GWindow)localObject).isWaitModal())
-        ((GWindow)localObject).msgMouseMove(true, paramFloat1, paramFloat2);
+      localGWindow1 = (GWindow)this.mouseListeners.get(i);
+      if (!localGWindow1.isWaitModal())
+        localGWindow1.msgMouseMove(true, paramFloat1, paramFloat2);
     }
     if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    GWindow localGWindow1;
+
     if (!this.bMouseCapture) {
       localGWindow1 = findWindowUnder(paramFloat1, paramFloat2);
       if (localGWindow1.isWaitModal())
@@ -173,16 +176,17 @@ public class GWindowRoot extends GWindow
     } else {
       localGWindow1 = this.mouseWindow;
     }
+    GPoint localGPoint;
     if (localGWindow1 != this.mouseWindow) {
       this.mouseOldWindow = this.mouseWindow;
       this.mouseWindow = localGWindow1;
       this.mouseOldWindow.mouseLeave();
       this.mouseWindow.mouseEnter();
-      localObject = this.mouseWindow.getMouseXY();
-      this.mouseWindow.mouseMove(((GPoint)localObject).x, ((GPoint)localObject).y);
+      localGPoint = this.mouseWindow.getMouseXY();
+      this.mouseWindow.mouseMove(localGPoint.x, localGPoint.y);
     } else if ((this.mousePos.x != this.mouseOldPos.x) || (this.mousePos.y != this.mouseOldPos.y)) {
-      localObject = this.mouseWindow.getMouseXY();
-      this.mouseWindow.mouseMove(((GPoint)localObject).x, ((GPoint)localObject).y);
+      localGPoint = this.mouseWindow.getMouseXY();
+      this.mouseWindow.mouseMove(localGPoint.x, localGPoint.y);
     }
     if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
     for (int j = 0; j < this.mouseListeners.size(); j++) {
@@ -196,9 +200,9 @@ public class GWindowRoot extends GWindow
   protected void doMouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
   {
     for (int i = 0; i < this.mouseListeners.size(); i++) {
-      GWindow localGWindow1 = (GWindow)this.mouseListeners.get(i);
-      if (!localGWindow1.isWaitModal())
-        localGWindow1.msgMouseButton(true, paramInt, paramBoolean, paramFloat1, paramFloat2);
+      localObject = (GWindow)this.mouseListeners.get(i);
+      if (!((GWindow)localObject).isWaitModal())
+        ((GWindow)localObject).msgMouseButton(true, paramInt, paramBoolean, paramFloat1, paramFloat2);
     }
     if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
 
@@ -220,9 +224,9 @@ public class GWindowRoot extends GWindow
     if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
 
     for (int j = 0; j < this.mouseListeners.size(); j++) {
-      GWindow localGWindow2 = (GWindow)this.mouseListeners.get(j);
-      if (!localGWindow2.isWaitModal())
-        localGWindow2.msgMouseButton(false, paramInt, paramBoolean, paramFloat1, paramFloat2);
+      GWindow localGWindow = (GWindow)this.mouseListeners.get(j);
+      if (!localGWindow.isWaitModal())
+        localGWindow.msgMouseButton(false, paramInt, paramBoolean, paramFloat1, paramFloat2);
     }
     if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
   }
@@ -316,13 +320,13 @@ public class GWindowRoot extends GWindow
   }
   public void hideWindow() {  }
 
-  public void doResolutionChanged() { this.resolutionChangeCounter += 1;
+  public void doResolutionChanged() { this.jdField_resolutionChangeCounter_of_type_Int += 1;
     if (this.lookAndFeel != null)
       this.lookAndFeel.resolutionChanged(this);
     resolutionChanged();
-    if (this.childWindow != null) {
-      for (int i = 0; i < this.childWindow.size(); i++) {
-        GWindow localGWindow = (GWindow)this.childWindow.get(i);
+    if (this.jdField_childWindow_of_type_JavaUtilArrayList != null) {
+      for (int i = 0; i < this.jdField_childWindow_of_type_JavaUtilArrayList.size(); i++) {
+        GWindow localGWindow = (GWindow)this.jdField_childWindow_of_type_JavaUtilArrayList.get(i);
         localGWindow.doResolutionChanged();
       }
     }
@@ -333,10 +337,10 @@ public class GWindowRoot extends GWindow
   }
 
   public GWindowRoot() {
-    this.root = this;
+    this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot = this;
     this.mouseOldWindow = this;
     this.mouseWindow = this;
     this.keyFocusWindow = this;
-    this.resolutionChangeCounter = 1;
+    this.jdField_resolutionChangeCounter_of_type_Int = 1;
   }
 }

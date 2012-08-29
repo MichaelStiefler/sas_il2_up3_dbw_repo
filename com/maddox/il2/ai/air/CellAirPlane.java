@@ -91,37 +91,37 @@ public class CellAirPlane extends CellObject
     int k = 0;
     int m = 0;
     for (; (m < i) && (k == 0); m++)
-      for (n = 0; n < j; n++) { if (arrayOfCellObject1[n][m] == null) continue; k = 1; break;
+      for (int n = 0; n < j; n++) { if (arrayOfCellObject1[n][m] == null) continue; k = 1; break;
       }
     k = 0;
-    int n = i - 1;
-    for (; (n > 0) && (k == 0); n--)
-      for (i1 = 0; i1 < j; i1++) { if (arrayOfCellObject1[i1][n] == null) continue; k = 1; break;
+    int i1 = i - 1;
+    for (; (i1 > 0) && (k == 0); i1--)
+      for (int i2 = 0; i2 < j; i2++) { if (arrayOfCellObject1[i2][i1] == null) continue; k = 1; break;
       }
     k = 0;
-    int i1 = 0;
-    for (; (i1 < j) && (k == 0); i1++)
-      for (i2 = 0; i2 < i; i2++) { if (arrayOfCellObject1[i1][i2] == null) continue; k = 1; break;
+    int i3 = 0;
+    for (; (i3 < j) && (k == 0); i3++)
+      for (int i4 = 0; i4 < i; i4++) { if (arrayOfCellObject1[i3][i4] == null) continue; k = 1; break;
       }
     k = 0;
-    int i2 = j - 1;
-    for (; (i2 > 0) && (k == 0); i2--)
-      for (int i3 = 0; i3 < i; i3++) { if (arrayOfCellObject1[i2][i3] == null) continue; k = 1; break;
+    int i5 = j - 1;
+    for (; (i5 > 0) && (k == 0); i5--)
+      for (int i6 = 0; i6 < i; i6++) { if (arrayOfCellObject1[i5][i6] == null) continue; k = 1; break;
       }
-    if ((m == 0) && (m == i - 1) && (i1 == 0) && (i2 == j - 1))
+    if ((m == 0) && (m == i - 1) && (i3 == 0) && (i5 == j - 1))
       return;
-    if ((m > n) || (i1 > i2)) {
+    if ((m > i1) || (i3 > i5)) {
       return;
     }
-    CellObject[][] arrayOfCellObject2 = new CellObject[i2 - i1 + 1][n - m + 1];
-    for (int i4 = 0; i4 < i2 - i1 + 1; i4++) {
-      for (int i5 = 0; i5 < n - m + 1; i5++) {
-        if (arrayOfCellObject1[(i4 + i1)][(i5 + m)] != null)
-          arrayOfCellObject2[i4][i5] = this;
+    CellObject[][] arrayOfCellObject2 = new CellObject[i5 - i3 + 1][i1 - m + 1];
+    for (int i7 = 0; i7 < i5 - i3 + 1; i7++) {
+      for (int i8 = 0; i8 < i1 - m + 1; i8++) {
+        if (arrayOfCellObject1[(i7 + i3)][(i8 + m)] != null)
+          arrayOfCellObject2[i7][i8] = this;
       }
     }
     this.ofsY -= m * getCellSize();
-    this.ofsX -= i1 * getCellSize();
+    this.ofsX -= i3 * getCellSize();
     setCells(arrayOfCellObject2);
   }
 

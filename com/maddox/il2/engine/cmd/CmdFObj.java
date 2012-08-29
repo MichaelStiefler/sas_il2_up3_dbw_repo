@@ -36,7 +36,7 @@ public class CmdFObj extends Cmd
             String str2 = FObj.Name(i).toLowerCase();
             if (StrMath.simple((String)((List)localObject).get(k), str2)) {
               j = 1;
-              FObj localFObj = (FObj)(FObj)GObj.getJavaObject(i);
+              FObj localFObj = (FObj)GObj.getJavaObject(i);
               if (localFObj != null) {
                 if (localFObj.ReLoad()) {
                   INFO_SOFT(localFObj.Name() + " Reloaded"); break;
@@ -60,7 +60,7 @@ public class CmdFObj extends Cmd
         return null;
       }
     }
-    else while (i != 0) {
+    else do {
         String str1 = FObj.Name(i).toLowerCase();
         k = 0;
         if (localObject != null) {
@@ -77,6 +77,7 @@ public class CmdFObj extends Cmd
           INFO_HARD("(" + GObj.LinkCount(i) + ") " + str1 + " CppClass:" + GObj.getCppClassName(i));
         i = FObj.NextFObj(i);
       }
+      while (i != 0);
 
     return CmdEnv.RETURN_OK;
   }

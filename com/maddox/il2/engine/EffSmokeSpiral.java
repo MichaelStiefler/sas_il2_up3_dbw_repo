@@ -10,10 +10,10 @@ public class EffSmokeSpiral extends Eff3D
     return new EffSmokeSpiralActor(this, paramActorPos);
   }
   protected EffSmokeSpiral() {
-    this.cppObj = cNew(); } 
+    this.jdField_cppObj_of_type_Int = cNew(); } 
   private native int cNew();
 
-  public EffSmokeSpiral(int paramInt) { this.cppObj = paramInt; }
+  public EffSmokeSpiral(int paramInt) { this.jdField_cppObj_of_type_Int = paramInt; }
 
   static {
     GObj.loadNative();

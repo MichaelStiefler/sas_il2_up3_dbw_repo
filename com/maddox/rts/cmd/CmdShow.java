@@ -81,8 +81,10 @@ public class CmdShow extends Cmd
           localObject2 = localIterator.next();
           if (localList != null)
           {
-            for (int j = 0; (j < localList.size()) && 
-              (!StrMath.simple((String)localList.get(j), localObject2.toString())); j++);
+            for (int j = 0; j < localList.size(); j++) {
+              if (StrMath.simple((String)localList.get(j), localObject2.toString()))
+                break;
+            }
             if (j == localList.size())
               localObject2 = null;
           }
@@ -116,8 +118,8 @@ public class CmdShow extends Cmd
 
   public CmdShow()
   {
-    this.param.put("AREA", null);
-    this.param.put("HISTORY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("AREA", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HISTORY", null);
     this._properties.put("NAME", "show");
     this._levelAccess = 2;
   }

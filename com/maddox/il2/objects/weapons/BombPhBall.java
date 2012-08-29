@@ -26,7 +26,7 @@ public class BombPhBall extends Bomb
 
   protected boolean haveSound()
   {
-    return this.index % 8 == 0;
+    return this.jdField_index_of_type_Int % 8 == 0;
   }
 
   public void start() {
@@ -40,12 +40,12 @@ public class BombPhBall extends Bomb
 
   public void interpolateTick() {
     this.curTm += Time.tickLenFs();
-    Ballistics.updateBomb(this, this.M, this.S, this.J, this.DistFromCMtoStab);
+    Ballistics.updateBomb(this, this.jdField_M_of_type_Float, this.S, this.J, this.DistFromCMtoStab);
     updateSound();
     if (this.t1 < Time.current()) {
       if (Config.isUSE_RENDER()) {
         Eff3DActor localEff3DActor = Eff3DActor.New(this, null, new Loc(), 1.0F, "3DO/Effects/Fireworks/PhosfourousFire.eff", (float)(this.t2 - this.t1) / 1000.0F);
-        if (this.index % 30 == 0) {
+        if (this.jdField_index_of_type_Int % 30 == 0) {
           LightPointActor localLightPointActor = new LightPointActor(new LightPointWorld(), new Point3d());
           localLightPointActor.light.setColor(1.0F, 1.0F, 0.0F);
           localLightPointActor.light.setEmit(1.0F, 300.0F);
@@ -68,7 +68,7 @@ public class BombPhBall extends Bomb
       float f1 = Property.floatValue(localClass, "power", 0.0F);
       int i = Property.intValue(localClass, "powerType", 0);
       float f2 = Property.floatValue(localClass, "radius", 1.0F);
-      MsgExplosion.send(paramActor, paramString2, localPoint3d, getOwner(), this.M, f1, i, f2);
+      MsgExplosion.send(paramActor, paramString2, localPoint3d, getOwner(), this.jdField_M_of_type_Float, f1, i, f2);
       Vector3d localVector3d = new Vector3d();
       getSpeed(localVector3d);
       localVector3d.x *= 0.5D;

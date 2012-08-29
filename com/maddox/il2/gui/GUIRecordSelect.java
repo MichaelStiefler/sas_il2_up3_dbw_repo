@@ -4,7 +4,6 @@ import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowLookAndFeel;
-import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
 import com.maddox.il2.ai.World;
@@ -147,33 +146,17 @@ public class GUIRecordSelect extends GameState
           GUIRecordSelect.this.bCycle = GUIRecordSelect.this.sCycle.isChecked();
           GUIRecordSelect.this.bManualTimeCompression = GUIRecordSelect.this.sTimeCompression.isChecked();
           GUIRecordSelect.this.bManualViewControls = GUIRecordSelect.this.sViewControls.isChecked();
-          i = GUIRecordSelect.this.wTable.selectRow;
+          i = GUIRecordSelect.this.wTable.jdField_selectRow_of_type_Int;
           if ((i < 0) || (i >= GUIRecordSelect.this.wTable.files.size())) return true;
           GUIRecordSelect.this.selectedFile = ((String)GUIRecordSelect.this.wTable.files.get(i));
 
           Main.stateStack().push(8);
           return true;
         }if (paramGWindow == GUIRecordSelect.this.wDelete) {
-          i = GUIRecordSelect.this.wTable.selectRow;
+          i = GUIRecordSelect.this.wTable.jdField_selectRow_of_type_Int;
           if ((i < 0) || (i >= GUIRecordSelect.this.wTable.files.size())) return true;
-          new GWindowMessageBox(this.root, 20.0F, true, GUIRecordSelect.this.i18n("warning.Warning"), GUIRecordSelect.this.i18n("warning.DeleteFile"), 1, 0.0F)
-          {
-            public void result(int paramInt) {
-              if (paramInt != 3) return;
-              int i = GUIRecordSelect.this.wTable.selectRow;
-              String str = (String)GUIRecordSelect.this.wTable.files.get(i);
-              try {
-                File localFile = new File(HomePath.toFileSystemName("Records/" + str, 0));
-                localFile.delete(); } catch (Exception localException) {
-              }
-              GUIRecordSelect.this.fillFiles();
-              if (i >= GUIRecordSelect.this.wTable.files.size())
-                i = GUIRecordSelect.this.wTable.files.size() - 1;
-              if (i < 0)
-                return;
-              GUIRecordSelect.this.wTable.setSelect(i, 0);
-            }
-          };
+          new GUIRecordSelect.1(this, this.root, 20.0F, true, GUIRecordSelect.this.i18n("warning.Warning"), GUIRecordSelect.this.i18n("warning.DeleteFile"), 1, 0.0F);
+
           return true;
         }if (paramGWindow == GUIRecordSelect.this.sViewMessages) {
           Main3D.cur3D().hud.bDrawAllMessages = GUIRecordSelect.this.sViewMessages.isChecked();
@@ -237,11 +220,11 @@ public class GUIRecordSelect extends GameState
       super.afterCreated();
       this.bColumnsSizable = false;
       addColumn(I18N.gui("record.TrackFiles"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {

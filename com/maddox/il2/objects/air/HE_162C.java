@@ -12,13 +12,13 @@ public class HE_162C extends HE_162
   protected void moveRudder(float paramFloat)
   {
     resetYPRmodifier();
-    xyz[1] = cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 0.0632F);
-    if (this.FM.CT.getGear() > 0.99F) {
-      ypr[1] = (40.0F * this.FM.CT.getRudder());
+    Aircraft.xyz[1] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 0.0632F);
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear() > 0.99F) {
+      Aircraft.ypr[1] = (40.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder());
     }
-    hierMesh().chunkSetLocate("GearC25_D0", xyz, ypr);
-    hierMesh().chunkSetAngles("GearC27_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, -15.0F), 0.0F);
-    hierMesh().chunkSetAngles("GearC28_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 30.0F), 0.0F);
+    hierMesh().chunkSetLocate("GearC25_D0", Aircraft.xyz, Aircraft.ypr);
+    hierMesh().chunkSetAngles("GearC27_D0", 0.0F, Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, -15.0F), 0.0F);
+    hierMesh().chunkSetAngles("GearC28_D0", 0.0F, Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 30.0F), 0.0F);
 
     updateControlsVisuals();
   }
@@ -30,8 +30,8 @@ public class HE_162C extends HE_162
 
   private final void updateControlsVisuals()
   {
-    hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -21.25F * this.FM.CT.getElevator() - 21.25F * this.FM.CT.getRudder(), 0.0F);
-    hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -21.25F * this.FM.CT.getElevator() + 21.25F * this.FM.CT.getRudder(), 0.0F);
+    hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -21.25F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator() - 21.25F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder(), 0.0F);
+    hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -21.25F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator() + 21.25F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder(), 0.0F);
   }
 
   protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
@@ -65,11 +65,11 @@ public class HE_162C extends HE_162
     Property.set(localClass, "cockpitClass", CockpitHE_162C.class);
     Property.set(localClass, "LOSElevation", 0.5099F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMK108k 100", "MGunMK108k 100" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMK108k 100", "MGunMK108k 100" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

@@ -20,7 +20,7 @@ public class B_25C25 extends B_25
   private long btme = -1L;
 
   public void update(float paramFloat) { super.update(paramFloat);
-    if (!this.FM.AS.isMaster()) {
+    if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
       return;
     }
     if (this.bpos == 0.0F) {
@@ -31,28 +31,28 @@ public class B_25C25 extends B_25
         }
       }
       resetYPRmodifier();
-      xyz[1] = (-0.31F + 0.31F * this.bcurpos);
-      hierMesh().chunkSetLocate("Turret3A_D0", xyz, ypr);
+      Aircraft.xyz[1] = (-0.31F + 0.31F * this.bcurpos);
+      hierMesh().chunkSetLocate("Turret3A_D0", Aircraft.xyz, Aircraft.ypr);
     } else if (this.bpos == 1.0F) {
       if (this.bcurpos < this.bpos) {
         this.bcurpos += 0.2F * paramFloat;
         if (this.bcurpos > 1.0F) {
           this.bcurpos = 1.0F;
           this.bpos = 0.5F;
-          this.FM.turret[2].bIsOperable = true;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = true;
         }
       }
       resetYPRmodifier();
-      xyz[1] = (-0.3F + 0.3F * this.bcurpos);
-      hierMesh().chunkSetLocate("Turret3A_D0", xyz, ypr);
+      Aircraft.xyz[1] = (-0.3F + 0.3F * this.bcurpos);
+      hierMesh().chunkSetLocate("Turret3A_D0", Aircraft.xyz, Aircraft.ypr);
     }
     if (Time.current() > this.btme) {
       this.btme = (Time.current() + World.Rnd().nextLong(5000L, 12000L));
-      if (this.FM.turret[2].target == null) {
-        this.FM.turret[2].bIsOperable = false;
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].target == null) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
         this.bpos = 0.0F;
       }
-      if ((this.FM.turret[1].target != null) && (this.FM.AS.astatePilotStates[4] < 90))
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].target != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[4] < 90))
         this.bpos = 1.0F;
     }
   }
@@ -110,17 +110,17 @@ public class B_25C25 extends B_25
   public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat) {
+  public void doKillPilot(int paramInt) {
     switch (paramInt) {
     case 0:
     case 1:
       break;
     case 2:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[1].setHealth(paramFloat);
-      this.FM.turret[2].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
       break;
     case 4:
     }
@@ -167,25 +167,25 @@ public class B_25C25 extends B_25
 
     Property.set(localClass, "FlightModel", "FlightModels/B-25C.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 10, 11, 11, 12, 12, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 10, 11, 11, 12, 12, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, null, null });
 
-    weaponsRegister(localClass, "12x100lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun50kg 6", "BombGun50kg 6" });
+    Aircraft.weaponsRegister(localClass, "12x100lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun50kg 6", "BombGun50kg 6" });
 
-    weaponsRegister(localClass, "6x250lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun250lbs 3", "BombGun250lbs 3" });
+    Aircraft.weaponsRegister(localClass, "6x250lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun250lbs 3", "BombGun250lbs 3" });
 
-    weaponsRegister(localClass, "4x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun500lbs 2", "BombGun500lbs 2" });
+    Aircraft.weaponsRegister(localClass, "4x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun500lbs 2", "BombGun500lbs 2" });
 
-    weaponsRegister(localClass, "2x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun1000lbs 1", "BombGun1000lbs 1" });
+    Aircraft.weaponsRegister(localClass, "2x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGun1000lbs 1", "BombGun1000lbs 1" });
 
-    weaponsRegister(localClass, "1x2000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", "BombGun2000lbs 1", null, null });
+    Aircraft.weaponsRegister(localClass, "1x2000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", "BombGun2000lbs 1", null, null });
 
-    weaponsRegister(localClass, "10x50kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGunFAB50 5", "BombGunFAB50 5" });
+    Aircraft.weaponsRegister(localClass, "10x50kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGunFAB50 5", "BombGunFAB50 5" });
 
-    weaponsRegister(localClass, "8x100kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGunFAB100 4", "BombGunFAB100 4" });
+    Aircraft.weaponsRegister(localClass, "8x100kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50t 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50tj 450", "MGunBrowning50tj 450", null, "BombGunFAB100 4", "BombGunFAB100 4" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null });
   }
 }

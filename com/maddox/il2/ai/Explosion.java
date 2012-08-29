@@ -69,7 +69,7 @@ public class Explosion
   public float receivedPower(ActorMesh paramActorMesh)
   {
     float f1 = paramActorMesh.collisionR();
-    float f2 = (float)paramActorMesh.pos.getAbsPoint().distance(this.p);
+    float f2 = (float)paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(this.p);
     f2 -= f1;
     if (f2 >= this.radius)
       return 0.0F;
@@ -97,7 +97,7 @@ public class Explosion
 
   public float receivedTNT_1meter(ActorMesh paramActorMesh)
   {
-    float f = (float)paramActorMesh.pos.getAbsPoint().distance(this.p) - paramActorMesh.collisionR();
+    float f = (float)paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(this.p) - paramActorMesh.collisionR();
 
     return receivedTNT_1meter(f);
   }
@@ -105,7 +105,7 @@ public class Explosion
   public float receivedTNTpower(ActorMesh paramActorMesh)
   {
     float f1 = paramActorMesh.collisionR();
-    float f2 = (float)paramActorMesh.pos.getAbsPoint().distance(this.p) - f1;
+    float f2 = (float)paramActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(this.p) - f1;
     if (f2 <= 0.0F) {
       return 0.5F * this.power;
     }

@@ -97,8 +97,8 @@ public class Polares extends FMMath
   {
     float f1 = new_Cxa(paramFloat);
     float f2 = new_Cya(paramFloat);
-    float f3 = (float)Math.cos(DEG2RAD(paramFloat));
-    float f4 = (float)Math.sin(DEG2RAD(paramFloat));
+    float f3 = (float)Math.cos(FMMath.DEG2RAD(paramFloat));
+    float f4 = (float)Math.sin(FMMath.DEG2RAD(paramFloat));
     this.lastAOA = paramFloat;
     this.lastCx = (f1 * f3 - f2 * f4);
     this.lastCy = (f2 * f3 + f1 * f4);
@@ -187,11 +187,10 @@ public class Polares extends FMMath
 
               float f2 = -10000.0F;
               float f14;
-              float f15;
               for (int i1 = 0; i1 < 20; i1++) {
-                f14 = 0.5F * i1;
-                f15 = new_Cya(f14) / new_Cxa(f14);
-                if (f2 >= f15) break; f2 = f15;
+                float f13 = 0.5F * i1;
+                f14 = new_Cya(f13) / new_Cxa(f13);
+                if (f2 >= f14) break; f2 = f14;
               }
 
               if ((f2 <= 1.3F * this.K_max) && (f2 >= 0.6F * this.K_max)) {
@@ -199,20 +198,21 @@ public class Polares extends FMMath
 
                 float f3 = -10000.0F;
                 float f4 = 300.0F;
+                float f15;
                 float f16;
                 float f17;
                 float f18;
                 float f19;
-                for (i1 = 25; i1 < 200; i1++) {
-                  f14 = this.S * this.Ro * i1 * i1;
+                for (int i2 = 25; i2 < 200; i2++) {
+                  f14 = this.S * this.Ro * i2 * i2;
                   f15 = 2.0F * this.G / f14;
                   f16 = (f15 - this.Cy0) / this.lineCyCoeff;
                   f17 = f16 - this.AOAMinCx;
                   f18 = 0.5F * (this.CxMin + this.parabCxCoeff * f17 * f17) * f14;
-                  f19 = i1 * (this.normP[i1] - f18) / this.G;
+                  f19 = i2 * (this.normP[i2] - f18) / this.G;
                   if (f3 >= f19) break;
                   f3 = f19;
-                  f4 = i1;
+                  f4 = i2;
                 }
 
                 if ((f3 <= f3 + 3.0F) && (f3 >= f3 - 3.0F)) {
@@ -222,20 +222,20 @@ public class Polares extends FMMath
 
                     float f5 = 10000.0F;
                     float f6 = 300.0F;
-                    for (i1 = 125; i1 > 40; i1--) {
-                      f14 = this.S * this.R1000 * i1 * i1;
-                      f15 = 2.0F * this.maxP[i1] / f14;
-                      if (f15 >= this.CxMin) {
-                        f16 = (float)Math.sqrt((f15 - this.CxMin) / this.parabCxCoeff);
-                        f17 = this.AOAMinCx + f16;
-                        if (f17 > 12.5F) f17 = 12.5F;
-                        f18 = 0.5F * new_Cya(f17) * f14 / this.G;
-                        f19 = (float)Math.sqrt(f18 * f18 - 1.0F);
-                        float f20 = 6.283186F * i1 / (9.8F * f19);
-                        if (f20 <= 60.0F) {
-                          if (f5 <= f20) break;
-                          f5 = f20;
-                          f6 = i1;
+                    for (int i3 = 125; i3 > 40; i3--) {
+                      f15 = this.S * this.R1000 * i3 * i3;
+                      f16 = 2.0F * this.maxP[i3] / f15;
+                      if (f16 >= this.CxMin) {
+                        f17 = (float)Math.sqrt((f16 - this.CxMin) / this.parabCxCoeff);
+                        f18 = this.AOAMinCx + f17;
+                        if (f18 > 12.5F) f18 = 12.5F;
+                        f19 = 0.5F * new_Cya(f18) * f15 / this.G;
+                        f20 = (float)Math.sqrt(f19 * f19 - 1.0F);
+                        float f21 = 6.283186F * i3 / (9.8F * f20);
+                        if (f21 <= 60.0F) {
+                          if (f5 <= f21) break;
+                          f5 = f21;
+                          f6 = i3;
                         }
                       }
                     }
@@ -244,19 +244,19 @@ public class Polares extends FMMath
 
                     i = 6;
 
-                    float f13 = this.K_max - f2;
-                    f13 = Math.abs(f13);
-                    f14 = this.Vz_climb - f3;
-                    f14 = Math.abs(f14);
-                    f15 = this.V_climb - f4;
+                    f15 = this.K_max - f2;
                     f15 = Math.abs(f15);
-                    f16 = this.T_turn - f5;
+                    f16 = this.Vz_climb - f3;
                     f16 = Math.abs(f16);
-                    f17 = this.V_turn - f6;
+                    f17 = this.V_climb - f4;
                     f17 = Math.abs(f17);
-                    f18 = 2.0F * f13 + 12.0F * f14 + 5.0F * f14 + 15.0F * f16 + 2.0F * f17;
-                    if (f1 > f18) {
-                      f1 = f18;
+                    f18 = this.T_turn - f5;
+                    f18 = Math.abs(f18);
+                    f19 = this.V_turn - f6;
+                    f19 = Math.abs(f19);
+                    float f20 = 2.0F * f15 + 12.0F * f16 + 5.0F * f16 + 15.0F * f18 + 2.0F * f19;
+                    if (f1 > f20) {
+                      f1 = f20;
                       f9 = f7;
                       f10 = f8;
                       f11 = this.parabCxCoeff;
@@ -320,13 +320,11 @@ public class Polares extends FMMath
   {
     float f1 = Atmosphere.density(paramFloat2);
     float f2 = this.S * f1 * paramFloat1 * paramFloat1;
-
     float f3 = 2.0F * this.G / f2;
     float f4 = (f3 - this.Cy0) / this.lineCyCoeff;
     float f5 = f4 - this.AOAMinCx;
     float f6 = 0.5F * (this.CxMin + this.parabCxCoeff * f5 * f5) * f2;
     float f7 = paramFloat1 * (paramFloat3 - f6) / this.G;
-
     return f7;
   }
 
@@ -337,22 +335,22 @@ public class Polares extends FMMath
       localPrintWriter.println("; ==============================================================================");
       localPrintWriter.println("[Polares]");
       localPrintWriter.println("; ==============================================================================");
-      localPrintWriter.println("lineCyCoeff        " + this.lineCyCoeff);
-      localPrintWriter.println("AOAMinCx_Shift     " + this.AOAMinCx_Shift);
-      localPrintWriter.println("Cy0_0              " + this.Cy0_0);
-      localPrintWriter.println("AOACritH_0         " + this.AOACritH_0);
-      localPrintWriter.println("AOACritL_0         " + this.AOACritL_0);
-      localPrintWriter.println("CyCritH_0          " + this.CyCritH_0);
-      localPrintWriter.println("CyCritL_0          " + this.CyCritL_0);
-      localPrintWriter.println("CxMin_0            " + this.CxMin_0);
-      localPrintWriter.println("parabCxCoeff_0     " + this.parabCxCoeff_0);
-      localPrintWriter.println("Cy0_1              " + this.Cy0_1);
-      localPrintWriter.println("AOACritH_1         " + this.AOACritH_1);
-      localPrintWriter.println("AOACritL_1         " + this.AOACritL_1);
-      localPrintWriter.println("CyCritH_1          " + this.CyCritH_1);
-      localPrintWriter.println("CyCritL_1          " + this.CyCritL_1);
-      localPrintWriter.println("CxMin_1            " + this.CxMin_1);
-      localPrintWriter.println("parabCxCoeff_1     " + this.parabCxCoeff_1);
+      localPrintWriter.println("lineCyCoeff        = " + this.lineCyCoeff);
+      localPrintWriter.println("AOAMinCx_Shift     = " + this.AOAMinCx_Shift);
+      localPrintWriter.println("Cy0_0              = " + this.Cy0_0);
+      localPrintWriter.println("AOACritH_0         = " + this.AOACritH_0);
+      localPrintWriter.println("AOACritL_0         = " + this.AOACritL_0);
+      localPrintWriter.println("CyCritH_0          = " + this.CyCritH_0);
+      localPrintWriter.println("CyCritL_0          = " + this.CyCritL_0);
+      localPrintWriter.println("CxMin_0            = " + this.CxMin_0);
+      localPrintWriter.println("parabCxCoeff_0     = " + this.parabCxCoeff_0);
+      localPrintWriter.println("Cy0_1              = " + this.Cy0_1);
+      localPrintWriter.println("AOACritH_1         = " + this.AOACritH_1);
+      localPrintWriter.println("AOACritL_1         = " + this.AOACritL_1);
+      localPrintWriter.println("CyCritH_1          = " + this.CyCritH_1);
+      localPrintWriter.println("CyCritL_1          = " + this.CyCritL_1);
+      localPrintWriter.println("CxMin_1            = " + this.CxMin_1);
+      localPrintWriter.println("parabCxCoeff_1     = " + this.parabCxCoeff_1);
       localPrintWriter.close();
     } catch (IOException localIOException) {
       System.out.println("File save failed: " + localIOException.getMessage());
@@ -425,7 +423,6 @@ public class Polares extends FMMath
           for (m = 120; m < 620; m += 2) {
             f6 = m * 0.27778F;
             f7 = this.S * this.Ro * f6 * f6;
-
             f8 = 2.0F * this.G / f7;
             f9 = getAoAbyCy(f8);
 
@@ -445,7 +442,6 @@ public class Polares extends FMMath
         for (m = 120; m < 620; m += 2) {
           f6 = m * 0.27778F;
           f7 = this.S * this.R1000 * f6 * f6;
-
           f8 = 2.0F * this.maxP[(int)f6] / f7;
           f9 = (float)Math.sqrt((f8 - this.CxMin) / this.parabCxCoeff);
           f10 = this.AOAMinCx + f9;
@@ -577,13 +573,13 @@ public class Polares extends FMMath
     else if (paramFloat <= this.AOACritL) {
       f2 += 0.03F * (this.AOACritL - paramFloat);
     }
-    float f3 = 0.2F + 1.2F * (float)Math.abs(Math.sin(DEG2RAD(paramFloat)));
+    float f3 = 0.2F + 1.2F * (float)Math.abs(Math.sin(FMMath.DEG2RAD(paramFloat)));
     return Math.min(f2, f3);
   }
 
   public final float new_Cz(float paramFloat)
   {
-    return 0.7F * (float)Math.sin(DEG2RAD(paramFloat));
+    return 0.7F * (float)Math.sin(FMMath.DEG2RAD(paramFloat));
   }
 
   public final float getFlaps()

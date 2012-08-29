@@ -40,8 +40,10 @@ public class GUISetupNet extends GameState
   private void setComboSpeed() {
     int i = Config.cur.netSpeed;
 
-    for (int j = 0; (j < this.speed.length - 1) && 
-      (i >= (this.speed[j] + this.speed[(j + 1)]) / 2); j++);
+    for (int j = 0; j < this.speed.length - 1; j++) {
+      if (i < (this.speed[j] + this.speed[(j + 1)]) / 2)
+        break;
+    }
     if (j == this.speed.length - 1)
       j = this.speed.length - 2;
     this.comboSpeed.setSelected(j, true, false);
@@ -52,22 +54,21 @@ public class GUISetupNet extends GameState
       return;
     Config.cur.netSpeed = paramInt;
     List localList = NetEnv.socketsBlock();
-    Object localObject;
     for (int i = 0; i < localList.size(); i++) {
-      localObject = (NetSocket)localList.get(i);
-      ((NetSocket)localObject).setMaxSpeed(paramInt / 1000.0F);
+      NetSocket localNetSocket1 = (NetSocket)localList.get(i);
+      localNetSocket1.setMaxSpeed(paramInt / 1000.0F);
     }
     localList = NetEnv.socketsNoBlock();
-    for (i = 0; i < localList.size(); i++) {
-      localObject = (NetSocket)localList.get(i);
-      ((NetSocket)localObject).setMaxSpeed(paramInt / 1000.0F);
+    for (int j = 0; j < localList.size(); j++) {
+      NetSocket localNetSocket2 = (NetSocket)localList.get(j);
+      localNetSocket2.setMaxSpeed(paramInt / 1000.0F);
     }
 
     localList = NetEnv.channels();
-    for (i = 0; i < localList.size(); i++) {
-      localObject = (NetChannel)localList.get(i);
-      if (((NetChannel)localObject).isReady())
-        ((NetChannel)localObject).setMaxSpeed(paramInt / 1000.0F);
+    for (int k = 0; k < localList.size(); k++) {
+      NetChannel localNetChannel = (NetChannel)localList.get(k);
+      if (localNetChannel.isReady())
+        localNetChannel.setMaxSpeed(paramInt / 1000.0F);
     }
   }
 

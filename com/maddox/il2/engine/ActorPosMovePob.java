@@ -228,9 +228,9 @@ public class ActorPosMovePob extends ActorPos
     if (InterpolateAdapter.isProcess()) {
       localPoint3d1 = this.prevLabs.getPoint();
       localPoint3d2 = this.curLabs.getPoint();
-      d1 = localPoint3d2.x - localPoint3d1.x;
-      d2 = localPoint3d2.y - localPoint3d1.y;
-      d3 = localPoint3d2.z - localPoint3d1.z;
+      d1 = localPoint3d2.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double;
+      d2 = localPoint3d2.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double;
+      d3 = localPoint3d2.jdField_z_of_type_Double - localPoint3d1.jdField_z_of_type_Double;
       d4 = 1.0F / Time.tickLenFs();
       if (paramVector3d != null)
         paramVector3d.set(d1 * d4, d2 * d4, d3 * d4);
@@ -238,9 +238,9 @@ public class ActorPosMovePob extends ActorPos
     }
     Point3d localPoint3d1 = this.Labs.getPoint();
     Point3d localPoint3d2 = this.curLabs.getPoint();
-    double d1 = localPoint3d1.x - localPoint3d2.x;
-    double d2 = localPoint3d1.y - localPoint3d2.y;
-    double d3 = localPoint3d1.z - localPoint3d2.z;
+    double d1 = localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double;
+    double d2 = localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double;
+    double d3 = localPoint3d1.jdField_z_of_type_Double - localPoint3d2.jdField_z_of_type_Double;
     double d4 = 1.0F / Time.tickLenFs();
     if (paramVector3d != null)
       paramVector3d.set(d1 * d4, d2 * d4, d3 * d4);

@@ -12,7 +12,7 @@ public class GUIInfoMenu extends GUIInfoTop
     super.render();
     setCanvasColor(GColor.Gray);
     setCanvasFont(0);
-    draw(M(2.0F), 0.0F, this.win.dx - M(2.0F), this.win.dy, 0, this.info);
+    draw(M(2.0F), 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - M(2.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, 0, this.info);
   }
 
   public void setPosSize() {

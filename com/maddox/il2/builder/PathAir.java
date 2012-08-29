@@ -47,10 +47,10 @@ public class PathAir extends Path
         d1 = localPlMisAir.type[this._iType].item[this._iItem].speedRunway;
       if (d1 == 0.0D)
         d1 = localPlMisAir.type[this._iType].item[this._iItem].speedRunway;
-      double d2 = ((PAir)localObject).pos.getAbsPoint().distance(localPAir.pos.getAbsPoint());
+      double d2 = ((PAir)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       d1 *= 0.2777777777777778D;
       double d3 = d2 / d1;
-      localPAir.time = (((PAir)localObject).time + d3);
+      localPAir.jdField_time_of_type_Double = (((PAir)localObject).jdField_time_of_type_Double + d3);
       localObject = localPAir;
     }
     if (paramBoolean)

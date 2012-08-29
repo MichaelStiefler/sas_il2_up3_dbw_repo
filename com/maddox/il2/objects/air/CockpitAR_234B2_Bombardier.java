@@ -121,8 +121,8 @@ public class CockpitAR_234B2_Bombardier extends CockpitPilot
     HookNamed localHookNamed;
     try {
       Loc localLoc1 = new Loc();
-      localHookNamed = new HookNamed(this.mesh, "CAMERAAIM");
-      localHookNamed.computePos(this, this.pos.getAbs(), localLoc1);
+      localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERAAIM");
+      localHookNamed.computePos(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), localLoc1);
       this.aAim = localLoc1.getOrient().getAzimut();
       this.tAim = localLoc1.getOrient().getTangage();
       this.kAim = localLoc1.getOrient().getKren();
@@ -132,8 +132,8 @@ public class CockpitAR_234B2_Bombardier extends CockpitPilot
     }
     try {
       Loc localLoc2 = new Loc();
-      localHookNamed = new HookNamed(this.mesh, "CAMERA");
-      localHookNamed.computePos(this, this.pos.getAbs(), localLoc2);
+      localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERA");
+      localHookNamed.computePos(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), localLoc2);
       this.aDiv = localLoc2.getOrient().getAzimut();
       this.tDiv = localLoc2.getOrient().getTangage();
       this.kDiv = localLoc2.getOrient().getKren();
@@ -142,19 +142,18 @@ public class CockpitAR_234B2_Bombardier extends CockpitPilot
       localException2.printStackTrace();
     }
     interpPut(new Interpolater(), null, Time.current(), null);
-    AircraftLH.printCompassHeading = true;
   }
 
   public void reflectWorldToInstruments(float paramFloat)
   {
     if (this.bBAiming) {
-      this.mesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((AR_234B2)aircraft()).fSightCurForwardAngle, 7.0F, 140.0F, 0.7F, 14.0F), angleScale), 0.0F, 0.0F);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((AR_234B2)aircraft()).fSightCurForwardAngle, 7.0F, 140.0F, 0.7F, 14.0F), angleScale), 0.0F, 0.0F);
 
       boolean bool = ((AR_234B2)aircraft()).fSightCurReadyness > 0.93F;
-      this.mesh.chunkVisible("zReticle", bool);
-      this.mesh.chunkVisible("zAngleMark", bool);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zReticle", bool);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zAngleMark", bool);
     } else {
-      this.mesh.chunkSetAngles("zGSDimm", -this.alpha, 0.0F, 0.0F);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zGSDimm", -this.alpha, 0.0F, 0.0F);
     }
   }
 
@@ -173,18 +172,18 @@ public class CockpitAR_234B2_Bombardier extends CockpitPilot
     {
       float f1 = ((AR_234B2)CockpitAR_234B2_Bombardier.this.aircraft()).fSightCurForwardAngle;
       float f2 = ((AR_234B2)CockpitAR_234B2_Bombardier.this.aircraft()).fSightCurSideslip;
-      CockpitAR_234B2_Bombardier.this.mesh.chunkSetAngles("BlackBox", -10.0F * f2, 0.0F, f1);
+      CockpitAR_234B2_Bombardier.this.mesh.chunkSetAngles("BlackBox", 0.0F, -f2, f1);
       if ((CockpitAR_234B2_Bombardier.this.bEntered) && (CockpitAR_234B2_Bombardier.this.bBAiming)) {
         HookPilot localHookPilot = HookPilot.current;
-        localHookPilot.setSimpleAimOrient(CockpitAR_234B2_Bombardier.this.aAim + 10.0F * f2, CockpitAR_234B2_Bombardier.this.tAim + f1, 0.0F);
+        localHookPilot.setSimpleAimOrient(CockpitAR_234B2_Bombardier.this.aAim + f2, CockpitAR_234B2_Bombardier.this.tAim + f1, 0.0F);
       }
 
-      float f3 = CockpitAR_234B2_Bombardier.this.fm.getAltitude();
-      float f4 = (float)(-(Math.abs(CockpitAR_234B2_Bombardier.this.fm.Vwld.length()) * Math.sin(Math.toRadians(Math.abs(CockpitAR_234B2_Bombardier.this.fm.Or.getTangage())))) * 0.1018999963998795D);
+      float f3 = CockpitAR_234B2_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getAltitude();
+      float f4 = (float)(-(Math.abs(CockpitAR_234B2_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.length()) * Math.sin(Math.toRadians(Math.abs(CockpitAR_234B2_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage())))) * 0.1018999963998795D);
       f4 += (float)Math.sqrt(f4 * f4 + 2.0F * f3 * 0.1019F);
-      float f5 = Math.abs((float)CockpitAR_234B2_Bombardier.this.fm.Vwld.length()) * (float)Math.cos(Math.toRadians(Math.abs(CockpitAR_234B2_Bombardier.this.fm.Or.getTangage())));
+      float f5 = Math.abs((float)CockpitAR_234B2_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.length()) * (float)Math.cos(Math.toRadians(Math.abs(CockpitAR_234B2_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage())));
       float f6 = f5 * f4 + 10.0F - 10.0F;
-      CockpitAR_234B2_Bombardier.access$402(CockpitAR_234B2_Bombardier.this, 90.0F - Math.abs(CockpitAR_234B2_Bombardier.this.fm.Or.getTangage()) - (float)Math.toDegrees(Math.atan(f6 / f3)));
+      CockpitAR_234B2_Bombardier.access$402(CockpitAR_234B2_Bombardier.this, 90.0F - Math.abs(CockpitAR_234B2_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage()) - (float)Math.toDegrees(Math.atan(f6 / f3)));
 
       return true;
     }

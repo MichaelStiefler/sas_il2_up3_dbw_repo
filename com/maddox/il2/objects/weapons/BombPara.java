@@ -19,11 +19,11 @@ public class BombPara extends Bomb
     Class localClass = getClass();
     init(Property.floatValue(localClass, "kalibr", 0.082F), Property.floatValue(localClass, "massa", 6.8F));
 
-    setOwner(this.pos.base(), false, false, false);
-    this.pos.setBase(null, null, true);
-    this.pos.setAbs(this.pos.getCurrent());
+    setOwner(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base(), false, false, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, true);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent());
 
-    this.pos.getAbs(localLoc);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc);
 
     Paratrooper localParatrooper = new Paratrooper(getOwner(), getOwner().getArmy(), 255, localLoc, ((Aircraft)getOwner()).FM.Vwld);
     destroy();

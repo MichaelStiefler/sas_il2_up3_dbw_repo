@@ -1,43 +1,24 @@
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Wing;
-import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
-import com.maddox.il2.objects.weapons.BombSC50;
 import com.maddox.rts.Property;
 
 public class BF_109E7 extends BF_109
 {
   private float kangle = 0.0F;
 
-  public void update(float paramFloat) { if (this.FM.getSpeed() > 5.0F) {
-      hierMesh().chunkSetAngles("SlatL_D0", 0.0F, 0.0F, cvt(this.FM.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F));
-      hierMesh().chunkSetAngles("SlatR_D0", 0.0F, 0.0F, cvt(this.FM.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F));
+  public void update(float paramFloat) { if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed() > 5.0F) {
+      hierMesh().chunkSetAngles("SlatL_D0", 0.0F, 0.0F, Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F));
+      hierMesh().chunkSetAngles("SlatR_D0", 0.0F, 0.0F, Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAOA(), 6.8F, 11.0F, 0.0F, 1.5F));
     }
     hierMesh().chunkSetAngles("WaterL_D0", 0.0F, -38.0F * this.kangle, 0.0F);
     hierMesh().chunkSetAngles("WaterR_D0", 0.0F, -38.0F * this.kangle, 0.0F);
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
+    this.kangle = (0.95F * this.kangle + 0.05F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator());
     if (this.kangle > 1.0F) this.kangle = 1.0F;
     super.update(paramFloat);
-  }
-
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-
-    Object[] arrayOfObject = this.pos.getBaseAttached();
-    if (arrayOfObject != null)
-    {
-      for (int i = 0; i < arrayOfObject.length; i++)
-      {
-        if (!(arrayOfObject[i] instanceof BombSC50))
-          continue;
-        hierMesh().chunkVisible("Rack", false);
-        hierMesh().chunkVisible("ETC50", true);
-      }
-    }
   }
 
   public static void moveGear(HierMesh paramHierMesh, float paramFloat)
@@ -88,8 +69,8 @@ public class BF_109E7 extends BF_109
   }
 
   public void moveSteering(float paramFloat) {
-    if (paramFloat > 77.5F) { paramFloat = 77.5F; this.FM.Gears.steerAngle = paramFloat; }
-    if (paramFloat < -77.5F) { paramFloat = -77.5F; this.FM.Gears.steerAngle = paramFloat; }
+    if (paramFloat > 77.5F) { paramFloat = 77.5F; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.steerAngle = paramFloat; }
+    if (paramFloat < -77.5F) { paramFloat = -77.5F; this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.steerAngle = paramFloat; }
     hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -paramFloat, 0.0F);
   }
 
@@ -111,17 +92,17 @@ public class BF_109E7 extends BF_109
     Property.set(localClass, "cockpitClass", CockpitBF_109Ex.class);
     Property.set(localClass, "LOSElevation", 0.74985F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 3, 3, 3, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalDev01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 3, 3, 3, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalDev01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4xSC50", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null });
+    Aircraft.weaponsRegister(localClass, "4xSC50", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null });
 
-    weaponsRegister(localClass, "1xSC250", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", "BombGunSC250 1", null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1xSC250", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", "BombGunSC250 1", null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xDROPTANK", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", null, null, null, null, null, "FuelTankGun_Type_D" });
+    Aircraft.weaponsRegister(localClass, "1xDROPTANK", new String[] { "MGunMG17si 1000", "MGunMG17si 1000", "MGunMGFFk 60", "MGunMGFFk 60", null, null, null, null, null, "FuelTankGun_Type_D" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }
 }

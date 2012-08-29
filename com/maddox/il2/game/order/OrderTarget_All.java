@@ -23,26 +23,26 @@ class OrderTarget_All extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       localPilot.targetAll();
       int j = 0;
-      if (localPilot.Group != null) {
-        this.Pd.set(localPilot.Group.Pos);
+      if (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) {
+        this.Pd.set(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.Pos);
         if (OrdersTree.curOrdersTree.alone())
-          if ((localPilot.Group.grTask != 3) && (((Maneuver)Player().FM).Group == localPilot.Group)) {
-            localAirGroup = new AirGroup(localPilot.Group);
-            localPilot.Group.delAircraft(localAircraft);
+          if ((localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.grTask != 3) && (((Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup)) {
+            localAirGroup = new AirGroup(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+            localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(localAircraft);
             localAirGroup.addAircraft(localAircraft);
           } else {
             localPilot.aggressiveWingman = true;
           }
-        localPilot.Group.setATargMode(9);
-        AirGroup localAirGroup = localPilot.Group.chooseTargetGroup();
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setATargMode(9);
+        AirGroup localAirGroup = localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.chooseTargetGroup();
         if (localAirGroup != null) {
-          localPilot.Group.targetGroup = localAirGroup;
-          localPilot.Group.setGroupTask(3);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.targetGroup = localAirGroup;
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(3);
           j = 1;
           if ((isEnableVoice()) && (localAircraft != Player()) && (localPilot.canAttack()))
             if ((localAircraft.getWing() == Player().getWing()) || (localAircraft.aircIndex() == 0))
@@ -52,17 +52,17 @@ class OrderTarget_All extends Order
         }
         if (j == 0) {
           if ((OrdersTree.curOrdersTree.alone()) && 
-            (localPilot.Group.grTask != 4) && (((Maneuver)Player().FM).Group == localPilot.Group)) {
-            localObject = new AirGroup(localPilot.Group);
-            localPilot.Group.delAircraft(localAircraft);
+            (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.grTask != 4) && (((Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup)) {
+            localObject = new AirGroup(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+            localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(localAircraft);
             ((AirGroup)localObject).addAircraft(localAircraft);
           }
 
-          localPilot.Group.setGTargMode(0);
-          localPilot.Group.setGTargMode(this.Pd, 5000.0F);
-          Object localObject = localPilot.Group.setGAttackObject(localPilot.Group.numInGroup(localAircraft));
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGTargMode(0);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGTargMode(this.Pd, 5000.0F);
+          Object localObject = localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGAttackObject(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.numInGroup(localAircraft));
           if (localObject != null) {
-            localPilot.Group.setGroupTask(4);
+            localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(4);
             j = 1;
             if ((isEnableVoice()) && (localAircraft != Player()))
               if ((localAircraft.getWing() == Player().getWing()) || (localAircraft.aircIndex() == 0))

@@ -40,15 +40,15 @@ public class TA_152C extends FW_190
   }
   protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
   public void moveSteering(float paramFloat) {
-    if (this.FM.CT.getGear() < 0.98F) return;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() < 0.98F) return;
     hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -paramFloat, 0.0F);
   }
   public void moveWheelSink() {
     resetYPRmodifier();
-    xyz[1] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
-    hierMesh().chunkSetLocate("GearL2a_D0", xyz, ypr);
-    xyz[1] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
-    hierMesh().chunkSetLocate("GearR2a_D0", xyz, ypr);
+    Aircraft.xyz[1] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
+    hierMesh().chunkSetLocate("GearL2a_D0", Aircraft.xyz, Aircraft.ypr);
+    Aircraft.xyz[1] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
+    hierMesh().chunkSetLocate("GearR2a_D0", Aircraft.xyz, Aircraft.ypr);
   }
 
   protected void moveFlap(float paramFloat)
@@ -61,16 +61,16 @@ public class TA_152C extends FW_190
   public void rareAction(float paramFloat, boolean paramBoolean)
   {
     super.rareAction(paramFloat, paramBoolean);
-    if ((((this.FM instanceof RealFlightModel)) && (((RealFlightModel)this.FM).isRealMode())) || (!paramBoolean) || (!(this.FM instanceof Pilot)))
+    if ((((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) && (((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode())) || (!paramBoolean) || (!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)))
     {
       return;
     }
-    Pilot localPilot = (Pilot)this.FM;
-    if ((localPilot.get_maneuver() == 63) && (localPilot.target != null)) {
-      Point3d localPoint3d = new Point3d(localPilot.target.Loc);
-      localPoint3d.sub(this.FM.Loc);
-      this.FM.Or.transformInv(localPoint3d);
-      if (((localPoint3d.x > 4000.0D) && (localPoint3d.x < 5500.0D)) || ((localPoint3d.x > 100.0D) && (localPoint3d.x < 5000.0D) && (World.Rnd().nextFloat() < 0.33F)))
+    Pilot localPilot = (Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+    if ((localPilot.get_maneuver() == 63) && (localPilot.jdField_target_of_type_ComMaddoxIl2FmFlightModel != null)) {
+      Point3d localPoint3d = new Point3d(localPilot.jdField_target_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+      localPoint3d.sub(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.transformInv(localPoint3d);
+      if (((localPoint3d.jdField_x_of_type_Double > 4000.0D) && (localPoint3d.jdField_x_of_type_Double < 5500.0D)) || ((localPoint3d.jdField_x_of_type_Double > 100.0D) && (localPoint3d.jdField_x_of_type_Double < 5000.0D) && (World.Rnd().nextFloat() < 0.33F)))
       {
         if (Time.current() > this.tX4Prev + 10000L) {
           this.bToFire = true;
@@ -85,7 +85,7 @@ public class TA_152C extends FW_190
     for (int i = 1; i < 15; i++) {
       hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10.0F * this.kangle, 0.0F);
     }
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
+    this.kangle = (0.95F * this.kangle + 0.05F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator());
     super.update(paramFloat);
   }
 
@@ -134,15 +134,15 @@ public class TA_152C extends FW_190
     Property.set(localClass, "cockpitClass", CockpitTA_152C.class);
     Property.set(localClass, "LOSElevation", 0.755F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 1, 1, 1, 9, 9, 2, 2, 2, 2, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON03", "_CANNON04", "_CANNON05", "_CANNON06", "_ExternalDev01", "_ExternalDev02", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalBomb02", "_ExternalBomb03" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1, 1, 1, 1, 9, 9, 2, 2, 2, 2, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON03", "_CANNON04", "_CANNON05", "_CANNON06", "_ExternalDev01", "_ExternalDev02", "_ExternalRock01", "_ExternalRock01", "_ExternalRock02", "_ExternalRock02", "_ExternalBomb02", "_ExternalBomb03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMK108k 90", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMK108k 90", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x4", new String[] { "MGunMK108k 90", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "PylonETC250", "PylonETC250", "RocketGunX4 1", "BombGunNull 1", "RocketGunX4 1", "BombGunNull 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2x4", new String[] { "MGunMK108k 90", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "PylonETC250", "PylonETC250", "RocketGunX4 1", "BombGunNull 1", "RocketGunX4 1", "BombGunNull 1", null, null });
 
-    weaponsRegister(localClass, "2xSC250", new String[] { "MGunMK108k 90", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "PylonETC250", "PylonETC250", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1" });
+    Aircraft.weaponsRegister(localClass, "2xSC250", new String[] { "MGunMK108k 90", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "MGunMG15120s 175", "PylonETC250", "PylonETC250", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

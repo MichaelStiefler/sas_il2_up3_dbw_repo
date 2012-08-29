@@ -60,18 +60,20 @@ public class CmdLoad extends Cmd
             return null;
           }
         }
-
-        while (localIterator.hasNext()) {
+        do
+        {
           str2 = (String)localIterator.next();
           if (((Map)localObject2).containsKey(str2)) {
             ((Map)localObject2).put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
             localObject1 = str2;
-            localStringBuffer = null; continue;
+            localStringBuffer = null;
+          } else {
+            if (localStringBuffer == null) localStringBuffer = new StringBuffer(); else
+              localStringBuffer.append(' ');
+            localStringBuffer.append(QuoteTokenizer.toToken(str2));
           }
-          if (localStringBuffer == null) localStringBuffer = new StringBuffer(); else
-            localStringBuffer.append(' ');
-          localStringBuffer.append(QuoteTokenizer.toToken(str2));
         }
+        while (localIterator.hasNext());
 
         ((Map)localObject2).put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
       }
@@ -115,11 +117,11 @@ public class CmdLoad extends Cmd
   }
 
   public CmdLoad() {
-    this.param.remove("_$$");
-    this.param.put("NAME", null);
-    this.param.put("HELP", null);
-    this.param.put("PARAM", null);
-    this.param.put("DELETE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.remove("_$$");
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NAME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HELP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PARAM", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("DELETE", null);
     this._properties.put("NAME", "load");
     this._levelAccess = 0;
   }

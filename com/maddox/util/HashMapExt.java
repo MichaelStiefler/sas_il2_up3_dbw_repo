@@ -135,17 +135,19 @@ public class HashMapExt extends AbstractMap
   {
     Entry localEntry = this.head.lNext;
 
-    if (paramObject == null) {
+    if (paramObject == null)
       while (localEntry != this.tail) {
         if (localEntry.value == null)
           return true;
         localEntry = localEntry.lNext;
       }
-    }
-    while (localEntry != this.tail) {
-      if (paramObject.equals(localEntry.value))
-        return true;
-      localEntry = localEntry.lNext;
+    else {
+      do {
+        if (paramObject.equals(localEntry.value))
+          return true;
+        localEntry = localEntry.lNext;
+      }
+      while (localEntry != this.tail);
     }
 
     return false;
@@ -262,17 +264,12 @@ public class HashMapExt extends AbstractMap
   public Object remove(Object paramObject)
   {
     Entry[] arrayOfEntry = this.table;
-    int i;
-    int j;
     Object localObject1;
-    Object localObject2;
-    Entry localEntry1;
-    Entry localEntry2;
     if (paramObject != null) {
-      i = paramObject.hashCode();
-      j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
+      int i = paramObject.hashCode();
+      int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
 
-      localObject1 = arrayOfEntry[j]; for (localObject2 = null; localObject1 != null; )
+      localObject1 = arrayOfEntry[j]; for (Object localObject2 = null; localObject1 != null; )
       {
         if ((((Entry)localObject1).hash == i) && (paramObject.equals(((Entry)localObject1).key))) {
           this.modCount += 1;
@@ -292,7 +289,7 @@ public class HashMapExt extends AbstractMap
     }
     else
     {
-      localEntry1 = arrayOfEntry[0]; for (localEntry2 = null; localEntry1 != null; )
+      Entry localEntry1 = arrayOfEntry[0]; for (Entry localEntry2 = null; localEntry1 != null; )
       {
         if (localEntry1.key == null) {
           this.modCount += 1;
@@ -337,8 +334,10 @@ public class HashMapExt extends AbstractMap
 
     Object localObject = this.table;
     int i = localObject.length;
-    while (true) { i--; if (i < 0) break;
-      localObject[i] = null; }
+    do { localObject[i] = null;
+
+      i--; } while (i >= 0);
+
     this.count = 0;
   }
 

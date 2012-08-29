@@ -5,12 +5,12 @@ class PropertyLong extends Property
   private long value = 0L;
 
   public PropertyLong(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
+    invokeObserver(Property.lastMapInt, Property.lastAction); }
 
   public PropertyLong(Object paramObject, String paramString, long paramLong) {
     super(paramObject, paramString);
     this.value = paramLong;
-    invokeObserver(lastMapInt, lastAction);
+    invokeObserver(Property.lastMapInt, Property.lastAction);
   }
   public Class classValue() { return Long.class; } 
   public int intValue() { return (int)this.value; } 

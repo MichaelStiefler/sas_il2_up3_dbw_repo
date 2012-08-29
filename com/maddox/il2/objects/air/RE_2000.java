@@ -23,20 +23,18 @@ public class RE_2000 extends RE_2000xyz
     Property.set(localClass, "yearExpired", 1948.5F);
     Property.set(localClass, "FlightModel", "FlightModels/RE-2000.fmd");
 
-    Property.set(localClass, "cockpitClass", CockpitRE_2000.class);
-
     Property.set(localClass, "LOSElevation", 0.9119F);
 
     Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3 });
 
     Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_BOMB100KG01", "_BOMB100KG02", "_BOMBCASSETTE01", "_BOMBCASSETTE02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127re 300", "MGunBredaSAFAT127re 300", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127re 300", "MGunBredaSAFAT127re 300", null, null, null, null });
 
-    weaponsRegister(localClass, "2x100_Kg_Bombs", new String[] { "MGunBredaSAFAT127re 300", "MGunBredaSAFAT127re 300", "BombGunIT_100_M 1", "BombGunIT_100_M 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2x100_Kg_Bombs", new String[] { "MGunBredaSAFAT127re 300", "MGunBredaSAFAT127re 300", "BombGunIT_100_M 1", "BombGunIT_100_M 1", null, null });
 
-    weaponsRegister(localClass, "4xCassette", new String[] { "MGunBredaSAFAT127re 300", "MGunBredaSAFAT127re 300", null, null, "BombGunSpezzoniera 44", "BombGunSpezzoniera 44" });
+    Aircraft.weaponsRegister(localClass, "4xCassette", new String[] { "MGunBredaSAFAT127re 300", "MGunBredaSAFAT127re 300", null, null, "BombGunSpezzoniera 44", "BombGunSpezzoniera 44" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

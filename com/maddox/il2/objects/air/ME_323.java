@@ -8,7 +8,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -73,7 +72,7 @@ public class ME_323 extends Scheme7
     if (paramString.startsWith("xengine")) {
       i = paramString.charAt(7) - '1';
       if (World.Rnd().nextFloat() < 0.1F)
-        this.FM.AS.hitEngine(paramShot.initiator, i, 1);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AS.hitEngine(paramShot.initiator, i, 1);
     }
     else if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead"))) {
       i = 0;
@@ -112,34 +111,34 @@ public class ME_323 extends Scheme7
 
   public void update(float paramFloat)
   {
-    this.FM.Gears.lgear = true;
-    this.FM.Gears.rgear = true;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.lgear = true;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.rgear = true;
     super.update(paramFloat);
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 2:
-      this.FM.turret[6].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[6].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[4].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[4].bIsOperable = false;
       break;
     case 4:
-      this.FM.turret[5].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[5].bIsOperable = false;
       break;
     case 5:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 6:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
       break;
     case 7:
-      this.FM.turret[2].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
       break;
     case 8:
-      this.FM.turret[3].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
     }
   }
 
@@ -247,13 +246,13 @@ public class ME_323 extends Scheme7
 
     Property.set(localClass, "FlightModel", "FlightModels/Me-323.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15, 16, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15, 16, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", null });
 
-    weaponsRegister(localClass, "32xPara", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", "BombGunPara 32" });
+    Aircraft.weaponsRegister(localClass, "32xPara", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", "BombGunPara 32" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
   }
 }

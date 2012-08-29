@@ -34,7 +34,7 @@ import java.util.Locale;
 
 public class PlMisHouse extends Plugin
 {
-  protected ArrayList allActors = new ArrayList();
+  private ArrayList allActors = new ArrayList();
   private HashMap allTypes = new HashMap();
   private Mat houseIcon = null;
   Type[] type;
@@ -74,27 +74,25 @@ public class PlMisHouse extends Plugin
   }
 
   public void renderMap2D() {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     if (!this.bView) return;
-    Actor localActor1 = builder.selectedActor();
+    Actor localActor1 = Plugin.builder.selectedActor();
 
     Render.prepareStates();
 
     for (int j = 0; j < this.allActors.size(); j++) {
       Actor localActor2 = (Actor)this.allActors.get(j);
       if ((!Actor.isValid(localActor2)) || (localActor2.icon == null) || 
-        (!builder.project2d(localActor2.pos.getAbsPoint(), this.p2d))) continue;
+        (!Plugin.builder.project2d(localActor2.pos.getAbsPoint(), this.p2d))) continue;
       int k = localActor2.getArmy();
-      int m = builder.conf.bShowArmy[k];
+      int m = Plugin.builder.conf.bShowArmy[k];
       if (m != 0)
       {
         int i;
-        if (builder.isMiltiSelected(localActor2)) i = Builder.colorMultiSelected(Army.color(localActor2.getArmy()));
-        else if (localActor2 == localActor1) i = Builder.colorSelected(); else {
+        if (localActor2 == localActor1) i = Builder.colorSelected(); else
           i = Army.color(localActor2.getArmy());
-        }
         IconDraw.setColor(i);
-        IconDraw.render(localActor2, this.p2d.x, this.p2d.y);
+        IconDraw.render(localActor2, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
       }
     }
   }
@@ -123,7 +121,7 @@ public class PlMisHouse extends Plugin
         localOrient1.set(localOrient2);
         localOrient1.wrap360();
         Type localType = (Type)Property.value(localActor, "builderType", null);
-        paramSectFile.lineAdd(i, j + "_bld", localType.shortClassName + " " + (localActor.isAlive() ? "1 " : "0 ") + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()));
+        paramSectFile.lineAdd(i, j + "_bld", localType.shortClassName + " " + (localActor.isAlive() ? "1 " : "0 ") + formatPos(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localOrient1.azimut()));
       }
 
     }
@@ -147,7 +145,7 @@ public class PlMisHouse extends Plugin
   private Actor insert(String paramString, boolean paramBoolean1, double paramDouble1, double paramDouble2, float paramFloat, boolean paramBoolean2) {
     ActorSpawn localActorSpawn = (ActorSpawn)Spawn.get_WithSoftClass(paramString, false);
     if (localActorSpawn == null) {
-      builder.tipErr("PlMisHouse: ActorSpawn for '" + paramString + "' not found");
+      Plugin.builder.tipErr("PlMisHouse: ActorSpawn for '" + paramString + "' not found");
       return null;
     }
     this.spawnArg.clear();
@@ -164,9 +162,9 @@ public class PlMisHouse extends Plugin
       Property.set(localActor, "builderType", localType);
       localActor.icon = this.houseIcon;
       this.allActors.add(localActor);
-      builder.align(localActor);
+      Plugin.builder.align(localActor);
       if (paramBoolean2)
-        builder.setSelected(localActor);
+        Plugin.builder.setSelected(localActor);
       PlMission.setChanged();
       return localActor;
     } catch (Exception localException) {
@@ -181,12 +179,12 @@ public class PlMisHouse extends Plugin
     this.spawnArg.clear();
     this.spawnArg.point = paramLoc.getPoint();
     this.spawnArg.orient = paramLoc.getOrient();
-    return insert(paramType.fullClassName, true, paramLoc.getPoint().x, paramLoc.getPoint().y, paramLoc.getOrient().getAzimut(), paramBoolean);
+    return insert(paramType.fullClassName, true, paramLoc.getPoint().jdField_x_of_type_Double, paramLoc.getPoint().jdField_y_of_type_Double, paramLoc.getOrient().getAzimut(), paramBoolean);
   }
 
   public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if (i != this.startComboBox1)
       return;
     if ((j < 0) || (j >= this.type.length))
@@ -195,12 +193,12 @@ public class PlMisHouse extends Plugin
   }
 
   public void changeType() {
-    int i = builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
-    int j = builder.wSelect.comboBox2.getSelected();
-    Actor localActor1 = builder.selectedActor();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
+    Actor localActor1 = Plugin.builder.selectedActor();
     Loc localLoc = localActor1.pos.getAbs();
     Actor localActor2 = insert(this.type[j], localLoc, true);
-    if (builder.selectedActor() != localActor1) {
+    if (Plugin.builder.selectedActor() != localActor1) {
       this.allActors.remove(localActor1);
       localActor1.destroy();
       PlMission.setChanged();
@@ -209,8 +207,8 @@ public class PlMisHouse extends Plugin
 
   public void changeType(boolean paramBoolean1, boolean paramBoolean2) {
     if (paramBoolean2) return;
-    if (builder.wSelect.comboBox1.getSelected() != this.startComboBox1) return;
-    int i = builder.wSelect.comboBox2.getSelected();
+    if (Plugin.builder.wSelect.comboBox1.getSelected() != this.startComboBox1) return;
+    int i = Plugin.builder.wSelect.comboBox2.getSelected();
     if (paramBoolean1) {
       i++;
       if (i >= this.type.length)
@@ -220,10 +218,10 @@ public class PlMisHouse extends Plugin
       if (i < 0)
         i = this.type.length - 1;
     }
-    Actor localActor1 = builder.selectedActor();
+    Actor localActor1 = Plugin.builder.selectedActor();
     Loc localLoc = localActor1.pos.getAbs();
     Actor localActor2 = insert(this.type[i], localLoc, true);
-    if (builder.selectedActor() != localActor1) {
+    if (Plugin.builder.selectedActor() != localActor1) {
       this.allActors.remove(localActor1);
       localActor1.destroy();
       PlMission.setChanged();
@@ -232,15 +230,15 @@ public class PlMisHouse extends Plugin
   }
 
   public void configure() {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisHouse: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-    if (this.sectFile == null)
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
+    if (this.jdField_sectFile_of_type_JavaLangString == null)
       throw new RuntimeException("PlMisHouse: field 'sectFile' not defined");
-    SectFile localSectFile = new SectFile(this.sectFile, 0);
+    SectFile localSectFile = new SectFile(this.jdField_sectFile_of_type_JavaLangString, 0);
     int i = localSectFile.sections();
     if (i <= 0)
-      throw new RuntimeException("PlMisHouse: file '" + this.sectFile + "' is empty");
+      throw new RuntimeException("PlMisHouse: file '" + this.jdField_sectFile_of_type_JavaLangString + "' is empty");
     Type[] arrayOfType = new Type[i];
     int j = 0;
     for (int k = 0; k < i; k++) {
@@ -249,10 +247,10 @@ public class PlMisHouse extends Plugin
         continue;
       String str2 = str1;
       String str3 = "";
-      int m = str1.lastIndexOf('$');
-      if (m >= 0) {
-        str2 = str1.substring(0, m);
-        str3 = str1.substring(m + 1);
+      int n = str1.lastIndexOf('$');
+      if (n >= 0) {
+        str2 = str1.substring(0, n);
+        str3 = str1.substring(n + 1);
       }
       Class localClass = null;
       try {
@@ -260,19 +258,19 @@ public class PlMisHouse extends Plugin
       } catch (Exception localException) {
         throw new RuntimeException("PlMisHouse: class '" + str2 + "' not found");
       }
-      if (m >= 0)
+      if (n >= 0)
         str1 = localClass.getName() + "$" + str3;
       else {
         str1 = localClass.getName();
       }
-      arrayOfType[j] = new Type(j, i18n("building") + " " + j, str1);
+      arrayOfType[j] = new Type(j, Plugin.i18n("building") + " " + j, str1);
       this.allTypes.put(str1, arrayOfType[j]);
       j++;
     }
     this.type = new Type[j];
-    for (k = 0; k < j; k++) {
-      this.type[k] = arrayOfType[k];
-      arrayOfType[k] = null;
+    for (int m = 0; m < j; m++) {
+      this.type[m] = arrayOfType[m];
+      arrayOfType[m] = null;
     }
     arrayOfType = null;
     this.houseIcon = IconDraw.get("icons/objHouse.mat");
@@ -285,10 +283,10 @@ public class PlMisHouse extends Plugin
       if (Actor.isValid(localActor))
         localActor.drawing(this.bView);
     }
-    if ((Actor.isValid(builder.selectedActor())) && (!builder.selectedActor().isDrawing()))
-      builder.setSelected(null);
-    if (!builder.isFreeView())
-      builder.repaint(); 
+    if ((Actor.isValid(Plugin.builder.selectedActor())) && (!Plugin.builder.selectedActor().isDrawing()))
+      Plugin.builder.setSelected(null);
+    if (!Plugin.builder.isFreeView())
+      Plugin.builder.repaint(); 
   }
 
   public void viewTypeAll(boolean paramBoolean) {
@@ -299,24 +297,24 @@ public class PlMisHouse extends Plugin
 
   private void fillComboBox1()
   {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add(i18n("buildings"));
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
+    Plugin.builder.wSelect.comboBox1.add(Plugin.i18n("buildings"));
     if (this.startComboBox1 == 0)
-      builder.wSelect.comboBox1.setSelected(0, true, false); 
+      Plugin.builder.wSelect.comboBox1.setSelected(0, true, false); 
   }
 
   private void fillComboBox2(int paramInt1, int paramInt2) {
     if (paramInt1 != this.startComboBox1) {
       return;
     }
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt1) {
+      Plugin.builder.wSelect.curFilledType = paramInt1;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.type.length; i++)
-        builder.wSelect.comboBox2.add(this.type[i].name);
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
+        Plugin.builder.wSelect.comboBox2.add(this.type[i].name);
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
 
     fillComboBox2Render(paramInt1, paramInt2);
   }
@@ -325,9 +323,9 @@ public class PlMisHouse extends Plugin
     try {
       Type localType = this.type[paramInt2];
       House.SPAWN localSPAWN = (House.SPAWN)localType.spawn;
-      builder.wSelect.setMesh(localSPAWN.prop.MESH0_NAME, true);
+      Plugin.builder.wSelect.setMesh(localSPAWN.prop.MESH0_NAME, true);
     } catch (Exception localException) {
-      builder.wSelect.setMesh(null, true);
+      Plugin.builder.wSelect.setMesh(null, true);
     }
   }
 
@@ -342,7 +340,7 @@ public class PlMisHouse extends Plugin
 
   public void syncSelector()
   {
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     Type localType = (Type)Property.value(localActor, "builderType", null);
     if (localType == null) return;
     fillComboBox2(this.startComboBox1, localType.indx);
@@ -351,7 +349,7 @@ public class PlMisHouse extends Plugin
   public void createGUI() {
     fillComboBox1();
     fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -359,7 +357,7 @@ public class PlMisHouse extends Plugin
         return false;
       }
     });
-    builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         if (paramInt1 != 2)
           return false;
@@ -371,72 +369,26 @@ public class PlMisHouse extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginMission.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
     if (i >= 0) {
       int j = i;
       if ("de".equals(RTSConf.cur.locale.getLanguage())) {
-        this.viewCheckBox = ((ViewType)builder.mDisplayFilter.subMenu.addItem(i, new ViewType(builder.mDisplayFilter.subMenu, i18n("buildings") + " " + i18n("show"), null)));
+        this.viewCheckBox = ((ViewType)Plugin.builder.mDisplayFilter.subMenu.addItem(i, new ViewType(Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("buildings") + " " + Plugin.i18n("show"), null)));
       }
       else {
-        this.viewCheckBox = ((ViewType)builder.mDisplayFilter.subMenu.addItem(i, new ViewType(builder.mDisplayFilter.subMenu, i18n("show") + " " + i18n("buildings"), null)));
+        this.viewCheckBox = ((ViewType)Plugin.builder.mDisplayFilter.subMenu.addItem(i, new ViewType(Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("show") + " " + Plugin.i18n("buildings"), null)));
       }
       viewTypeAll(true);
     }
   }
 
-  public String mis_getProperties(Actor paramActor) {
-    String str = "";
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if (i != this.startComboBox1)
-      return str;
-    if ((j < 0) || (j >= this.type.length)) {
-      return str;
-    }
-    Orient localOrient1 = new Orient();
-    Point3d localPoint3d = paramActor.pos.getAbsPoint();
-    Orient localOrient2 = paramActor.pos.getAbsOrient();
-    localOrient1.set(localOrient2);
-    localOrient1.wrap360();
-    Type localType = (Type)Property.value(paramActor, "builderType", null);
-    str = "1_bld " + localType.shortClassName + " " + (paramActor.isAlive() ? "1 " : "0 ") + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut());
-    return str;
-  }
-
-  public Actor mis_insert(Loc paramLoc, String paramString) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if (i != this.startComboBox1)
-      return null;
-    if ((j < 0) || (j >= this.type.length)) {
-      return null;
-    }
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramString);
-    localNumberTokenizer.next("");
-    String str = localNumberTokenizer.next("");
-    i = localNumberTokenizer.next(1);
-    double d = localNumberTokenizer.next(0.0D);
-    d = localNumberTokenizer.next(0.0D);
-
-    Actor localActor = insert("com.maddox.il2.objects.buildings." + str, i == 1, paramLoc.getPoint().x, paramLoc.getPoint().y, localNumberTokenizer.next(0.0F), false);
-    return localActor;
-  }
-
-  public boolean mis_validateSelected(int paramInt1, int paramInt2) {
-    if (paramInt1 != this.startComboBox1) {
-      return false;
-    }
-    return (paramInt2 >= 0) && (paramInt2 < this.type.length);
-  }
-
-  static
-  {
+  static {
     Property.set(PlMisHouse.class, "name", "MisHouse");
   }
 
@@ -444,8 +396,8 @@ public class PlMisHouse extends Plugin
   {
     public void execute()
     {
-      this.bChecked = (!this.bChecked);
-      PlMisHouse.this.viewTypeAll(this.bChecked);
+      this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
+      PlMisHouse.this.viewTypeAll(this.jdField_bChecked_of_type_Boolean);
     }
     public ViewType(GWindowMenu paramString1, String paramString2, String arg4) {
       super(paramString2, str);

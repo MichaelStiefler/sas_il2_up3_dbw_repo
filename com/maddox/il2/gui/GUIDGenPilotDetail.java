@@ -51,9 +51,9 @@ public class GUIDGenPilotDetail extends GameState
       String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/logbook.dat";
       BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
       this.events.clear();
-      Event localEvent = null;
-      while ((localEvent = loadEvent(localBufferedReader)) != null)
-        this.events.add(localEvent);
+      Object localObject = null;
+      while ((localObject = loadEvent(localBufferedReader)) != null)
+        this.events.add(localObject);
       localBufferedReader.close();
     } catch (Exception localException) {
       System.out.println("Squadron file load failed: " + localException.getMessage());
@@ -175,12 +175,12 @@ public class GUIDGenPilotDetail extends GameState
     }
 
     private void computeHeights() {
-      this.root.C.font = this.fnt;
+      this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = this.fnt;
       for (int i = 0; i < 5; i++)
-        this.c[i] = (int)((GWindowTable.Column)this.columns.get(i)).win.dx;
-      i = GUIDGenPilotDetail.this.events.size();
-      for (int j = 0; j < i; j++)
-        computeHeight(j); 
+        this.c[i] = (int)((GWindowTable.Column)this.jdField_columns_of_type_JavaUtilArrayList.get(i)).jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+      int j = GUIDGenPilotDetail.this.events.size();
+      for (int k = 0; k < j; k++)
+        computeHeight(k); 
     }
 
     public float rowHeight(int paramInt) {
@@ -189,7 +189,7 @@ public class GUIDGenPilotDetail extends GameState
       if (GUIDGenPilotDetail.this.events.size() == 0) return 0.0F;
       int i = 0;
       for (int j = 0; j < 5; j++)
-        if (this.c[j] != ((GWindowTable.Column)this.columns.get(j)).win.dx)
+        if (this.c[j] != ((GWindowTable.Column)this.jdField_columns_of_type_JavaUtilArrayList.get(j)).jdField_win_of_type_ComMaddoxGwindowGRegion.dx)
           i = 1;
       if (((GUIDGenPilotDetail.Event)GUIDGenPilotDetail.this.events.get(paramInt)).h == 0)
         i = 1;
@@ -215,7 +215,7 @@ public class GUIDGenPilotDetail extends GameState
       if (paramInt1 > 0)
         GUISeparate.draw(this, this.myBrass, 0.0F, 0.0F, paramFloat1, 1.0F);
       setCanvasColorBLACK();
-      this.root.C.font = this.fnt;
+      this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = this.fnt;
       GUIDGenPilotDetail.Event localEvent = (GUIDGenPilotDetail.Event)GUIDGenPilotDetail.this.events.get(paramInt1);
       String str = null;
       int i = 0;
@@ -268,7 +268,7 @@ public class GUIDGenPilotDetail extends GameState
       addColumn(I18N.gui("dgendetail.Mission"), null);
       addColumn(I18N.gui("dgendetail.FlightTime"), null);
       addColumn(I18N.gui("dgendetail.Notes"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(10.0F);
       getColumn(1).setRelativeDx(10.0F);
       getColumn(2).setRelativeDx(20.0F);
@@ -280,7 +280,7 @@ public class GUIDGenPilotDetail extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

@@ -26,11 +26,7 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Mesh;
 import com.maddox.il2.engine.MsgCollisionListener;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiPadObject;
-import com.maddox.il2.gui.GUI;
-import com.maddox.il2.gui.GUIPad;
 import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.air.Aircraft;
@@ -49,7 +45,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class RocketryGeneric extends ActorMesh
   implements MsgCollisionListener, MsgExplosionListener, MsgShotListener, Prey
@@ -113,7 +108,7 @@ public class RocketryGeneric extends ActorMesh
     if (!Actor.isValid(paramActor)) {
       return;
     }
-    if ((paramActor.net != null) && (paramActor.net.isMirror())) {
+    if ((paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet != null) && (paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirror())) {
       return;
     }
     if ((paramActor instanceof Wreckage)) {
@@ -261,7 +256,7 @@ public class RocketryGeneric extends ActorMesh
 
     Vector2d localVector2d = new Vector2d();
 
-    localVector2d.set(this.endPos_wagon.x - this.begPos_wagon.x, this.endPos_wagon.y - this.begPos_wagon.y);
+    localVector2d.set(this.endPos_wagon.jdField_x_of_type_Double - this.begPos_wagon.jdField_x_of_type_Double, this.endPos_wagon.jdField_y_of_type_Double - this.begPos_wagon.jdField_y_of_type_Double);
     localVector2d.normalize();
 
     TrajSeg[] arrayOfTrajSeg = new TrajSeg[2];
@@ -287,15 +282,15 @@ public class RocketryGeneric extends ActorMesh
 
     f = this.prop.TAKEOFF_SPEED * rndSeed.nextFloat(0.85F, 0.97F);
 
-    double d2 = localVector3d.z * d1;
+    double d2 = localVector3d.jdField_z_of_type_Double * d1;
     double d3 = Math.sqrt(d1 * d1 - d2 * d2);
     arrayOfTrajSeg[1].v0.set(d3, 0.0D, d2);
     arrayOfTrajSeg[1].v0.normalize();
     arrayOfTrajSeg[1].v0.scale(f);
 
-    arrayOfTrajSeg[1].pos0.set(0.0D, 0.0D, this.endPos_wagon.z);
+    arrayOfTrajSeg[1].pos0.set(0.0D, 0.0D, this.endPos_wagon.jdField_z_of_type_Double);
 
-    arrayOfTrajSeg[1].t = (30.0D + 2.0D * (arrayOfTrajSeg[1].v0.z / 9.800000000000001D));
+    arrayOfTrajSeg[1].t = (30.0D + 2.0D * (arrayOfTrajSeg[1].v0.jdField_z_of_type_Double / 9.800000000000001D));
     arrayOfTrajSeg[1].a.set(0.0D, 0.0D, -9.800000000000001D);
 
     for (int j = 0; j <= 1; j++) {
@@ -306,15 +301,15 @@ public class RocketryGeneric extends ActorMesh
     }
 
     arrayOfTrajSeg[0].t0 = 0.0D;
-    for (j = 1; j <= 1; j++) {
-      arrayOfTrajSeg[j].t0 = (arrayOfTrajSeg[(j - 1)].t0 + arrayOfTrajSeg[(j - 1)].t);
+    for (int k = 1; k <= 1; k++) {
+      arrayOfTrajSeg[k].t0 = (arrayOfTrajSeg[(k - 1)].t0 + arrayOfTrajSeg[(k - 1)].t);
     }
 
-    for (j = 1; j <= 1; j++) {
-      arrayOfTrajSeg[j].pos0.set(localVector2d.x * arrayOfTrajSeg[j].pos0.x, localVector2d.y * arrayOfTrajSeg[j].pos0.x, arrayOfTrajSeg[j].pos0.z);
-      arrayOfTrajSeg[j].pos0.add(this.endPos_wagon.x, this.endPos_wagon.y, 0.0D);
-      arrayOfTrajSeg[j].v0.set(localVector2d.x * arrayOfTrajSeg[j].v0.x, localVector2d.y * arrayOfTrajSeg[j].v0.x, arrayOfTrajSeg[j].v0.z);
-      arrayOfTrajSeg[j].a.set(localVector2d.x * arrayOfTrajSeg[j].a.x, localVector2d.y * arrayOfTrajSeg[j].a.x, arrayOfTrajSeg[j].a.z);
+    for (int m = 1; m <= 1; m++) {
+      arrayOfTrajSeg[m].pos0.set(localVector2d.jdField_x_of_type_Double * arrayOfTrajSeg[m].pos0.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double * arrayOfTrajSeg[m].pos0.jdField_x_of_type_Double, arrayOfTrajSeg[m].pos0.jdField_z_of_type_Double);
+      arrayOfTrajSeg[m].pos0.add(this.endPos_wagon.jdField_x_of_type_Double, this.endPos_wagon.jdField_y_of_type_Double, 0.0D);
+      arrayOfTrajSeg[m].v0.set(localVector2d.jdField_x_of_type_Double * arrayOfTrajSeg[m].v0.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double * arrayOfTrajSeg[m].v0.jdField_x_of_type_Double, arrayOfTrajSeg[m].v0.jdField_z_of_type_Double);
+      arrayOfTrajSeg[m].a.set(localVector2d.jdField_x_of_type_Double * arrayOfTrajSeg[m].a.jdField_x_of_type_Double, localVector2d.jdField_y_of_type_Double * arrayOfTrajSeg[m].a.jdField_x_of_type_Double, arrayOfTrajSeg[m].a.jdField_z_of_type_Double);
     }
 
     return arrayOfTrajSeg;
@@ -334,16 +329,16 @@ public class RocketryGeneric extends ActorMesh
     double d1 = this.prop.FLY_HEIGHT + rndSeed.nextFloat(-this.prop.MAX_ERR_HEIGHT, this.prop.MAX_ERR_HEIGHT);
 
     Point3d localPoint3d2 = new Point3d();
-    localPoint3d2.set(this.pos.getAbsPoint());
-    localPoint3d2.z = d1;
+    localPoint3d2.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+    localPoint3d2.jdField_z_of_type_Double = d1;
 
-    Object localObject = new Point2d(localPoint3d1.x, localPoint3d1.y);
-    Point2d localPoint2d = new Point2d(localPoint3d2.x, localPoint3d2.y);
+    Object localObject = new Point2d(localPoint3d1.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double);
+    Point2d localPoint2d = new Point2d(localPoint3d2.jdField_x_of_type_Double, localPoint3d2.jdField_y_of_type_Double);
     double d2 = ((Point2d)localObject).distance(localPoint2d);
 
     localObject = new Vector2d();
 
-    ((Vector2d)localObject).set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y);
+    ((Vector2d)localObject).set(localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double);
     ((Vector2d)localObject).normalize();
 
     float f3 = this.prop.MAX_SPEED;
@@ -360,15 +355,15 @@ public class RocketryGeneric extends ActorMesh
 
     arrayOfTrajSeg[0].pos0.set(0.0D, 0.0D, d1);
 
-    arrayOfTrajSeg[2].pos0.set(d2, 0.0D, localPoint3d1.z);
+    arrayOfTrajSeg[2].pos0.set(d2, 0.0D, localPoint3d1.jdField_z_of_type_Double);
 
-    arrayOfTrajSeg[1].t = (2.0D * (arrayOfTrajSeg[2].pos0.z - d1) / (arrayOfTrajSeg[1].v0.z + arrayOfTrajSeg[2].v0.z));
+    arrayOfTrajSeg[1].t = (2.0D * (arrayOfTrajSeg[2].pos0.jdField_z_of_type_Double - d1) / (arrayOfTrajSeg[1].v0.jdField_z_of_type_Double + arrayOfTrajSeg[2].v0.jdField_z_of_type_Double));
 
-    arrayOfTrajSeg[1].pos0.set(arrayOfTrajSeg[2].pos0.x - 0.5D * (arrayOfTrajSeg[1].v0.x + arrayOfTrajSeg[2].v0.x) * arrayOfTrajSeg[1].t, 0.0D, d1);
+    arrayOfTrajSeg[1].pos0.set(arrayOfTrajSeg[2].pos0.jdField_x_of_type_Double - 0.5D * (arrayOfTrajSeg[1].v0.jdField_x_of_type_Double + arrayOfTrajSeg[2].v0.jdField_x_of_type_Double) * arrayOfTrajSeg[1].t, 0.0D, d1);
 
     arrayOfTrajSeg[2].t = 100.0D;
 
-    arrayOfTrajSeg[0].t = (2.0D * (arrayOfTrajSeg[1].pos0.x - arrayOfTrajSeg[0].pos0.x) / (arrayOfTrajSeg[0].v0.x + arrayOfTrajSeg[1].v0.x));
+    arrayOfTrajSeg[0].t = (2.0D * (arrayOfTrajSeg[1].pos0.jdField_x_of_type_Double - arrayOfTrajSeg[0].pos0.jdField_x_of_type_Double) / (arrayOfTrajSeg[0].v0.jdField_x_of_type_Double + arrayOfTrajSeg[1].v0.jdField_x_of_type_Double));
 
     for (i = 0; i <= 2; i++) {
       if (arrayOfTrajSeg[i].t <= 0.0D) {
@@ -378,22 +373,22 @@ public class RocketryGeneric extends ActorMesh
     }
 
     arrayOfTrajSeg[0].a.set(0.0D, 0.0D, 0.0D);
-    for (i = 1; i <= 1; i++) {
-      arrayOfTrajSeg[i].a.sub(arrayOfTrajSeg[(i + 1)].v0, arrayOfTrajSeg[i].v0);
-      arrayOfTrajSeg[i].a.scale(1.0D / arrayOfTrajSeg[i].t);
+    for (int j = 1; j <= 1; j++) {
+      arrayOfTrajSeg[j].a.sub(arrayOfTrajSeg[(j + 1)].v0, arrayOfTrajSeg[j].v0);
+      arrayOfTrajSeg[j].a.scale(1.0D / arrayOfTrajSeg[j].t);
     }
     arrayOfTrajSeg[2].a.set(0.0D, 0.0D, 0.0D);
 
     arrayOfTrajSeg[0].t0 = 0.0D;
-    for (i = 1; i <= 2; i++) {
-      arrayOfTrajSeg[i].t0 = (arrayOfTrajSeg[(i - 1)].t0 + arrayOfTrajSeg[(i - 1)].t);
+    for (int k = 1; k <= 2; k++) {
+      arrayOfTrajSeg[k].t0 = (arrayOfTrajSeg[(k - 1)].t0 + arrayOfTrajSeg[(k - 1)].t);
     }
 
-    for (i = 0; i <= 2; i++) {
-      arrayOfTrajSeg[i].pos0.set(((Vector2d)localObject).x * arrayOfTrajSeg[i].pos0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[i].pos0.x, arrayOfTrajSeg[i].pos0.z);
-      arrayOfTrajSeg[i].pos0.add(localPoint3d2.x, localPoint3d2.y, 0.0D);
-      arrayOfTrajSeg[i].v0.set(((Vector2d)localObject).x * arrayOfTrajSeg[i].v0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[i].v0.x, arrayOfTrajSeg[i].v0.z);
-      arrayOfTrajSeg[i].a.set(((Vector2d)localObject).x * arrayOfTrajSeg[i].a.x, ((Vector2d)localObject).y * arrayOfTrajSeg[i].a.x, arrayOfTrajSeg[i].a.z);
+    for (int m = 0; m <= 2; m++) {
+      arrayOfTrajSeg[m].pos0.set(((Vector2d)localObject).jdField_x_of_type_Double * arrayOfTrajSeg[m].pos0.jdField_x_of_type_Double, ((Vector2d)localObject).jdField_y_of_type_Double * arrayOfTrajSeg[m].pos0.jdField_x_of_type_Double, arrayOfTrajSeg[m].pos0.jdField_z_of_type_Double);
+      arrayOfTrajSeg[m].pos0.add(localPoint3d2.jdField_x_of_type_Double, localPoint3d2.jdField_y_of_type_Double, 0.0D);
+      arrayOfTrajSeg[m].v0.set(((Vector2d)localObject).jdField_x_of_type_Double * arrayOfTrajSeg[m].v0.jdField_x_of_type_Double, ((Vector2d)localObject).jdField_y_of_type_Double * arrayOfTrajSeg[m].v0.jdField_x_of_type_Double, arrayOfTrajSeg[m].v0.jdField_z_of_type_Double);
+      arrayOfTrajSeg[m].a.set(((Vector2d)localObject).jdField_x_of_type_Double * arrayOfTrajSeg[m].a.jdField_x_of_type_Double, ((Vector2d)localObject).jdField_y_of_type_Double * arrayOfTrajSeg[m].a.jdField_x_of_type_Double, arrayOfTrajSeg[m].a.jdField_z_of_type_Double);
     }
 
     return (TrajSeg)arrayOfTrajSeg;
@@ -410,13 +405,13 @@ public class RocketryGeneric extends ActorMesh
     float f2 = rndSeed.nextFloat(0.0F, this.prop.MAX_ERR_HIT_DISTANCE);
     localPoint3d.add(Geom.cosDeg(f1) * f2, Geom.sinDeg(f1) * f2, 0.0D);
 
-    Object localObject = new Point2d(localPoint3d.x, localPoint3d.y);
-    Point2d localPoint2d = new Point2d(this.endPos_rocket.x, this.endPos_rocket.y);
+    Object localObject = new Point2d(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double);
+    Point2d localPoint2d = new Point2d(this.endPos_rocket.jdField_x_of_type_Double, this.endPos_rocket.jdField_y_of_type_Double);
     double d1 = ((Point2d)localObject).distance(localPoint2d);
 
     localObject = new Vector2d();
 
-    ((Vector2d)localObject).set(localPoint3d.x - this.endPos_rocket.x, localPoint3d.y - this.endPos_rocket.y);
+    ((Vector2d)localObject).set(localPoint3d.jdField_x_of_type_Double - this.endPos_rocket.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double - this.endPos_rocket.jdField_y_of_type_Double);
     ((Vector2d)localObject).normalize();
 
     float f3 = paramBoolean ? 0.5F : 1.0F;
@@ -443,7 +438,7 @@ public class RocketryGeneric extends ActorMesh
     arrayOfTrajSeg[0].a.set(localVector3d);
     arrayOfTrajSeg[0].a.scale(this.prop.TAKEOFF_SPEED / arrayOfTrajSeg[0].t);
 
-    double d4 = localVector3d.z * d3;
+    double d4 = localVector3d.jdField_z_of_type_Double * d3;
     double d5 = Math.sqrt(d3 * d3 - d4 * d4);
     arrayOfTrajSeg[1].v0.set(d5, 0.0D, d4);
     arrayOfTrajSeg[1].v0.normalize();
@@ -454,24 +449,24 @@ public class RocketryGeneric extends ActorMesh
     arrayOfTrajSeg[4].v0.set(f4, 0.0D, 0.0D);
     arrayOfTrajSeg[5].v0.set(f4 * Geom.cosDeg(this.prop.HIT_ANGLE), 0.0D, -f4 * Geom.sinDeg(this.prop.HIT_ANGLE));
 
-    arrayOfTrajSeg[1].pos0.set(0.0D, 0.0D, this.endPos_rocket.z);
+    arrayOfTrajSeg[1].pos0.set(0.0D, 0.0D, this.endPos_rocket.jdField_z_of_type_Double);
 
-    arrayOfTrajSeg[1].t = (2.0D * (d2 - arrayOfTrajSeg[1].pos0.z) / (arrayOfTrajSeg[1].v0.z + 0.0D));
+    arrayOfTrajSeg[1].t = (2.0D * (d2 - arrayOfTrajSeg[1].pos0.jdField_z_of_type_Double) / (arrayOfTrajSeg[1].v0.jdField_z_of_type_Double + 0.0D));
 
-    arrayOfTrajSeg[2].pos0.set(arrayOfTrajSeg[1].pos0.x + 0.5D * (arrayOfTrajSeg[1].v0.x + arrayOfTrajSeg[2].v0.x) * arrayOfTrajSeg[1].t, 0.0D, d2);
+    arrayOfTrajSeg[2].pos0.set(arrayOfTrajSeg[1].pos0.jdField_x_of_type_Double + 0.5D * (arrayOfTrajSeg[1].v0.jdField_x_of_type_Double + arrayOfTrajSeg[2].v0.jdField_x_of_type_Double) * arrayOfTrajSeg[1].t, 0.0D, d2);
     arrayOfTrajSeg[2].t = this.prop.SPEEDUP_TIME;
 
-    arrayOfTrajSeg[3].pos0.set(arrayOfTrajSeg[2].pos0.x + 0.5D * (arrayOfTrajSeg[2].v0.x + arrayOfTrajSeg[3].v0.x) * arrayOfTrajSeg[2].t, 0.0D, d2);
+    arrayOfTrajSeg[3].pos0.set(arrayOfTrajSeg[2].pos0.jdField_x_of_type_Double + 0.5D * (arrayOfTrajSeg[2].v0.jdField_x_of_type_Double + arrayOfTrajSeg[3].v0.jdField_x_of_type_Double) * arrayOfTrajSeg[2].t, 0.0D, d2);
 
-    arrayOfTrajSeg[5].pos0.set(d1, 0.0D, localPoint3d.z);
+    arrayOfTrajSeg[5].pos0.set(d1, 0.0D, localPoint3d.jdField_z_of_type_Double);
 
-    arrayOfTrajSeg[4].t = (2.0D * (arrayOfTrajSeg[5].pos0.z - d2) / (arrayOfTrajSeg[4].v0.z + arrayOfTrajSeg[5].v0.z));
+    arrayOfTrajSeg[4].t = (2.0D * (arrayOfTrajSeg[5].pos0.jdField_z_of_type_Double - d2) / (arrayOfTrajSeg[4].v0.jdField_z_of_type_Double + arrayOfTrajSeg[5].v0.jdField_z_of_type_Double));
 
-    arrayOfTrajSeg[4].pos0.set(arrayOfTrajSeg[5].pos0.x - 0.5D * (arrayOfTrajSeg[4].v0.x + arrayOfTrajSeg[5].v0.x) * arrayOfTrajSeg[4].t, 0.0D, d2);
+    arrayOfTrajSeg[4].pos0.set(arrayOfTrajSeg[5].pos0.jdField_x_of_type_Double - 0.5D * (arrayOfTrajSeg[4].v0.jdField_x_of_type_Double + arrayOfTrajSeg[5].v0.jdField_x_of_type_Double) * arrayOfTrajSeg[4].t, 0.0D, d2);
 
     arrayOfTrajSeg[5].t = 100.0D;
 
-    arrayOfTrajSeg[3].t = (2.0D * (arrayOfTrajSeg[4].pos0.x - arrayOfTrajSeg[3].pos0.x) / (arrayOfTrajSeg[3].v0.x + arrayOfTrajSeg[4].v0.x));
+    arrayOfTrajSeg[3].t = (2.0D * (arrayOfTrajSeg[4].pos0.jdField_x_of_type_Double - arrayOfTrajSeg[3].pos0.jdField_x_of_type_Double) / (arrayOfTrajSeg[3].v0.jdField_x_of_type_Double + arrayOfTrajSeg[4].v0.jdField_x_of_type_Double));
 
     for (int j = 0; j <= 5; j++) {
       if (arrayOfTrajSeg[j].t <= 0.0D) {
@@ -480,22 +475,22 @@ public class RocketryGeneric extends ActorMesh
 
     }
 
-    for (j = 1; j <= 4; j++) {
-      arrayOfTrajSeg[j].a.sub(arrayOfTrajSeg[(j + 1)].v0, arrayOfTrajSeg[j].v0);
-      arrayOfTrajSeg[j].a.scale(1.0D / arrayOfTrajSeg[j].t);
+    for (int k = 1; k <= 4; k++) {
+      arrayOfTrajSeg[k].a.sub(arrayOfTrajSeg[(k + 1)].v0, arrayOfTrajSeg[k].v0);
+      arrayOfTrajSeg[k].a.scale(1.0D / arrayOfTrajSeg[k].t);
     }
     arrayOfTrajSeg[5].a.set(0.0D, 0.0D, 0.0D);
 
     arrayOfTrajSeg[0].t0 = 0.0D;
-    for (j = 1; j <= 5; j++) {
-      arrayOfTrajSeg[j].t0 = (arrayOfTrajSeg[(j - 1)].t0 + arrayOfTrajSeg[(j - 1)].t);
+    for (int m = 1; m <= 5; m++) {
+      arrayOfTrajSeg[m].t0 = (arrayOfTrajSeg[(m - 1)].t0 + arrayOfTrajSeg[(m - 1)].t);
     }
 
-    for (j = 1; j <= 5; j++) {
-      arrayOfTrajSeg[j].pos0.set(((Vector2d)localObject).x * arrayOfTrajSeg[j].pos0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[j].pos0.x, arrayOfTrajSeg[j].pos0.z);
-      arrayOfTrajSeg[j].pos0.add(this.endPos_rocket.x, this.endPos_rocket.y, 0.0D);
-      arrayOfTrajSeg[j].v0.set(((Vector2d)localObject).x * arrayOfTrajSeg[j].v0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[j].v0.x, arrayOfTrajSeg[j].v0.z);
-      arrayOfTrajSeg[j].a.set(((Vector2d)localObject).x * arrayOfTrajSeg[j].a.x, ((Vector2d)localObject).y * arrayOfTrajSeg[j].a.x, arrayOfTrajSeg[j].a.z);
+    for (int n = 1; n <= 5; n++) {
+      arrayOfTrajSeg[n].pos0.set(((Vector2d)localObject).jdField_x_of_type_Double * arrayOfTrajSeg[n].pos0.jdField_x_of_type_Double, ((Vector2d)localObject).jdField_y_of_type_Double * arrayOfTrajSeg[n].pos0.jdField_x_of_type_Double, arrayOfTrajSeg[n].pos0.jdField_z_of_type_Double);
+      arrayOfTrajSeg[n].pos0.add(this.endPos_rocket.jdField_x_of_type_Double, this.endPos_rocket.jdField_y_of_type_Double, 0.0D);
+      arrayOfTrajSeg[n].v0.set(((Vector2d)localObject).jdField_x_of_type_Double * arrayOfTrajSeg[n].v0.jdField_x_of_type_Double, ((Vector2d)localObject).jdField_y_of_type_Double * arrayOfTrajSeg[n].v0.jdField_x_of_type_Double, arrayOfTrajSeg[n].v0.jdField_z_of_type_Double);
+      arrayOfTrajSeg[n].a.set(((Vector2d)localObject).jdField_x_of_type_Double * arrayOfTrajSeg[n].a.jdField_x_of_type_Double, ((Vector2d)localObject).jdField_y_of_type_Double * arrayOfTrajSeg[n].a.jdField_x_of_type_Double, arrayOfTrajSeg[n].a.jdField_z_of_type_Double);
     }
 
     return (TrajSeg)arrayOfTrajSeg;
@@ -531,7 +526,7 @@ public class RocketryGeneric extends ActorMesh
     }
     else {
       this.targetPos = new Point3d();
-      this.targetPos.set(paramPoint2d.x, paramPoint2d.y, Engine.land().HQ(paramPoint2d.x, paramPoint2d.y));
+      this.targetPos.set(paramPoint2d.jdField_x_of_type_Double, paramPoint2d.jdField_y_of_type_Double, Engine.land().HQ(paramPoint2d.jdField_x_of_type_Double, paramPoint2d.jdField_y_of_type_Double));
     }
 
     setName(paramString);
@@ -544,7 +539,7 @@ public class RocketryGeneric extends ActorMesh
       localPoint3d.set(paramDouble1, paramDouble2, Engine.land().HQ(paramDouble1, paramDouble2));
       localObject = new Point3d();
       getHookOffset(mesh(), "Ground_Level", false, (Point3d)localObject);
-      localPoint3d.z -= ((Point3d)localObject).z;
+      localPoint3d.jdField_z_of_type_Double -= ((Point3d)localObject).jdField_z_of_type_Double;
     }
 
     Object localObject = new Orient();
@@ -554,12 +549,12 @@ public class RocketryGeneric extends ActorMesh
     else {
       Vector3d localVector3d = new Vector3d();
       localVector3d.sub(this.targetPos, localPoint3d);
-      localVector3d.z = 0.0D;
+      localVector3d.jdField_z_of_type_Double = 0.0D;
       ((Orient)localObject).setAT0(localVector3d);
     }
 
-    this.pos.setAbs(localPoint3d, (Orient)localObject);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d, (Orient)localObject);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     if (this.prop.air) {
       collide(false);
@@ -576,14 +571,14 @@ public class RocketryGeneric extends ActorMesh
       this.endPos_rocket = null;
     } else {
       getHookOffset(mesh(), "_begWagon", true, this.begPos_wagon);
-      this.pos.getAbs().transform(this.begPos_wagon);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transform(this.begPos_wagon);
       getHookOffset(mesh(), "_endWagon", true, this.endPos_wagon);
-      this.pos.getAbs().transform(this.endPos_wagon);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transform(this.endPos_wagon);
 
       getHookOffset(mesh(), "_begRocket", true, this.begPos_rocket);
-      this.pos.getAbs().transform(this.begPos_rocket);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transform(this.begPos_rocket);
       getHookOffset(mesh(), "_endRocket", true, this.endPos_rocket);
-      this.pos.getAbs().transform(this.endPos_rocket);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().transform(this.endPos_rocket);
     }
 
     int i = (int)(paramFloat2 * 60.0F + 0.5F);
@@ -742,7 +737,7 @@ public class RocketryGeneric extends ActorMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream)) {
       return;
     }
 
@@ -759,9 +754,9 @@ public class RocketryGeneric extends ActorMesh
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(45);
       localNetMsgFiltered.writeShort(i);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -770,7 +765,7 @@ public class RocketryGeneric extends ActorMesh
 
   private void sendRespawn_Master()
   {
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
 
@@ -778,7 +773,7 @@ public class RocketryGeneric extends ActorMesh
     try {
       localNetMsgGuaranted.writeByte(83);
       localNetMsgGuaranted.writeByte(this.nextFreeIdR);
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -818,29 +813,22 @@ public class RocketryGeneric extends ActorMesh
       return;
     }
 
-    Main.cur().mission.getClass();
-
-    Object localObject = new ZutiPadObject(localRocketryRocket, Main.cur().mission.zutiRadar_RefreshInterval > 0);
-    ((ZutiPadObject)localObject).type = 3;
-
-    GUI.pad.zutiPadObjects.put(new Integer(((ZutiPadObject)localObject).hashCode()), localObject);
-
     this.rs.add(localRocketryRocket);
     if (this.countRockets < 1000) {
       this.countRockets -= 1;
     }
 
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
 
-    localObject = new NetMsgGuaranted();
+    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
-      ((NetMsgGuaranted)localObject).writeByte(80);
-      ((NetMsgGuaranted)localObject).writeShort(paramInt);
-      ((NetMsgGuaranted)localObject).writeByte(j);
-      ((NetMsgGuaranted)localObject).writeShort(i);
-      this.net.post((NetMsgGuaranted)localObject);
+      localNetMsgGuaranted.writeByte(80);
+      localNetMsgGuaranted.writeShort(paramInt);
+      localNetMsgGuaranted.writeByte(j);
+      localNetMsgGuaranted.writeShort(i);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -871,21 +859,10 @@ public class RocketryGeneric extends ActorMesh
       }
       RocketryRocket localRocketryRocket = new RocketryRocket(this, this.meshNames.rocket, paramArrayOfRocketInGame[j].idR, paramArrayOfRocketInGame[j].randseed, l - ()(1000.0D * paramArrayOfRocketInGame[j].timeAfterStartS), l, arrayOfTrajSeg);
 
-      if (localRocketryRocket.isDamaged()) {
+      if (localRocketryRocket.isDamaged())
         localRocketryRocket.silentDeath();
-      }
       else
-      {
-        if (GUI.pad != null) { Main.cur().mission.getClass();
-
-          ZutiPadObject localZutiPadObject = new ZutiPadObject(localRocketryRocket, Main.cur().mission.zutiRadar_RefreshInterval > 0);
-          localZutiPadObject.type = 3;
-
-          GUI.pad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-        }
-
         this.rs.add(localRocketryRocket);
-      }
     }
   }
 
@@ -954,7 +931,7 @@ public class RocketryGeneric extends ActorMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream)) {
       return;
     }
 
@@ -963,8 +940,8 @@ public class RocketryGeneric extends ActorMesh
       localNetMsgGuaranted.writeByte(Character.toLowerCase(paramChar));
       localNetMsgGuaranted.writeByte(paramRocketryRocket.idR);
       localNetMsgGuaranted.writeShort(i);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -983,7 +960,7 @@ public class RocketryGeneric extends ActorMesh
     }
 
     paramChar = localRocketryRocket.handleCommand(paramChar, paramInt2, paramActor);
-    if ((paramChar == 0) || (!paramBoolean) || (!this.net.isMirrored())) {
+    if ((paramChar == 0) || (!paramBoolean) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
@@ -992,8 +969,8 @@ public class RocketryGeneric extends ActorMesh
       localNetMsgGuaranted.writeByte(Character.toUpperCase(paramChar));
       localNetMsgGuaranted.writeByte(paramInt1);
       localNetMsgGuaranted.writeShort(paramInt2);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1030,9 +1007,9 @@ public class RocketryGeneric extends ActorMesh
     }
 
     for (int i = 0; i < this.rs.size(); i++) {
-      RocketryRocket localRocketryRocket = (RocketryRocket)this.rs.get(i);
-      int j = localRocketryRocket.idR;
-      if (localRocketryRocket.isOnRamp()) {
+      localObject = (RocketryRocket)this.rs.get(i);
+      int j = ((RocketryRocket)localObject).idR;
+      if (((RocketryRocket)localObject).isOnRamp()) {
         handleRocketCommand_Both('X', j, RndI(0, 65535), paramActor, paramBoolean);
         i = 0;
       }
@@ -1041,17 +1018,17 @@ public class RocketryGeneric extends ActorMesh
 
     Explosions.ExplodeBridge(this.begPos_wagon, this.endPos_wagon, 1.2F);
 
-    if ((!paramBoolean) || (!this.net.isMirrored())) {
+    if ((!paramBoolean) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) {
       return;
     }
 
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
+    Object localObject = new NetMsgGuaranted();
     try {
-      localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeByte(this.nextFreeIdR);
-      localNetMsgGuaranted.writeShort(RndI(0, 65535));
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      ((NetMsgGuaranted)localObject).writeByte(68);
+      ((NetMsgGuaranted)localObject).writeByte(this.nextFreeIdR);
+      ((NetMsgGuaranted)localObject).writeShort(RndI(0, 65535));
+      ((NetMsgGuaranted)localObject).writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post((NetMsgGuaranted)localObject);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1062,10 +1039,10 @@ public class RocketryGeneric extends ActorMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -1079,10 +1056,9 @@ public class RocketryGeneric extends ActorMesh
     localNetMsgGuaranted.writeByte(this.nextFreeIdR);
 
     int i = 0;
-    RocketryRocket localRocketryRocket;
     for (int j = 0; j < this.rs.size(); j++) {
-      localRocketryRocket = (RocketryRocket)this.rs.get(j);
-      if (!localRocketryRocket.isDamaged()) {
+      RocketryRocket localRocketryRocket1 = (RocketryRocket)this.rs.get(j);
+      if (!localRocketryRocket1.isDamaged()) {
         i++;
       }
 
@@ -1092,19 +1068,19 @@ public class RocketryGeneric extends ActorMesh
       i = 10;
     }
     localNetMsgGuaranted.writeByte(i);
-    for (j = this.rs.size() - 1; j >= 0; j--) {
-      localRocketryRocket = (RocketryRocket)this.rs.get(j);
-      if (!localRocketryRocket.isDamaged()) {
-        localNetMsgGuaranted.writeByte(localRocketryRocket.idR);
-        float f = (float)((Time.current() - localRocketryRocket.timeOfStartMS) * 0.001D);
+    for (int k = this.rs.size() - 1; k >= 0; k--) {
+      RocketryRocket localRocketryRocket2 = (RocketryRocket)this.rs.get(k);
+      if (!localRocketryRocket2.isDamaged()) {
+        localNetMsgGuaranted.writeByte(localRocketryRocket2.idR);
+        float f = (float)((Time.current() - localRocketryRocket2.timeOfStartMS) * 0.001D);
         localNetMsgGuaranted.writeFloat(f);
-        localNetMsgGuaranted.writeShort(localRocketryRocket.randseed);
+        localNetMsgGuaranted.writeShort(localRocketryRocket2.randseed);
         i--; if (i <= 0) {
           break;
         }
       }
     }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public static RocketryGeneric New(String paramString1, String paramString2, NetChannel paramNetChannel, int paramInt1, int paramInt2, double paramDouble1, double paramDouble2, float paramFloat1, float paramFloat2, int paramInt3, float paramFloat3, Point2d paramPoint2d)

@@ -4,7 +4,6 @@ import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.AirportGround;
 import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.Chief;
 import com.maddox.il2.ai.DifficultySettings;
@@ -40,8 +39,6 @@ import com.maddox.il2.engine.LandConf;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.RenderContext;
-import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Wind;
 import com.maddox.il2.game.order.OrdersTree;
 import com.maddox.il2.gui.GUI;
@@ -68,19 +65,8 @@ import com.maddox.il2.objects.effects.SpritesFog;
 import com.maddox.il2.objects.effects.SunGlare;
 import com.maddox.il2.objects.effects.Zip;
 import com.maddox.il2.objects.humans.Soldier;
-import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
-import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
-import com.maddox.il2.objects.vehicles.radios.TypeHasLorenzBlindLanding;
-import com.maddox.il2.objects.vehicles.radios.TypeHasMeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke12;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke13;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke14;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke15;
-import com.maddox.il2.objects.vehicles.stationary.SmokeGeneric;
 import com.maddox.rts.BackgroundTask;
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.CmdEnv;
@@ -90,7 +76,6 @@ import com.maddox.rts.HomePath;
 import com.maddox.rts.IniFile;
 import com.maddox.rts.Joy;
 import com.maddox.rts.KeyRecord;
-import com.maddox.rts.LDRres;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.MsgInvokeMethod_Object;
 import com.maddox.rts.MsgNet;
@@ -116,7 +101,6 @@ import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
 import com.maddox.rts.net.NetFileServerDef;
 import com.maddox.sound.AudioDevice;
-import com.maddox.sound.CmdMusic;
 import com.maddox.util.HashMapInt;
 import com.maddox.util.HashMapIntEntry;
 import com.maddox.util.NumberTokenizer;
@@ -126,14 +110,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 public class Mission
   implements Destroy
@@ -141,42 +118,21 @@ public class Mission
   public static final String DIR = "missions/";
   public static final String DIRNET = "missions/Net/Cache/";
   public static final float CLOUD_HEIGHT = 8000.0F;
-  private String name = null;
+  private String name;
   private SectFile sectFile;
-  private long sectFinger = 0L;
-  private ArrayList actors = new ArrayList();
-  private int curActor = 0;
-  private boolean bPlaying = false;
-
-  private int curCloudsType = 0;
-  private float curCloudsHeight = 1000.0F;
-
+  private long sectFinger;
+  private ArrayList actors;
+  private int curActor;
+  private boolean bPlaying;
+  private int curCloudsType;
+  private float curCloudsHeight;
   protected static int viewSet = 0;
   protected static int iconTypes = 0;
 
   private static HashMap respawnMap = new HashMap();
-
-  private int curYear = 0;
-  private int curMonth = 0;
-  private int curDay = 0;
-  private float curWindDirection = 0.0F;
-  private float curWindVelocity = 0.0F;
-  private float curGust = 0.0F;
-  private float curTurbulence = 0.0F;
-
-  private static ArrayList beaconsRed = new ArrayList();
-  private static ArrayList beaconsBlue = new ArrayList();
-  private static ArrayList meaconsRed = new ArrayList();
-  private static ArrayList meaconsBlue = new ArrayList();
-  private static Map hayrakeMap = new HashMap();
-  private final int HAYRAKE_CODE_LENGTH = 12;
-  public static boolean hasRadioStations = false;
-  private static boolean radioStationsLoaded = false;
-
-  private float bigShipHpDiv = 1.0F;
   private String player;
-  private boolean _loadPlayer = false;
-  private int playerNum = 0;
+  private boolean _loadPlayer;
+  private int playerNum;
   private HashMap mapWingTakeoff;
   private static SectFile chiefsIni;
   private static Point3d Loc = new Point3d();
@@ -199,60 +155,22 @@ public class Mission
   public static final int NET_MSG_ID_TIME = 13;
   public static final int NET_MSG_ID_END = 20;
   protected NetObj net;
-  public int zutiCarrierSpawnPoints_CV2;
-  public int zutiCarrierSpawnPoints_CV9;
-  public int zutiCarrierSpawnPoints_CVE;
-  public int zutiCarrierSpawnPoints_CVL;
-  public int zutiCarrierSpawnPoints_Akagi;
-  public int zutiCarrierSpawnPoints_IJN;
-  public int zutiCarrierSpawnPoints_HMS;
-  public final boolean zutiTargets_MovingIcons = true;
 
-  public final boolean zutiTargets_ShowTargets = true;
-  public final boolean zutiIcons_ShowNeutralHB = true;
+  public Mission()
+  {
+    this.name = null;
 
-  public final boolean zutiRadar_ShowAircraft = true;
+    this.sectFinger = 0L;
+    this.actors = new ArrayList();
+    this.curActor = 0;
+    this.bPlaying = false;
 
-  public final boolean zutiRadar_ShowGroundUnits = true;
+    this.curCloudsType = 0;
+    this.curCloudsHeight = 1000.0F;
 
-  public final boolean zutiRadar_StaticIconsIfNoRadar = true;
-  public boolean zutiRadar_PlayerSideHasRadars;
-  public int zutiRadar_RefreshInterval;
-  public final boolean zutiRadar_AircraftIconsWhite = false;
-  public boolean zutiRadar_HideUnpopulatedAirstripsFromMinimap;
-  public boolean zutiRadar_EnableTowerCommunications;
-  public boolean zutiRadar_ShipsAsRadar;
-  public int zutiRadar_ShipRadar_MaxRange;
-  public int zutiRadar_ShipRadar_MinHeight;
-  public int zutiRadar_ShipRadar_MaxHeight;
-  public int zutiRadar_ShipSmallRadar_MaxRange;
-  public int zutiRadar_ShipSmallRadar_MinHeight;
-  public int zutiRadar_ShipSmallRadar_MaxHeight;
-  public boolean zutiRadar_ScoutsAsRadar;
-  public int zutiRadar_ScoutRadar_MaxRange;
-  public int zutiRadar_ScoutRadar_DeltaHeight;
-  public ArrayList ScoutsRed;
-  public ArrayList ScoutsBlue;
-  public int zutiRadar_ScoutGroundObjects_Alpha;
-  public final boolean zutiRadar_ShowRockets = true;
-  public boolean zutiRadar_EnableBigShip_Radar;
-  public boolean zutiRadar_EnableSmallShip_Radar;
-  public boolean zutiRadar_ScoutCompleteRecon;
-  public boolean zutiRadar_DisableVectoring;
-  public static boolean ZUTI_RADAR_IN_ADV_MODE;
-  private static int[] ZUTI_ICON_SIZES;
-  public static int ZUTI_ICON_SIZE;
-  public boolean zutiMisc_DisableAIRadioChatter;
-  public boolean zutiMisc_DespawnAIPlanesAfterLanding;
-  public boolean zutiMisc_HidePlayersCountOnHomeBase;
-  public boolean zutiMisc_EnableReflyOnlyIfBailedOrDied;
-  public boolean zutiMisc_DisableReflyForMissionDuration;
-  public int zutiMisc_ReflyKIADelay;
-  public int zutiMisc_MaxAllowedKIA;
-  public float zutiMisc_ReflyKIADelayMultiplier;
-  public float zutiMisc_BombsCat1_CratersVisibilityMultiplier;
-  public float zutiMisc_BombsCat2_CratersVisibilityMultiplier;
-  public float zutiMisc_BombsCat3_CratersVisibilityMultiplier;
+    this._loadPlayer = false;
+    this.playerNum = 0;
+  }
 
   public static float respawnTime(String paramString)
   {
@@ -341,44 +259,7 @@ public class Mission
     return Main.cur().mission.curCloudsHeight;
   }
 
-  public static int curYear()
-  {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curYear;
-  }
-
-  public static int curMonth() {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curMonth;
-  }
-
-  public static int curDay() {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curDay;
-  }
-
-  public static float curWindDirection() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curWindDirection;
-  }
-
-  public static float curWindVelocity() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curWindVelocity;
-  }
-
-  public static float curGust() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curGust;
-  }
-
-  public static float curTurbulence() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curTurbulence;
-  }
-
-  public static Mission cur()
-  {
+  public static Mission cur() {
     return Main.cur().mission;
   }
 
@@ -459,21 +340,9 @@ public class Mission
         doReplicateNotMissionActors(this.net.masterChannel(), false);
     }
     this.actors.clear();
-    beaconsRed.clear();
-    beaconsBlue.clear();
-    hasRadioStations = false;
-    radioStationsLoaded = false;
-    meaconsRed.clear();
-    meaconsBlue.clear();
-    hayrakeMap.clear();
     this.curActor = 0;
     Main.cur().resetGame();
-    ZutiSupportMethods.clear();
-    ZutiRadarRefresh.reset();
-    if (GUI.pad != null)
-      GUI.pad.zutiPadObjects.clear(); 
   }
-
   private void Mission() {
   }
 
@@ -494,14 +363,7 @@ public class Mission
       throw new RuntimeException(BackgroundTask.executed().messageCancel());
   }
 
-  private void _load(String paramString, SectFile paramSectFile, boolean paramBoolean)
-    throws Exception
-  {
-    if (GUI.pad != null) {
-      GUI.pad.zutiPadObjects.clear();
-    }
-    zutiResetMissionVariables();
-
+  private void _load(String paramString, SectFile paramSectFile, boolean paramBoolean) throws Exception {
     AudioDevice.soundsOff();
     if (paramString != null) System.out.println("Loading mission " + paramString + "..."); else
       System.out.println("Loading mission ...");
@@ -518,91 +380,28 @@ public class Mission
       loadRespawnTime(paramSectFile);
       Front.loadMission(paramSectFile);
       List localList = null;
-
-      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight()) || (Main.cur().netServerParams.isSingle()))
+      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle()))
       {
-        try
-        {
-          localList = loadWings(paramSectFile);
-        }
-        catch (Exception localException3)
-        {
-          System.out.println("Mission error, ID_04: " + localException3.toString());
-          localException3.printStackTrace();
-        }
-        try
-        {
-          loadChiefs(paramSectFile);
-        } catch (Exception localException4) {
-          System.out.println("Mission error, ID_05: " + localException4.toString());
-        }
+        localList = loadWings(paramSectFile);
+        loadChiefs(paramSectFile);
       }
-      try {
-        loadHouses(paramSectFile);
-      } catch (Exception localException5) {
-        System.out.println("Mission error, ID_06.1: " + localException5.toString());
+      loadHouses(paramSectFile);
+      loadNStationary(paramSectFile);
+      loadStationary(paramSectFile);
+      loadRocketry(paramSectFile);
+      loadViewPoint(paramSectFile);
+      if (Main.cur().netServerParams.isDogfight()) {
+        loadBornPlaces(paramSectFile);
       }
-      try {
-        loadNStationary(paramSectFile);
-      } catch (Exception localException6) {
-        System.out.println("Mission error, ID_06.2: " + localException6.toString());
-      }
-      try {
-        loadStationary(paramSectFile);
-      } catch (Exception localException7) {
-        System.out.println("Mission error, ID_06.3: " + localException7.toString());
-      }
-      try {
-        loadRocketry(paramSectFile);
-      } catch (Exception localException8) {
-        System.out.println("Mission error, ID_06.4: " + localException8.toString());
-      }
-      try {
-        loadViewPoint(paramSectFile);
-      } catch (Exception localException9) {
-        System.out.println("Mission error, ID_06.5: " + localException9.toString());
-      }
-      try
+      if ((Main.cur().netServerParams.isMaster()) && ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle())))
       {
-        if (Main.cur().netServerParams.isDogfight())
-          loadBornPlaces(paramSectFile);
-      } catch (Exception localException10) {
-        System.out.println("Mission error, ID_07: " + localException10.toString());
-      }
-
-      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isDogfight()))
-      {
-        try
-        {
-          loadTargets(paramSectFile);
-        } catch (Exception localException11) {
-          System.out.println("Mission error, ID_08: " + localException11.toString());
-        }
-      }
-
-      try
-      {
-        populateBeacons();
-      } catch (Exception localException12) {
-        System.out.println("Mission error, ID_09: " + localException12.toString());
-      }
-
-      try
-      {
-        populateRunwayLights();
-      } catch (Exception localException13) {
-        System.out.println("Mission error, ID_10: " + localException13.toString());
-      }
-      if (localList != null) {
+        loadTargets(paramSectFile);
+      }if (localList != null) {
         int i = localList.size();
         for (int j = 0; j < i; j++) {
           Wing localWing = (Wing)localList.get(j);
-          try
-          {
-            if (Actor.isValid(localWing))
-              localWing.setOnAirport();
-          } catch (Exception localException14) {
-          }
+          if (Actor.isValid(localWing))
+            localWing.setOnAirport();
         }
       }
     }
@@ -625,7 +424,7 @@ public class Mission
     }
     if (Config.isUSE_RENDER()) {
       if (Actor.isValid(World.getPlayerAircraft()))
-        World.land().cubeFullUpdate((float)World.getPlayerAircraft().pos.getAbsPoint().z);
+        World.land().cubeFullUpdate((float)World.getPlayerAircraft().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().z);
       else
         World.land().cubeFullUpdate(1000.0F);
       GUI.pad.fillAirports();
@@ -637,8 +436,7 @@ public class Mission
     LOADING_STEP(90.0F, "task.Load_humans");
     Paratrooper.PRELOAD();
     LOADING_STEP(95.0F, "task.Load_humans");
-
-    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight()))
+    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()))
       Soldier.PRELOAD();
     LOADING_STEP(100.0F, "");
     if (Main.cur().netMissionListener != null) {
@@ -669,9 +467,6 @@ public class Mission
 
     NetObj.tryReplicate(this.net, false);
     War.cur().missionLoaded();
-
-    if (paramBoolean)
-      Main.cur().mission = this;
   }
 
   private void setTime(boolean paramBoolean) {
@@ -688,76 +483,6 @@ public class Mission
     }
   }
 
-  private void loadZutis(SectFile paramSectFile)
-  {
-    try
-    {
-      Main.cur().mission.zutiRadar_ShipsAsRadar = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_ShipsAsRadar", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_ShipsAsRadar = true;
-      }
-      Main.cur().mission.zutiRadar_ShipRadar_MaxRange = paramSectFile.get("MDS", "MDS_Radar_ShipRadar_MaxRange", 100, 1, 99999);
-      Main.cur().mission.zutiRadar_ShipRadar_MinHeight = paramSectFile.get("MDS", "MDS_Radar_ShipRadar_MinHeight", 100, 0, 99999);
-      Main.cur().mission.zutiRadar_ShipRadar_MaxHeight = paramSectFile.get("MDS", "MDS_Radar_ShipRadar_MaxHeight", 5000, 1000, 99999);
-      Main.cur().mission.zutiRadar_ShipSmallRadar_MaxRange = paramSectFile.get("MDS", "MDS_Radar_ShipSmallRadar_MaxRange", 25, 1, 99999);
-      Main.cur().mission.zutiRadar_ShipSmallRadar_MinHeight = paramSectFile.get("MDS", "MDS_Radar_ShipSmallRadar_MinHeight", 0, 0, 99999);
-      Main.cur().mission.zutiRadar_ShipSmallRadar_MaxHeight = paramSectFile.get("MDS", "MDS_Radar_ShipSmallRadar_MaxHeight", 2000, 1000, 99999);
-
-      Main.cur().mission.zutiRadar_ScoutsAsRadar = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_ScoutsAsRadar", 0, 0, 1) == 1)
-        Main.cur().mission.zutiRadar_ScoutsAsRadar = true;
-      Main.cur().mission.zutiRadar_ScoutRadar_MaxRange = paramSectFile.get("MDS", "MDS_Radar_ScoutRadar_MaxRange", 2, 1, 99999);
-      Main.cur().mission.zutiRadar_ScoutRadar_DeltaHeight = paramSectFile.get("MDS", "MDS_Radar_ScoutRadar_DeltaHeight", 1500, 100, 99999);
-
-      Main.cur().mission.zutiRadar_ScoutCompleteRecon = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_ScoutCompleteRecon", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_ScoutCompleteRecon = true;
-      }
-      zutiLoadScouts_Red(paramSectFile);
-      zutiLoadScouts_Blue(paramSectFile);
-
-      Main.cur().mission.zutiRadar_RefreshInterval = (paramSectFile.get("MDS", "MDS_Radar_RefreshInterval", 0, 0, 99999) * 1000);
-
-      Main.cur().mission.zutiRadar_DisableVectoring = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_DisableVectoring", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_DisableVectoring = true;
-      }
-      Main.cur().mission.zutiRadar_EnableTowerCommunications = true;
-      if (paramSectFile.get("MDS", "MDS_Radar_EnableTowerCommunications", 1, 0, 1) == 0) {
-        Main.cur().mission.zutiRadar_EnableTowerCommunications = false;
-      }
-      ZUTI_RADAR_IN_ADV_MODE = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_SetRadarToAdvanceMode", 0, 0, 1) == 1) {
-        ZUTI_RADAR_IN_ADV_MODE = true;
-      }
-      Main.cur().mission.zutiRadar_HideUnpopulatedAirstripsFromMinimap = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_HideUnpopulatedAirstripsFromMinimap", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_HideUnpopulatedAirstripsFromMinimap = true;
-      }
-      Main.cur().mission.zutiRadar_ScoutGroundObjects_Alpha = paramSectFile.get("MDS", "MDS_Radar_ScoutGroundObjects_Alpha", 5, 1, 11);
-
-      Main.cur().mission.zutiMisc_DisableAIRadioChatter = false;
-      if (paramSectFile.get("MDS", "MDS_Misc_DisableAIRadioChatter", 0, 0, 1) == 1)
-        Main.cur().mission.zutiMisc_DisableAIRadioChatter = true;
-      Main.cur().mission.zutiMisc_DespawnAIPlanesAfterLanding = true;
-      if (paramSectFile.get("MDS", "MDS_Misc_DespawnAIPlanesAfterLanding", 1, 0, 1) == 0)
-        Main.cur().mission.zutiMisc_DespawnAIPlanesAfterLanding = false;
-      Main.cur().mission.zutiMisc_HidePlayersCountOnHomeBase = false;
-      if (paramSectFile.get("MDS", "MDS_Misc_HidePlayersCountOnHomeBase", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiMisc_HidePlayersCountOnHomeBase = true;
-      }
-
-      Main.cur().mission.zutiMisc_BombsCat1_CratersVisibilityMultiplier = paramSectFile.get("MDS", "MDS_Misc_BombsCat1_CratersVisibilityMultiplier", 1.0F, 1.0F, 99999.0F);
-      Main.cur().mission.zutiMisc_BombsCat2_CratersVisibilityMultiplier = paramSectFile.get("MDS", "MDS_Misc_BombsCat2_CratersVisibilityMultiplier", 1.0F, 1.0F, 99999.0F);
-      Main.cur().mission.zutiMisc_BombsCat3_CratersVisibilityMultiplier = paramSectFile.get("MDS", "MDS_Misc_BombsCat3_CratersVisibilityMultiplier", 1.0F, 1.0F, 99999.0F);
-
-      zutiSetShipRadars();
-    }
-    catch (Exception localException) {
-      System.out.println("Mission error, ID_11: " + localException.toString());
-    }
-  }
-
   private void loadMain(SectFile paramSectFile)
     throws Exception
   {
@@ -765,12 +490,8 @@ public class Mission
     World.cur().setTimeOfDayConstant(i == 1);
     World.setTimeofDay(paramSectFile.get("MAIN", "TIME", 12.0F, 0.0F, 23.99F));
 
-    loadZutis(paramSectFile);
-
     int j = paramSectFile.get("MAIN", "WEAPONSCONSTANT", 0, 0, 1);
     World.cur().setWeaponsConstant(j == 1);
-
-    this.bigShipHpDiv = (1.0F / paramSectFile.get("MAIN", "ShipHP", 1.0F, 0.001F, 100.0F));
 
     String str1 = paramSectFile.get("MAIN", "MAP");
     if (str1 == null) {
@@ -793,15 +514,11 @@ public class Mission
 
     LOADING_STEP(0.0F, "task.Load_landscape");
 
-    int m = paramSectFile.get("SEASON", "Year", 1940, 1930, 1960);
-    int n = paramSectFile.get("SEASON", "Month", World.land().config.getDefaultMonth("maps/" + str1), 1, 12);
-    int i1 = paramSectFile.get("SEASON", "Day", 15, 1, 31);
-    setDate(m, n, i1);
-
-    World.land().LoadMap(str1, arrayOfInt, n, i1);
+    World.land().LoadMap(str1, arrayOfInt);
 
     World.cur().setCamouflage(World.land().config.camouflage);
-    int i2;
+    Main3D localMain3D;
+    int m;
     if (Config.isUSE_RENDER())
     {
       if (Main3D.cur3D().land2D != null) {
@@ -809,11 +526,11 @@ public class Mission
           Main3D.cur3D().land2D.destroy();
         Main3D.cur3D().land2D = null;
       }
-      Object localObject = null;
-      i2 = localSectFile.sectionIndex("MAP2D");
-      if (i2 >= 0) {
-        i3 = localSectFile.vars(i2);
-        if (i3 > 0) {
+      localMain3D = null;
+      m = localSectFile.sectionIndex("MAP2D");
+      if (m >= 0) {
+        n = localSectFile.vars(m);
+        if (n > 0) {
           LOADING_STEP(20.0F, "task.Load_map");
           Main3D.cur3D().land2D = new Land2Dn(str1, World.land().getSizeX(), World.land().getSizeY());
         }
@@ -824,10 +541,10 @@ public class Mission
         Main3D.cur3D().land2DText = new Land2DText();
       else
         Main3D.cur3D().land2DText.clear();
-      int i3 = localSectFile.sectionIndex("text");
-      if ((i3 >= 0) && (localSectFile.vars(i3) > 0)) {
+      int n = localSectFile.sectionIndex("text");
+      if ((n >= 0) && (localSectFile.vars(n) > 0)) {
         LOADING_STEP(22.0F, "task.Load_landscape_texts");
-        String str3 = localSectFile.var(i3, 0);
+        String str3 = localSectFile.var(n, 0);
         Main3D.cur3D().land2DText.load(HomePath.concatNames("maps/" + str1, str3));
       }
 
@@ -840,18 +557,14 @@ public class Mission
     }
     Statics.trim();
 
-    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight())) {
-      try
-      {
-        World.cur().statics.loadStateBridges(paramSectFile, false);
-        World.cur().statics.loadStateHouses(paramSectFile, false);
-        World.cur().statics.loadStateBridges(paramSectFile, true);
-        World.cur().statics.loadStateHouses(paramSectFile, true);
-        checkBridgesAndHouses(paramSectFile);
-      } catch (Exception localException) {
-        System.out.println("Mission error, ID_12: " + localException.toString());
-      }
+    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop())) {
+      World.cur().statics.loadStateBridges(paramSectFile, false);
+      World.cur().statics.loadStateHouses(paramSectFile, false);
+      World.cur().statics.loadStateBridges(paramSectFile, true);
+      World.cur().statics.loadStateHouses(paramSectFile, true);
+      checkBridgesAndHouses(paramSectFile);
     }
+
     if (Main.cur().netServerParams.isSingle()) {
       this.player = paramSectFile.get("MAIN", "player");
       this.playerNum = paramSectFile.get("MAIN", "playerNum", 0, 0, 3);
@@ -862,16 +575,15 @@ public class Mission
 
     if (Config.isUSE_RENDER())
     {
-      Main3D.cur3D().ordersTree.setFrequency(new Boolean(true));
+      Main3D.cur3D().ordersTree.setFrequency(true);
     }
 
     if (Config.isUSE_RENDER()) {
       LOADING_STEP(29.0F, "task.Load_landscape_effects");
-      Main3D localMain3D = Main3D.cur3D();
-      i2 = paramSectFile.get("MAIN", "CloudType", 0, 0, 6);
-
-      float f1 = paramSectFile.get("MAIN", "CloudHeight", 1000.0F, 300.0F, 5000.0F);
-      createClouds(i2, f1);
+      localMain3D = Main3D.cur3D();
+      m = paramSectFile.get("MAIN", "CloudType", 0, 0, 6);
+      float f = paramSectFile.get("MAIN", "CloudHeight", 1000.0F, 500.0F, 1500.0F);
+      createClouds(m, f);
       if (!Config.cur.ini.get("game", "NoLensFlare", false)) {
         localMain3D.sunFlareCreate();
         localMain3D.sunFlareShow(true);
@@ -879,87 +591,13 @@ public class Mission
         localMain3D.sunFlareShow(false);
       }
 
-      float f2 = (str1.charAt(0) - '@') * 3.141593F;
-      f2 = paramSectFile.get("WEATHER", "WindDirection", f2, 0.0F, 359.98999F);
+      World.wind().set(m, f, str1);
 
-      float f3 = 0.25F + i2 * i2 * 0.12F;
-      f3 = paramSectFile.get("WEATHER", "WindSpeed", f3, 0.0F, 15.0F);
-
-      float f4 = i2 <= 3 ? 0.0F : i2 * 2.0F;
-      f4 = paramSectFile.get("WEATHER", "Gust", f4, 0.0F, 12.0F);
-
-      float f5 = i2;
-      f5 = paramSectFile.get("WEATHER", "Turbulence", f5, 0.0F, 6.0F);
-
-      World.wind().set(f1, f2, f3, f4, f5);
-
-      for (int i4 = 0; i4 < 3; i4++) {
-        Main3D.cur3D()._lightsGlare[i4].setShow(true);
-        Main3D.cur3D()._sunGlare[i4].setShow(true);
+      for (int i1 = 0; i1 < 3; i1++) {
+        Main3D.cur3D()._lightsGlare[i1].setShow(true);
+        Main3D.cur3D()._sunGlare[i1].setShow(true);
       }
     }
-  }
-
-  public static void setDate(int paramInt1, int paramInt2, int paramInt3)
-  {
-    setYear(paramInt1);
-    setMonth(paramInt2);
-    setDay(paramInt3);
-  }
-
-  public static void setYear(int paramInt) {
-    if (paramInt < 1930) paramInt = 1930;
-    if (paramInt > 1960) paramInt = 1960;
-    if (cur() != null)
-      cur().curYear = paramInt;
-  }
-
-  public static void setMonth(int paramInt)
-  {
-    if (paramInt < 1) paramInt = 1;
-    if (paramInt > 12) paramInt = 12;
-    if (cur() != null)
-      cur().curMonth = paramInt;
-  }
-
-  public static void setDay(int paramInt)
-  {
-    if (paramInt < 1) paramInt = 1;
-    if (paramInt > 31) paramInt = 31;
-    if (cur() != null)
-      cur().curDay = paramInt;
-  }
-
-  public static void setWindDirection(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 359.98999F) paramFloat = 0.0F;
-    if (cur() != null)
-      cur().curWindDirection = paramFloat;
-  }
-
-  public static void setWindVelocity(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 15.0F) paramFloat = 15.0F;
-    if (cur() != null)
-      cur().curWindVelocity = paramFloat;
-  }
-
-  public static void setGust(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 12.0F) paramFloat = 12.0F;
-    if (cur() != null)
-      cur().curGust = paramFloat;
-  }
-
-  public static void setTurbulence(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 6.0F) paramFloat = 6.0F;
-    if (cur() != null)
-      cur().curTurbulence = paramFloat;
   }
 
   public static void createClouds(int paramInt, float paramFloat)
@@ -1224,8 +862,8 @@ public class Mission
     prepareSkinInWing(this.sectFile, paramAircraft, str2, i);
   }
 
-  public void recordNetFiles()
-  {
+  public void recordNetFiles() {
+    if (isDogfight()) return;
     int i = this.sectFile.sectionIndex("Wing");
     if (i < 0)
       return;
@@ -1281,7 +919,7 @@ public class Mission
 
     int j = 0;
     if (i != 0) {
-      j = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
+      j = ((Integer)this.actors.get(this.curActor)).intValue();
       if (j == 0)
       {
         localAircraft.load(paramSectFile, paramString2, paramInt, null, 0);
@@ -1302,7 +940,7 @@ public class Mission
 
     }
 
-    localAircraft.pos.reset();
+    localAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     return localAircraft;
   }
@@ -1607,7 +1245,7 @@ public class Mission
     spawnArg.netIdRemote = 0;
     if (this.net.isMirror()) {
       spawnArg.netChannel = this.net.masterChannel();
-      spawnArg.netIdRemote = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
+      spawnArg.netIdRemote = ((Integer)this.actors.get(this.curActor)).intValue();
       if (spawnArg.netIdRemote == 0) {
         this.actors.set(this.curActor++, null);
         return null;
@@ -1678,7 +1316,7 @@ public class Mission
                   int i1 = 0;
                   if (this.net.isMirror()) {
                     localNetChannel = this.net.masterChannel();
-                    i1 = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
+                    i1 = ((Integer)this.actors.get(this.curActor)).intValue();
                     if (i1 == 0) {
                       this.actors.set(this.curActor++, null);
                       continue;
@@ -1715,8 +1353,8 @@ public class Mission
     HouseManager localHouseManager;
     if (this.net.isMirror()) {
       spawnArg.netChannel = this.net.masterChannel();
-      spawnArg.netIdRemote = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
-      localHouseManager = new HouseManager(paramSectFile, "Buildings", this.net.masterChannel(), ((Integer)(Integer)this.actors.get(this.curActor)).intValue());
+      spawnArg.netIdRemote = ((Integer)this.actors.get(this.curActor)).intValue();
+      localHouseManager = new HouseManager(paramSectFile, "Buildings", this.net.masterChannel(), ((Integer)this.actors.get(this.curActor)).intValue());
       this.actors.set(this.curActor++, localHouseManager);
     } else {
       localHouseManager = new HouseManager(paramSectFile, "Buildings", null, 0);
@@ -1744,209 +1382,68 @@ public class Mission
       double d1 = f1 * f1;
       float f2 = localNumberTokenizer.next(0);
       float f3 = localNumberTokenizer.next(0);
-      boolean bool1 = localNumberTokenizer.next(1) == 1;
+      boolean bool = localNumberTokenizer.next(1) == 1;
 
-      int n = 1000;
-      int i1 = 200;
-      int i2 = 0;
-      int i3 = 0;
-      int i4 = 0;
-      int i5 = 5000;
-      int i6 = 50;
-      boolean bool2 = false;
-      boolean bool3 = false;
-      boolean bool4 = false;
-      boolean bool5 = false;
-      boolean bool6 = false;
-      boolean bool7 = false;
-      boolean bool8 = false;
-      double d2 = 3.8D;
-      boolean bool9 = false;
-
-      int i7 = 0;
-      try
-      {
-        n = localNumberTokenizer.next(1000, 0, 10000); i7++;
-        i1 = localNumberTokenizer.next(200, 0, 500); i7++;
-        i2 = localNumberTokenizer.next(0, 0, 360); i7++;
-        i3 = localNumberTokenizer.next(0, 0, 99999); i7++;
-
-        i4 = localNumberTokenizer.next(0, 0, 99999); i7++;
-        i5 = localNumberTokenizer.next(5000, 0, 99999); i7++;
-        i6 = localNumberTokenizer.next(50, 1, 99999); i7++;
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool3 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool4 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool5 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool7 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool8 = true;
-          i7++;
-        }
-        d2 = localNumberTokenizer.next(3.8D, 0.0D, 10.0D);
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool6 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool9 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool2 = true;
-          i7++;
-        }
-      }
-      catch (Exception localException2)
-      {
-        System.out.println("Mission: no air spawn entries defined for HomeBase nr. " + k + ". value index: " + i7);
-      }
-
-      int i8 = 0;
+      int n = 0;
       Point_Stay[][] arrayOfPoint_Stay = World.cur().airdrome.stay;
-
-      if (!isDogfight()) {
-        i8 = 1;
-      }
-      else {
-        for (int i9 = 0; i9 < arrayOfPoint_Stay.length; i9++)
-          if (arrayOfPoint_Stay[i9] != null) {
-            Point_Stay localPoint_Stay = arrayOfPoint_Stay[i9][(arrayOfPoint_Stay[i9].length - 1)];
-            if ((localPoint_Stay.x - f2) * (localPoint_Stay.x - f2) + (localPoint_Stay.y - f3) * (localPoint_Stay.y - f3) <= d1) {
-              i8 = 1;
-              break;
-            }
+      for (int i1 = 0; i1 < arrayOfPoint_Stay.length; i1++)
+        if (arrayOfPoint_Stay[i1] != null) {
+          localObject1 = arrayOfPoint_Stay[i1][(arrayOfPoint_Stay[i1].length - 1)];
+          if ((((Point_Stay)localObject1).jdField_x_of_type_Float - f2) * (((Point_Stay)localObject1).jdField_x_of_type_Float - f2) + (((Point_Stay)localObject1).jdField_y_of_type_Float - f3) * (((Point_Stay)localObject1).jdField_y_of_type_Float - f3) <= d1) {
+            n = 1;
+            break;
           }
-      }
-      if (i8 == 0)
+        }
+      if (n == 0)
         continue;
-      BornPlace localBornPlace = new BornPlace(f2, f3, m, f1);
-
-      localBornPlace.zutiRadarHeight_MIN = i4;
-      localBornPlace.zutiRadarHeight_MAX = i5;
-      localBornPlace.zutiRadarRange = i6;
-      localBornPlace.zutiSpawnHeight = n;
-      localBornPlace.zutiSpawnSpeed = i1;
-      localBornPlace.zutiSpawnOrient = i2;
-      localBornPlace.zutiMaxBasePilots = i3;
-      localBornPlace.zutiAirspawnIfCarrierFull = bool2;
-      localBornPlace.zutiAirspawnOnly = bool3;
-      localBornPlace.zutiDisableSpawning = bool7;
-      localBornPlace.zutiEnableFriction = bool8;
-      localBornPlace.zutiFriction = d2;
-      localBornPlace.zutiEnablePlaneLimits = bool4;
-      localBornPlace.zutiDecreasingNumberOfPlanes = bool5;
-      localBornPlace.zutiIncludeStaticPlanes = bool6;
-      localBornPlace.zutiBpIndex = k;
-      localBornPlace.zutiStaticPositionOnly = bool9;
-
-      localBornPlace.bParachute = bool1;
-      World.cur().bornPlaces.add(localBornPlace);
-
-      localBornPlace.zutiCountBornPlaceStayPoints();
-      int i11;
-      Object localObject;
+      Object localObject1 = new BornPlace(f2, f3, m, f1);
+      ((BornPlace)localObject1).bParachute = bool;
+      World.cur().bornPlaces.add(localObject1);
+      int i3;
+      Object localObject2;
       if (this.actors != null) {
-        i10 = this.actors.size();
-        for (i11 = 0; i11 < i10; i11++) {
-          Actor localActor = (Actor)this.actors.get(i11);
-
-          if ((Actor.isValid(localActor)) && (localActor.pos != null) && (ZutiSupportMethods.isStaticActor(localActor))) {
-            localObject = localActor.pos.getAbsPoint();
-            double d3 = (((Point3d)localObject).x - f2) * (((Point3d)localObject).x - f2) + (((Point3d)localObject).y - f3) * (((Point3d)localObject).y - f3);
-            if (d3 <= d1) {
-              localActor.setArmy(localBornPlace.army);
+        i2 = this.actors.size();
+        for (i3 = 0; i3 < i2; i3++) {
+          Actor localActor = (Actor)this.actors.get(i3);
+          if ((Actor.isValid(localActor)) && (localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null)) {
+            localObject2 = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+            double d2 = (((Point3d)localObject2).jdField_x_of_type_Double - f2) * (((Point3d)localObject2).jdField_x_of_type_Double - f2) + (((Point3d)localObject2).jdField_y_of_type_Double - f3) * (((Point3d)localObject2).jdField_y_of_type_Double - f3);
+            if (d2 <= d1) {
+              localActor.setArmy(((BornPlace)localObject1).army);
             }
           }
         }
       }
-      int i10 = paramSectFile.sectionIndex("BornPlace" + k);
-      if (i10 >= 0) {
-        i11 = paramSectFile.vars(i10);
-        for (int i12 = 0; i12 < i11; i12++)
-        {
-          localObject = paramSectFile.line(i10, i12);
-          StringTokenizer localStringTokenizer = new StringTokenizer((String)localObject);
-
-          ZutiAircraft localZutiAircraft = new ZutiAircraft();
-          String str1 = "";
-          int i13 = 0;
-          while (localStringTokenizer.hasMoreTokens())
-          {
-            switch (i13)
-            {
-            case 0:
-              localZutiAircraft.setAcName(localStringTokenizer.nextToken());
-              break;
-            case 1:
-              localZutiAircraft.setMaxAllowed(Integer.valueOf(localStringTokenizer.nextToken()).intValue());
-              break;
-            default:
-              str1 = str1 + " " + localStringTokenizer.nextToken();
+      int i2 = paramSectFile.sectionIndex("BornPlace" + k);
+      if (i2 >= 0) {
+        i3 = paramSectFile.vars(i2);
+        for (int i4 = 0; i4 < i3; i4++) {
+          localObject2 = paramSectFile.var(i2, i4);
+          if (localObject2 != null) {
+            localObject2 = ((String)localObject2).intern();
+            Class localClass = (Class)Property.value(localObject2, "airClass", null);
+            if (localClass != null) {
+              if (((BornPlace)localObject1).airNames == null)
+                ((BornPlace)localObject1).airNames = new ArrayList();
+              ((BornPlace)localObject1).airNames.add(localObject2);
             }
-
-            i13++;
           }
-          localZutiAircraft.setLoadedWeapons(str1, false);
-          String str2 = localZutiAircraft.getAcName();
-          if (str2 == null)
-            continue;
-          str2 = str2.intern();
-          Class localClass = (Class)Property.value(str2, "airClass", null);
-
-          if (localClass == null) {
-            continue;
-          }
-          if (localBornPlace.zutiAircrafts == null) {
-            localBornPlace.zutiAircrafts = new ArrayList();
-          }
-          localBornPlace.zutiAircrafts.add(localZutiAircraft);
         }
-
       }
-
-      localBornPlace.zutiFillAirNames();
-
-      zutiLoadBornPlaceCountries(localBornPlace, paramSectFile, k);
-    }
-
-    try
-    {
-      zutiAssignBpToMovingCarrier(); } catch (Exception localException1) {
-      System.out.println("Mission error, ID_15: " + localException1.toString());
     }
   }
 
-  private void loadTargets(SectFile paramSectFile)
-  {
-    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight()))
-    {
-      int i = paramSectFile.sectionIndex("Target");
-      if (i < 0)
-        return;
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-        Target.create(paramSectFile.line(i, k));
+  private void loadTargets(SectFile paramSectFile) {
+    if (!Main.cur().netServerParams.isSingle()) {
+      if (!Main.cur().netServerParams.isCoop()) return;
+      if (!Main.cur().netServerParams.isMaster()) return;
     }
+    int i = paramSectFile.sectionIndex("Target");
+    if (i < 0)
+      return;
+    int j = paramSectFile.vars(i);
+    for (int k = 0; k < j; k++)
+      Target.create(paramSectFile.line(i, k));
   }
 
   private void loadViewPoint(SectFile paramSectFile)
@@ -1962,11 +1459,11 @@ public class Mission
       float f3 = localNumberTokenizer.next(100, 2, 10000);
       ActorViewPoint localActorViewPoint = new ActorViewPoint();
       World.land(); Point3d localPoint3d = new Point3d(f1, f2, f3 + Landscape.HQ_Air(f1, f2));
-      localActorViewPoint.pos.setAbs(localPoint3d); localActorViewPoint.pos.reset();
+      localActorViewPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d); localActorViewPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       localActorViewPoint.dreamFire(true);
       localActorViewPoint.setName("StaticCamera_" + k);
       if (this.net.isMirror()) {
-        localActorViewPoint.createNetObject(this.net.masterChannel(), ((Integer)(Integer)this.actors.get(this.curActor)).intValue());
+        localActorViewPoint.createNetObject(this.net.masterChannel(), ((Integer)this.actors.get(this.curActor)).intValue());
 
         this.actors.set(this.curActor++, localActorViewPoint);
       } else {
@@ -1979,7 +1476,6 @@ public class Mission
   private void checkBridgesAndHouses(SectFile paramSectFile)
   {
     int i = paramSectFile.sections();
-    int n;
     int i1;
     for (int j = 0; j < i; j++) {
       String str1 = paramSectFile.sectionName(j);
@@ -2019,13 +1515,13 @@ public class Mission
         }
       }
     }
-    j = paramSectFile.sectionIndex("Target");
-    if (j < 0) return;
-    int k = paramSectFile.vars(j);
-    for (int m = 0; m < k; m++) {
-      SharedTokenizer.set(paramSectFile.line(j, m));
-      n = SharedTokenizer.next(0, 0, 7);
-      if ((n != 1) && (n != 2) && (n != 6) && (n != 7))
+    int k = paramSectFile.sectionIndex("Target");
+    if (k < 0) return;
+    int m = paramSectFile.vars(k);
+    for (int n = 0; n < m; n++) {
+      SharedTokenizer.set(paramSectFile.line(k, n));
+      i1 = SharedTokenizer.next(0, 0, 7);
+      if ((i1 != 1) && (i1 != 2) && (i1 != 6) && (i1 != 7))
       {
         continue;
       }
@@ -2033,17 +1529,17 @@ public class Mission
       SharedTokenizer.next(0);
       SharedTokenizer.next(0);
       SharedTokenizer.next(0);
-      i1 = SharedTokenizer.next(0);
       int i2 = SharedTokenizer.next(0);
-      int i3 = SharedTokenizer.next(1000, 50, 3000);
-      int i4 = SharedTokenizer.next(0);
+      int i3 = SharedTokenizer.next(0);
+      int i4 = SharedTokenizer.next(1000, 50, 3000);
+      int i5 = SharedTokenizer.next(0);
       String str3 = SharedTokenizer.next(null);
       if ((str3 != null) && (str3.startsWith("Bridge")))
         str3 = " " + str3;
-      switch (n) {
+      switch (i1) {
       case 1:
       case 6:
-        World.cur().statics.restoreAllHouses(i1, i2, i3);
+        World.cur().statics.restoreAllHouses(i2, i3, i4);
         break;
       case 2:
       case 7:
@@ -2071,34 +1567,6 @@ public class Mission
       } catch (Exception localException) {
         System.out.println(localException.getMessage());
         localException.printStackTrace();
-      }
-    }
-  }
-
-  public static void initRadioSounds()
-  {
-    if (radioStationsLoaded)
-    {
-      return;
-    }
-
-    Aircraft localAircraft = World.getPlayerAircraft();
-    if (localAircraft != null)
-    {
-      ArrayList localArrayList = Main.cur().mission.getBeacons(localAircraft.FM.actor.getArmy());
-      if (localArrayList != null)
-      {
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Actor localActor = (Actor)localArrayList.get(i);
-          if (!(localActor instanceof TypeHasRadioStation))
-            continue;
-          hasRadioStations = true;
-          localAircraft.FM.AS.preLoadRadioStation(localActor);
-          radioStationsLoaded = true;
-          CmdMusic.setCurrentVolume(0.001F);
-          return;
-        }
       }
     }
   }
@@ -2163,60 +1631,49 @@ public class Mission
       Main.cur().netServerParams.setExtraOcclusion(false);
       AudioDevice.soundsOn();
     }
-    if ((Main.cur().netServerParams.isMaster()) && ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isDogfight())))
+    if ((Main.cur().netServerParams.isMaster()) && ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle())))
     {
       World.cur().targetsGuard.activate();
     }EventLog.type(true, "Mission: " + name() + " is Playing");
     EventLog.type("Mission BEGIN");
-
-    if (Main.cur().netServerParams != null) {
-      Main.cur().netServerParams.zutiResetServerTime();
-    }
     this.bPlaying = true;
     if (Main.cur().netServerParams != null)
       Main.cur().netServerParams.USGSupdate();
   }
 
-  public void doEnd()
-  {
-    try
-    {
-      if (!this.bPlaying) return;
-      EventLog.type("Mission END");
+  public void doEnd() {
+    if (!this.bPlaying) return;
+    EventLog.type("Mission END");
 
-      if (Config.isUSE_RENDER()) {
-        ForceFeedback.stopMission();
-        if (Main3D.cur3D().guiManager != null)
-          Main3D.cur3D().guiManager.setTimeGameActive(false);
-        NetMissionTrack.stopRecording();
-        if (Main3D.cur3D().keyRecord != null) {
-          if (Main3D.cur3D().keyRecord.isPlaying()) {
-            Main3D.cur3D().keyRecord.stopPlay();
-            Main3D.cur3D().guiManager.setKeyboardGameActive(true);
-            Main3D.cur3D().guiManager.setMouseGameActive(true);
-            Main3D.cur3D().guiManager.setJoyGameActive(true);
-          }
-          Main3D.cur3D().keyRecord.stopRecording(true);
+    if (Config.isUSE_RENDER()) {
+      ForceFeedback.stopMission();
+      if (Main3D.cur3D().guiManager != null)
+        Main3D.cur3D().guiManager.setTimeGameActive(false);
+      NetMissionTrack.stopRecording();
+      if (Main3D.cur3D().keyRecord != null) {
+        if (Main3D.cur3D().keyRecord.isPlaying()) {
+          Main3D.cur3D().keyRecord.stopPlay();
+          Main3D.cur3D().guiManager.setKeyboardGameActive(true);
+          Main3D.cur3D().guiManager.setMouseGameActive(true);
+          Main3D.cur3D().guiManager.setJoyGameActive(true);
         }
-        CmdEnv.top().exec("music POP");
-        CmdEnv.top().exec("music PLAY");
+        Main3D.cur3D().keyRecord.stopRecording(true);
       }
-
-      RTSConf.cur.time.setEnableChangePause1(true);
-      Time.setPause(true);
-
-      if (this.net.isMaster()) {
-        sendCmd(20);
-      }
-      AudioDevice.soundsOff();
-      Voice.endSession();
-      this.bPlaying = false;
-      if (Main.cur().netServerParams != null)
-        Main.cur().netServerParams.USGSupdate();
+      CmdEnv.top().exec("music POP");
+      CmdEnv.top().exec("music PLAY");
     }
-    catch (Exception localException) {
-      System.out.println("Mission error, ID_16: " + localException.toString());
+
+    RTSConf.cur.time.setEnableChangePause1(true);
+    Time.setPause(true);
+
+    if (this.net.isMaster()) {
+      sendCmd(20);
     }
+    AudioDevice.soundsOff();
+    Voice.endSession();
+    this.bPlaying = false;
+    if (Main.cur().netServerParams != null)
+      Main.cur().netServerParams.USGSupdate();
   }
 
   public NetObj netObj()
@@ -2463,104 +1920,106 @@ public class Mission
         localNetMsgGuaranted.writeByte(4);
         paramNetMsgInput.channel().userState = 3;
       } else {
-        Main.cur().netMissionListener.netMissionState(2, 0.0F, null); } case 4:
+        Main.cur().netMissionListener.netMissionState(2, 0.0F, null);
+
+        while (paramNetMsgInput.available() > 0)
+          this.actors.add(new Integer(paramNetMsgInput.readUnsignedShort()));
+      }
+      break;
+    case 4:
+      if (i != 0) {
+        if ((isDogfight()) || ((paramNetMsgInput.channel() instanceof NetChannelOutStream))) {
+          World.cur().statics.netBridgeSync(paramNetMsgInput.channel());
+          World.cur().statics.netHouseSync(paramNetMsgInput.channel());
+        }
+        for (k = 0; k < this.actors.size(); k++) {
+          Actor localActor1 = (Actor)this.actors.get(k);
+          if (!Actor.isValid(localActor1)) continue;
+          try {
+            NetChannel localNetChannel = paramNetMsgInput.channel();
+            localNetChannel.setMirrored(localActor1.net);
+            localActor1.netFirstUpdate(paramNetMsgInput.channel());
+          } catch (Exception localException2) {
+            printDebug(localException2);
+          }
+        }
+
+        if (Actor.isValid(World.cur().houseManager))
+          World.cur().houseManager.fullUpdateChannel(paramNetMsgInput.channel());
+        localNetMsgGuaranted = new NetMsgGuaranted();
+        if (isPlaying()) {
+          localNetMsgGuaranted.writeByte(10);
+          this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
+          localNetMsgGuaranted = new NetMsgGuaranted();
+          localNetMsgGuaranted.writeByte(11);
+          localNetMsgGuaranted.writeFloat(World.getTimeofDay());
+          this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
+          localNetMsgGuaranted = null;
+          doReplicateNotMissionActors(paramNetMsgInput.channel(), true);
+
+          trySendMsgStart(paramNetMsgInput.channel());
+        } else {
+          localNetMsgGuaranted.writeByte(5);
+          paramNetMsgInput.channel().userState = 4;
+        }
+      } else {
+        paramNetMsgInput.channel().userState = 3;
+        try {
+          load(this.name, this.sectFile, true);
+        }
+        catch (Exception localException1)
+        {
+          printDebug(localException1);
+          Main.cur().netMissionListener.netMissionState(4, 0.0F, localException1.getMessage());
+        }
+
+      }
+
     case 5:
     case 10:
+      if ((i == 0) || (goto 1420) || 
+        ((this.net instanceof Master)))
+        break;
+      if (paramNetMsgInput.channel() != this.net.masterChannel())
+        break;
+      if (this.net.isMirrored()) {
+        localNetMsgGuaranted = new NetMsgGuaranted();
+        localNetMsgGuaranted.writeByte(10);
+        this.net.post(localNetMsgGuaranted);
+        localNetMsgGuaranted = null;
+      }
+      doReplicateNotMissionActors(true);
+      doReplicateNotMissionActors(paramNetMsgInput.channel(), true);
+      doBegin();
+      Main.cur().netMissionListener.netMissionState(6, 0.0F, null); break;
     case 11:
+      if ((this.net instanceof Master))
+        break;
+      if (paramNetMsgInput.channel() != this.net.masterChannel()) break;
+      float f = paramNetMsgInput.readFloat();
+      World.setTimeofDay(f);
+      World.land().cubeFullUpdate(); break;
     case 20:
+      if ((this.net instanceof Master))
+        break;
+      if (paramNetMsgInput.channel() != this.net.masterChannel())
+        break;
+      Main.cur().netMissionListener.netMissionState(7, 0.0F, null);
+
+      doReplicateNotMissionActors(false);
+      doReplicateNotMissionActors(paramNetMsgInput.channel(), false);
+      doEnd();
+      if (!this.net.isMirrored()) break;
+      localNetMsgGuaranted = new NetMsgGuaranted();
+      localNetMsgGuaranted.writeByte(20);
+      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted = null; break;
     case 12:
-      while (paramNetMsgInput.available() > 0) {
-        this.actors.add(new Integer(paramNetMsgInput.readUnsignedShort())); continue;
-
-        if (i != 0) {
-          if ((isDogfight()) || ((paramNetMsgInput.channel() instanceof NetChannelOutStream))) {
-            World.cur().statics.netBridgeSync(paramNetMsgInput.channel());
-            World.cur().statics.netHouseSync(paramNetMsgInput.channel());
-          }
-          for (k = 0; k < this.actors.size(); k++) {
-            Actor localActor1 = (Actor)this.actors.get(k);
-            if (!Actor.isValid(localActor1)) continue;
-            try {
-              NetChannel localNetChannel = paramNetMsgInput.channel();
-              localNetChannel.setMirrored(localActor1.net);
-              localActor1.netFirstUpdate(paramNetMsgInput.channel());
-            } catch (Exception localException2) {
-              printDebug(localException2);
-            }
-          }
-
-          if (Actor.isValid(World.cur().houseManager))
-            World.cur().houseManager.fullUpdateChannel(paramNetMsgInput.channel());
-          localNetMsgGuaranted = new NetMsgGuaranted();
-          if (isPlaying()) {
-            localNetMsgGuaranted.writeByte(10);
-            this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
-            localNetMsgGuaranted = new NetMsgGuaranted();
-            localNetMsgGuaranted.writeByte(11);
-            localNetMsgGuaranted.writeFloat(World.getTimeofDay());
-            this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
-            localNetMsgGuaranted = null;
-            doReplicateNotMissionActors(paramNetMsgInput.channel(), true);
-
-            trySendMsgStart(paramNetMsgInput.channel());
-          } else {
-            localNetMsgGuaranted.writeByte(5);
-            paramNetMsgInput.channel().userState = 4;
-          }
-        } else {
-          paramNetMsgInput.channel().userState = 3;
-          try {
-            load(this.name, this.sectFile, true);
-          }
-          catch (Exception localException1)
-          {
-            printDebug(localException1);
-            Main.cur().netMissionListener.netMissionState(4, 0.0F, localException1.getMessage());
-          }
-
-          if ((i == 0) || (goto 1412) || 
-            ((this.net instanceof Master)))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel())
-            break;
-          if (this.net.isMirrored()) {
-            localNetMsgGuaranted = new NetMsgGuaranted();
-            localNetMsgGuaranted.writeByte(10);
-            this.net.post(localNetMsgGuaranted);
-            localNetMsgGuaranted = null;
-          }
-          doReplicateNotMissionActors(true);
-          doReplicateNotMissionActors(paramNetMsgInput.channel(), true);
-          doBegin();
-          Main.cur().netMissionListener.netMissionState(6, 0.0F, null); break;
-
-          if ((this.net instanceof Master))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel()) break;
-          float f = paramNetMsgInput.readFloat();
-          World.setTimeofDay(f);
-          World.land().cubeFullUpdate();
-          break;
-
-          if ((this.net instanceof Master))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel())
-            break;
-          Main.cur().netMissionListener.netMissionState(7, 0.0F, null);
-
-          doReplicateNotMissionActors(false);
-          doReplicateNotMissionActors(paramNetMsgInput.channel(), false);
-          doEnd();
-          if (!this.net.isMirrored()) break;
-          localNetMsgGuaranted = new NetMsgGuaranted();
-          localNetMsgGuaranted.writeByte(20);
-          this.net.post(localNetMsgGuaranted);
-          localNetMsgGuaranted = null; break;
-
-          if ((this.net instanceof Master))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel()) break;
-          Main.cur().netMissionListener.netMissionState(9, 0.0F, null); }  } case 6:
+      if ((this.net instanceof Master))
+        break;
+      if (paramNetMsgInput.channel() != this.net.masterChannel()) break;
+      Main.cur().netMissionListener.netMissionState(9, 0.0F, null); break;
+    case 6:
     case 7:
     case 8:
     case 9:
@@ -2569,8 +2028,7 @@ public class Mission
     case 16:
     case 17:
     case 18:
-    case 19:
-    }if ((localNetMsgGuaranted != null) && (localNetMsgGuaranted.size() > 0))
+    case 19: } if ((localNetMsgGuaranted != null) && (localNetMsgGuaranted.size() > 0))
       this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
   }
 
@@ -2583,21 +2041,24 @@ public class Mission
     Object localObject1;
     while ((localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry)) != null) {
       localObject1 = (NetObj)localHashMapIntEntry.getValue();
-      if ((localObject1 != null) && (!((NetObj)localObject1).isDestroyed()) && (!((NetObj)localObject1).isCommon()) && (!localNetChannel.isMirrored((NetObj)localObject1)) && (((NetObj)localObject1).masterChannel() != localNetChannel))
-      {
-        if ((((localNetChannel instanceof NetChannelOutStream)) && (
-          ((localObject1 instanceof NetControl)) || (
-          ((localObject1 instanceof NetUser)) && (((NetObj)localObject1).isMaster()) && (NetMissionTrack.isPlaying())))) || (
-          ((localObject1 instanceof GameTrack)) && (((NetObj)localObject1).isMirror())))
-          continue;
-        Object localObject2 = ((NetObj)localObject1).superObj();
-        if (((localObject2 instanceof Destroy)) && (((Destroy)localObject2).isDestroyed()))
-          continue;
-        new MsgInvokeMethod_Object("trySendMsgStart", localNetChannel).post(72, this, 0.0D);
-        return;
+      if ((localObject1 == null) || (((NetObj)localObject1).isDestroyed()) || (((NetObj)localObject1).isCommon()) || (localNetChannel.isMirrored((NetObj)localObject1)) || (((NetObj)localObject1).masterChannel() == localNetChannel)) {
+        continue;
       }
+      if (((localNetChannel instanceof NetChannelOutStream)) && (
+        ((localObject1 instanceof NetControl)) || (
+        ((localObject1 instanceof NetUser)) && (((NetObj)localObject1).isMaster()) && (NetMissionTrack.isPlaying())))) {
+        continue;
+      }
+      if (((localObject1 instanceof GameTrack)) && (((NetObj)localObject1).isMirror()))
+        continue;
+      Object localObject2 = ((NetObj)localObject1).superObj();
+      if (((localObject2 instanceof Destroy)) && (((Destroy)localObject2).isDestroyed()))
+        continue;
+      new MsgInvokeMethod_Object("trySendMsgStart", localNetChannel).post(72, this, 0.0D);
+      return;
     }
-    try {
+    try
+    {
       localObject1 = new NetMsgGuaranted();
       ((NetMsgGuaranted)localObject1).writeByte(12);
       this.net.postTo(localNetChannel, (NetMsgGuaranted)localObject1);
@@ -2646,569 +2107,13 @@ public class Mission
     return arrayOfInt;
   }
 
-  public ArrayList getAllActors()
-  {
-    return this.actors;
-  }
-
-  private String generateHayrakeCode(Point3d paramPoint3d)
-  {
-    double d1 = paramPoint3d.x;
-    double d2 = paramPoint3d.y;
-    long l = ()(d1 + d2);
-    Random localRandom = new Random(l);
-    byte[] arrayOfByte = new byte[12];
-    for (int i = 0; i < arrayOfByte.length; i++)
-    {
-      int j = 0;
-      while (j == 0)
-      {
-        int k = (byte)(localRandom.nextInt(26) + 65);
-        if ((k != 74) && (k != 81) && (k != 89) && (k <= 90))
-        {
-          for (int m = 0; m < arrayOfByte.length; m++)
-          {
-            if (k == arrayOfByte[m])
-            {
-              break;
-            }
-            if (m != arrayOfByte.length - 1)
-              continue;
-            j = 1;
-            arrayOfByte[i] = k;
-          }
-        }
-      }
-
-    }
-
-    String str = new String(arrayOfByte);
-    return str;
-  }
-
-  private void populateRunwayLights()
-  {
-    ArrayList localArrayList = new ArrayList();
-    World.getAirports(localArrayList);
-    for (int i = 0; i < localArrayList.size(); i++)
-    {
-      if (!(localArrayList.get(i) instanceof AirportGround))
-        continue;
-      for (int j = 0; j < this.actors.size(); j++)
-      {
-        if (!(this.actors.get(j) instanceof SmokeGeneric))
-          continue;
-        if ((!(this.actors.get(j) instanceof Smoke.Smoke15)) && (!(this.actors.get(j) instanceof Smoke.Smoke14)) && (!(this.actors.get(j) instanceof Smoke.Smoke13)) && (!(this.actors.get(j) instanceof Smoke.Smoke12)))
-        {
-          continue;
-        }
-
-        AirportGround localAirportGround = (AirportGround)localArrayList.get(i);
-        Actor localActor = (Actor)this.actors.get(j);
-        double d1 = localAirportGround.pos.getAbsPoint().x - localActor.pos.getAbsPoint().x;
-        double d2 = localAirportGround.pos.getAbsPoint().y - localActor.pos.getAbsPoint().y;
-        if ((Math.abs(d1) >= 2000.0D) || (Math.abs(d2) >= 2000.0D) || ((localActor.getArmy() != 1) && (localActor.getArmy() != 2)))
-          continue;
-        SmokeGeneric localSmokeGeneric = (SmokeGeneric)localActor;
-        localSmokeGeneric.setVisible(false);
-        localAirportGround.addLights(localSmokeGeneric);
-      }
-
-    }
-
-    for (i = 0; i < this.actors.size(); i++)
-    {
-      if (!(this.actors.get(i) instanceof SmokeGeneric))
-        continue;
-      ((SmokeGeneric)this.actors.get(i)).setArmy(0);
-    }
-  }
-
-  private void populateBeacons()
-  {
-    ArrayList localArrayList1 = new ArrayList();
-    ArrayList localArrayList2 = new ArrayList();
-    Object localObject1;
-    Object localObject2;
-    for (int i = 0; i < this.actors.size(); i++)
-    {
-      if ((this.actors.get(i) instanceof TypeHasBeacon))
-      {
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localArrayList1.add(new Object[] { this.actors.get(i), localObject1 });
-        if ((this.actors.get(i) instanceof TypeHasLorenzBlindLanding))
-        {
-          ((Actor)this.actors.get(i)).missionStarting();
-        }
-        if ((this.actors.get(i) instanceof BigshipGeneric))
-        {
-          hayrakeMap.put((Actor)this.actors.get(i), "NDB");
-        }
-      }
-      else if ((this.actors.get(i) instanceof TypeHasMeacon))
-      {
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localArrayList2.add(new Object[] { this.actors.get(i), localObject1 });
-      } else {
-        if (!(this.actors.get(i) instanceof TypeHasHayRake))
-          continue;
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localObject2 = generateHayrakeCode((Point3d)localObject1);
-        localArrayList1.add(new Object[] { this.actors.get(i), localObject1 });
-        hayrakeMap.put((Actor)this.actors.get(i), localObject2);
-      }
-    }
-
-    if (localArrayList1.size() == 0)
-    {
-      return;
-    }
-    sortBeaconsList(localArrayList1);
-
-    for (i = 0; i < localArrayList1.size(); i++)
-    {
-      localObject1 = (Object[])(Object[])localArrayList1.get(i);
-      localObject2 = (Actor)localObject1[0];
-      if ((((localObject2 instanceof TypeHasRadioStation)) || (((Actor)localObject2).getArmy() == 1)) && (beaconsRed.size() < 32))
-      {
-        beaconsRed.add(localObject1[0]);
-      }
-      if (((!(localObject2 instanceof TypeHasRadioStation)) && (((Actor)localObject2).getArmy() != 2)) || (beaconsBlue.size() >= 32))
-        continue;
-      beaconsBlue.add(localObject1[0]);
-    }
-
-    for (i = 0; i < localArrayList2.size(); i++)
-    {
-      localObject1 = (Object[])(Object[])localArrayList2.get(i);
-      localObject2 = (Actor)localObject1[0];
-      if ((((Actor)localObject2).getArmy() == 1) && (meaconsRed.size() < 32))
-      {
-        meaconsRed.add(localObject1[0]);
-      } else {
-        if ((((Actor)localObject2).getArmy() != 2) || (meaconsBlue.size() >= 32))
-          continue;
-        meaconsBlue.add(localObject1[0]);
-      }
-    }
-    localArrayList1.clear();
-    localArrayList1 = null;
-    localArrayList2.clear();
-    localArrayList2 = null;
-  }
-
-  public static void addHayrakesToOrdersTree()
-  {
-    for (int i = 0; i < 10; i++)
-    {
-      Main3D.cur3D().ordersTree.addShipIDs(i, -1, null, "", "");
-    }
-
-    if (!World.cur().diffCur.RealisticNavigationInstruments) {
-      return;
-    }
-    i = 0;
-    Iterator localIterator = hayrakeMap.entrySet().iterator();
-    while ((localIterator.hasNext()) && (i < 10))
-    {
-      Map.Entry localEntry = (Map.Entry)localIterator.next();
-      Actor localActor = (Actor)localEntry.getKey();
-      if (localActor.getArmy() != World.getPlayerArmy())
-        continue;
-      String str1 = (String)localEntry.getValue();
-      String str2 = Property.stringValue(localActor.getClass(), "i18nName", "");
-      if (str2.equals(""))
-      {
-        try
-        {
-          String str3 = localActor.getClass().toString().substring(localActor.getClass().toString().indexOf("$") + 1);
-          str2 = I18N.technic(str3);
-        }
-        catch (Exception localException)
-        {
-        }
-      }
-      int j = -1;
-      if (beaconsRed.contains(localActor))
-      {
-        j = beaconsRed.indexOf(localActor);
-      }
-      else if (beaconsBlue.contains(localActor))
-      {
-        j = beaconsBlue.indexOf(localActor);
-      }
-
-      if (str1.equals("NDB"))
-      {
-        Main3D.cur3D().ordersTree.addShipIDs(i, j, localActor, str2, "");
-      }
-      else
-      {
-        boolean bool = Aircraft.hasPlaneZBReceiver(World.getPlayerAircraft());
-        if (!bool)
-          continue;
-        String str4 = str1;
-        if (str1.length() == 12)
-        {
-          str4 = str1.substring(0, 3) + " / " + str1.substring(3, 6) + " / " + str1.substring(6, 9) + " / " + str1.substring(9, 12);
-        }
-        else if (str1.length() == 24)
-        {
-          str4 = str1.substring(0, 2) + "-" + str1.substring(2, 4) + "-" + str1.substring(4, 6) + " / " + str1.substring(6, 8) + "-" + str1.substring(8, 10) + "-" + str1.substring(10, 12) + " / " + str1.substring(12, 14) + "-" + str1.substring(14, 16) + "-" + str1.substring(16, 18) + " / " + str1.substring(18, 20) + "-" + str1.substring(20, 22) + "-" + str1.substring(22, 24);
-        }
-
-        Main3D.cur3D().ordersTree.addShipIDs(i, j, localActor, str2, "( " + str4 + " )");
-      }
-      i++;
-    }
-  }
-
-  private void sortBeaconsList(List paramList)
-  {
-    int i = 0;
-    do
-    {
-      for (int j = 0; j < paramList.size() - 1; j++)
-      {
-        i = 0;
-        Object[] arrayOfObject1 = (Object[])(Object[])paramList.get(j);
-        Object[] arrayOfObject2 = (Object[])(Object[])paramList.get(j + 1);
-
-        if (((!(arrayOfObject1[0] instanceof TypeHasHayRake)) || ((arrayOfObject2[0] instanceof TypeHasHayRake))) && ((!(arrayOfObject1[0] instanceof BigshipGeneric)) || ((arrayOfObject2[0] instanceof BigshipGeneric)))) {
-          continue;
-        }
-        Object[] arrayOfObject3 = arrayOfObject1;
-        paramList.set(j, arrayOfObject2);
-        paramList.set(j + 1, arrayOfObject3);
-        i = 1;
-      }
-    }
-    while (i != 0);
-  }
-
-  public boolean hasBeacons(int paramInt)
-  {
-    if (paramInt == 1)
-    {
-      return beaconsRed.size() > 0;
-    }
-
-    if (paramInt == 2)
-    {
-      return beaconsBlue.size() > 0;
-    }
-
-    return false;
-  }
-
-  public ArrayList getBeacons(int paramInt)
-  {
-    if (paramInt == 1)
-    {
-      return beaconsRed;
-    }
-    if (paramInt == 2)
-    {
-      return beaconsBlue;
-    }
-
-    return null;
-  }
-
-  public ArrayList getMeacons(int paramInt) {
-    if (paramInt == 1)
-    {
-      return meaconsBlue;
-    }
-    if (paramInt == 2)
-    {
-      return meaconsRed;
-    }
-
-    return null;
-  }
-
-  public String getHayrakeCodeOfCarrier(Actor paramActor)
-  {
-    if (hayrakeMap.containsKey(paramActor))
-    {
-      return (String)hayrakeMap.get(paramActor);
-    }
-    return null;
-  }
-
-  private void zutiAssignBpToMovingCarrier()
-  {
-    for (int i = 0; i < this.actors.size(); i++)
-    {
-      Actor localActor = (Actor)Main.cur().mission.actors.get(i);
-      if ((!(localActor instanceof BigshipGeneric)) || (localActor.name().indexOf("_Chief") <= -1))
-        continue;
-      if ((localActor.toString().indexOf(BigshipGeneric.ZUTI_CARRIER_STRING[0]) <= -1) && (localActor.toString().indexOf(BigshipGeneric.ZUTI_CARRIER_STRING[1]) <= -1)) {
-        continue;
-      }
-      BigshipGeneric localBigshipGeneric = (BigshipGeneric)localActor;
-      if ((localActor.icon == null) && (!Main.cur().netServerParams.isMaster()))
-        continue;
-      localBigshipGeneric.zutiAssignBornPlace();
-    }
-  }
-
-  private void zutiResetMissionVariables()
-  {
-    if (ZutiSupportMethods.ZUTI_BANNED_PILOTS == null)
-      ZutiSupportMethods.ZUTI_BANNED_PILOTS = new ArrayList();
-    ZutiSupportMethods.ZUTI_BANNED_PILOTS.clear();
-
-    if (ZutiSupportMethods.ZUTI_DEAD_TARGETS == null)
-      ZutiSupportMethods.ZUTI_DEAD_TARGETS = new ArrayList();
-    ZutiSupportMethods.ZUTI_DEAD_TARGETS.clear();
-
-    if (GUI.pad != null) {
-      GUI.pad.zutiColorAirfields = true;
-    }
-
-    ZutiSupportMethods.ZUTI_KIA_COUNTER = 0;
-    ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-
-    this.zutiCarrierSpawnPoints_CV2 = 6;
-    this.zutiCarrierSpawnPoints_CV9 = 5;
-    this.zutiCarrierSpawnPoints_CVE = 2;
-    this.zutiCarrierSpawnPoints_CVL = 7;
-    this.zutiCarrierSpawnPoints_Akagi = 8;
-    this.zutiCarrierSpawnPoints_IJN = 6;
-    this.zutiCarrierSpawnPoints_HMS = 5;
-
-    this.zutiRadar_PlayerSideHasRadars = false;
-    this.zutiRadar_ShipsAsRadar = false;
-    this.zutiRadar_ShipRadar_MaxRange = 100;
-    this.zutiRadar_ShipRadar_MinHeight = 100;
-    this.zutiRadar_ShipRadar_MaxHeight = 5000;
-    this.zutiRadar_ShipSmallRadar_MaxRange = 25;
-    this.zutiRadar_ShipSmallRadar_MinHeight = 0;
-    this.zutiRadar_ShipSmallRadar_MaxHeight = 2000;
-    this.zutiRadar_ScoutsAsRadar = false;
-    this.zutiRadar_ScoutRadar_MaxRange = 2;
-    this.zutiRadar_ScoutRadar_DeltaHeight = 1500;
-    this.zutiRadar_RefreshInterval = 0;
-    this.zutiRadar_EnableTowerCommunications = true;
-    this.zutiRadar_HideUnpopulatedAirstripsFromMinimap = false;
-    ZUTI_RADAR_IN_ADV_MODE = false;
-    this.zutiRadar_ScoutGroundObjects_Alpha = 5;
-    this.ScoutsRed = new ArrayList();
-    this.ScoutsBlue = new ArrayList();
-    this.zutiRadar_ScoutCompleteRecon = false;
-
-    this.zutiRadar_EnableBigShip_Radar = true;
-    this.zutiRadar_EnableSmallShip_Radar = true;
-
-    this.zutiMisc_DisableAIRadioChatter = false;
-    this.zutiMisc_DespawnAIPlanesAfterLanding = true;
-    this.zutiMisc_HidePlayersCountOnHomeBase = false;
-    this.zutiMisc_EnableReflyOnlyIfBailedOrDied = false;
-    this.zutiMisc_DisableReflyForMissionDuration = false;
-    this.zutiMisc_ReflyKIADelay = 0;
-    this.zutiMisc_MaxAllowedKIA = 2147483647;
-    this.zutiMisc_ReflyKIADelayMultiplier = 0.0F;
-
-    if (Main.cur().netServerParams.reflyKIADelay > 0)
-    {
-      this.zutiMisc_EnableReflyOnlyIfBailedOrDied = true;
-      this.zutiMisc_ReflyKIADelay = Main.cur().netServerParams.reflyKIADelay;
-    }
-    if (Main.cur().netServerParams.reflyDisabled)
-    {
-      this.zutiMisc_DisableReflyForMissionDuration = true;
-    }
-    else if (Main.cur().netServerParams.maxAllowedKIA >= 0)
-    {
-      this.zutiMisc_EnableReflyOnlyIfBailedOrDied = true;
-      this.zutiMisc_MaxAllowedKIA = Main.cur().netServerParams.maxAllowedKIA;
-    }
-    if ((Main.cur().netServerParams.reflyKIADelayMultiplier > 0.0F) && (this.zutiMisc_ReflyKIADelay != 0))
-    {
-      this.zutiMisc_EnableReflyOnlyIfBailedOrDied = true;
-      this.zutiMisc_ReflyKIADelayMultiplier = Main.cur().netServerParams.reflyKIADelayMultiplier;
-    }
-
-    this.zutiMisc_BombsCat1_CratersVisibilityMultiplier = 1.0F;
-    this.zutiMisc_BombsCat2_CratersVisibilityMultiplier = 1.0F;
-    this.zutiMisc_BombsCat3_CratersVisibilityMultiplier = 1.0F;
-  }
-
-  private void zutiLoadBornPlaceCountries(BornPlace paramBornPlace, SectFile paramSectFile, int paramInt)
-  {
-    if (paramBornPlace == null) {
-      return;
-    }
-    if ((paramBornPlace != null) && (paramBornPlace.zutiHomeBaseCountries == null)) {
-      paramBornPlace.zutiHomeBaseCountries = new ArrayList();
-    }
-    paramBornPlace.zutiLoadAllCountries();
-
-    int i = paramSectFile.sectionIndex("BornPlaceCountries" + paramInt);
-    if (i >= 0)
-    {
-      paramBornPlace.zutiHomeBaseCountries.clear();
-      ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-      {
-        try
-        {
-          String str1 = paramSectFile.var(i, k);
-          String str2 = localResourceBundle.getString(str1);
-          if (!paramBornPlace.zutiHomeBaseCountries.contains(str2))
-          {
-            paramBornPlace.zutiHomeBaseCountries.add(str2);
-          }
-        }
-        catch (Exception localException)
-        {
-        }
-      }
-    }
-  }
-
-  private void zutiLoadScouts_Red(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("MDS_Scouts_Red");
-    if (i > -1)
-    {
-      if (Main.cur().mission.ScoutsRed == null)
-        Main.cur().mission.ScoutsRed = new ArrayList();
-      Main.cur().mission.ScoutsRed.clear();
-
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-      {
-        String str1 = paramSectFile.line(i, k);
-        StringTokenizer localStringTokenizer = new StringTokenizer(str1);
-        String str2 = null;
-
-        if (localStringTokenizer.hasMoreTokens())
-        {
-          str2 = localStringTokenizer.nextToken();
-        }
-
-        if (str2 == null)
-          continue;
-        str2 = str2.intern();
-        Class localClass = (Class)Property.value(str2, "airClass", null);
-
-        Main.cur().mission.ScoutsRed.add(str2);
-      }
-    }
-  }
-
-  private void zutiLoadScouts_Blue(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("MDS_Scouts_Blue");
-    if (i > -1)
-    {
-      if (Main.cur().mission.ScoutsBlue == null)
-        Main.cur().mission.ScoutsBlue = new ArrayList();
-      Main.cur().mission.ScoutsBlue.clear();
-
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-      {
-        String str1 = paramSectFile.line(i, k);
-        StringTokenizer localStringTokenizer = new StringTokenizer(str1);
-        String str2 = null;
-
-        if (localStringTokenizer.hasMoreTokens())
-        {
-          str2 = localStringTokenizer.nextToken();
-        }
-
-        if (str2 == null)
-          continue;
-        str2 = str2.intern();
-        Class localClass = (Class)Property.value(str2, "airClass", null);
-
-        Main.cur().mission.ScoutsBlue.add(str2);
-      }
-    }
-  }
-
-  private void zutiSetShipRadars()
-  {
-    if ((this.zutiRadar_ShipRadar_MaxHeight == 0) && (this.zutiRadar_ShipRadar_MaxRange == 0) && (this.zutiRadar_ShipRadar_MinHeight == 0)) {
-      this.zutiRadar_EnableBigShip_Radar = false;
-    }
-    if ((this.zutiRadar_ShipSmallRadar_MaxHeight == 0) && (this.zutiRadar_ShipSmallRadar_MaxRange == 0) && (this.zutiRadar_ShipSmallRadar_MinHeight == 0))
-      this.zutiRadar_EnableSmallShip_Radar = false;
-  }
-
-  public static int getMissionDate(boolean paramBoolean)
-  {
-    int i = 0;
-    int m;
-    int i2;
-    int i3;
-    if (Main.cur().mission == null)
-    {
-      SectFile localSectFile1 = Main.cur().currentMissionFile;
-      if (localSectFile1 == null)
-        return 0;
-      String str1 = localSectFile1.get("MAIN", "MAP");
-      m = World.land().config.getDefaultMonth("maps/" + str1);
-      int n = localSectFile1.get("SEASON", "Year", 1940, 1930, 1960);
-      int i1 = localSectFile1.get("SEASON", "Month", m, 1, 12);
-      i2 = localSectFile1.get("SEASON", "Day", 15, 1, 31);
-      i = n * 10000 + i1 * 100 + i2;
-      i3 = 19400000 + m * 100 + 15;
-      if ((paramBoolean) && (i == i3))
-        i = 0;
-    }
-    else
-    {
-      int j = curYear();
-      int k = curMonth();
-      m = curDay();
-      i = j * 10000 + k * 100 + m;
-      if (paramBoolean)
-      {
-        SectFile localSectFile2 = Main.cur().currentMissionFile;
-        if (localSectFile2 == null)
-          return 0;
-        String str2 = localSectFile2.get("MAIN", "MAP");
-        i2 = World.land().config.getDefaultMonth("maps/" + str2);
-        i3 = 19400000 + i2 * 100 + 15;
-        if (i == i3)
-          i = 0;
-      }
-    }
-    return i;
-  }
-
-  public static float BigShipHpDiv()
-  {
-    if (Main.cur().mission == null) {
-      return 1.0F;
-    }
-
-    return Main.cur().mission.bigShipHpDiv;
-  }
-
   static
   {
     Spawn.add(Mission.class, new SPAWN());
-
-    ZUTI_RADAR_IN_ADV_MODE = false;
-    ZUTI_ICON_SIZES = new int[] { 8, 12, 16, 20, 24, 28, 32 };
-
-    ZUTI_ICON_SIZE = ZUTI_ICON_SIZES[4];
   }
-
-  static class SPAWN
-    implements NetSpawn
-  {
-    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput)
-    {
-      try
-      {
+  static class SPAWN implements NetSpawn {
+    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput) {
+      try {
         if (Main.cur().mission != null)
         {
           Main.cur().mission.destroy();
@@ -3296,7 +2201,7 @@ public class Mission
           paramNetChannelInStream.setPause(true);
         } else if (i == 12) {
           paramNetChannelInStream.setGameTime();
-          if ((Mission.isCoop()) || (Mission.isDogfight())) {
+          if (Mission.isCoop()) {
             Main.cur().netServerParams.prepareHidenAircraft();
             Mission.doMissionStarting();
             Time.setPause(false);

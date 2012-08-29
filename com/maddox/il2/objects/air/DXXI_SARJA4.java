@@ -11,7 +11,6 @@ import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.HomePath;
@@ -24,6 +23,7 @@ import java.io.PrintStream;
 public class DXXI_SARJA4 extends DXXI
   implements TypeScout
 {
+  private boolean skisLocked = false;
   private float skiAngleL = 0.0F;
   private float skiAngleR = 0.0F;
   private float spring = 0.15F;
@@ -36,8 +36,6 @@ public class DXXI_SARJA4 extends DXXI
 
   private void customization()
   {
-    if (!Mission.isSingle())
-      return;
     int i = hierMesh().chunkFindCheck("cf_D0");
     int j = hierMesh().materialFindInChunk("Gloss1D0o", i);
     Mat localMat = hierMesh().material(j);
@@ -59,25 +57,26 @@ public class DXXI_SARJA4 extends DXXI
           if (str3.equals("[NoWheelSpats]"))
           {
             k = 1;
-            m = 0; continue;
+            m = 0;
           }
-          if (str3.equals("[NoWingSlots]"))
+          else if (str3.equals("[NoWingSlots]"))
           {
             k = 0;
-            m = 1; continue;
+            m = 1;
+          } else {
+            if (!str3.equals(str1))
+              continue;
+            if ((k != 0) && (World.cur().camouflage == 1))
+            {
+              removeWheelSpats();
+            }
+            if (m == 0)
+              continue;
+            hierMesh().chunkVisible("SlotCoverLMid", true);
+            hierMesh().chunkVisible("SlotCoverRMid", true);
+            hierMesh().chunkVisible("SlotCoverLOut", true);
+            hierMesh().chunkVisible("SlotCoverROut", true);
           }
-          if (!str3.equals(str1))
-            continue;
-          if ((k != 0) && (World.cur().camouflage != 1))
-          {
-            removeWheelSpats();
-          }
-          if (m == 0)
-            continue;
-          hierMesh().chunkVisible("SlotCoverLMid", true);
-          hierMesh().chunkVisible("SlotCoverRMid", true);
-          hierMesh().chunkVisible("SlotCoverLOut", true);
-          hierMesh().chunkVisible("SlotCoverROut", true);
         }
 
         localBufferedReader.close();
@@ -97,7 +96,7 @@ public class DXXI_SARJA4 extends DXXI
 
     if ((Config.isUSE_RENDER()) && (World.cur().camouflage == 1))
     {
-      this.hasSkis = true;
+      this.jdField_hasSkis_of_type_Boolean = true;
       hierMesh().chunkVisible("GearL1_D0", false);
       hierMesh().chunkVisible("GearL22_D0", false);
       hierMesh().chunkVisible("GearR1_D0", false);
@@ -114,7 +113,7 @@ public class DXXI_SARJA4 extends DXXI
       hierMesh().chunkVisible("GearR11_D0", true);
       hierMesh().chunkVisible("GearR21_D0", true);
 
-      this.FM.CT.bHasBrakeControl = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasBrakeControl = false;
     }
     else if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.01F) {
       removeWheelSpats();
@@ -152,14 +151,14 @@ public class DXXI_SARJA4 extends DXXI
     if (Config.isUSE_RENDER())
     {
       super.moveFan(-paramFloat);
-      float f1 = this.FM.CT.getAileron();
-      float f2 = this.FM.CT.getElevator();
+      float f1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getAileron();
+      float f2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getElevator();
 
-      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9.0F * f1, cvt(f2, -1.0F, 1.0F, -8.0F, 9.5F));
-      hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - cvt(f2, -1.0F, 1.0F, -37.0F, 35.0F));
-      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + cvt(f2, -1.0F, 0.0F, -61.0F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 43.0F));
+      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9.0F * f1, Aircraft.cvt(f2, -1.0F, 1.0F, -8.0F, 9.5F));
+      hierMesh().chunkSetAngles("pilotarm2_d0", Aircraft.cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, Aircraft.cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - Aircraft.cvt(f2, -1.0F, 1.0F, -37.0F, 35.0F));
+      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, Aircraft.cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + Aircraft.cvt(f2, -1.0F, 0.0F, -61.0F, 0.0F) + Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 43.0F));
 
-      float f3 = this.FM.CT.getRadiator() * 30.0F;
+      float f3 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiator() * 30.0F;
 
       hierMesh().chunkSetAngles("cowlf1_d0", 0.0F, f3, 0.0F);
       hierMesh().chunkSetAngles("cowlf2_d0", 0.0F, f3, 0.0F);
@@ -175,12 +174,12 @@ public class DXXI_SARJA4 extends DXXI
 
       if (World.cur().camouflage == 1)
       {
-        float f4 = Aircraft.cvt(this.FM.getSpeed(), 30.0F, 100.0F, 1.0F, 0.0F);
-        float f5 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 30.0F, 0.0F, 0.5F);
+        float f4 = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed(), 30.0F, 100.0F, 1.0F, 0.0F);
+        float f5 = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed(), 0.0F, 30.0F, 0.0F, 0.5F);
 
-        if (this.FM.Gears.gWheelSinking[0] > 0.0F)
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0] > 0.0F)
         {
-          this.skiAngleL = (0.5F * this.skiAngleL + 0.5F * this.FM.Or.getTangage());
+          this.skiAngleL = (0.5F * this.skiAngleL + 0.5F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage());
 
           if (this.skiAngleL > 20.0F)
           {
@@ -189,7 +188,7 @@ public class DXXI_SARJA4 extends DXXI
 
           hierMesh().chunkSetAngles("GearL21_D0", World.Rnd().nextFloat(-f5, f5), World.Rnd().nextFloat(-f5 * 2.0F, f5 * 2.0F) + this.skiAngleL, World.Rnd().nextFloat(f5, f5));
 
-          if ((this.FM.Gears.gWheelSinking[1] == 0.0F) && (this.FM.Or.getRoll() < 365.0F) && (this.FM.Or.getRoll() > 355.0F))
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1] == 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getRoll() < 365.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getRoll() > 355.0F))
           {
             this.skiAngleR = this.skiAngleL;
             hierMesh().chunkSetAngles("GearR21_D0", World.Rnd().nextFloat(-f5, f5), World.Rnd().nextFloat(-f5 * 2.0F, f5 * 2.0F) + this.skiAngleR, World.Rnd().nextFloat(f5, f5));
@@ -210,9 +209,9 @@ public class DXXI_SARJA4 extends DXXI
           hierMesh().chunkSetAngles("GearL21_D0", 0.0F, this.skiAngleL, 0.0F);
         }
 
-        if (this.FM.Gears.gWheelSinking[1] > 0.0F)
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1] > 0.0F)
         {
-          this.skiAngleR = (0.5F * this.skiAngleR + 0.5F * this.FM.Or.getTangage());
+          this.skiAngleR = (0.5F * this.skiAngleR + 0.5F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage());
 
           if (this.skiAngleR > 20.0F)
           {
@@ -254,7 +253,7 @@ public class DXXI_SARJA4 extends DXXI
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers())
       this.bChangedPit = true;
     Wreckage localWreckage;
     Vector3d localVector3d;
@@ -269,7 +268,7 @@ public class DXXI_SARJA4 extends DXXI
           localWreckage = new Wreckage(this, hierMesh().chunkFind("GearR22_D1"));
           localWreckage.collide(true);
           localVector3d = new Vector3d();
-          localVector3d.set(this.FM.Vwld);
+          localVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
           localWreckage.setSpeed(localVector3d);
         }
       }
@@ -282,7 +281,7 @@ public class DXXI_SARJA4 extends DXXI
           localWreckage = new Wreckage(this, hierMesh().chunkFind("GearL22_D1"));
           localWreckage.collide(true);
           localVector3d = new Vector3d();
-          localVector3d.set(this.FM.Vwld);
+          localVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
           localWreckage.setSpeed(localVector3d);
         }
       }
@@ -300,7 +299,7 @@ public class DXXI_SARJA4 extends DXXI
           localWreckage = new Wreckage(this, hierMesh().chunkFind("GearR11_D0"));
           localWreckage.collide(true);
           localVector3d = new Vector3d();
-          localVector3d.set(this.FM.Vwld);
+          localVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
           localWreckage.setSpeed(localVector3d);
         }
       }
@@ -315,7 +314,7 @@ public class DXXI_SARJA4 extends DXXI
           localWreckage = new Wreckage(this, hierMesh().chunkFind("GearL11_D0"));
           localWreckage.collide(true);
           localVector3d = new Vector3d();
-          localVector3d.set(this.FM.Vwld);
+          localVector3d.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
           localWreckage.setSpeed(localVector3d);
         }
       }
@@ -323,7 +322,7 @@ public class DXXI_SARJA4 extends DXXI
   }
 
   public void sfxWheels() {
-    if (!this.hasSkis)
+    if (!this.jdField_hasSkis_of_type_Boolean)
       super.sfxWheels();
   }
 
@@ -339,13 +338,14 @@ public class DXXI_SARJA4 extends DXXI
     Property.set(localClass, "yearService", 1941.0F);
     Property.set(localClass, "yearExpired", 1945.0F);
     Property.set(localClass, "FlightModel", "FlightModels/FokkerS4.fmd");
+
     Property.set(localClass, "LOSElevation", 0.8472F);
     Property.set(localClass, "originCountry", PaintScheme.countryFinland);
     Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0 });
     Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 300", "MGunBrowning303k 300", "MGunBrowning303k 300", "MGunBrowning303k 300" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 300", "MGunBrowning303k 300", "MGunBrowning303k 300", "MGunBrowning303k 300" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

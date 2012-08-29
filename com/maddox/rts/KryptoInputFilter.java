@@ -42,7 +42,7 @@ public class KryptoInputFilter extends FilterInputStream
   public int read()
     throws IOException
   {
-    int i = this.in.read();
+    int i = this.jdField_in_of_type_JavaIoInputStream.read();
 
     if (this.key == null)
       return i;
@@ -55,7 +55,7 @@ public class KryptoInputFilter extends FilterInputStream
   public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
-    int i = this.in.read(paramArrayOfByte, paramInt1, paramInt2);
+    int i = this.jdField_in_of_type_JavaIoInputStream.read(paramArrayOfByte, paramInt1, paramInt2);
 
     if ((this.key == null) || (i <= 0)) {
       return i;

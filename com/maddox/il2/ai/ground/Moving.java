@@ -28,7 +28,7 @@ public class Moving
   }
   public boolean IsLandAligned() { return this.normal.z < 0.0F; } 
   public static final float distance2D(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return (float)Math.sqrt((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y));
+    return (float)Math.sqrt((paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double));
   }
 
   public Moving()
@@ -73,8 +73,8 @@ public class Moving
     this.movingForward = true;
 
     this.angles.setDeg(paramActor.pos.getAbsOrient().getYaw());
-    double d1 = this.dstPos.x - this.srcPos.x;
-    double d2 = this.dstPos.y - this.srcPos.y;
+    double d1 = this.dstPos.jdField_x_of_type_Double - this.srcPos.jdField_x_of_type_Double;
+    double d2 = this.dstPos.jdField_y_of_type_Double - this.srcPos.jdField_y_of_type_Double;
     if (Math.abs(d1) + Math.abs(d2) > 1.E-005D) {
       this.angles.setDstRad((float)Math.atan2(d2, d1));
     }

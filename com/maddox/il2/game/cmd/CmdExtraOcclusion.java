@@ -30,8 +30,8 @@ public class CmdExtraOcclusion extends Cmd
   }
 
   public CmdExtraOcclusion() {
-    this.param.put("ON", null);
-    this.param.put("OFF", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ON", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("OFF", null);
     this._properties.put("NAME", "extraocclusion");
     this._levelAccess = 1;
   }

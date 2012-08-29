@@ -5,12 +5,12 @@ class PropertyString extends Property
   private String value = "";
 
   public PropertyString(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
+    invokeObserver(Property.lastMapInt, Property.lastAction); }
 
   public PropertyString(Object paramObject, String paramString1, String paramString2) {
     super(paramObject, paramString1);
     this.value = paramString2;
-    invokeObserver(lastMapInt, lastAction);
+    invokeObserver(Property.lastMapInt, Property.lastAction);
   }
   public Class classValue() { return String.class; } 
   public int intValue() { try { return Integer.parseInt(this.value); } catch (Exception localException) {  }

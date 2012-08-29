@@ -22,17 +22,17 @@ public class KI_84_IB extends KI_84
     Property.set(localClass, "cockpitClass", CockpitKI_84_IB.class);
     Property.set(localClass, "LOSElevation", 0.0985F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 9, 9, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 9, 9, 9, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x100", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", "BombGun100kgJ 1", "BombGun100kgJ 1", "PylonKI84PLN2", "PylonKI84PLN2", null, null });
+    Aircraft.weaponsRegister(localClass, "2x100", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", "BombGun100kgJ 1", "BombGun100kgJ 1", "PylonKI84PLN2", "PylonKI84PLN2", null, null });
 
-    weaponsRegister(localClass, "2x250", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", "BombGun250kgJ 1", "BombGun250kgJ 1", "PylonKI84PLN2", "PylonKI84PLN2", null, null });
+    Aircraft.weaponsRegister(localClass, "2x250", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", "BombGun250kgJ 1", "BombGun250kgJ 1", "PylonKI84PLN2", "PylonKI84PLN2", null, null });
 
-    weaponsRegister(localClass, "2tank200", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", null, null, "PylonKI84PLN2", "PylonKI84PLN2", "FuelTankGun_TankKi84", "FuelTankGun_TankKi84" });
+    Aircraft.weaponsRegister(localClass, "2tank200", new String[] { "MGunHo5s 150", "MGunHo5s 150", "MGunHo5k 150", "MGunHo5k 150", null, null, "PylonKI84PLN2", "PylonKI84PLN2", "FuelTankGun_TankKi84", "FuelTankGun_TankKi84" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }
 }

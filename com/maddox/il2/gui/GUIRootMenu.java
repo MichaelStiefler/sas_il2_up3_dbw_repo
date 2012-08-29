@@ -13,7 +13,7 @@ public class GUIRootMenu extends GWindowRootMenu
   {
     if ((Mission.cur() == null) || (Mission.cur().isDestroyed())) {
       setCanvasColorWHITE();
-      draw(0.0F, 0.0F, this.win.dx, this.win.dy, this.background);
+      draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.background);
     }
   }
 

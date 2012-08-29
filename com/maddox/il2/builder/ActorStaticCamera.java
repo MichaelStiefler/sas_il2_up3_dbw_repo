@@ -22,8 +22,8 @@ public class ActorStaticCamera extends Actor
   }
   public ActorStaticCamera(Point3d paramPoint3d) {
     this.flags |= 8192;
-    this.pos = new ActorPosMove(this);
-    this.pos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
     align();
     drawing(true);
     this.icon = IconDraw.get("icons/camera.mat");

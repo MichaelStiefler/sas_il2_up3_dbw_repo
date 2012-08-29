@@ -78,9 +78,9 @@ public class Train extends Chief
     this.headSeg = (int)paramTrain.getLocationOfWagon(paramInt, true);
     this.headAlong = paramTrain.getLocationOfWagon(paramInt, false);
 
-    this.pos = new ActorPosMove(this);
-    this.pos.setAbs(this.road.get(this.headSeg).computePos_Fit(this.headAlong, 0.0D, 0.0F));
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.road.get(this.headSeg).computePos_Fit(this.headAlong, 0.0D, 0.0F));
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     computeSpeedsWhenCrush(paramTrain.curSpeed);
 
@@ -90,8 +90,8 @@ public class Train extends Chief
       this.wagons.add(localWagon);
       localWagon.setOwner(this);
     }
-    for (i = paramTrain.wagons.size() - 1; i >= paramInt; i--) {
-      paramTrain.wagons.remove(i);
+    for (int j = paramTrain.wagons.size() - 1; j >= paramInt; j--) {
+      paramTrain.wagons.remove(j);
     }
 
     paramTrain.recomputeTrainLength();
@@ -140,9 +140,9 @@ public class Train extends Chief
       this.headSeg = 0;
       this.headAlong = 0.0D;
 
-      this.pos = new ActorPosMove(this);
-      this.pos.setAbs(this.road.get(0).start);
-      this.pos.reset();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.road.get(0).start);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
       int i = paramSectFile1.sectionIndex(paramString2);
       int j = paramSectFile1.vars(i);
@@ -189,8 +189,11 @@ public class Train extends Chief
       return;
     }
 
-    for (int i = this.tailSeg; (i <= this.headSeg) && 
-      (!this.road.segIsWrongOrDamaged(i)); i++);
+    for (int i = this.tailSeg; i <= this.headSeg; i++) {
+      if (this.road.segIsWrongOrDamaged(i)) {
+        break;
+      }
+    }
     if (i > this.headSeg) {
       return;
     }
@@ -498,15 +501,18 @@ public class Train extends Chief
       localRoadSegment = this.road.get(this.headSeg);
     }
     this.headAlong += d2;
-    this.pos.setAbs(localRoadSegment.computePos_Fit(this.headAlong, 0.0D, 0.0F));
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localRoadSegment.computePos_Fit(this.headAlong, 0.0D, 0.0F));
 
     placeTrain(false, false);
   }
 
   void wagonDied(Wagon paramWagon, Actor paramActor)
   {
-    for (int i = 0; (i < this.wagons.size()) && 
-      (paramWagon != (Wagon)this.wagons.get(i)); i++);
+    for (int i = 0; i < this.wagons.size(); i++) {
+      if (paramWagon == (Wagon)this.wagons.get(i)) {
+        break;
+      }
+    }
     if (i >= this.wagons.size()) {
       ERR("Unknown wagon");
     }

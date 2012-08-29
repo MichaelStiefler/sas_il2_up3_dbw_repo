@@ -41,10 +41,10 @@ public class Point4d extends Tuple4d
 
   public final double distanceSquared(Point4d paramPoint4d)
   {
-    double d1 = this.x - paramPoint4d.x;
-    double d2 = this.y - paramPoint4d.y;
-    double d3 = this.z - paramPoint4d.z;
-    double d4 = this.z - paramPoint4d.w;
+    double d1 = this.jdField_x_of_type_Double - paramPoint4d.jdField_x_of_type_Double;
+    double d2 = this.jdField_y_of_type_Double - paramPoint4d.jdField_y_of_type_Double;
+    double d3 = this.jdField_z_of_type_Double - paramPoint4d.jdField_z_of_type_Double;
+    double d4 = this.jdField_z_of_type_Double - paramPoint4d.jdField_w_of_type_Double;
     return (float)(d1 * d1 + d2 * d2 + d3 * d3 + d4 * d4);
   }
 
@@ -55,19 +55,19 @@ public class Point4d extends Tuple4d
 
   public final double distanceL1(Point4d paramPoint4d)
   {
-    return Math.abs(this.x - paramPoint4d.x) + Math.abs(this.y - paramPoint4d.y) + Math.abs(this.z - paramPoint4d.z) + Math.abs(this.w - paramPoint4d.w);
+    return Math.abs(this.jdField_x_of_type_Double - paramPoint4d.jdField_x_of_type_Double) + Math.abs(this.jdField_y_of_type_Double - paramPoint4d.jdField_y_of_type_Double) + Math.abs(this.jdField_z_of_type_Double - paramPoint4d.jdField_z_of_type_Double) + Math.abs(this.jdField_w_of_type_Double - paramPoint4d.jdField_w_of_type_Double);
   }
 
   public final double distanceLinf(Point4d paramPoint4d)
   {
-    return Math.max(Math.max(Math.abs(this.x - paramPoint4d.x), Math.abs(this.y - paramPoint4d.y)), Math.max(Math.abs(this.z - paramPoint4d.z), Math.abs(this.w - paramPoint4d.w)));
+    return Math.max(Math.max(Math.abs(this.jdField_x_of_type_Double - paramPoint4d.jdField_x_of_type_Double), Math.abs(this.jdField_y_of_type_Double - paramPoint4d.jdField_y_of_type_Double)), Math.max(Math.abs(this.jdField_z_of_type_Double - paramPoint4d.jdField_z_of_type_Double), Math.abs(this.jdField_w_of_type_Double - paramPoint4d.jdField_w_of_type_Double)));
   }
 
   public final void project(Point4d paramPoint4d)
   {
-    paramPoint4d.x /= paramPoint4d.w;
-    paramPoint4d.y /= paramPoint4d.w;
-    paramPoint4d.z /= paramPoint4d.w;
-    this.w = 1.0D;
+    this.jdField_x_of_type_Double = (paramPoint4d.jdField_x_of_type_Double / paramPoint4d.jdField_w_of_type_Double);
+    this.jdField_y_of_type_Double = (paramPoint4d.jdField_y_of_type_Double / paramPoint4d.jdField_w_of_type_Double);
+    this.jdField_z_of_type_Double = (paramPoint4d.jdField_z_of_type_Double / paramPoint4d.jdField_w_of_type_Double);
+    this.jdField_w_of_type_Double = 1.0D;
   }
 }

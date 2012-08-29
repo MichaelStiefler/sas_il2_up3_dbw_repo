@@ -30,7 +30,7 @@ public class Connect
   static final long TIME_OUT = 500L;
   static final long FULL_TIME_OUT = 30000L;
   public static final String PROMPT = "socket";
-  public static final String VERSION = "FB_PF_v_4.10.1m";
+  public static final String VERSION = "FB_PF_v_4.09m";
   static final String CONNECT = "connect";
   static final String CONNECTED = "connected";
   static final String REJECT = "reject";
@@ -61,7 +61,7 @@ public class Connect
   }
 
   private static String badVersionMessage() {
-    return "Server uses a different version of the game (4.10.1m).";
+    return "Server uses a different version of the game (4.09m).";
   }
 
   private void bindReceiveConnect(StringTokenizer paramStringTokenizer, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
@@ -74,7 +74,7 @@ public class Connect
     if (!paramStringTokenizer.hasMoreTokens()) return;
     String str3 = paramStringTokenizer.nextToken();
 
-    if ((!"FB_PF_v_4.10.1m".equals(str1)) && 
+    if ((!"FB_PF_v_4.09m".equals(str1)) && 
       (!"il2_r01_0f".equals(str1)))
     {
       String str4 = "reject " + str2 + " " + str3 + " " + badVersionMessage();
@@ -117,28 +117,26 @@ public class Connect
 
     }
 
-    if (localObject1 == null)
-    {
-      String str5;
+    if (localObject1 == null) {
       if ((!isBindEnable()) || (paramNetSocket.maxChannels == 0)) {
-        str5 = "reject " + str2 + " " + j + " connect disabled";
+        localObject2 = "reject " + str2 + " " + j + " connect disabled";
 
-        NetEnv.cur().postExtUTF(32, str5, paramNetSocket, paramNetAddress, paramInt);
+        NetEnv.cur().postExtUTF(32, (String)localObject2, paramNetSocket, paramNetAddress, paramInt);
         return;
       }
       if (paramNetSocket.maxChannels <= paramNetSocket.countChannels) {
-        str5 = "reject " + str2 + " " + j + " limit connections = " + paramNetSocket.maxChannels;
+        localObject2 = "reject " + str2 + " " + j + " limit connections = " + paramNetSocket.maxChannels;
 
-        NetEnv.cur().postExtUTF(32, str5, paramNetSocket, paramNetAddress, paramInt);
+        NetEnv.cur().postExtUTF(32, (String)localObject2, paramNetSocket, paramNetAddress, paramInt);
         return;
       }
       int n = NetEnv.hosts().size();
       if (!Main.cur().netServerParams.isDedicated())
         n++;
       if (n >= Main.cur().netServerParams.getMaxUsers()) {
-        localObject2 = "reject " + str2 + " " + j + " limit users = " + Main.cur().netServerParams.getMaxUsers();
+        String str6 = "reject " + str2 + " " + j + " limit users = " + Main.cur().netServerParams.getMaxUsers();
 
-        NetEnv.cur().postExtUTF(32, (String)localObject2, paramNetSocket, paramNetAddress, paramInt);
+        NetEnv.cur().postExtUTF(32, str6, paramNetSocket, paramNetAddress, paramInt);
         return;
       }
 
@@ -147,14 +145,14 @@ public class Connect
       ((NetChannel)localObject1).setInitStamp(j);
       setChannel((NetChannel)localObject1, i1, i, j);
       paramNetSocket.countChannels += 1;
-      if (!"FB_PF_v_4.10.1m".equals(str1)) {
+      if (!"FB_PF_v_4.09m".equals(str1)) {
         kickChannel(localObject1);
       }
     }
 
-    String str6 = "connected " + str1 + " " + i + " " + j + " " + ((NetChannel)localObject1).id();
+    String str5 = "connected " + str1 + " " + i + " " + j + " " + ((NetChannel)localObject1).id();
 
-    NetEnv.cur().postExtUTF(32, str6, paramNetSocket, paramNetAddress, paramInt);
+    NetEnv.cur().postExtUTF(32, str5, paramNetSocket, paramNetAddress, paramInt);
   }
 
   private void kickChannel(Object paramObject) {
@@ -236,7 +234,7 @@ public class Connect
   }
 
   private void joinSend() {
-    String str = "connect FB_PF_v_4.10.1m " + this.joinId + " " + this.joinStamp;
+    String str = "connect FB_PF_v_4.09m " + this.joinId + " " + this.joinStamp;
 
     NetEnv.cur().postExtUTF(32, str, this.joinSocket, this.joinAddr, this.joinPort);
   }
@@ -250,7 +248,7 @@ public class Connect
 
     if (!paramStringTokenizer.hasMoreTokens()) return;
     String str1 = paramStringTokenizer.nextToken();
-    if (!"FB_PF_v_4.10.1m".equals(str1)) return;
+    if (!"FB_PF_v_4.09m".equals(str1)) return;
 
     if (!paramStringTokenizer.hasMoreTokens()) return;
     String str2 = paramStringTokenizer.nextToken();
@@ -448,7 +446,7 @@ public class Connect
     StringBuffer localStringBuffer = new StringBuffer();
     localStringBuffer.append("ainfo"); localStringBuffer.append(' ');
     localStringBuffer.append(str1); localStringBuffer.append(' ');
-    localStringBuffer.append("FB_PF_v_4.10.1m"); localStringBuffer.append(' ');
+    localStringBuffer.append("FB_PF_v_4.09m"); localStringBuffer.append(' ');
     localStringBuffer.append(Main.cur().netServerParams.isMaster() ? "1 " : "0 ");
     localStringBuffer.append("" + (Main.cur().netServerParams.getType() >> 4 & 0x7) + " ");
     localStringBuffer.append(Main.cur().netServerParams.isProtected() ? "1 " : "0 ");
@@ -494,7 +492,7 @@ public class Connect
     for (int m = 0; m < j; m++)
       arrayOfByte[m] = Finger.kTable[((k + m) % Finger.kTable.length)];
     paramNetChannel.swTbl = arrayOfByte;
-    for (m = 0; m < 2; m++)
-      paramNetChannel.crcInit[m] = Finger.kTable[((k + j + m) % Finger.kTable.length)];
+    for (int n = 0; n < 2; n++)
+      paramNetChannel.crcInit[n] = Finger.kTable[((k + j + n) % Finger.kTable.length)];
   }
 }

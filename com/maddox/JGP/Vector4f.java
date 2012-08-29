@@ -31,7 +31,7 @@ public class Vector4f extends Tuple4f
 
   public final float lengthSquared()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+    return this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float + this.jdField_z_of_type_Float * this.jdField_z_of_type_Float + this.jdField_w_of_type_Float * this.jdField_w_of_type_Float;
   }
 
   public final float length()
@@ -41,7 +41,7 @@ public class Vector4f extends Tuple4f
 
   public final float dot(Tuple4f paramTuple4f)
   {
-    return this.x * paramTuple4f.x + this.y * paramTuple4f.y + this.z * paramTuple4f.z + this.w * paramTuple4f.w;
+    return this.jdField_x_of_type_Float * paramTuple4f.jdField_x_of_type_Float + this.jdField_y_of_type_Float * paramTuple4f.jdField_y_of_type_Float + this.jdField_z_of_type_Float * paramTuple4f.jdField_z_of_type_Float + this.jdField_w_of_type_Float * paramTuple4f.jdField_w_of_type_Float;
   }
 
   public final void normalize(Tuple4d paramTuple4d)
@@ -54,10 +54,10 @@ public class Vector4f extends Tuple4f
   {
     double d = length();
 
-    this.x = (float)(this.x / d);
-    this.y = (float)(this.y / d);
-    this.z = (float)(this.z / d);
-    this.w = (float)(this.w / d);
+    this.jdField_x_of_type_Float = (float)(this.jdField_x_of_type_Float / d);
+    this.jdField_y_of_type_Float = (float)(this.jdField_y_of_type_Float / d);
+    this.jdField_z_of_type_Float = (float)(this.jdField_z_of_type_Float / d);
+    this.jdField_w_of_type_Float = (float)(this.jdField_w_of_type_Float / d);
   }
 
   public final float angle(Vector4f paramVector4f)

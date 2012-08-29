@@ -17,7 +17,6 @@ import com.maddox.gwindow.GWindowScrollingDialogClient;
 import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.engine.Config;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.I18N;
@@ -87,59 +86,58 @@ public class GUIControls extends GameState
   {
     for (int i = 0; i < this.items.length; i++) {
       localObject1 = this.items[i];
-      int tmp29_28 = 0; localObject1.key[1] = tmp29_28; localObject1.key[0] = tmp29_28;
+      int tmp23_22 = 0; localObject1.jdField_key_of_type_ArrayOfInt[1] = tmp23_22; localObject1.jdField_key_of_type_ArrayOfInt[0] = tmp23_22;
     }
 
-    ArrayList localArrayList = new ArrayList();
-    Object localObject1 = UserCfg.nameHotKeyEnvs;
-    Object localObject2;
-    for (int j = 0; j < localObject1.length; j++) {
-      localObject2 = HotKeyEnv.env(localObject1[j]);
-      boolean bool = "move".equals(localObject1[j]);
-      HashMapInt localHashMapInt = ((HotKeyEnv)localObject2).all();
+    Object localObject1 = new ArrayList();
+    String[] arrayOfString = UserCfg.nameHotKeyEnvs;
+    for (int j = 0; j < arrayOfString.length; j++) {
+      HotKeyEnv localHotKeyEnv = HotKeyEnv.env(arrayOfString[j]);
+      boolean bool = "move".equals(arrayOfString[j]);
+      HashMapInt localHashMapInt = localHotKeyEnv.all();
       HashMapIntEntry localHashMapIntEntry = localHashMapInt.nextEntry(null);
-      int k;
-      Object localObject3;
+      int m;
+      Object localObject2;
       while (localHashMapIntEntry != null) {
-        k = localHashMapIntEntry.getKey();
-        localObject3 = (String)(String)localHashMapIntEntry.getValue();
-        Item localItem = (Item)this.mapItems.get(localObject3);
-        if (localItem != null) {
-          if (localItem.key[0] == 0) localItem.key[0] = k;
-          else if (localItem.key[1] == 0) localItem.key[1] = k;
+        m = localHashMapIntEntry.getKey();
+        localObject2 = (String)localHashMapIntEntry.getValue();
+        Item localItem2 = (Item)this.mapItems.get(localObject2);
+        if (localItem2 != null) {
+          if (localItem2.jdField_key_of_type_ArrayOfInt[0] == 0) localItem2.jdField_key_of_type_ArrayOfInt[0] = m;
+          else if (localItem2.jdField_key_of_type_ArrayOfInt[1] == 0) localItem2.jdField_key_of_type_ArrayOfInt[1] = m;
           else {
-            localArrayList.add(new Integer(k));
+            ((ArrayList)localObject1).add(new Integer(m));
           }
           if (bool) {
-            ((ItemJoy)localItem).bMinus = false;
-            if (localItem.key[1] != 0) { localArrayList.add(new Integer(localItem.key[1])); localItem.key[1] = 0; }
+            ((ItemJoy)localItem2).bMinus = false;
+            if (localItem2.jdField_key_of_type_ArrayOfInt[1] != 0) { ((ArrayList)localObject1).add(new Integer(localItem2.jdField_key_of_type_ArrayOfInt[1])); localItem2.jdField_key_of_type_ArrayOfInt[1] = 0; }
           }
-        } else if ((bool) && (((String)localObject3).charAt(0) == '-')) {
-          ItemJoy localItemJoy = (ItemJoy)this.mapItems.get(((String)localObject3).substring(1));
+        } else if ((bool) && (((String)localObject2).charAt(0) == '-')) {
+          ItemJoy localItemJoy = (ItemJoy)this.mapItems.get(((String)localObject2).substring(1));
           if (localItemJoy != null) {
             localItemJoy.bMinus = true;
-            if (localItemJoy.key[0] == 0) localItemJoy.key[0] = k;
+            if (localItemJoy.jdField_key_of_type_ArrayOfInt[0] == 0) localItemJoy.jdField_key_of_type_ArrayOfInt[0] = m;
             else {
-              localArrayList.add(new Integer(k));
+              ((ArrayList)localObject1).add(new Integer(m));
             }
-            if (localItemJoy.key[1] != 0) { localArrayList.add(new Integer(localItemJoy.key[1])); localItemJoy.key[1] = 0; }
+            if (localItemJoy.jdField_key_of_type_ArrayOfInt[1] != 0) { ((ArrayList)localObject1).add(new Integer(localItemJoy.jdField_key_of_type_ArrayOfInt[1])); localItemJoy.jdField_key_of_type_ArrayOfInt[1] = 0; }
           }
         }
         localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
       }
-      if (localArrayList.size() > 0) {
-        for (k = 0; k < localArrayList.size(); k++) {
-          localObject3 = (Integer)localArrayList.get(k);
-          localHashMapInt.remove(((Integer)localObject3).intValue());
+      if (((ArrayList)localObject1).size() > 0) {
+        for (m = 0; m < ((ArrayList)localObject1).size(); m++) {
+          localObject2 = (Integer)((ArrayList)localObject1).get(m);
+          localHashMapInt.remove(((Integer)localObject2).intValue());
         }
-        localArrayList.clear();
+        ((ArrayList)localObject1).clear();
       }
     }
 
-    for (j = 0; j < this.items.length; j++) {
-      localObject2 = this.items[j];
-      if (((Item)localObject2).control != null)
-        ((Item)localObject2).control.fillCaption();
+    for (int k = 0; k < this.items.length; k++) {
+      Item localItem1 = this.items[k];
+      if (localItem1.control != null)
+        localItem1.control.fillCaption();
     }
   }
 
@@ -196,41 +194,41 @@ public class GUIControls extends GameState
           ((Item)localObject).y = f;
           ((Item)localObject).label = this.fixedClient.addLabel(new ItemLabel(this.fixedClient, 0.0F, 0.0F, 1.0F, 1.0F, "", null));
           localArrayList.add(localObject);
-          continue;
         }
-        if (localHotKeyCmd2.name().startsWith("$$+")) {
+        else if (localHotKeyCmd2.name().startsWith("$$+")) {
           localObject = new Item();
           f += 32.0F;
           ((Item)localObject).y = f;
           ((Item)localObject).label = this.fixedClient.addLabel(new ItemLabel(this.fixedClient, 0.0F, 0.0F, 1.0F, 1.0F, resName(localHotKeyCmd2.name().substring(3)), null));
           ((Item)localObject).label.color = -16632394;
           localArrayList.add(localObject);
-          continue;
         }
-        if (bool) {
-          ItemJoy localItemJoy = new ItemJoy();
-          localObject = localItemJoy;
-        } else {
-          localObject = new Item();
+        else {
+          if (bool) {
+            ItemJoy localItemJoy = new ItemJoy();
+            localObject = localItemJoy;
+          } else {
+            localObject = new Item();
+          }
+          f += 32.0F;
+          ((Item)localObject).y = f;
+          ((Item)localObject).cmd = localHotKeyCmd2;
+          ((Item)localObject).env = localHotKeyEnv;
+          ((Item)localObject).label = this.fixedClient.addLabel(new ItemLabel(this.fixedClient, 0.0F, 0.0F, 1.0F, 1.0F, resName(localHotKeyCmd2.name()), null));
+          ((Item)localObject).control = ((ItemControl)this.fixedClient.addControl(new ItemControl(this.fixedClient, localHotKeyCmd2.name(), null)));
+          localArrayList.add(localObject);
+          this.mapItems.put(localHotKeyCmd2.name(), localObject);
         }
-        f += 32.0F;
-        ((Item)localObject).y = f;
-        ((Item)localObject).cmd = localHotKeyCmd2;
-        ((Item)localObject).env = localHotKeyEnv;
-        ((Item)localObject).label = this.fixedClient.addLabel(new ItemLabel(this.fixedClient, 0.0F, 0.0F, 1.0F, 1.0F, resName(localHotKeyCmd2.name()), null));
-        ((Item)localObject).control = ((ItemControl)this.fixedClient.addControl(new ItemControl(this.fixedClient, localHotKeyCmd2.name(), null)));
-        localArrayList.add(localObject);
-        this.mapItems.put(localHotKeyCmd2.name(), localObject);
       }
       this._sortMap.clear();
     }
 
     this.items = new Item[localArrayList.size()];
-    for (i = 0; i < localArrayList.size(); i++) {
-      this.items[i] = ((Item)localArrayList.get(i));
-      this.items[i].indx = i;
-      if (this.items[i].control != null)
-        this.items[i].control.indx = i;
+    for (int j = 0; j < localArrayList.size(); j++) {
+      this.items[j] = ((Item)localArrayList.get(j));
+      this.items[j].indx = j;
+      if (this.items[j].control != null)
+        this.items[j].control.indx = j;
     }
     localArrayList.clear();
     f += 64.0F;
@@ -353,8 +351,8 @@ public class GUIControls extends GameState
     GRegion clipReg = new GRegion();
 
     public ScrollClient() {  } 
-    public void created() { this.fixed = (GUIControls.this.fixedClient = (GUIControls.FixedClient)create(new GUIControls.FixedClient(GUIControls.this)));
-      this.fixed.bNotify = true;
+    public void created() { this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = (GUIControls.this.fixedClient = (GUIControls.FixedClient)create(new GUIControls.FixedClient(GUIControls.this)));
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient.bNotify = true;
       this.bNotify = true; }
 
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
@@ -366,16 +364,16 @@ public class GUIControls extends GameState
     public void resized() {
       super.resized();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      if (this.vScroll.isVisible()) {
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+      if (this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible()) {
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
       }
-      this.clipReg.set(0.0F, 0.0F, this.win.dx - localGBevel.R.dx, this.win.dy - localGBevel.B.dy);
+      this.clipReg.set(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.R.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.B.dy);
     }
     public void render() {
       setCanvasColorWHITE();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
     }
     public void doChildrensRender(boolean paramBoolean) {
       pushClipRegion(this.clipReg, true, 0.0F);
@@ -443,30 +441,17 @@ public class GUIControls extends GameState
       localItem.key[0] = GUIControls.this.keySum;
       int tmp168_167 = 0; GUIControls.this.curKey[1] = tmp168_167; GUIControls.this.curKey[0] = tmp168_167;
       fillCaption();
-      this.parentWindow.setKeyFocus();
+      this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.setKeyFocus();
     }
 
     private void requestItem() {
       GUIControls.Item localItem = GUIControls.this.items[GUIControls.this.iFinded];
       String str = localItem.label.cap.caption;
-      GUIControls.this.messageBox = new GWindowMessageBox(GUIControls.this.client, 24.0F, true, I18N.gui("ctrl.Warning"), I18N.gui("ctrl.ReplaceCommand0") + str + I18N.gui("ctrl.ReplaceCommand1"), 1, 0.0F)
-      {
-        public void result(int paramInt)
-        {
-          GUIControls.this.messageBox = null;
-          if (paramInt == 3) {
-            GUIControls.ItemControl.this.fillItem(true);
-          }
-          else
-          {
-            int tmp50_49 = 0; GUIControls.this.curKey[1] = tmp50_49; GUIControls.this.curKey[0] = tmp50_49;
-            GUIControls.ItemControl.this.fillCaption();
-            this.parentWindow.setKeyFocus();
-          }
-        } } ;
+      GUIControls.this.messageBox = new GUIControls.1(this, GUIControls.this.client, 24.0F, true, I18N.gui("ctrl.Warning"), I18N.gui("ctrl.ReplaceCommand0") + str + I18N.gui("ctrl.ReplaceCommand1"), 1, 0.0F);
     }
 
-    protected void doKey(int paramInt, boolean paramBoolean) {
+    protected void doKey(int paramInt, boolean paramBoolean)
+    {
       doKey(paramInt, paramBoolean, false, false);
     }
 
@@ -527,7 +512,7 @@ public class GUIControls extends GameState
           }
           int tmp714_713 = 0; GUIControls.this.curKey[1] = tmp714_713; GUIControls.this.curKey[0] = tmp714_713;
           fillCaption();
-          this.parentWindow.setKeyFocus();
+          this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.setKeyFocus();
         }
       }
     }
@@ -535,7 +520,7 @@ public class GUIControls extends GameState
     public void keyboardKey(int paramInt, boolean paramBoolean) {
       super.keyboardKey(paramInt, paramBoolean);
       if (paramInt == 27) {
-        this.parentWindow.setKeyFocus();
+        this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.setKeyFocus();
         return;
       }
       if ((isKeyFocus()) && (!(GUIControls.this.items[this.indx] instanceof GUIControls.ItemJoy)) && (GUIControls.this.messageBox == null))
@@ -591,24 +576,6 @@ public class GUIControls extends GameState
         doKey(paramInt2, true);
         doKey(paramInt2, false, true, bool);
         doKey(paramInt1, false, true, bool);
-
-        int[] arrayOfInt = new int[13];
-        Joy.adapter().getSensitivity(paramInt1 - 580, paramInt2 - 563, arrayOfInt);
-        if (arrayOfInt[12] > 0) {
-          if (bool) {
-            arrayOfInt[12] = 2;
-          }
-          else {
-            arrayOfInt[12] = 1;
-          }
-        }
-        Joy.adapter().setSensitivity(paramInt1 - 580, paramInt2 - 563, arrayOfInt);
-        int k = Config.cur.ini.get("rts", "JoyProfile", 0, 0, 3);
-        String str = "rts_joystick";
-        if (k > 0) {
-          str = str + k;
-        }
-        Joy.adapter().saveConfig(Config.cur.ini, str);
       }
     }
 
@@ -663,7 +630,7 @@ public class GUIControls extends GameState
       if (isActivated()) {
         setCanvasColorWHITE();
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+        lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
       }
       super.render();
     }

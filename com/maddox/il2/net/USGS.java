@@ -104,8 +104,7 @@ public class USGS
             if (str.indexOf("COOP") > 0) bGameDfight = false; else
               bGameDfight = true;
             csp_state = 2;
-            cspPostMessage(1, 0);
-          }break;
+            cspPostMessage(1, 0); } break;
         case 2:
           if (j != 65538) break;
           csp_state = 3;

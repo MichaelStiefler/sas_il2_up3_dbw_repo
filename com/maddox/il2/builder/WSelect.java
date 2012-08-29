@@ -59,7 +59,7 @@ public class WSelect extends GWindowFramed
   }
 
   public boolean isMeshVisible() {
-    return this.renders.bVisible;
+    return this.renders.jdField_bVisible_of_type_Boolean;
   }
   public HierMesh getHierMesh() {
     if (!Actor.isValid(this.actorMesh)) return null;
@@ -93,18 +93,18 @@ public class WSelect extends GWindowFramed
     this.meshName = paramString;
     this.bGround = paramBoolean;
     if (paramString == null) {
-      this.wShow.bEnable = false;
-      if (this.renders.bVisible) {
+      this.wShow.jdField_bEnable_of_type_Boolean = false;
+      if (this.renders.jdField_bVisible_of_type_Boolean) {
         this.renders.hideWindow();
-        this.wShow.cap = new GCaption(Plugin.i18n("ButtonShow"));
+        this.wShow.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(Plugin.i18n("ButtonShow"));
       }
       return;
     }
-    this.wShow.bEnable = true;
-    if (!this.renders.bVisible) return;
+    this.wShow.jdField_bEnable_of_type_Boolean = true;
+    if (!this.renders.jdField_bVisible_of_type_Boolean) return;
     if (!this.renders.isVisible()) {
       this.renders.hideWindow();
-      this.wShow.cap = new GCaption(Plugin.i18n("ButtonShow"));
+      this.wShow.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(Plugin.i18n("ButtonShow"));
       return;
     }
     double d = 20.0D;
@@ -118,18 +118,18 @@ public class WSelect extends GWindowFramed
         Aircraft.prepareMeshCamouflage(paramString, ((ActorHMesh)this.actorMesh).hierMesh());
     }
     if (paramBoolean) {
-      this.actorMesh.pos.setAbs(new Orient(30.0F, 0.0F, 0.0F));
+      this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Orient(30.0F, 0.0F, 0.0F));
       d *= Math.cos(0.7853981633974483D) / Math.sin(this.camera3D.FOV() * 3.141592653589793D / 180.0D / 2.0D);
-      this.camera3D.pos.setAbs(new Point3d(d, 0.0D, d * 0.9D), new Orient(180.0F, -45.0F, 0.0F));
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(d, 0.0D, d * 0.9D), new Orient(180.0F, -45.0F, 0.0F));
     }
     else
     {
-      this.actorMesh.pos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
+      this.actorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
       d *= Math.cos(0.2617993877991494D) / Math.sin(this.camera3D.FOV() * 3.141592653589793D / 180.0D / 2.0D);
-      this.camera3D.pos.setAbs(new Point3d(d, 0.0D, 0.0D), new Orient(180.0F, 0.0F, 0.0F));
+      this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(d, 0.0D, 0.0D), new Orient(180.0F, 0.0F, 0.0F));
     }
 
-    this.camera3D.pos.reset();
+    this.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     if (paramBoolean)
       this.animateMeshT = 0.0F;
     doUpdateMesh();
@@ -139,8 +139,8 @@ public class WSelect extends GWindowFramed
     this.bAlwaysOnTop = true;
     super.created();
     this.title = Plugin.i18n("Object");
-    this.clientWindow = create(new GWindowTabDialogClient());
-    this.tabsClient = ((GWindowTabDialogClient)this.clientWindow);
+    this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow = create(new GWindowTabDialogClient());
+    this.tabsClient = ((GWindowTabDialogClient)this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow);
     GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.tabsClient.create(new GWindowDialogClient());
     this.tabsClient.addTab(Plugin.i18n("Type"), localGWindowDialogClient);
     localGWindowDialogClient.addControl(this.comboBox1 = new GWindowComboControl(localGWindowDialogClient, 1.0F, 1.0F, 18.0F) {
@@ -180,11 +180,11 @@ public class WSelect extends GWindowFramed
         if (paramInt1 == 2) {
           if (WSelect.this.renders.bVisible) {
             WSelect.this.renders.hideWindow();
-            this.cap = new GCaption(Plugin.i18n("ButtonShow"));
+            this.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(Plugin.i18n("ButtonShow"));
           } else {
             Actor.destroy(WSelect.this.actorMesh);
             WSelect.this.renders.showWindow();
-            this.cap = new GCaption(Plugin.i18n("ButtonHide"));
+            this.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(Plugin.i18n("ButtonHide"));
             if (Actor.isValid(WSelect.this.actorMesh))
               WSelect.this.actorMesh.destroy();
             WSelect.this.setMesh(WSelect.this.meshName, WSelect.this.bGround);
@@ -194,7 +194,7 @@ public class WSelect extends GWindowFramed
         return super.notify(paramInt1, paramInt2);
       }
     });
-    this.wShow.bEnable = false;
+    this.wShow.jdField_bEnable_of_type_Boolean = false;
 
     this.renders = new GUIRenders(localGWindowDialogClient, 1.0F, 6.0F, 18.0F, 12.0F, true) {
       public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
@@ -207,13 +207,13 @@ public class WSelect extends GWindowFramed
               WSelect.this.actorMesh.pos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
         }
         else if (paramInt == 0) {
-          paramFloat1 -= this.win.dx / 2.0F;
-          if (Math.abs(paramFloat1) < this.win.dx / 16.0F) WSelect.this.animateMeshA = 0.0F; else
-            WSelect.this.animateMeshA = (-128.0F * paramFloat1 / this.win.dx);
+          paramFloat1 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F;
+          if (Math.abs(paramFloat1) < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 16.0F) WSelect.this.animateMeshA = 0.0F; else
+            WSelect.this.animateMeshA = (-128.0F * paramFloat1 / this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
           if (!WSelect.this.bGround) {
-            paramFloat2 -= this.win.dy / 2.0F;
-            if (Math.abs(paramFloat2) < this.win.dy / 16.0F) WSelect.this.animateMeshT = 0.0F; else
-              WSelect.this.animateMeshT = (-128.0F * paramFloat2 / this.win.dy); 
+            paramFloat2 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F;
+            if (Math.abs(paramFloat2) < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 16.0F) WSelect.this.animateMeshT = 0.0F; else
+              WSelect.this.animateMeshT = (-128.0F * paramFloat2 / this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy); 
           }
         }
       }
@@ -240,12 +240,12 @@ public class WSelect extends GWindowFramed
 
   public void _resized() {
     if (this.comboBox1 == null) return;
-    this.comboBox1.setSize(this.comboBox1.parentWindow.win.dx - lookAndFeel().metric(2.0F), this.comboBox1.win.dy);
-    this.comboBox2.setSize(this.comboBox2.parentWindow.win.dx - lookAndFeel().metric(2.0F), this.comboBox2.win.dy);
-    this.wShow.setSize(this.wShow.parentWindow.win.dx - lookAndFeel().metric(2.0F), this.wShow.win.dy);
-    float f = this.renders.parentWindow.win.dy - lookAndFeel().metric(7.0F);
+    this.comboBox1.setSize(this.comboBox1.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().metric(2.0F), this.comboBox1.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+    this.comboBox2.setSize(this.comboBox2.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().metric(2.0F), this.comboBox2.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+    this.wShow.setSize(this.wShow.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().metric(2.0F), this.wShow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+    float f = this.renders.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - lookAndFeel().metric(7.0F);
     if (f <= 10.0F) f = 10.0F;
-    this.renders.setSize(this.renders.parentWindow.win.dx - lookAndFeel().metric(2.0F), f);
+    this.renders.setSize(this.renders.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().metric(2.0F), f);
   }
 
   public void resized() {
@@ -273,7 +273,7 @@ public class WSelect extends GWindowFramed
       if (Actor.isValid(WSelect.this.actorMesh)) {
         if ((WSelect.this.animateMeshA != 0.0F) || (WSelect.this.animateMeshT != 0.0F)) {
           WSelect.this.actorMesh.pos.getAbs(WSelect.this._orient);
-          WSelect.this._orient.set(WSelect.this._orient.azimut() + WSelect.this.animateMeshA * WSelect.this.root.deltaTimeSec, WSelect.this._orient.tangage() + WSelect.this.animateMeshT * WSelect.this.root.deltaTimeSec, 0.0F);
+          WSelect.this._orient.set(WSelect.this._orient.azimut() + WSelect.this.animateMeshA * WSelect.this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, WSelect.this._orient.tangage() + WSelect.this.animateMeshT * WSelect.this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, 0.0F);
 
           WSelect.this._orient.wrap360();
           WSelect.this.actorMesh.pos.setAbs(WSelect.this._orient);

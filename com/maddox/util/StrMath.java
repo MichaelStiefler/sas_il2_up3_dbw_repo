@@ -15,23 +15,25 @@ public class StrMath
     int j = 0;
     int k = -1;
     int m = -1;
-    while (true) {
-      if (arrayOfChar1[i] == arrayOfChar2[j]) {
-        if (arrayOfChar2[j] == 0)
-          return true;
-        j++;
-        i++; continue;
+    while (true)
+    {
+      if (arrayOfChar2[j] == 0)
+        return true;
+      j++;
+      i++;
+
+      while (arrayOfChar1[i] != arrayOfChar2[j])
+      {
+        if ((arrayOfChar2[j] != 0) && (arrayOfChar1[i] == '?')) {
+          i++;
+          j++; continue;
+        }if (arrayOfChar1[i] == '*') {
+          i++; k = i;
+          m = j; continue;
+        }if ((m == -1) || (arrayOfChar2[m] == 0)) break label183; m++; j = m;
+        i = k;
       }
-      if ((arrayOfChar2[j] != 0) && (arrayOfChar1[i] == '?')) {
-        i++;
-        j++; continue;
-      }if (arrayOfChar1[i] == '*') {
-        i++; k = i;
-        m = j; continue;
-      }if ((m == -1) || (arrayOfChar2[m] == 0)) break;
-      m++; j = m;
-      i = k;
     }
-    return false;
+    label183: return false;
   }
 }

@@ -6,12 +6,12 @@ public class EnvControl extends SoundControl
 {
   public void load(SectFile paramSectFile, String paramString)
   {
-    boolean bool = this.handle != 0;
+    boolean bool = this.jdField_handle_of_type_Int != 0;
     if (bool) {
       float f1 = paramSectFile.get(paramString, "gain0", 1.0F);
       float f2 = paramSectFile.get(paramString, "gain1", 1.0F);
-      bool = jniSet(this.handle, f1, f2);
-      if (!bool) printf("ERROR loading sound control " + paramString);
+      bool = jniSet(this.jdField_handle_of_type_Int, f1, f2);
+      if (!bool) BaseObject.printf("ERROR loading sound control " + paramString);
     }
   }
 

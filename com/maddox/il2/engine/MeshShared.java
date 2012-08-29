@@ -47,10 +47,10 @@ public class MeshShared extends Mesh
       meshes.put(paramString, localMesh);
     }
 
-    this.cppObj = localMesh.cppObject();
+    this.jdField_cppObj_of_type_Int = localMesh.cppObject();
     this.collisionR = localMesh.collisionR();
     this.visibilityR = localMesh.visibilityR();
-    this.bAllowsSimpleRendering = localMesh.bAllowsSimpleRendering;
+    this.jdField_bAllowsSimpleRendering_of_type_Boolean = localMesh.jdField_bAllowsSimpleRendering_of_type_Boolean;
   }
   protected void finalize() {
   }
@@ -65,10 +65,10 @@ public class MeshShared extends Mesh
     arraySize = 0; } 
   public static int sizeRenderArray() { return arraySize; } 
   public boolean putToRenderArray(Loc paramLoc) {
-    if ((!this.bAllowsSimpleRendering) || (arraySize >= 2048)) {
+    if ((!this.jdField_bAllowsSimpleRendering_of_type_Boolean) || (arraySize >= 2048)) {
       return false;
     }
-    arrayCppObjs[arraySize] = this.cppObj;
+    arrayCppObjs[arraySize] = this.jdField_cppObj_of_type_Int;
     Point3d localPoint3d = paramLoc.getPoint();
     Orient localOrient = paramLoc.getOrient();
     int i = 3 * arraySize;

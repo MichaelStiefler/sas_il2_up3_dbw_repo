@@ -5,7 +5,7 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
 
-public abstract class Scheme1 extends AircraftLH
+public abstract class Scheme1 extends Aircraft
 {
   protected void moveRudder(float paramFloat)
   {

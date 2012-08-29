@@ -3,14 +3,11 @@ package com.maddox.il2.objects.air;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.Squadron;
 import com.maddox.il2.ai.Wing;
-import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.FObj;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Mat;
-import com.maddox.il2.engine.Mesh;
 import com.maddox.il2.game.I18N;
-import com.maddox.il2.game.Mission;
 import com.maddox.rts.HomePath;
 import com.maddox.rts.SectFile;
 import java.io.File;
@@ -126,17 +123,17 @@ public abstract class PaintScheme
     } else {
       if ((paramRegiment.country() == countryUSA) || ((paramRegiment.country() == countryBritain) && ("rn".equals(paramRegiment.branch()))) || (paramRegiment.country() == countryJapan))
       {
-        changeMat(null, paramHierMesh, "Overlay5", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay5", "null", "null.tga", 1.0F, 1.0F, 1.0F);
       }
-      else changeMat(null, paramHierMesh, "Overlay5", paramRegiment.name(), paramRegiment.fileNameTga(), 1.0F, 1.0F, 1.0F);
+      else changeMat(paramHierMesh, "Overlay5", paramRegiment.name(), paramRegiment.fileNameTga(), 1.0F, 1.0F, 1.0F);
 
-      changeMat(null, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(null, paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(null, paramHierMesh, "Overlay3", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(null, paramHierMesh, "Overlay4", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(null, paramHierMesh, "Overlay6", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(null, paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(null, paramHierMesh, "Overlay8", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay3", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay4", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "null", "null.tga", 1.0F, 1.0F, 1.0F);
       prepareNumOff(paramClass, paramHierMesh, paramRegiment, paramInt1, paramInt2, paramInt3);
     }
   }
@@ -159,39 +156,18 @@ public abstract class PaintScheme
     psFinnishFighterString = new String[][] { { I18N.color("Red") + " ", I18N.color("White") + " ", I18N.color("Yellow") + " ", I18N.color("Blue") + " " }, { I18N.color("Red") + " ", I18N.color("White") + " ", I18N.color("Yellow") + " ", I18N.color("Blue") + " " } };
   }
 
-  protected void changeMat(Class paramClass, HierMesh paramHierMesh, String paramString1, String paramString2, String paramString3, float paramFloat1, float paramFloat2, float paramFloat3)
+  protected void changeMat(HierMesh paramHierMesh, String paramString1, String paramString2, String paramString3, float paramFloat1, float paramFloat2, float paramFloat3)
   {
     if (!Config.isUSE_RENDER()) return;
     if ((paramString3 == null) || (paramString3.length() < 4)) return;
     int i = paramString3.charAt(paramString3.length() - 1);
     if ((i == 92) || (i == 47)) return;
 
-    String[] arrayOfString = getCustomMarkings(paramClass, paramString2, paramString3, paramString1);
-    if (arrayOfString != null)
-    {
-      paramString2 = arrayOfString[0];
-      paramString3 = arrayOfString[1];
-    }
-    String str = null;
-    if (paramClass != null)
-    {
-      str = getPlaneSpecificMaterialID(paramClass);
-      if (str != null)
-      {
-        paramString2 = paramString2 + "_" + str;
-      }
-
-    }
-
     int j = paramHierMesh.materialFind(paramString1);
     if (j != -1) {
       Mat localMat = makeMat(paramString2, paramString3, paramFloat1, paramFloat2, paramFloat3);
       if (localMat != null)
-      {
         paramHierMesh.materialReplace(paramString1, localMat);
-        if (str != null)
-          changeMatAppearance(paramHierMesh, paramString1);
-      }
     }
   }
 
@@ -511,150 +487,5 @@ public abstract class PaintScheme
     if (paramInt < 1) return 1;
     if (paramInt > 26) return 26;
     return paramInt;
-  }
-
-  private String getPlaneSpecificMaterialID(Class paramClass)
-  {
-    if ((paramClass.isAssignableFrom(IL_2I.class)) || (paramClass.isAssignableFrom(IL_2MLate.class)) || (paramClass.isAssignableFrom(IL_2Type3.class)) || (paramClass.isAssignableFrom(IL_2Type3M.class)))
-    {
-      return "IL-2";
-    }
-    if ((paramClass.isAssignableFrom(MIG_3EARLY.class)) || (paramClass.isAssignableFrom(MIG_3AM38.class)) || (paramClass.isAssignableFrom(MIG_3POKRYSHKIN.class)) || (paramClass.isAssignableFrom(MIG_3SHVAK.class)) || (paramClass.isAssignableFrom(MIG_3UB.class)) || (paramClass.isAssignableFrom(MIG_3UD.class)))
-    {
-      return "MIG-3";
-    }
-    if (paramClass.isAssignableFrom(U_2VS.class))
-    {
-      return "U-2";
-    }
-    if (paramClass.isAssignableFrom(R_10.class))
-    {
-      return "R-10";
-    }
-    return null;
-  }
-
-  private String[] getCustomMarkings(Class paramClass, String paramString1, String paramString2, String paramString3)
-  {
-    if (paramClass == null)
-      return null;
-    int i;
-    if (paramString1.equals("whitestar1"))
-    {
-      i = Mission.getMissionDate(true);
-      if (i > 0)
-      {
-        if (i < 19420515)
-        {
-          paramString2 = "States/whitestar1_early.tga";
-          paramString1 = "whitestar1_early";
-        }
-        if ((i > 19421108) && (i < 19430628) && (paramString3.equals("Overlay7")) && ((World.cur().camouflage == 2) || (World.cur().camouflage == 5)))
-        {
-          paramString2 = "States/whitestar1_OT.tga";
-          paramString1 = "whitestar1_OT";
-        }
-
-        return new String[] { paramString1, paramString2 };
-      }
-    } else {
-      if ((paramString1.equals("redstar0")) || (paramString1.equals("redstar1")) || (paramString1.equals("redstar2")) || (paramString1.equals("redstar3")))
-      {
-        i = Mission.getMissionDate(true);
-        if (i > 0)
-        {
-          if (PE_8.class.isAssignableFrom(paramClass))
-          {
-            if (i < 19421231)
-            {
-              paramString2 = "Russian/redstar1.tga";
-              paramString1 = "redstar1";
-            }
-            else
-            {
-              paramString2 = "Russian/redstar3.tga";
-              paramString1 = "redstar3";
-            }
-            return new String[] { paramString1, paramString2 };
-          }
-
-          if ((i < 19391000) && (!SB_2M100A.class.isAssignableFrom(paramClass)) && (!SB_2M103.class.isAssignableFrom(paramClass)) && (!IL_4_DB3B.class.isAssignableFrom(paramClass)) && (!IL_4_DB3F.class.isAssignableFrom(paramClass)) && (!IL_4_DB3M.class.isAssignableFrom(paramClass)) && (!IL_4_DB3T.class.isAssignableFrom(paramClass)) && (!IL_4_IL4.class.isAssignableFrom(paramClass)))
-          {
-            paramString2 = "Russian/redstar0.tga";
-            paramString1 = "redstar0";
-          }
-          else if (i < 19420500)
-          {
-            paramString2 = "Russian/redstar1_border.tga";
-            paramString1 = "redstar1_border";
-          }
-          else if (i < 19430700)
-          {
-            paramString2 = "Russian/redstar1.tga";
-            paramString1 = "redstar1";
-          }
-          else if (i < 19430700)
-          {
-            paramString2 = "Russian/redstar2.tga";
-            paramString1 = "redstar2";
-          }
-          else
-          {
-            paramString2 = "Russian/redstar3.tga";
-            paramString1 = "redstar3";
-          }
-          return new String[] { paramString1, paramString2 };
-        }
-        return null;
-      }
-
-      if ((DO_335A0.class.isAssignableFrom(paramClass)) || (DO_335V13.class.isAssignableFrom(paramClass)))
-      {
-        if (paramString1.equals("balken2"))
-          return new String[] { "balken3", "German/balken3.tga" };
-      }
-      else if ((BF_109G6AS.class.isAssignableFrom(paramClass)) || (BF_109G6Late.class.isAssignableFrom(paramClass)) || (BF_109G10.class.isAssignableFrom(paramClass)) || (FW_190F8.class.isAssignableFrom(paramClass)) || (FW_190A8.class.isAssignableFrom(paramClass)) || (FW_190A6.class.isAssignableFrom(paramClass)))
-      {
-        if (paramString1.equals("balken0"))
-          return new String[] { "balken4", "German/balken4.tga" };
-        if (paramString1.equals("balken1"))
-          return new String[] { "balken2", "German/balken2.tga" };
-      }
-      else if (FW_190A9.class.isAssignableFrom(paramClass))
-      {
-        if (paramString1.equals("balken0"))
-          return new String[] { "balken4", "German/balken4.tga" };
-        if (paramString1.equals("balken1"))
-          return new String[] { "balken5", "German/balken5.tga" }; 
-      }
-    }
-    return null;
-  }
-
-  private void changeMatAppearance(Mesh paramMesh, String paramString)
-  {
-    try
-    {
-      int i = paramMesh.materialFind("Matt1D0o");
-      int j = paramMesh.materialFind(paramString);
-
-      if ((i == -1) || (j == -1)) {
-        return;
-      }
-      Mat localMat1 = paramMesh.material(i);
-      Mat localMat2 = paramMesh.material(j);
-
-      if ((localMat2 == null) || (localMat1 == null)) {
-        return;
-      }
-      localMat2.set(22, localMat1.get(22));
-      localMat2.set(23, localMat1.get(23));
-      localMat2.set(24, localMat1.get(24));
-      localMat2.set(20, localMat1.get(20));
-      localMat2.set(21, localMat1.get(21));
-    }
-    catch (Exception localException)
-    {
-    }
   }
 }

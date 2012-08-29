@@ -36,7 +36,7 @@ public class BombAB1000 extends Bomb
 
   public void msgCollision(Actor paramActor, String paramString1, String paramString2)
   {
-    if ((this.t1 > Time.current()) && (isFuseArmed())) {
+    if (this.t1 > Time.current()) {
       doFireContaineds();
     }
 
@@ -47,7 +47,7 @@ public class BombAB1000 extends Bomb
   {
     this.charge += 1;
     if (this.charge < 6) {
-      Explosions.generateExplosion(this, this.pos.getCurrentPoint(), 0.01F, 0, 10.0F, 0.0D);
+      Explosions.generateExplosion(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrentPoint(), 0.01F, 0, 10.0F, 0.0D);
       Actor localActor = getOwner();
       if (!Actor.isValid(localActor)) {
         return;
@@ -59,7 +59,7 @@ public class BombAB1000 extends Bomb
       Vector3d localVector3d2 = new Vector3d();
       Loc localLoc1 = new Loc();
       Loc localLoc2 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      this.pos.getCurrent(localLoc1);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent(localLoc1);
       findHook("_Spawn0" + this.charge).computePos(this, localLoc1, localLoc2);
       getSpeed(localVector3d2);
       for (int i = 0; i < 74; i++) {
@@ -70,9 +70,9 @@ public class BombAB1000 extends Bomb
         localVector3d1.scale(World.Rnd().nextDouble(5.0D, 38.200000000000003D));
         localVector3d1.add(localVector3d2);
         BombB22EZ localBombB22EZ = new BombB22EZ();
-        localBombB22EZ.pos.setUpdateEnable(true);
-        localBombB22EZ.pos.setAbs(localPoint3d, localOrient);
-        localBombB22EZ.pos.reset();
+        localBombB22EZ.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
+        localBombB22EZ.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d, localOrient);
+        localBombB22EZ.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         localBombB22EZ.start();
         localBombB22EZ.setOwner(localActor, false, false, false);
         localBombB22EZ.setSpeed(localVector3d1);
@@ -83,7 +83,7 @@ public class BombAB1000 extends Bomb
       }
       this.t1 = (Time.current() + 1000L);
     } else {
-      Explosions.AirFlak(this.pos.getAbsPoint(), 1);
+      Explosions.AirFlak(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), 1);
       postDestroy();
     }
   }

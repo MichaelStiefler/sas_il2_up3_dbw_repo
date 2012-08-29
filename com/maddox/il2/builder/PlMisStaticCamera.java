@@ -41,18 +41,18 @@ public class PlMisStaticCamera extends Plugin
 
   public void renderMap2DAfter()
   {
-    if (builder.isFreeView()) return;
+    if (Plugin.builder.isFreeView()) return;
     if (!this.viewType.bChecked) return;
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     int i = this.allActors.size();
     for (int j = 0; j < i; j++) {
       ActorStaticCamera localActorStaticCamera = (ActorStaticCamera)this.allActors.get(j);
-      if (builder.project2d(localActorStaticCamera.pos.getAbsPoint(), this.p2d)) {
+      if (Plugin.builder.project2d(localActorStaticCamera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.p2d)) {
         int k = Army.color(0);
-        if (builder.isMiltiSelected(localActorStaticCamera)) k = Builder.colorMultiSelected(k);
-        else if (localActorStaticCamera == localActor) k = Builder.colorSelected();
+        if (localActorStaticCamera == localActor)
+          k = Builder.colorSelected();
         IconDraw.setColor(k);
-        IconDraw.render(localActorStaticCamera, this.p2d.x, this.p2d.y);
+        IconDraw.render(localActorStaticCamera, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
       }
     }
   }
@@ -64,7 +64,7 @@ public class PlMisStaticCamera extends Plugin
     int j = paramSectFile.sectionAdd("StaticCamera");
     for (int k = 0; k < i; k++) {
       ActorStaticCamera localActorStaticCamera = (ActorStaticCamera)this.allActors.get(k);
-      paramSectFile.lineAdd(j, "" + (int)localActorStaticCamera.pos.getAbsPoint().x + " " + (int)localActorStaticCamera.pos.getAbsPoint().y + " " + localActorStaticCamera.h);
+      paramSectFile.lineAdd(j, "" + (int)localActorStaticCamera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double + " " + (int)localActorStaticCamera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double + " " + localActorStaticCamera.h);
     }
 
     return true;
@@ -77,8 +77,8 @@ public class PlMisStaticCamera extends Plugin
       Point3d localPoint3d = new Point3d();
       for (int k = 0; k < j; k++) {
         NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-        localPoint3d.x = localNumberTokenizer.next(0);
-        localPoint3d.y = localNumberTokenizer.next(0);
+        localPoint3d.jdField_x_of_type_Double = localNumberTokenizer.next(0);
+        localPoint3d.jdField_y_of_type_Double = localNumberTokenizer.next(0);
         int m = localNumberTokenizer.next(100, 2, 10000);
         ActorStaticCamera localActorStaticCamera = insert(localPoint3d, false);
         if (localActorStaticCamera != null)
@@ -111,7 +111,7 @@ public class PlMisStaticCamera extends Plugin
       Property.set(localActorStaticCamera, "builderPlugin", this);
       this.allActors.add(localActorStaticCamera);
       if (paramBoolean)
-        builder.setSelected(localActorStaticCamera);
+        Plugin.builder.setSelected(localActorStaticCamera);
       PlMission.setChanged();
       return localActorStaticCamera; } catch (Exception localException) {
     }
@@ -119,8 +119,8 @@ public class PlMisStaticCamera extends Plugin
   }
 
   public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if (i != this.startComboBox1)
       return;
     if ((j < 0) || (j >= this.item.length))
@@ -129,7 +129,7 @@ public class PlMisStaticCamera extends Plugin
   }
 
   public void changeType() {
-    builder.setSelected(null);
+    Plugin.builder.setSelected(null);
   }
 
   private void updateView() {
@@ -142,23 +142,23 @@ public class PlMisStaticCamera extends Plugin
 
   public void configure()
   {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisBorn: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
   }
 
   private void fillComboBox2(int paramInt) {
     if (paramInt != this.startComboBox1)
       return;
-    if (builder.wSelect.curFilledType != paramInt) {
-      builder.wSelect.curFilledType = paramInt;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt) {
+      Plugin.builder.wSelect.curFilledType = paramInt;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.item.length; i++)
-        builder.wSelect.comboBox2.add(i18n(this.item[i].name));
-      builder.wSelect.comboBox1.setSelected(paramInt, true, false);
+        Plugin.builder.wSelect.comboBox2.add(Plugin.i18n(this.item[i].name));
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(0, true, false);
-    builder.wSelect.setMesh(null, true);
+    Plugin.builder.wSelect.comboBox2.setSelected(0, true, false);
+    Plugin.builder.wSelect.setMesh(null, true);
   }
 
   public void viewTypeAll(boolean paramBoolean) {
@@ -168,23 +168,23 @@ public class PlMisStaticCamera extends Plugin
 
   public String[] actorInfo(Actor paramActor) {
     ActorStaticCamera localActorStaticCamera = (ActorStaticCamera)paramActor;
-    this._actorInfo[0] = (i18n("StaticCamera") + " " + localActorStaticCamera.h);
+    this._actorInfo[0] = (Plugin.i18n("StaticCamera") + " " + localActorStaticCamera.h);
     return this._actorInfo;
   }
 
   public void syncSelector()
   {
-    ActorStaticCamera localActorStaticCamera = (ActorStaticCamera)builder.selectedActor();
+    ActorStaticCamera localActorStaticCamera = (ActorStaticCamera)Plugin.builder.selectedActor();
     fillComboBox2(this.startComboBox1);
-    builder.wSelect.comboBox2.setSelected(0, true, false);
-    builder.wSelect.tabsClient.addTab(1, this.tabTarget);
+    Plugin.builder.wSelect.comboBox2.setSelected(0, true, false);
+    Plugin.builder.wSelect.tabsClient.addTab(1, this.tabTarget);
     this.wH.setValue("" + localActorStaticCamera.h, false);
   }
 
   public void createGUI() {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add(i18n("StaticCamera"));
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
+    Plugin.builder.wSelect.comboBox1.add(Plugin.i18n("StaticCamera"));
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -192,29 +192,29 @@ public class PlMisStaticCamera extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginMission.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
     if (i >= 0) {
-      this.viewType = builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(builder.mDisplayFilter.subMenu, i18n("showStaticCamers"), null)
+      this.viewType = Plugin.builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("showStaticCamers"), null)
       {
         public void execute() {
-          this.bChecked = (!this.bChecked);
+          this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
           PlMisStaticCamera.this.updateView();
         }
       });
       this.viewType.bChecked = true;
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
-    this.tabTarget = builder.wSelect.tabsClient.createTab(i18n("StaticCamera"), localGWindowDialogClient);
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient());
+    this.tabTarget = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("StaticCamera"), localGWindowDialogClient);
 
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 4.0F, 1.3F, i18n("Height"), null));
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 11.0F, 1.0F, 2.0F, 1.3F, i18n("[m]"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 4.0F, 1.3F, Plugin.i18n("Height"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 11.0F, 1.0F, 2.0F, 1.3F, Plugin.i18n("[m]"), null));
     localGWindowDialogClient.addControl(this.wH = new GWindowEditControl(localGWindowDialogClient, 6.0F, 1.0F, 4.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -234,52 +234,7 @@ public class PlMisStaticCamera extends Plugin
       } } );
   }
 
-  public String mis_getProperties(Actor paramActor) {
-    String str = "";
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if (i != this.startComboBox1)
-      return str;
-    if ((j < 0) || (j >= this.item.length)) {
-      return str;
-    }
-    ActorStaticCamera localActorStaticCamera = (ActorStaticCamera)paramActor;
-    str = "" + (int)localActorStaticCamera.pos.getAbsPoint().x + " " + (int)localActorStaticCamera.pos.getAbsPoint().y + " " + localActorStaticCamera.h;
-    return str;
-  }
-
-  public Actor mis_insert(Loc paramLoc, String paramString) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if (i != this.startComboBox1)
-      return null;
-    if ((j < 0) || (j >= this.item.length)) {
-      return null;
-    }
-    Point3d localPoint3d = new Point3d();
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramString);
-    localPoint3d.x = localNumberTokenizer.next(0);
-    localPoint3d.y = localNumberTokenizer.next(0);
-    int k = localNumberTokenizer.next(100, 2, 10000);
-    localPoint3d.x = paramLoc.getPoint().x;
-    localPoint3d.y = paramLoc.getPoint().y;
-    ActorStaticCamera localActorStaticCamera = insert(localPoint3d, false);
-    if (localActorStaticCamera != null) {
-      localActorStaticCamera.h = k;
-      return localActorStaticCamera;
-    }
-    return null;
-  }
-
-  public boolean mis_validateSelected(int paramInt1, int paramInt2) {
-    if (paramInt1 != this.startComboBox1) {
-      return false;
-    }
-    return (paramInt2 >= 0) && (paramInt2 < this.item.length);
-  }
-
-  static
-  {
+  static {
     Property.set(PlMisStaticCamera.class, "name", "MisStaticCamera");
   }
 

@@ -37,9 +37,9 @@ public class BridgeRoad extends Actor
 
   public BridgeRoad(Point3d paramPoint3d, float paramFloat1, Mat paramMat, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, float paramFloat2)
   {
-    this.pos = new ActorPosStatic(this);
-    this.pos.setAbs(paramPoint3d);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.draw = new BridgeRoadDraw(null);
     drawing(true);

@@ -41,8 +41,8 @@ public class Point2f extends Tuple2f
 
   public final float distanceSquared(Point2f paramPoint2f)
   {
-    double d1 = this.x - paramPoint2f.x;
-    double d2 = this.y - paramPoint2f.y;
+    double d1 = this.jdField_x_of_type_Float - paramPoint2f.jdField_x_of_type_Float;
+    double d2 = this.jdField_y_of_type_Float - paramPoint2f.jdField_y_of_type_Float;
     return (float)(d1 * d1 + d2 * d2);
   }
 
@@ -53,11 +53,11 @@ public class Point2f extends Tuple2f
 
   public final float distanceL1(Point2f paramPoint2f)
   {
-    return Math.abs(this.x - paramPoint2f.x) + Math.abs(this.y - paramPoint2f.y);
+    return Math.abs(this.jdField_x_of_type_Float - paramPoint2f.jdField_x_of_type_Float) + Math.abs(this.jdField_y_of_type_Float - paramPoint2f.jdField_y_of_type_Float);
   }
 
   public final float distanceLinf(Point2f paramPoint2f)
   {
-    return Math.max(Math.abs(this.x - paramPoint2f.x), Math.abs(this.y - paramPoint2f.y));
+    return Math.max(Math.abs(this.jdField_x_of_type_Float - paramPoint2f.jdField_x_of_type_Float), Math.abs(this.jdField_y_of_type_Float - paramPoint2f.jdField_y_of_type_Float));
   }
 }

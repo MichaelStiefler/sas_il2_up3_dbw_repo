@@ -30,13 +30,9 @@ public class CockpitPilot extends Cockpit
   protected float minMaxAzimut = 145.0F;
   protected float maxTangage = 90.0F;
   protected float minTangage = -60.0F;
-  protected Point3d cameraCenter = new Point3d();
+  private Point3d cameraCenter = new Point3d();
   private Point3d cameraAim;
   private Point3d cameraUp;
-  private boolean bBeaconKeysEnabled;
-  private float saveZN;
-  protected float normZN;
-  protected float gsZN;
   private double pictBall = 0.0D;
   private long oldBallTime = 0L;
 
@@ -47,20 +43,8 @@ public class CockpitPilot extends Cockpit
   public String[] getHotKeyEnvs() { return this.hotKeyEnvs;
   }
 
-  private float ZNear(float paramFloat)
+  protected boolean doFocusEnter()
   {
-    if (paramFloat < 0.0F) {
-      return -1.0F;
-    }
-    Camera3D localCamera3D = (Camera3D)Actor.getByName("camera");
-    float f = localCamera3D.ZNear;
-
-    localCamera3D.ZNear = paramFloat;
-
-    return f;
-  }
-
-  protected boolean doFocusEnter() {
     HookPilot localHookPilot = HookPilot.current;
     Aircraft localAircraft = aircraft();
     Main3D localMain3D = Main3D.cur3D();
@@ -79,53 +63,44 @@ public class CockpitPilot extends Cockpit
     localHookPilot.reset();
     localHookPilot.use(true);
 
-    localAircraft.setAcoustics(this.acoustics);
-    if (this.acoustics != null) {
+    localAircraft.setAcoustics(this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics);
+    if (this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics != null) {
       localAircraft.enableDoorSnd(true);
-      if (this.acoustics.getEnvNum() == 2) localAircraft.setDoorSnd(1.0F);
+      if (this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics.getEnvNum() == 2) localAircraft.setDoorSnd(1.0F);
     }
 
-    localMain3D.camera3D.pos.setRel(new Point3d(), new Orient());
-    localMain3D.camera3D.pos.setBase(localAircraft, localHookPilot, false);
-    localMain3D.camera3D.pos.resetAsBase();
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(localAircraft, localHookPilot, false);
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
-    this.pos.resetAsBase();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
-    aircraft().setMotorPos(localMain3D.camera3D.pos.getAbsPoint());
+    aircraft().setMotorPos(localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
 
-    localMain3D.cameraCockpit.pos.setRel(new Point3d(), new Orient());
-    localMain3D.cameraCockpit.pos.setBase(this, localHookPilot, false);
-    localMain3D.cameraCockpit.pos.resetAsBase();
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, localHookPilot, false);
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
     localMain3D.overLoad.setShow(true);
 
     localMain3D.renderCockpit.setShow(true);
 
     localAircraft.drawing(!isNullShow());
-
-    this.saveZN = ZNear(HookPilot.current.isAim() ? this.gsZN : this.normZN);
-    this.bBeaconKeysEnabled = ((AircraftLH)aircraft()).bWantBeaconKeys;
-    ((AircraftLH)aircraft()).bWantBeaconKeys = true;
-
     return true;
   }
 
-  protected void doFocusLeave()
-  {
-    this.saveZN = ZNear(this.saveZN);
-    ((AircraftLH)aircraft()).bWantBeaconKeys = this.bBeaconKeysEnabled;
-
+  protected void doFocusLeave() {
     HookPilot localHookPilot = HookPilot.current;
     Aircraft localAircraft = aircraft();
     Main3D localMain3D = Main3D.cur3D();
 
     localHookPilot.use(false);
 
-    localMain3D.camera3D.pos.setRel(new Point3d(), new Orient());
-    localMain3D.camera3D.pos.setBase(null, null, false);
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.camera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, false);
 
-    localMain3D.cameraCockpit.pos.setRel(new Point3d(), new Orient());
-    localMain3D.cameraCockpit.pos.setBase(null, null, false);
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(), new Orient());
+    localMain3D.cameraCockpit.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, false);
 
     localMain3D.overLoad.setShow(false);
     localMain3D.renderCockpit.setShow(false);
@@ -186,13 +161,7 @@ public class CockpitPilot extends Cockpit
     if (!isFocused()) return;
     HookPilot localHookPilot = HookPilot.current;
     localHookPilot.doAim(paramBoolean);
-
-    if (paramBoolean)
-      ZNear(this.gsZN);
-    else
-      ZNear(this.normZN);
   }
-
   public boolean isToggleUp() {
     if (!isFocused()) return false;
     HookPilot localHookPilot = HookPilot.current;
@@ -209,14 +178,14 @@ public class CockpitPilot extends Cockpit
   public CockpitPilot(String paramString1, String paramString2)
   {
     super(paramString1, paramString2);
-    HookNamed localHookNamed = new HookNamed(this.mesh, "CAMERA");
+    HookNamed localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERA");
     Loc localLoc = new Loc();
-    localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
+    localHookNamed.computePos(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), localLoc);
     localLoc.get(this.cameraCenter);
     try {
-      localHookNamed = new HookNamed(this.mesh, "CAMERAAIM");
+      localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERAAIM");
       localLoc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
+      localHookNamed.computePos(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), localLoc);
       this.cameraAim = new Point3d();
       localLoc.get(this.cameraAim);
     } catch (Exception localException1) {
@@ -224,22 +193,18 @@ public class CockpitPilot extends Cockpit
       localException1.printStackTrace();
     }
     try {
-      localHookNamed = new HookNamed(this.mesh, "CAMERAUP");
+      localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERAUP");
       localLoc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
+      localHookNamed.computePos(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), localLoc);
       this.cameraUp = new Point3d();
       localLoc.get(this.cameraUp);
     } catch (Exception localException2) {
     }
-    this.pos.setBase(aircraft(), new Cockpit.HookOnlyOrient(), false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(aircraft(), new Cockpit.HookOnlyOrient(), false);
     interpPut(new Interpolater(), "CockpitPilot", Time.current(), null);
 
-    if (HookPilot.current != null) {
+    if (HookPilot.current != null)
       HookPilot.current.doUp(false);
-    }
-
-    this.normZN = Property.floatValue(getClass(), "normZN", -1.0F);
-    this.gsZN = Property.floatValue(getClass(), "gsZN", -1.0F);
   }
 
   protected float getBall(double paramDouble)
@@ -250,8 +215,8 @@ public class CockpitPilot extends Cockpit
     this.oldBallTime = l1;
     if (l2 > 200L) l2 = 200L;
     double d2 = 0.00038D * l2;
-    if (-this.fm.getBallAccel().z > 0.001D) {
-      d1 = Math.toDegrees(Math.atan2(this.fm.getBallAccel().y, -this.fm.getBallAccel().z));
+    if (-this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getBallAccel().jdField_z_of_type_Double > 0.001D) {
+      d1 = Math.toDegrees(Math.atan2(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getBallAccel().y, -this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getBallAccel().jdField_z_of_type_Double));
       if (d1 > 20.0D) d1 = 20.0D;
       else if (d1 < -20.0D) d1 = -20.0D;
       this.pictBall = ((1.0D - d2) * this.pictBall + d2 * d1);

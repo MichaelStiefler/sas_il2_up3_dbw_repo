@@ -18,7 +18,7 @@ public class SfxZip extends SoundFX
       else if (d1 < d3 * d3) setUsrFlag(1); else
         setUsrFlag(2);
     }
-    jniSetPosition(this.handle, paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
+    SoundFX.jniSetPosition(this.handle, paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
     play();
   }
 }

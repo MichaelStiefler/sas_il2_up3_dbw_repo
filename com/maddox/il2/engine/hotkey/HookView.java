@@ -235,16 +235,16 @@ public class HookView extends HookRender
       this.pAbs.add(this.p);
       if (this.bClipOnLand) {
         double d = Engine.land().HQ_Air(this.pAbs.x, this.pAbs.y) + 2.0D;
-        if (this.pAbs.z < d)
-          this.pAbs.z = d;
+        if (this.pAbs.jdField_z_of_type_Double < d)
+          this.pAbs.jdField_z_of_type_Double = d;
         pClipZ1.set(this.pAbs);
         pClipZ2.set(this.pAbs);
-        pClipZ1.z -= 2.0D;
-        pClipZ2.z += 42.0D;
+        pClipZ1.jdField_z_of_type_Double -= 2.0D;
+        pClipZ2.jdField_z_of_type_Double += 42.0D;
         Actor localActor = Engine.collideEnv().getLine(pClipZ2, pClipZ1, false, clipFilter, pClipRes);
         if ((Actor.isValid(localActor)) && 
-          (this.pAbs.z < pClipRes.z + 2.0D)) {
-          this.pAbs.z = (pClipRes.z + 2.0D);
+          (this.pAbs.jdField_z_of_type_Double < pClipRes.jdField_z_of_type_Double + 2.0D)) {
+          this.pAbs.jdField_z_of_type_Double = (pClipRes.jdField_z_of_type_Double + 2.0D);
         }
       }
       paramLoc2.set(this.pAbs, this.o);
@@ -344,7 +344,7 @@ public class HookView extends HookRender
         if (Azimut > _Azimut)
           while (Math.abs(Azimut - _Azimut) > 180.0F)
             Azimut -= 360.0F;
-        if (Azimut < _Azimut) {
+        else if (Azimut < _Azimut) {
           while (Math.abs(Azimut - _Azimut) > 180.0F) {
             Azimut += 360.0F;
           }
@@ -353,7 +353,7 @@ public class HookView extends HookRender
         if (Tangage > _Tangage)
           while (Math.abs(Tangage - _Tangage) > 180.0F)
             Tangage -= 360.0F;
-        if (Tangage < _Tangage) {
+        else if (Tangage < _Tangage) {
           while (Math.abs(Tangage - _Tangage) > 180.0F) {
             Tangage += 360.0F;
           }
@@ -384,7 +384,7 @@ public class HookView extends HookRender
         if (Azimut > _Azimut)
           while (Math.abs(Azimut - _Azimut) > 180.0F)
             Azimut -= 360.0F;
-        if (Azimut < _Azimut) {
+        else if (Azimut < _Azimut) {
           while (Math.abs(Azimut - _Azimut) > 180.0F) {
             Azimut += 360.0F;
           }
@@ -393,7 +393,7 @@ public class HookView extends HookRender
         if (Tangage > _Tangage)
           while (Math.abs(Tangage - _Tangage) > 180.0F)
             Tangage -= 360.0F;
-        if (Tangage < _Tangage) {
+        else if (Tangage < _Tangage) {
           while (Math.abs(Tangage - _Tangage) > 180.0F) {
             Tangage += 360.0F;
           }

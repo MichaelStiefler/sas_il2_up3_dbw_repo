@@ -8,9 +8,9 @@ import com.maddox.il2.objects.effects.Explosions;
 
 public class BulletAntiAirSmallUSSR extends BulletAntiAirGeneric
 {
-  public BulletAntiAirSmallUSSR(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong1, long paramLong2)
+  public BulletAntiAirSmallUSSR(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong1, long paramLong2)
   {
-    super(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong1 + paramLong2, -1.0F, paramLong2 != 0L);
+    super(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong1 + paramLong2, -1.0F, paramLong2 != 0L);
   }
 
   protected void explodeInAir_Effect(Point3d paramPoint3d) {

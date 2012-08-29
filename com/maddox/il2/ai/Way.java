@@ -125,7 +125,7 @@ public class Way
     if ((curr().timeout == -1) && (!isLast())) {
       ((WayPoint)this.WList.get(this.Cur + 1)).getP(tmpP);
       V.sub(paramPoint3d, tmpP);
-      this.curDist = (V.x * V.x + V.y * V.y);
+      this.curDist = (V.jdField_x_of_type_Double * V.jdField_x_of_type_Double + V.jdField_y_of_type_Double * V.jdField_y_of_type_Double);
       if ((this.curDist < 100000000.0D) && (this.curDist > this.prevdistToNextWP2)) {
         curr().setTimeout(0);
         this.prevdistToNextWP2 = 3.402823466385289E+038D;
@@ -133,7 +133,7 @@ public class Way
       }
       this.prevdistToNextWP2 = this.curDist;
     } else {
-      this.curDist = (V.x * V.x + V.y * V.y);
+      this.curDist = (V.jdField_x_of_type_Double * V.jdField_x_of_type_Double + V.jdField_y_of_type_Double * V.jdField_y_of_type_Double);
       if ((this.curDist < 1000000.0D) && (this.curDist > this.prevdist2)) { this.prevdist2 = 100000000.0D; return true; }
       this.prevdist2 = this.curDist;
     }
@@ -194,9 +194,9 @@ public class Way
       else if (str1.equalsIgnoreCase("GATTACK")) localWayPoint.Action = 3; else
         localWayPoint.Action = 0;
       NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.value(i, k));
-      P.x = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
-      P.y = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
-      P.z = (localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F) + World.land().HQ(P.x, P.y));
+      P.jdField_x_of_type_Double = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
+      P.jdField_y_of_type_Double = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
+      P.z = (localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F) + World.land().HQ(P.jdField_x_of_type_Double, P.jdField_y_of_type_Double));
       float f = localNumberTokenizer.next(0.0F, 0.0F, 2800.0F);
       localWayPoint.set(P);
       localWayPoint.set(f / 3.6F);

@@ -46,10 +46,9 @@ public class BridgesGenerator
 
   private static int getlen(int paramInt1, int paramInt2, int paramInt3)
   {
-    for (int i = 0; (i < 50) && 
-      (paramInt1 >= 0) && (paramInt2 >= 0) && (paramInt1 < T.sx) && (paramInt2 < T.sy) && 
-      ((T.I(paramInt1, paramInt2) & paramInt3) != 0); paramInt2 += dy)
-    {
+    for (int i = 0; i < 50; paramInt2 += dy) {
+      if ((paramInt1 < 0) || (paramInt2 < 0) || (paramInt1 >= T.sx) || (paramInt2 >= T.sy) || 
+        ((T.I(paramInt1, paramInt2) & paramInt3) == 0)) break;
       T.I(paramInt1, paramInt2, T.I(paramInt1, paramInt2) & (paramInt3 ^ 0xFFFFFFFF));
 
       i++; paramInt1 += dx;

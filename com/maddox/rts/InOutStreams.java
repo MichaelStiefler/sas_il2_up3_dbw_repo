@@ -104,12 +104,14 @@ public class InOutStreams
         this.listBlocks = localBlock1;
       }
     } else {
-      while ((localBlock1.next != null) && (
-        (localBlock1.entry != paramEntry) || (localBlock1.index != paramInt)))
-      {
+      do {
+        if ((localBlock1.entry == paramEntry) && (localBlock1.index == paramInt))
+          break;
         localBlock2 = localBlock1;
         localBlock1 = localBlock1.next;
       }
+      while (localBlock1.next != null);
+
       if (localBlock2 != null) {
         localBlock2.next = localBlock1.next;
         localBlock1.next = this.listBlocks;
@@ -154,38 +156,39 @@ public class InOutStreams
   {
     Map.Entry localEntry = this.entryNewHash.nextEntry(null);
     while (localEntry != null) {
-      localObject = (OutputStreamThread)localEntry.getValue();
-      ((OutputStreamThread)localObject)._close();
+      localObject1 = (OutputStreamThread)localEntry.getValue();
+      ((OutputStreamThread)localObject1)._close();
       localEntry = this.entryNewHash.nextEntry(localEntry);
     }
     this.entryNewHash.clear();
 
-    Object localObject = new DataOutputStream(this.outputFile);
+    Object localObject1 = new DataOutputStream(this.outputFile);
     this.tailer = new Tailer();
 
     int i = this.indexLst.size();
+    Object localObject2;
     for (int j = 0; j < i; j++) {
-      IndexEntry localIndexEntry = (IndexEntry)this.indexLst.get(j);
-      ((DataOutputStream)localObject).writeInt(localIndexEntry.lenInFile);
+      localObject2 = (IndexEntry)this.indexLst.get(j);
+      ((DataOutputStream)localObject1).writeInt(((IndexEntry)localObject2).lenInFile);
     }
     this.tailer.indexesSizeInFile = (i * IndexEntry.sizeInFile());
 
-    this.tailer.entrysSizeInFile = ((DataOutputStream)localObject).size();
+    this.tailer.entrysSizeInFile = ((DataOutputStream)localObject1).size();
     localEntry = this.entryHash.nextEntry(null);
     while (localEntry != null) {
-      Entry localEntry1 = (Entry)localEntry.getValue();
-      ((DataOutputStream)localObject).writeUTF(localEntry1.name);
-      ((DataOutputStream)localObject).writeInt(localEntry1.len);
-      ((DataOutputStream)localObject).writeInt(localEntry1.index.length);
-      for (int k = 0; k < localEntry1.index.length; k++)
-        ((DataOutputStream)localObject).writeInt(localEntry1.index[k]);
+      localObject2 = (Entry)localEntry.getValue();
+      ((DataOutputStream)localObject1).writeUTF(((Entry)localObject2).name);
+      ((DataOutputStream)localObject1).writeInt(((Entry)localObject2).len);
+      ((DataOutputStream)localObject1).writeInt(((Entry)localObject2).index.length);
+      for (int k = 0; k < ((Entry)localObject2).index.length; k++)
+        ((DataOutputStream)localObject1).writeInt(localObject2.index[k]);
       localEntry = this.entryHash.nextEntry(localEntry);
     }
-    this.tailer.entrysSizeInFile = (((DataOutputStream)localObject).size() - this.tailer.entrysSizeInFile);
+    this.tailer.entrysSizeInFile = (((DataOutputStream)localObject1).size() - this.tailer.entrysSizeInFile);
 
-    ((DataOutputStream)localObject).writeInt(this.tailer.indexesSizeInFile);
-    ((DataOutputStream)localObject).writeInt(this.tailer.entrysSizeInFile);
-    ((DataOutputStream)localObject).flush();
+    ((DataOutputStream)localObject1).writeInt(this.tailer.indexesSizeInFile);
+    ((DataOutputStream)localObject1).writeInt(this.tailer.entrysSizeInFile);
+    ((DataOutputStream)localObject1).flush();
   }
 
   private void open() throws IOException {
@@ -217,24 +220,25 @@ public class InOutStreams
     int i = this.tailer.indexesSizeInFile / IndexEntry.sizeInFile();
     this.indexLst = new ArrayList(i);
     int j = 0;
+    Object localObject;
     for (int k = 0; k < i; k++) {
-      IndexEntry localIndexEntry = new IndexEntry();
-      localIndexEntry.offsetInFile = j;
-      localIndexEntry.lenInFile = localDataInputStream.readInt();
-      j += localIndexEntry.lenInFile;
-      this.indexLst.add(localIndexEntry);
+      localObject = new IndexEntry();
+      ((IndexEntry)localObject).offsetInFile = j;
+      ((IndexEntry)localObject).lenInFile = localDataInputStream.readInt();
+      j += ((IndexEntry)localObject).lenInFile;
+      this.indexLst.add(localObject);
     }
 
     this.entryHash = new HashMapExt();
     while (this.inputFile.available() > Tailer.sizeInFile()) {
-      Entry localEntry = new Entry();
-      localEntry.name = localDataInputStream.readUTF();
-      localEntry.len = localDataInputStream.readInt();
+      localObject = new Entry();
+      ((Entry)localObject).name = localDataInputStream.readUTF();
+      ((Entry)localObject).len = localDataInputStream.readInt();
       int m = localDataInputStream.readInt();
-      localEntry.index = new int[m];
+      ((Entry)localObject).index = new int[m];
       for (int n = 0; n < m; n++)
-        localEntry.index[n] = localDataInputStream.readInt();
-      this.entryHash.put(localEntry.name, localEntry);
+        localObject.index[n] = localDataInputStream.readInt();
+      this.entryHash.put(((Entry)localObject).name, localObject);
     }
   }
 

@@ -83,16 +83,16 @@ public abstract class CannonAntiAirGeneric extends CannonMidrangeGeneric
   private float straightTravelTime(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
     float f = (float)paramPoint3d1.distance(paramPoint3d2);
-    if ((f < this.prop.aimMinDist) || (f > this.prop.aimMaxDist)) {
+    if ((f < this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMinDist) || (f > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMaxDist)) {
       return -1.0F;
     }
-    return f / this.prop.bullet[0].speed;
+    return f / this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[0].speed;
   }
 
   private boolean straightFireDirection(Point3d paramPoint3d1, Point3d paramPoint3d2, Vector3d paramVector3d)
   {
     float f = (float)paramPoint3d1.distance(paramPoint3d2);
-    if ((f < this.prop.aimMinDist) || (f > this.prop.aimMaxDist)) {
+    if ((f < this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMinDist) || (f > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMaxDist)) {
       return false;
     }
     paramVector3d.set(paramPoint3d2);
@@ -103,7 +103,7 @@ public abstract class CannonAntiAirGeneric extends CannonMidrangeGeneric
 
   public float TravelTime(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    if ((this.bulletTypeIdx > 0) || ((float)(paramPoint3d2.z - paramPoint3d1.z) < 250.0F))
+    if ((this.jdField_bulletTypeIdx_of_type_Int > 0) || ((float)(paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double) < 250.0F))
     {
       return super.TravelTime(paramPoint3d1, paramPoint3d2);
     }
@@ -113,13 +113,13 @@ public abstract class CannonAntiAirGeneric extends CannonMidrangeGeneric
   public boolean FireDirection(Point3d paramPoint3d1, Point3d paramPoint3d2, Vector3d paramVector3d)
   {
     boolean bool;
-    if ((this.bulletTypeIdx > 0) || ((float)(paramPoint3d2.z - paramPoint3d1.z) < 250.0F))
+    if ((this.jdField_bulletTypeIdx_of_type_Int > 0) || ((float)(paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double) < 250.0F))
     {
       bool = super.FireDirection(paramPoint3d1, paramPoint3d2, paramVector3d);
       this.explodeAtHeight = -1.0F;
     } else {
       bool = straightFireDirection(paramPoint3d1, paramPoint3d2, paramVector3d);
-      this.explodeAtHeight = (float)paramPoint3d2.z;
+      this.explodeAtHeight = (float)paramPoint3d2.jdField_z_of_type_Double;
     }
 
     return bool;

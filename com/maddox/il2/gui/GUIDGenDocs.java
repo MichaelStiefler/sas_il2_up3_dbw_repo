@@ -53,8 +53,8 @@ public class GUIDGenDocs extends GameState
     this.client.activateWindow();
     this.wTable.fill();
     this.wScrollDescription.resized();
-    if (this.wScrollDescription.vScroll.isVisible())
-      this.wScrollDescription.vScroll.setPos(0.0F, true); 
+    if (this.wScrollDescription.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible())
+      this.wScrollDescription.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(0.0F, true); 
   }
 
   public void _leave() {
@@ -132,8 +132,8 @@ public class GUIDGenDocs extends GameState
 
     public void created()
     {
-      this.fixed = (GUIDGenDocs.this.wDescript = GUIDGenDocs.this.createDescript(this));
-      this.fixed.bNotify = true;
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = (GUIDGenDocs.this.wDescript = GUIDGenDocs.this.createDescript(this));
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient.bNotify = true;
       this.bNotify = true;
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
@@ -147,17 +147,17 @@ public class GUIDGenDocs extends GameState
         GUIDGenDocs.this.wDescript.computeSize();
       }
       super.resized();
-      if (this.vScroll.isVisible()) {
+      if (this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible()) {
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
       }
     }
 
     public void render() {
       setCanvasColorWHITE();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
     }
   }
 
@@ -174,28 +174,28 @@ public class GUIDGenDocs extends GameState
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
         setCanvasFont(0);
         setCanvasColorBLACK();
-        this.root.C.clip.y += localGBevel.T.dy;
-        this.root.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
-        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.root.C.font.height);
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.y += localGBevel.T.dy;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
+        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height);
       }
     }
 
     public void computeSize() {
       String str = GUIDGenDocs.this.textDescription();
       if (str != null) {
-        this.win.dx = this.parentWindow.win.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
         setCanvasFont(0);
-        int i = computeLines(str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-        this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
-        if (this.win.dy > this.parentWindow.win.dy) {
-          this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-          i = computeLines(str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-          this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        int i = computeLines(str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) {
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW());
+          i = computeLines(str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
         }
       } else {
-        this.win.dx = this.parentWindow.win.dx;
-        this.win.dy = this.parentWindow.win.dy;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       }
     }
   }
@@ -264,8 +264,8 @@ public class GUIDGenDocs extends GameState
     public void setSelect(int paramInt1, int paramInt2) {
       super.setSelect(paramInt1, paramInt2);
       GUIDGenDocs.access$002(GUIDGenDocs.this, null);
-      if (this.selectRow >= 0) {
-        String str1 = (String)this.files.get(this.selectRow);
+      if (this.jdField_selectRow_of_type_Int >= 0) {
+        String str1 = (String)this.files.get(this.jdField_selectRow_of_type_Int);
         BufferedReader localBufferedReader = null;
         try {
           localBufferedReader = new BufferedReader(new SFSReader(str1, RTSConf.charEncoding));
@@ -280,13 +280,13 @@ public class GUIDGenDocs extends GameState
               continue;
             str2 = UnicodeTo8bit.load(str2, false);
             if (localStringBuffer == null) {
-              localStringBuffer = new StringBuffer(str2);
+              localStringBuffer = new StringBuffer(str2); continue;
             }
-            else {
-              localStringBuffer.append('\n');
-              localStringBuffer.append(str2);
-            }
+
+            localStringBuffer.append('\n');
+            localStringBuffer.append(str2);
           }
+
           localBufferedReader.close();
           if (localStringBuffer != null)
             GUIDGenDocs.access$002(GUIDGenDocs.this, localStringBuffer.toString());
@@ -299,8 +299,8 @@ public class GUIDGenDocs extends GameState
       }
       if (GUIDGenDocs.this.wScrollDescription != null) {
         GUIDGenDocs.this.wScrollDescription.resized();
-        if (GUIDGenDocs.this.wScrollDescription.vScroll.isVisible())
-          GUIDGenDocs.this.wScrollDescription.vScroll.setPos(0.0F, true);
+        if (GUIDGenDocs.this.wScrollDescription.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible())
+          GUIDGenDocs.this.wScrollDescription.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(0.0F, true);
       }
     }
 
@@ -308,11 +308,11 @@ public class GUIDGenDocs extends GameState
       super.afterCreated();
       this.bColumnsSizable = false;
       addColumn(I18N.gui("dgendocs.docs"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {

@@ -87,22 +87,22 @@ public class GUIDGenRoster extends GameState
       this.pilots.clear();
       this.sorties = 0;
       this.kills = 0;
-      Pilot localPilot = null;
+      Object localObject = null;
       String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/squadron.dat";
       BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
-      while ((localPilot = loadPilot(localBufferedReader)) != null) {
+      while ((localObject = loadPilot(localBufferedReader)) != null) {
         if (this.pilotPlayer == null) {
-          localPilot.bPlayer = true;
-          this.pilotPlayer = localPilot;
+          ((Pilot)localObject).bPlayer = true;
+          this.pilotPlayer = ((Pilot)localObject);
         } else {
-          localTreeMap.put(localPilot, localPilot);
+          localTreeMap.put(localObject, localObject);
         }
         if (localResourceBundle != null)
-          localPilot.sRank = localResourceBundle.getString("" + localPilot.rank);
+          ((Pilot)localObject).sRank = localResourceBundle.getString("" + ((Pilot)localObject).rank);
         else
-          localPilot.sRank = "";
-        this.sorties += localPilot.sorties;
-        this.kills += localPilot.kills;
+          ((Pilot)localObject).sRank = "";
+        this.sorties += ((Pilot)localObject).sorties;
+        this.kills += ((Pilot)localObject).kills;
       }
       localBufferedReader.close();
     } catch (Exception localException2) {
@@ -129,15 +129,15 @@ public class GUIDGenRoster extends GameState
       this.gones.clear();
       String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/archive.dat";
       BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
-      Pilot localPilot = null;
-      while ((localPilot = loadPilot(localBufferedReader)) != null) {
-        this.gones.add(localPilot);
+      Object localObject = null;
+      while ((localObject = loadPilot(localBufferedReader)) != null) {
+        this.gones.add(localObject);
         if (localResourceBundle != null)
-          localPilot.sRank = localResourceBundle.getString("" + localPilot.rank);
+          ((Pilot)localObject).sRank = localResourceBundle.getString("" + ((Pilot)localObject).rank);
         else
-          localPilot.sRank = "";
-        this.sorties += localPilot.sorties;
-        this.kills += localPilot.kills;
+          ((Pilot)localObject).sRank = "";
+        this.sorties += ((Pilot)localObject).sorties;
+        this.kills += ((Pilot)localObject).kills;
       }
       localBufferedReader.close(); } catch (Exception localException2) {
     }
@@ -203,13 +203,16 @@ public class GUIDGenRoster extends GameState
   public String readArgStr(String paramString) {
     int i = paramString.indexOf(":") + 1;
     int j = paramString.length();
-    while ((i < j) && 
-      (paramString.charAt(i) <= ' ')) i++;
+    while (i < j) {
+      if (paramString.charAt(i) > ' ') break; i++;
+    }
 
     if (i >= j)
       return "";
-    while ((i < j) && 
-      (paramString.charAt(j - 1) <= ' ')) j--;
+    do {
+      if (paramString.charAt(j - 1) > ' ') break; j--;
+    }
+    while (i < j);
 
     if (i == j)
       return "";
@@ -387,7 +390,7 @@ public class GUIDGenRoster extends GameState
       addColumn(I18N.gui("dgenroster.Rank"), null);
       addColumn(I18N.gui("dgenroster.Name"), null);
       addColumn(I18N.gui("dgenroster.To"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(17.0F);
       getColumn(1).setRelativeDx(17.0F);
       getColumn(2).setRelativeDx(46.0F);
@@ -397,7 +400,7 @@ public class GUIDGenRoster extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Gone(GWindow arg2) {
@@ -474,7 +477,7 @@ public class GUIDGenRoster extends GameState
       addColumn(I18N.gui("dgenroster.Name"), null);
       addColumn(I18N.gui("dgenroster.Sorties"), null);
       addColumn(I18N.gui("dgenroster.Kills"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(17.0F);
       getColumn(1).setRelativeDx(17.0F);
       getColumn(2).setRelativeDx(23.0F);
@@ -485,7 +488,7 @@ public class GUIDGenRoster extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

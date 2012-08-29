@@ -64,13 +64,13 @@ public class CmdParam extends Cmd
         if (localMap.containsKey(localObject2)) {
           localMap.put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
           localObject1 = localObject2;
-          localStringBuffer = null; continue;
+          localStringBuffer = null;
+        } else {
+          if (localStringBuffer == null) localStringBuffer = new StringBuffer(); else
+            localStringBuffer.append(' ');
+          localStringBuffer.append(QuoteTokenizer.toToken((String)localObject2));
         }
-        if (localStringBuffer == null) localStringBuffer = new StringBuffer(); else
-          localStringBuffer.append(' ');
-        localStringBuffer.append(QuoteTokenizer.toToken((String)localObject2));
       }
-
       localMap.put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
       return CmdEnv.RETURN_OK;
     }

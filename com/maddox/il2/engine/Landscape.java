@@ -10,8 +10,6 @@ import java.util.Map.Entry;
 
 public class Landscape
 {
-  private int month;
-  private int day;
   public LandConf config;
   public static final float WoodH = 16.0F;
   public static final int TILE = 8;
@@ -294,10 +292,10 @@ public class Landscape
   }
 
   public static boolean rayHitHQ(Point3d paramPoint3d1, Point3d paramPoint3d2, Point3d paramPoint3d3) {
-    _RayStart[0] = (float)paramPoint3d1.x; _RayStart[1] = (float)paramPoint3d1.y; _RayStart[2] = (float)paramPoint3d1.z;
-    _RayEnd[0] = (float)paramPoint3d2.x; _RayEnd[1] = (float)paramPoint3d2.y; _RayEnd[2] = (float)paramPoint3d2.z;
+    _RayStart[0] = (float)paramPoint3d1.jdField_x_of_type_Double; _RayStart[1] = (float)paramPoint3d1.jdField_y_of_type_Double; _RayStart[2] = (float)paramPoint3d1.jdField_z_of_type_Double;
+    _RayEnd[0] = (float)paramPoint3d2.jdField_x_of_type_Double; _RayEnd[1] = (float)paramPoint3d2.jdField_y_of_type_Double; _RayEnd[2] = (float)paramPoint3d2.jdField_z_of_type_Double;
     boolean bool = cRayHitHQ(_RayStart, _RayEnd, _RayHit);
-    paramPoint3d3.x = _RayHit[0]; paramPoint3d3.y = _RayHit[1]; paramPoint3d3.z = _RayHit[2];
+    paramPoint3d3.jdField_x_of_type_Double = _RayHit[0]; paramPoint3d3.jdField_y_of_type_Double = _RayHit[1]; paramPoint3d3.jdField_z_of_type_Double = _RayHit[2];
 
     if (meshMakeMapRay(paramPoint3d1, paramPoint3d2)) {
       float f1 = 1.0F;
@@ -307,8 +305,8 @@ public class Landscape
         if (d1 > 0.0D)
           f1 = (float)(d2 / d1);
       }
-      _RayHitD[0] = paramPoint3d1.x; _RayHitD[1] = paramPoint3d1.y; _RayHitD[2] = paramPoint3d1.z;
-      _RayHitD[3] = paramPoint3d2.x; _RayHitD[4] = paramPoint3d2.y; _RayHitD[5] = paramPoint3d2.z;
+      _RayHitD[0] = paramPoint3d1.jdField_x_of_type_Double; _RayHitD[1] = paramPoint3d1.jdField_y_of_type_Double; _RayHitD[2] = paramPoint3d1.jdField_z_of_type_Double;
+      _RayHitD[3] = paramPoint3d2.jdField_x_of_type_Double; _RayHitD[4] = paramPoint3d2.jdField_y_of_type_Double; _RayHitD[5] = paramPoint3d2.jdField_z_of_type_Double;
       int i = 0;
       Map.Entry localEntry = meshMapRay.nextEntry(null);
       while (localEntry != null) {
@@ -353,13 +351,6 @@ public class Landscape
   {
     LoadMap(paramString, paramArrayOfInt, true);
   }
-
-  public void LoadMap(String paramString, int[] paramArrayOfInt, int paramInt1, int paramInt2)
-    throws Exception
-  {
-    LoadMap(paramString, paramArrayOfInt, true, paramInt1, paramInt2);
-  }
-
   public void UnLoadMap() {
     if (meshMapXY != null)
       meshMapXY.clear();
@@ -371,20 +362,10 @@ public class Landscape
     throws Exception
   {
     if ("".equals(this.MapName)) return;
-    LoadMap(this.MapName, null, false, this.month, this.day);
+    LoadMap(this.MapName, null, false);
   }
 
-  private void LoadMap(String paramString, int[] paramArrayOfInt, boolean paramBoolean)
-    throws Exception
-  {
-    LoadMap(paramString, paramArrayOfInt, paramBoolean, this.config.month, 15);
-  }
-
-  private void LoadMap(String paramString, int[] paramArrayOfInt, boolean paramBoolean, int paramInt1, int paramInt2) throws Exception
-  {
-    this.month = paramInt1;
-    this.day = paramInt2;
-
+  private void LoadMap(String paramString, int[] paramArrayOfInt, boolean paramBoolean) throws Exception {
     if (meshMapXY != null)
       meshMapXY.clear();
     meshMapXY = null;
@@ -392,13 +373,10 @@ public class Landscape
     if (paramArrayOfInt != null) i = paramArrayOfInt.length / 2;
     this.MapName = paramString;
     this.config.set("maps/" + this.MapName);
-
-    bNoWater = "ICE".equals(this.config.zutiWaterState);
-
-    World.Sun().resetCalendar();
-    World.Sun().setAstronomic(this.config.declin, this.month, this.day, World.getTimeofDay());
+    bNoWater = "WINTER".equals(this.config.camouflage);
+    World.Sun().setAstronomic(this.config.declin, this.config.month, 15, World.getTimeofDay());
     if (Config.isUSE_RENDER()) {
-      setAstronomic(this.config.declin, this.month, this.day, World.getTimeofDay(), World.Sun().moonPhase);
+      setAstronomic(this.config.declin, this.config.month, 15, World.getTimeofDay(), World.Sun().MoonPhase);
     }
     if (!cLoadMap(paramString, paramArrayOfInt, i, paramBoolean))
       throw new RuntimeException("Landscape '" + paramString + "' loading error");
@@ -407,7 +385,7 @@ public class Landscape
   public void cubeFullUpdate() {
     Actor localActor = Actor.getByName("camera");
     if (Actor.isValid(localActor))
-      preRender((float)localActor.pos.getAbsPoint().z, true);
+      preRender((float)localActor.pos.getAbsPoint().jdField_z_of_type_Double, true);
   }
 
   public void cubeFullUpdate(float paramFloat) {
@@ -436,9 +414,9 @@ public class Landscape
       if (j + k > paramInt) k = paramInt - j;
       if (k == 0) break;
       j += k;
-      if (this.sunRise.z < -0.1F) i += k;
+      if (this.sunRise.jdField_z_of_type_Float < -0.1F) i += k;
       paramFloat += k / 3600.0F;
-      if (paramFloat >= 24.0F) paramFloat -= 24.0F;
+      if (paramFloat < 24.0F) continue; paramFloat -= 24.0F;
     }
     return i;
   }
@@ -447,14 +425,13 @@ public class Landscape
     Sun localSun = World.Sun();
     if ((paramBoolean) || (cIsCubeUpdated()))
     {
-      localSun.setAstronomic(this.config.declin, this.month, this.day, World.getTimeofDay());
-      setAstronomic(this.config.declin, this.month, this.day, World.getTimeofDay(), localSun.moonPhase);
+      localSun.setAstronomic(this.config.declin, this.config.month, 15, World.getTimeofDay());
+      setAstronomic(this.config.declin, this.config.month, 15, World.getTimeofDay(), localSun.MoonPhase);
     }
+    _sunmoon[0] = localSun.ToSun.jdField_x_of_type_Float; _sunmoon[1] = localSun.ToSun.jdField_y_of_type_Float; _sunmoon[2] = localSun.ToSun.jdField_z_of_type_Float;
+    _sunmoon[3] = localSun.ToMoon.jdField_x_of_type_Float; _sunmoon[4] = localSun.ToMoon.jdField_y_of_type_Float; _sunmoon[5] = localSun.ToMoon.jdField_z_of_type_Float;
 
-    _sunmoon[0] = localSun.ToSun.x; _sunmoon[1] = localSun.ToSun.y; _sunmoon[2] = localSun.ToSun.z;
-    _sunmoon[3] = localSun.ToMoon.x; _sunmoon[4] = localSun.ToMoon.y; _sunmoon[5] = localSun.ToMoon.z;
-
-    cPreRender(paramFloat / 2.0F, paramBoolean, _sunmoon);
+    cPreRender(paramFloat, paramBoolean, _sunmoon);
   }
 
   public int render0(boolean paramBoolean)
@@ -513,10 +490,10 @@ public class Landscape
   {
     double d1 = paramActorLandMesh.mesh().visibilityR();
     Point3d localPoint3d = paramActorLandMesh.pos.getAbsPoint();
-    int i = (int)((localPoint3d.x - d1 - 200.0D) / 200.0D);
-    int j = (int)((localPoint3d.x + d1 + 200.0D) / 200.0D);
-    int k = (int)((localPoint3d.y - d1 - 200.0D) / 200.0D);
-    int m = (int)((localPoint3d.y + d1 + 200.0D) / 200.0D);
+    int i = (int)((localPoint3d.jdField_x_of_type_Double - d1 - 200.0D) / 200.0D);
+    int j = (int)((localPoint3d.jdField_x_of_type_Double + d1 + 200.0D) / 200.0D);
+    int k = (int)((localPoint3d.jdField_y_of_type_Double - d1 - 200.0D) / 200.0D);
+    int m = (int)((localPoint3d.jdField_y_of_type_Double + d1 + 200.0D) / 200.0D);
     float f1 = 10000.0F;
     float f2 = -10000.0F;
     for (int n = k; n < m; n++)
@@ -552,23 +529,23 @@ public class Landscape
   private static boolean meshMakeMapRay(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
     if (meshMapXY == null) return false;
-    int i = (int)paramPoint3d1.x / 200;
-    int j = (int)paramPoint3d1.y / 200;
-    int k = Math.abs((int)paramPoint3d2.x / 200 - i) + Math.abs((int)paramPoint3d2.y / 200 - j) + 1;
+    int i = (int)paramPoint3d1.jdField_x_of_type_Double / 200;
+    int j = (int)paramPoint3d1.jdField_y_of_type_Double / 200;
+    int k = Math.abs((int)paramPoint3d2.jdField_x_of_type_Double / 200 - i) + Math.abs((int)paramPoint3d2.jdField_y_of_type_Double / 200 - j) + 1;
     if (k > 1000) {
       return false;
     }
     MeshCell localMeshCell = (MeshCell)meshMapXY.get(j, i);
     if ((localMeshCell != null) && (Actor.isValid(localMeshCell.m))) meshMapRay.put(localMeshCell.m, localMeshCell.m);
     if (k > 1) {
-      int m = 1; if (paramPoint3d2.x < paramPoint3d1.x) m = -1;
-      int n = 1; if (paramPoint3d2.y < paramPoint3d1.y) n = -1;
+      int m = 1; if (paramPoint3d2.jdField_x_of_type_Double < paramPoint3d1.jdField_x_of_type_Double) m = -1;
+      int n = 1; if (paramPoint3d2.jdField_y_of_type_Double < paramPoint3d1.jdField_y_of_type_Double) n = -1;
       double d1;
       double d2;
       int i1;
-      if (Math.abs(paramPoint3d2.x - paramPoint3d1.x) >= Math.abs(paramPoint3d2.y - paramPoint3d1.y)) {
-        d1 = Math.abs(paramPoint3d1.y % 200.0D);
-        d2 = 200.0D * (paramPoint3d2.y - paramPoint3d1.y) / Math.abs(paramPoint3d2.x - paramPoint3d1.x);
+      if (Math.abs(paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) >= Math.abs(paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double)) {
+        d1 = Math.abs(paramPoint3d1.jdField_y_of_type_Double % 200.0D);
+        d2 = 200.0D * (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) / Math.abs(paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
         if (d2 >= 0.0D)
           for (i1 = 1; i1 < k; i1++) {
             if (d1 < 200.0D) { i += m; d1 += d2; } else {
@@ -586,8 +563,8 @@ public class Landscape
       }
       else
       {
-        d1 = Math.abs(paramPoint3d1.x % 200.0D);
-        d2 = 200.0D * (paramPoint3d2.x - paramPoint3d1.x) / Math.abs(paramPoint3d2.y - paramPoint3d1.y);
+        d1 = Math.abs(paramPoint3d1.jdField_x_of_type_Double % 200.0D);
+        d2 = 200.0D * (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) / Math.abs(paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
         if (d2 >= 0.0D)
           for (i1 = 1; i1 < k; i1++) {
             if (d1 < 200.0D) { j += n; d1 += d2; } else {

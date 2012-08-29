@@ -19,13 +19,6 @@ public class LandConf
   public int outsideMapCell = 2;
   public String HeightMap;
   public String[] Fields = new String[32];
-  public String zutiWaterState;
-
-  public int getDefaultMonth(String paramString)
-  {
-    IniFile localIniFile = new IniFile(paramString, 0);
-    return localIniFile.get("WORLDPOS", "MONTH", 6);
-  }
 
   public void set(String paramString) {
     IniFile localIniFile = new IniFile(paramString, 0);
@@ -33,17 +26,6 @@ public class LandConf
     this.typeMap = localIniFile.getValue("MAP", "TypeMap");
 
     this.camouflage = localIniFile.get("WORLDPOS", "CAMOUFLAGE", "SUMMER");
-
-    this.zutiWaterState = localIniFile.get("WORLDPOS", "WATER_STATE", "");
-    if ((this.zutiWaterState == null) || (this.zutiWaterState.trim().length() == 0))
-    {
-      if ("WINTER".equals(this.camouflage))
-        this.zutiWaterState = "ICE";
-      else {
-        this.zutiWaterState = "LIQUID";
-      }
-    }
-
     this.declin = localIniFile.get("WORLDPOS", "DECLIN", 45);
     this.month = localIniFile.get("WORLDPOS", "MONTH", 6);
 

@@ -167,7 +167,7 @@ public class NetChannel
 
   public NetObj getMirror(int paramInt)
   {
-    return (NetObj)(NetObj)this.objects.get(paramInt);
+    return (NetObj)this.objects.get(paramInt);
   }
 
   public boolean isInitRemote()
@@ -423,8 +423,8 @@ public class NetChannel
     }
 
     NetChannelGMsgOutput localNetChannelGMsgOutput = setGMsg(paramNetMsgSpawn, 3);
-    this.mirrored.put(paramNetMsgSpawn._sender, null);
-    paramNetMsgSpawn._sender.countMirrors += 1;
+    this.mirrored.put(paramNetMsgSpawn.jdField__sender_of_type_ComMaddoxRtsNetObj, null);
+    paramNetMsgSpawn.jdField__sender_of_type_ComMaddoxRtsNetObj.countMirrors += 1;
   }
 
   protected void putMessageDestroy(NetMsgDestroy paramNetMsgDestroy) throws IOException {
@@ -439,8 +439,8 @@ public class NetChannel
     }
 
     NetChannelGMsgOutput localNetChannelGMsgOutput = setGMsg(paramNetMsgDestroy, 4);
-    this.mirrored.remove(paramNetMsgDestroy._sender);
-    paramNetMsgDestroy._sender.countMirrors -= 1;
+    this.mirrored.remove(paramNetMsgDestroy.jdField__sender_of_type_ComMaddoxRtsNetObj);
+    paramNetMsgDestroy.jdField__sender_of_type_ComMaddoxRtsNetObj.countMirrors -= 1;
   }
 
   protected void putMessage(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
@@ -454,9 +454,9 @@ public class NetChannel
       return;
     }
 
-    int i = getIndx(paramNetMsgGuaranted._sender);
+    int i = getIndx(paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj);
     if (i == -1) {
-      throw new NetException("Put Guaranted message to NOT mirrored object [" + paramNetMsgGuaranted._sender + "] (" + id() + ")");
+      throw new NetException("Put Guaranted message to NOT mirrored object [" + paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj + "] (" + id() + ")");
     }
     setGMsg(paramNetMsgGuaranted, i);
   }
@@ -472,7 +472,7 @@ public class NetChannel
         NetObj localNetObj = (NetObj)localList.get(j);
         int k = getIndx(localNetObj);
         if (k == -1) {
-          throw new NetException("Put Guaranted message referenced to NOT mirrored object [" + paramNetMsgGuaranted._sender + "] -> [" + localNetObj + "] (" + id() + ")");
+          throw new NetException("Put Guaranted message referenced to NOT mirrored object [" + paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj + "] -> [" + localNetObj + "] (" + id() + ")");
         }
         _tmpOut.writeShort(k);
       }
@@ -492,7 +492,7 @@ public class NetChannel
   private boolean isReferenceOk(NetMsgGuaranted paramNetMsgGuaranted)
   {
     if ((!(paramNetMsgGuaranted instanceof NetMsgSpawn)) && (!(paramNetMsgGuaranted instanceof NetMsgDestroy)) && 
-      (getIndx(paramNetMsgGuaranted._sender) == -1)) {
+      (getIndx(paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj) == -1)) {
       return false;
     }
     List localList = paramNetMsgGuaranted.objects();
@@ -540,8 +540,8 @@ public class NetChannel
         NetMsgGuaranted localNetMsgGuaranted = (NetMsgGuaranted)this.holdGMsgs.get(j);
         localNetMsgGuaranted.lockDec();
         if (localNetMsgGuaranted.isRequiredAsk())
-          MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted._sender, false, localNetMsgGuaranted, this);
-        System.err.println(" " + localNetMsgGuaranted.toString() + " (" + localNetMsgGuaranted._sender.toString() + ")");
+          MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj, false, localNetMsgGuaranted, this);
+        System.err.println(" " + localNetMsgGuaranted.toString() + " (" + localNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj.toString() + ")");
       }
       this.holdGMsgs.clear();
       throw new IOException("Cycled guaranted messages");
@@ -554,7 +554,7 @@ public class NetChannel
       NetMsgGuaranted localNetMsgGuaranted = (NetMsgGuaranted)this.holdGMsgs.get(j);
       localNetMsgGuaranted.lockDec();
       if (localNetMsgGuaranted.isRequiredAsk())
-        MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted._sender, false, localNetMsgGuaranted, this);
+        MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj, false, localNetMsgGuaranted, this);
     }
     this.holdGMsgs.clear();
   }
@@ -566,7 +566,7 @@ public class NetChannel
     if (paramNetMsgFiltered.size() > 255) {
       throw new IOException("Output message is very long");
     }
-    if (getIndx(paramNetMsgFiltered._sender) == -1) {
+    if (getIndx(paramNetMsgFiltered.jdField__sender_of_type_ComMaddoxRtsNetObj) == -1) {
       return;
     }
     List localList = paramNetMsgFiltered.objects();
@@ -640,7 +640,7 @@ public class NetChannel
       NetMsgGuaranted localNetMsgGuaranted = localNetChannelGMsgOutput.msg;
       localNetMsgGuaranted.lockDec();
       if (localNetMsgGuaranted.isRequiredAsk())
-        MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted._sender, true, localNetMsgGuaranted, this);
+        MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj, true, localNetMsgGuaranted, this);
       localNetChannelGMsgOutput.msg = null;
       if (localNetChannelGMsgOutput.sequenceNum == paramInt) break;
     }
@@ -656,7 +656,7 @@ public class NetChannel
       NetMsgGuaranted localNetMsgGuaranted = localNetChannelGMsgOutput.msg;
       localNetMsgGuaranted.lockDec();
       if (localNetMsgGuaranted.isRequiredAsk())
-        MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted._sender, false, localNetMsgGuaranted, this);
+        MsgNetAskNak.postReal(Time.currentReal(), localNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj, false, localNetMsgGuaranted, this);
     }
     this.sendGMsgs.clear();
   }
@@ -669,23 +669,26 @@ public class NetChannel
       i = 1023;
     int j = 0;
     NetChannelGMsgOutput localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.sendGMsgs.get(j);
-    while ((paramInt2 > 0) && 
-      (winLT(localNetChannelGMsgOutput.sequenceNum, paramInt1, 65535)))
-    {
+    while (paramInt2 > 0) {
+      if (!winLT(localNetChannelGMsgOutput.sequenceNum, paramInt1, 65535))
+        break;
       paramInt2--;
       paramInt1 = paramInt1 + 1 & 0xFFFF;
     }
-    if (paramInt2 == 0) return;
-    while (i > 0) {
+    if (paramInt2 == 0) return; do
+    {
       localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.sendGMsgs.get(j);
       if (localNetChannelGMsgOutput.sequenceNum == paramInt1) break;
       i--; j++;
     }
-    if (i == 0) return;
-    while ((i-- > 0) && (paramInt2-- > 0)) {
+    while (i > 0);
+
+    if (i == 0) return; do
+    {
       localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.sendGMsgs.get(j++);
       localNetChannelGMsgOutput.timeLastSend = 0L;
     }
+    while ((i-- > 0) && (paramInt2-- > 0));
   }
 
   private void tryNakMessageSend()
@@ -695,9 +698,9 @@ public class NetChannel
     this.lastTimeNakMessageSend = Time.currentReal();
     int i = this.receiveGMsgSequenceNum + 1 & 0xFFFF;
     int j = 0;
-    for (; (j < 256) && 
-      (!this.receiveGMsgs.containsKey(i)); j++)
-    {
+    for (; j < 256; j++) {
+      if (this.receiveGMsgs.containsKey(i))
+        break;
       i = i + 1 & 0xFFFF;
     }
     j--;
@@ -859,7 +862,7 @@ public class NetChannel
       NetChannelGMsgOutput localNetChannelGMsgOutput2 = (NetChannelGMsgOutput)this.sendGMsgs.get(j);
       if (l < localNetChannelGMsgOutput2.timeLastSend) break;
       computeMessageLen(localNetChannelGMsgOutput2.msg);
-      k += localNetChannelGMsgOutput2.msg._len;
+      k += localNetChannelGMsgOutput2.msg.jdField__len_of_type_Int;
     }
     return k;
   }
@@ -873,9 +876,9 @@ public class NetChannel
     guarantedSizeMsgs = 0;
     while ((j < i) && (paramInt > 0)) {
       NetChannelGMsgOutput localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.sendGMsgs.get(j++);
-      paramInt -= localNetChannelGMsgOutput.msg._len;
+      paramInt -= localNetChannelGMsgOutput.msg.jdField__len_of_type_Int;
       if ((paramInt < 0) && (k > 0)) break;
-      guarantedSizeMsgs += localNetChannelGMsgOutput.msg._len;
+      guarantedSizeMsgs += localNetChannelGMsgOutput.msg.jdField__len_of_type_Int;
       k++;
     }
     return k;
@@ -891,8 +894,8 @@ public class NetChannel
       computeMessageLen(localNetMsgFiltered, paramLong);
       if (localNetMsgFiltered.prior > 1.0F) {
         localNetMsgFiltered._prior = localNetMsgFiltered.prior;
-        filteredMinSizeMsgs += localNetMsgFiltered._len;
-        filteredSizeMsgs += localNetMsgFiltered._len;
+        filteredMinSizeMsgs += localNetMsgFiltered.jdField__len_of_type_Int;
+        filteredSizeMsgs += localNetMsgFiltered.jdField__len_of_type_Int;
         filteredSortMsgs.add(localNetMsgFiltered);
       }
       else {
@@ -913,7 +916,7 @@ public class NetChannel
         }
         if (localNetMsgFiltered._prior < 0.0F) localNetMsgFiltered._prior = 0.0F;
         if (localNetMsgFiltered._prior > 1.0F) localNetMsgFiltered._prior = 1.0F;
-        filteredSizeMsgs += localNetMsgFiltered._len;
+        filteredSizeMsgs += localNetMsgFiltered.jdField__len_of_type_Int;
         filteredSortMsgs.add(localNetMsgFiltered);
       }
       localEntry = this.filteredTickMsgs.nextEntry(localEntry);
@@ -942,7 +945,7 @@ public class NetChannel
       for (i = filteredSortMsgs.size() - 1; (i >= 0) && (filteredSizeMsgs > paramInt); i--) {
         NetMsgFiltered localNetMsgFiltered = (NetMsgFiltered)filteredSortMsgs.get(i);
         localNetMsgFiltered.lockDec();
-        filteredSizeMsgs -= localNetMsgFiltered._len;
+        filteredSizeMsgs -= localNetMsgFiltered.jdField__len_of_type_Int;
         filteredSortMsgs.remove(i);
       }
     }
@@ -1066,11 +1069,11 @@ public class NetChannel
         }
         if (this.swTbl != null) {
           int i4 = paramNetMsgOutput.dataLength();
-          int i5 = i4 - i2;
-          if (i5 > 0) {
-            if (i5 > 255) i5 = 255;
-            paramNetMsgOutput.data()[(i2 - 1)] = (byte)i5;
-            cdata(paramNetMsgOutput.data(), i2, i5);
+          int i6 = i4 - i2;
+          if (i6 > 0) {
+            if (i6 > 255) i6 = 255;
+            paramNetMsgOutput.data()[(i2 - 1)] = (byte)i6;
+            cdata(paramNetMsgOutput.data(), i2, i6);
           }
         }
 
@@ -1084,9 +1087,9 @@ public class NetChannel
       }
       filteredSortMsgs.clear();
 
-      i3 = CRC16.checksum(0, paramNetMsgOutput.data(), 0, paramNetMsgOutput.dataLength());
-      paramNetMsgOutput.data()[2] = (byte)(i3 >>> 8 & 0xFF);
-      paramNetMsgOutput.data()[3] = (byte)(i3 & 0xFF);
+      int i5 = CRC16.checksum(0, paramNetMsgOutput.data(), 0, paramNetMsgOutput.dataLength());
+      paramNetMsgOutput.data()[2] = (byte)(i5 >>> 8 & 0xFF);
+      paramNetMsgOutput.data()[3] = (byte)(i5 & 0xFF);
 
       paramNetPacket.setLength(paramNetMsgOutput.dataLength());
       paramNetPacket.setAddress(this.remoteAddress);
@@ -1128,10 +1131,12 @@ public class NetChannel
       k = 0;
       bool = true;
     } else {
-      while (this.receiveSequenceNum != i) {
+      do {
         this.receiveSequenceMask <<= 1;
         this.receiveSequenceNum = (this.receiveSequenceNum + 1 & 0x3FFF);
       }
+      while (this.receiveSequenceNum != i);
+
       this.receiveSequenceMask |= 1;
     }
     long l = receiveTime(paramLong, paramNetMsgInput, i, m, bool);
@@ -1174,7 +1179,7 @@ public class NetChannel
   protected void putMessage(NetMsgOutput paramNetMsgOutput, int paramInt, NetMsgGuaranted paramNetMsgGuaranted, byte[] paramArrayOfByte)
     throws IOException
   {
-    statOut(false, paramNetMsgGuaranted._sender, paramNetMsgGuaranted);
+    statOut(false, paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj, paramNetMsgGuaranted);
     paramNetMsgOutput.writeShort(paramInt);
     paramNetMsgOutput.writeByte(paramNetMsgGuaranted.size());
 
@@ -1192,8 +1197,8 @@ public class NetChannel
   }
 
   protected void putMessage(NetMsgOutput paramNetMsgOutput, long paramLong1, NetMsgFiltered paramNetMsgFiltered, long paramLong2) throws IOException {
-    statOut(true, paramNetMsgFiltered._sender, paramNetMsgFiltered);
-    paramNetMsgOutput.writeShort(getIndx(paramNetMsgFiltered._sender));
+    statOut(true, paramNetMsgFiltered.jdField__sender_of_type_ComMaddoxRtsNetObj, paramNetMsgFiltered);
+    paramNetMsgOutput.writeShort(getIndx(paramNetMsgFiltered.jdField__sender_of_type_ComMaddoxRtsNetObj));
     this.statHSizeSendFMsgs += 2;
     int i = 0;
     int j = paramNetMsgFiltered.size();
@@ -1277,7 +1282,7 @@ public class NetChannel
   }
 
   private void computeMessageLen(NetMsgGuaranted paramNetMsgGuaranted) {
-    paramNetMsgGuaranted._len = (3 + paramNetMsgGuaranted.size());
+    paramNetMsgGuaranted.jdField__len_of_type_Int = (3 + paramNetMsgGuaranted.size());
   }
 
   protected void computeMessageLen(NetMsgFiltered paramNetMsgFiltered, long paramLong) {
@@ -1309,7 +1314,7 @@ public class NetChannel
           i += 2;
       }
     }
-    paramNetMsgFiltered._len = i;
+    paramNetMsgFiltered.jdField__len_of_type_Int = i;
   }
 
   protected NetMsgInput getMessage(NetMsgInput paramNetMsgInput)
@@ -1367,10 +1372,12 @@ public class NetChannel
         this.statHSizeReseivedMsgs += 1;
         i3 = (i2 & 0x80) != 0 ? 1 : 0;
         i2 &= 127;
-        while (true) { i1--; if (i1 <= 0) break;
+        do {
           i2 = i2 << 8 | paramNetMsgInput.readUnsignedByte();
           this.statHSizeReseivedMsgs += 1;
-        }
+
+          i1--; } while (i1 > 0);
+
         l += i2;
       }
     } else {
@@ -1380,10 +1387,12 @@ public class NetChannel
         i1 = j >> 6;
         i2 = j & 0xF;
         i3 = (j & 0x10) != 0 ? 1 : 0;
-        while (true) { i1--; if (i1 <= 0) break;
+        do {
           i2 = i2 << 8 | paramNetMsgInput.readUnsignedByte();
           this.statHSizeReseivedMsgs += 1;
-        }
+
+          i1--; } while (i1 > 0);
+
         l += i2;
       }
     }

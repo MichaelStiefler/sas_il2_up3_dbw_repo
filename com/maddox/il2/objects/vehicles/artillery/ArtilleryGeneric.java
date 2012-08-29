@@ -88,7 +88,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
   private float headYaw;
   private float gunPitch;
   private long startDelay;
-  public int dying = 0;
+  private int dying = 0;
   static final int DYING_NONE = 0;
   static final int DYING_DEAD = 1;
   private short deathSeed;
@@ -132,24 +132,24 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     this.time_lastCheckShoot = (Time.current() - ()Rnd(0.0F, 1200.0F));
     this.dontShoot = false;
 
-    Point3d localPoint3d = paramAircraft.pos.getAbsPoint();
+    Point3d localPoint3d = paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     double d1 = 16000000.0D;
 
-    if (!(paramAircraft.FM instanceof Maneuver))
+    if (!(paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver))
       return false;
-    AirGroup localAirGroup1 = ((Maneuver)(Maneuver)paramAircraft.FM).Group;
+    AirGroup localAirGroup1 = ((Maneuver)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group;
     if (localAirGroup1 == null)
       return false;
     int i = AirGroupList.length(localAirGroup1.enemies[0]);
     for (int j = 0; j < i; j++) {
       AirGroup localAirGroup2 = AirGroupList.getGroup(localAirGroup1.enemies[0], j);
       if (localAirGroup2.nOfAirc > 0) {
-        double d2 = localAirGroup2.Pos.x - localPoint3d.x;
-        double d3 = localAirGroup2.Pos.y - localPoint3d.y;
-        double d4 = localAirGroup2.Pos.z - localPoint3d.z;
+        double d2 = localAirGroup2.Pos.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double;
+        double d3 = localAirGroup2.Pos.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double;
+        double d4 = localAirGroup2.Pos.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double;
         if (d2 * d2 + d3 * d3 + d4 * d4 > d1)
           continue;
-        d4 = localPoint3d.z - Engine.land().HQ(localPoint3d.x, localPoint3d.y);
+        d4 = localPoint3d.jdField_z_of_type_Double - Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double);
         if (d4 <= 50.0D)
           continue;
         this.dontShoot = true;
@@ -200,7 +200,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       return;
     }
 
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
+    float f1 = Shot.panzerThickness(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
 
     f1 *= Rnd(0.93F, 1.07F);
 
@@ -347,7 +347,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     hierMesh().chunkSetAngles("Head", this.headYaw, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Gun", -this.gunPitch, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
   }
 
   public void destroy()
@@ -359,7 +359,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       this.aime = null;
     }
     if (this.gun != null) {
-      destroy(this.gun);
+      ObjState.destroy(this.gun);
       this.gun = null;
     }
     super.destroy();
@@ -443,10 +443,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     setDefaultLivePose();
     startMove();
 
-    Point3d localPoint3d = this.pos.getAbsPoint();
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     Airport localAirport = Airport.nearest(localPoint3d, -1, 7);
     if (localAirport != null) {
-      float f = (float)localAirport.pos.getAbsPoint().distance(localPoint3d);
+      float f = (float)localAirport.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(localPoint3d);
       this.nearAirfield = (f <= 2000.0F);
     } else {
       this.nearAirfield = false;
@@ -457,12 +457,12 @@ public abstract class ArtilleryGeneric extends ActorHMesh
   }
 
   private void Align() {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.heightAboveLandSurface);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
     o.orient(n);
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public void align()
@@ -587,8 +587,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     return this.prop.ATTACK_MAX_DISTANCE;
   }
 
-  public float AttackMaxRadius()
-  {
+  public float AttackMaxRadius() {
     return this.prop.ATTACK_MAX_RADIUS;
   }
 
@@ -614,7 +613,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     return paramFloat <= 0.0F ? 0.0F : paramFloat;
   }
 
@@ -637,8 +636,8 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       localNetMsgGuaranted.writeShort(this.deathSeed);
       localNetMsgGuaranted.writeFloat(this.headYaw);
       localNetMsgGuaranted.writeFloat(this.gunPitch);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -653,7 +652,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -665,7 +664,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     if (!isNetMaster()) {
       return;
     }
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
     if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
@@ -678,10 +677,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       try {
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(84);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException1) {
         System.out.println(localException1.getMessage());
         localException1.printStackTrace();
@@ -691,10 +690,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(70);
         this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException2) {
         System.out.println(localException2.getMessage());
         localException2.printStackTrace();
@@ -707,15 +706,15 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -726,10 +725,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -744,7 +743,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     }
     localNetMsgGuaranted.writeFloat(this.headYaw);
     localNetMsgGuaranted.writeFloat(this.gunPitch);
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public float getReloadingTime(Aim paramAim)
@@ -812,7 +811,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       NearestEnemies.set(WeaponsMask(), -9999.9004F, KmHourToMSec(100.0F));
     }
 
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), AttackMaxRadius(), getArmy());
+    localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), AttackMaxRadius(), getArmy());
 
     if (localActor == null) {
       return null;
@@ -841,15 +840,15 @@ public abstract class ArtilleryGeneric extends ActorHMesh
 
     BulletProperties localBulletProperties = null;
 
-    if (this.gun.prop != null) {
-      j = ((Prey)localActor).chooseBulletType(this.gun.prop.bullet);
+    if (this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties != null) {
+      j = ((Prey)localActor).chooseBulletType(this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
 
       if (j < 0)
       {
         return null;
       }
 
-      localBulletProperties = this.gun.prop.bullet[j];
+      localBulletProperties = this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[j];
     }
 
     int j = ((Prey)localActor).chooseShotpoint(localBulletProperties);
@@ -867,7 +866,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
   {
     if ((paramInt == 1) && (this.hideTmr < 0L))
     {
-      float f = (float)paramActor.pos.getAbsPoint().distanceSquared(this.pos.getAbsPoint());
+      float f = (float)paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distanceSquared(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       if (f > this.RADIUS_HIDE * this.RADIUS_HIDE) {
         return false;
       }
@@ -930,7 +929,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     }
 
     if ((this.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(this.gun.prop.bullet);
+      int i = ((Prey)paramActor).chooseBulletType(this.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (i < 0) {
         return 0;
       }
@@ -956,7 +955,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     float f2 = 0.19F;
 
     double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
+    double d2 = localPoint3d1.jdField_z_of_type_Double;
 
     localPoint3d1.sub(localPoint3d2);
     localPoint3d1.scale(Rnd(0.96D, 1.04D));
@@ -964,7 +963,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
 
     if (f1 > 0.001F) {
       Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d3);
 
       tmpv.sub(localPoint3d1, localPoint3d3);
       double d3 = tmpv.length();
@@ -977,7 +976,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
         float f8 = f7 * 0.015F;
 
         localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
+        double d4 = localPoint3d3.jdField_x_of_type_Double * localPoint3d3.jdField_x_of_type_Double + localPoint3d3.jdField_y_of_type_Double * localPoint3d3.jdField_y_of_type_Double + localPoint3d3.jdField_z_of_type_Double * localPoint3d3.jdField_z_of_type_Double;
 
         if (d4 > 0.01D) {
           float f9 = (float)tmpv.dot(localPoint3d3);
@@ -989,9 +988,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
         }
         f8 *= 1.1F;
 
-        int k = 0;
-
-        k = Mission.curCloudsType();
+        int k = Mission.curCloudsType();
         if (k > 2) {
           float f10 = k > 4 ? 300.0F : 500.0F;
           float f11 = (float)(d1 / f10);
@@ -1013,8 +1010,8 @@ public abstract class ArtilleryGeneric extends ActorHMesh
 
     }
 
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
+    if (World.Sun().ToSun.jdField_z_of_type_Float < -0.15F) {
+      f5 = (-World.Sun().ToSun.jdField_z_of_type_Float - 0.15F) / 0.13F;
       if (f5 >= 1.0F) {
         f5 = 1.0F;
       }
@@ -1048,7 +1045,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       f4 = this.prop.GUN_MAX_PITCH_SPEED;
     }
 
-    int j = paramAim.setRotationForTargeting(this, this.pos.getAbs().getOrient(), localPoint3d2, this.headYaw, this.gunPitch, localVector3d, f2, f1, this.prop.HEAD_YAW_RANGE, this.prop.GUN_MIN_PITCH, this.prop.GUN_MAX_PITCH, f3, f4, 0.0F);
+    int j = paramAim.setRotationForTargeting(this, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient(), localPoint3d2, this.headYaw, this.gunPitch, localVector3d, f2, f1, this.prop.HEAD_YAW_RANGE, this.prop.GUN_MIN_PITCH, this.prop.GUN_MAX_PITCH, f3, f4, 0.0F);
 
     return j;
   }
@@ -1192,10 +1189,6 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       if (f2 != -9865.3447F) {
         localArtilleryProperties.ATTACK_FAST_TARGETS = (f2 > 0.5F);
       }
-      else if (str1.equals("Tank"))
-      {
-        localArtilleryProperties.ATTACK_FAST_TARGETS = false;
-      }
 
       localArtilleryProperties.ATTACK_MAX_DISTANCE = getF(paramSectFile, paramString, "AttackMaxDistance", 6.0F, 12000.0F);
       localArtilleryProperties.ATTACK_MAX_RADIUS = getF(paramSectFile, paramString, "AttackMaxRadius", 6.0F, 12000.0F);
@@ -1268,14 +1261,14 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       ArtilleryGeneric localArtilleryGeneric = null;
       try
       {
-        ArtilleryGeneric.access$1302(this.proper);
-        ArtilleryGeneric.access$1402(paramActorSpawnArg);
+        ArtilleryGeneric.access$1402(this.proper);
+        ArtilleryGeneric.access$1502(paramActorSpawnArg);
         localArtilleryGeneric = (ArtilleryGeneric)this.cls.newInstance();
-        ArtilleryGeneric.access$1302(null);
         ArtilleryGeneric.access$1402(null);
+        ArtilleryGeneric.access$1502(null);
       } catch (Exception localException) {
-        ArtilleryGeneric.access$1302(null);
         ArtilleryGeneric.access$1402(null);
+        ArtilleryGeneric.access$1502(null);
         System.out.println(localException.getMessage());
         localException.printStackTrace();
         System.out.println("SPAWN: Can't create Artillery object [class:" + this.cls.getName() + "]");
@@ -1324,7 +1317,7 @@ public abstract class ArtilleryGeneric extends ActorHMesh
             localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
             post((NetMsgGuaranted)localObject);
           }
-          ArtilleryGeneric.this.dying = 0;
+          ArtilleryGeneric.access$002(ArtilleryGeneric.this, 0);
 
           ArtilleryGeneric.this.setDiedFlag(false);
 
@@ -1435,12 +1428,12 @@ public abstract class ArtilleryGeneric extends ActorHMesh
     public boolean tick()
     {
       if (ArtilleryGeneric.this.dying == 1) {
-        if (ArtilleryGeneric.access$010(ArtilleryGeneric.this) <= 0L) {
+        if (ArtilleryGeneric.access$110(ArtilleryGeneric.this) <= 0L) {
           if (!Mission.isDeathmatch())
           {
             if (ArtilleryGeneric.this.aime != null) {
               ArtilleryGeneric.this.aime.forgetAll();
-              ArtilleryGeneric.access$102(ArtilleryGeneric.this, null);
+              ArtilleryGeneric.access$202(ArtilleryGeneric.this, null);
             }
             if (ArtilleryGeneric.this.gun != null) {
               ObjState.destroy(ArtilleryGeneric.this.gun);
@@ -1449,15 +1442,15 @@ public abstract class ArtilleryGeneric extends ActorHMesh
             return false;
           }
           if (!ArtilleryGeneric.this.isNetMaster()) {
-            ArtilleryGeneric.access$002(ArtilleryGeneric.this, 10000L);
+            ArtilleryGeneric.access$102(ArtilleryGeneric.this, 10000L);
             return true;
           }
 
-          ArtilleryGeneric.this.dying = 0;
+          ArtilleryGeneric.access$002(ArtilleryGeneric.this, 0);
 
-          ArtilleryGeneric.access$202(ArtilleryGeneric.this, 0L);
+          ArtilleryGeneric.access$302(ArtilleryGeneric.this, 0L);
           if ((!ArtilleryGeneric.this.isNetMirror()) && (ArtilleryGeneric.this.RADIUS_HIDE > 0.0F)) {
-            ArtilleryGeneric.access$202(ArtilleryGeneric.this, -1L);
+            ArtilleryGeneric.access$302(ArtilleryGeneric.this, -1L);
           }
 
           ArtilleryGeneric.this.setDiedFlag(false);
@@ -1468,8 +1461,8 @@ public abstract class ArtilleryGeneric extends ActorHMesh
           ArtilleryGeneric.this.setDefaultLivePose();
           ArtilleryGeneric.this.send_RespawnCommand();
 
-          ArtilleryGeneric.access$602(ArtilleryGeneric.this, false);
-          ArtilleryGeneric.access$702(ArtilleryGeneric.this, Time.current() - 12000L);
+          ArtilleryGeneric.access$702(ArtilleryGeneric.this, false);
+          ArtilleryGeneric.access$802(ArtilleryGeneric.this, Time.current() - 12000L);
           return true;
         }
         return true;
@@ -1481,10 +1474,10 @@ public abstract class ArtilleryGeneric extends ActorHMesh
       {
         if (ArtilleryGeneric.this.aime.getEnemy() != null)
         {
-          ArtilleryGeneric.access$202(ArtilleryGeneric.this, 0L);
+          ArtilleryGeneric.access$302(ArtilleryGeneric.this, 0L);
         }
-        else if (ArtilleryGeneric.access$204(ArtilleryGeneric.this) > ArtilleryGeneric.delay_hide_ticks) {
-          ArtilleryGeneric.access$202(ArtilleryGeneric.this, -1L);
+        else if (ArtilleryGeneric.access$304(ArtilleryGeneric.this) > ArtilleryGeneric.delay_hide_ticks) {
+          ArtilleryGeneric.access$302(ArtilleryGeneric.this, -1L);
         }
 
       }

@@ -31,25 +31,25 @@ public class Vector2d extends Tuple2d
 
   public final double dot(Tuple2d paramTuple2d)
   {
-    return this.x * paramTuple2d.x + this.y * paramTuple2d.y;
+    return this.jdField_x_of_type_Double * paramTuple2d.jdField_x_of_type_Double + this.jdField_y_of_type_Double * paramTuple2d.jdField_y_of_type_Double;
   }
 
   public final double length()
   {
-    return Math.sqrt(this.x * this.x + this.y * this.y);
+    return Math.sqrt(this.jdField_x_of_type_Double * this.jdField_x_of_type_Double + this.jdField_y_of_type_Double * this.jdField_y_of_type_Double);
   }
 
   public final double lengthSquared()
   {
-    return this.x * this.x + this.y * this.y;
+    return this.jdField_x_of_type_Double * this.jdField_x_of_type_Double + this.jdField_y_of_type_Double * this.jdField_y_of_type_Double;
   }
 
   public final void normalize()
   {
     double d = length();
 
-    this.x /= d;
-    this.y /= d;
+    this.jdField_x_of_type_Double /= d;
+    this.jdField_y_of_type_Double /= d;
   }
 
   public final void normalize(Tuple2d paramTuple2d)
@@ -60,12 +60,12 @@ public class Vector2d extends Tuple2d
 
   public final double angle(Vector2d paramVector2d)
   {
-    return Math.abs(Math.atan2(this.x * paramVector2d.y - this.y * paramVector2d.x, dot(paramVector2d)));
+    return Math.abs(Math.atan2(this.jdField_x_of_type_Double * paramVector2d.jdField_y_of_type_Double - this.jdField_y_of_type_Double * paramVector2d.jdField_x_of_type_Double, dot(paramVector2d)));
   }
 
   public final double direction()
   {
-    double d = Math.atan2(this.y, this.x);
+    double d = Math.atan2(this.jdField_y_of_type_Double, this.jdField_x_of_type_Double);
     if (d < 0.0D) d += 6.283185307179586D;
     return d;
   }

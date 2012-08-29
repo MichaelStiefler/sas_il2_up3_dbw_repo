@@ -23,7 +23,6 @@ import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.FuelTank;
 import com.maddox.il2.objects.weapons.FuelTankGun;
 import com.maddox.il2.objects.weapons.Rocket;
-import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Console;
@@ -290,7 +289,7 @@ public abstract class Main
       Object localObject = localEntry.getKey();
       if ((localObject instanceof Class)) {
         Class localClass = (Class)localObject;
-        if ((Bomb.class.isAssignableFrom(localClass)) || (BombGun.class.isAssignableFrom(localClass)) || (RocketBombGun.class.isAssignableFrom(localClass)) || (FuelTank.class.isAssignableFrom(localClass)) || (FuelTankGun.class.isAssignableFrom(localClass)) || (Rocket.class.isAssignableFrom(localClass)) || (RocketGun.class.isAssignableFrom(localClass)))
+        if ((Bomb.class.isAssignableFrom(localClass)) || (BombGun.class.isAssignableFrom(localClass)) || (FuelTank.class.isAssignableFrom(localClass)) || (FuelTankGun.class.isAssignableFrom(localClass)) || (Rocket.class.isAssignableFrom(localClass)) || (RocketGun.class.isAssignableFrom(localClass)))
         {
           localArrayList.clear();
           if (Property.vars(localArrayList, localObject)) {
@@ -318,6 +317,7 @@ public abstract class Main
                 case 'L':
                   long l = SharedTokenizer.next(0);
                   Property.set(localObject, str2, l);
+                  continue;
                 }
 
               }
@@ -427,14 +427,15 @@ public abstract class Main
         if (paramMain.beginApp(paramString1, paramString2, paramInt)) {
           clearCache();
 
-          if (Config.LOCALE.equals("RU")) { int i;
-            try { Cpu86ID.getMask();
+          if (Config.LOCALE.equals("RU"))
+            try {
+              Cpu86ID.getMask();
             } catch (Throwable localThrowable2) {
-              i = 0; } for (; i < 10; i++)
-              new MsgAction(64, 1.0D + i * 10 + Math.random() * 10.0D) {
-                public void doAction() { Main.doGameExit(); }
-              };
-          }
+              for (int i = 0; i < 10; i++)
+                new MsgAction(64, 1.0D + i * 10 + Math.random() * 10.0D) {
+                  public void doAction() { Main.doGameExit(); }
+                };
+            }
           try
           {
             paramMain.lifeLimitted();
@@ -578,10 +579,9 @@ public abstract class Main
         }
 
         int i = 0;
-        String str;
         for (int j = 0; j < this.clientAdr.size(); j++) {
-          str = (String)this.clientAdr.get(j);
-          if (localSocket.getInetAddress().getHostAddress().equals(str)) {
+          String str1 = (String)this.clientAdr.get(j);
+          if (localSocket.getInetAddress().getHostAddress().equals(str1)) {
             i = 1;
             break;
           }
@@ -590,39 +590,40 @@ public abstract class Main
         if ((i == 0) && (!localInetAddress.equals(localSocket.getInetAddress()))) {
           try { localSocket.close(); } catch (Exception localException5) {
           }localSocket = null;
-          continue;
         }
-        try
+        else
         {
-          this.out = new PrintWriter(localSocket.getOutputStream(), true);
-          BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
-
-          while ((str = localBufferedReader.readLine()) != null) {
-            str = UnicodeTo8bit.load(str);
-            if (str.startsWith("<QUIT QUIT>"))
-              break;
-            while (true)
-            {
-              synchronized (Main.this.oCommandSync) {
-                if (RTSConf.isRequestExitApp()) break;
-                if (!Main.this.bCommand) {
-                  Main.this.sCommand = str;
-                  Main.this.bCommandNet = true;
-                  Main.this.bCommand = true;
-                  break;
+          try {
+            this.out = new PrintWriter(localSocket.getOutputStream(), true);
+            BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
+            String str2;
+            while ((str2 = localBufferedReader.readLine()) != null) {
+              str2 = UnicodeTo8bit.load(str2);
+              if (str2.startsWith("<QUIT QUIT>"))
+                break;
+              while (true)
+              {
+                synchronized (Main.this.oCommandSync) {
+                  if (RTSConf.isRequestExitApp()) break;
+                  if (!Main.this.bCommand) {
+                    Main.this.sCommand = str2;
+                    Main.this.bCommandNet = true;
+                    Main.this.bCommand = true;
+                    break;
+                  }
+                }
+                try {
+                  Thread.sleep(10L); } catch (Exception localException7) {
                 }
               }
-              try {
-                Thread.sleep(10L); } catch (Exception localException7) {
-              }
+              if (RTSConf.isRequestExitApp()) break;
             }
-            if (!RTSConf.isRequestExitApp()) continue;
+            this.out.close();
+            localBufferedReader.close();
+          } catch (Exception localException6) {
           }
-          this.out.close();
-          localBufferedReader.close();
-        } catch (Exception localException6) {
+          this.out = null;
         }
-        this.out = null;
       }
       if (localSocket != null) try {
           localSocket.close(); } catch (Exception localException3) {
@@ -652,18 +653,16 @@ public abstract class Main
       while ((RTSConf.cur != null) && (!RTSConf.isRequestExitApp())) {
         String str = Main.this.consoleServer.outQueue.get();
         str = UnicodeTo8bit.save(str, false);
-        if (Main.this.consoleServer.out != null)
-          try {
-            Main.this.consoleServer.out.print(str);
-            Main.this.consoleServer.out.println();
-            if (Main.this.consoleServer.outQueue.isEmpty()) {
-              Main.this.consoleServer.out.flush();
-              continue;
-            }
-          }
-          catch (Exception localException)
-          {
-          }
+        if (Main.this.consoleServer.out == null) continue;
+        try {
+          Main.this.consoleServer.out.print(str);
+          Main.this.consoleServer.out.println();
+          if (Main.this.consoleServer.outQueue.isEmpty())
+            Main.this.consoleServer.out.flush();
+        }
+        catch (Exception localException)
+        {
+        }
       }
     }
   }

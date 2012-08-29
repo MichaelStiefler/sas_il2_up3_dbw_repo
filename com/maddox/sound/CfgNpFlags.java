@@ -53,10 +53,10 @@ public class CfgNpFlags extends SoundFlags
   {
     switch (paramInt) {
     case 1:
-      AudioDevice.setPTTMode((this.value & 0x2) != 0);
+      AudioDevice.setPTTMode((this.jdField_value_of_type_Int & 0x2) != 0);
       break;
     case 2:
-      AudioDevice.setPhoneFX((this.value & 0x4) != 0);
+      AudioDevice.setPhoneFX((this.jdField_value_of_type_Int & 0x4) != 0);
     }
 
     return 0;

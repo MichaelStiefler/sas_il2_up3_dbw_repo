@@ -62,13 +62,13 @@ public class PaintSchemeSpecial extends PaintSchemeFMPar04
     int i = paramRegiment.gruppeNumber() - 1;
 
     if ((paramClass.isAssignableFrom(P_39NPOKRYSHKIN.class)) || (paramClass.isAssignableFrom(P_39Q15RECHKALOV.class))) {
-      changeMat(paramClass, paramHierMesh, "Overlay6", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
     }
 
     if (paramClass.isAssignableFrom(LA_7KOJEDUB.class)) {
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "redstar3", "Russian/redstar3.tga", 1.0F, 1.0F, 1.0F);
     }
   }
 }

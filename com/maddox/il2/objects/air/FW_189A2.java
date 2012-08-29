@@ -9,7 +9,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
@@ -49,32 +48,32 @@ public class FW_189A2 extends Scheme3
     setShot(paramShot);
 
     if (paramShot.chunkName.startsWith("WingLIn")) {
-      if (World.Rnd().nextFloat() < 0.048F) this.FM.AS.setJamBullets(0, 0);
-      if ((v1.x < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < paramShot.mass)) {
-        this.FM.AS.hitTank(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 26.08F));
+      if (World.Rnd().nextFloat() < 0.048F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(0, 0);
+      if ((Aircraft.v1.jdField_x_of_type_Double < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < paramShot.mass)) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 26.08F));
       }
     }
     if (paramShot.chunkName.startsWith("WingRIn")) {
-      if (World.Rnd().nextFloat() < 0.048F) this.FM.AS.setJamBullets(0, 1);
-      if ((v1.x < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < paramShot.mass)) {
-        this.FM.AS.hitTank(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 26.08F));
+      if (World.Rnd().nextFloat() < 0.048F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setJamBullets(0, 1);
+      if ((Aircraft.v1.jdField_x_of_type_Double < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < paramShot.mass)) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 26.08F));
       }
     }
 
     if (paramShot.chunkName.startsWith("Engine1")) {
-      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) this.FM.AS.hitEngine(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 20.700001F));
-      if (World.Rnd().nextFloat() < 0.01F) this.FM.AS.hitEngine(paramShot.initiator, 0, 5);
+      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 20.700001F));
+      if (World.Rnd().nextFloat() < 0.01F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 5);
     }
     if (paramShot.chunkName.startsWith("Engine2")) {
-      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) this.FM.AS.hitEngine(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 20.700001F));
-      if (World.Rnd().nextFloat() < 0.01F) this.FM.AS.hitEngine(paramShot.initiator, 1, 5);
+      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 20.700001F));
+      if (World.Rnd().nextFloat() < 0.01F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 1, 5);
     }
 
     if (paramShot.chunkName.startsWith("Pilot1")) {
-      if ((v1.x > -0.5D) || (paramShot.power * -v1.x > 12800.0D)) {
+      if ((Aircraft.v1.jdField_x_of_type_Double > -0.5D) || (paramShot.power * -Aircraft.v1.jdField_x_of_type_Double > 12800.0D)) {
         killPilot(paramShot.initiator, 0);
-        this.FM.setCapableOfBMP(false, paramShot.initiator);
-        if ((Pd.z > 0.5D) && 
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setCapableOfBMP(false, paramShot.initiator);
+        if ((Aircraft.Pd.jdField_z_of_type_Double > 0.5D) && 
           (paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
       }
 
@@ -82,14 +81,14 @@ public class FW_189A2 extends Scheme3
     }
     if (paramShot.chunkName.startsWith("Pilot2")) {
       killPilot(paramShot.initiator, 1);
-      if ((Pd.z > 0.5D) && 
+      if ((Aircraft.Pd.jdField_z_of_type_Double > 0.5D) && 
         (paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
 
       paramShot.chunkName = "CF_D0";
     }
     if (paramShot.chunkName.startsWith("Pilot3")) {
       killPilot(paramShot.initiator, 2);
-      if ((Pd.z > 0.5D) && 
+      if ((Aircraft.Pd.jdField_z_of_type_Double > 0.5D) && 
         (paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
 
       paramShot.chunkName = "CF_D0";
@@ -97,16 +96,16 @@ public class FW_189A2 extends Scheme3
 
     if ((paramShot.chunkName.startsWith("Tail1")) && 
       (World.Rnd().nextFloat() < 0.05F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 26.08F));
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 26.08F));
     }
 
     if ((paramShot.chunkName.startsWith("Tail2")) && 
       (World.Rnd().nextFloat() < 0.05F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 26.08F));
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 26.08F));
     }
 
-    if (((this.FM.AS.astateEngineStates[0] == 4) || (this.FM.AS.astateEngineStates[1] == 4)) && (World.Rnd().nextInt(0, 99) < 33)) {
-      this.FM.setCapableOfBMP(false, paramShot.initiator);
+    if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates[0] == 4) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates[1] == 4)) && (World.Rnd().nextInt(0, 99) < 33)) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setCapableOfBMP(false, paramShot.initiator);
     }
 
     super.msgShot(paramShot);
@@ -116,10 +115,10 @@ public class FW_189A2 extends Scheme3
   {
     switch (paramInt1) {
     case 33:
-      if (World.Rnd().nextFloat() < 0.66F) this.FM.AS.hitTank(this, 0, 6);
+      if (World.Rnd().nextFloat() < 0.66F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, 0, 6);
       return super.cutFM(34, paramInt2, paramActor);
     case 36:
-      if (World.Rnd().nextFloat() < 0.66F) this.FM.AS.hitTank(this, 1, 6);
+      if (World.Rnd().nextFloat() < 0.66F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, 1, 6);
       return super.cutFM(37, paramInt2, paramActor);
     }
     return super.cutFM(paramInt1, paramInt2, paramActor);
@@ -130,22 +129,22 @@ public class FW_189A2 extends Scheme3
     super.rareAction(paramFloat, paramBoolean);
 
     for (int i = 1; i < 4; i++)
-      if (this.FM.getAltitude() < 3000.0F)
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F)
         hierMesh().chunkVisible("HMask" + i + "_D0", false);
       else
         hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     if (paramInt == 1) {
-      this.FM.turret[1].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
       hierMesh().chunkVisible("Turret2A_D0", false);
       hierMesh().chunkVisible("Turret2B_D0", false);
       hierMesh().chunkVisible("Turret2B_D1", true);
     }
     if (paramInt == 2) {
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       hierMesh().chunkVisible("Turret1A_D0", false);
       hierMesh().chunkVisible("Turret1B_D0", false);
       hierMesh().chunkVisible("Turret1B_D1", true);
@@ -255,13 +254,13 @@ public class FW_189A2 extends Scheme3
 
     Property.set(localClass, "FlightModel", "FlightModels/Fw-189A-2.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3, 10, 10, 11, 11 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3, 10, 10, 11, 11 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17k 660", "MGunMG17k 660", null, null, null, null, "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG17k 660", "MGunMG17k 660", null, null, null, null, "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500" });
 
-    weaponsRegister(localClass, "4xSC50", new String[] { "MGunMG17k 660", "MGunMG17k 660", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500" });
+    Aircraft.weaponsRegister(localClass, "4xSC50", new String[] { "MGunMG17k 660", "MGunMG17k 660", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }
 }

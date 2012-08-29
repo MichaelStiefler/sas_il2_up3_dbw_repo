@@ -64,7 +64,7 @@ public class GUINetClientGuard
     RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
 
     GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-    this.closeConnectionMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("netcg.Close"), paramString, 3, 0.0F)
+    this.closeConnectionMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, I18N.gui("netcg.Close"), paramString, 3, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -111,7 +111,7 @@ public class GUINetClientGuard
         this.curMessageBox.hideWindow();
         this.curMessageBox = null;
       }
-      this.closeConnectionMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("netcg.Close"), I18N.gui("netcg.Mission_load_error") + " " + paramString, 3, 0.0F)
+      this.closeConnectionMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, I18N.gui("netcg.Close"), I18N.gui("netcg.Mission_load_error") + " " + paramString, 3, 0.0F)
       {
         public void result(int paramInt)
         {
@@ -209,7 +209,7 @@ public class GUINetClientGuard
       this.curMessageBox = null;
     }
     this.destroyExec = paramDestroyExec;
-    this.curMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("main.ConfirmQuit"), I18N.gui("main.ReallyQuit"), 1, 0.0F)
+    this.curMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, I18N.gui("main.ConfirmQuit"), I18N.gui("main.ReallyQuit"), 1, 0.0F)
     {
       public void result(int paramInt)
       {

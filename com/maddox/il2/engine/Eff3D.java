@@ -52,12 +52,12 @@ public class Eff3D extends ActorDraw
 
   protected void setPos(Point3d paramPoint3d, Orient paramOrient)
   {
-    SetXYZATK(this.cppObj, (float)paramPoint3d.x, (float)paramPoint3d.y, (float)paramPoint3d.z, paramOrient.azimut(), paramOrient.tangage(), paramOrient.kren());
+    SetXYZATK(this.cppObj, (float)paramPoint3d.jdField_x_of_type_Double, (float)paramPoint3d.jdField_y_of_type_Double, (float)paramPoint3d.jdField_z_of_type_Double, paramOrient.azimut(), paramOrient.tangage(), paramOrient.kren());
   }
 
   protected void setPos(Loc paramLoc)
   {
-    SetXYZATK(this.cppObj, (float)paramLoc.P.x, (float)paramLoc.P.y, (float)paramLoc.P.z, paramLoc.O.azimut(), paramLoc.O.tangage(), paramLoc.O.kren());
+    SetXYZATK(this.cppObj, (float)paramLoc.P.jdField_x_of_type_Double, (float)paramLoc.P.jdField_y_of_type_Double, (float)paramLoc.P.jdField_z_of_type_Double, paramLoc.O.azimut(), paramLoc.O.tangage(), paramLoc.O.kren());
   }
 
   protected void setOrientation(Orient paramOrient) {
@@ -120,7 +120,7 @@ public class Eff3D extends ActorDraw
   private native boolean IsTimeReal(int paramInt);
 
   protected static void spawnSetCommonFields(ActorSpawnArg paramActorSpawnArg, Loc paramLoc) { paramLoc.get(tmpP, tmpO);
-    initSetPos((float)tmpP.x, (float)tmpP.y, (float)tmpP.z);
+    initSetPos((float)tmpP.jdField_x_of_type_Double, (float)tmpP.jdField_y_of_type_Double, (float)tmpP.jdField_z_of_type_Double);
     tmpO.get(tmpFArray);
     initSetAnglesATK(tmpFArray[0], tmpFArray[1], tmpFArray[2]);
 
@@ -145,7 +145,7 @@ public class Eff3D extends ActorDraw
   protected static void initSetLocator(Loc paramLoc)
   {
     paramLoc.get(tmpP, tmpO);
-    initSetPos((float)tmpP.x, (float)tmpP.y, (float)tmpP.z);
+    initSetPos((float)tmpP.jdField_x_of_type_Double, (float)tmpP.jdField_y_of_type_Double, (float)tmpP.jdField_z_of_type_Double);
     tmpO.get(tmpFArray);
     initSetAnglesATK(tmpFArray[0], tmpFArray[1], tmpFArray[2]); } 
   protected static native void initSetProcessTime(float paramFloat);

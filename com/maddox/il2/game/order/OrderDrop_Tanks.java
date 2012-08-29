@@ -16,8 +16,8 @@ class OrderDrop_Tanks extends Order
     Voice.setSyncMode(1);
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
-      if ((Actor.isAlive(localAircraft)) && ((localAircraft.FM instanceof Pilot))) {
-        if (((Pilot)localAircraft.FM).CT.dropFuelTanks()) {
+      if ((Actor.isAlive(localAircraft)) && ((localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot))) {
+        if (((Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).CT.dropFuelTanks()) {
           if ((!isEnableVoice()) || (localAircraft == Player()) || (
             (localAircraft.getWing() != Player().getWing()) && (localAircraft.aircIndex() != 0))) continue;
           Voice.speakDropTanks(localAircraft);

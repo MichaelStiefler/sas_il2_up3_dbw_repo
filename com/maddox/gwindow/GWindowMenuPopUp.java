@@ -15,7 +15,7 @@ public class GWindowMenuPopUp extends GWindowMenu
 
   public void keyboardKey(int paramInt, boolean paramBoolean) {
     super.keyboardKey(paramInt, paramBoolean);
-    int i = this.items.size();
+    int i = this.jdField_items_of_type_JavaUtilArrayList.size();
     if ((!paramBoolean) && (i > 0))
     {
       int j;
@@ -25,22 +25,22 @@ public class GWindowMenuPopUp extends GWindowMenu
         setSelected(null);
         break;
       case 10:
-        if (this.selected == null) break;
-        doExecute(this.selected); break;
+        if (this.jdField_selected_of_type_ComMaddoxGwindowGWindowMenuItem == null) break;
+        doExecute(this.jdField_selected_of_type_ComMaddoxGwindowGWindowMenuItem); break;
       case 38:
-        if (this.selected == null) {
+        if (this.jdField_selected_of_type_ComMaddoxGwindowGWindowMenuItem == null) {
           nextSelected(i - 1, -1);
         } else {
-          j = this.items.indexOf(this.selected);
+          j = this.jdField_items_of_type_JavaUtilArrayList.indexOf(this.jdField_selected_of_type_ComMaddoxGwindowGWindowMenuItem);
           if (j == 0) j = i;
           nextSelected(j - 1, -1);
         }
         break;
       case 40:
-        if (this.selected == null) {
+        if (this.jdField_selected_of_type_ComMaddoxGwindowGWindowMenuItem == null) {
           nextSelected(0, 1);
         } else {
-          j = this.items.indexOf(this.selected);
+          j = this.jdField_items_of_type_JavaUtilArrayList.indexOf(this.jdField_selected_of_type_ComMaddoxGwindowGWindowMenuItem);
           if (j == i - 1) j = -1;
           nextSelected(j + 1, 1);
         }
@@ -53,7 +53,7 @@ public class GWindowMenuPopUp extends GWindowMenu
   {
     if (paramBoolean1) return;
     if (!paramBoolean2) return;
-    GWindow localGWindow1 = this.root.findWindowUnder(this.root.mousePos.x, this.root.mousePos.y);
+    GWindow localGWindow1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.findWindowUnder(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.x, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.y);
     GWindow localGWindow2 = localGWindow1.getParent(GWindowMenuPopUp.class, false);
     if (localGWindow2 != this) {
       close(false);

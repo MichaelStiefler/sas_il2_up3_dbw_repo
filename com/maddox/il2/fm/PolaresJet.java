@@ -40,8 +40,8 @@ public class PolaresJet extends FMMath
   {
     float f1 = get_Cxa(paramFloat);
     float f2 = get_Cya(paramFloat);
-    float f3 = (float)Math.cos(DEG2RAD(paramFloat));
-    float f4 = (float)Math.sin(DEG2RAD(paramFloat));
+    float f3 = (float)Math.cos(FMMath.DEG2RAD(paramFloat));
+    float f4 = (float)Math.sin(FMMath.DEG2RAD(paramFloat));
     this.lastCx = (f1 * f3 - f2 * f4);
     this.lastCy = (f2 * f3 + f1 * f4);
     this.lastAOA = paramFloat;
@@ -56,18 +56,18 @@ public class PolaresJet extends FMMath
         paramFloat = -(float)Math.sqrt(-paramFloat);
       paramFloat *= 90.0F;
     }
-    float f = DEG2RAD(paramFloat);
+    float f = FMMath.DEG2RAD(paramFloat);
     return (float)Math.sin(f * 2.0F) * this.Cy_Crit[2];
   }
 
   public float get_Cxa(float paramFloat)
   {
-    float f = DEG2RAD(paramFloat);
+    float f = FMMath.DEG2RAD(paramFloat);
     return (1.0F - (float)Math.cos(f * 2.0F)) * 0.5F + this.Cx_Min[2];
   }
 
   public float get_Cz(float paramFloat)
   {
-    return 0.3F * (float)Math.sin(DEG2RAD(paramFloat) * 2.0F);
+    return 0.3F * (float)Math.sin(FMMath.DEG2RAD(paramFloat) * 2.0F);
   }
 }

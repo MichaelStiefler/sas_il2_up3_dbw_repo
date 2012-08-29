@@ -88,7 +88,7 @@ public class CockpitPE2_Bombardier extends CockpitPilot
     super("3DO/Cockpit/Pe-2-Bombardier/hier.him", "he111");
     try {
       Loc localLoc = new Loc();
-      HookNamed localHookNamed = new HookNamed(this.mesh, "CAMERA");
+      HookNamed localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERA");
       localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
       this.aAim = localLoc.getOrient().getAzimut();
       this.tAim = localLoc.getOrient().getTangage();
@@ -102,18 +102,18 @@ public class CockpitPE2_Bombardier extends CockpitPilot
 
   public void reflectWorldToInstruments(float paramFloat)
   {
-    this.mesh.chunkSetAngles("zMark1", ((PE_2)aircraft()).fSightCurForwardAngle * 3.675F, 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zMark1", ((PE_2)aircraft()).fSightCurForwardAngle * 3.675F, 0.0F, 0.0F);
     float f = cvt(((PE_2)aircraft()).fSightSetForwardAngle, -15.0F, 75.0F, -15.0F, 75.0F);
-    this.mesh.chunkSetAngles("zMark2", f * 3.675F, 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zMark2", f * 3.675F, 0.0F, 0.0F);
     resetYPRmodifier();
-    xyz[0] = cvt(this.fm.Or.getKren() * Math.abs(this.fm.Or.getKren()), -1225.0F, 1225.0F, -0.23F, 0.23F);
-    xyz[1] = cvt((this.fm.Or.getTangage() - 1.0F) * Math.abs(this.fm.Or.getTangage() - 1.0F), -1225.0F, 1225.0F, 0.23F, -0.23F);
-    ypr[0] = cvt(this.fm.Or.getKren(), -45.0F, 45.0F, -180.0F, 180.0F);
-    this.mesh.chunkSetLocate("zBulb", xyz, ypr);
+    Cockpit.xyz[0] = cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren() * Math.abs(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren()), -1225.0F, 1225.0F, -0.23F, 0.23F);
+    Cockpit.xyz[1] = cvt((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage() - 1.0F) * Math.abs(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage() - 1.0F), -1225.0F, 1225.0F, 0.23F, -0.23F);
+    Cockpit.ypr[0] = cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren(), -45.0F, 45.0F, -180.0F, 180.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("zBulb", Cockpit.xyz, Cockpit.ypr);
     resetYPRmodifier();
-    xyz[0] = cvt(xyz[0], -0.23F, 0.23F, 0.0095F, -0.0095F);
-    xyz[1] = cvt(xyz[1], -0.23F, 0.23F, 0.0095F, -0.0095F);
-    this.mesh.chunkSetLocate("zRefraction", xyz, ypr);
+    Cockpit.xyz[0] = cvt(Cockpit.xyz[0], -0.23F, 0.23F, 0.0095F, -0.0095F);
+    Cockpit.xyz[1] = cvt(Cockpit.xyz[1], -0.23F, 0.23F, 0.0095F, -0.0095F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("zRefraction", Cockpit.xyz, Cockpit.ypr);
   }
 
   static

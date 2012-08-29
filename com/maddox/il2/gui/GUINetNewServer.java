@@ -279,27 +279,14 @@ public class GUINetNewServer extends GameState
     }
 
     public void afterCreated() {
-      this.clientWindow = create(new GWindowDialogClient() {
-        public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-          if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-          if (paramGWindow == GUINetNewServer.DlgPassword.this.bOk) {
-            if (GUINetNewServer.DlgPassword.this.doOk())
-              close(false);
-            return true;
-          }if (paramGWindow == GUINetNewServer.DlgPassword.this.bCancel) {
-            GUINetNewServer.DlgPassword.this.doCancel();
-            close(false);
-            return true;
-          }
-          return super.notify(paramGWindow, paramInt1, paramInt2);
-        }
-      });
-      GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.clientWindow;
+      this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow = create(new GUINetNewServer.1(this));
+
+      GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow;
       localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 10.0F, 1.5F, GUINetNewServer.this.i18n("netns.Password_") + " ", null));
       localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 10.0F, 1.5F, GUINetNewServer.this.i18n("netns.ConfirmPassword") + " ", null));
       localGWindowDialogClient.addControl(this.pw0 = new GWindowEditControl(localGWindowDialogClient, 12.0F, 1.0F, 8.0F, 1.5F, null));
       localGWindowDialogClient.addControl(this.pw1 = new GWindowEditControl(localGWindowDialogClient, 12.0F, 3.0F, 8.0F, 1.5F, null));
-      this.pw0.bPassword = (this.pw1.bPassword = 1);
+      this.pw0.jdField_bPassword_of_type_Boolean = (this.pw1.jdField_bPassword_of_type_Boolean = 1);
       localGWindowDialogClient.addDefault(this.bOk = new GWindowButton(localGWindowDialogClient, 4.0F, 6.0F, 6.0F, 2.0F, GUINetNewServer.this.i18n("netns.Ok"), null));
       localGWindowDialogClient.addEscape(this.bCancel = new GWindowButton(localGWindowDialogClient, 12.0F, 6.0F, 6.0F, 2.0F, GUINetNewServer.this.i18n("netns.Cancel"), null));
       if (GUINetNewServer.this.password != null) {

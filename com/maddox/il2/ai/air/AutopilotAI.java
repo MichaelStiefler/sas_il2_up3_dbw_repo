@@ -4,7 +4,6 @@ import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.Airport;
 import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Way;
 import com.maddox.il2.ai.WayPoint;
@@ -19,9 +18,6 @@ import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FMMath;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
-import com.maddox.il2.fm.Wind;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.sounds.Voice;
@@ -42,9 +38,6 @@ public class AutopilotAI extends Autopilotage
   private static Point3d P = new Point3d();
   private static Point3d PlLoc = new Point3d();
   private static Orientation O = new Orientation();
-
-  protected Vector3d courseV = new Vector3d();
-  protected Vector3d windV = new Vector3d();
   private float Ail;
   private float Pw;
   private float Ru;
@@ -74,7 +67,7 @@ public class AutopilotAI extends Autopilotage
     if (this.WWPoint != null) {
       this.WWPoint.getP(this.WPoint);
       this.StabSpeed = this.WWPoint.Speed;
-      this.StabAltitude = this.WPoint.z;
+      this.StabAltitude = this.WPoint.jdField_z_of_type_Double;
     } else {
       this.StabAltitude = 1000.0D;
       this.StabSpeed = 80.0D;
@@ -87,11 +80,11 @@ public class AutopilotAI extends Autopilotage
     if (!paramBoolean) return;
     this.bWayPoint = false;
     this.FM.getLoc(P);
-    this.StabAltitude = P.z;
+    this.StabAltitude = P.jdField_z_of_type_Double;
 
     if (!this.bStabSpeed) this.StabSpeed = this.FM.getSpeed();
 
-    this.Pw = this.FM.CT.PowerControl;
+    this.Pw = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl;
   }
 
   public void setStabAltitude(float paramFloat)
@@ -103,7 +96,7 @@ public class AutopilotAI extends Autopilotage
 
     if (!this.bStabSpeed) this.StabSpeed = this.FM.getSpeed();
 
-    this.Pw = this.FM.CT.PowerControl;
+    this.Pw = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl;
   }
 
   public void setStabSpeed(boolean paramBoolean)
@@ -126,16 +119,16 @@ public class AutopilotAI extends Autopilotage
     this.bStabDirection = paramBoolean;
     if (!paramBoolean) return;
     this.bWayPoint = false;
-    O.set(this.FM.Or);
+    O.set(this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation);
     this.StabDirection = O.getAzimut();
-    this.Ail = this.FM.CT.AileronControl;
+    this.Ail = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl;
   }
 
   public void setStabDirection(float paramFloat) {
     this.bStabDirection = true;
     this.bWayPoint = false;
     this.StabDirection = ((paramFloat + 3600.0F) % 360.0F);
-    this.Ail = this.FM.CT.AileronControl;
+    this.Ail = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl;
   }
 
   public void setStabAll(boolean paramBoolean) {
@@ -149,129 +142,123 @@ public class AutopilotAI extends Autopilotage
   public float getWayPointDistance()
   {
     if (this.WPoint == null) return 1000000.0F;
-    this.way.curr().getP(P); P.sub(this.FM.Loc);
-    return (float)Math.sqrt(P.x * P.x + P.y * P.y);
+    this.jdField_way_of_type_ComMaddoxIl2AiWay.curr().getP(P); P.sub(this.FM.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+    return (float)Math.sqrt(P.jdField_x_of_type_Double * P.jdField_x_of_type_Double + P.jdField_y_of_type_Double * P.jdField_y_of_type_Double);
   }
 
   private void voiceCommand(Point3d paramPoint3d1, Point3d paramPoint3d2) {
     this.Ve.sub(paramPoint3d2, paramPoint3d1);
-    float f = 57.324841F * (float)Math.atan2(this.Ve.x, this.Ve.y);
+    float f = 57.324841F * (float)Math.atan2(this.Ve.jdField_x_of_type_Double, this.Ve.jdField_y_of_type_Double);
     int i = (int)f;
     i = (i + 180) % 360;
-    Voice.speakHeading((Aircraft)this.FM.actor, i);
-    Voice.speakAltitude((Aircraft)this.FM.actor, (int)paramPoint3d1.z);
+    Voice.speakHeading((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor, i);
+    Voice.speakAltitude((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor, (int)paramPoint3d1.jdField_z_of_type_Double);
   }
 
   public void update(float paramFloat) {
     this.FM.getLoc(PlLoc);
-    this.SA = (float)Math.max(this.StabAltitude, Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5.0D);
+    this.SA = (float)Math.max(this.StabAltitude, Engine.land().HQ_Air(PlLoc.jdField_x_of_type_Double, PlLoc.jdField_y_of_type_Double) + 5.0D);
 
     if (this.bWayPoint) {
-      if ((this.WWPoint != this.way.auto(PlLoc)) || (this.way.isReached(PlLoc))) {
-        this.WWPoint = this.way.auto(PlLoc);
+      if ((this.WWPoint != this.jdField_way_of_type_ComMaddoxIl2AiWay.auto(PlLoc)) || (this.jdField_way_of_type_ComMaddoxIl2AiWay.isReached(PlLoc))) {
+        this.WWPoint = this.jdField_way_of_type_ComMaddoxIl2AiWay.auto(PlLoc);
         this.WWPoint.getP(this.WPoint);
-        if ((((Aircraft)this.FM.actor).aircIndex() == 0) && (!this.way.isLanding())) voiceCommand(this.WPoint, PlLoc);
+        if ((((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor).aircIndex() == 0) && (!this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding())) voiceCommand(this.WPoint, PlLoc);
 
-        this.StabSpeed = (this.WWPoint.Speed - 2.0F * ((Aircraft)this.FM.actor).aircIndex());
-        this.StabAltitude = this.WPoint.z;
+        this.StabSpeed = (this.WWPoint.Speed - 2.0F * ((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor).aircIndex());
+        this.StabAltitude = this.WPoint.jdField_z_of_type_Double;
         Object localObject;
         if (this.WWPoint.Action == 3) {
           localObject = this.WWPoint.getTarget();
           if (localObject != null) {
             this.FM.target_ground = null;
           }
-          else if ((((Aircraft)this.FM.actor instanceof TypeBomber)) && (this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][0] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].haveBullets()))
+          else if ((((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeBomber)) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0] != null) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].haveBullets()))
           {
-            this.FM.CT.BayDoorControl = 1.0F;
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.BayDoorControl = 1.0F;
             Pilot localPilot = this.FM;
-            while (localPilot.Wingman != null) {
-              localPilot = (Pilot)localPilot.Wingman;
-              localPilot.CT.BayDoorControl = 1.0F;
+            while (localPilot.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel != null) {
+              localPilot = (Pilot)localPilot.jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel;
+              localPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.BayDoorControl = 1.0F;
             }
           }
         }
         else {
-          if (((Aircraft)this.FM.actor instanceof TypeBomber)) {
-            this.FM.CT.BayDoorControl = 0.0F;
+          if (((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeBomber)) {
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.BayDoorControl = 0.0F;
             localObject = this.FM;
-            while (((Pilot)localObject).Wingman != null) {
-              localObject = (Pilot)((Pilot)localObject).Wingman;
-              ((Pilot)localObject).CT.BayDoorControl = 0.0F;
+            while (((Pilot)localObject).jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel != null) {
+              localObject = (Pilot)((Pilot)localObject).jdField_Wingman_of_type_ComMaddoxIl2FmFlightModel;
+              ((Pilot)localObject).jdField_CT_of_type_ComMaddoxIl2FmControls.BayDoorControl = 0.0F;
             }
           }
           localObject = this.WWPoint.getTarget();
           if ((localObject instanceof Aircraft)) {
-            if (((Actor)localObject).getArmy() == this.FM.actor.getArmy()) this.FM.airClient = ((Maneuver)((Aircraft)localObject).FM); else {
-              this.FM.target = ((Aircraft)localObject).FM;
+            if (((Actor)localObject).getArmy() == this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor.getArmy()) this.FM.airClient = ((Maneuver)((Aircraft)localObject).jdField_FM_of_type_ComMaddoxIl2FmFlightModel); else {
+              this.FM.target = ((Aircraft)localObject).jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
             }
           }
         }
 
-        if (this.way.isLanding()) {
+        if (this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding()) {
           this.FM.getLoc(P);
-          if ((this.way.Cur() > 3) && (P.z > this.WPoint.z + 500.0D)) this.way.setCur(1);
-          if ((this.way.Cur() == 5) && (
-            (!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))) {
-            Voice.speakLanding((Aircraft)this.FM.actor);
+          if ((this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() > 3) && (P.jdField_z_of_type_Double > this.WPoint.jdField_z_of_type_Double + 500.0D)) this.jdField_way_of_type_ComMaddoxIl2AiWay.setCur(1);
+          if (this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() == 5) {
+            Voice.speakLanding((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
           }
-          if ((this.way.Cur() == 6) || (this.way.Cur() == 7)) {
+          if ((this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() == 6) || (this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() == 7)) {
             int i = 0;
-            if (Actor.isAlive(this.way.landingAirport)) {
-              i = this.way.landingAirport.landingFeedback(this.WPoint, (Aircraft)this.FM.actor);
+            if (Actor.isAlive(this.jdField_way_of_type_ComMaddoxIl2AiWay.landingAirport)) {
+              i = this.jdField_way_of_type_ComMaddoxIl2AiWay.landingAirport.landingFeedback(this.WPoint, (Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
             }
-            if ((i == 0) && (
-              (!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))) {
-              Voice.speakLandingPermited((Aircraft)this.FM.actor);
+            if (i == 0) {
+              Voice.speakLandingPermited((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
             }
             if (i == 1) {
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakLandingDenied((Aircraft)this.FM.actor);
-              this.way.first();
+              Voice.speakLandingDenied((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
+              this.jdField_way_of_type_ComMaddoxIl2AiWay.first();
               this.FM.push(2);
               this.FM.push(2);
               this.FM.push(2);
               this.FM.push(2);
               this.FM.pop();
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakGoAround((Aircraft)this.FM.actor);
-              this.FM.CT.FlapsControl = 0.4F;
-              this.FM.CT.GearControl = 0.0F;
+              Voice.speakGoAround((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
+              this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.4F;
+              this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 0.0F;
               return;
             }
             if (i == 2) {
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakWaveOff((Aircraft)this.FM.actor);
+              Voice.speakWaveOff((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
               if (this.FM.isReadyToReturn()) {
-                if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                  Voice.speakGoingIn((Aircraft)this.FM.actor);
-                this.FM.AS.setCockpitDoor(this.FM.actor, 1);
-                this.FM.CT.GearControl = 1.0F;
+                Voice.speakGoingIn((Aircraft)this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor);
+                this.FM.AS.setCockpitDoor(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor, 1);
+                this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 1.0F;
                 return;
               }
-              this.way.first();
+              this.jdField_way_of_type_ComMaddoxIl2AiWay.first();
               this.FM.push(2);
               this.FM.push(2);
               this.FM.push(2);
               this.FM.push(2);
               this.FM.pop();
-              this.FM.CT.FlapsControl = 0.4F;
-              this.FM.CT.GearControl = 0.0F;
-              Aircraft.debugprintln(this.FM.actor, "Going around!.");
+              this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = 0.4F;
+              this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 0.0F;
+              Aircraft.debugprintln(this.FM.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Going around!.");
               return;
             }
-            this.FM.CT.GearControl = 1.0F;
+            this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = 1.0F;
           }
         }
       }
 
-      if ((this.way.isLanding()) && (this.way.Cur() < 6) && (this.way.getCurDist() < 800.0D)) this.way.next();
+      if ((this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding()) && (this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() < 6) && (this.jdField_way_of_type_ComMaddoxIl2AiWay.getCurDist() < 800.0D)) this.jdField_way_of_type_ComMaddoxIl2AiWay.next();
 
-      if (((this.way.Cur() == this.way.size() - 1) && (getWayPointDistance() < 2000.0F) && (this.way.curr().getTarget() == null) && (this.FM.M.fuel < 0.2F * this.FM.M.maxFuel)) || ((this.way.curr().Action == 2) && (!this.way.isLanding())))
+      if (((this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() == this.jdField_way_of_type_ComMaddoxIl2AiWay.size() - 1) && (getWayPointDistance() < 2000.0F) && (this.jdField_way_of_type_ComMaddoxIl2AiWay.curr().getTarget() == null) && (this.FM.jdField_M_of_type_ComMaddoxIl2FmMass.fuel < 0.2F * this.FM.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel)) || ((this.jdField_way_of_type_ComMaddoxIl2AiWay.curr().Action == 2) && (!this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding())))
       {
         Airport localAirport = Airport.makeLandWay(this.FM);
         if (localAirport != null) {
           this.WWPoint = null;
-          this.way.first();
+          this.jdField_way_of_type_ComMaddoxIl2AiWay.first();
           update(paramFloat);
           return;
         }
@@ -280,33 +267,17 @@ public class AutopilotAI extends Autopilotage
         this.FM.setBusy(true);
       }
 
-      if (World.cur().diffCur.Wind_N_Turbulence) { World.cur(); if ((!World.wind().noWind) && (this.FM.Skill > 0))
-        {
-          World.cur(); World.wind().getVectorAI(this.WPoint, this.windV);
-          this.windV.scale(-1.0D);
-
-          if (this.FM.Skill == 1) {
-            this.windV.scale(0.75D);
-          }
-          this.courseV.set(this.WPoint.x - PlLoc.x, this.WPoint.y - PlLoc.y, 0.0D);
-          this.courseV.normalize();
-
-          this.courseV.scale(this.FM.getSpeed());
-          this.courseV.add(this.windV);
-          this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.courseV.y, this.courseV.x))); break label1470;
-        }
-      }
-      this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.WPoint.y - PlLoc.y, this.WPoint.x - PlLoc.x)));
+      this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.WPoint.jdField_y_of_type_Double - PlLoc.jdField_y_of_type_Double, this.WPoint.jdField_x_of_type_Double - PlLoc.jdField_x_of_type_Double)));
     }
 
-    label1470: if ((this.bStabSpeed) || (this.bWayPoint)) {
+    if ((this.bStabSpeed) || (this.bWayPoint)) {
       this.Pw = (0.3F - 0.04F * (this.FM.getSpeed() - (float)this.StabSpeed));
       if (this.Pw > 1.0F) this.Pw = 1.0F; else if (this.Pw < 0.0F) this.Pw = 0.0F;
 
     }
 
     if ((this.bStabAltitude) || (this.bWayPoint)) {
-      this.Ev = this.FM.CT.ElevatorControl;
+      this.Ev = this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl;
 
       double d1 = this.SA - this.FM.getAltitude();
       double d2 = 0.0D;
@@ -317,43 +288,43 @@ public class AutopilotAI extends Autopilotage
         f4 = 5.0F + 0.00025F * this.FM.getAltitude();
         f4 = (float)(f4 + 0.02D * (250.0D - this.FM.Vmax));
         if (f4 > 14.0F) f4 = 14.0F;
-        d2 = Math.min(this.FM.getAOA() - f4, this.FM.Or.getTangage() - 1.0F) * 1.0F * paramFloat + 0.5F * this.FM.getForwAccel();
+        d2 = Math.min(this.FM.getAOA() - f4, this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage() - 1.0F) * 1.0F * paramFloat + 0.5F * this.FM.getForwAccel();
       }
 
       if (d1 < 50.0D)
       {
-        f4 = -15.0F + this.FM.M.mass * 0.00033F;
+        f4 = -15.0F + this.FM.jdField_M_of_type_ComMaddoxIl2FmMass.mass * 0.00033F;
         if (f4 < -4.0F) f4 = -4.0F;
-        d3 = (this.FM.Or.getTangage() - f4) * 0.8F * paramFloat;
+        d3 = (this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage() - f4) * 0.8F * paramFloat;
       }
       double d4 = 0.01D * (d1 + 50.0D);
       if (d4 > 1.0D) d4 = 1.0D;
       if (d4 < 0.0D) d4 = 0.0D;
       this.Ev = (float)(this.Ev - (d4 * d2 + (1.0D - d4) * d3));
 
-      this.Ev = (float)(this.Ev + (1.0D * this.FM.getW().y + 0.5D * this.FM.getAW().y));
-      if (this.FM.getSpeed() < 1.3F * this.FM.VminFLAPS) this.Ev -= 0.004F * paramFloat;
+      this.Ev = (float)(this.Ev + (1.0D * this.FM.getW().jdField_y_of_type_Double + 0.5D * this.FM.getAW().jdField_y_of_type_Double));
+      if (this.FM.getSpeed() < 1.3F * this.FM.jdField_VminFLAPS_of_type_Float) this.Ev -= 0.004F * paramFloat;
 
-      float f5 = 9.0F * this.FM.getSpeed() / this.FM.VminFLAPS;
-      if (this.FM.VminFLAPS < 28.0F) f5 = 10.0F;
+      float f5 = 9.0F * this.FM.getSpeed() / this.FM.jdField_VminFLAPS_of_type_Float;
+      if (this.FM.jdField_VminFLAPS_of_type_Float < 28.0F) f5 = 10.0F;
       if (f5 > 25.0F) f5 = 25.0F;
-      float f6 = (f5 - this.FM.Or.getTangage()) * 0.1F;
-      float f7 = -15.0F + this.FM.M.mass * 0.00033F;
+      float f6 = (f5 - this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage()) * 0.1F;
+      float f7 = -15.0F + this.FM.jdField_M_of_type_ComMaddoxIl2FmMass.mass * 0.00033F;
       if (f7 < -4.0F) f7 = -4.0F;
-      float f8 = (f7 - this.FM.Or.getTangage()) * 0.2F;
+      float f8 = (f7 - this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage()) * 0.2F;
 
       if (this.Ev > f6) this.Ev = f6;
       if (this.Ev < f8) this.Ev = f8;
 
-      this.FM.CT.ElevatorControl = (0.8F * this.FM.CT.ElevatorControl + 0.2F * this.Ev);
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = (0.8F * this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl + 0.2F * this.Ev);
     }
 
     float f1 = 0.0F;
 
     if ((this.bStabDirection) || (this.bWayPoint))
     {
-      f1 = this.FM.Or.getAzimut();
-      float f2 = this.FM.Or.getKren();
+      f1 = this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getAzimut();
+      float f2 = this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren();
       f1 = (float)(f1 - this.StabDirection);
 
       f1 = (f1 + 3600.0F) % 360.0F;
@@ -361,29 +332,29 @@ public class AutopilotAI extends Autopilotage
       if (f1 > 180.0F) f1 -= 360.0F;
       if (f2 > 180.0F) f2 -= 360.0F;
 
-      float f3 = ((this.FM.getSpeed() - this.FM.VminFLAPS) * 3.6F + this.FM.getVertSpeed() * 40.0F) * 0.25F;
-      if (this.way.isLanding()) f3 = 65.0F;
+      float f3 = ((this.FM.getSpeed() - this.FM.jdField_VminFLAPS_of_type_Float) * 3.6F + this.FM.getVertSpeed() * 40.0F) * 0.25F;
+      if (this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding()) f3 = 65.0F;
       if (f3 < 15.0F) f3 = 15.0F; else if (f3 > 65.0F) f3 = 65.0F;
       if (f1 < -f3) f1 = -f3; else if (f1 > f3) f1 = f3;
 
-      this.Ail = (-0.01F * (f1 + f2 + 3.0F * (float)this.FM.getW().x + 0.5F * (float)this.FM.getAW().x));
+      this.Ail = (-0.01F * (f1 + f2 + 3.0F * (float)this.FM.getW().jdField_x_of_type_Double + 0.5F * (float)this.FM.getAW().jdField_x_of_type_Double));
       if (this.Ail > 1.0F) this.Ail = 1.0F; else if (this.Ail < -1.0F) this.Ail = -1.0F;
       this.WPoint.get(this.Ve);
-      this.Ve.sub(this.FM.Loc);
-      this.FM.Or.transformInv(this.Ve);
-      if ((Math.abs(this.Ve.y) < 25.0D) && (Math.abs(this.Ve.x) < 150.0D))
-        this.FM.CT.AileronControl = (-0.01F * this.FM.Or.getKren());
+      this.Ve.sub(this.FM.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+      this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transformInv(this.Ve);
+      if ((Math.abs(this.Ve.jdField_y_of_type_Double) < 25.0D) && (Math.abs(this.Ve.jdField_x_of_type_Double) < 150.0D))
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = (-0.01F * this.FM.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren());
       else
-        this.FM.CT.AileronControl = this.Ail;
-      this.FM.CT.ElevatorControl += Math.abs(f2) * 0.004F * paramFloat;
+        this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = this.Ail;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl += Math.abs(f2) * 0.004F * paramFloat;
 
-      this.FM.CT.RudderControl -= this.FM.getAOS() * 0.04F * paramFloat;
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl -= this.FM.getAOS() * 0.04F * paramFloat;
     }
 
-    if ((this.bWayPoint) && (this.way.isLanding())) {
+    if ((this.bWayPoint) && (this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding())) {
       if (World.Rnd().nextFloat() < 0.01F) this.FM.doDumpBombsPassively();
-      if (this.way.Cur() > 5) this.FM.set_maneuver(25);
-      this.FM.CT.RudderControl -= f1 * 0.04F * paramFloat;
+      if (this.jdField_way_of_type_ComMaddoxIl2AiWay.Cur() > 5) this.FM.set_maneuver(25);
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl -= f1 * 0.04F * paramFloat;
       landUpdate(paramFloat);
     }
   }
@@ -391,11 +362,11 @@ public class AutopilotAI extends Autopilotage
   private void landUpdate(float paramFloat)
   {
     if (this.FM.getAltitude() - 10.0F + this.FM.getVertSpeed() * 5.0F - this.SA > 0.0F) {
-      if (this.FM.Vwld.z > -10.0D) this.FM.Vwld.z -= 1.0F * paramFloat;
+      if (this.FM.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double > -10.0D) this.FM.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double -= 1.0F * paramFloat;
     }
-    else if (this.FM.Vwld.z < 10.0D) this.FM.Vwld.z += 1.0F * paramFloat;
+    else if (this.FM.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double < 10.0D) this.FM.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double += 1.0F * paramFloat;
 
-    if ((this.FM.getAOA() > 11.0F) && (this.FM.CT.ElevatorControl > -0.3F))
-      this.FM.CT.ElevatorControl -= 0.3F * paramFloat;
+    if ((this.FM.getAOA() > 11.0F) && (this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl > -0.3F))
+      this.FM.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl -= 0.3F * paramFloat;
   }
 }

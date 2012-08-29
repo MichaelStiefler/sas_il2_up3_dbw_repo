@@ -5,7 +5,6 @@ import com.maddox.gwindow.GRegion;
 import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowButton;
-import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowDialogClient;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowFramed;
@@ -57,13 +56,13 @@ public class GUINetNewClient extends GameState
   public GUIInfoMenu infoMenu;
   public GUIInfoName infoName;
   public Table wTable;
+  public GWindowEditControl wEdit;
   public GUIButton bSearch;
   public GUIButton bJoin;
   public GUIButton bExit;
   public GWindow connectMessgeBox;
   public String serverAddress;
   NetChannel serverChannel;
-  GWindowComboControl wZutiServersList;
   public boolean bExistSearch;
   private static NetAddress broadcastAdr;
   private static NetMsgInput _netMsgInput = new NetMsgInput();
@@ -78,14 +77,12 @@ public class GUINetNewClient extends GameState
     if ((USGS.isUsed()) || (Main.cur().netGameSpy != null))
     {
       this.bSearch.hideWindow();
-
-      this.wZutiServersList.hideWindow();
+      this.wEdit.hideWindow();
       this.bJoin.hideWindow();
     } else {
       this.bSearch.showWindow();
-
-      this.wZutiServersList.setValue(Config.cur.netRemoteHost + ":" + Config.cur.netRemotePort, false);
-      this.wZutiServersList.showWindow();
+      this.wEdit.setValue(Config.cur.netRemoteHost + ":" + Config.cur.netRemotePort, false);
+      this.wEdit.showWindow();
       this.bJoin.showWindow();
     }
     this.dialogClient.setPosSize();
@@ -111,7 +108,7 @@ public class GUINetNewClient extends GameState
     if (this.connectMessgeBox == null)
       return;
     this.connectMessgeBox.hideWindow();
-    this.connectMessgeBox = new GWindowMessageBox(this.client.root, 20.0F, true, i18n("netnc.NotConnect"), paramString, 3, 0.0F)
+    this.connectMessgeBox = new GWindowMessageBox(this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netnc.NotConnect"), paramString, 3, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -134,7 +131,7 @@ public class GUINetNewClient extends GameState
   private void onChannelCreated()
   {
     this.connectMessgeBox.hideWindow();
-    this.connectMessgeBox = new GWindowMessageBox(this.client.root, 20.0F, true, i18n("netnc.Connect"), i18n("netnc.ConnectSucc"), 3, 5.0F)
+    this.connectMessgeBox = new GWindowMessageBox(this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netnc.Connect"), i18n("netnc.ConnectSucc"), 3, 5.0F)
     {
       public void result(int paramInt)
       {
@@ -155,7 +152,7 @@ public class GUINetNewClient extends GameState
     if ("SP".equals(str1)) {
       String str2 = localNumberTokenizer.next("0");
       this.connectMessgeBox.hideWindow();
-      this.connectMessgeBox = new DlgServerPassword(this.client.root, str2);
+      this.connectMessgeBox = new DlgServerPassword(this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, str2);
     }
     else if ((USGS.isUsed()) && ("NM".equals(str1))) {
       ((NetControl)NetEnv.cur().control).doAnswer("NM \"" + NetEnv.host().shortName() + '"');
@@ -258,8 +255,7 @@ public class GUINetNewClient extends GameState
     }
     else {
       NetEnv.cur(); NetEnv.host().setShortName(World.cur().userCfg.callsign);
-
-      this.serverAddress = this.wZutiServersList.getValue();
+      this.serverAddress = this.wEdit.getValue();
     }
 
     String str1 = this.serverAddress;
@@ -289,15 +285,13 @@ public class GUINetNewClient extends GameState
     Config.cur.netRemoteHost = str1;
     Config.cur.netRemotePort = i;
 
-    Config.cur.zutiAddServerName(this.wZutiServersList.getValue());
-
     doStartWaitDlg();
   }
 
   private void doStartWaitDlg() {
     if (this.connectMessgeBox != null)
       this.connectMessgeBox.close(false);
-    this.connectMessgeBox = new GWindowMessageBox(this.dialogClient.root, 20.0F, true, i18n("netnc.Connect"), i18n("netnc.ConnectWait"), 5, 0.0F)
+    this.connectMessgeBox = new GWindowMessageBox(this.dialogClient.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netnc.Connect"), i18n("netnc.ConnectWait"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -327,9 +321,7 @@ public class GUINetNewClient extends GameState
     this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
 
     this.wTable = new Table(this.dialogClient);
-
-    this.wZutiServersList = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 50.0F)));
-    this.wZutiServersList.list = Config.cur.zutiGetServerNames();
+    this.wEdit = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
 
     GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
 
@@ -355,22 +347,9 @@ public class GUINetNewClient extends GameState
     }
 
     public void afterCreated() {
-      this.clientWindow = create(new GWindowDialogClient() {
-        public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-          if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-          if (paramGWindow == GUINetNewClient.DlgServerPassword.this.bOk) {
-            GUINetNewClient.DlgServerPassword.this.doOk();
-            close(false);
-            return true;
-          }if (paramGWindow == GUINetNewClient.DlgServerPassword.this.bCancel) {
-            GUINetNewClient.DlgServerPassword.this.doCancel();
-            close(false);
-            return true;
-          }
-          return super.notify(paramGWindow, paramInt1, paramInt2);
-        }
-      });
-      GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.clientWindow;
+      this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow = create(new GUINetNewClient.5(this));
+
+      GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.jdField_clientWindow_of_type_ComMaddoxGwindowGWindow;
       localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 10.0F, 1.5F, GUINetNewClient.this.i18n("netnc.Password") + " ", null));
       localGWindowDialogClient.addControl(this.pw = new GWindowEditControl(localGWindowDialogClient, 12.0F, 1.0F, 8.0F, 1.5F, null));
       this.pw.bPassword = true;
@@ -484,16 +463,12 @@ public class GUINetNewClient extends GameState
 
       if (GUINetNewClient.this.bExistSearch) {
         GUINetNewClient.this.wTable.set1024PosSize(32.0F, 32.0F, 892.0F, 192.0F);
-
-        GUINetNewClient.this.wZutiServersList.setPosSize(x1024(352.0F), y1024(304.0F), x1024(256.0F), y1024(32.0F));
-
+        GUINetNewClient.this.wEdit.setPosSize(x1024(352.0F), y1024(304.0F), x1024(256.0F), y1024(32.0F));
         GUINetNewClient.this.bJoin.setPosC(x1024(904.0F), y1024(424.0F));
         GUINetNewClient.this.bExit.setPosC(x1024(56.0F), y1024(424.0F));
       } else {
         GUINetNewClient.this.bSearch.setPosC(x1024(56.0F), y1024(56.0F));
-
-        GUINetNewClient.this.wZutiServersList.setPosSize(x1024(144.0F), y1024(144.0F), x1024(256.0F), y1024(32.0F));
-
+        GUINetNewClient.this.wEdit.setPosSize(x1024(144.0F), y1024(144.0F), x1024(256.0F), y1024(32.0F));
         GUINetNewClient.this.bJoin.setPosC(x1024(488.0F), y1024(264.0F));
         GUINetNewClient.this.bExit.setPosC(x1024(56.0F), y1024(264.0F));
       }
@@ -551,10 +526,9 @@ public class GUINetNewClient extends GameState
 
     public void setSelect(int paramInt1, int paramInt2) {
       super.setSelect(paramInt1, paramInt2);
-      if (this.selectRow >= 0) {
-        String str = (String)this.adrList.get(this.selectRow);
-
-        GUINetNewClient.this.wZutiServersList.setValue(str, false);
+      if (this.jdField_selectRow_of_type_Int >= 0) {
+        String str = (String)this.adrList.get(this.jdField_selectRow_of_type_Int);
+        GUINetNewClient.this.wEdit.setValue(str, false);
       }
     }
 
@@ -568,7 +542,7 @@ public class GUINetNewClient extends GameState
       addColumn(I18N.gui("netnc.Ping"), null);
       addColumn(I18N.gui("netnc.Users"), null);
       addColumn(I18N.gui("netnc.Type"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(8.0F);
 
       getColumn(1).setRelativeDx(10.0F);
@@ -581,7 +555,7 @@ public class GUINetNewClient extends GameState
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

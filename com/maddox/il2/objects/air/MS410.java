@@ -29,9 +29,9 @@ public class MS410 extends MS400X
 
     Property.set(localClass, "FlightModel", "FlightModels/MS410.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01" });
-    weaponsRegister(localClass, "default", new String[] { "MGunMAC1934 500", "MGunMAC1934 500", "MGunMAC1934 500", "MGunMAC1934 500", "MGunHispanoMkIki 60" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15k 300", "MGunMG15k 300", "MGunMG15k 300", "MGunMG15k 300", "MGunHispanoMkIki 60" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

@@ -21,7 +21,7 @@ public class I_15BIS_SKIS extends I_15xyz
   public void onAircraftLoaded()
   {
     super.onAircraftLoaded();
-    this.FM.CT.bHasBrakeControl = false;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.bHasBrakeControl = false;
     this.wireRandomizer1 = ((float)(Math.random() * 2.0D) - 1.0F);
     this.wireRandomizer2 = ((float)(Math.random() * 2.0D) - 1.0F);
     this.wireRandomizer3 = ((float)(Math.random() * 2.0D) - 1.0F);
@@ -38,13 +38,13 @@ public class I_15BIS_SKIS extends I_15xyz
     {
       int i = 0;
 
-      float f1 = Aircraft.cvt(this.FM.getSpeed(), 30.0F, 80.0F, 1.0F, 0.0F);
-      float f2 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 30.0F, 0.0F, 0.5F);
+      float f1 = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed(), 30.0F, 80.0F, 1.0F, 0.0F);
+      float f2 = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed(), 0.0F, 30.0F, 0.0F, 0.5F);
 
-      if (this.FM.Gears.gWheelSinking[0] > 0.0F)
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0] > 0.0F)
       {
         i = 1;
-        this.skiAngleL = (0.5F * this.skiAngleL + 0.5F * this.FM.Or.getTangage());
+        this.skiAngleL = (0.5F * this.skiAngleL + 0.5F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage());
 
         if (this.skiAngleL > 20.0F)
         {
@@ -69,10 +69,10 @@ public class I_15BIS_SKIS extends I_15xyz
         hierMesh().chunkSetAngles("SkiL1_D0", 0.0F, -this.skiAngleL, 0.0F);
       }
 
-      if (this.FM.Gears.gWheelSinking[1] > 0.0F)
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1] > 0.0F)
       {
         i = 1;
-        this.skiAngleR = (0.5F * this.skiAngleR + 0.5F * this.FM.Or.getTangage());
+        this.skiAngleR = (0.5F * this.skiAngleR + 0.5F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage());
 
         if (this.skiAngleR > 20.0F)
         {
@@ -81,7 +81,7 @@ public class I_15BIS_SKIS extends I_15xyz
 
         hierMesh().chunkSetAngles("SkiR1_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2, f2) - this.skiAngleR, World.Rnd().nextFloat(f2, f2));
 
-        if ((this.FM.Gears.gWheelSinking[0] == 0.0F) && (this.FM.Or.getRoll() < 365.0F) && (this.FM.Or.getRoll() > 355.0F))
+        if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0] == 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getRoll() < 365.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getRoll() > 355.0F))
         {
           this.skiAngleL = this.skiAngleR;
           hierMesh().chunkSetAngles("SkiL1_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2, f2) - this.skiAngleL, World.Rnd().nextFloat(f2, f2));
@@ -297,22 +297,21 @@ public class I_15BIS_SKIS extends I_15xyz
     Property.set(localClass, "yearService", 1937.0F);
     Property.set(localClass, "yearExpired", 1942.0F);
     Property.set(localClass, "FlightModel", "FlightModels/I-15bis.fmd");
-    Property.set(localClass, "cockpitClass", CockpitI_15Bis.class);
     Property.set(localClass, "LOSElevation", 0.84305F);
     Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
 
     Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4xAO10", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4xAO10", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", "BombGunAO10 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2xAO10_2xFAB50", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, "BombGunAO10S 1", "BombGunAO10S 1", "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2xAO10_2xFAB50", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, "BombGunAO10 1", "BombGunAO10 1", "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2xFAB50", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, null, null, "BombGunFAB50", "BombGunFAB50", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2xFAB50", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, null, null, null, null, null, null, null, null, "BombGunFAB50", "BombGunFAB50", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4xRS82", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", null, null, null, null, null, null, null, null, "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", null, null });
+    Aircraft.weaponsRegister(localClass, "4xRS82", new String[] { "MGunPV1sipzl 775", "MGunPV1sipzl 775", "MGunPV1sipzl 425", "MGunPV1sipzl 425", null, null, "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", null, null, null, null, null, null, null, null, "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

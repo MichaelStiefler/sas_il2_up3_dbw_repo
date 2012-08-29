@@ -4,7 +4,6 @@ import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -13,13 +12,13 @@ import java.io.IOException;
 public class R_10 extends Scheme1
   implements TypeScout, TypeBomber, TypeStormovik
 {
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 0:
       break;
     case 1:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
     }
   }
 
@@ -42,7 +41,7 @@ public class R_10 extends Scheme1
   {
     super.rareAction(paramFloat, paramBoolean);
 
-    if (this.FM.getAltitude() < 3000.0F) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F) {
       hierMesh().chunkVisible("HMask1_D0", false);
       hierMesh().chunkVisible("HMask2_D0", false);
     } else {
@@ -172,13 +171,13 @@ public class R_10 extends Scheme1
 
     Property.set(localClass, "FlightModel", "FlightModels/R-10.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_BombSpawn01", "_BombSpawn02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_BombSpawn01", "_BombSpawn02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASk 750", "MGunShKASk 750", "MGunShKASt 250", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASk 750", "MGunShKASk 750", "MGunShKASt 250", null, null });
 
-    weaponsRegister(localClass, "6xFAB50", new String[] { "MGunShKASk 750", "MGunShKASk 750", "MGunShKASt 250", "BombGunFAB50 3", "BombGunFAB50 3" });
+    Aircraft.weaponsRegister(localClass, "6xFAB50", new String[] { "MGunShKASk 750", "MGunShKASk 750", "MGunShKASt 250", "BombGunFAB50 3", "BombGunFAB50 3" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

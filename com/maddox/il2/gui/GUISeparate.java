@@ -34,7 +34,7 @@ public class GUISeparate extends GWindow
   public void render()
   {
     setCanvasColor(this.color.color);
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, tex);
+    draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, tex);
   }
 
   public boolean isMousePassThrough(float paramFloat1, float paramFloat2)

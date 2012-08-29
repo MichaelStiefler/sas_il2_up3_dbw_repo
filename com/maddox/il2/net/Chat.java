@@ -124,37 +124,22 @@ public class Chat extends NetObj
       }
       ((ChatMessage)localObject1).msg = MessageFormat.format(str1, this.params);
       paramChatMessage = (ChatMessage)localObject1;
-       tmp504_503 = null; this.params[1] = tmp504_503; this.params[0] = tmp504_503;
+       tmp511_510 = null; this.params[1] = tmp511_510; this.params[0] = tmp511_510;
     }
     return (ChatMessage)(ChatMessage)(ChatMessage)paramChatMessage;
   }
 
   private void addMsg(ChatMessage paramChatMessage) {
     paramChatMessage = translateMsg(paramChatMessage);
-    if ((paramChatMessage.msg != null) && ((paramChatMessage.msg.startsWith("Morse:")) || (paramChatMessage.msg.startsWith("morse:"))))
-    {
-      try
-      {
-        if (!World.cur().blockMorseChat)
-          World.getPlayerAircraft().playChatMsgAsMorse(paramChatMessage.msg);
-      }
-      catch (Exception localException)
-      {
-        System.out.println("Exception - " + localException);
-      }
+    this.buf.add(0, paramChatMessage);
+    this.stampUpdate += 1;
+    while (this.buf.size() > this.maxBufLen) {
+      this.buf.remove(this.buf.size() - 1);
     }
+    if (paramChatMessage.from != null)
+      System.out.println("Chat: " + paramChatMessage.from.shortName() + ": \t" + paramChatMessage.msg);
     else
-    {
-      this.buf.add(0, paramChatMessage);
-      this.stampUpdate += 1;
-      while (this.buf.size() > this.maxBufLen) {
-        this.buf.remove(this.buf.size() - 1);
-      }
-      if (paramChatMessage.from != null)
-        System.out.println("Chat: " + paramChatMessage.from.shortName() + ": \t" + paramChatMessage.msg);
-      else
-        System.out.println("Chat: --- " + paramChatMessage.msg);
-    }
+      System.out.println("Chat: --- " + paramChatMessage.msg);
   }
 
   public static void sendLogRnd(int paramInt, String paramString, Aircraft paramAircraft1, Aircraft paramAircraft2) {
@@ -266,7 +251,7 @@ public class Chat extends NetObj
             localNetMsgGuaranted.writeNetObj((NetObj)localChatMessage.to.get(j));
         }
         postExclude(null, localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
   }
 
@@ -306,7 +291,7 @@ public class Chat extends NetObj
       j = 1;
     } else {
       localChatMessage.to = new ArrayList(k);
-      for (int m = 0; m < k; m++)
+      for (m = 0; m < k; m++)
         localChatMessage.to.add(paramNetMsgInput.readNetObj());
       if ((paramNetMsgInput.channel() instanceof NetChannelInStream)) {
         NetUser localNetUser = NetUser.findTrackWriter();
@@ -318,15 +303,15 @@ public class Chat extends NetObj
     if (j != 0) {
       addMsg(localChatMessage);
     }
-    int n = 0;
+    int m = 0;
     if ((isMirror()) && (paramNetMsgInput.channel() != masterChannel()))
-      n = 1;
+      m = 1;
     if (isMirrored()) {
-      n += countMirrors();
+      m += countMirrors();
       if (paramNetMsgInput.channel() != masterChannel())
-        n--;
+        m--;
     }
-    if (n > 0)
+    if (m > 0)
       postExclude(paramNetMsgInput.channel(), new NetMsgGuaranted(paramNetMsgInput, k + i + 1));
     return true;
   }

@@ -14,12 +14,12 @@ public class RocketRS132_45 extends Rocket
 
   protected void doExplosion(Actor paramActor, String paramString)
   {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     MsgExplosion.send(paramActor, paramString, p, getOwner(), 10.1F, 2.1F, 1, 600.0F);
     super.doExplosion(paramActor, paramString);
   }
   protected void doExplosionAir() {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     MsgExplosion.send(null, null, p, getOwner(), 10.1F, 2.1F, 1, 600.0F);
     super.doExplosionAir();
   }

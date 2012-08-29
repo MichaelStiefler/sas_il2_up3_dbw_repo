@@ -35,7 +35,7 @@ public class WayPoint
   }
 
   public WayPoint(Point3d paramPoint3d) {
-    this((float)paramPoint3d.x, (float)paramPoint3d.y, (float)paramPoint3d.z);
+    this((float)paramPoint3d.jdField_x_of_type_Double, (float)paramPoint3d.jdField_y_of_type_Double, (float)paramPoint3d.jdField_z_of_type_Double);
   }
 
   public WayPoint(float paramFloat1, float paramFloat2, float paramFloat3)
@@ -48,9 +48,9 @@ public class WayPoint
     set(paramFloat1, paramFloat2, paramFloat3, paramFloat4);
   }
   public float x() {
-    return (float)this.p.x; } 
-  public float y() { return (float)this.p.y; } 
-  public float z() { return (float)this.p.z; }
+    return (float)this.p.jdField_x_of_type_Double; } 
+  public float y() { return (float)this.p.jdField_y_of_type_Double; } 
+  public float z() { return (float)this.p.jdField_z_of_type_Double; }
 
   public void setTarget(String paramString) {
     if (paramString == null) this.bHadTarget = false; else
@@ -92,16 +92,15 @@ public class WayPoint
       int i = localActor1.getOwnerAttachedCount();
       if (i < 1)
         return null;
-      Actor localActor2;
       for (int j = 0; j < i; j++) {
-        localActor2 = (Actor)localActor1.getOwnerAttached(World.Rnd().nextInt(0, i - 1));
+        Actor localActor2 = (Actor)localActor1.getOwnerAttached(World.Rnd().nextInt(0, i - 1));
         if ((Actor.isValid(localActor2)) && (localActor2.isAlive()))
           return localActor2;
       }
-      for (j = 0; j < i; j++) {
-        localActor2 = (Actor)localActor1.getOwnerAttached(j);
-        if ((Actor.isValid(localActor2)) && (localActor2.isAlive()))
-          return localActor2;
+      for (int k = 0; k < i; k++) {
+        Actor localActor3 = (Actor)localActor1.getOwnerAttached(k);
+        if ((Actor.isValid(localActor3)) && (localActor3.isAlive()))
+          return localActor3;
       }
       return null;
     }
@@ -172,9 +171,9 @@ public class WayPoint
 
   public static Vector3f vector(WayPoint paramWayPoint1, WayPoint paramWayPoint2)
   {
-    V1.x = (float)(paramWayPoint2.p.x - paramWayPoint1.p.x);
-    V1.y = (float)(paramWayPoint2.p.y - paramWayPoint1.p.y);
-    V1.z = (float)(paramWayPoint2.p.z - paramWayPoint1.p.z);
+    V1.x = (float)(paramWayPoint2.p.jdField_x_of_type_Double - paramWayPoint1.p.jdField_x_of_type_Double);
+    V1.y = (float)(paramWayPoint2.p.jdField_y_of_type_Double - paramWayPoint1.p.jdField_y_of_type_Double);
+    V1.z = (float)(paramWayPoint2.p.jdField_z_of_type_Double - paramWayPoint1.p.jdField_z_of_type_Double);
     return V1;
   }
 

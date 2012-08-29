@@ -159,7 +159,7 @@ public class NetMsgOutput extends OutputStream
   public void writeUTF(String paramString) throws IOException {
     int i = paramString.length();
     int j = 0;
-    int m;
+
     for (int k = 0; k < i; k++) {
       m = paramString.charAt(k);
       if ((m >= 1) && (m <= 127))
@@ -176,17 +176,17 @@ public class NetMsgOutput extends OutputStream
     }
     write(j >>> 8 & 0xFF);
     write(j >>> 0 & 0xFF);
-    for (k = 0; k < i; k++) {
-      m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127)) {
-        write(m);
-      } else if (m > 2047) {
-        write(0xE0 | m >> 12 & 0xF);
-        write(0x80 | m >> 6 & 0x3F);
-        write(0x80 | m >> 0 & 0x3F);
+    for (int m = 0; m < i; m++) {
+      int n = paramString.charAt(m);
+      if ((n >= 1) && (n <= 127)) {
+        write(n);
+      } else if (n > 2047) {
+        write(0xE0 | n >> 12 & 0xF);
+        write(0x80 | n >> 6 & 0x3F);
+        write(0x80 | n >> 0 & 0x3F);
       } else {
-        write(0xC0 | m >> 6 & 0x1F);
-        write(0x80 | m >> 0 & 0x3F);
+        write(0xC0 | n >> 6 & 0x1F);
+        write(0x80 | n >> 0 & 0x3F);
       }
     }
   }
@@ -212,7 +212,7 @@ public class NetMsgOutput extends OutputStream
   {
     int i = paramString.length();
     int j = 0;
-    int m;
+
     for (int k = 0; k < i; k++) {
       m = paramString.charAt(k);
       if ((m >= 1) && (m <= 127))
@@ -228,17 +228,17 @@ public class NetMsgOutput extends OutputStream
       throw new UTFDataFormatException();
     }
     write(j & 0xFF);
-    for (k = 0; k < i; k++) {
-      m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127)) {
-        write(m);
-      } else if (m > 2047) {
-        write(0xE0 | m >> 12 & 0xF);
-        write(0x80 | m >> 6 & 0x3F);
-        write(0x80 | m >> 0 & 0x3F);
+    for (int m = 0; m < i; m++) {
+      int n = paramString.charAt(m);
+      if ((n >= 1) && (n <= 127)) {
+        write(n);
+      } else if (n > 2047) {
+        write(0xE0 | n >> 12 & 0xF);
+        write(0x80 | n >> 6 & 0x3F);
+        write(0x80 | n >> 0 & 0x3F);
       } else {
-        write(0xC0 | m >> 6 & 0x1F);
-        write(0x80 | m >> 0 & 0x3F);
+        write(0xC0 | n >> 6 & 0x1F);
+        write(0x80 | n >> 0 & 0x3F);
       }
     }
   }

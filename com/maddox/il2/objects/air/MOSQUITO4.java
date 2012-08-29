@@ -105,15 +105,15 @@ public class MOSQUITO4 extends MOSQUITO
 
     Property.set(localClass, "FlightModel", "FlightModels/Mosquito-BMkIV.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_Clip04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_Clip04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04" });
 
-    weaponsRegister(localClass, "default", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { null, null, null, null, null });
 
-    weaponsRegister(localClass, "4x250", new String[] { null, "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1" });
+    Aircraft.weaponsRegister(localClass, "4x250", new String[] { null, "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1" });
 
-    weaponsRegister(localClass, "4x500", new String[] { null, "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1" });
+    Aircraft.weaponsRegister(localClass, "4x500", new String[] { null, "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

@@ -10,7 +10,7 @@ public class MGunMG81ki extends MGunMG81s
 
     localGunProperties.bUseHookAsRel = true;
     localGunProperties.shells = null;
-    localGunProperties.shotFreq = 26.666666F;
+    localGunProperties.shotFreq = 20.0F;
 
     localGunProperties.maxDeltaAngle = 0.56F;
     localGunProperties.shotFreqDeviation = 0.04F;

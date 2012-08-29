@@ -35,13 +35,9 @@ import com.maddox.il2.game.I18N;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.PaintScheme;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
-import com.maddox.il2.objects.vehicles.radios.LorenzBlindLandingBeacon;
 import com.maddox.il2.objects.vehicles.stationary.SirenGeneric;
 import com.maddox.il2.objects.vehicles.stationary.SmokeGeneric;
 import com.maddox.rts.LDRres;
@@ -156,8 +152,8 @@ public class PlMisStatic extends Plugin
   }
 
   public void renderMap2D() {
-    if (builder.isFreeView()) return;
-    Actor localActor1 = builder.selectedActor();
+    if (Plugin.builder.isFreeView()) return;
+    Actor localActor1 = Plugin.builder.selectedActor();
 
     Render.prepareStates();
 
@@ -167,22 +163,20 @@ public class PlMisStatic extends Plugin
         continue;
       this.p3d.set(localActor2.pos.getAbsPoint());
       if ((localActor2 instanceof SmokeGeneric))
-        this.p3d.z = Engine.land().HQ(this.p3d.x, this.p3d.y);
-      if (builder.project2d(this.p3d, this.p2d)) {
+        this.p3d.jdField_z_of_type_Double = Engine.land().HQ(this.p3d.jdField_x_of_type_Double, this.p3d.jdField_y_of_type_Double);
+      if (Plugin.builder.project2d(this.p3d, this.p2d)) {
         int k = localActor2.getArmy();
-        int m = builder.conf.bShowArmy[k];
+        int m = Plugin.builder.conf.bShowArmy[k];
         if (m != 0)
         {
           int i;
-          if (builder.isMiltiSelected(localActor2)) i = Builder.colorMultiSelected(Army.color(localActor2.getArmy()));
-          else if (localActor2 == localActor1) i = Builder.colorSelected(); else {
+          if (localActor2 == localActor1) i = Builder.colorSelected(); else
             i = Army.color(localActor2.getArmy());
-          }
           IconDraw.setColor(i);
-          IconDraw.render(localActor2, this.p2d.x, this.p2d.y);
+          IconDraw.render(localActor2, this.p2d.jdField_x_of_type_Double, this.p2d.jdField_y_of_type_Double);
           if (Plugin.builder.conf.bShowName) {
             String str = Property.stringValue(localActor2.getClass(), "i18nName", "");
-            Plugin.builder.smallFont.output(i, (int)this.p2d.x + IconDraw.scrSizeX() / 2 + 2, (int)this.p2d.y + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, str);
+            Plugin.builder.smallFont.output(i, (int)this.p2d.jdField_x_of_type_Double + IconDraw.scrSizeX() / 2 + 2, (int)this.p2d.jdField_y_of_type_Double + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, str);
           }
         }
       }
@@ -227,7 +221,7 @@ public class PlMisStatic extends Plugin
         float f1 = Property.floatValue(localActor, "timeout", 0.0F);
         if ((localActor instanceof PlaneGeneric)) {
           String str = ((PlaneGeneric)localActor).country;
-          paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + str);
+          paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localOrient1.azimut()) + " " + f1 + " " + str);
         }
         else
         {
@@ -236,18 +230,18 @@ public class PlMisStatic extends Plugin
             k = Property.intValue(localActor, "sleep", 0);
             int m = Property.intValue(localActor, "skill", 2);
             float f2 = Property.floatValue(localActor, "slowfire", 1.0F);
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k + " " + m + " " + f2);
+            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localOrient1.azimut()) + " " + f1 + " " + k + " " + m + " " + f2);
           }
           else if ((localActor instanceof ArtilleryGeneric)) {
             k = Property.intValue(localActor, "radius_hide", 0);
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k);
+            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localOrient1.azimut()) + " " + f1 + " " + k);
           }
           else if ((localActor instanceof SmokeGeneric)) {
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + formatValue(localPoint3d.z));
+            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localOrient1.azimut()) + " " + formatValue(localPoint3d.jdField_z_of_type_Double));
           }
           else
           {
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1);
+            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localOrient1.azimut()) + " " + f1);
           }
         }
 
@@ -291,12 +285,12 @@ public class PlMisStatic extends Plugin
     Class localClass = null;
     try { localClass = ObjIO.classForName(paramString2);
     } catch (Exception localException1) {
-      builder.tipErr("MissionLoad: class '" + paramString2 + "' not found");
+      Plugin.builder.tipErr("MissionLoad: class '" + paramString2 + "' not found");
       return null;
     }
     ActorSpawn localActorSpawn = (ActorSpawn)Spawn.get(localClass.getName(), false);
     if (localActorSpawn == null) {
-      builder.tipErr("MissionLoad: ActorSpawn for '" + paramString2 + "' not found");
+      Plugin.builder.tipErr("MissionLoad: ActorSpawn for '" + paramString2 + "' not found");
       return null;
     }
     this.spawnArg.clear();
@@ -307,7 +301,7 @@ public class PlMisStatic extends Plugin
         paramString1 = null;
     }
     if ((paramInt < 0) && (paramInt >= Builder.armyAmount())) {
-      builder.tipErr("MissionLoad: Wrong actor army '" + paramInt + "'");
+      Plugin.builder.tipErr("MissionLoad: Wrong actor army '" + paramInt + "'");
       return null;
     }
     this.spawnArg.army = paramInt;
@@ -329,7 +323,7 @@ public class PlMisStatic extends Plugin
         Chief.new_SKILL_IDX = Integer.parseInt(paramString4); } catch (Exception localException3) {
       }
       if ((Chief.new_SKILL_IDX < 0) || (Chief.new_SKILL_IDX > 3)) {
-        builder.tipErr("MissionLoad: Wrong actor skill '" + Chief.new_SKILL_IDX + "'");
+        Plugin.builder.tipErr("MissionLoad: Wrong actor skill '" + Chief.new_SKILL_IDX + "'");
         return null;
       }
     }
@@ -340,7 +334,7 @@ public class PlMisStatic extends Plugin
         Chief.new_SLOWFIRE_K = Float.parseFloat(paramString5); } catch (Exception localException4) {
       }
       if ((Chief.new_SLOWFIRE_K < 0.5F) || (Chief.new_SLOWFIRE_K > 100.0F)) {
-        builder.tipErr("MissionLoad: Wrong actor slowfire '" + Chief.new_SLOWFIRE_K + "'");
+        Plugin.builder.tipErr("MissionLoad: Wrong actor slowfire '" + Chief.new_SLOWFIRE_K + "'");
         return null;
       }
     }
@@ -354,27 +348,17 @@ public class PlMisStatic extends Plugin
       if ((localActor instanceof SirenGeneric))
         localActor.setArmy(paramInt);
       if ((localActor instanceof SmokeGeneric)) {
-        this.p.z = paramFloat2;
+        this.p.jdField_z_of_type_Double = paramFloat2;
         localActor.pos.setAbs(this.p);
         localActor.pos.reset();
       }
-      builder.align(localActor);
+      Plugin.builder.align(localActor);
       Property.set(localActor, "builderSpawn", "");
       Property.set(localActor, "builderPlugin", this);
       if (!localActor.isRealTimeFlag())
         localActor.interpCancelAll();
       makeName(localActor, paramString1);
       this.allActors.add(localActor);
-
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        ((BigshipGeneric)localActor).showTransparentRunwayRed();
-      }
-      if ((localActor instanceof LorenzBlindLandingBeacon))
-      {
-        ((LorenzBlindLandingBeacon)localActor).showGuideArrows();
-      }
-
       if ((localActor instanceof ArtilleryGeneric)) {
         Property.set(localActor, "timeout", paramFloat2);
         Property.set(localActor, "radius_hide", (int)ArtilleryGeneric.new_RADIUS_HIDE);
@@ -401,19 +385,9 @@ public class PlMisStatic extends Plugin
     this.spawnArg.country = paramString;
     try {
       Actor localActor = paramActorSpawn.actorSpawn(this.spawnArg);
-
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        ((BigshipGeneric)localActor).showTransparentRunwayRed();
-      }
-      if ((localActor instanceof LorenzBlindLandingBeacon))
-      {
-        ((LorenzBlindLandingBeacon)localActor).showGuideArrows();
-      }
-
       if ((localActor instanceof SirenGeneric))
         localActor.setArmy(paramInt);
-      builder.align(localActor);
+      Plugin.builder.align(localActor);
       Property.set(localActor, "builderSpawn", "");
       Property.set(localActor, "builderPlugin", this);
       if (!localActor.isRealTimeFlag())
@@ -430,7 +404,7 @@ public class PlMisStatic extends Plugin
       makeName(localActor, null);
       this.allActors.add(localActor);
       if (paramBoolean)
-        builder.setSelected(localActor);
+        Plugin.builder.setSelected(localActor);
       PlMission.setChanged();
       return localActor;
     } catch (Exception localException) {
@@ -442,8 +416,8 @@ public class PlMisStatic extends Plugin
 
   public void insert(Loc paramLoc, boolean paramBoolean)
   {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length))
     {
       return;
@@ -456,12 +430,12 @@ public class PlMisStatic extends Plugin
   }
 
   public void changeType() {
-    int i = builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
-    int j = builder.wSelect.comboBox2.getSelected();
-    Actor localActor1 = builder.selectedActor();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
+    Actor localActor1 = Plugin.builder.selectedActor();
     Loc localLoc = localActor1.pos.getAbs();
     Actor localActor2 = insert(this.type[i].item[j].spawn, localLoc, this.type[i].item[j].army, true, this.type[i].item[j].country);
-    if (builder.selectedActor() != localActor1) {
+    if (Plugin.builder.selectedActor() != localActor1) {
       this.allActors.remove(localActor1);
       String str = localActor1.name();
       localActor1.destroy();
@@ -470,15 +444,15 @@ public class PlMisStatic extends Plugin
   }
 
   public void configure() {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisStatic: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-    if (this.sectFile == null)
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
+    if (this.jdField_sectFile_of_type_JavaLangString == null)
       throw new RuntimeException("PlMisStatic: field 'sectFile' not defined");
-    SectFile localSectFile = new SectFile(this.sectFile, 0);
+    SectFile localSectFile = new SectFile(this.jdField_sectFile_of_type_JavaLangString, 0);
     int i = localSectFile.sections();
     if (i <= 0)
-      throw new RuntimeException("PlMisStatic: file '" + this.sectFile + "' is empty");
+      throw new RuntimeException("PlMisStatic: file '" + this.jdField_sectFile_of_type_JavaLangString + "' is empty");
     this.type = new Type[i];
     for (int j = 0; j < i; j++) {
       String str1 = localSectFile.sectionName(j);
@@ -524,10 +498,10 @@ public class PlMisStatic extends Plugin
       if ((Actor.isValid(localActor)) && (Property.containsValue(localActor, "builderSpawn")))
         localActor.drawing(this.viewClasses.containsKey(localActor.getClass()));
     }
-    if ((Actor.isValid(builder.selectedActor())) && (!builder.selectedActor().isDrawing()))
-      builder.setSelected(null);
-    if (!builder.isFreeView())
-      builder.repaint(); 
+    if ((Actor.isValid(Plugin.builder.selectedActor())) && (!Plugin.builder.selectedActor().isDrawing()))
+      Plugin.builder.setSelected(null);
+    if (!Plugin.builder.isFreeView())
+      Plugin.builder.repaint(); 
   }
 
   void viewType(int paramInt, boolean paramBoolean) {
@@ -539,39 +513,39 @@ public class PlMisStatic extends Plugin
     viewUpdate();
   }
   void viewType(int paramInt) {
-    viewType(paramInt, this.viewType[paramInt].bChecked);
+    viewType(paramInt, this.viewType[paramInt].jdField_bChecked_of_type_Boolean);
   }
   public void viewTypeAll(boolean paramBoolean) {
     for (int i = 0; i < this.type.length; i++)
-      if (this.viewType[i].bChecked != paramBoolean) {
-        this.viewType[i].bChecked = paramBoolean;
+      if (this.viewType[i].jdField_bChecked_of_type_Boolean != paramBoolean) {
+        this.viewType[i].jdField_bChecked_of_type_Boolean = paramBoolean;
         viewType(i, paramBoolean);
       }
   }
 
   private void fillComboBox1()
   {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
     for (int i = 0; i < this.type.length; i++) {
-      builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
+      Plugin.builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
     }
     if (this.startComboBox1 == 0)
-      builder.wSelect.comboBox1.setSelected(0, true, false); 
+      Plugin.builder.wSelect.comboBox1.setSelected(0, true, false); 
   }
 
   private void fillComboBox2(int paramInt1, int paramInt2) {
     if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
       return;
     }
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt1) {
+      Plugin.builder.wSelect.curFilledType = paramInt1;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.type[(paramInt1 - this.startComboBox1)].item.length; i++) {
-        builder.wSelect.comboBox2.add(Property.stringValue(this.type[(paramInt1 - this.startComboBox1)].item[i].clazz, "i18nName", ""));
+        Plugin.builder.wSelect.comboBox2.add(Property.stringValue(this.type[(paramInt1 - this.startComboBox1)].item[i].clazz, "i18nName", ""));
       }
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
 
     fillComboBox2Render(paramInt1, paramInt2);
   }
@@ -584,20 +558,20 @@ public class PlMisStatic extends Plugin
         localObject = (Class)Property.value(localClass, "airClass", null);
         int i = this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].army;
         String str1 = null;
-        if (Actor.isValid(builder.selectedActor())) {
-          i = builder.selectedActor().getArmy();
-          str1 = ((PlaneGeneric)builder.selectedActor()).country;
+        if (Actor.isValid(Plugin.builder.selectedActor())) {
+          i = Plugin.builder.selectedActor().getArmy();
+          str1 = ((PlaneGeneric)Plugin.builder.selectedActor()).country;
           this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].country = str1;
           this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].army = i;
         }
         Regiment localRegiment = Regiment.findFirst(str1, i);
         String str2 = Aircraft.getPropertyMesh((Class)localObject, localRegiment.country());
 
-        builder.wSelect.setMesh(str2, false);
+        Plugin.builder.wSelect.setMesh(str2, false);
 
-        if (builder.wSelect.getHierMesh() != null) {
+        if (Plugin.builder.wSelect.getHierMesh() != null) {
           PaintScheme localPaintScheme = Aircraft.getPropertyPaintScheme((Class)localObject, localRegiment.country());
-          localPaintScheme.prepareNum((Class)localObject, builder.wSelect.getHierMesh(), localRegiment, (int)(Math.random() * 3.0D), (int)(Math.random() * 3.0D), (int)(Math.random() * 98.0D + 1.0D));
+          localPaintScheme.prepareNum((Class)localObject, Plugin.builder.wSelect.getHierMesh(), localRegiment, (int)(Math.random() * 3.0D), (int)(Math.random() * 3.0D), (int)(Math.random() * 98.0D + 1.0D));
         }
 
       }
@@ -608,10 +582,10 @@ public class PlMisStatic extends Plugin
           Method localMethod = localClass.getMethod("getMeshNameForEditor", null);
           localObject = (String)localMethod.invoke(localClass, null);
         }
-        builder.wSelect.setMesh((String)localObject, true);
+        Plugin.builder.wSelect.setMesh((String)localObject, true);
       }
     } catch (Exception localException) {
-      builder.wSelect.setMesh(null, true);
+      Plugin.builder.wSelect.setMesh(null, true);
     }
   }
 
@@ -624,7 +598,7 @@ public class PlMisStatic extends Plugin
 
           float f = Property.floatValue(paramActor, "timeout", 0.0F);
           if (f > 0.0F)
-            this._actorInfo[1] = timeSecToString(f * 60.0F + (int)(World.getTimeofDay() * 60.0F * 60.0F));
+            this._actorInfo[1] = Plugin.timeSecToString(f * 60.0F + (int)(World.getTimeofDay() * 60.0F * 60.0F));
           else {
             this._actorInfo[1] = null;
           }
@@ -637,13 +611,13 @@ public class PlMisStatic extends Plugin
 
   public void syncSelector()
   {
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     Class localClass = localActor.getClass();
     for (int i = 0; i < this.type.length; i++)
       for (int j = 0; j < this.type[i].item.length; j++)
         if (localClass == this.type[i].item[j].clazz) {
           fillComboBox2(i + this.startComboBox1, j);
-          builder.wSelect.tabsClient.addTab(1, this.tabActor);
+          Plugin.builder.wSelect.tabsClient.addTab(1, this.tabActor);
           this.wName.cap.set(Property.stringValue(this.type[i].item[j].clazz, "i18nName", ""));
           this.wArmy.setSelected(localActor.getArmy(), true, false);
           int m;
@@ -714,8 +688,8 @@ public class PlMisStatic extends Plugin
     this.wCountry.clear(false);
     ArrayList localArrayList = this.listCountry[paramInt];
     for (int i = 0; i < localArrayList.size(); i++) {
-      Country localCountry = (Country)localArrayList.get(i);
-      this.wCountry.add(localCountry.i18nName);
+      localObject = (Country)localArrayList.get(i);
+      this.wCountry.add(((Country)localObject).i18nName);
     }
     if ((paramString != null) && 
       (!this.mapCountry[paramInt].containsKey(paramString)))
@@ -729,9 +703,9 @@ public class PlMisStatic extends Plugin
         paramString = "de";
       }
     }
-    Integer localInteger = (Integer)this.mapCountry[paramInt].get(paramString);
-    this.wCountry.setSelected(localInteger.intValue(), true, false);
-    return paramString;
+    Object localObject = (Integer)this.mapCountry[paramInt].get(paramString);
+    this.wCountry.setSelected(((Integer)localObject).intValue(), true, false);
+    return (String)paramString;
   }
 
   private void controlResized(GWindowDialogClient paramGWindowDialogClient, GWindow paramGWindow) {
@@ -747,7 +721,7 @@ public class PlMisStatic extends Plugin
   public void createGUI() {
     fillComboBox1();
     fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -755,7 +729,7 @@ public class PlMisStatic extends Plugin
         return false;
       }
     });
-    builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         if (paramInt1 != 2)
           return false;
@@ -768,10 +742,10 @@ public class PlMisStatic extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginMission.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
@@ -782,27 +756,27 @@ public class PlMisStatic extends Plugin
       while (i >= 0) {
         localObject = null;
         if ("de".equals(RTSConf.cur.locale.getLanguage())) {
-          localObject = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + i18n("show"), null));
+          localObject = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + Plugin.i18n("show"), null));
         }
         else {
-          localObject = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, i18n("show") + " " + I18N.technic(this.type[i].name), null));
+          localObject = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("show") + " " + I18N.technic(this.type[i].name), null));
         }
-        ((ViewItem)localObject).bChecked = true;
+        ((ViewItem)localObject).jdField_bChecked_of_type_Boolean = true;
         this.viewType[i] = localObject;
         viewType(i, true);
         i--;
       }
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient() {
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient() {
       public void resized() { super.resized(); PlMisStatic.this.editResized(this);
       }
     });
-    this.tabActor = builder.wSelect.tabsClient.createTab(i18n("StaticActor"), localGWindowDialogClient);
+    this.tabActor = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("StaticActor"), localGWindowDialogClient);
 
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, i18n("Name"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, Plugin.i18n("Name"), null));
     localGWindowDialogClient.addLabel(this.wName = new GWindowLabel(localGWindowDialogClient, 9.0F, 1.0F, 7.0F, 1.3F, "", null));
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, i18n("Army"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Army"), null));
     localGWindowDialogClient.addControl(this.wArmy = new GWindowComboControl(localGWindowDialogClient, 9.0F, 3.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -863,7 +837,7 @@ public class PlMisStatic extends Plugin
       }
     });
     Object localObject = localGWindowDialogClient;
-    ((GWindowDialogClient)localObject).addLabel(this.wLTimeOutH = new GWindowLabel((GWindow)localObject, 1.0F, 5.0F, 7.0F, 1.3F, i18n("TimeOut"), null));
+    ((GWindowDialogClient)localObject).addLabel(this.wLTimeOutH = new GWindowLabel((GWindow)localObject, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("TimeOut"), null));
     ((GWindowDialogClient)localObject).addControl(this.wTimeOutH = new GWindowEditControl((GWindow)localObject, 9.0F, 5.0F, 2.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -887,8 +861,8 @@ public class PlMisStatic extends Plugin
         return false;
       }
     });
-    ((GWindowDialogClient)localObject).addLabel(this.wL1RHide = new GWindowLabel((GWindow)localObject, 1.0F, 7.0F, 7.0F, 1.3F, i18n("RHide"), null));
-    ((GWindowDialogClient)localObject).addLabel(this.wL2RHide = new GWindowLabel((GWindow)localObject, 14.0F, 7.0F, 4.0F, 1.3F, i18n("[M]"), null));
+    ((GWindowDialogClient)localObject).addLabel(this.wL1RHide = new GWindowLabel((GWindow)localObject, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("RHide"), null));
+    ((GWindowDialogClient)localObject).addLabel(this.wL2RHide = new GWindowLabel((GWindow)localObject, 14.0F, 7.0F, 4.0F, 1.3F, Plugin.i18n("[M]"), null));
     ((GWindowDialogClient)localObject).addControl(this.wRHide = new GWindowEditControl((GWindow)localObject, 9.0F, 7.0F, 4.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -914,7 +888,7 @@ public class PlMisStatic extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSleepM = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("Sleep"), null));
+    localGWindowDialogClient.addLabel(this.wLSleepM = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("Sleep"), null));
     localGWindowDialogClient.addControl(this.wSleepM = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 2.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -938,7 +912,7 @@ public class PlMisStatic extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSkill = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Skill"), null));
+    localGWindowDialogClient.addLabel(this.wLSkill = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("Skill"), null));
     localGWindowDialogClient.addControl(this.wSkill = new GWindowComboControl(localGWindowDialogClient, 9.0F, 7.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -955,7 +929,7 @@ public class PlMisStatic extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSlowfire = new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, i18n("Slowfire"), null));
+    localGWindowDialogClient.addLabel(this.wLSlowfire = new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, Plugin.i18n("Slowfire"), null));
     localGWindowDialogClient.addControl(this.wSlowfire = new GWindowEditControl(localGWindowDialogClient, 9.0F, 9.0F, 3.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = (this.bNumericFloat = 1);
@@ -992,7 +966,7 @@ public class PlMisStatic extends Plugin
     if (d2 < 0.0D) d2 = 0.0D;
     if (d2 > 60.0D) d2 = 60.0D;
     float f = (float)(d1 * 60.0D + d2);
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     Property.set(localActor, "timeout", f);
     PlMission.setChanged();
   }
@@ -1009,87 +983,9 @@ public class PlMisStatic extends Plugin
     }
     if (d2 < 0.0D) d2 = 0.0D;
     if (d2 > 60.0D) d2 = 60.0D;
-    Actor localActor = builder.selectedActor();
+    Actor localActor = Plugin.builder.selectedActor();
     Property.set(localActor, "sleep", (int)(d1 * 60.0D + d2));
     PlMission.setChanged();
-  }
-
-  public String mis_getProperties(Actor paramActor) {
-    Orient localOrient1 = new Orient();
-    String str1 = "";
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length)) {
-      return str1;
-    }
-    i -= this.startComboBox1;
-    if ((j < 0) || (j >= this.type[i].item.length)) {
-      return str1;
-    }
-    if ((Actor.isValid(paramActor)) && (Property.containsValue(paramActor, "builderSpawn"))) {
-      Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      Orient localOrient2 = paramActor.pos.getAbsOrient();
-      localOrient1.set(localOrient2);
-      localOrient1.wrap360();
-      float f1 = Property.floatValue(paramActor, "timeout", 0.0F);
-      if ((paramActor instanceof PlaneGeneric)) {
-        String str2 = ((PlaneGeneric)paramActor).country;
-        str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + str2;
-      }
-      else
-      {
-        int k;
-        if (((paramActor instanceof ShipGeneric)) || ((paramActor instanceof BigshipGeneric))) {
-          k = Property.intValue(paramActor, "sleep", 0);
-          int m = Property.intValue(paramActor, "skill", 2);
-          float f2 = Property.floatValue(paramActor, "slowfire", 1.0F);
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k + " " + m + " " + f2;
-        }
-        else if ((paramActor instanceof ArtilleryGeneric)) {
-          k = Property.intValue(paramActor, "radius_hide", 0);
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k;
-        }
-        else if ((paramActor instanceof SmokeGeneric)) {
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + formatValue(localPoint3d.z);
-        }
-        else
-        {
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1;
-        }
-      }
-    }
-    return str1;
-  }
-
-  public Actor mis_insert(Loc paramLoc, String paramString) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length)) {
-      return null;
-    }
-    i -= this.startComboBox1;
-    if ((j < 0) || (j >= this.type[i].item.length)) {
-      return null;
-    }
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramString);
-    String str1 = localNumberTokenizer.next("");
-    String str2 = localNumberTokenizer.next("");
-    int k = localNumberTokenizer.next(0);
-    double d1 = localNumberTokenizer.next(0.0D);
-    double d2 = localNumberTokenizer.next(0.0D);
-    d1 = paramLoc.getPoint().x;
-    d2 = paramLoc.getPoint().y;
-    Actor localActor = insert(null, str2, k, d1, d2, localNumberTokenizer.next(0.0F), localNumberTokenizer.next(0.0F), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null));
-    return localActor;
-  }
-
-  public boolean mis_validateSelected(int paramInt1, int paramInt2) {
-    if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
-      return false;
-    }
-    paramInt1 -= this.startComboBox1;
-
-    return (paramInt2 >= 0) && (paramInt2 < this.type[paramInt1].item.length);
   }
 
   static
@@ -1103,7 +999,7 @@ public class PlMisStatic extends Plugin
 
     public void execute()
     {
-      this.bChecked = (!this.bChecked);
+      this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
       PlMisStatic.this.viewType(this.indx);
     }
     public ViewItem(int paramGWindowMenu, GWindowMenu paramString1, String paramString2, String arg5) {

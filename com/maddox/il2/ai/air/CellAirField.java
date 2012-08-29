@@ -78,22 +78,6 @@ public class CellAirField extends CellObject
         }
   }
 
-  public boolean removeAirPlane(CellAirPlane paramCellAirPlane)
-  {
-    if (getCells() == null) return false;
-    int i = 0;
-    for (int j = 0; j < getCells().length; j++) {
-      for (int k = 0; k < getCells()[0].length; k++) {
-        if (getCells()[j][k] != paramCellAirPlane)
-          continue;
-        getCells()[j][k] = null;
-        i = 1;
-      }
-    }
-
-    return i;
-  }
-
   public void replaceAirPlane(CellAirPlane paramCellAirPlane, int paramInt1, int paramInt2)
   {
     if (getCells() == null) return;
@@ -118,8 +102,8 @@ public class CellAirField extends CellObject
     double d1 = 1000.0D; double d2 = -1000.0D;
     for (int i = 0; i < paramArrayList.size(); i++) {
       Point3d localPoint3d2 = (Point3d)paramArrayList.get(i);
-      if (localPoint3d2.x < d1) d1 = localPoint3d2.x;
-      if (localPoint3d2.y <= d2) continue; d2 = localPoint3d2.y;
+      if (localPoint3d2.jdField_x_of_type_Double < d1) d1 = localPoint3d2.jdField_x_of_type_Double;
+      if (localPoint3d2.jdField_y_of_type_Double <= d2) continue; d2 = localPoint3d2.jdField_y_of_type_Double;
     }
     localPoint3d1.set(d1, d2, 0.0D);
     return localPoint3d1;
@@ -131,8 +115,8 @@ public class CellAirField extends CellObject
     double d1 = -1000.0D; double d2 = 1000.0D;
     for (int i = 0; i < paramArrayList.size(); i++) {
       Point3d localPoint3d2 = (Point3d)paramArrayList.get(i);
-      if (localPoint3d2.x > d1) d1 = localPoint3d2.x;
-      if (localPoint3d2.y >= d2) continue; d2 = localPoint3d2.y;
+      if (localPoint3d2.jdField_x_of_type_Double > d1) d1 = localPoint3d2.jdField_x_of_type_Double;
+      if (localPoint3d2.jdField_y_of_type_Double >= d2) continue; d2 = localPoint3d2.jdField_y_of_type_Double;
     }
     localPoint3d1.set(d1, d2, 0.0D);
     return localPoint3d1;
@@ -151,8 +135,8 @@ public class CellAirField extends CellObject
 
     Point3d localPoint3d6 = getRightDownPoint(paramArrayList);
 
-    int i = (int)(Math.abs(localPoint3d6.x - localPoint3d5.x) / paramDouble);
-    int j = (int)(Math.abs(localPoint3d6.y - localPoint3d5.y) / paramDouble);
+    int i = (int)(Math.abs(localPoint3d6.jdField_x_of_type_Double - localPoint3d5.jdField_x_of_type_Double) / paramDouble);
+    int j = (int)(Math.abs(localPoint3d6.jdField_y_of_type_Double - localPoint3d5.jdField_y_of_type_Double) / paramDouble);
 
     CellObject[][] arrayOfCellObject = new CellObject[i][j];
     setCells(arrayOfCellObject);
@@ -161,17 +145,17 @@ public class CellAirField extends CellObject
     for (int k = 0; k < getWidth(); k++)
       for (int m = 0; m < getHeight(); m++)
       {
-        localPoint3d5.x += k * paramDouble;
-        localPoint3d5.y -= m * paramDouble;
+        localPoint3d1.jdField_x_of_type_Double = (localPoint3d5.jdField_x_of_type_Double + k * paramDouble);
+        localPoint3d1.jdField_y_of_type_Double = (localPoint3d5.jdField_y_of_type_Double - m * paramDouble);
 
-        localPoint3d2.x = (localPoint3d5.x + k * paramDouble + paramDouble);
-        localPoint3d5.y -= m * paramDouble;
+        localPoint3d2.jdField_x_of_type_Double = (localPoint3d5.jdField_x_of_type_Double + k * paramDouble + paramDouble);
+        localPoint3d2.jdField_y_of_type_Double = (localPoint3d5.jdField_y_of_type_Double - m * paramDouble);
 
-        localPoint3d5.x += k * paramDouble;
-        localPoint3d3.y = (localPoint3d5.y - m * paramDouble + paramDouble);
+        localPoint3d3.jdField_x_of_type_Double = (localPoint3d5.jdField_x_of_type_Double + k * paramDouble);
+        localPoint3d3.jdField_y_of_type_Double = (localPoint3d5.jdField_y_of_type_Double - m * paramDouble + paramDouble);
 
-        localPoint3d4.x = (localPoint3d5.x + k * paramDouble + paramDouble);
-        localPoint3d4.y = (localPoint3d5.y - m * paramDouble + paramDouble);
+        localPoint3d4.jdField_x_of_type_Double = (localPoint3d5.jdField_x_of_type_Double + k * paramDouble + paramDouble);
+        localPoint3d4.jdField_y_of_type_Double = (localPoint3d5.jdField_y_of_type_Double - m * paramDouble + paramDouble);
 
         if ((CellTools.belongsToComplex(paramArrayList, localPoint3d1)) && (CellTools.belongsToComplex(paramArrayList, localPoint3d2)) && (CellTools.belongsToComplex(paramArrayList, localPoint3d3)) && (CellTools.belongsToComplex(paramArrayList, localPoint3d4)))
         {

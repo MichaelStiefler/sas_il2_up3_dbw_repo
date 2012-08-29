@@ -19,11 +19,11 @@ public class JU_52_3MG5E extends JU_52
   {
     super.update(paramFloat);
     for (int i = 0; i < 3; i++) for (int j = 0; j < 2; j++)
-        if (this.FM.Gears.clpGearEff[i][j] != null) {
-          this.tmpp.set(this.FM.Gears.clpGearEff[i][j].pos.getAbsPoint());
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j] != null) {
+          this.tmpp.set(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
           this.tmpp.z = 0.01D;
-          this.FM.Gears.clpGearEff[i][j].pos.setAbs(this.tmpp);
-          this.FM.Gears.clpGearEff[i][j].pos.reset();
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.tmpp);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpGearEff[i][j].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         }
   }
 
@@ -49,19 +49,19 @@ public class JU_52_3MG5E extends JU_52
 
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
     if ((paramShot.chunkName.startsWith("Engine1")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("Engine2")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 1, 1);
     }
-    if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)) {
-      this.FM.setCapableOfBMP(false, paramShot.initiator);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates[0] > 2) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates[1] > 2)) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setCapableOfBMP(false, paramShot.initiator);
     }
 
     super.msgShot(paramShot);
@@ -82,13 +82,13 @@ public class JU_52_3MG5E extends JU_52
     Property.set(localClass, "yearService", 1938.5F);
     Property.set(localClass, "yearExpired", 1945.5F);
 
-    weaponTriggersRegister(localClass, new int[] { 10, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_BombSpawn01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_BombSpawn01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15t 250", null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15t 250", null });
 
-    weaponsRegister(localClass, "18xPara", new String[] { "MGunMG15t 250", "BombGunPara 18" });
+    Aircraft.weaponsRegister(localClass, "18xPara", new String[] { "MGunMG15t 250", "BombGunPara 18" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

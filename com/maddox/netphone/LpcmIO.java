@@ -87,16 +87,16 @@ public class LpcmIO extends CodecIO
     this.irms = paramBitStream.get(bittab[1]);
 
     int i = this.isVoiced ? 10 : 4;
-
+    int k;
     for (int j = 0; j < i; j++) {
-      int k = paramBitStream.get(bittab[(j + 2)]);
+      k = paramBitStream.get(bittab[(j + 2)]);
       int m = 1 << bittab[(j + 2)] - 1;
       if ((k & m) != 0) k -= (m << 1);
       this.irc[j] = k;
     }
 
     if (!this.isVoiced) {
-      for (j = 4; j < 10; j++) this.irc[j] = 0;
+      for (k = 4; k < 10; k++) this.irc[k] = 0;
     }
 
     this.assigned = true;

@@ -36,8 +36,11 @@ public class NearestAircraft
       return true;
     }
 
-    for (int i = 0; (i < nearNUsed) && 
-      (paramDouble >= nearDSq[i]); i++);
+    for (int i = 0; i < nearNUsed; i++) {
+      if (paramDouble < nearDSq[i]) {
+        break;
+      }
+    }
     if (i >= nearNUsed) {
       if (nearNUsed < 48) {
         nearAct[nearNUsed] = ((Aircraft)paramActor);

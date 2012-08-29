@@ -100,9 +100,9 @@ public class HookGunner extends HookRender
     if ((l >= 0L) && (l < 50L))
       return;
     this.roolTime = this.tstamp;
-    float f1 = (float)(-(paramAircraft.FM.getAccel().y + paramAircraft.FM.getRollAcceleration()) * 0.0500000007450581D);
-    float f2 = (float)(-paramAircraft.FM.getAccel().x * 0.1000000014901161D);
-    float f3 = (float)(-paramAircraft.FM.getAccel().z * 0.01999999955296516D);
+    float f1 = (float)(-(paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().y + paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getRollAcceleration()) * 0.0500000007450581D);
+    float f2 = (float)(-paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().x * 0.1000000014901161D);
+    float f3 = (float)(-paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().z * 0.01999999955296516D);
     if ((f2 >= 1.0F) || (f2 <= -1.0F))
     {
       if (f2 < -1.0F) f2 = -1.0F; else if (f2 > 1.0F) f2 = 1.0F; else
@@ -153,7 +153,7 @@ public class HookGunner extends HookRender
         Aircraft localAircraft = World.getPlayerAircraft();
         if (Actor.isValid(localAircraft)) {
           long l = Time.current();
-          if ((l != this.tstamp) && (!localAircraft.FM.Gears.onGround())) {
+          if ((l != this.tstamp) && (!localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.onGround())) {
             this.tstamp = l;
             headRoll(localAircraft);
           }

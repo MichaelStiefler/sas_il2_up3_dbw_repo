@@ -71,9 +71,9 @@ public class GUIBuilder extends GameState
     super(18);
     this.rootWindow = new GWindowRootMenu();
     this.guiManager = new GUIWindowManager(-2.5F, this.rootWindow, new GWin95LookAndFeel(), "renderGUIBuilder");
-    this.rootWindow.textFonts[0] = GFont.New("arial8");
-    this.rootWindow.textFonts[1] = GFont.New("arialb8");
-    ((GWin95LookAndFeel)this.rootWindow.lAF()).metric = (int)(this.rootWindow.textFonts[0].height + 0.5F);
+    this.rootWindow.jdField_textFonts_of_type_ArrayOfComMaddoxGwindowGFont[0] = GFont.New("arial8");
+    this.rootWindow.jdField_textFonts_of_type_ArrayOfComMaddoxGwindowGFont[1] = GFont.New("arialb8");
+    ((GWin95LookAndFeel)this.rootWindow.lAF()).metric = (int)(this.rootWindow.jdField_textFonts_of_type_ArrayOfComMaddoxGwindowGFont[0].height + 0.5F);
     this.rootWindow.resized();
     this.builder = new Builder(this.rootWindow, "builder");
     this.guiManager.render.setShow(false);

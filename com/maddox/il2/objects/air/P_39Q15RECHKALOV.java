@@ -22,12 +22,12 @@ public class P_39Q15RECHKALOV extends P_39
 
     Property.set(localClass, "FlightModel", "FlightModels/P-39Q-15(ofRechkalov).fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalBomb01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalBomb01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 320", "MGunBrowning50si 320", "MGunM4ki 60", null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 320", "MGunBrowning50si 320", "MGunM4ki 60", null });
 
-    weaponsRegister(localClass, "1xFAB250", new String[] { "MGunBrowning50si 320", "MGunBrowning50si 320", "MGunM4ki 60", "BombGunFAB250 1" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1xFAB250", new String[] { "MGunBrowning50si 320", "MGunBrowning50si 320", "MGunM4ki 60", "BombGunFAB250 1" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

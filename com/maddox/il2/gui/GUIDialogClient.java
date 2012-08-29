@@ -41,24 +41,24 @@ public class GUIDialogClient extends GWindowDialogClient
 
   public void render() {
     setCanvasColorWHITE();
-    lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, bevel, texture);
+    lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float, bevel, texture);
 
-    draw(3.0F, 3.0F, this.win.dx - 6.0F, this.win.dy - 6.0F, detail, 0.0F, 0.0F, this.win.dx - 6.0F, this.win.dy - 6.0F);
+    draw(3.0F, 3.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float - 6.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float - 6.0F, detail, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float - 6.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float - 6.0F);
 
-    region.set(bevel.L.dx - bolt[0].dx * 0.5F, bevel.T.dy - bolt[0].dy * 0.5F, this.win.dx - bevel.L.dx - bevel.R.dx + bolt[0].dx * 0.25F, this.win.dy - bevel.T.dy - bevel.B.dy + bolt[0].dy * 0.25F);
+    region.set(bevel.L.jdField_dx_of_type_Float - bolt[0].jdField_dx_of_type_Float * 0.5F, bevel.T.jdField_dy_of_type_Float - bolt[0].jdField_dy_of_type_Float * 0.5F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float - bevel.L.jdField_dx_of_type_Float - bevel.R.jdField_dx_of_type_Float + bolt[0].jdField_dx_of_type_Float * 0.25F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float - bevel.T.jdField_dy_of_type_Float - bevel.B.jdField_dy_of_type_Float + bolt[0].jdField_dy_of_type_Float * 0.25F);
 
-    int i = Math.round(region.dx / 156.0F);
+    int i = Math.round(region.jdField_dx_of_type_Float / 156.0F);
     if (i < 1) i = 1;
-    float f1 = region.dx / i;
-    int j = Math.round(region.dy / 156.0F);
+    float f1 = region.jdField_dx_of_type_Float / i;
+    int j = Math.round(region.jdField_dy_of_type_Float / 156.0F);
     if (j < 1) j = 1;
-    float f2 = region.dy / j;
+    float f2 = region.jdField_dy_of_type_Float / j;
     int m = 0;
     for (int k = 0; k <= i; k++) {
       draw(Math.round(region.x + k * f1), Math.round(region.y), bolt[m]);
 
       m = (m + 1) % 8;
-      draw(Math.round(region.x + k * f1), Math.round(region.y + region.dy), bolt[m]);
+      draw(Math.round(region.x + k * f1), Math.round(region.y + region.jdField_dy_of_type_Float), bolt[m]);
 
       m = (m + 1) % 8;
     }
@@ -66,7 +66,7 @@ public class GUIDialogClient extends GWindowDialogClient
       draw(Math.round(region.x), Math.round(region.y + k * f2), bolt[m]);
 
       m = (m + 1) % 8;
-      draw(Math.round(region.x + region.dx), Math.round(region.y + k * f2), bolt[m]);
+      draw(Math.round(region.x + region.jdField_dx_of_type_Float), Math.round(region.y + k * f2), bolt[m]);
 
       m = (m + 1) % 8;
     }

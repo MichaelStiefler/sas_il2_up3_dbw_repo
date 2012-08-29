@@ -107,9 +107,9 @@ public class Land2DText
         String str2 = ((NumberTokenizer)localObject).nextToken("");
         int i2 = 0;
         int i3 = str2.length() - 1;
-        while ((i2 < i3) && (str2.charAt(i2) <= ' ')) i2++;
-        while ((i2 < i3) && (str2.charAt(i3) <= ' ')) i3--;
-        if (i2 == i3) return;
+        for (; i2 < i3; i2++) if (str2.charAt(i2) > ' ')
+            break; for (; i2 < i3; i3--) if (str2.charAt(i3) > ' ')
+            break; if (i2 == i3) return;
         if ((i2 != 0) || (i3 != str2.length() - 1))
           str2 = str2.substring(i2, i3 + 1);
         if (localResourceBundle != null)

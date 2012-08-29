@@ -97,10 +97,10 @@ public class Soldier extends ActorMesh
       return;
     }
 
-    Point3d localPoint3d1 = p; this.pos.getAbs(p);
-    Point3d localPoint3d2 = paramActor.pos.getAbsPoint();
+    Point3d localPoint3d1 = p; this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    Point3d localPoint3d2 = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     Vector3d localVector3d = new Vector3d();
-    localVector3d.set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y, 0.0D);
+    localVector3d.set(localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double, 0.0D);
     if (localVector3d.length() < 0.001D) {
       f1 = World.Rnd().nextFloat(0.0F, 359.98999F);
       localVector3d.set(Geom.sinDeg(f1), Geom.cosDeg(f1), 0.0D);
@@ -115,7 +115,7 @@ public class Soldier extends ActorMesh
     localVector3d.scale(f2);
 
     localPoint3d1.add(localVector3d);
-    this.pos.setAbs(localPoint3d1);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d1);
 
     if (this.st == 1) {
       this.st = 2;
@@ -347,8 +347,8 @@ public class Soldier extends ActorMesh
 
     localOrient.setAT0(this.speed);
     localOrient.set(localOrient.azimut(), 0.0F, 0.0F);
-    this.pos.setAbs(localPoint3d, localOrient);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d, localOrient);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.speed.scale(6.545454502105713D);
 
@@ -398,39 +398,39 @@ public class Soldier extends ActorMesh
 
       switch (Soldier.this.st) {
       case 0:
-        Soldier.this.pos.getAbs(Soldier.p);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Soldier.p);
         Soldier.p.scaleAdd(Time.tickLenFs(), Soldier.this.speed, Soldier.p);
-        Soldier.this.speed.z -= Time.tickLenFs() * World.g();
-        Engine.land(); float f = Landscape.HQ((float)Soldier.p.x, (float)Soldier.p.y);
-        if (Soldier.p.z <= f) {
-          Soldier.this.speed.z = 0.0D;
+        Soldier.this.speed.jdField_z_of_type_Double -= Time.tickLenFs() * World.g();
+        Engine.land(); float f = Landscape.HQ((float)Soldier.p.jdField_x_of_type_Double, (float)Soldier.p.jdField_y_of_type_Double);
+        if (Soldier.p.jdField_z_of_type_Double <= f) {
+          Soldier.this.speed.jdField_z_of_type_Double = 0.0D;
           Soldier.this.speed.normalize();
           Soldier.this.speed.scale(6.545454502105713D);
-          Soldier.p.z = f;
+          Soldier.p.jdField_z_of_type_Double = f;
           Soldier.access$002(Soldier.this, 1);
           Soldier.access$702(Soldier.this, World.Rnd().nextInt(9, 17));
         }
 
-        Soldier.this.pos.setAbs(Soldier.p);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Soldier.p);
         break;
       case 1:
-        Soldier.this.pos.getAbs(Soldier.p);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Soldier.p);
         Soldier.p.scaleAdd(Time.tickLenFs(), Soldier.this.speed, Soldier.p);
-        Soldier.p.z = Engine.land().HQ(Soldier.p.x, Soldier.p.y);
-        Soldier.this.pos.setAbs(Soldier.p);
+        Soldier.p.jdField_z_of_type_Double = Engine.land().HQ(Soldier.p.jdField_x_of_type_Double, Soldier.p.jdField_y_of_type_Double);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Soldier.p);
 
-        if ((l / 733L < Soldier.this.nRunCycles) && (!World.land().isWater(Soldier.p.x, Soldier.p.y)))
+        if ((l / 733L < Soldier.this.nRunCycles) && (!World.land().isWater(Soldier.p.jdField_x_of_type_Double, Soldier.p.jdField_y_of_type_Double)))
           break;
         Soldier.access$002(Soldier.this, 2);
         Soldier.access$302(Soldier.this, Time.current()); break;
       case 2:
-        Soldier.this.pos.getAbs(Soldier.p);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Soldier.p);
         Soldier.p.scaleAdd(Time.tickLenFs(), Soldier.this.speed, Soldier.p);
-        Soldier.p.z = Engine.land().HQ(Soldier.p.x, Soldier.p.y);
-        if (World.land().isWater(Soldier.p.x, Soldier.p.y)) {
-          Soldier.p.z -= 0.5D;
+        Soldier.p.jdField_z_of_type_Double = Engine.land().HQ(Soldier.p.jdField_x_of_type_Double, Soldier.p.jdField_y_of_type_Double);
+        if (World.land().isWater(Soldier.p.jdField_x_of_type_Double, Soldier.p.jdField_y_of_type_Double)) {
+          Soldier.p.jdField_z_of_type_Double -= 0.5D;
         }
-        Soldier.this.pos.setAbs(Soldier.p);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Soldier.p);
 
         if (l < 1066L) break;
         Soldier.access$002(Soldier.this, 3);
@@ -439,12 +439,12 @@ public class Soldier extends ActorMesh
         Soldier.access$102(Soldier.this, Time.tickNext() + 1000 * World.Rnd().nextInt(25, 35)); break;
       case 3:
       case 4:
-        Soldier.this.pos.getAbs(Soldier.p);
-        Soldier.p.z = Engine.land().HQ(Soldier.p.x, Soldier.p.y);
-        if (World.land().isWater(Soldier.p.x, Soldier.p.y)) {
-          Soldier.p.z -= 3.0D;
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Soldier.p);
+        Soldier.p.jdField_z_of_type_Double = Engine.land().HQ(Soldier.p.jdField_x_of_type_Double, Soldier.p.jdField_y_of_type_Double);
+        if (World.land().isWater(Soldier.p.jdField_x_of_type_Double, Soldier.p.jdField_y_of_type_Double)) {
+          Soldier.p.jdField_z_of_type_Double -= 3.0D;
         }
-        Soldier.this.pos.setAbs(Soldier.p);
+        Soldier.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Soldier.p);
       }
 
       Soldier.this.setAnimFrame(Time.tickNext());

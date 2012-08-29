@@ -39,9 +39,9 @@ public class GUIRoot extends GWindowRoot
     if (RendersMain.getRenderFocus() == (Render)Actor.getByName("renderGUI")) {
       setCanvasColorWHITE();
       if (this.backgroundCountry != null)
-        draw(0.0F, 0.0F, this.win.dx, this.win.dy, this.backgroundCountry);
+        draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.backgroundCountry);
       else
-        draw(0.0F, 0.0F, this.win.dx, this.win.dy, this.background);
+        draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.background);
     }
   }
 

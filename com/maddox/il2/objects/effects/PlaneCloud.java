@@ -61,12 +61,12 @@ public class PlaneCloud
 
   public void renderFar()
   {
-    Render.drawSetMaterial(this.mat1, (float)this.p.x, (float)this.p.y, (float)this.p.z, 60000.0F);
+    Render.drawSetMaterial(this.mat1, (float)this.p.jdField_x_of_type_Double, (float)this.p.jdField_y_of_type_Double, (float)this.p.jdField_z_of_type_Double, 60000.0F);
     CalcLightColor(this.mat1);
     if (this.z0 > 0.0F)
-      draw(((int)(this.p.x / 4000.0D) - 1 - 9) * 4000, ((int)(this.p.y / 4000.0D) - 1 - 9) * 4000, 1.59375E-005F, 12000.0F, this.z0);
+      draw(((int)(this.p.jdField_x_of_type_Double / 4000.0D) - 1 - 9) * 4000, ((int)(this.p.jdField_y_of_type_Double / 4000.0D) - 1 - 9) * 4000, 1.59375E-005F, 12000.0F, this.z0);
     if (this.z1 > 0.0F)
-      draw(((int)(this.p.x / 4000.0D) - 1 - 9) * 4000, ((int)(this.p.y / 4000.0D) - 1 - 9) * 4000, 3.864583E-005F, 12000.0F, this.z1);
+      draw(((int)(this.p.jdField_x_of_type_Double / 4000.0D) - 1 - 9) * 4000, ((int)(this.p.jdField_y_of_type_Double / 4000.0D) - 1 - 9) * 4000, 3.864583E-005F, 12000.0F, this.z1);
   }
 
   public void render()
@@ -81,13 +81,13 @@ public class PlaneCloud
     localCamera3D.pos.getRender(this.p, this.o);
     Render.drawBeginTriangleLists(0);
 
-    Render.drawSetMaterial(this.mat0, (float)this.p.x, (float)this.p.y, (float)this.p.z, 60000.0F);
+    Render.drawSetMaterial(this.mat0, (float)this.p.jdField_x_of_type_Double, (float)this.p.jdField_y_of_type_Double, (float)this.p.jdField_z_of_type_Double, 60000.0F);
     CalcLightColor(this.mat0);
 
     if (this.z0 > 0.0F)
-      draw0(((int)(this.p.x / 4000.0D) - 1) * 4000, ((int)(this.p.y / 4000.0D) - 1) * 4000, 1.59375E-005F, 1000.0F, 12, this.z0);
+      draw0(((int)(this.p.jdField_x_of_type_Double / 4000.0D) - 1) * 4000, ((int)(this.p.jdField_y_of_type_Double / 4000.0D) - 1) * 4000, 1.59375E-005F, 1000.0F, 12, this.z0);
     if (this.z1 > 0.0F) {
-      draw0(((int)(this.p.x / 4000.0D) - 1) * 4000, ((int)(this.p.y / 4000.0D) - 1) * 4000, 3.864583E-005F, 1000.0F, 12, this.z1);
+      draw0(((int)(this.p.jdField_x_of_type_Double / 4000.0D) - 1) * 4000, ((int)(this.p.jdField_y_of_type_Double / 4000.0D) - 1) * 4000, 3.864583E-005F, 1000.0F, 12, this.z1);
     }
     renderFar();
     Render.drawEnd();
@@ -105,10 +105,10 @@ public class PlaneCloud
     float f6 = paramFloat1 * paramFloat3 % 1.0F;
     float f7 = paramFloat2 * paramFloat3 % 1.0F;
     float f8 = paramFloat4 * paramFloat3;
-
+    int n;
     for (int k = 0; k <= 9; k++) {
       float f9 = paramFloat1;
-      for (int n = 0; n <= 9; n++)
+      for (n = 0; n <= 9; n++)
       {
         float f10 = (f9 - paramFloat1 - paramFloat4 * 4.0F) * (f9 - paramFloat1 - paramFloat4 * 4.0F) + (f1 - paramFloat2 - paramFloat4 * 4.0F) * (f1 - paramFloat2 - paramFloat4 * 4.0F);
         float f11 = 1.0F;
@@ -126,16 +126,16 @@ public class PlaneCloud
       f1 += paramFloat4;
     }
     i = 0;
-    for (k = 0; k < 9; k++) {
-      for (int m = 0; m < 9; m++) {
-        if ((k == 3) && (m == 3))
+    for (int m = 0; m < 9; m++) {
+      for (n = 0; n < 9; n++) {
+        if ((m == 3) && (n == 3))
           continue;
-        this.indexes[(i++)] = (k * 10 + m);
-        this.indexes[(i++)] = (k * 10 + m + 1);
-        this.indexes[(i++)] = ((k + 1) * 10 + m + 1);
-        this.indexes[(i++)] = ((k + 1) * 10 + m + 1);
-        this.indexes[(i++)] = ((k + 1) * 10 + m);
-        this.indexes[(i++)] = (k * 10 + m);
+        this.indexes[(i++)] = (m * 10 + n);
+        this.indexes[(i++)] = (m * 10 + n + 1);
+        this.indexes[(i++)] = ((m + 1) * 10 + n + 1);
+        this.indexes[(i++)] = ((m + 1) * 10 + n + 1);
+        this.indexes[(i++)] = ((m + 1) * 10 + n);
+        this.indexes[(i++)] = (m * 10 + n);
       }
     }
 
@@ -170,22 +170,22 @@ public class PlaneCloud
       f9 += paramFloat4;
     }
     i = 0;
-    k = 0;
-    for (int m = 0; m < paramInt; m++) {
-      for (int n = 0; n < paramInt; n++) {
-        i1 = m * (paramInt + 1) + n; int i2 = i1 + paramInt + 1;
-        if ((this.Clip[i1] | this.Clip[(i1 + 1)] | this.Clip[i2] | this.Clip[(i2 + 1)]) != 0) {
-          this.indexes[(i + 0)] = i1;
-          this.indexes[(i + 1)] = (i1 + 1);
-          this.indexes[(i + 2)] = (i2 + 1);
-          this.indexes[(i + 3)] = (i2 + 1);
-          this.indexes[(i + 4)] = i2;
-          this.indexes[(i + 5)] = i1;
-          i += 6; k += 2;
+    int m = 0;
+    for (int n = 0; n < paramInt; n++) {
+      for (i1 = 0; i1 < paramInt; i1++) {
+        int i2 = n * (paramInt + 1) + i1; int i3 = i2 + paramInt + 1;
+        if ((this.Clip[i2] | this.Clip[(i2 + 1)] | this.Clip[i3] | this.Clip[(i3 + 1)]) != 0) {
+          this.indexes[(i + 0)] = i2;
+          this.indexes[(i + 1)] = (i2 + 1);
+          this.indexes[(i + 2)] = (i3 + 1);
+          this.indexes[(i + 3)] = (i3 + 1);
+          this.indexes[(i + 4)] = i3;
+          this.indexes[(i + 5)] = i2;
+          i += 6; m += 2;
         }
       }
     }
-    Render.drawTriangleList(this.xyzuv, (paramInt + 1) * (paramInt + 1), this.LightColor, 0, this.indexes, k);
+    Render.drawTriangleList(this.xyzuv, (paramInt + 1) * (paramInt + 1), this.LightColor, 0, this.indexes, m);
   }
 
   public PlaneCloud(float paramFloat1, float paramFloat2)
