@@ -142,22 +142,22 @@ public final class HomePath
     if ((j >= 0) && (j + 1 < i)) {
       localStringBuffer.delete(j + 1, i);
     }
-    k = 0;
+    int m = 0;
     i = paramString2.length();
-    while (k < i) {
-      c = paramString2.charAt(k);
+    while (m < i) {
+      c = paramString2.charAt(m);
       if (c == '.') {
-        k++;
-        if (k == i) break;
-        c = paramString2.charAt(k);
+        m++;
+        if (m == i) break;
+        c = paramString2.charAt(m);
         if (c == '.') {
-          k++;
-          if (k == i) break;
-          c = paramString2.charAt(k);
+          m++;
+          if (m == i) break;
+          c = paramString2.charAt(m);
           if ((c == '\\') || (c == '/')) {
             j--;
-            while ((j >= 0) && (localStringBuffer.charAt(j) != '/')) j--;
-            if (j < 0)
+            for (; j >= 0; j--) if (localStringBuffer.charAt(j) == '/')
+                break; if (j < 0)
             {
               return null;
             }
@@ -165,20 +165,20 @@ public final class HomePath
           }
         } else if ((c != '\\') && (c != '/'))
         {
-          k--;
+          m--;
           break;
         }
       } else {
         if (c >= ' ')
           break;
       }
-      k++;
+      m++;
     }
-    if (k == i)
+    if (m == i)
     {
       return null;
     }
-    if (k > 0) localStringBuffer.append(paramString2.substring(k)); else
+    if (m > 0) localStringBuffer.append(paramString2.substring(m)); else
       localStringBuffer.append(paramString2);
     i = localStringBuffer.length();
     if (j < 0) j = 0;

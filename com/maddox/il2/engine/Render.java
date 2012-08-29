@@ -66,7 +66,7 @@ public class Render extends Actor
     return state() == 0;
   }
   public void setShow(boolean paramBoolean) {
-    this.states.setState(paramBoolean ? 0 : 1);
+    this.jdField_states_of_type_ComMaddoxRtsStates.setState(paramBoolean ? 0 : 1);
   }
 
   public float getZOrder()
@@ -377,8 +377,8 @@ public class Render extends Actor
 
   public Render(Renders paramRenders, float paramFloat) {
     this.flags |= 24576;
-    this.states = new States(new Object[] { new State(this), new State(this) });
-    this.states.setState(0);
+    this.jdField_states_of_type_ComMaddoxRtsStates = new States(new Object[] { new State(this), new State(this) });
+    this.jdField_states_of_type_ComMaddoxRtsStates.setState(0);
     this.zOrder = paramFloat;
     this.renders = paramRenders;
     paramRenders.renderSet.add(this);

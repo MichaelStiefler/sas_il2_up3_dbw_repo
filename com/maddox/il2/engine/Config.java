@@ -24,21 +24,20 @@ import com.maddox.util.UnicodeTo8bit;
 import java.io.PrintStream;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
 
 public class Config
 {
   public static final String JRE = "JRE";
   public static final boolean AEROMASH = false;
   public static final String PRODUCT = "FB_PF";
-  private static final String _VERSION = "4.10.1";
-  private static final int _TRACK_SINGLE_VERSION = 30;
-  public static final int TRACK_NET_VERSION = 103;
+  private static final String _VERSION = "4.09";
+  private static final int _TRACK_SINGLE_VERSION = 29;
+  public static final int TRACK_NET_VERSION = 102;
   public static final boolean TRACK_CHECK = false;
-  public static final String VERSION = "4.10.1m";
-  public static final String NET_VERSION = "FB_PF_v_4.10.1m";
-  public static final int TRACK_SINGLE_VERSION = 130;
-  public static String LOCALE = "PE";
+  public static final String VERSION = "4.09m";
+  public static final String NET_VERSION = "FB_PF_v_4.09m";
+  public static final int TRACK_SINGLE_VERSION = 129;
+  public static String LOCALE = "RU";
   public static final boolean bCHECK_LOCALE = true;
   public static final String RELEASE = "ON";
   public static final String PROTECT = "OFF";
@@ -99,54 +98,52 @@ public class Config
   public static final String GAME_3DGUNNERS = "3dgunners";
   public static final String GAME_CLEARCACHE = "ClearCache";
   public static final String GAME_TYPECLOUDS = "TypeClouds";
-  public IniFile ini = null;
-  public String mainSection = "il2";
-  public String windowTitle = "Il2";
-
-  public int windowWidth = 640;
-  public int windowHeight = 480;
-  public int windowColourBits = 16;
-  public int windowDepthBits = 16;
-  public int windowStencilBits = 0;
-  public boolean windowFullScreen = true;
-  public boolean windowChangeScreenRes = true;
-  public boolean windowEnableResize = false;
-  public boolean windowEnableClose = false;
-  public boolean windowSaveAspect = true;
-  public boolean windowUse3Renders = false;
-
-  public String glLib = "opengl32.dll";
-  public String gluLib = null;
-
-  public int netLocalPort = 21000;
-  public int netRemotePort = 21000;
-  public String netLocalHost = null;
-  public String netRemoteHost = "";
-  public int netSpeed = 5000;
-  public int netRouteChannels = 0;
-  public int netServerChannels = 8;
-  public boolean netSkinDownload = true;
-  public String netServerName = "";
-  public String netServerDescription = "";
-
-  public boolean b3dgunners = false;
-  public boolean clear_cache = true;
-  public boolean newCloudsRender = true;
-
+  public IniFile ini;
+  public String mainSection;
+  public String windowTitle;
+  public int windowWidth;
+  public int windowHeight;
+  public int windowColourBits;
+  public int windowDepthBits;
+  public int windowStencilBits;
+  public boolean windowFullScreen;
+  public boolean windowChangeScreenRes;
+  public boolean windowEnableResize;
+  public boolean windowEnableClose;
+  public boolean windowSaveAspect;
+  public boolean windowUse3Renders;
+  public String glLib;
+  public String gluLib;
+  public int netLocalPort;
+  public int netRemotePort;
+  public String netLocalHost;
+  public String netRemoteHost;
+  public int netSpeed;
+  public int netRouteChannels;
+  public int netServerChannels;
+  public boolean netSkinDownload;
+  public String netServerName;
+  public String netServerDescription;
+  public boolean b3dgunners;
+  public boolean clear_cache;
+  public boolean newCloudsRender;
   private static boolean bUseRender = false;
-
-  public ArrayList zutiServerNames = null;
-
-  protected boolean bSoundUse = false;
-  private boolean bDebugSound = false;
-
-  public boolean bAppEditor = false;
+  protected boolean bSoundUse;
+  private boolean bDebugSound;
+  public boolean bAppEditor;
 
   public boolean isUse3Renders()
   {
     return (this.windowUse3Renders) && (this.windowSaveAspect);
   }
-  public void checkWindowUse3Renders() { if (!this.windowUse3Renders) return;
+
+  public void checkWindowUse3Renders()
+  {
+    if (!this.windowUse3Renders)
+    {
+      return;
+    }
+
     this.windowUse3Renders = (this.windowWidth == this.windowHeight * 4);
   }
 
@@ -155,11 +152,11 @@ public class Config
     return bUseRender;
   }
 
-  private void loadGlProvider() {
+  private void loadGlProvider()
+  {
     String str = this.ini.get("GLPROVIDER", "GL", (String)null);
-    if (str != null) {
+    if (str != null)
       this.glLib = str;
-    }
     this.gluLib = this.ini.get("GLPROVIDER", "GLU", (String)null);
   }
 
@@ -169,7 +166,8 @@ public class Config
     loadNet();
     loadGame();
     loadConsole();
-    if (isUSE_RENDER()) {
+    if (isUSE_RENDER())
+    {
       this.windowWidth = this.ini.get("window", "width", this.windowWidth);
       this.windowHeight = this.ini.get("window", "height", this.windowHeight);
       this.windowColourBits = this.ini.get("window", "ColourBits", this.windowColourBits);
@@ -182,11 +180,14 @@ public class Config
       this.windowSaveAspect = this.ini.get("window", "SaveAspect", this.windowSaveAspect);
       this.windowUse3Renders = this.ini.get("window", "Use3Renders", this.windowUse3Renders);
       checkWindowUse3Renders();
-      if (this.windowChangeScreenRes) {
+      if (this.windowChangeScreenRes)
+      {
         this.windowFullScreen = true;
-      } else {
+      }
+      else {
         ScreenMode localScreenMode = ScreenMode.startup();
-        if (this.windowColourBits != localScreenMode.colourBits()) this.windowColourBits = localScreenMode.colourBits();
+        if (this.windowColourBits != localScreenMode.colourBits())
+          this.windowColourBits = localScreenMode.colourBits();
       }
       loadGlProvider();
       loadEngine();
@@ -197,8 +198,10 @@ public class Config
     }
   }
 
-  public void save() {
-    if (isUSE_RENDER()) {
+  public void save()
+  {
+    if (isUSE_RENDER())
+    {
       this.ini.setValue("window", "width", Integer.toString(this.windowWidth));
       this.ini.setValue("window", "height", Integer.toString(this.windowHeight));
       this.ini.setValue("window", "ColourBits", Integer.toString(this.windowColourBits));
@@ -210,11 +213,9 @@ public class Config
       this.ini.setValue("window", "EnableClose", this.windowEnableClose ? "1" : "0");
       this.ini.setValue("window", "SaveAspect", this.windowSaveAspect ? "1" : "0");
       this.ini.setValue("window", "Use3Renders", this.windowUse3Renders ? "1" : "0");
-
       this.ini.setValue("GLPROVIDER", "GL", this.glLib);
-      if (this.gluLib != null) {
+      if (this.gluLib != null)
         this.ini.setValue("GLPROVIDER", "GLU", this.gluLib);
-      }
       saveSound();
       saveEngine();
     }
@@ -223,28 +224,30 @@ public class Config
     this.ini.saveFile();
   }
 
-  private void loadNet() {
+  private void loadNet()
+  {
     this.netLocalPort = this.ini.get("NET", "localPort", this.netLocalPort, 1000, 65000);
     this.netRemotePort = this.ini.get("NET", "remotePort", this.netRemotePort, 1000, 65000);
     this.netSpeed = this.ini.get("NET", "speed", this.netSpeed, 300, 1000000);
     this.netLocalHost = this.ini.get("NET", "localHost", this.netLocalHost);
-    if (this.netLocalHost != null) {
-      try {
+    if (this.netLocalHost != null)
+      try
+      {
         InetAddress localInetAddress = InetAddress.getByName(this.netLocalHost);
         DatagramSocket localDatagramSocket = new DatagramSocket(this.netLocalPort, localInetAddress);
         localDatagramSocket.close();
-      } catch (Exception localException) {
+      }
+      catch (Exception localException)
+      {
         System.out.println("Unknown net address: " + this.netLocalHost);
         this.netLocalHost = null;
       }
-    }
-    if (isUSE_RENDER()) {
+    if (isUSE_RENDER())
+    {
       this.netRemotePort = this.ini.get("NET", "remotePort", this.netRemotePort, 1000, 65000);
       this.netRemoteHost = this.ini.get("NET", "remoteHost", this.netRemoteHost);
       this.netRouteChannels = this.ini.get("NET", "routeChannels", this.netRouteChannels, 0, 16);
-      this.netServerChannels = this.ini.get("NET", "serverChannels", this.netServerChannels, 1, 31);
-
-      zutiLoadServers();
+      this.netServerChannels = this.ini.get("NET", "serverChannels", this.netServerChannels, 1, 127);
     }
     else {
       this.netServerChannels = this.ini.get("NET", "serverChannels", this.netServerChannels, 1, 128);
@@ -252,44 +255,30 @@ public class Config
     this.netSkinDownload = this.ini.get("NET", "SkinDownload", this.netSkinDownload);
     this.netServerName = UnicodeTo8bit.load(this.ini.get("NET", "serverName", ""));
     this.netServerDescription = UnicodeTo8bit.load(this.ini.get("NET", "serverDescription", ""));
-
     NetChannel.bCheckServerTimeSpeed = this.ini.get("NET", "checkServerTimeSpeed", NetChannel.bCheckServerTimeSpeed);
     NetChannel.bCheckClientTimeSpeed = this.ini.get("NET", "checkClientTimeSpeed", NetChannel.bCheckClientTimeSpeed);
-
     NetChannel.checkTimeSpeedDifferense = this.ini.get("NET", "checkTimeSpeedDifferense", (float)NetChannel.checkTimeSpeedDifferense, 0.01F, 1000.0F);
     NetChannel.checkTimeSpeedInterval = this.ini.get("NET", "checkTimeSpeedInterval", NetChannel.checkTimeSpeedInterval, 1, 1000);
-
     SocksUdpSocket.setProxyHost(this.ini.get("NET", "socksHost", (String)null));
     SocksUdpSocket.setProxyPort(this.ini.get("NET", "socksPort", 1080));
     SocksUdpSocket.setProxyUser(this.ini.get("NET", "socksUser", (String)null));
     SocksUdpSocket.setProxyPassword(this.ini.get("NET", "socksPwd", (String)null));
   }
-  private void saveNet() {
+
+  private void saveNet()
+  {
     this.ini.setValue("NET", "localPort", "" + this.netLocalPort);
     this.ini.setValue("NET", "speed", "" + this.netSpeed);
-    if (isUSE_RENDER()) {
+    if (isUSE_RENDER())
+    {
       this.ini.setValue("NET", "remotePort", "" + this.netRemotePort);
       this.ini.setValue("NET", "remoteHost", this.netRemoteHost);
       this.ini.setValue("NET", "routeChannels", "" + this.netRouteChannels);
-
-      for (int i = 0; i < this.zutiServerNames.size(); i++)
-      {
-        String str = "";
-        if (i < 10)
-          str = "00" + new Integer(i).toString();
-        else if ((i > 9) && (i < 100))
-          str = "0" + new Integer(i).toString();
-        else if (i > 99) str = new Integer(i).toString();
-
-        this.ini.setValue("NET", "remoteHost_" + str, (String)this.zutiServerNames.get(i));
-      }
     }
-
     this.ini.setValue("NET", "serverChannels", "" + this.netServerChannels);
     this.ini.setValue("NET", "SkinDownload", this.netSkinDownload ? "1" : "0");
     this.ini.setValue("NET", "serverName", UnicodeTo8bit.save(this.netServerName, false));
     this.ini.setValue("NET", "serverDescription", UnicodeTo8bit.save(this.netServerDescription, false));
-
     if (SocksUdpSocket.getProxyHost() != null)
       this.ini.setValue("NET", "socksHost", SocksUdpSocket.getProxyHost());
     else
@@ -308,13 +297,15 @@ public class Config
       this.ini.deleteValue("NET", "socksPwd");
   }
 
-  private void loadGame() {
+  private void loadGame()
+  {
     this.b3dgunners = this.ini.get("game", "3dgunners", this.b3dgunners);
     this.clear_cache = this.ini.get("game", "ClearCache", this.clear_cache);
     this.newCloudsRender = this.ini.get("game", "TypeClouds", this.newCloudsRender);
   }
 
-  private void loadConsole() {
+  private void loadConsole()
+  {
     RTSConf.cur.console.bWrap = (this.ini.get("Console", "WRAP", 1, 0, 1) == 1);
     RTSConf.cur.console.setMaxHistoryOut(this.ini.get("Console", "HISTORY", 128, 0, 10000));
     RTSConf.cur.console.setMaxHistoryCmd(this.ini.get("Console", "HISTORYCMD", 128, 0, 10000));
@@ -333,8 +324,10 @@ public class Config
       RTSConf.cur.console.load(str);
   }
 
-  private void saveConsole() {
-    if (RTSConf.cur.console.getEnv().levelAccess() == 0) {
+  private void saveConsole()
+  {
+    if (RTSConf.cur.console.getEnv().levelAccess() == 0)
+    {
       this.ini.setValue("Console", "WRAP", Integer.toString(RTSConf.cur.console.bWrap ? 1 : 0));
       this.ini.setValue("Console", "PAUSE", Integer.toString(RTSConf.cur.console.isPaused() ? 1 : 0));
       this.ini.setValue("Console", "PAGE", Integer.toString(RTSConf.cur.console.pageHistoryOut()));
@@ -351,10 +344,13 @@ public class Config
     RTSConf.cur.console.log(false);
   }
 
-  public void loadEngine() {
+  public void loadEngine()
+  {
     loadEngine(this.ini.get("GLPROVIDER", "GL", (String)null));
   }
-  public void loadEngine(String paramString) {
+
+  public void loadEngine(String paramString)
+  {
     if (paramString == null)
       paramString = this.glLib;
     String str1 = this.ini.get("GLPROVIDERS", "DirectX", "");
@@ -364,7 +360,8 @@ public class Config
     RenderContext.loadConfig(this.ini, str2);
   }
 
-  private void saveEngine() {
+  private void saveEngine()
+  {
     RenderContext.saveConfig();
   }
 
@@ -372,27 +369,33 @@ public class Config
   {
     return this.bDebugSound;
   }
-  public boolean isSoundUse() {
+
+  public boolean isSoundUse()
+  {
     return this.bSoundUse;
   }
 
-  private void beforeLoadSound() {
+  private void beforeLoadSound()
+  {
     this.bSoundUse = this.ini.get("sound", "SoundUse", false);
     this.bDebugSound = this.ini.get("sound", "DebugSound", this.bDebugSound);
   }
 
-  private void saveSound() {
+  private void saveSound()
+  {
     this.ini.setValue("sound", "SoundUse", this.bSoundUse ? "1" : "0");
     AudioDevice.saveControls(this.ini, "sound");
   }
 
-  public void beginSound() {
+  public void beginSound()
+  {
     AudioDevice.setMessageMode(this.bDebugSound ? 1 : 0);
     AudioDevice.loadControls(this.ini, "sound");
-
-    if (this.bSoundUse) {
+    if (this.bSoundUse)
+    {
       this.bSoundUse = false;
-      if ((RTSConf.cur != null) && ((RTSConf.cur instanceof RTSConfWin))) {
+      if ((RTSConf.cur != null) && ((RTSConf.cur instanceof RTSConfWin)))
+      {
         int i = RTSConf.cur.mainWindow.hWnd();
         if (i != 0)
           if (AudioDevice.initialize(i, engineDllName() + ".dll"))
@@ -401,15 +404,14 @@ public class Config
             System.err.println("AudioDevice NOT initialized");
       }
     }
-    else
-    {
+    else {
       AudioDevice.initialize(0, engineDllName() + ".dll");
     }
-
     AudioDevice.resetControls();
   }
 
-  public void endSound() {
+  public void endSound()
+  {
     if (this.bSoundUse)
       AudioDevice.done();
   }
@@ -424,7 +426,8 @@ public class Config
     return localGLInitCaps;
   }
 
-  public void setGLCaps(GLCaps paramGLCaps) {
+  public void setGLCaps(GLCaps paramGLCaps)
+  {
     this.windowColourBits = paramGLCaps.getColourBits();
     this.windowDepthBits = paramGLCaps.getDepthBits();
     this.windowStencilBits = paramGLCaps.getStencilBits();
@@ -434,31 +437,32 @@ public class Config
     throws GLContextException
   {
     ScreenMode localScreenMode = ScreenMode.readCurrent();
-    if (paramBoolean1) {
-      if (ScreenMode.set(paramInt1, paramInt2, paramInt3)) {
+    if (paramBoolean1)
+    {
+      if (ScreenMode.set(paramInt1, paramInt2, paramInt3))
+      {
         paramInt1 = ScreenMode.current().width();
         paramInt2 = ScreenMode.current().height();
         paramInt3 = ScreenMode.current().colourBits();
-      } else {
+      }
+      else {
         throw new GLContextException("ScreenMode NOT changed");
       }
     }
-    else if (ScreenMode.current() != ScreenMode.startup()) {
+    else if (ScreenMode.current() != ScreenMode.startup())
       ScreenMode.restore();
-    }
     boolean bool = false;
     if (paramBoolean2)
       bool = ((MainWin32)RTSConf.cur.mainWindow).create(this.windowTitle, paramInt1, paramInt2);
-    else {
+    else
       bool = ((MainWin32)RTSConf.cur.mainWindow).create(this.windowTitle, this.windowEnableClose, this.windowEnableResize, paramInt1, paramInt2);
-    }
-    if (!bool) {
+    if (!bool)
+    {
       ScreenMode.set(localScreenMode);
       throw new GLContextException("Window NOT created");
     }
     paramInt1 = RTSConf.cur.mainWindow.width();
     paramInt2 = RTSConf.cur.mainWindow.height();
-
     GLInitCaps localGLInitCaps = new GLInitCaps();
     localGLInitCaps.setDoubleBuffered(true);
     localGLInitCaps.setColourBits(paramInt3);
@@ -466,18 +470,21 @@ public class Config
     localGLInitCaps.setStencilBits(paramInt5);
     try
     {
-      if (paramGLContext != null) {
+      if (paramGLContext != null)
+      {
         paramGLContext.changeWin32(localGLInitCaps, RTSConf.cur.mainWindow.hWnd(), true, paramInt1, paramInt2);
-      } else {
+      }
+      else {
         paramGLContext = new GLContext(localGLInitCaps);
         paramGLContext.createWin32(RTSConf.cur.mainWindow.hWnd(), true, paramInt1, paramInt2);
       }
-    } catch (GLContextException localGLContextException) {
+    }
+    catch (GLContextException localGLContextException)
+    {
       ((MainWin32)RTSConf.cur.mainWindow).destroy();
       ScreenMode.set(localScreenMode);
       throw localGLContextException;
     }
-
     this.windowFullScreen = paramBoolean2;
     this.windowChangeScreenRes = paramBoolean1;
     this.windowWidth = RTSConf.cur.mainWindow.width();
@@ -502,25 +509,31 @@ public class Config
     System.err.println("Current screen mode: " + localScreenMode.width() + "x" + localScreenMode.height() + "x" + localScreenMode.colourBits());
   }
 
-  public static void typeScreenModes() {
+  public static void typeScreenModes()
+  {
     ScreenMode[] arrayOfScreenMode = ScreenMode.all();
     System.err.print("Screen modes: ");
-    for (int i = 0; i < arrayOfScreenMode.length; i++) {
-      if (i % 4 == 0) System.err.println("");
+    for (int i = 0; i < arrayOfScreenMode.length; i++)
+    {
+      if (i % 4 == 0)
+        System.err.println("");
       System.err.print("\t" + i + " " + arrayOfScreenMode[i].width() + "x" + arrayOfScreenMode[i].height() + "x" + arrayOfScreenMode[i].colourBits());
     }
+
     System.err.println("");
   }
 
-  public static void typeGLCaps() {
+  public static void typeGLCaps()
+  {
     GLCaps[] arrayOfGLCaps = Provider.getGLCaps();
     System.err.println("Caps OpenGL library:");
-    for (int i = 0; i < arrayOfGLCaps.length; i++) {
+    for (int i = 0; i < arrayOfGLCaps.length; i++)
+    {
       System.err.print(i);
-      System.err.print(arrayOfGLCaps[i].getDevice() == 1 ? "  DRAW_TO_WINDOW" : "  DRAW_TO_BITMAP");
+      System.err.print(arrayOfGLCaps[i].getDevice() != 1 ? "  DRAW_TO_BITMAP" : "  DRAW_TO_WINDOW");
       System.err.print(arrayOfGLCaps[i].isDoubleBuffered() ? "  DOUBLEBUFFER" : "  SINGLEBUFFER");
       System.err.print(arrayOfGLCaps[i].isStereo() ? "  STEREO" : "  NOSTEREO");
-      System.err.println(arrayOfGLCaps[i].getPixelType() == 1 ? "  TYPE_RGBA" : "  TYPE_COLOURINDEX");
+      System.err.println(arrayOfGLCaps[i].getPixelType() != 1 ? "  TYPE_COLOURINDEX" : "  TYPE_RGBA");
       System.err.print("  ColourBits: " + arrayOfGLCaps[i].getColourBits());
       System.err.print("  AlphaBits: " + arrayOfGLCaps[i].getAlphaBits());
       System.err.print("  AccumBits: " + arrayOfGLCaps[i].getAccumBits());
@@ -529,7 +542,8 @@ public class Config
     }
   }
 
-  public static void typeGlStrings() {
+  public static void typeGlStrings()
+  {
     System.err.println("OpenGL library:");
     System.err.println("  Vendor: " + gl.GetString(7936));
     System.err.println("  Render: " + gl.GetString(7937));
@@ -537,9 +551,11 @@ public class Config
     System.err.println("  Extensions: " + gl.GetString(7939));
   }
 
-  public static void typeProvider() {
+  public static void typeProvider()
+  {
     System.err.println("OpenGL provider: " + Provider.GLname());
-    try {
+    try
+    {
       System.err.println("GLU provider: " + Provider.GLUname());
     }
     catch (Exception localException) {
@@ -559,51 +575,57 @@ public class Config
     return cur.bAppEditor;
   }
 
-  public static String engineDllName() {
-    if (CLASS.ser() != 0) {
-      if ((Cpu86ID.getVendor() == 1) && (Cpu86ID.isSSE2()))
-      {
+  public static String engineDllName()
+  {
+    if (CLASS.ser() != 0)
+    {
+      if ((Cpu86ID.getVendor() == 1) && (Cpu86ID.isSSE2())) {
         return "il2_coreP4";
       }
       return "il2_core";
     }
+
     Cpu86ID.getVendor();
     return "il2_server";
   }
 
   public Config(IniFile paramIniFile, boolean paramBoolean)
   {
-    this.zutiServerNames = new ArrayList();
-
+    this.ini = null;
+    this.mainSection = "il2";
+    this.windowTitle = "Il2";
+    this.windowWidth = 640;
+    this.windowHeight = 480;
+    this.windowColourBits = 16;
+    this.windowDepthBits = 16;
+    this.windowStencilBits = 0;
+    this.windowFullScreen = true;
+    this.windowChangeScreenRes = true;
+    this.windowEnableResize = false;
+    this.windowEnableClose = false;
+    this.windowSaveAspect = true;
+    this.windowUse3Renders = false;
+    this.glLib = "opengl32.dll";
+    this.gluLib = null;
+    this.netLocalPort = 21000;
+    this.netRemotePort = 21000;
+    this.netLocalHost = null;
+    this.netRemoteHost = "";
+    this.netSpeed = 5000;
+    this.netRouteChannels = 0;
+    this.netServerChannels = 8;
+    this.netSkinDownload = true;
+    this.netServerName = "";
+    this.netServerDescription = "";
+    this.b3dgunners = false;
+    this.clear_cache = true;
+    this.newCloudsRender = true;
+    this.bSoundUse = false;
+    this.bDebugSound = false;
+    this.bAppEditor = false;
     bUseRender = paramBoolean;
     GObj.loadNative();
     this.ini = paramIniFile;
     load();
-  }
-
-  private void zutiLoadServers()
-  {
-    for (int i = 0; i < 255; i++)
-    {
-      String str1 = "";
-      if (i < 10)
-        str1 = "00" + new Integer(i).toString();
-      else if ((i > 9) && (i < 100))
-        str1 = "0" + new Integer(i).toString();
-      else if (i > 99) str1 = new Integer(i).toString();
-
-      String str2 = this.ini.get("NET", "remoteHost_" + str1, "");
-      if (str2.trim().length() <= 0) continue; this.zutiServerNames.add(str2);
-    }
-  }
-
-  public ArrayList zutiGetServerNames()
-  {
-    return this.zutiServerNames;
-  }
-
-  public void zutiAddServerName(String paramString)
-  {
-    if (!this.zutiServerNames.contains(paramString)) this.zutiServerNames.add(paramString);
   }
 }

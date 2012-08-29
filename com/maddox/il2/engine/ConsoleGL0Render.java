@@ -32,21 +32,21 @@ class ConsoleGL0Render extends Render
   {
     int i;
     if (ConsoleGL0.backgroundMat != null) {
-      drawTile(0.0F, 0.0F, RendersMain.getViewPortWidth(), RendersMain.getViewPortHeight(), 0.0F, ConsoleGL0.backgroundMat, -1, 0.0F, 1.0F, 1.0F, -1.0F);
+      Render.drawTile(0.0F, 0.0F, RendersMain.getViewPortWidth(), RendersMain.getViewPortHeight(), 0.0F, ConsoleGL0.backgroundMat, -1, 0.0F, 1.0F, 1.0F, -1.0F);
 
       if (this.sstep != null) {
         float f1 = TTFont.font[2].width(this.sstep);
 
         i = -16776961;
         if ("ru".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
-          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.12F, 0.0F, this.sstep);
+          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.045F, 0.0F, this.sstep);
 
-          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.12F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.10.1m");
+          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.045F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.09m");
         }
         else {
           TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F, 0.0F, this.sstep);
 
-          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.10.1m");
+          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.09m");
         }
       }
 
@@ -99,27 +99,30 @@ class ConsoleGL0Render extends Render
       if (RTSConf.cur.console.bWrap) {
         k = i;
         int m = 1;
-        while ((j > 0) && (k < localList.size())) {
-          str2 = (String)(String)localList.get(k);
+        do {
+          str2 = (String)localList.get(k);
           i1 = str2.length() - 1;
-          while ((i1 >= 0) && (str2.charAt(i1) < ' ')) i1--;
-          if (i1 > 0) {
+          for (; i1 >= 0; i1--) if (str2.charAt(i1) >= ' ')
+              break; if (i1 > 0) {
             i1++;
             int i2 = 0;
             int i3 = 0;
             int i4 = i1;
             this.ofs[i2] = i3;
-            while ((i4 > 0) && (ConsoleGL0.font.width(str2, i3, i4) > 0.0F)) {
+            do {
               int i5 = i4;
-              while (ConsoleGL0.font.width(str2, i3, i4) + ConsoleGL0.typeOffset > getViewPortWidth()) {
-                while (true) { i4--; if (i4 <= 0) break; if (str2.charAt(i3 + i4) != ' ') continue; }
-                if (i4 != 0) continue;
+              do {
+                do { if (str2.charAt(i3 + i4) == ' ') break; i4--; } while (i4 > 0);
+                if (i4 == 0)
+                  break;
               }
+              while (ConsoleGL0.font.width(str2, i3, i4) + ConsoleGL0.typeOffset > getViewPortWidth());
+
               if (i4 == 0) {
                 i4 = i5;
                 while (ConsoleGL0.font.width(str2, i3, i4) + ConsoleGL0.typeOffset > getViewPortWidth()) {
                   i4--;
-                  if (i4 != 0) continue;
+                  if (i4 == 0) break;
                 }
               }
               if (i2 + 1 >= this.ofs.length)
@@ -132,7 +135,10 @@ class ConsoleGL0Render extends Render
               i3 += i4;
               i4 = i1 - i3;
               this.ofs[i2] = i3;
-            }
+
+              if (i4 <= 0) break; 
+            }while (ConsoleGL0.font.width(str2, i3, i4) > 0.0F);
+
             while ((i2 > 0) && (j > 0)) {
               ConsoleGL0.font.output(-1, ConsoleGL0.typeOffset, ConsoleGL0.font.height() * m - ConsoleGL0.font.descender(), 0.0F, str2, this.ofs[(i2 - 1)], this.ofs[i2] - this.ofs[(i2 - 1)]);
 
@@ -142,17 +148,20 @@ class ConsoleGL0Render extends Render
             }
           }
           k++;
-        }
+
+          if (j <= 0) break; 
+        }while (k < localList.size());
       }
-      else {
+      else
+      {
         if (j > localList.size() - i)
           j = localList.size() - i;
         for (k = 0; k < j; k++) {
           float f2 = ConsoleGL0.font.height() * (k + 1) - ConsoleGL0.font.descender();
-          str2 = (String)(String)localList.get(k + i);
+          str2 = (String)localList.get(k + i);
           i1 = str2.length() - 1;
-          while ((i1 >= 0) && (str2.charAt(i1) < ' ')) i1--;
-          if (i1 > 0)
+          for (; i1 >= 0; i1--) if (str2.charAt(i1) >= ' ')
+              break; if (i1 > 0)
             ConsoleGL0.font.output(-1, ConsoleGL0.typeOffset, f2, 0.0F, str2, 0, i1 + 1);
         }
       }

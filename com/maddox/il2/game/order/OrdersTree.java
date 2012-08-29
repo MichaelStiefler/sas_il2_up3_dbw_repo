@@ -10,9 +10,7 @@ import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
-import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Autopilotage;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
@@ -24,7 +22,6 @@ import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeTransport;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.il2.objects.vehicles.radios.Beacon;
 import com.maddox.rts.HotKeyCmd;
 import com.maddox.rts.HotKeyCmdEnv;
 import com.maddox.rts.HotKeyEnv;
@@ -100,9 +97,9 @@ public class OrdersTree
     {
       Voice.setSyncMode(1);
       for (int i = 0; i < CommandSet().length; i++) {
-        if ((Actor.isAlive(CommandSet()[i])) && ((CommandSet()[i].FM instanceof Pilot))) {
-          Pilot localPilot = (Pilot)CommandSet()[i].FM;
-          if (!localPilot.AP.way.isLanding()) localPilot.AP.way.next();
+        if ((Actor.isAlive(CommandSet()[i])) && ((CommandSet()[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot))) {
+          Pilot localPilot = (Pilot)CommandSet()[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+          if (!localPilot.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) localPilot.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
           if ((!isEnableVoice()) || (CommandSet()[i] == Player()) || (
             (CommandSet()[i].getWing() != Player().getWing()) && (CommandSet()[i].aircIndex() != 0))) continue;
           Voice.speakNextWayPoint(CommandSet()[i]);
@@ -117,9 +114,9 @@ public class OrdersTree
     {
       Voice.setSyncMode(1);
       for (int i = 0; i < CommandSet().length; i++) {
-        if ((Actor.isAlive(CommandSet()[i])) && ((CommandSet()[i].FM instanceof Pilot))) {
-          Pilot localPilot = (Pilot)CommandSet()[i].FM;
-          if (!localPilot.AP.way.isLanding()) localPilot.AP.way.prev();
+        if ((Actor.isAlive(CommandSet()[i])) && ((CommandSet()[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot))) {
+          Pilot localPilot = (Pilot)CommandSet()[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+          if (!localPilot.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) localPilot.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.prev();
           if ((!isEnableVoice()) || (CommandSet()[i] == Player()) || (
             (CommandSet()[i].getWing() != Player().getWing()) && (CommandSet()[i].aircIndex() != 0))) continue;
           Voice.speakPrevWayPoint(CommandSet()[i]);
@@ -134,34 +131,35 @@ public class OrdersTree
     {
       Voice.setSyncMode(1);
       int i = 0;
-      Maneuver localManeuver = (Maneuver)Player().FM;
-      Object localObject;
+      Maneuver localManeuver = (Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      Object localObject1;
+      Object localObject2;
       for (int j = 0; j < CommandSet().length; j++) {
-        localObject = CommandSet()[j];
-        if ((Actor.isAlive((Actor)localObject)) && ((((Aircraft)localObject).FM instanceof Pilot))) {
-          Pilot localPilot = (Pilot)CommandSet()[j].FM;
-          if (!localPilot.AP.way.isLanding()) {
-            localPilot.AP.way.last();
-            localPilot.AP.way.prev();
+        localObject1 = CommandSet()[j];
+        if ((Actor.isAlive((Actor)localObject1)) && ((((Aircraft)localObject1).jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot))) {
+          localObject2 = (Pilot)CommandSet()[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+          if (!((Pilot)localObject2).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) {
+            ((Pilot)localObject2).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.last();
+            ((Pilot)localObject2).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.prev();
           }
-          if (localPilot.Group != null) {
-            localPilot.Group.setGroupTask(1);
-            localPilot.Group.timeOutForTaskSwitch = 480;
+          if (((Pilot)localObject2).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) {
+            ((Pilot)localObject2).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(1);
+            ((Pilot)localObject2).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.timeOutForTaskSwitch = 480;
           }
-          if ((isEnableVoice()) && (localObject != Player()) && (
-            (((Aircraft)localObject).getWing() == Player().getWing()) || (((Aircraft)localObject).aircIndex() == 0)))
+          if ((isEnableVoice()) && (localObject1 != Player()) && (
+            (((Aircraft)localObject1).getWing() == Player().getWing()) || (((Aircraft)localObject1).aircIndex() == 0)))
             Voice.speakReturnToBase(CommandSet()[j]);
-          if ((localObject == Player()) || (localPilot.Group != localManeuver.Group)) continue; i = 1;
+          if ((localObject1 == Player()) || (((Pilot)localObject2).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup)) continue; i = 1;
         }
       }
       Voice.setSyncMode(0);
       if (i != 0) {
-        AirGroup localAirGroup = localManeuver.Group;
-        localObject = new AirGroup(localManeuver.Group);
-        ((AirGroup)localObject).rejoinGroup = null;
-        localManeuver.Group.delAircraft(Player());
-        ((AirGroup)localObject).addAircraft(Player());
-        localAirGroup.setGroupTask(1);
+        localObject1 = localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup;
+        localObject2 = new AirGroup(localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+        ((AirGroup)localObject2).rejoinGroup = null;
+        localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(Player());
+        ((AirGroup)localObject2).addAircraft(Player());
+        ((AirGroup)localObject1).setGroupTask(1);
       }
     }
   }
@@ -171,16 +169,16 @@ public class OrdersTree
     {
       for (int i = 0; i < CommandSet().length; i++) {
         Voice.setSyncMode(1);
-        if ((Actor.isAlive(CommandSet()[i])) && ((CommandSet()[i].FM instanceof Pilot))) {
-          Pilot localPilot1 = (Pilot)CommandSet()[i].FM;
-          if ((localPilot1.Group != null) && 
-            (localPilot1.Group.nOfAirc > 0) && (localPilot1 == localPilot1.Group.airc[0].FM) && (!localPilot1.isBusy()))
+        if ((Actor.isAlive(CommandSet()[i])) && ((CommandSet()[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot))) {
+          Pilot localPilot1 = (Pilot)CommandSet()[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+          if ((localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) && 
+            (localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.nOfAirc > 0) && (localPilot1 == localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel) && (!localPilot1.isBusy()))
           {
-            if ((Actor.isAlive(localPilot1.Group.airc[(localPilot1.Group.nOfAirc - 1)])) && ((localPilot1.Group.airc[(localPilot1.Group.nOfAirc - 1)].FM instanceof Pilot)))
+            if ((Actor.isAlive(localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.airc[(localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.nOfAirc - 1)])) && ((localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.airc[(localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.nOfAirc - 1)].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)))
             {
-              Pilot localPilot2 = (Pilot)localPilot1.Group.airc[(localPilot1.Group.nOfAirc - 1)].FM;
-              localPilot1.Group.setFormationAndScale(localPilot2.formationType, localPilot2.formationScale, false);
-              localPilot1.Group.setGroupTask(1);
+              Pilot localPilot2 = (Pilot)localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.airc[(localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.nOfAirc - 1)].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+              localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setFormationAndScale(localPilot2.formationType, localPilot2.formationScale, false);
+              localPilot1.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(1);
               localPilot1.clear_stack();
               localPilot1.push(45);
               localPilot1.push(45);
@@ -202,22 +200,19 @@ public class OrdersTree
 
   static Orders ToGroupSquad = ToParaZveno;
 
-  static Orders ToGroundControl = new Orders(new Order[] { new Order("GroundControl"), new OrderRequest_Assistance(), new OrderVector_To_Home_Base(), new OrderVector_To_Target(), new OrderRequest_For_Landing(), new OrderRequest_For_Takeoff(), new OrderRequest_For_RunwayLights(), null, new OrderBack() });
+  static Orders ToGroundControl = new Orders(new Order[] { new Order("GroundControl"), new OrderRequest_Assistance(), new OrderVector_To_Home_Base(), new OrderVector_To_Target(), new OrderRequest_For_Landing(), new OrderRequest_For_Takeoff(), null, new OrderBack() });
 
   static Orders Frequency = new Orders(new Order[] { new Order("Frequency"), new Order()
   {
-    public void preRun()
-    {
-      Player().FM.AS.setBeacon(0);
-      OrdersTree.curOrdersTree.frequency = OrdersTree.FREQ_FRIENDLY;
+    public void preRun() {
+      OrdersTree.curOrdersTree.frequency = true;
     }
   }
   , new Order()
   {
     public void preRun()
     {
-      Player().FM.AS.setBeacon(0);
-      OrdersTree.curOrdersTree.frequency = OrdersTree.FREQ_ENEMY;
+      OrdersTree.curOrdersTree.frequency = false;
     }
   }
   , null, new OrderBack() });
@@ -303,10 +298,7 @@ public class OrdersTree
   {
     public void run()
     {
-      cset(PlayerSquad()); super.run();
-    }
-  }
-  , new OrderAnyone_Help_Me(), new Order("Ground_Control", ToGroundControl), new Order("Frequency", Frequency), null, new OrderBack() });
+      cset(PlayerSquad()); super.run(); }  } , new OrderAnyone_Help_Me(), new Order("Ground_Control", ToGroundControl), new Order("Frequency", Frequency), null, new OrderBack() });
   public static final String envName = "orders";
   public static OrdersTree curOrdersTree;
   protected Orders home;
@@ -318,42 +310,16 @@ public class OrdersTree
   protected Squadron PlayerSquad;
   protected Regiment PlayerRegiment;
   protected Aircraft[] CommandSet = new Aircraft[16];
-  protected Boolean frequency = new Boolean(true);
+  protected boolean frequency = true;
   protected boolean alone = false;
-
-  public static final Boolean FREQ_FRIENDLY = new Boolean(true);
-  public static final Boolean FREQ_ENEMY = new Boolean(false);
-  public static final int shipIDListSize = 10;
-  private String[] shipIDList = new String[10];
   protected static final int CONTEXT_LOCAL_SERVER = 0;
   protected static final int CONTEXT_LOCAL_CLIENT = 1;
   protected static final int CONTEXT_REMOTE_SERVER = 2;
   protected int context;
-  private static String[] hotKeyEnvNames = { "pilot", "aircraftView" };
-
-  private HashMapInt[] disabledHotKeys = { new HashMapInt(), new HashMapInt() };
+  private HashMapInt disabledHotKeys = new HashMapInt();
   private HotKeyCmdFire[] hotKeyCmd;
-  static Orders ZutiDogfightOptions = new Orders(new Order[] { new Order("MainMenu"), new Order("deWingman", ToWingman)
-  {
-    public void run()
-    {
-      cset(Wingman());
-      super.run();
-    }
-  }
-  , new Order("deSquadron", ToGroupSquad)
-  {
-    public void run()
-    {
-      cset(PlayerSquad());
-      super.run();
-    }
-  }
-  , new OrderAnyone_Help_Me(), new Order("Frequency", Frequency), new Order("Ground_Control", ToGroundControl), null, new OrderBack() });
 
-  protected boolean isLocalServer()
-  {
-    return this.context == 0; } 
+  protected boolean isLocalServer() { return this.context == 0; } 
   protected boolean isLocalClient() { return this.context == 1; } 
   protected boolean isRemoteServer() { return this.context == 2; } 
   protected boolean isRemote() { return this.context == 2; } 
@@ -369,13 +335,13 @@ public class OrdersTree
       localArrayList1.add(0, paramOrder.name(i));
       if (paramOrder.orders.upOrders == null) break;
       if (paramOrder != paramOrder.orders.order[0]) {
-        paramOrder = paramOrder.orders.order[0]; continue;
+        paramOrder = paramOrder.orders.order[0];
+      } else {
+        if (paramOrder.orders.upOrders.upOrders == null)
+          break;
+        paramOrder = paramOrder.orders.upOrders.order[0];
       }
-      if (paramOrder.orders.upOrders.upOrders == null)
-        break;
-      paramOrder = paramOrder.orders.upOrders.order[0];
     }
-
     StringBuffer localStringBuffer = new StringBuffer();
     for (int j = 0; j < localArrayList1.size(); j++) {
       if (j > 0) localStringBuffer.append(" ");
@@ -398,15 +364,15 @@ public class OrdersTree
     localArrayList2.add(localObject);
     Main.cur().chat.send((NetHost)localObject, localStringBuffer.toString(), localArrayList2, 1, i == World.getPlayerArmy());
   }
-  public Boolean frequency() {
+  public boolean frequency() {
     return this.frequency; } 
-  public void setFrequency(Boolean paramBoolean) { this.frequency = paramBoolean; } 
+  public void setFrequency(boolean paramBoolean) { this.frequency = paramBoolean; } 
   public boolean alone() { return this.alone; }
 
   protected void _cset(Actor paramActor)
   {
     for (int i = 0; i < 16; i++) this.CommandSet[i] = null;
-    if ((this.frequency == null) || (!this.frequency.booleanValue())) return;
+    if (!this.frequency) return;
     this.alone = false;
 
     if (!Actor.isAlive(paramActor)) return;
@@ -465,14 +431,6 @@ public class OrdersTree
     this.Player = paramAircraft;
     if (this.Player == null) return;
     curOrdersTree = this;
-
-    if (Mission.isDogfight())
-    {
-      setAsDogfight();
-      curOrdersTree = null;
-      return;
-    }
-
     Wing localWing1 = this.Player.getWing();
     this.PlayerWing = localWing1;
     this.PlayerSquad = localWing1.squadron();
@@ -506,9 +464,9 @@ public class OrdersTree
       setAsWingman(i);
     }
     else if (!isRemote()) {
-      for (n = 0; n < 4; n++) {
-        if (this.PlayerSquad.wing[n] == null) {
-          this.home.order[(2 + n)].attrib |= 1;
+      for (int i1 = 0; i1 < 4; i1++) {
+        if (this.PlayerSquad.wing[i1] == null) {
+          this.home.order[(2 + i1)].attrib |= 1;
         }
       }
 
@@ -570,13 +528,6 @@ public class OrdersTree
   public void activate() {
     if (isActive()) return;
 
-    if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isDogfight()) && (Main.cur().mission.zutiRadar_EnableTowerCommunications))
-    {
-      if (World.getPlayerAircraft() != null)
-        ((Maneuver)World.getPlayerAircraft().FM).silence = false;
-      missionLoaded();
-    }
-
     if (isLocal()) {
       if ((!Actor.isAlive(this.Player)) || (World.isPlayerDead()) || (World.isPlayerParatrooper()))
       {
@@ -615,38 +566,34 @@ public class OrdersTree
 
   private void disableAircraftCmds()
   {
-    for (int i = 0; i < hotKeyEnvNames.length; i++) {
-      HashMapInt localHashMapInt1 = HotKeyEnv.env(hotKeyEnvNames[i]).all();
-      HashMapInt localHashMapInt2 = HotKeyEnv.env("orders").all();
-      HashMapIntEntry localHashMapIntEntry = localHashMapInt2.nextEntry(null);
-      int j;
-      while (localHashMapIntEntry != null) {
-        j = localHashMapIntEntry.getKey();
-        String str = (String)localHashMapInt1.get(j);
-        if (str != null)
-          this.disabledHotKeys[i].put(j, str);
-        localHashMapIntEntry = localHashMapInt2.nextEntry(localHashMapIntEntry);
-      }
-      localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        j = localHashMapIntEntry.getKey();
-        localHashMapInt1.remove(j);
-        localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(localHashMapIntEntry);
-      }
+    HashMapInt localHashMapInt1 = HotKeyEnv.env("pilot").all();
+    HashMapInt localHashMapInt2 = HotKeyEnv.env("orders").all();
+    HashMapIntEntry localHashMapIntEntry = localHashMapInt2.nextEntry(null);
+    int i;
+    while (localHashMapIntEntry != null) {
+      i = localHashMapIntEntry.getKey();
+      String str = (String)localHashMapInt1.get(i);
+      if (str != null)
+        this.disabledHotKeys.put(i, str);
+      localHashMapIntEntry = localHashMapInt2.nextEntry(localHashMapIntEntry);
+    }
+
+    localHashMapIntEntry = this.disabledHotKeys.nextEntry(null);
+    while (localHashMapIntEntry != null) {
+      i = localHashMapIntEntry.getKey();
+      localHashMapInt1.remove(i);
+      localHashMapIntEntry = this.disabledHotKeys.nextEntry(localHashMapIntEntry);
     }
   }
 
-  private void enableAircraftCmds()
-  {
-    for (int i = 0; i < hotKeyEnvNames.length; i++) {
-      HashMapInt localHashMapInt = HotKeyEnv.env(hotKeyEnvNames[i]).all();
-      HashMapIntEntry localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        localHashMapInt.put(localHashMapIntEntry.getKey(), localHashMapIntEntry.getValue());
-        localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(localHashMapIntEntry);
-      }
-      this.disabledHotKeys[i].clear();
+  private void enableAircraftCmds() {
+    HashMapInt localHashMapInt = HotKeyEnv.env("pilot").all();
+    HashMapIntEntry localHashMapIntEntry = this.disabledHotKeys.nextEntry(null);
+    while (localHashMapIntEntry != null) {
+      localHashMapInt.put(localHashMapIntEntry.getKey(), localHashMapIntEntry.getValue());
+      localHashMapIntEntry = this.disabledHotKeys.nextEntry(localHashMapIntEntry);
     }
+    this.disabledHotKeys.clear();
   }
 
   public void execCmd(int paramInt) {
@@ -763,32 +710,6 @@ public class OrdersTree
     HotKeyCmdEnv.addCmd(this.hotKeyCmd[8] =  = new HotKeyCmdFire(null, "order8", 8, 258));
     HotKeyCmdEnv.addCmd(this.hotKeyCmd[9] =  = new HotKeyCmdFire(null, "order9", 9, 259));
     activateHotKeyCmd(false);
-  }
-
-  public String[] getShipIDs()
-  {
-    return this.shipIDList;
-  }
-
-  public void addShipIDs(int paramInt1, int paramInt2, Actor paramActor, String paramString1, String paramString2)
-  {
-    if (paramInt2 == -1)
-      this.shipIDList[paramInt1] = null;
-    else
-      this.shipIDList[paramInt1] = ("ID:" + Beacon.getBeaconID(paramInt2) + "  " + paramString1 + " " + paramString2);
-  }
-
-  private void setAsDogfight()
-  {
-    this.home = GroupLeader;
-    if (!isRemote())
-    {
-      for (int i = 0; i < this.home.order.length; i++)
-      {
-        if (this.home.order[i] != null)
-          this.home.order[i].attrib &= -2;
-      }
-    }
   }
 
   class HotKeyCmdFire extends HotKeyCmd

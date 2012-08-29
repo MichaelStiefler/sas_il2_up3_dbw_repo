@@ -22,17 +22,17 @@ public class P_40SUKAISVOLOCH2B extends P_40SUKAISVOLOCH
     Property.set(localClass, "cockpitClass", CockpitP_40C.class);
     Property.set(localClass, "LOSElevation", 1.0728F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0, 9, 3, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0, 9, 3, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", null, null, null });
 
-    weaponsRegister(localClass, "1x75dt", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", "PylonP39PLN1", null, "FuelTankGun_Tank75gal" });
+    Aircraft.weaponsRegister(localClass, "1x75dt", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", "PylonP39PLN1", null, "FuelTankGun_Tank75gal" });
 
-    weaponsRegister(localClass, "1x100", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", "PylonP39PLN1", "BombGunFAB50 1", null });
+    Aircraft.weaponsRegister(localClass, "1x100", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", "PylonP39PLN1", "BombGunFAB50 1", null });
 
-    weaponsRegister(localClass, "1x250", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", "PylonP39PLN1", "BombGun250lbs 1", null });
+    Aircraft.weaponsRegister(localClass, "1x250", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240", "PylonP39PLN1", "BombGun250lbs 1", null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null });
   }
 }

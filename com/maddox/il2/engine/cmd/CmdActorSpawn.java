@@ -78,7 +78,7 @@ public class CmdActorSpawn extends Cmd
 
   protected boolean paramContainsKey(String paramString)
   {
-    return this.param.containsKey(paramString);
+    return this.jdField_param_of_type_JavaUtilTreeMap.containsKey(paramString);
   }
   protected void ERR_HARD(String paramString) { super.ERR_HARD(paramString); }
 
@@ -97,7 +97,7 @@ public class CmdActorSpawn extends Cmd
     while ((this.tokens.hasMoreTokens()) || (this.word != null)) {
       if (this.word == null)
         this.word = this.tokens.nextToken();
-      localObject1 = (Token)this.param.get(this.word);
+      localObject1 = (Token)this.jdField_param_of_type_JavaUtilTreeMap.get(this.word);
       if (localObject1 != null) {
         if (localActorSpawn == null) {
           ERR_HARD("class of actor NOT present");
@@ -175,15 +175,15 @@ public class CmdActorSpawn extends Cmd
 
   public CmdActorSpawn()
   {
-    this.param.put("NAME", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NAME", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.name = getStr(); CmdActorSpawn.access$302(CmdActorSpawn.this, true);
       }
     });
-    this.param.put("OVR", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("OVR", new Token() {
       public void parse() { getStr(); CmdActorSpawn.access$402(CmdActorSpawn.this, true);
       }
     });
-    this.param.put("ARMY", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ARMY", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.armyExist = true;
         String str = getStr();
         try { CmdActorSpawn.this.sarg.army = Integer.parseInt(str);
@@ -193,7 +193,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("POSP", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("POSP", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.point = CmdActorSpawn.this.P;
         CmdActorSpawn.this.sarg.point.set(0.0D, 0.0D, 0.0D);
@@ -211,7 +211,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("POSO", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("POSO", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.orient = CmdActorSpawn.this.O;
         CmdActorSpawn.this.sarg.orient.set(0.0F, 0.0F, 0.0F);
@@ -230,7 +230,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("BASED", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BASED", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.access$802(CmdActorSpawn.this, Actor.getByName(str));
         if (CmdActorSpawn.this.basedActor == null) {
@@ -239,7 +239,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("BASE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BASE", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.baseActor = Actor.getByName(str);
         if (CmdActorSpawn.this.sarg.baseActor == null) {
@@ -248,11 +248,11 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("HOOK", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HOOK", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.hookName = getStr();
       }
     });
-    this.param.put("OWNER", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("OWNER", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.ownerActor = Actor.getByName(str);
         if (CmdActorSpawn.this.sarg.ownerActor == null) {
@@ -261,23 +261,23 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("ICON", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ICON", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.iconName = getStr();
       }
     });
-    this.param.put("MESH", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("MESH", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.meshName = getStr();
       }
     });
-    this.param.put("MAT", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("MAT", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.matName = getStr();
       }
     });
-    this.param.put("PARAMFILE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PARAMFILE", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.paramFileName = getStr();
       }
     });
-    this.param.put("SIZE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SIZE", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.sizeExist = true;
         String str = getStr();
         try { CmdActorSpawn.this.sarg.size = Float.parseFloat(str);
@@ -287,7 +287,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("TIMELEN", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TIMELEN", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.timeLenExist = true;
         String str = getStr();
         try { CmdActorSpawn.this.sarg.timeLen = Float.parseFloat(str);
@@ -297,7 +297,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("TIMENATIVE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TIMENATIVE", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.timeNativeExist = true;
         String str = getStr();
         try { CmdActorSpawn.this.sarg.timeNative = (Integer.parseInt(str) != 0);
@@ -307,7 +307,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("TYPE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TYPE", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.typeExist = true;
         String str = getStr();
         try { CmdActorSpawn.this.sarg.type = Integer.parseInt(str);
@@ -317,27 +317,27 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("PATH", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PATH", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.path = getStr();
       }
     });
-    this.param.put("TARGET", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TARGET", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.target = getStr();
       }
     });
-    this.param.put("ACOUSTIC", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ACOUSTIC", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.acoustic = getStr();
       }
     });
-    this.param.put("SOUND", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SOUND", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.sound = getStr();
       }
     });
-    this.param.put("PRELOAD", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PRELOAD", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.preload = getStr();
       }
     });
-    this.param.put("COLOR", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("COLOR", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.color3f = CmdActorSpawn.this.color3f;
         CmdActorSpawn.this.color3f.set(1.0F, 1.0F, 1.0F);
@@ -355,7 +355,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("LIGHT", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LIGHT", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.light = CmdActorSpawn.this.light;
         CmdActorSpawn.this.sarg.light[0] = 1.0F; CmdActorSpawn.this.sarg.light[1] = 10.0F;
@@ -372,7 +372,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("Z0", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("Z0", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.Z0Exist = true;
         String str = getStr();
         try { CmdActorSpawn.this.sarg.Z0 = Float.parseFloat(str);
@@ -382,11 +382,11 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("FM", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FM", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.FM = getStr();
       }
     });
-    this.param.put("FM_Type", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FM_Type", new Token() {
       public void parse() { String str = getStr();
         try {
           CmdActorSpawn.this.sarg.FM_Type = Integer.parseInt(str);
@@ -396,11 +396,11 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("WEAPONS", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("WEAPONS", new Token() {
       public void parse() { CmdActorSpawn.this.sarg.weapons = getStr();
       }
     });
-    this.param.put("FUEL", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FUEL", new Token() {
       public void parse() { String str = getStr();
         try {
           CmdActorSpawn.this.sarg.fuel = (Float.parseFloat(str) / 100.0F);
@@ -413,7 +413,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("SPEED", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SPEED", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.speed = CmdActorSpawn.this.speed3d;
         CmdActorSpawn.this.speed3d.set(0.0D, 0.0D, -1.0D);
@@ -431,7 +431,7 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("SKILL", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SKILL", new Token() {
       public void parse() { String str = getStr();
         try { CmdActorSpawn.this.sarg.skill = Integer.parseInt(str);
         } catch (Exception localException) {
@@ -440,17 +440,17 @@ public class CmdActorSpawn extends Cmd
         }
       }
     });
-    this.param.put("PLAYER", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PLAYER", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.bPlayer = true;
       }
     });
-    this.param.put("NUMBEROFF", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NUMBEROFF", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.bNumberOn = false;
       }
     });
-    this.param.put("BORNPLACE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BORNPLACE", new Token() {
       public void parse() { String str = getStr();
         try { CmdActorSpawn.this.sarg.bornPlace = Integer.parseInt(str);
         } catch (Exception localException) {
@@ -460,7 +460,7 @@ public class CmdActorSpawn extends Cmd
         CmdActorSpawn.this.sarg.bornPlaceExist = true;
       }
     });
-    this.param.put("STAYPLACE", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("STAYPLACE", new Token() {
       public void parse() { String str = getStr();
         try { CmdActorSpawn.this.sarg.stayPlace = Integer.parseInt(str);
         } catch (Exception localException) {
@@ -470,7 +470,7 @@ public class CmdActorSpawn extends Cmd
         CmdActorSpawn.this.sarg.stayPlaceExist = true;
       }
     });
-    this.param.put("RAWDATA", new Token() {
+    this.jdField_param_of_type_JavaUtilTreeMap.put("RAWDATA", new Token() {
       public void parse() { String str = getStr();
         CmdActorSpawn.this.sarg.rawData = str;
       }

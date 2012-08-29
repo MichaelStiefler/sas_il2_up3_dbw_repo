@@ -91,7 +91,7 @@ public class BitStream extends MixBase
       while (localIterator.hasNext()) {
         BitStream localBitStream = (BitStream)localIterator.next();
         int i = localBitStream.bitlen();
-        if (i > j) j = i;
+        if (i <= j) continue; j = i;
       }
       this.bdt.maxlen = j;
       this.bdt.rdflag = false;
@@ -124,13 +124,13 @@ public class BitStream extends MixBase
     for (int j = 0; j < paramInt2; j++) {
       if ((paramInt1 & 1 << j) != 0)
       {
-        int tmp58_57 = (this.bdt.wp >>> 3);
-        byte[] tmp58_46 = this.bdt.data; tmp58_46[tmp58_57] = (byte)(tmp58_46[tmp58_57] | 1 << (this.bdt.wp & 0x7));
+        int tmp55_54 = (this.bdt.wp >>> 3);
+        byte[] tmp55_43 = this.bdt.data; tmp55_43[tmp55_54] = (byte)(tmp55_43[tmp55_54] | 1 << (this.bdt.wp & 0x7));
       }
       else
       {
-        int tmp94_93 = (this.bdt.wp >>> 3);
-        byte[] tmp94_82 = this.bdt.data; tmp94_82[tmp94_93] = (byte)(tmp94_82[tmp94_93] & (1 << (this.bdt.wp & 0x7) ^ 0xFFFFFFFF));
+        int tmp91_90 = (this.bdt.wp >>> 3);
+        byte[] tmp91_79 = this.bdt.data; tmp91_79[tmp91_90] = (byte)(tmp91_79[tmp91_90] & (1 << (this.bdt.wp & 0x7) ^ 0xFFFFFFFF));
       }
       this.bdt.wp = (this.bdt.wp + 1 & this.bdt.size - 1);
     }
@@ -155,13 +155,13 @@ public class BitStream extends MixBase
       this.rp = (this.rp - 1 & this.bdt.size - 1);
       if ((paramInt1 & 1 << i) != 0)
       {
-        int tmp76_75 = (this.rp >>> 3);
-        byte[] tmp76_67 = this.bdt.data; tmp76_67[tmp76_75] = (byte)(tmp76_67[tmp76_75] | 1 << (this.rp & 0x7));
+        int tmp75_74 = (this.rp >>> 3);
+        byte[] tmp75_66 = this.bdt.data; tmp75_66[tmp75_74] = (byte)(tmp75_66[tmp75_74] | 1 << (this.rp & 0x7));
       }
       else
       {
-        int tmp106_105 = (this.rp >>> 3);
-        byte[] tmp106_97 = this.bdt.data; tmp106_97[tmp106_105] = (byte)(tmp106_97[tmp106_105] & (1 << (this.rp & 0x7) ^ 0xFFFFFFFF));
+        int tmp105_104 = (this.rp >>> 3);
+        byte[] tmp105_96 = this.bdt.data; tmp105_96[tmp105_104] = (byte)(tmp105_96[tmp105_104] & (1 << (this.rp & 0x7) ^ 0xFFFFFFFF));
       }
     }
     this.bdt.maxlen += paramInt2;

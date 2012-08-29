@@ -49,9 +49,9 @@ public abstract class Wagon extends ActorHMesh
   private String meshLive;
   private String meshDead;
   protected byte crushSeed;
-  protected float life = 0.017F;
-  protected float ignoreTNT = 0.35F;
-  protected float killTNT = 1.9F;
+  protected float life = 0.01F;
+  protected float ignoreTNT = 0.2F;
+  protected float killTNT = 1.2F;
   protected int bodyMaterial = 2;
 
   private static float[] tmp_atk = new float[3];
@@ -183,7 +183,7 @@ public abstract class Wagon extends ActorHMesh
 
     paramPoint3d.x += tmp_rnd.nextDouble(-0.8D, 0.8D);
     paramPoint3d.y += tmp_rnd.nextDouble(-0.9D, 0.9D);
-    paramPoint3d.z += tmp_rnd.nextDouble(-0.25D, 0.0D);
+    paramPoint3d.jdField_z_of_type_Double += tmp_rnd.nextDouble(-0.25D, 0.0D);
   }
 
   void place(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean1, boolean paramBoolean2)
@@ -195,7 +195,7 @@ public abstract class Wagon extends ActorHMesh
     Orient localOrient = new Orient();
     Point3d localPoint3d = new Point3d();
     localPoint3d.interpolate(paramPoint3d1, paramPoint3d2, this.hook1 / (this.hook1 - this.hook2));
-    localPoint3d.z += this.heightAboveLandSurface;
+    localPoint3d.jdField_z_of_type_Double += this.heightAboveLandSurface;
     Vector3d localVector3d = new Vector3d();
     localVector3d.sub(paramPoint3d1, paramPoint3d2);
     localOrient.setAT0(localVector3d);
@@ -204,10 +204,10 @@ public abstract class Wagon extends ActorHMesh
       changePoseAsCrushed(localPoint3d, localOrient);
     }
 
-    this.pos.setAbs(localPoint3d, localOrient);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d, localOrient);
 
     if (paramBoolean1)
-      this.pos.reset();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
@@ -282,9 +282,6 @@ public abstract class Wagon extends ActorHMesh
 
   public void msgShot(Shot paramShot)
   {
-    if ((paramShot.chunkName.startsWith("Armor")) && (paramShot.power <= 20450.0F)) {
-      return;
-    }
     paramShot.bodyMaterial = this.bodyMaterial;
 
     if (IsDamaged()) {
@@ -341,23 +338,16 @@ public abstract class Wagon extends ActorHMesh
   {
     new MsgAction(0.0D, this) {
       public void doAction(Object paramObject) { Wagon localWagon = (Wagon)paramObject;
-        try
-        {
-          Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/WagonFC.eff", 60.0F);
-        }
-        catch (ActorException localActorException)
-        {
-          Eff3DActor.New(localWagon, new HookNamed(localWagon, "Select1"), null, 1.0F, "Effects/Smokes/WagonFC.eff", 60.0F);
-        }
+        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Select1"), null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", 10.0F);
       }
     };
-    new MsgAction(2.5D) {
+    new MsgAction(4.0D) {
       public void doAction() { Point3d localPoint3d = new Point3d();
         Wagon.this.pos.getAbs(localPoint3d);
         Explosions.ExplodeVagonArmor(localPoint3d, localPoint3d, 2.0F);
       }
     };
-    new MsgAction(4.5D, new Pair(this, paramActor)) {
+    new MsgAction(5.5D, new Pair(this, paramActor)) {
       public void doAction(Object paramObject) {
         Actor localActor = Wagon.this.getOwner();
         if (localActor != null) {
@@ -478,9 +468,9 @@ public abstract class Wagon extends ActorHMesh
     int i = Mission.cur().getUnitNetIdRemote(this);
     NetChannel localNetChannel = Mission.cur().getNetMasterChannel();
     if (localNetChannel == null)
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     else if (i != 0)
-      this.net = new Mirror(this, localNetChannel, i);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, localNetChannel, i);
   }
 
   private void send_DeathCommand(Actor paramActor)
@@ -493,8 +483,8 @@ public abstract class Wagon extends ActorHMesh
     try {
       localNetMsgGuaranted.writeByte(68);
 
-      localNetMsgGuaranted.writeNetObj(paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -506,7 +496,7 @@ public abstract class Wagon extends ActorHMesh
     if (!isNetMaster()) {
       return;
     }
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
     if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
@@ -520,10 +510,10 @@ public abstract class Wagon extends ActorHMesh
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(84);
         this.outCommand.writeByte(paramInt1);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt2);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException1) {
         System.out.println(localException1.getMessage());
         localException1.printStackTrace();
@@ -534,10 +524,10 @@ public abstract class Wagon extends ActorHMesh
         this.outCommand.writeByte(70);
         this.outCommand.writeByte(paramInt1);
         this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt2);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException2) {
         System.out.println(localException2.getMessage());
         localException2.printStackTrace();
@@ -550,15 +540,15 @@ public abstract class Wagon extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -605,7 +595,7 @@ public abstract class Wagon extends ActorHMesh
       localNetMsgGuaranted.writeFloat(this.life);
     }
 
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public class MyMsgAction extends MsgAction

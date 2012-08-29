@@ -85,16 +85,16 @@ public abstract class MGunAntiAirGeneric extends CannonMidrangeGeneric
   private float straightTravelTime(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
     float f = (float)paramPoint3d1.distance(paramPoint3d2);
-    if ((f < this.prop.aimMinDist) || (f > this.prop.aimMaxDist)) {
+    if ((f < this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMinDist) || (f > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMaxDist)) {
       return -1.0F;
     }
-    return f / this.prop.bullet[0].speed;
+    return f / this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[0].speed;
   }
 
   private boolean straightFireDirection(Point3d paramPoint3d1, Point3d paramPoint3d2, Vector3d paramVector3d)
   {
     float f = (float)paramPoint3d1.distance(paramPoint3d2);
-    if ((f < this.prop.aimMinDist) || (f > this.prop.aimMaxDist)) {
+    if ((f < this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMinDist) || (f > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.aimMaxDist)) {
       return false;
     }
     paramVector3d.set(paramPoint3d2);
@@ -106,11 +106,11 @@ public abstract class MGunAntiAirGeneric extends CannonMidrangeGeneric
   public float TravelTime(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
     float f = super.TravelTime(paramPoint3d1, paramPoint3d2);
-    if (this.bulletTypeIdx > 0) {
+    if (this.jdField_bulletTypeIdx_of_type_Int > 0) {
       return f;
     }
 
-    if (f > this.prop.bullet[0].timeLife + this.prop.bullet[0].addExplTime) {
+    if (f > this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[0].timeLife + this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[0].addExplTime) {
       return -1.0F;
     }
     return f;
@@ -130,8 +130,8 @@ public abstract class MGunAntiAirGeneric extends CannonMidrangeGeneric
   {
     this.explAddTimeT = 0L;
 
-    if (this.bulletTypeIdx == 0) {
-      float f = this.prop.bullet[0].addExplTime;
+    if (this.jdField_bulletTypeIdx_of_type_Int == 0) {
+      float f = this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[0].addExplTime;
       if (f > 0.0F) {
         this.explAddTimeT = SecsToTicks(Rnd(-f, f));
         if (this.explAddTimeT == 0L) {

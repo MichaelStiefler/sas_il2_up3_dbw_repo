@@ -54,7 +54,7 @@ public class LA_7R extends LA_X
     if (!Config.isUSE_RENDER()) return;
     super.moveFan(paramFloat);
     if (isNetMirror()) {
-      if (this.FM.EI.engines[1].getStage() == 6) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6) {
         Eff3DActor.setIntesity(this.flame, 1.0F);
         Eff3DActor.setIntesity(this.dust, 1.0F);
         Eff3DActor.setIntesity(this.trail, 1.0F);
@@ -66,7 +66,7 @@ public class LA_7R extends LA_X
         Eff3DActor.setIntesity(this.sprite, 0.0F);
       }
     }
-    else if ((this.bHasEngine) && (this.FM.EI.engines[1].getControlThrottle() > 0.0F) && (this.FM.EI.engines[1].getStage() == 6)) {
+    else if ((this.bHasEngine) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getControlThrottle() > 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6)) {
       Eff3DActor.setIntesity(this.flame, 1.0F);
       Eff3DActor.setIntesity(this.dust, 1.0F);
       Eff3DActor.setIntesity(this.trail, 1.0F);
@@ -84,8 +84,8 @@ public class LA_7R extends LA_X
     switch (paramInt1) {
     case 19:
       this.bHasEngine = false;
-      this.FM.AS.setEngineDies(this, 1);
-      return cut(partNames()[paramInt1]);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AS.setEngineDies(this, 1);
+      return cut(Aircraft.partNames()[paramInt1]);
     case 3:
     case 4:
       return false;
@@ -99,19 +99,19 @@ public class LA_7R extends LA_X
     if (isNetMirror()) return;
 
     this.bPowR = (this == World.getPlayerAircraft());
-    if ((this.FM.getAltitude() - Engine.land().HQ(this.FM.Loc.x, this.FM.Loc.y) > 5.0D) && (this.FM.M.fuel > 0.0F)) {
-      if ((this.FM.EI.engines[1].getControlThrottle() > (this.bPowR ? 0.4120879F : 0.77F)) && (this.FM.EI.engines[1].getStage() == 0) && (this.FM.M.nitro > 0.0F)) {
-        this.FM.EI.engines[1].setStage(this, 6);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() - Engine.land().HQ(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.x, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.y) > 5.0D) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel > 0.0F)) {
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getControlThrottle() > (this.bPowR ? 0.4120879F : 0.77F)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 0) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.nitro > 0.0F)) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].setStage(this, 6);
 
         if (this.bPowR) {
-          HUD.log("EngineI" + (this.FM.EI.engines[1].getStage() == 6 ? '1' : '0'));
+          HUD.log("EngineI" + (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6 ? '1' : '0'));
         }
       }
-      if ((this.FM.EI.engines[1].getControlThrottle() < (this.bPowR ? 0.4120879F : 0.77F)) && (this.FM.EI.engines[1].getStage() > 0)) {
-        this.FM.EI.engines[1].setEngineStops(this);
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getControlThrottle() < (this.bPowR ? 0.4120879F : 0.77F)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() > 0)) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].setEngineStops(this);
 
         if (this.bPowR)
-          HUD.log("EngineI" + (this.FM.EI.engines[1].getStage() == 6 ? '1' : '0'));
+          HUD.log("EngineI" + (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6 ? '1' : '0'));
       }
     }
   }
@@ -132,17 +132,17 @@ public class LA_7R extends LA_X
     Property.set(localClass, "cockpitClass", CockpitLA_7R.class);
     Property.set(localClass, "LOSElevation", 0.92F);
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1, 3, 3, 9, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunB20s 200", "MGunB20s 200", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunB20s 200", "MGunB20s 200", null, null, null, null });
 
-    weaponsRegister(localClass, "2xFAB50", new String[] { "MGunB20s 200", "MGunB20s 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2xFAB50", new String[] { "MGunB20s 200", "MGunB20s 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
 
-    weaponsRegister(localClass, "2xFAB100", new String[] { "MGunB20s 200", "MGunB20s 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
+    Aircraft.weaponsRegister(localClass, "2xFAB100", new String[] { "MGunB20s 200", "MGunB20s 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
 
-    weaponsRegister(localClass, "2xDROPTANK", new String[] { "MGunB20s 200", "MGunB20s 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
+    Aircraft.weaponsRegister(localClass, "2xDROPTANK", new String[] { "MGunB20s 200", "MGunB20s 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

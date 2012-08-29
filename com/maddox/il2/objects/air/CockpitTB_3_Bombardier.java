@@ -96,7 +96,7 @@ public class CockpitTB_3_Bombardier extends CockpitPilot
     super("3DO/Cockpit/TB-3-Bombardier/hier.him", "he111");
     try {
       Loc localLoc = new Loc();
-      HookNamed localHookNamed = new HookNamed(this.mesh, "CAMERAAIM");
+      HookNamed localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERAAIM");
       localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
       this.aAim = localLoc.getOrient().getAzimut();
       this.tAim = localLoc.getOrient().getTangage();
@@ -112,8 +112,8 @@ public class CockpitTB_3_Bombardier extends CockpitPilot
 
   public void toggleLight()
   {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl)
+    this.jdField_cockpitLightControl_of_type_Boolean = (!this.jdField_cockpitLightControl_of_type_Boolean);
+    if (this.jdField_cockpitLightControl_of_type_Boolean)
       setNightMats(true);
     else
       setNightMats(false);
@@ -121,42 +121,42 @@ public class CockpitTB_3_Bombardier extends CockpitPilot
 
   public void reflectCockpitState()
   {
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0) {
-      this.mesh.chunkVisible("HullDamage1", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x10) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("HullDamage1", false);
     }
-    if ((this.fm.AS.astateCockpitState & 0x20) != 0) {
-      this.mesh.chunkVisible("HullDamage2", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x20) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("HullDamage2", false);
     }
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
-      this.mesh.chunkVisible("HullDamage3", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x4) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("HullDamage3", false);
     }
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0) {
-      this.mesh.chunkVisible("HullDamage4", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x8) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("HullDamage4", false);
     }
-    if ((this.fm.AS.astateCockpitState & 0x1) != 0) {
-      this.mesh.chunkVisible("XGlassDamage1", false);
-      this.mesh.chunkVisible("XGlassDamage2", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x1) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage2", false);
     }
-    if ((this.fm.AS.astateCockpitState & 0x2) != 0)
-      this.mesh.chunkVisible("XGlassDamage3", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x2) != 0)
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage3", false);
   }
 
   public void reflectWorldToInstruments(float paramFloat)
   {
     if (this.bEntered) {
-      this.mesh.chunkVisible("BlackBox", true);
-      this.mesh.chunkVisible("zReticle", true);
-      this.mesh.chunkVisible("zScaleCurve", true);
-      this.mesh.chunkVisible("zScaleM", true);
-      this.mesh.chunkVisible("zScaleKM", true);
-      this.mesh.chunkVisible("zScaleKMH", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("BlackBox", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zReticle", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleCurve", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleM", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleKM", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleKMH", true);
     } else {
-      this.mesh.chunkVisible("BlackBox", false);
-      this.mesh.chunkVisible("zReticle", false);
-      this.mesh.chunkVisible("zScaleCurve", false);
-      this.mesh.chunkVisible("zScaleM", false);
-      this.mesh.chunkVisible("zScaleKM", false);
-      this.mesh.chunkVisible("zScaleKMH", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("BlackBox", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zReticle", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleCurve", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleM", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleKM", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zScaleKMH", false);
     }
   }
 
@@ -178,20 +178,20 @@ public class CockpitTB_3_Bombardier extends CockpitPilot
       float f2 = ((TB_3_4M_17)CockpitTB_3_Bombardier.this.aircraft()).fSightCurAltitude;
       CockpitTB_3_Bombardier.access$002(CockpitTB_3_Bombardier.this, (19.0F * CockpitTB_3_Bombardier.this.curAlt + f2) / 20.0F);
       CockpitTB_3_Bombardier.access$102(CockpitTB_3_Bombardier.this, (19.0F * CockpitTB_3_Bombardier.this.curSpd + f1) / 20.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("zScaleKM", 0.04F * CockpitTB_3_Bombardier.this.curAlt, 0.0F, 0.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("zScaleM", 0.36F * CockpitTB_3_Bombardier.this.curAlt, 0.0F, 0.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("zScaleKMH", -0.8F * (CockpitTB_3_Bombardier.this.curSpd - 50.0F), 0.0F, 0.0F);
+      CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zScaleKM", 0.04F * CockpitTB_3_Bombardier.this.curAlt, 0.0F, 0.0F);
+      CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zScaleM", 0.36F * CockpitTB_3_Bombardier.this.curAlt, 0.0F, 0.0F);
+      CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zScaleKMH", -0.8F * (CockpitTB_3_Bombardier.this.curSpd - 50.0F), 0.0F, 0.0F);
       float f3 = 0.5F * (float)Math.tan(Math.atan(83.333335876464844D * Math.sqrt(2.0F * CockpitTB_3_Bombardier.this.curAlt / Atmosphere.g()) / CockpitTB_3_Bombardier.this.curAlt));
       float f4 = (float)Math.tan(Math.atan(CockpitTB_3_Bombardier.this.curSpd / 3.6F * Math.sqrt(2.0F * CockpitTB_3_Bombardier.this.curAlt / Atmosphere.g()) / CockpitTB_3_Bombardier.this.curAlt));
       Cockpit.xyz[0] = (-0.0005F * CockpitTB_3_Bombardier.access$000(CockpitTB_3_Bombardier.this));
       Cockpit.xyz[1] = (-1.0F * (f3 - f4));
 
-      CockpitTB_3_Bombardier.this.mesh.chunkSetLocate("zScaleCurve", Cockpit.xyz, Cockpit.ypr);
-      if (Math.abs(CockpitTB_3_Bombardier.this.fm.Or.getKren()) < 30.0D) {
-        CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_Compass1", 0.0F, -CockpitTB_3_Bombardier.this.fm.Or.getYaw(), 0.0F);
+      CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("zScaleCurve", Cockpit.xyz, Cockpit.ypr);
+      if (Math.abs(CockpitTB_3_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren()) < 30.0D) {
+        CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Compass1", 0.0F, -CockpitTB_3_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getYaw(), 0.0F);
       }
-      if (Math.abs(CockpitTB_3_Bombardier.this.fm.Or.getKren()) > 3.5D) {
-        CockpitTB_3_Bombardier.access$224(CockpitTB_3_Bombardier.this, 0.0004F * CockpitTB_3_Bombardier.this.fm.Or.getKren());
+      if (Math.abs(CockpitTB_3_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren()) > 3.5D) {
+        CockpitTB_3_Bombardier.access$224(CockpitTB_3_Bombardier.this, 0.0004F * CockpitTB_3_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren());
         if (CockpitTB_3_Bombardier.this.pencilDisp > 0.1725F) {
           CockpitTB_3_Bombardier.access$202(CockpitTB_3_Bombardier.this, 0.1725F);
         }
@@ -200,12 +200,12 @@ public class CockpitTB_3_Bombardier extends CockpitPilot
         }
         Cockpit.xyz[0] = 0.0F;
         Cockpit.xyz[1] = CockpitTB_3_Bombardier.access$200(CockpitTB_3_Bombardier.this);
-        CockpitTB_3_Bombardier.this.mesh.chunkSetLocate("Z_Pencil1", Cockpit.xyz, Cockpit.ypr);
-        CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_Pencilrot1", 0.0F, 11459.156F * CockpitTB_3_Bombardier.this.pencilDisp, 0.0F);
+        CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("Z_Pencil1", Cockpit.xyz, Cockpit.ypr);
+        CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Pencilrot1", 0.0F, 11459.156F * CockpitTB_3_Bombardier.this.pencilDisp, 0.0F);
       }
 
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_ANO1", 0.0F, CockpitTB_3_Bombardier.this.fm.AS.bNavLightsOn ? -50.0F : 0.0F, 0.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_CockpLight1", 0.0F, CockpitTB_3_Bombardier.this.cockpitLightControl ? -50.0F : 0.0F, 0.0F);
+      CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_ANO1", 0.0F, CockpitTB_3_Bombardier.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.AS.bNavLightsOn ? -50.0F : 0.0F, 0.0F);
+      CockpitTB_3_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_CockpLight1", 0.0F, CockpitTB_3_Bombardier.this.cockpitLightControl ? -50.0F : 0.0F, 0.0F);
       return true;
     }
   }

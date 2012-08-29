@@ -33,7 +33,7 @@ public class GUIInfoTop extends GWindowDialogClient
 
   public void render() {
     setCanvasColorWHITE();
-    lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, bevel, texture);
+    lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, bevel, texture);
   }
 
   public void setPosSize() {

@@ -20,8 +20,8 @@ public class ActorFrontMarker extends Actor
   public void align()
   {
     alignPosToLand(0.0D, true);
-    this.m.x = this.pos.getAbsPoint().x;
-    this.m.y = this.pos.getAbsPoint().y;
+    this.m.x = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().x;
+    this.m.y = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().y;
   }
 
   public Object getSwitchListener(Message paramMessage) {
@@ -45,10 +45,10 @@ public class ActorFrontMarker extends Actor
     this.m.army = paramInt;
     this.m._armyMask = (1 << paramInt - 1);
     this.flags |= 8192;
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
     IconDraw.create(this);
     if (paramPoint3d != null) {
-      this.pos.setAbs(paramPoint3d);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
       align();
     }
     this.icon = IconDraw.get("icons/front0.mat");

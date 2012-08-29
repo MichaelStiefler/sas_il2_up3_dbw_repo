@@ -67,7 +67,7 @@ public class Selector
     camera = paramCamera3D;
     excludeActor = paramActor;
     maxdist = MAXDIST;
-    camP = camera.pos.getAbsPoint();
+    camP = camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
 
     if (i != 0) paramBoolean3 = false;
     if (currentActor == null) paramBoolean3 = false;
@@ -85,8 +85,8 @@ public class Selector
         localObject2 = Engine.targets();
         k = ((List)localObject2).size();
         for (int m = 0; m < k; m++) {
-          Actor localActor1 = (Actor)((List)localObject2).get(m);
-          if ((isUse(localActor1, false)) && (!tree.contains(localActor1))) {
+          Actor localActor2 = (Actor)((List)localObject2).get(m);
+          if ((isUse(localActor2, false)) && (!tree.contains(localActor2))) {
             paramBoolean3 = false;
             break;
           }
@@ -107,41 +107,41 @@ public class Selector
     tree.clear();
 
     if (bDirected) {
-      Vc.set(1.0D, 0.0D, 0.0D); camera.pos.getAbsOrient().transform(Vc);
+      Vc.set(1.0D, 0.0D, 0.0D); camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().transform(Vc);
       FOVc = camera.FOV() / 2.0F;
     }
     Object localObject1 = Engine.targets();
     int j = ((List)localObject1).size();
     for (int k = 0; k < j; k++) {
-      localObject3 = (Actor)((List)localObject1).get(k);
-      if (isUse((Actor)localObject3, false)) {
+      Actor localActor1 = (Actor)((List)localObject1).get(k);
+      if (isUse(localActor1, false)) {
         if (bDirected) {
-          Ve.sub(((Actor)localObject3).pos.getAbsPoint(), camP); Ve.normalize();
+          Ve.sub(localActor1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), camP); Ve.normalize();
           double d = Vc.dot(Ve);
-          Property.set(localObject3, "SelectorLookKey", 1.0D - d);
+          Property.set(localActor1, "SelectorLookKey", 1.0D - d);
         } else {
-          Property.set(localObject3, "SelectorLookKey", _useDistance);
+          Property.set(localActor1, "SelectorLookKey", _useDistance);
         }
-        tree.add(localObject3);
+        tree.add(localActor1);
       }
     }
 
     currentActor = null;
 
-    k = tree.size();
-    if (k == 0) {
+    int n = tree.size();
+    if (n == 0) {
       return setCurRecordArg1(null);
     }
-    Object localObject3 = tree.iterator();
-    for (int n = 0; n < k; n++) {
-      Actor localActor2 = (Actor)((Iterator)localObject3).next();
-      if (isUse(localActor2, bDirected)) {
-        currentActor = localActor2;
+    Iterator localIterator = tree.iterator();
+    for (int i1 = 0; i1 < n; i1++) {
+      Actor localActor3 = (Actor)localIterator.next();
+      if (isUse(localActor3, bDirected)) {
+        currentActor = localActor3;
         break;
       }
     }
 
-    return (Actor)(Actor)(Actor)setCurRecordArg1(currentActor);
+    return (Actor)(Actor)setCurRecordArg1(currentActor);
   }
 
   public static Actor next(boolean paramBoolean) {
@@ -204,7 +204,7 @@ public class Selector
     if ((vArmy >= 0) && (vArmy == i)) return false;
     if ((viewArmy >= 0) && (viewArmy != i)) return false;
 
-    _useDistance = camP.distance(paramActor.pos.getAbsPoint());
+    _useDistance = camP.distance(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     if (_useDistance > maxdist) return false;
 
     if (!paramBoolean) return true;

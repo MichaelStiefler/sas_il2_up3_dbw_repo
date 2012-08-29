@@ -62,19 +62,20 @@ public abstract class ActorDraw
           localEntry = this.lightMap.nextEntry(localEntry);
         }
       }
-
-      while (localEntry != null) {
-        localLightPointActor = (LightPointActor)localEntry.getValue();
-        if (((localLightPointActor.light instanceof LightPoint)) && (!(localLightPointActor.light instanceof LightPointWorld))) {
-          localObject = localLightPointActor.light;
-          if ((((LightPoint)localObject).I > 0.0F) && (((LightPoint)localObject).R > 0.0F)) {
-            computeAbsPos(paramLoc, localLightPointActor.relPos);
-            ((LightPoint)localObject).setPos(absPos);
-            ((LightPoint)localObject).addToRender();
+      else
+        do {
+          localLightPointActor = (LightPointActor)localEntry.getValue();
+          if (((localLightPointActor.light instanceof LightPoint)) && (!(localLightPointActor.light instanceof LightPointWorld))) {
+            localObject = localLightPointActor.light;
+            if ((((LightPoint)localObject).I > 0.0F) && (((LightPoint)localObject).R > 0.0F)) {
+              computeAbsPos(paramLoc, localLightPointActor.relPos);
+              ((LightPoint)localObject).setPos(absPos);
+              ((LightPoint)localObject).addToRender();
+            }
           }
+          localEntry = this.lightMap.nextEntry(localEntry);
         }
-        localEntry = this.lightMap.nextEntry(localEntry);
-      }
+        while (localEntry != null);
     }
   }
 
@@ -109,9 +110,9 @@ public abstract class ActorDraw
                 if ((i & 0x8) != 0) computeAheadUp(paramLoc.getOrient()); else
                   computeAhead(paramLoc.getOrient());
                 ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-                ((SoundFX)localObject).setOrientation((float)ahead.x, (float)ahead.y, (float)ahead.z);
+                ((SoundFX)localObject).setOrientation((float)ahead.jdField_x_of_type_Double, (float)ahead.jdField_y_of_type_Double, (float)ahead.jdField_z_of_type_Double);
                 if ((i & 0x8) != 0)
-                  ((SoundFX)localObject).setTop((float)up.x, (float)up.y, (float)up.z);
+                  ((SoundFX)localObject).setTop((float)up.jdField_x_of_type_Double, (float)up.jdField_y_of_type_Double, (float)up.jdField_z_of_type_Double);
               }
               else {
                 ((SoundFX)localObject).setPosition(paramLoc.getPoint());
@@ -122,14 +123,14 @@ public abstract class ActorDraw
                 if ((i & 0x8) != 0) computeAheadUp(paramLoc.getOrient()); else
                   computeAhead(paramLoc.getOrient());
                 ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-                ((SoundFX)localObject).setVelocity((float)vspeed.x, (float)vspeed.y, (float)vspeed.z);
-                ((SoundFX)localObject).setOrientation((float)ahead.x, (float)ahead.y, (float)ahead.z);
+                ((SoundFX)localObject).setVelocity((float)vspeed.jdField_x_of_type_Double, (float)vspeed.jdField_y_of_type_Double, (float)vspeed.jdField_z_of_type_Double);
+                ((SoundFX)localObject).setOrientation((float)ahead.jdField_x_of_type_Double, (float)ahead.jdField_y_of_type_Double, (float)ahead.jdField_z_of_type_Double);
                 if ((i & 0x8) != 0)
-                  ((SoundFX)localObject).setTop((float)up.x, (float)up.y, (float)up.z);
+                  ((SoundFX)localObject).setTop((float)up.jdField_x_of_type_Double, (float)up.jdField_y_of_type_Double, (float)up.jdField_z_of_type_Double);
               }
               else {
                 ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-                ((SoundFX)localObject).setVelocity((float)vspeed.x, (float)vspeed.y, (float)vspeed.z);
+                ((SoundFX)localObject).setVelocity((float)vspeed.jdField_x_of_type_Double, (float)vspeed.jdField_y_of_type_Double, (float)vspeed.jdField_z_of_type_Double);
               }
             }
           }

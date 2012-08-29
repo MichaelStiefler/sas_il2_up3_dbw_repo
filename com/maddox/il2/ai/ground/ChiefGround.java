@@ -82,8 +82,8 @@ public class ChiefGround extends Chief
     return this;
   }
   private void SetPosition(Point3d paramPoint3d, float paramFloat) {
-    this.pos.getAbs(this.tmpp);
-    this.pos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.tmpp);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
     this.estim_speed.sub(paramPoint3d, this.tmpp);
     if (paramFloat <= 1.0E-004F)
       this.estim_speed.set(0.0D, 0.0D, 0.0D);
@@ -125,9 +125,9 @@ public class ChiefGround extends Chief
 
       this.minGrabSeg = (this.maxGrabSeg = -1);
 
-      this.pos = new ActorPosMove(this);
-      this.pos.setAbs(this.road.get(0).start);
-      this.pos.reset();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.road.get(0).start);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       this.posCountdown = 0;
       this.estim_speed = new Vector3d(0.0D, 0.0D, 0.0D);
 
@@ -213,10 +213,10 @@ public class ChiefGround extends Chief
       if (n <= k) continue; k = n;
     }
 
-    Point3d localPoint3d = new Point3d(((Actor)arrayOfObject[0]).pos.getAbsPoint());
-    double d = World.land().HQ(localPoint3d.x, localPoint3d.y);
-    if (localPoint3d.z < d) {
-      localPoint3d.z = d;
+    Point3d localPoint3d = new Point3d(((Actor)arrayOfObject[0]).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+    double d = World.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double);
+    if (localPoint3d.jdField_z_of_type_Double < d) {
+      localPoint3d.jdField_z_of_type_Double = d;
     }
 
     SetPosition(localPoint3d, 1.05F);
@@ -233,7 +233,7 @@ public class ChiefGround extends Chief
   {
     if (this.unitsPacked.size() > 0) ERR("advanced position when PACKED");
 
-    Point3d localPoint3d = this.pos.getAbsPoint();
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     double d1 = 999999.90000000002D;
     this.chiefSeg = this.minSeg;
     for (int i = this.minSeg; i <= this.maxSeg; i++) {
@@ -309,8 +309,8 @@ public class ChiefGround extends Chief
 
     this.groupSpeed = 100000.0F;
     this.maxSpace = -1.0F;
-    this.weaponsMask = 0;
-    this.hitbyMask = 0;
+    this.jdField_weaponsMask_of_type_Int = 0;
+    this.jdField_hitbyMask_of_type_Int = 0;
 
     for (int j = 0; j < i; j++) {
       UnitInPackedForm localUnitInPackedForm = (UnitInPackedForm)this.unitsPacked.get(j);
@@ -321,8 +321,8 @@ public class ChiefGround extends Chief
       f = localUnitInPackedForm.BEST_SPACE;
       if (f > this.maxSpace) this.maxSpace = f;
 
-      this.weaponsMask |= localUnitInPackedForm.WEAPONS_MASK;
-      this.hitbyMask |= localUnitInPackedForm.HITBY_MASK;
+      this.jdField_weaponsMask_of_type_Int |= localUnitInPackedForm.WEAPONS_MASK;
+      this.jdField_hitbyMask_of_type_Int |= localUnitInPackedForm.HITBY_MASK;
     }
 
     if ((this.groupSpeed < 0.001F) || (this.groupSpeed > 10000.0F)) {
@@ -344,8 +344,8 @@ public class ChiefGround extends Chief
     int i = arrayOfObject.length;
     this.groupSpeed = 10000.0F;
     this.maxSpace = -1.0F;
-    this.weaponsMask = 0;
-    this.hitbyMask = 0;
+    this.jdField_weaponsMask_of_type_Int = 0;
+    this.jdField_hitbyMask_of_type_Int = 0;
     this.withPreys = false;
     for (int j = 0; j < i; j++) {
       UnitInterface localUnitInterface = (UnitInterface)arrayOfObject[j];
@@ -354,9 +354,9 @@ public class ChiefGround extends Chief
       f = localUnitInterface.BestSpace();
       if (f > this.maxSpace) this.maxSpace = f;
       if ((localUnitInterface instanceof Predator))
-        this.weaponsMask |= ((Predator)localUnitInterface).WeaponsMask();
+        this.jdField_weaponsMask_of_type_Int |= ((Predator)localUnitInterface).WeaponsMask();
       if ((localUnitInterface instanceof Prey)) {
-        this.hitbyMask |= ((Prey)localUnitInterface).HitbyMask();
+        this.jdField_hitbyMask_of_type_Int |= ((Prey)localUnitInterface).HitbyMask();
         if (!(localUnitInterface instanceof Predator)) {
           this.withPreys = true;
         }
@@ -374,7 +374,7 @@ public class ChiefGround extends Chief
     float f1 = -1.0F;
     while (paramInt2-- > 0) {
       float f2 = ((UnitInterface)paramArrayList.get(paramInt1++)).BestSpace();
-      if (f2 > f1) f1 = f2;
+      if (f2 <= f1) continue; f1 = f2;
     }
     if (f1 <= 0.01F) {
       ERR("maxSpace is too small");
@@ -386,7 +386,7 @@ public class ChiefGround extends Chief
     float f1 = -1.0F;
     while (paramInt2-- > 0) {
       float f2 = ((UnitInterface)paramArrayOfObject[(paramInt1++)]).BestSpace();
-      if (f2 > f1) f1 = f2;
+      if (f2 <= f1) continue; f1 = f2;
     }
     if (f1 <= 0.01F) {
       ERR("maxSpace is too small");
@@ -446,8 +446,9 @@ public class ChiefGround extends Chief
 
     int i = arrayOfObject.length;
 
-    for (int j = 0; (j < i) && 
-      (paramActor1 != (Actor)arrayOfObject[j]); j++);
+    for (int j = 0; j < i; j++)
+      if (paramActor1 == (Actor)arrayOfObject[j])
+        break;
     if (j >= i) ERR("Detaching unknown unit");
 
     UnitInterface localUnitInterface1 = (UnitInterface)paramActor1;
@@ -591,7 +592,7 @@ public class ChiefGround extends Chief
 
     float f1 = (arrayOfObject.length - 1) * this.maxSpace;
 
-    double d1 = this.road.get(this.chiefSeg).computePosAlong_Fit(this.pos.getAbsPoint());
+    double d1 = this.road.get(this.chiefSeg).computePosAlong_Fit(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     RoadPart localRoadPart = new RoadPart();
     this.road.FindFreeSpace(f1, this.chiefSeg, d1, localRoadPart);
 
@@ -627,12 +628,13 @@ public class ChiefGround extends Chief
           d3 = 0.0D;
           if (!this.road.segIsWrongOrDamaged(i - 1)) {
             i--;
-            d3 = this.road.get(i).length2D - d4; continue;
+            d3 = this.road.get(i).length2D - d4;
           }
-
-          d3 = -1.0D;
+          else {
+            d3 = -1.0D;
+            break;
+          }
         }
-
         if (d3 < 0.0D)
           break;
       }
@@ -660,19 +662,19 @@ public class ChiefGround extends Chief
 
         Point3d localPoint3d = this.road.get(i).computePos_Fit(d3, localUnitData.sideOffset, localActor.collisionR());
 
-        localPoint3d.z += ((UnitInterface)localActor).HeightAboveLandSurface();
-        localActor.pos.setAbs(localPoint3d);
+        localPoint3d.jdField_z_of_type_Double += ((UnitInterface)localActor).HeightAboveLandSurface();
+        localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d);
 
         Vector3f localVector3f = new Vector3f();
         if (this.road.get(i).IsLandAligned())
-          Engine.land().N(localPoint3d.x, localPoint3d.y, localVector3f);
+          Engine.land().N(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localVector3f);
         else
           localVector3f.set(this.road.get(i).normal);
         Orient localOrient = new Orient();
         localOrient.setYPR(this.road.get(i).yaw, 0.0F, 0.0F);
         localOrient.orient(localVector3f);
-        localActor.pos.setAbs(localOrient);
-        localActor.pos.reset();
+        localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localOrient);
+        localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
         ((UnitInterface)arrayOfObject[j]).startMove();
 
@@ -728,8 +730,8 @@ public class ChiefGround extends Chief
       localUnitData.sideOffset = f;
     }
 
-    for (j = 0; j < paramArrayOfObject.length; j++)
-      ((UnitInterface)paramArrayOfObject[j]).forceReaskMove();
+    for (int k = 0; k < paramArrayOfObject.length; k++)
+      ((UnitInterface)paramArrayOfObject[k]).forceReaskMove();
   }
 
   private void reform(Object[] paramArrayOfObject, int[] paramArrayOfInt)
@@ -759,14 +761,14 @@ public class ChiefGround extends Chief
         return d > 0.0D ? 1 : d == 0.0D ? 0 : -1;
       }
     });
-    for (i = 0; i < localArrayList.size(); i++) {
-      UnitData localUnitData1 = ((UnitInterface)localArrayList.get(i)).GetUnitData();
+    for (int j = 0; j < localArrayList.size(); j++) {
+      UnitData localUnitData1 = ((UnitInterface)localArrayList.get(j)).GetUnitData();
       if (paramArrayOfInt[0] == 0) {
-        localUnitData1.leaderDist = (i / paramArrayOfInt[1]);
+        localUnitData1.leaderDist = (j / paramArrayOfInt[1]);
       } else {
-        j = i / (paramArrayOfInt[1] * 2 - 1);
-        j = i % (paramArrayOfInt[1] * 2 - 1) < paramArrayOfInt[1] - 1 ? j * 2 : j * 2 + 1;
-        localUnitData1.leaderDist = j;
+        int m = j / (paramArrayOfInt[1] * 2 - 1);
+        m = j % (paramArrayOfInt[1] * 2 - 1) < paramArrayOfInt[1] - 1 ? m * 2 : m * 2 + 1;
+        localUnitData1.leaderDist = m;
       }
 
     }
@@ -788,46 +790,46 @@ public class ChiefGround extends Chief
         return d2 > 0.0D ? 1 : d2 == 0.0D ? 0 : -1;
       }
     });
-    i = 0;
+    int k = 0;
     float f1 = 0.0F;
-    for (int j = 0; j < paramArrayOfInt[2]; j++) {
-      int k = paramArrayOfInt[1];
-      if (((j & 0x1) == 0) && (paramArrayOfInt[0] == 1)) k--;
-      int m = k;
-      if (i + m > localArrayList.size()) m = localArrayList.size() - i;
-      float f2 = computeMaxSpace(localArrayList, i, m);
+    for (int n = 0; n < paramArrayOfInt[2]; n++) {
+      int i1 = paramArrayOfInt[1];
+      if (((n & 0x1) == 0) && (paramArrayOfInt[0] == 1)) i1--;
+      int i2 = i1;
+      if (k + i2 > localArrayList.size()) i2 = localArrayList.size() - k;
+      float f2 = computeMaxSpace(localArrayList, k, i2);
       float f3 = 0.0F;
-      if (j > 0) f3 = Math.max(f1, f2);
+      if (n > 0) f3 = Math.max(f1, f2);
 
-      for (int n = 0; n < m; n++) {
-        UnitData localUnitData2 = ((UnitInterface)localArrayList.get(i)).GetUnitData();
+      for (int i3 = 0; i3 < i2; i3++) {
+        UnitData localUnitData2 = ((UnitInterface)localArrayList.get(k)).GetUnitData();
 
         localUnitData2.leaderDist = f3;
-        int i1;
-        if (i == 0) {
-          i1 = -1;
-        } else if (j == 0) {
-          i1 = 0;
+        int i4;
+        if (k == 0) {
+          i4 = -1;
+        } else if (n == 0) {
+          i4 = 0;
           localUnitData2.leaderDist = 0.0F;
         }
-        else if ((paramArrayOfInt[0] == 0) || ((j & 0x1) == 0) || (n > 0)) {
-          i1 = i - paramArrayOfInt[1];
+        else if ((paramArrayOfInt[0] == 0) || ((n & 0x1) == 0) || (i3 > 0)) {
+          i4 = k - paramArrayOfInt[1];
         } else {
-          i1 = i - paramArrayOfInt[1] + 1;
-        }localUnitData2.leader = (i1 < 0 ? null : (Actor)localArrayList.get(i1));
+          i4 = k - paramArrayOfInt[1] + 1;
+        }localUnitData2.leader = (i4 < 0 ? null : (Actor)localArrayList.get(i4));
         float f4 = paramArrayOfInt[0] == 0 ? f2 : this.maxSpace;
         float f5 = (paramArrayOfInt[1] - 1) * f4;
-        if ((paramArrayOfInt[0] == 1) && ((j & 0x1) == 0)) f5 -= f4;
-        localUnitData2.sideOffset = (-f5 / 2.0F + n * f4);
+        if ((paramArrayOfInt[0] == 1) && ((n & 0x1) == 0)) f5 -= f4;
+        localUnitData2.sideOffset = (-f5 / 2.0F + i3 * f4);
 
-        i++;
+        k++;
       }
-      if (i >= localArrayList.size()) break;
+      if (k >= localArrayList.size()) break;
       f1 = f2;
     }
 
-    for (i = 0; i < paramArrayOfObject.length; i++)
-      ((UnitInterface)paramArrayOfObject[i]).forceReaskMove();
+    for (k = 0; k < paramArrayOfObject.length; k++)
+      ((UnitInterface)paramArrayOfObject[k]).forceReaskMove();
   }
 
   private int[] FindBestFormation(int paramInt)
@@ -883,7 +885,7 @@ public class ChiefGround extends Chief
 
     Vector2d localVector2d2 = localChiefGround.road.get(localUnitInterface.GetUnitData().segmentIdx).dir2D;
 
-    int i = localVector2d1.x * localVector2d2.x + localVector2d1.y * localVector2d2.y < 0.0D ? 1 : 0;
+    int i = localVector2d1.jdField_x_of_type_Double * localVector2d2.jdField_x_of_type_Double + localVector2d1.jdField_y_of_type_Double * localVector2d2.jdField_y_of_type_Double < 0.0D ? 1 : 0;
 
     boolean bool = false;
     if (localChiefGround.waitTime < this.waitTime)
@@ -943,7 +945,7 @@ public class ChiefGround extends Chief
   }
 
   private static final float distance2D(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return (float)Math.sqrt((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y));
+    return (float)Math.sqrt((paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double));
   }
 
   private static boolean intersectLineCircle(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7)
@@ -966,9 +968,9 @@ public class ChiefGround extends Chief
 
   private static boolean intersectCircle(Point3d paramPoint3d1, double paramDouble1, Point3d paramPoint3d2, double paramDouble2, float paramFloat)
   {
-    float f1 = (float)(paramPoint3d2.x + paramDouble2 * Geom.cosDeg(paramFloat));
-    float f2 = (float)(paramPoint3d2.y + paramDouble2 * Geom.sinDeg(paramFloat));
-    return intersectLineCircle((float)paramPoint3d2.x, (float)paramPoint3d2.y, f1, f2, (float)paramPoint3d1.x, (float)paramPoint3d1.y, (float)paramDouble1);
+    float f1 = (float)(paramPoint3d2.jdField_x_of_type_Double + paramDouble2 * Geom.cosDeg(paramFloat));
+    float f2 = (float)(paramPoint3d2.jdField_y_of_type_Double + paramDouble2 * Geom.sinDeg(paramFloat));
+    return intersectLineCircle((float)paramPoint3d2.jdField_x_of_type_Double, (float)paramPoint3d2.jdField_y_of_type_Double, f1, f2, (float)paramPoint3d1.jdField_x_of_type_Double, (float)paramPoint3d1.jdField_y_of_type_Double, (float)paramDouble1);
   }
 
   private UnitMove createStay_UnitMove(float paramFloat, int paramInt)
@@ -1040,15 +1042,15 @@ public class ChiefGround extends Chief
     UnitInterface localUnitInterface = (UnitInterface)paramActor;
     UnitData localUnitData1 = localUnitInterface.GetUnitData();
 
-    int i = (paramPoint3d != null) && (paramPoint3d.z < 0.0D) ? 1 : 0;
-    int j = (paramPoint3d != null) && (paramPoint3d.z > 0.0D) ? 1 : 0;
+    int i = (paramPoint3d != null) && (paramPoint3d.jdField_z_of_type_Double < 0.0D) ? 1 : 0;
+    int j = (paramPoint3d != null) && (paramPoint3d.jdField_z_of_type_Double > 0.0D) ? 1 : 0;
 
     if (((this.curState == 2) || (this.curState == 3)) && (j != 0)) {
       j = 0;
     }
 
     RoadSegment localRoadSegment1 = this.road.get(localUnitData1.segmentIdx);
-    Point3d localPoint3d1 = new Point3d(paramActor.pos.getAbsPoint());
+    Point3d localPoint3d1 = new Point3d(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     int k;
     double d5;
     if (i != 0)
@@ -1109,7 +1111,7 @@ public class ChiefGround extends Chief
       k = 0;
       UnitMove localUnitMove = null;
 
-      while (localRoadSegment1.computePosAlong(paramActor.pos.getAbsPoint()) >= localRoadSegment1.length2D - 1.0D)
+      while (localRoadSegment1.computePosAlong(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint()) >= localRoadSegment1.length2D - 1.0D)
       {
         if (cantEnterIntoSegment_checkComplete(localUnitData1.segmentIdx + 1))
         {
@@ -1134,8 +1136,8 @@ public class ChiefGround extends Chief
 
     }
 
-    Vector3d localVector3d = new Vector3d(localRoadSegment1.dir2D.x, localRoadSegment1.dir2D.y, 0.0D);
-    if ((i == 0) && (paramStaticObstacle.updateState()))
+    Vector3d localVector3d = new Vector3d(localRoadSegment1.dir2D.jdField_x_of_type_Double, localRoadSegment1.dir2D.jdField_y_of_type_Double, 0.0D);
+    while ((i == 0) && (paramStaticObstacle.updateState()))
     {
       double d2 = localRoadSegment1.computePosAlong(localPoint3d1);
       double d4 = this.road.ComputeSignedDistAlong(localUnitData1.segmentIdx, d2, paramStaticObstacle.segIdx, paramStaticObstacle.along);
@@ -1159,85 +1161,84 @@ public class ChiefGround extends Chief
         (d8 < -Math.max(7.0D * Math.abs(d6), 120.0D)))
       {
         paramStaticObstacle.clear();
+        break;
       }
-      else if (d4 <= 0.0D) {
-        if (d8 >= -1.5D) {
-          localVector3d.z = 2.5D;
-        }
 
+      if (d4 <= 0.0D) {
+        if (d8 < -1.5D) break;
+        localVector3d.jdField_z_of_type_Double = 2.5D; break;
       }
-      else if (d8 > Math.max(3.0D * d6, 20.0D))
+
+      if (d8 > Math.max(3.0D * d6, 20.0D))
       {
-        localVector3d.z = Math.max(d6, 3.0D);
+        localVector3d.jdField_z_of_type_Double = Math.max(d6, 3.0D);
+        break;
       }
-      else
+
+      double d9 = 0.5D * d6;
+      if (d9 < 0.01D)
       {
-        double d9 = 0.5D * d6;
-        if (d9 < 0.01D)
-        {
-          localVector3d.z = 1.0D;
-        }
-        else {
-          Vector2f localVector2f = new Vector2f((float)(paramStaticObstacle.pos.x - localPoint3d1.x), (float)(paramStaticObstacle.pos.y - localPoint3d1.y));
-
-          if (localVector2f.length() < 0.1F)
-          {
-            localVector3d.z = 4.0D;
-          }
-          else {
-            localVector2f.normalize();
-            AnglesFork localAnglesFork = new AnglesFork();
-            localAnglesFork.setSrcRad((float)Math.atan2(localVector2f.y, localVector2f.x));
-            localAnglesFork.setDstDeg(localAnglesFork.getSrcDeg() + (paramStaticObstacle.side > 0.0D ? 90.0F : -90.0F));
-            double d12 = d6 + 0.5D;
-            if (!intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, localAnglesFork.getSrcDeg()))
-            {
-              float f6 = localAnglesFork.getSrcDeg();
-              localVector3d.set(Geom.cosDeg(f6), Geom.sinDeg(f6), d9);
-            }
-            else if (intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, localAnglesFork.getDstDeg()))
-            {
-              localVector3d.z = 2.0D;
-            }
-            else {
-              for (int m = 0; m < 6; m++) {
-                float f8 = localAnglesFork.getDeg(0.5F);
-                if (intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, f8))
-                  localAnglesFork.setSrcDeg(f8);
-                else
-                  localAnglesFork.setDstDeg(f8);
-              }
-              float f7 = localAnglesFork.getDstDeg();
-
-              localVector3d.set(Geom.cosDeg(f7), Geom.sinDeg(f7), d9);
-            }
-          }
-        }
+        localVector3d.jdField_z_of_type_Double = 1.0D;
+        break;
       }
+      Vector2f localVector2f = new Vector2f((float)(paramStaticObstacle.pos.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double), (float)(paramStaticObstacle.pos.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double));
+
+      if (localVector2f.length() < 0.1F)
+      {
+        localVector3d.jdField_z_of_type_Double = 4.0D;
+        break;
+      }
+      localVector2f.normalize();
+      AnglesFork localAnglesFork = new AnglesFork();
+      localAnglesFork.setSrcRad((float)Math.atan2(localVector2f.y, localVector2f.x));
+      localAnglesFork.setDstDeg(localAnglesFork.getSrcDeg() + (paramStaticObstacle.side > 0.0D ? 90.0F : -90.0F));
+      double d12 = d6 + 0.5D;
+      if (!intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, localAnglesFork.getSrcDeg()))
+      {
+        float f6 = localAnglesFork.getSrcDeg();
+        localVector3d.set(Geom.cosDeg(f6), Geom.sinDeg(f6), d9);
+        break;
+      }
+      if (intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, localAnglesFork.getDstDeg()))
+      {
+        localVector3d.jdField_z_of_type_Double = 2.0D;
+        break;
+      }
+      for (int m = 0; m < 6; m++) {
+        f7 = localAnglesFork.getDeg(0.5F);
+        if (intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, f7))
+          localAnglesFork.setSrcDeg(f7);
+        else
+          localAnglesFork.setDstDeg(f7);
+      }
+      float f7 = localAnglesFork.getDstDeg();
+
+      localVector3d.set(Geom.cosDeg(f7), Geom.sinDeg(f7), d9);
+      break;
     }
 
-    if (localVector3d.z > 0.0D)
+    if (localVector3d.jdField_z_of_type_Double > 0.0D)
     {
       j = 0;
       i = 1;
-      localVector3d.x *= localVector3d.z;
-      localVector3d.y *= localVector3d.z;
+      localVector3d.jdField_x_of_type_Double *= localVector3d.jdField_z_of_type_Double;
+      localVector3d.jdField_y_of_type_Double *= localVector3d.jdField_z_of_type_Double;
       paramPoint3d = new Point3d(localVector3d);
-      paramPoint3d.z = -1.0D;
+      paramPoint3d.jdField_z_of_type_Double = -1.0D;
     }
     double d3;
     double d7;
     if (i != 0) {
       Point3d localPoint3d2 = new Point3d(localPoint3d1);
-      localPoint3d2.x += paramPoint3d.x;
-      localPoint3d2.y += paramPoint3d.y;
+      localPoint3d2.jdField_x_of_type_Double += paramPoint3d.jdField_x_of_type_Double;
+      localPoint3d2.jdField_y_of_type_Double += paramPoint3d.jdField_y_of_type_Double;
       d3 = localRoadSegment1.computePosAlong(localPoint3d2);
       d5 = localRoadSegment1.computePosSide(localPoint3d2);
       if (d3 >= localRoadSegment1.length2D - 0.2D)
       {
         localPoint3d2 = localRoadSegment1.computePos_Fit(localRoadSegment1.length2D, d5, paramActor.collisionR());
-        localPoint3d2.x += localRoadSegment1.dir2D.x * 0.2D;
-        localPoint3d2.y += localRoadSegment1.dir2D.y * 0.2D;
+        localPoint3d2.jdField_x_of_type_Double += localRoadSegment1.dir2D.jdField_x_of_type_Double * 0.2D;
+        localPoint3d2.jdField_y_of_type_Double += localRoadSegment1.dir2D.jdField_y_of_type_Double * 0.2D;
       }
       else {
         localPoint3d2 = localRoadSegment1.computePos_Fit(d3, d5, paramActor.collisionR());
@@ -1261,15 +1262,15 @@ public class ChiefGround extends Chief
       d5 = d3 + localRoadSegment1.computePosAlong(localPoint3d1);
       d7 = localUnitData1.sideOffset;
       if (j != 0) {
-        d5 += paramPoint3d.x;
-        d7 += paramPoint3d.y;
+        d5 += paramPoint3d.jdField_x_of_type_Double;
+        d7 += paramPoint3d.jdField_y_of_type_Double;
       }
       Point3d localPoint3d4;
       if (d5 >= localRoadSegment1.length2D - 0.2D)
       {
         localPoint3d4 = localRoadSegment1.computePos_Fit(localRoadSegment1.length2D, d7, paramActor.collisionR());
-        localPoint3d4.x += localRoadSegment1.dir2D.x * 0.2D;
-        localPoint3d4.y += localRoadSegment1.dir2D.y * 0.2D;
+        localPoint3d4.jdField_x_of_type_Double += localRoadSegment1.dir2D.jdField_x_of_type_Double * 0.2D;
+        localPoint3d4.jdField_y_of_type_Double += localRoadSegment1.dir2D.jdField_y_of_type_Double * 0.2D;
       } else {
         localPoint3d4 = localRoadSegment1.computePos_Fit(d5, d7, paramActor.collisionR());
       }
@@ -1294,13 +1295,13 @@ public class ChiefGround extends Chief
     double d8 = localRoadSegment3.computePosAlong(localPoint3d3);
 
     Point3d localPoint3d5 = new Point3d();
-    paramActor.pos.getAbs(localPoint3d5);
+    paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d5);
     double d10 = localRoadSegment1.computePosAlong(localPoint3d5);
 
     double d11 = this.road.ComputeSignedDistAlong(localUnitData1.segmentIdx, d10, localUnitData2.segmentIdx, d8);
 
     double d13 = localUnitData1.leaderDist;
-    if (j != 0) d13 += paramPoint3d.x;
+    if (j != 0) d13 += paramPoint3d.jdField_x_of_type_Double;
 
     double d14 = d11 - d13;
     if (d14 < 0.0D) {
@@ -1324,14 +1325,14 @@ public class ChiefGround extends Chief
     f3 *= 1.05F;
 
     double d16 = localUnitData1.sideOffset;
-    if (j != 0) d16 += paramPoint3d.y;
+    if (j != 0) d16 += paramPoint3d.jdField_y_of_type_Double;
 
     localPoint3d5 = localRoadSegment1.computePos_FitBegCirc(d10, d16, paramActor.collisionR());
     if (d10 >= localRoadSegment1.length2D - 0.1D) {
-      localPoint3d5.x += localRoadSegment1.dir2D.x * 0.2D;
-      localPoint3d5.y += localRoadSegment1.dir2D.y * 0.2D;
+      localPoint3d5.jdField_x_of_type_Double += localRoadSegment1.dir2D.jdField_x_of_type_Double * 0.2D;
+      localPoint3d5.jdField_y_of_type_Double += localRoadSegment1.dir2D.jdField_y_of_type_Double * 0.2D;
     }
-    d13 = distance2D(localPoint3d5, paramActor.pos.getAbsPoint());
+    d13 = distance2D(localPoint3d5, paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
 
     Vector3f localVector3f3 = this.road.get(localUnitData1.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1.0F) : this.road.get(localUnitData1.segmentIdx).normal;
 

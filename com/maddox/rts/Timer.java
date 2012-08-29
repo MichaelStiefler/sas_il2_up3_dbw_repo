@@ -36,9 +36,9 @@ public final class Timer
       return true;
     }
     if (localMsgTimerParam.bSkip) {
-      while ((localMsgTimerParam.nextTime < paramLong1) && (localMsgTimerParam.nextTime + localMsgTimerParam.stepTime < paramLong1) && 
-        (localMsgTimerParam.curCount != 1))
-      {
+      while ((localMsgTimerParam.nextTime < paramLong1) && (localMsgTimerParam.nextTime + localMsgTimerParam.stepTime < paramLong1)) {
+        if (localMsgTimerParam.curCount == 1)
+          break;
         localMsgTimerParam.nextTime += localMsgTimerParam.stepTime;
         localMsgTimerParam.curCount -= 1;
       }

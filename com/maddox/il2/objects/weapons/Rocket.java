@@ -4,7 +4,6 @@ import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.MsgShot;
 import com.maddox.il2.ai.RangeRandom;
@@ -26,7 +25,6 @@ import com.maddox.il2.engine.MeshShared;
 import com.maddox.il2.engine.MsgCollisionListener;
 import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.engine.Orient;
-import com.maddox.il2.fm.Wind;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.Chat;
 import com.maddox.il2.objects.ActorLand;
@@ -34,6 +32,7 @@ import com.maddox.il2.objects.ActorSimpleMesh;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Message;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import com.maddox.util.HashMapExt;
@@ -78,7 +77,7 @@ public class Rocket extends ActorMesh
   }
 
   protected void doExplosion(Actor paramActor, String paramString) {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
 
     Class localClass = getClass();
     float f1 = Property.floatValue(localClass, "power", 1000.0F);
@@ -101,7 +100,7 @@ public class Rocket extends ActorMesh
 
   protected void doExplosionAir()
   {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
     Class localClass = getClass();
     float f1 = Property.floatValue(localClass, "power", 1000.0F);
     int i = Property.intValue(localClass, "powerType", 0);
@@ -126,7 +125,7 @@ public class Rocket extends ActorMesh
       this.light.light.setEmit(0.0F, 1.0F);
     Eff3DActor.finish(this.smoke);
     Eff3DActor.finish(this.sprite);
-    destroy(this.flame);
+    ObjState.destroy(this.flame);
     stopSounds();
   }
 
@@ -163,15 +162,6 @@ public class Rocket extends ActorMesh
       setName("_rocket_");
     }
     super.getSpeed(this.speed);
-
-    if (World.cur().diffCur.Wind_N_Turbulence) {
-      Point3d localPoint3d = new Point3d();
-      Vector3d localVector3d = new Vector3d();
-      this.pos.getAbs(localPoint3d);
-      World.wind().getVectorWeapon(localPoint3d, localVector3d);
-      this.speed.add(-localVector3d.x, -localVector3d.y, 0.0D);
-    }
-
     this.S = (float)(3.141592653589793D * paramFloat1 * paramFloat1 / 4.0D);
     this.M = paramFloat2;
     if (paramFloat4 > 0.0F) this.DM = ((paramFloat2 - paramFloat3) / (paramFloat4 / Time.tickConstLenFs())); else
@@ -183,48 +173,26 @@ public class Rocket extends ActorMesh
   }
 
   public void start(float paramFloat) {
-    start(paramFloat, 0);
-  }
-
-  public void start(float paramFloat, int paramInt) {
     Class localClass = getClass();
     float f1 = Property.floatValue(localClass, "kalibr", 0.082F);
-    if (paramFloat <= 0.0F) {
+    if (paramFloat <= 0.0F)
       paramFloat = Property.floatValue(localClass, "timeLife", 45.0F);
-    }
+    init(f1, Property.floatValue(localClass, "massa", 6.8F), Property.floatValue(localClass, "massaEnd", 2.52F), Property.floatValue(localClass, "timeFire", 4.0F), Property.floatValue(localClass, "force", 500.0F), paramFloat);
 
-    RangeRandom localRangeRandom = new RangeRandom(paramInt);
+    setOwner(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base(), false, false, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, true);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent());
 
-    float f2 = -1.0F + 2.0F * localRangeRandom.nextFloat();
-    f2 *= f2 * f2;
-    float f3 = -1.0F + 2.0F * localRangeRandom.nextFloat();
-    f3 *= f3 * f3;
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Aircraft.tmpOr);
+    float f2 = 0.5F * Property.floatValue(localClass, "maxDeltaAngle", 0.0F);
+    Aircraft.tmpOr.increment(World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2, f2), 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Aircraft.tmpOr);
 
-    init(f1, Property.floatValue(localClass, "massa", 6.8F), Property.floatValue(localClass, "massaEnd", 2.52F), Property.floatValue(localClass, "timeFire", 4.0F) / (1.0F + 0.1F * f2), Property.floatValue(localClass, "force", 500.0F) * (1.0F + 0.1F * f2), paramFloat + f3 * 0.1F);
-
-    setOwner(this.pos.base(), false, false, false);
-    this.pos.setBase(null, null, true);
-    this.pos.setAbs(this.pos.getCurrent());
-
-    this.pos.getAbs(Aircraft.tmpOr);
-
-    float f4 = 0.68F * Property.floatValue(localClass, "maxDeltaAngle", 3.0F);
-
-    f2 = -1.0F + 2.0F * localRangeRandom.nextFloat();
-    f3 = -1.0F + 2.0F * localRangeRandom.nextFloat();
-
-    f2 *= f2 * f2 * f4;
-    f3 *= f3 * f3 * f4;
-
-    Aircraft.tmpOr.increment(f2, f3, 0.0F);
-
-    this.pos.setAbs(Aircraft.tmpOr);
-
-    this.pos.getRelOrient().transformInv(this.speed);
-
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRelOrient().transformInv(this.speed);
+    this.speed.y /= 3.0D;
     this.speed.z /= 3.0D;
     this.speed.x += 200.0D;
-    this.pos.getRelOrient().transform(this.speed);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRelOrient().transform(this.speed);
     collide(true);
     interpPut(new Interpolater(), null, Time.current(), null);
 
@@ -241,7 +209,7 @@ public class Rocket extends ActorMesh
       }
       this.sprite = Eff3DActor.New(this, localHook, null, f1, str, -1.0F);
       if (this.sprite != null)
-        this.sprite.pos.changeHookToRel();
+        this.sprite.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
     }
     str = Property.stringValue(localClass, "flame", null);
     if (str != null) {
@@ -251,9 +219,9 @@ public class Rocket extends ActorMesh
       this.flame = new ActorSimpleMesh(str);
       if (this.flame != null) {
         ((ActorSimpleMesh)this.flame).mesh().setScale(f1);
-        this.flame.pos.setBase(this, localHook, false);
-        this.flame.pos.changeHookToRel();
-        this.flame.pos.resetAsBase();
+        this.flame.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, localHook, false);
+        this.flame.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
+        this.flame.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
       }
     }
     str = Property.stringValue(localClass, "smoke", null);
@@ -263,7 +231,7 @@ public class Rocket extends ActorMesh
       }
       this.smoke = Eff3DActor.New(this, localHook, null, 1.0F, str, -1.0F);
       if (this.smoke != null) {
-        this.smoke.pos.changeHookToRel();
+        this.smoke.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
       }
     }
     this.light = new LightPointActor(new LightPointWorld(), new Point3d());
@@ -281,9 +249,6 @@ public class Rocket extends ActorMesh
   }
 
   public Rocket() {
-    this.noGDelay = 0L;
-    this.endedSmoke = false;
-
     setMesh(MeshShared.get(Property.stringValue(getClass(), "mesh", null)));
     this.flags |= 224;
     collide(false);
@@ -298,13 +263,13 @@ public class Rocket extends ActorMesh
 
     public boolean tick()
     {
-      if (this.timeBegin + Rocket.this.timeLife < Time.current())
+      if (this.jdField_timeBegin_of_type_Long + Rocket.this.timeLife < Time.current())
       {
         Rocket.this.doExplosionAir();
         Rocket.this.postDestroy(); Rocket.this.collide(false); Rocket.this.drawing(false);
         return false;
       }
-      if (this.timeBegin + Rocket.this.timeFire < Time.current()) {
+      if (this.jdField_timeBegin_of_type_Long + Rocket.this.timeFire < Time.current()) {
         Rocket.this.endSmoke();
         Rocket.access$002(Rocket.this, 0.0F);
       } else {
@@ -312,7 +277,7 @@ public class Rocket extends ActorMesh
       }
       if (Rocket.this.interpolateStep())
       {
-        Ballistics.update(this.actor, Rocket.this.M, Rocket.this.S, Rocket.this.P, this.timeBegin + Rocket.this.noGDelay < Time.current());
+        Ballistics.update(this.actor, Rocket.this.M, Rocket.this.S, Rocket.this.P, this.jdField_timeBegin_of_type_Long + Rocket.this.noGDelay < Time.current());
       }
       return true;
     }

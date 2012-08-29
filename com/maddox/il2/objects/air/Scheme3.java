@@ -7,7 +7,7 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Squares;
 
-public abstract class Scheme3 extends AircraftLH
+public abstract class Scheme3 extends Aircraft
 {
   protected void moveRudder(float paramFloat)
   {
@@ -43,42 +43,42 @@ public abstract class Scheme3 extends AircraftLH
       super.cutFM(17, paramInt2, paramActor); return super.cutFM(18, paramInt2, paramActor);
     case 17:
       super.cutFM(18, paramInt2, paramActor);
-      this.FM.cut(17, paramInt2, paramActor);
-      this.FM.cut(18, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(17, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(18, paramInt2, paramActor);
       if (World.Rnd().nextBoolean()) {
-        this.FM.Sq.liftWingLOut *= 0.95F;
-        this.FM.Sq.liftWingLMid *= 0.95F;
-        this.FM.Sq.liftWingLIn *= 0.95F;
-        this.FM.Sq.liftWingRIn *= 0.75F;
-        this.FM.Sq.liftWingRMid *= 0.75F;
-        this.FM.Sq.liftWingROut *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLOut *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLMid *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLIn *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRIn *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRMid *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingROut *= 0.75F;
       } else {
-        this.FM.Sq.liftWingLOut *= 0.75F;
-        this.FM.Sq.liftWingLMid *= 0.75F;
-        this.FM.Sq.liftWingLIn *= 0.75F;
-        this.FM.Sq.liftWingRIn *= 0.95F;
-        this.FM.Sq.liftWingRMid *= 0.95F;
-        this.FM.Sq.liftWingROut *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLOut *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLMid *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLIn *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRIn *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRMid *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingROut *= 0.95F;
       }
       break;
     case 18:
       super.cutFM(17, paramInt2, paramActor);
-      this.FM.cut(17, paramInt2, paramActor);
-      this.FM.cut(18, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(17, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(18, paramInt2, paramActor);
       if (World.Rnd().nextBoolean()) {
-        this.FM.Sq.liftWingLOut *= 0.95F;
-        this.FM.Sq.liftWingLMid *= 0.95F;
-        this.FM.Sq.liftWingLIn *= 0.95F;
-        this.FM.Sq.liftWingRIn *= 0.75F;
-        this.FM.Sq.liftWingRMid *= 0.75F;
-        this.FM.Sq.liftWingROut *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLOut *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLMid *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLIn *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRIn *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRMid *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingROut *= 0.75F;
       } else {
-        this.FM.Sq.liftWingLOut *= 0.75F;
-        this.FM.Sq.liftWingLMid *= 0.75F;
-        this.FM.Sq.liftWingLIn *= 0.75F;
-        this.FM.Sq.liftWingRIn *= 0.95F;
-        this.FM.Sq.liftWingRMid *= 0.95F;
-        this.FM.Sq.liftWingROut *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLOut *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLMid *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingLIn *= 0.75F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRIn *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingRMid *= 0.95F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Sq_of_type_ComMaddoxIl2FmSquares.liftWingROut *= 0.95F;
       }case 13:
     case 14:
     case 15:

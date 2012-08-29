@@ -41,12 +41,12 @@ public class BombCargoA extends Bomb
     getSpeed(v3d);
 
     or.setAT0(v3d);
-    this.pos.setAbs(or);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(or);
 
     if (this.bOnChute) {
       v3d.scale(0.99D);
-      if (v3d.z < -5.0D) {
-        v3d.z += 1.1F * Time.tickConstLenFs();
+      if (v3d.jdField_z_of_type_Double < -5.0D) {
+        v3d.jdField_z_of_type_Double += 1.1F * Time.tickConstLenFs();
       }
       setSpeed(v3d);
     } else if (this.curTm > this.ttcurTM) {
@@ -54,7 +54,7 @@ public class BombCargoA extends Bomb
       this.chute = new Chute(this);
       this.chute.collide(false);
       this.chute.mesh().setScale(1.5F);
-      this.chute.pos.setRel(new Point3d(2.0D, 0.0D, 0.0D), new Orient(0.0F, 90.0F, 0.0F));
+      this.chute.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(new Point3d(2.0D, 0.0D, 0.0D), new Orient(0.0F, 90.0F, 0.0F));
     }
   }
 
@@ -65,9 +65,9 @@ public class BombCargoA extends Bomb
       }
 
       Loc localLoc = new Loc();
-      this.pos.getAbs(localLoc);
-      localLoc.getPoint().z = Engine.land().HQ(localLoc.getPoint().x, localLoc.getPoint().y);
-      if (!Engine.land().isWater(localLoc.getPoint().x, localLoc.getPoint().y)) {
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc);
+      localLoc.getPoint().jdField_z_of_type_Double = Engine.land().HQ(localLoc.getPoint().jdField_x_of_type_Double, localLoc.getPoint().jdField_y_of_type_Double);
+      if (!Engine.land().isWater(localLoc.getPoint().jdField_x_of_type_Double, localLoc.getPoint().jdField_y_of_type_Double)) {
         localLoc.getOrient().set(localLoc.getOrient().getAzimut(), -90.0F, 0.0F);
         ActorSimpleMesh localActorSimpleMesh = new ActorSimpleMesh("3DO/Arms/Cargo-TypeA/mono.sim", localLoc);
         localActorSimpleMesh.collide(false);

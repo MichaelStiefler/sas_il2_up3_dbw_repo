@@ -19,22 +19,13 @@ public class Platform1 extends Wagon
     this.bodyMaterial = 2;
   }
 
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
-    {
+  private static String getMeshName(int paramInt) {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/Platform1" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/Platform1" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()

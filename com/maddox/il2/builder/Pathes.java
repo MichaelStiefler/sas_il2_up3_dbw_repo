@@ -43,153 +43,154 @@ public class Pathes extends Actor
     this.pathes = getOwnerAttached(this.pathes);
     Object localObject1;
     int i3;
+    int i7;
     for (int n = 0; n < this.pathes.length; n++) {
-      localObject1 = (Path)this.pathes[n];
+      Path localPath = (Path)this.pathes[n];
       this.pathes[n] = null;
-      if (localObject1 == null) break;
-      ((Path)localObject1).renderPoints = 0;
-      if (!((Path)localObject1).isDrawing())
+      if (localPath == null) break;
+      localPath.renderPoints = 0;
+      if (!localPath.isDrawing())
         continue;
-      this.points = ((Path)localObject1).getOwnerAttached(this.points);
-      Object localObject2 = null;
-      int i2 = 0;
+      this.points = localPath.getOwnerAttached(this.points);
+      localObject1 = null;
+      i3 = 0;
       if (this.lineNXYZ.length / 3 <= this.points.length)
         this.lineNXYZ = new float[(this.points.length + 1) * 3];
       this.lineNCounter = 0;
       int m;
-      for (i3 = 0; i3 < this.points.length; i3++) {
-        PPoint localPPoint = (PPoint)this.points[i3];
-        this.points[i3] = null;
-        if (localPPoint == null) break;
-        Plugin.builder.project2d(localPPoint.pos.getCurrentPoint(), this.p2d);
-        localPPoint.screenX = this.p2d.x;
-        localPPoint.screenY = this.p2d.y;
-        if (localPPoint.screenX < d1) {
-          if (localPPoint.screenY < d2) localPPoint.screenQuad = 6;
-          else if (localPPoint.screenY > d4) localPPoint.screenQuad = 0; else
-            localPPoint.screenQuad = 7;
-        } else if (localPPoint.screenX > d3) {
-          if (localPPoint.screenY < d2) localPPoint.screenQuad = 4;
-          else if (localPPoint.screenY > d4) localPPoint.screenQuad = 2; else
-            localPPoint.screenQuad = 3;
+      for (int i5 = 0; i5 < this.points.length; i5++) {
+        PPoint localPPoint2 = (PPoint)this.points[i5];
+        this.points[i5] = null;
+        if (localPPoint2 == null) break;
+        Plugin.builder.project2d(localPPoint2.pos.getCurrentPoint(), this.p2d);
+        localPPoint2.screenX = this.p2d.jdField_x_of_type_Double;
+        localPPoint2.screenY = this.p2d.jdField_y_of_type_Double;
+        if (localPPoint2.screenX < d1) {
+          if (localPPoint2.screenY < d2) localPPoint2.screenQuad = 6;
+          else if (localPPoint2.screenY > d4) localPPoint2.screenQuad = 0; else
+            localPPoint2.screenQuad = 7;
+        } else if (localPPoint2.screenX > d3) {
+          if (localPPoint2.screenY < d2) localPPoint2.screenQuad = 4;
+          else if (localPPoint2.screenY > d4) localPPoint2.screenQuad = 2; else
+            localPPoint2.screenQuad = 3;
         }
-        else if (localPPoint.screenY < d2) localPPoint.screenQuad = 5;
-        else if (localPPoint.screenY > d4) localPPoint.screenQuad = 1; else
-          localPPoint.screenQuad = 8;
-        int i6;
-        if ((localPPoint instanceof PNodes)) {
-          PNodes localPNodes = (PNodes)localPPoint;
+        else if (localPPoint2.screenY < d2) localPPoint2.screenQuad = 5;
+        else if (localPPoint2.screenY > d4) localPPoint2.screenQuad = 1; else
+          localPPoint2.screenQuad = 8;
+        int i8;
+        if ((localPPoint2 instanceof PNodes)) {
+          PNodes localPNodes = (PNodes)localPPoint2;
           if (localPNodes.posXYZ != null) {
-            i6 = (this.currentPPoint != null) && (this.currentPPoint.getOwner() == localObject1) ? 1 : 0;
+            i8 = (this.currentPPoint != null) && (this.currentPPoint.getOwner() == localPath) ? 1 : 0;
             if (this.lineNXYZ.length / 3 <= localPNodes.posXYZ.length / 4)
               this.lineNXYZ = new float[(localPNodes.posXYZ.length / 4 + 1) * 3];
             this.lineNCounter = 0;
-            for (int i7 = 0; i7 < localPNodes.posXYZ.length / 4; i7++) {
-              Plugin.builder.project2d(localPNodes.posXYZ[(i7 * 4 + 0)], localPNodes.posXYZ[(i7 * 4 + 1)], localPNodes.posXYZ[(i7 * 4 + 2)], this.p2d);
+            for (int i9 = 0; i9 < localPNodes.posXYZ.length / 4; i9++) {
+              Plugin.builder.project2d(localPNodes.posXYZ[(i9 * 4 + 0)], localPNodes.posXYZ[(i9 * 4 + 1)], localPNodes.posXYZ[(i9 * 4 + 2)], this.p2d);
 
-              this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)this.p2d.x;
-              this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)this.p2d.y;
+              this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)this.p2d.jdField_x_of_type_Double;
+              this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)this.p2d.jdField_y_of_type_Double;
               this.lineNXYZ[(this.lineNCounter * 3 + 2)] = 0.0F;
               this.lineNCounter += 1;
             }
-            if (i6 != 0) { j = Builder.colorSelected(); k = 3; } else {
-              j = Army.color(((Path)localObject1).getArmy()); k = 1;
+            if (i8 != 0) { j = Builder.colorSelected(); k = 3; } else {
+              j = Army.color(localPath.getArmy()); k = 1;
             }Render.drawLines(this.lineNXYZ, this.lineNCounter, k, j, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
           }
 
         }
-        else if (localObject2 != null) {
-          int i5 = (localPPoint.screenQuad == 8) || (localObject2.screenQuad == 8) ? 1 : 0;
-          while ((i5 == 0) && 
-            (localPPoint.screenQuad != localObject2.screenQuad) && 
-            (localPPoint.screenQuad != (localObject2.screenQuad + 1 & 0x7)) && 
-            (localObject2.screenQuad != (localPPoint.screenQuad + 1 & 0x7)) && (
-            ((localPPoint.screenQuad & 0x1) != 0) || ((localObject2.screenQuad & 0x1) != 0) || (
-            (localPPoint.screenQuad != (localObject2.screenQuad + 2 & 0x7)) && 
-            (localObject2.screenQuad != (localPPoint.screenQuad + 2 & 0x7)))))
-          {
-            i5 = 1;
+        else if (localObject1 != null) {
+          i7 = (localPPoint2.screenQuad == 8) || (((PPoint)localObject1).screenQuad == 8) ? 1 : 0;
+          while (i7 == 0) {
+            if ((localPPoint2.screenQuad == ((PPoint)localObject1).screenQuad) || 
+              (localPPoint2.screenQuad == (((PPoint)localObject1).screenQuad + 1 & 0x7)) || 
+              (((PPoint)localObject1).screenQuad == (localPPoint2.screenQuad + 1 & 0x7)) || (
+              ((localPPoint2.screenQuad & 0x1) == 0) && ((((PPoint)localObject1).screenQuad & 0x1) == 0) && (
+              (localPPoint2.screenQuad == (((PPoint)localObject1).screenQuad + 2 & 0x7)) || 
+              (((PPoint)localObject1).screenQuad == (localPPoint2.screenQuad + 2 & 0x7)))))
+              break;
+            i7 = 1;
           }
-          if (i5 != 0) {
-            if (i2 == 0) {
-              i2 = 1;
-              i6 = (this.currentPPoint != null) && (this.currentPPoint.getOwner() == localObject1) ? 1 : 0;
-              if (i6 != 0) { j = Builder.colorSelected(); m = 3; } else {
-                j = Army.color(((Path)localObject1).getArmy()); m = 1;
-              }this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)localObject2.screenX;
-              this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)localObject2.screenY;
+          if (i7 != 0) {
+            if (i3 == 0) {
+              i3 = 1;
+              i8 = (this.currentPPoint != null) && (this.currentPPoint.getOwner() == localPath) ? 1 : 0;
+              if (i8 != 0) { j = Builder.colorSelected(); m = 3; } else {
+                j = Army.color(localPath.getArmy()); m = 1;
+              }this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)((PPoint)localObject1).screenX;
+              this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)((PPoint)localObject1).screenY;
               this.lineNXYZ[(this.lineNCounter * 3 + 2)] = 0.0F;
               this.lineNCounter += 1;
             }
-            this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)localPPoint.screenX;
-            this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)localPPoint.screenY;
+            this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)localPPoint2.screenX;
+            this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)localPPoint2.screenY;
             this.lineNXYZ[(this.lineNCounter * 3 + 2)] = 0.0F;
             this.lineNCounter += 1;
-          } else if (i2 != 0) {
-            i2 = 0;
+          } else if (i3 != 0) {
+            i3 = 0;
             Render.drawLines(this.lineNXYZ, this.lineNCounter, m, j, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
           }
 
         }
 
-        if (localPPoint.screenQuad == 8) { localObject1.renderPoints += 1; i++; }
-        localObject2 = localPPoint;
+        if (localPPoint2.screenQuad == 8) { localPath.renderPoints += 1; i++; }
+        localObject1 = localPPoint2;
       }
-      if (i2 != 0) {
-        i2 = 0;
+      if (i3 != 0) {
+        i3 = 0;
         Render.drawLines(this.lineNXYZ, this.lineNCounter, m, j, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
       }
 
     }
 
     Render.drawEnd();
-    int i1;
-    Object localObject3;
+    Object localObject2;
+    int i6;
     if (i != 0)
     {
       this.pathes = getOwnerAttached(this.pathes);
-      for (n = 0; n < this.pathes.length; n++) {
-        localObject1 = (Path)this.pathes[n];
-        this.pathes[n] = null;
+      for (i1 = 0; i1 < this.pathes.length; i1++) {
+        localObject1 = (Path)this.pathes[i1];
+        this.pathes[i1] = null;
         if (localObject1 == null) break;
         if (((Path)localObject1).renderPoints != 0) {
           this.points = ((Path)localObject1).getOwnerAttached(this.points);
-          for (i1 = 0; i1 < this.points.length; i1++) {
-            localObject3 = (PPoint)this.points[i1];
-            this.points[i1] = null;
-            if (localObject3 == null) break;
-            if (((PPoint)localObject3).screenQuad == 8) {
-              if ((this.currentPPoint == localObject3) && (this.currentPPoint.getOwner() == ((PPoint)localObject3).getOwner()))
+          for (i3 = 0; i3 < this.points.length; i3++) {
+            localObject2 = (PPoint)this.points[i3];
+            this.points[i3] = null;
+            if (localObject2 == null) break;
+            if (((PPoint)localObject2).screenQuad == 8) {
+              if ((this.currentPPoint == localObject2) && (this.currentPPoint.getOwner() == ((PPoint)localObject2).getOwner()))
                 j = Builder.colorSelected();
-              else if (Plugin.builder.isMiltiSelected((Actor)localObject3)) j = -16776961; else
+              else if (Plugin.builder.isMiltiSelected((Actor)localObject2)) j = -16776961; else
                 j = Army.color(((Path)localObject1).getArmy());
               IconDraw.setColor(j);
 
-              IconDraw.render((Actor)localObject3, ((PPoint)localObject3).screenX, ((PPoint)localObject3).screenY);
+              IconDraw.render((Actor)localObject2, ((PPoint)localObject2).screenX, ((PPoint)localObject2).screenY);
               this.strBuf.delete(0, this.strBuf.length());
-              this.strBuf.append(i1);
-              if ((Plugin.builder.conf.bShowTime) && (!(localObject3 instanceof PAirdrome))) {
+              this.strBuf.append(i3);
+              if ((Plugin.builder.conf.bShowTime) && (!(localObject2 instanceof PAirdrome))) {
                 this.strBuf.append('(');
-                i3 = (int)Math.round(((PPoint)localObject3).time / 60.0D) + (int)(World.getTimeofDay() * 60.0F);
-                this.strBuf.append(i3 / 60 % 24); this.strBuf.append(':');
-                int i4 = i3 % 60;
-                if (i4 < 10) this.strBuf.append('0');
-                this.strBuf.append(i4);
+                i6 = (int)Math.round(((PPoint)localObject2).time / 60.0D) + (int)(World.getTimeofDay() * 60.0F);
+                this.strBuf.append(i6 / 60 % 24); this.strBuf.append(':');
+                i7 = i6 % 60;
+                if (i7 < 10) this.strBuf.append('0');
+                this.strBuf.append(i7);
                 this.strBuf.append(')');
               }
-              Plugin.builder.smallFont.output(j, (int)((PPoint)localObject3).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject3).screenY - IconDraw.scrSizeY() / 2 - 2, 0.0F, this.strBuf.toString());
+              Plugin.builder.smallFont.output(j, (int)((PPoint)localObject2).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject2).screenY - IconDraw.scrSizeY() / 2 - 2, 0.0F, this.strBuf.toString());
 
               if ((!Plugin.builder.conf.bShowName) || 
                 (!((Path)localObject1).isNamed())) continue;
               if ((localObject1 instanceof PathAir)) {
-                Plugin.builder.smallFont.output(j, (int)((PPoint)localObject3).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject3).screenY + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, ((PathAir)localObject1).typedName);
+                Plugin.builder.smallFont.output(j, (int)((PPoint)localObject2).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject2).screenY + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, ((PathAir)localObject1).typedName);
               }
               else if ((localObject1 instanceof PathChief)) {
-                Plugin.builder.smallFont.output(j, (int)((PPoint)localObject3).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject3).screenY + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, Property.stringValue(localObject1, "i18nName", ""));
+                Plugin.builder.smallFont.output(j, (int)((PPoint)localObject2).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject2).screenY + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, Property.stringValue(localObject1, "i18nName", ""));
               }
               else
               {
-                Plugin.builder.smallFont.output(j, (int)((PPoint)localObject3).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject3).screenY + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, ((Path)localObject1).name());
+                Plugin.builder.smallFont.output(j, (int)((PPoint)localObject2).screenX + IconDraw.scrSizeX() / 2 + 2, (int)((PPoint)localObject2).screenY + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, ((Path)localObject1).name());
               }
 
             }
@@ -203,37 +204,37 @@ public class Pathes extends Actor
     }
 
     this.pathes = getOwnerAttached(this.pathes);
-    for (n = 0; n < this.pathes.length; n++) {
-      localObject1 = (Path)this.pathes[n];
-      this.pathes[n] = null;
+    for (int i1 = 0; i1 < this.pathes.length; i1++) {
+      localObject1 = (Path)this.pathes[i1];
+      this.pathes[i1] = null;
       if (localObject1 == null) break;
       if ((localObject1 instanceof PathAir)) {
         this.points = ((Path)localObject1).getOwnerAttached(this.points);
-        for (i1 = 0; i1 < this.points.length; i1++) {
-          localObject3 = (PAir)this.points[i1];
-          this.points[i1] = null;
-          if (localObject3 == null) break;
-          if (Actor.isValid(((PAir)localObject3).getTarget())) {
-            Plugin.builder.project2d(((PAir)localObject3).getTarget().pos.getCurrentPoint(), this.p2d);
-            i3 = Plugin.builder.conf.iconSize;
-            Render.drawTile((float)(this.p2d.x - i3 / 2), (float)(this.p2d.y - i3 / 2), i3, i3, 0.0F, Plugin.targetIcon, -16711936, 0.0F, 0.0F, 1.0F, 1.0F);
+        for (i3 = 0; i3 < this.points.length; i3++) {
+          localObject2 = (PAir)this.points[i3];
+          this.points[i3] = null;
+          if (localObject2 == null) break;
+          if (Actor.isValid(((PAir)localObject2).getTarget())) {
+            Plugin.builder.project2d(((PAir)localObject2).getTarget().pos.getCurrentPoint(), this.p2d);
+            i6 = Plugin.builder.conf.iconSize;
+            Render.drawTile((float)(this.p2d.jdField_x_of_type_Double - i6 / 2), (float)(this.p2d.jdField_y_of_type_Double - i6 / 2), i6, i6, 0.0F, Plugin.targetIcon, -16711936, 0.0F, 0.0F, 1.0F, 1.0F);
           }
         }
       }
     }
     if ((i != 0) && (Actor.isValid(Path.player)) && (Path.player.renderPoints != 0)) {
       this.points = Path.player.getOwnerAttached(this.points);
-      for (n = 0; n < this.points.length; n++) {
-        localObject1 = (PPoint)this.points[n];
-        if (localObject1 == null) break;
-        if (((PPoint)localObject1).screenQuad == 8) {
-          Render.drawTile((float)((PPoint)localObject1).screenX, (float)((PPoint)localObject1).screenY, paramInt, paramInt, 0.0F, Plugin.playerIcon, Army.color(Path.player.getArmy()), 0.0F, 1.0F, 1.0F, -1.0F);
+      for (int i2 = 0; i2 < this.points.length; i2++) {
+        PPoint localPPoint1 = (PPoint)this.points[i2];
+        if (localPPoint1 == null) break;
+        if (localPPoint1.screenQuad == 8) {
+          Render.drawTile((float)localPPoint1.screenX, (float)localPPoint1.screenY, paramInt, paramInt, 0.0F, Plugin.playerIcon, Army.color(Path.player.getArmy()), 0.0F, 1.0F, 1.0F, -1.0F);
 
           break;
         }
       }
-      for (n = 0; n < this.points.length; n++)
-        this.points[n] = null;
+      for (int i4 = 0; i4 < this.points.length; i4++)
+        this.points[i4] = null;
     }
   }
 
@@ -253,12 +254,12 @@ public class Pathes extends Actor
           if (localPAir == null) break;
           if (Actor.isValid(localPAir.getTarget())) {
             Plugin.builder.project2d(localPAir.pos.getCurrentPoint(), this.p2d);
-            this.lineNXYZ[0] = (float)this.p2d.x;
-            this.lineNXYZ[1] = (float)this.p2d.y;
+            this.lineNXYZ[0] = (float)this.p2d.jdField_x_of_type_Double;
+            this.lineNXYZ[1] = (float)this.p2d.jdField_y_of_type_Double;
             this.lineNXYZ[2] = 0.0F;
             Plugin.builder.project2d(localPAir.getTarget().pos.getCurrentPoint(), this.p2d);
-            this.lineNXYZ[3] = (float)this.p2d.x;
-            this.lineNXYZ[4] = (float)this.p2d.y;
+            this.lineNXYZ[3] = (float)this.p2d.jdField_x_of_type_Double;
+            this.lineNXYZ[4] = (float)this.p2d.jdField_y_of_type_Double;
             this.lineNXYZ[5] = 0.0F;
             Render.drawLines(this.lineNXYZ, 2, 3.0F, -16711936, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
           }

@@ -20,8 +20,8 @@ public class CockpitHE_111H2_RGunner extends CockpitGunner
   public void moveGun(Orient paramOrient)
   {
     super.moveGun(paramOrient);
-    this.mesh.chunkSetAngles("TurretRA", 0.0F, -paramOrient.getYaw(), 0.0F);
-    this.mesh.chunkSetAngles("TurretRB", 0.0F, paramOrient.getTangage(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("TurretRA", 0.0F, -paramOrient.getYaw(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("TurretRB", 0.0F, paramOrient.getTangage(), 0.0F);
   }
 
   public void clipAnglesGun(Orient paramOrient) {
@@ -42,42 +42,42 @@ public class CockpitHE_111H2_RGunner extends CockpitGunner
 
   protected void interpTick() {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+      this.jdField_bGunFire_of_type_Boolean = false;
+    }this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
 
-    if (this.bGunFire) {
+    if (this.jdField_bGunFire_of_type_Boolean) {
       if (this.hook1 == null) {
         this.hook1 = new HookNamed(aircraft(), "_MGUN05");
       }
       doHitMasterAircraft(aircraft(), this.hook1, "_MGUN05");
       if (this.iCocking > 0) this.iCocking = 0; else
         this.iCocking = 1;
-      this.iNewVisDrums = (int)(this.emitter.countBullets() / 250.0F);
+      this.iNewVisDrums = (int)(this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.countBullets() / 250.0F);
       if (this.iNewVisDrums < this.iOldVisDrums) {
         this.iOldVisDrums = this.iNewVisDrums;
-        this.mesh.chunkVisible("DrumR1", this.iNewVisDrums > 1);
-        this.mesh.chunkVisible("DrumR2", this.iNewVisDrums > 0);
+        this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("DrumR1", this.iNewVisDrums > 1);
+        this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("DrumR2", this.iNewVisDrums > 0);
         sfxClick(13);
       }
     } else {
       this.iCocking = 0;
     }
     resetYPRmodifier();
-    xyz[0] = (-0.07F * this.iCocking);
-    this.mesh.chunkSetLocate("LeverR", xyz, ypr);
+    Cockpit.xyz[0] = (-0.07F * this.iCocking);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("LeverR", Cockpit.xyz, Cockpit.ypr);
   }
 
   public void doGunFire(boolean paramBoolean)
   {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
+      this.jdField_bGunFire_of_type_Boolean = false;
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+    else this.jdField_bGunFire_of_type_Boolean = paramBoolean;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
   }
 
   public CockpitHE_111H2_RGunner() {
@@ -86,20 +86,20 @@ public class CockpitHE_111H2_RGunner extends CockpitGunner
 
   public void toggleLight()
   {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl) {
-      this.mesh.chunkVisible("Flare", true);
+    this.jdField_cockpitLightControl_of_type_Boolean = (!this.jdField_cockpitLightControl_of_type_Boolean);
+    if (this.jdField_cockpitLightControl_of_type_Boolean) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Flare", true);
       setNightMats(true);
     } else {
-      this.mesh.chunkVisible("Flare", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Flare", false);
       setNightMats(false);
     }
   }
 
   public void reflectCockpitState()
   {
-    if (this.fm.AS.astateCockpitState != 0)
-      this.mesh.chunkVisible("Holes_D1", true);
+    if (this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.AS.astateCockpitState != 0)
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Holes_D1", true);
   }
 
   static

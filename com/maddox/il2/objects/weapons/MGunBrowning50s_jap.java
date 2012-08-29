@@ -8,7 +8,6 @@ public class MGunBrowning50s_jap extends MGunBrowning50s
   public GunProperties createProperties()
   {
     GunProperties localGunProperties = super.createProperties();
-
     localGunProperties.bullet = new BulletProperties[] { new BulletProperties(), new BulletProperties(), new BulletProperties(), new BulletProperties() };
 
     localGunProperties.bullet[0].massa = 0.0485F;
@@ -19,9 +18,8 @@ public class MGunBrowning50s_jap extends MGunBrowning50s
     localGunProperties.bullet[0].powerRadius = 0.0F;
     localGunProperties.bullet[0].traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
     localGunProperties.bullet[0].traceTrail = null;
-    localGunProperties.bullet[0].traceColor = -117374977;
+    localGunProperties.bullet[0].traceColor = -117440257;
     localGunProperties.bullet[0].timeLife = 6.5F;
-
     localGunProperties.bullet[1].massa = 0.0485F;
     localGunProperties.bullet[1].kalibr = 0.000120968F;
     localGunProperties.bullet[1].speed = 870.0F;
@@ -32,7 +30,6 @@ public class MGunBrowning50s_jap extends MGunBrowning50s
     localGunProperties.bullet[1].traceTrail = null;
     localGunProperties.bullet[1].traceColor = 0;
     localGunProperties.bullet[1].timeLife = 6.52F;
-
     localGunProperties.bullet[2].massa = 0.0485F;
     localGunProperties.bullet[2].kalibr = 0.000125806F;
     localGunProperties.bullet[2].speed = 870.0F;
@@ -43,7 +40,6 @@ public class MGunBrowning50s_jap extends MGunBrowning50s
     localGunProperties.bullet[2].traceTrail = null;
     localGunProperties.bullet[2].traceColor = 0;
     localGunProperties.bullet[2].timeLife = 6.5F;
-
     localGunProperties.bullet[3].massa = 0.0485F;
     localGunProperties.bullet[3].kalibr = 0.000120968F;
     localGunProperties.bullet[3].speed = 870.0F;
@@ -54,7 +50,6 @@ public class MGunBrowning50s_jap extends MGunBrowning50s
     localGunProperties.bullet[3].traceTrail = null;
     localGunProperties.bullet[3].traceColor = 0;
     localGunProperties.bullet[3].timeLife = 6.25F;
-
     return localGunProperties;
   }
 }

@@ -2,26 +2,35 @@ package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombTorpF5Bheavy extends Torpedo
+public class BombTorpF5Bheavy extends TorpedoLtfFiume
 {
   static
   {
-    Class localClass = BombTorpF5Bheavy.class;
-    Property.set(localClass, "mesh", "3DO/Arms/LTF5B/mono.sim");
-    Property.set(localClass, "radius", 120.0F);
-    Property.set(localClass, "power", 267.5F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.45F);
-    Property.set(localClass, "massa", 812.0F);
-    Property.set(localClass, "sound", "weapon.torpedo");
-    Property.set(localClass, "velocity", 20.58F);
-    Property.set(localClass, "traveltime", 97.181702F);
-    Property.set(localClass, "startingspeed", 0.0F);
-    Property.set(localClass, "impactAngleMin", 18.0F);
-    Property.set(localClass, "impactAngleMax", 27.0F);
-    Property.set(localClass, "impactSpeed", 88.0F);
-    Property.set(localClass, "armingTime", 2.0F);
-    Property.set(localClass, "dropAltitude", 40.0F);
-    Property.set(localClass, "dropSpeed", 250.0F);
+    Class class1 = BombTorpF5Bheavy.class;
+    Property.set(class1, "mesh", "3DO/Arms/LTF5B/mono.sim");
+    Property.set(class1, "radius", 120.0F);
+    Property.set(class1, "power", 267.5F);
+    Property.set(class1, "powerType", 0);
+    Property.set(class1, "kalibr", 0.45F);
+    Property.set(class1, "massa", 812.0F);
+    Property.set(class1, "sound", "weapon.torpedo");
+    Property.set(class1, "velocity", 20.58F);
+    Property.set(class1, "traveltime", 97.181702F);
+    Property.set(class1, "startingspeed", 0.0F);
+  }
+
+  static Class _mthclass$(String s)
+  {
+    try
+    {
+      class1 = Class.forName(s);
+    }
+    catch (ClassNotFoundException classnotfoundexception)
+    {
+      Class class1;
+      throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+    Class class1;
+    return class1;
   }
 }

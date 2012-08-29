@@ -37,12 +37,6 @@ public class CmdDifficulty extends Cmd
   public static final String NoMinimapPath = "NoMinimapPath";
   public static final String NoSpeedBar = "NoSpeedBar";
   public static final String ComplexEManagement = "ComplexEManagement";
-  public static final String Reliability = "Reliability";
-  public static final String GLimits = "GLimits";
-  public static final String RealisticPilotVulnerability = "RealisticPilotVulnerability";
-  public static final String RealisticNavigationInstruments = "RealisticNavigationInstruments";
-  public static final String NoPlayerIcon = "NoPlayerIcon";
-  public static final String NoFogOfWarIcons = "NoFogOfWarIcons";
   private boolean bSet = false;
 
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
@@ -79,13 +73,6 @@ public class CmdDifficulty extends Cmd
       localDifficultySettings.NoSpeedBar = get(paramMap, "NoSpeedBar", localDifficultySettings.NoSpeedBar);
       localDifficultySettings.ComplexEManagement = get(paramMap, "ComplexEManagement", localDifficultySettings.ComplexEManagement);
 
-      localDifficultySettings.Reliability = get(paramMap, "Reliability", localDifficultySettings.Reliability);
-      localDifficultySettings.G_Limits = get(paramMap, "GLimits", localDifficultySettings.G_Limits);
-      localDifficultySettings.RealisticPilotVulnerability = get(paramMap, "RealisticPilotVulnerability", localDifficultySettings.RealisticPilotVulnerability);
-      localDifficultySettings.RealisticNavigationInstruments = get(paramMap, "RealisticNavigationInstruments", localDifficultySettings.RealisticNavigationInstruments);
-      localDifficultySettings.No_Player_Icon = get(paramMap, "NoPlayerIcon", localDifficultySettings.No_Player_Icon);
-      localDifficultySettings.No_Fog_Of_War_Icons = get(paramMap, "NoFogOfWarIcons", localDifficultySettings.No_Fog_Of_War_Icons);
-
       if (this.bSet) {
         Main.cur().netServerParams.setDifficulty(localDifficultySettings.get());
         return CmdEnv.RETURN_OK;
@@ -116,56 +103,41 @@ public class CmdDifficulty extends Cmd
     INFO_HARD("  NoMapIcons        " + (localDifficultySettings.No_Map_Icons ? "1" : "0"));
     INFO_HARD("  NoMinimapPath     " + (localDifficultySettings.NoMinimapPath ? "1" : "0"));
     INFO_HARD("  NoSpeedBar        " + (localDifficultySettings.NoSpeedBar ? "1" : "0"));
-
-    INFO_HARD("  Reliability  \t\t\t\t\t" + (localDifficultySettings.Reliability ? "1" : "0"));
-    INFO_HARD("  GLimits    \t\t\t\t\t" + (localDifficultySettings.G_Limits ? "1" : "0"));
-    INFO_HARD("  RealisticPilotVulnerability \t" + (localDifficultySettings.RealisticPilotVulnerability ? "1" : "0"));
-    INFO_HARD("  RealisticNavigationInstruments " + (localDifficultySettings.RealisticNavigationInstruments ? "1" : "0"));
-    INFO_HARD("  NoPlayerIcon     \t\t\t\t" + (localDifficultySettings.No_Player_Icon ? "1" : "0"));
-    INFO_HARD("  NoFogOfWarIcons        \t\t" + (localDifficultySettings.No_Fog_Of_War_Icons ? "1" : "0"));
-
     return CmdEnv.RETURN_OK;
   }
 
   private boolean get(Map paramMap, String paramString, boolean paramBoolean)
   {
-    if (nargs(paramMap, paramString) != 1) return paramBoolean;
+    if (Cmd.nargs(paramMap, paramString) != 1) return paramBoolean;
     this.bSet = true;
-    return arg(paramMap, paramString, 0, paramBoolean ? 1 : 0) != 0;
+    return Cmd.arg(paramMap, paramString, 0, paramBoolean ? 1 : 0) != 0;
   }
 
   public CmdDifficulty() {
-    this.param.put("WindTurbulence", null);
-    this.param.put("FlutterEffect", null);
-    this.param.put("StallsSpins", null);
-    this.param.put("BlackoutsRedouts", null);
-    this.param.put("EngineOverheat", null);
-    this.param.put("TorqueGyroEffects", null);
-    this.param.put("RealisticLandings", null);
-    this.param.put("TakeoffLanding", null);
-    this.param.put("CockpitAlwaysOn", null);
-    this.param.put("NoOutsideViews", null);
-    this.param.put("HeadShake", null);
-    this.param.put("NoIcons", null);
-    this.param.put("RealisticGunnery", null);
-    this.param.put("LimitedAmmo", null);
-    this.param.put("LimitedFuel", null);
-    this.param.put("Vulnerability", null);
-    this.param.put("NoPadlock", null);
-    this.param.put("Clouds", null);
-    this.param.put("NoMapIcons", null);
-    this.param.put("SeparateEStart", null);
-    this.param.put("NoInstantSuccess", null);
-    this.param.put("NoMinimapPath", null);
-    this.param.put("NoSpeedBar", null);
-    this.param.put("ComplexEManagement", null);
-
-    this.param.put("Reliability", null);
-    this.param.put("GLimits", null);
-    this.param.put("RealisticPilotVulnerability", null);
-    this.param.put("RealisticNavigationInstruments", null);
-    this.param.put("NoPlayerIcon", null);
-    this.param.put("NoFogOfWarIcons", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("WindTurbulence", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FlutterEffect", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("StallsSpins", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BlackoutsRedouts", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("EngineOverheat", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TorqueGyroEffects", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("RealisticLandings", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TakeoffLanding", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("CockpitAlwaysOn", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoOutsideViews", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HeadShake", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoIcons", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("RealisticGunnery", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LimitedAmmo", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LimitedFuel", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("Vulnerability", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoPadlock", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("Clouds", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoMapIcons", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SeparateEStart", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoInstantSuccess", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoMinimapPath", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NoSpeedBar", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ComplexEManagement", null);
 
     this._properties.put("NAME", "difficulty");
     this._levelAccess = 1;

@@ -57,18 +57,18 @@ public class VisibilityChecker
     if (paramVector3d != null) {
       i = 1;
 
-      Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()].pos.getRender(Cam2WorldLoc);
+      Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(Cam2WorldLoc);
 
       Cam2WorldLoc.get(nosePos);
     } else {
       i = 0;
 
-      Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()].pos.getAbs(Cam2WorldLoc);
+      Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Cam2WorldLoc);
 
       Cam2WorldLoc.get(nosePos);
 
       if (targetPosInput == null)
-        paramActor.pos.getAbs(targetPos);
+        paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(targetPos);
       else {
         targetPos.set(targetPosInput);
       }
@@ -96,15 +96,15 @@ public class VisibilityChecker
 
     if (i != 0)
     {
-      if (paramVector3d.z < 0.4199999868869782D) {
-        if (paramVector3d.z <= 0.0D) {
+      if (paramVector3d.jdField_z_of_type_Double < 0.4199999868869782D) {
+        if (paramVector3d.jdField_z_of_type_Double <= 0.0D) {
           return 0.0F;
         }
-        f1 = (float)(f1 * (paramVector3d.z / 0.4199999868869782D));
+        f1 = (float)(f1 * (paramVector3d.jdField_z_of_type_Double / 0.4199999868869782D));
       }
 
       if ((Main3D.cur3D().clouds != null) && 
-        (nosePos.z < Main3D.cur3D().clouds.height() + 150.0F)) {
+        (nosePos.jdField_z_of_type_Double < Main3D.cur3D().clouds.height() + 150.0F)) {
         if (Main3D.cur3D().clouds.type() >= 5) {
           return 0.0F;
         }
@@ -121,7 +121,7 @@ public class VisibilityChecker
       float f2;
       if (i != 0)
       {
-        if (nosePos.z < Main3D.cur3D().clouds.height() + 150.0F) {
+        if (nosePos.jdField_z_of_type_Double < Main3D.cur3D().clouds.height() + 150.0F) {
           tmpp0.set(nosePos);
           tmpp1.set(paramVector3d);
           tmpp1.scale(30000.0D);
@@ -183,9 +183,9 @@ public class VisibilityChecker
         return 0.0F;
       }
       if (i != 0)
-        ((Actor)localObject1).pos.getRender(Plane2WorldLoc);
+        ((Actor)localObject1).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(Plane2WorldLoc);
       else {
-        ((Actor)localObject1).pos.getAbs(Plane2WorldLoc);
+        ((Actor)localObject1).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Plane2WorldLoc);
       }
       Plane2WorldLoc.getMatrix(Plane2WorldTM);
     }
@@ -224,7 +224,7 @@ public class VisibilityChecker
       if (k == 2) {
         localObject2 = null;
       }
-      Point3d localPoint3d = Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()].pos.getAbsPoint();
+      Point3d localPoint3d = Main3D.cur3D()._camera3D[Main3D.cur3D().getRenderIndx()].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
       tmpp0.set(localPoint3d);
       if (i != 0) {
         tmpp1.set(paramVector3d);

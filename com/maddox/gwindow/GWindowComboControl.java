@@ -142,7 +142,7 @@ public class GWindowComboControl extends GWindowDialogControl
     this.listStartLine = (int)this.scrollBar.pos();
   }
   public void showList() {
-    if (!this.bEnable) return;
+    if (!this.jdField_bEnable_of_type_Boolean) return;
     if (this.list.size() == 0) return;
     if (this.listArea.isVisible()) return;
     lookAndFeel().setupComboList(this);
@@ -157,7 +157,7 @@ public class GWindowComboControl extends GWindowDialogControl
       return true;
     }
     if ((paramGWindow == this.editBox) && 
-      (this.bEnable) && (paramInt1 == 10)) {
+      (this.jdField_bEnable_of_type_Boolean) && (paramInt1 == 10)) {
       if (paramInt2 == 38) {
         editScroll(true);
         return true;
@@ -172,7 +172,7 @@ public class GWindowComboControl extends GWindowDialogControl
   }
 
   public void editScroll(boolean paramBoolean) {
-    if (!this.bEnable) return;
+    if (!this.jdField_bEnable_of_type_Boolean) return;
     if (this.listArea.isVisible()) return;
     int i;
     int j;
@@ -181,18 +181,20 @@ public class GWindowComboControl extends GWindowDialogControl
       j = this.iSelected;
       while (i-- > 0) {
         j = (j - 1 + size()) % size();
-        if ((this.posEnable == null) || (this.posEnable[j] != 0))
+        if ((this.posEnable == null) || (this.posEnable[j] != 0)) {
           setSelected(j, true, true);
+          break;
+        }
       }
-    }
-    else
-    {
+    } else {
       i = size();
       j = this.iSelected;
       while (i-- > 0) {
         j = (j + 1) % size();
-        if ((this.posEnable == null) || (this.posEnable[j] != 0))
+        if ((this.posEnable == null) || (this.posEnable[j] != 0)) {
           setSelected(j, true, true);
+          break;
+        }
       }
     }
   }
@@ -211,8 +213,8 @@ public class GWindowComboControl extends GWindowDialogControl
     this.listArea.hideWindow();
   }
   public void resized() {
-    if (this.metricWin != null)
-      this.metricWin.dy = (lookAndFeel().getComboH() / lookAndFeel().metric());
+    if (this.jdField_metricWin_of_type_ComMaddoxGwindowGRegion != null)
+      this.jdField_metricWin_of_type_ComMaddoxGwindowGRegion.dy = (lookAndFeel().getComboH() / lookAndFeel().metric());
     if (this.button != null) this.button.resized();
     if (this.editBox != null) this.editBox.resized();
     hideList();
@@ -260,8 +262,8 @@ public class GWindowComboControl extends GWindowDialogControl
     }
 
     public boolean notify(int paramInt1, int paramInt2) {
-      if ((paramInt1 == 17) && (this.root.mouseRelMoveZ != 0.0F)) {
-        GWindowComboControl.this.editScroll(this.root.mouseRelMoveZ > 0.0F);
+      if ((paramInt1 == 17) && (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseRelMoveZ != 0.0F)) {
+        GWindowComboControl.this.editScroll(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseRelMoveZ > 0.0F);
         return true;
       }
       String str;
@@ -277,7 +279,7 @@ public class GWindowComboControl extends GWindowDialogControl
           }
         }
         return super.notify(paramInt1, -1);
-      }if ((this.bDelayedNotify) && (this.bCanEdit) && (GWindowComboControl.this.listArea.isVisible())) {
+      }if ((this.jdField_bDelayedNotify_of_type_Boolean) && (this.bCanEdit) && (GWindowComboControl.this.listArea.isVisible())) {
         str = getValue();
         if (str.length() > 0) {
           i = GWindowComboControl.this.findStartsWith(str, GWindowComboControl.this.bFindIgnoreCase);
@@ -288,7 +290,7 @@ public class GWindowComboControl extends GWindowDialogControl
       return super.notify(paramInt1, paramInt2);
     }
     public void created() {
-      this.bDelayedNotify = true;
+      this.jdField_bDelayedNotify_of_type_Boolean = true;
       lookAndFeel().setupComboEditBox(this);
     }
     public void resized() {
@@ -307,7 +309,7 @@ public class GWindowComboControl extends GWindowDialogControl
     {
       super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
       if ((paramInt != 0) || (!paramBoolean)) return;
-      int i = (int)(paramFloat2 / (this.win.dy / GWindowComboControl.this.listCountLines)) + GWindowComboControl.this.listStartLine;
+      int i = (int)(paramFloat2 / (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / GWindowComboControl.this.listCountLines)) + GWindowComboControl.this.listStartLine;
       if ((GWindowComboControl.this.posEnable != null) && (GWindowComboControl.this.posEnable[i] == 0)) return;
       if (isVisible())
         lAF().soundPlay("comboHide");
@@ -316,19 +318,19 @@ public class GWindowComboControl extends GWindowDialogControl
     }
     public void mouseMove(float paramFloat1, float paramFloat2) {
       super.mouseMove(paramFloat1, paramFloat2);
-      int i = (int)(paramFloat2 / (this.win.dy / GWindowComboControl.this.listCountLines)) + GWindowComboControl.this.listStartLine;
+      int i = (int)(paramFloat2 / (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / GWindowComboControl.this.listCountLines)) + GWindowComboControl.this.listStartLine;
       if ((GWindowComboControl.this.posEnable != null) && (GWindowComboControl.this.posEnable[i] == 0)) return;
       GWindowComboControl.this.listSelected = i;
     }
 
     public void render() {
-      lookAndFeel().renderComboList((GWindowComboControl)this.parentWindow);
+      lookAndFeel().renderComboList((GWindowComboControl)this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow);
     }
     public void msgMouseButton(boolean paramBoolean1, int paramInt, boolean paramBoolean2, float paramFloat1, float paramFloat2) {
       if (paramBoolean1) return;
-      GWindow localGWindow1 = this.root.findWindowUnder(this.root.mousePos.x, this.root.mousePos.y);
+      GWindow localGWindow1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.findWindowUnder(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.x, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.y);
       GWindow localGWindow2 = localGWindow1.getParent(GWindowComboControl.class, false);
-      if (localGWindow2 != this.parentWindow) {
+      if (localGWindow2 != this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow) {
         if (isVisible())
           lAF().soundPlay("comboHide");
         hideWindow();

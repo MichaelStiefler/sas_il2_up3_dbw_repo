@@ -65,8 +65,6 @@ public class ProfileUser
   public static final String F_Bridges = "bridges";
   public static final String F_Buildings = "buildings";
   public static final String F_Others = "others";
-  public static final String F_Radios = "radios";
-  public static final String F_FRadios = "fradios";
   public static final String F_Score = "score";
   public static final String F_Rating = "rating";
 
@@ -166,7 +164,6 @@ public class ProfileUser
     localNetUserStat.enemyKill[5] = get("bridges", 0);
     localNetUserStat.enemyKill[6] = get("trains", 0);
     localNetUserStat.enemyKill[7] = get("ships", 0);
-    localNetUserStat.enemyKill[9] = get("radios", 0);
     localNetUserStat.enemyKill[8] = get("skills", 0);
     localNetUserStat.friendKill[0] = get("fkills", 0);
     localNetUserStat.friendKill[1] = get("ftanks", 0);
@@ -176,7 +173,6 @@ public class ProfileUser
 
     localNetUserStat.friendKill[6] = get("ftrains", 0);
     localNetUserStat.friendKill[7] = get("fships", 0);
-    localNetUserStat.friendKill[9] = get("fradios", 0);
     localNetUserStat.friendKill[8] = get("fskills", 0);
     localNetUserStat.bulletsFire = get("fired", 0);
     localNetUserStat.bulletsHit = get("hit", 0);
@@ -214,7 +210,6 @@ public class ProfileUser
     set("trains", paramNetUserStat.enemyKill[6]);
     set("ships", paramNetUserStat.enemyKill[7]);
     set("skills", paramNetUserStat.enemyKill[8]);
-    set("radios", paramNetUserStat.enemyKill[9]);
     set("fkills", paramNetUserStat.friendKill[0]);
     set("ftanks", paramNetUserStat.friendKill[1]);
     set("fcars", paramNetUserStat.friendKill[2]);
@@ -224,7 +219,6 @@ public class ProfileUser
     set("ftrains", paramNetUserStat.friendKill[6]);
     set("fships", paramNetUserStat.friendKill[7]);
     set("fskills", paramNetUserStat.friendKill[8]);
-    set("fradios", paramNetUserStat.friendKill[9]);
     set("fired", paramNetUserStat.bulletsFire);
     set("hit", paramNetUserStat.bulletsHit);
     set("aerialhits", paramNetUserStat.bulletsHitAir);

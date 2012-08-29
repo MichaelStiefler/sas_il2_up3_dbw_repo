@@ -63,7 +63,7 @@ public class Runaway extends ActorMesh
 
     Runaway localRunaway = World.cur().runawayList;
     if (localRunaway == null) { World.cur().runawayList = this; return; }
-    while (localRunaway.next != null) localRunaway = localRunaway.next;
+    do localRunaway = localRunaway.next; while (localRunaway.next != null);
     localRunaway.next = this;
   }
 
@@ -72,7 +72,7 @@ public class Runaway extends ActorMesh
     double d1 = 0.0D; double d2 = 1.7976931348623157E+308D;
     Runaway localRunaway2 = World.cur().runawayList;
     if (localRunaway2 == null) return null;
-    localRunaway2.pos.getAbs(pcur);
+    localRunaway2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(pcur);
     if ((paramInt == 0) || ((!isMaritime(localRunaway2)) && (paramInt == 1)) || ((isMaritime(localRunaway2)) && (paramInt == 2)))
     {
       d2 = paramPoint3d.distanceSquared(pcur);
@@ -80,7 +80,7 @@ public class Runaway extends ActorMesh
     Runaway localRunaway1 = localRunaway2;
 
     for (localRunaway2 = localRunaway2.next; localRunaway2 != null; localRunaway2 = localRunaway2.next) {
-      localRunaway2.pos.getAbs(pcur);
+      localRunaway2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(pcur);
       d1 = paramPoint3d.distanceSquared(pcur);
       if ((d1 >= d2) || (
         (paramInt != 0) && ((isMaritime(localRunaway2)) || (paramInt != 1)) && ((!isMaritime(localRunaway2)) || (paramInt != 2))))
@@ -106,13 +106,13 @@ public class Runaway extends ActorMesh
   {
     Runaway localRunaway = World.cur().runawayList;
     if (localRunaway == null) return null;
-    localRunaway.pos.getAbs(pcur);
+    localRunaway.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(pcur);
     paramLoc.transformInv(pcur);
-    if ((Math.abs(pcur.y) < 15.0D) && (pcur.x < -800.0D) && (pcur.x > -2500.0D)) return localRunaway;
+    if ((Math.abs(pcur.jdField_y_of_type_Double) < 15.0D) && (pcur.jdField_x_of_type_Double < -800.0D) && (pcur.jdField_x_of_type_Double > -2500.0D)) return localRunaway;
     for (localRunaway = localRunaway.next; localRunaway != null; localRunaway = localRunaway.next) {
-      localRunaway.pos.getAbs(pcur);
+      localRunaway.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(pcur);
       paramLoc.transformInv(pcur);
-      if ((Math.abs(pcur.y) < 15.0D) && (pcur.x < -800.0D) && (pcur.x > -2500.0D)) return localRunaway;
+      if ((Math.abs(pcur.jdField_y_of_type_Double) < 15.0D) && (pcur.jdField_x_of_type_Double < -800.0D) && (pcur.jdField_x_of_type_Double > -2500.0D)) return localRunaway;
     }
     return null;
   }
@@ -125,14 +125,14 @@ public class Runaway extends ActorMesh
 
   public static boolean isMaritime(Runaway paramRunaway)
   {
-    return Engine.cur.land.isWater(paramRunaway.pos.getAbsPoint().x, paramRunaway.pos.getAbsPoint().y);
+    return Engine.cur.land.isWater(paramRunaway.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double, paramRunaway.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public void setAircrafts(Aircraft[] paramArrayOfAircraft) {
-    Runaway localRunaway = opposite(this.pos.getAbs());
+    Runaway localRunaway = opposite(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
     float f1 = 1000.0F;
     if (localRunaway != null) {
-      f1 = (float)this.pos.getAbs().getPoint().distance(localRunaway.pos.getAbs().getPoint());
+      f1 = (float)this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getPoint().distance(localRunaway.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getPoint());
     }
     if (Time.tickCounter() != this.oldTickCounter) {
       this.oldTickCounter = Time.tickCounter();
@@ -149,15 +149,15 @@ public class Runaway extends ActorMesh
         this.Planes[0] = paramArrayOfAircraft[i];
         this.curPlaneShift += 1;
         if (this.curPlaneShift > 31) throw new RuntimeException("Too many planes on airdrome");
-        for (j = 0; j < this.curPlaneShift; j++) {
-          if (!Actor.isValid(this.Planes[j]))
+        for (int k = 0; k < this.curPlaneShift; k++) {
+          if (!Actor.isValid(this.Planes[k]))
             continue;
-          this.tmpLoc.set(this.PlaneShift[j] - f1, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-          this.tmpLoc.add(this.pos.getAbs());
-          this.Planes[j].pos.setAbs(this.tmpLoc);
-          this.Planes[j].setSpeed(this.zeroSpeed);
-          this.Planes[j].pos.reset();
-          if (!(this.Planes[j].FM instanceof Maneuver)) continue; ((Maneuver)this.Planes[j].FM).direction = this.Planes[j].pos.getAbsOrient().getAzimut();
+          this.tmpLoc.set(this.PlaneShift[k] - f1, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+          this.tmpLoc.add(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
+          this.Planes[k].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.tmpLoc);
+          this.Planes[k].setSpeed(this.zeroSpeed);
+          this.Planes[k].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
+          if (!(this.Planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) continue; ((Maneuver)this.Planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).direction = this.Planes[k].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getAzimut();
         }
       }
   }
@@ -166,7 +166,7 @@ public class Runaway extends ActorMesh
   {
     Way localWay = new Way();
 
-    RW.set(this.pos.getAbs());
+    RW.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
     float f1 = (float)Engine.land().HQ_Air(RW.getX(), RW.getY());
     float f2 = paramFlightModel.M.massEmpty / 3000.0F;
     if (f2 > 1.0F) f2 = 1.0F;
@@ -177,7 +177,7 @@ public class Runaway extends ActorMesh
       localWayPoint.set(Math.min(v[i] * 0.278F, paramFlightModel.Vmax * 0.6F));
       localWayPoint.Action = 2;
       RW.transform(pd);
-      float f3 = (float)Engine.land().HQ_Air(pd.x, pd.y);
+      float f3 = (float)Engine.land().HQ_Air(pd.jdField_x_of_type_Double, pd.jdField_y_of_type_Double);
       pd.z -= f3 - f1;
       pf.set(pd);
       localWayPoint.set(pf);
@@ -207,7 +207,7 @@ public class Runaway extends ActorMesh
       Actor localActor = paramActorSpawnArg.set(new Runaway());
       if (localActor != null) {
         Point3d localPoint3d = localActor.pos.getAbsPoint();
-        localActor.pos.setAbs(new Point3d(localPoint3d.x, localPoint3d.y, World.land().HQ(localPoint3d.x, localPoint3d.y)));
+        localActor.pos.setAbs(new Point3d(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, World.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double)));
       }
       return localActor;
     }

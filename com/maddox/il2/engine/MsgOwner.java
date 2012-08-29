@@ -60,15 +60,15 @@ public class MsgOwner extends Message
   {
     if ((paramObject instanceof MsgOwnerListener)) {
       switch (this._id) { case 0:
-        ((MsgOwnerListener)paramObject).msgOwnerAttach((Actor)this._sender); break;
+        ((MsgOwnerListener)paramObject).msgOwnerAttach((Actor)this.jdField__sender_of_type_JavaLangObject); break;
       case 1:
-        ((MsgOwnerListener)paramObject).msgOwnerDetach((Actor)this._sender); break;
+        ((MsgOwnerListener)paramObject).msgOwnerDetach((Actor)this.jdField__sender_of_type_JavaLangObject); break;
       case 3:
-        ((MsgOwnerListener)paramObject).msgOwnerDied((Actor)this._sender); break;
+        ((MsgOwnerListener)paramObject).msgOwnerDied((Actor)this.jdField__sender_of_type_JavaLangObject); break;
       case 4:
-        ((MsgOwnerListener)paramObject).msgOwnerTaskComplete((Actor)this._sender); break;
+        ((MsgOwnerListener)paramObject).msgOwnerTaskComplete((Actor)this.jdField__sender_of_type_JavaLangObject); break;
       case 2:
-        ((MsgOwnerListener)paramObject).msgOwnerChange((Actor)this._sender, this._oldOwner);
+        ((MsgOwnerListener)paramObject).msgOwnerChange((Actor)this.jdField__sender_of_type_JavaLangObject, this._oldOwner);
       }
       return true;
     }

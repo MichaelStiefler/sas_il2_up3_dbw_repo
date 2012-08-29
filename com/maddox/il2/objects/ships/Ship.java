@@ -1,1146 +1,1145 @@
 package com.maddox.il2.objects.ships;
 
 import com.maddox.il2.ai.ground.TgtShip;
-import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
+import com.maddox.il2.ai.ground.TypeRadar;
 import com.maddox.rts.SectFile;
 
 public abstract class Ship
 {
+  public static final int AIR_WARNING = 0;
+  public static final int FIRE_CONTROL = 1;
+
   static
   {
-    new BigshipGeneric.SPAWN(G5.class);
-
-    new BigshipGeneric.SPAWN(MO4.class);
-
-    new BigshipGeneric.SPAWN(BBK_1942.class);
-
-    new BigshipGeneric.SPAWN(BBK1124_1943.class);
-
-    new BigshipGeneric.SPAWN(Destroyer_USSR_Type7.class);
-
-    new BigshipGeneric.SPAWN(Destroyer_USSR_Type7_44.class);
-
-    new BigshipGeneric.SPAWN(Tral.class);
-
-    new ShipGeneric.SPAWN(Shuka.class);
-
-    new BigshipGeneric.SPAWN(ShukaP.class);
-
+    new ShipGeneric.SPAWN(Ship.G5.class);
+    new ShipGeneric.SPAWN(Ship.MO4.class);
+    new ShipGeneric.SPAWN(Ship.BBK_1942.class);
+    new ShipGeneric.SPAWN(Ship.BBK1124_1943.class);
+    new ShipGeneric.SPAWN(Ship.Destroyer_USSR_Type7.class);
+    new ShipGeneric.SPAWN(Destroyer_USSR_Type7_44.class);
+    new ShipGeneric.SPAWN(Ship.Tral.class);
+    new ShipGeneric.SPAWN(Ship.Shuka.class);
+    new ShipGeneric.SPAWN(Ship.ShukaP.class);
     new BigshipGeneric.SPAWN(Aurora.class);
-
     new BigshipGeneric.SPAWN(Marat.class);
-
     new BigshipGeneric.SPAWN(Kirov.class);
-
     new BigshipGeneric.SPAWN(Tashkent.class);
-
-    new BigshipGeneric.SPAWN(Tramp.class);
-
-    new BigshipGeneric.SPAWN(Tanker.class);
-
+    new BigshipGeneric.SPAWN(Ship.Tramp.class);
+    new BigshipGeneric.SPAWN(Ship.Tanker.class);
     new BigshipGeneric.SPAWN(USSLexingtonCV2.class);
-
     new BigshipGeneric.SPAWN(USSSaratogaCV3.class);
-
     new BigshipGeneric.SPAWN(USSCVGeneric.class);
-
     new BigshipGeneric.SPAWN(USSBBGeneric.class);
-
     new BigshipGeneric.SPAWN(USSIndianapolisCA35.class);
-
-    new ShipGeneric.SPAWN(LVT_2WAT.class);
-
-    new ShipGeneric.SPAWN(DUKW_WAT.class);
-
-    new ShipGeneric.SPAWN(LCVP.class);
-
+    new ShipGeneric.SPAWN(Ship.LVT_2WAT.class);
+    new ShipGeneric.SPAWN(Ship.DUKW_WAT.class);
+    new ShipGeneric.SPAWN(Ship.LCVP.class);
     new BigshipGeneric.SPAWN(USSGreenlingSS213_Srf.class);
-
-    new BigshipGeneric.SPAWN(USSGreenlingSS213_Sub.class);
-
+    new ShipGeneric.SPAWN(USSGreenlingSS213_Sub.class);
     new BigshipGeneric.SPAWN(USSGatoSS212_Srf.class);
-
-    new BigshipGeneric.SPAWN(USSGatoSS212_Sub.class);
-
+    new ShipGeneric.SPAWN(USSGatoSS212_Sub.class);
     new BigshipGeneric.SPAWN(USSWardDD139.class);
-
     new BigshipGeneric.SPAWN(USSDentDD116.class);
-
     new BigshipGeneric.SPAWN(USSFletcherDD445.class);
-
     new BigshipGeneric.SPAWN(USSOBannonDD450.class);
-
     new BigshipGeneric.SPAWN(USSKiddDD661.class);
-
     new BigshipGeneric.SPAWN(USSCasablancaCVE55.class);
-
     new BigshipGeneric.SPAWN(USSKitkunBayCVE71.class);
-
     new BigshipGeneric.SPAWN(USSShamrockBayCVE84.class);
-
     new BigshipGeneric.SPAWN(USSEssexCV9.class);
-
     new BigshipGeneric.SPAWN(USSIntrepidCV11.class);
-
-    new ShipGeneric.SPAWN(PilotWater_US.class);
-
-    new ShipGeneric.SPAWN(PilotBoatWater_US.class);
-
+    new ShipGeneric.SPAWN(Ship.PilotWater_US.class);
+    new ShipGeneric.SPAWN(Ship.PilotBoatWater_US.class);
     new BigshipGeneric.SPAWN(HMSIllustriousCV.class);
-
     new BigshipGeneric.SPAWN(HMSPoWBB.class);
-
     new BigshipGeneric.SPAWN(HMSKingGeorgeVBB.class);
-
     new BigshipGeneric.SPAWN(HMSDukeOfYorkBB.class);
-
-    new BigshipGeneric.SPAWN(S80.class);
-
-    new BigshipGeneric.SPAWN(MFP.class);
-
-    new BigshipGeneric.SPAWN(MFP2.class);
-
-    new BigshipGeneric.SPAWN(MAS501.class);
-
-    new BigshipGeneric.SPAWN(Murgesku.class);
-
-    new BigshipGeneric.SPAWN(MBoat.class);
-
-    new ShipGeneric.SPAWN(Submarine.class);
-
-    new BigshipGeneric.SPAWN(SubmarineP.class);
-
+    new ShipGeneric.SPAWN(Ship.S80.class);
+    new ShipGeneric.SPAWN(Ship.MFP.class);
+    new ShipGeneric.SPAWN(Ship.MFP2.class);
+    new ShipGeneric.SPAWN(Ship.MAS501.class);
+    new ShipGeneric.SPAWN(Murgesku.class);
+    new ShipGeneric.SPAWN(Ship.MBoat.class);
+    new ShipGeneric.SPAWN(Ship.Submarine.class);
+    new ShipGeneric.SPAWN(Ship.SubmarineP.class);
     new BigshipGeneric.SPAWN(Niobe.class);
-
-    new BigshipGeneric.SPAWN(NiobeWithBeacon.class);
-
-    new BigshipGeneric.SPAWN(SubTypeVIIC_Srf.class);
-
-    new BigshipGeneric.SPAWN(SubTypeVIIC_SrfWithBeacon.class);
-
-    new BigshipGeneric.SPAWN(SubTypeVIIC_Sub.class);
-
+    new BigshipGeneric.SPAWN(Ship.SubTypeVIIC_Srf.class);
+    new ShipGeneric.SPAWN(Ship.SubTypeVIIC_Sub.class);
     new BigshipGeneric.SPAWN(Illmarinen.class);
-
     new BigshipGeneric.SPAWN(Vainamoinen.class);
-
     new BigshipGeneric.SPAWN(Tirpitz.class);
-
-    new BigshipGeneric.SPAWN(PAM.class);
-
+    new BigshipGeneric.SPAWN(Ship.PAM.class);
     new BigshipGeneric.SPAWN(IJNAkagiCV.class);
-
+    new BigshipGeneric.SPAWN(IJNHiryuCV.class);
+    new BigshipGeneric.SPAWN(IJNKagaCV.class);
+    new BigshipGeneric.SPAWN(IJNSoryuCV.class);
     new BigshipGeneric.SPAWN(IJNShokakuCV.class);
-
     new BigshipGeneric.SPAWN(IJNZuikakuCV.class);
-
     new BigshipGeneric.SPAWN(IJNCVGeneric.class);
-
+    new BigshipGeneric.SPAWN(IJNCVLGeneric.class);
     new BigshipGeneric.SPAWN(IJNBBGeneric.class);
-
-    new BigshipGeneric.SPAWN(IJNAkizukiDD42.class);
-
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD41.class);
-
-    new BigshipGeneric.SPAWN(IJNArashiDD41.class);
-
-    new BigshipGeneric.SPAWN(IJNKageroDD41.class);
-
-    new BigshipGeneric.SPAWN(IJNNowakiDD41.class);
-
-    new BigshipGeneric.SPAWN(IJNYukikazeDD41.class);
-
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD43.class);
-
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD43WithBeacon.class);
-
-    new BigshipGeneric.SPAWN(IJNNowakiDD43.class);
-
-    new BigshipGeneric.SPAWN(IJNYukikazeDD43.class);
-
+    new BigshipGeneric.SPAWN(Ship.IJNAkizukiDD42.class);
+    new BigshipGeneric.SPAWN(Ship.IJNAmatsukazeDD41.class);
+    new BigshipGeneric.SPAWN(Ship.IJNArashiDD41.class);
+    new BigshipGeneric.SPAWN(Ship.IJNKageroDD41.class);
+    new BigshipGeneric.SPAWN(Ship.IJNNowakiDD41.class);
+    new BigshipGeneric.SPAWN(Ship.IJNYukikazeDD41.class);
+    new BigshipGeneric.SPAWN(Ship.IJNAmatsukazeDD43.class);
+    new BigshipGeneric.SPAWN(Ship.IJNNowakiDD43.class);
+    new BigshipGeneric.SPAWN(Ship.IJNYukikazeDD43.class);
     new BigshipGeneric.SPAWN(IJNAmatsukazeDD45.class);
-
     new BigshipGeneric.SPAWN(IJNYukikazeDD45.class);
-
-    new BigshipGeneric.SPAWN(IJNFishJunk.class);
-
-    new BigshipGeneric.SPAWN(IJNFishJunkA.class);
-
-    new ShipGeneric.SPAWN(DaihatsuLC.class);
-
-    new ShipGeneric.SPAWN(PilotWater_JA.class);
-
-    new BigshipGeneric.SPAWN(RwyCon.class);
-
-    new BigshipGeneric.SPAWN(RwySteel.class);
-
-    new BigshipGeneric.SPAWN(RwySteelLow.class);
-
-    new BigshipGeneric.SPAWN(RwyTransp.class);
-
-    new BigshipGeneric.SPAWN(RwyTranspWide.class);
-
-    new BigshipGeneric.SPAWN(RwyTranspSqr.class);
+    new BigshipGeneric.SPAWN(Ship.IJNFishJunk.class);
+    new BigshipGeneric.SPAWN(Ship.IJNFishJunkA.class);
+    new ShipGeneric.SPAWN(Ship.DaihatsuLC.class);
+    new ShipGeneric.SPAWN(Ship.PilotWater_JA.class);
+    new BigshipGeneric.SPAWN(Ship.RwyCon.class);
+    new BigshipGeneric.SPAWN(Ship.RwySteel.class);
+    new BigshipGeneric.SPAWN(Ship.RwySteelLow.class);
+    new BigshipGeneric.SPAWN(Ship.RwyTransp.class);
+    new BigshipGeneric.SPAWN(USSPrincetonCVL23.class);
+    new BigshipGeneric.SPAWN(USSBelleauWoodCVL24.class);
+    new BigshipGeneric.SPAWN(USSSanJacintoCVL30.class);
+    new BigshipGeneric.SPAWN(Italia0.class);
+    new BigshipGeneric.SPAWN(Italia1.class);
+    new BigshipGeneric.SPAWN(Soldati.class);
+    new BigshipGeneric.SPAWN(Littorio.class);
+    new BigshipGeneric.SPAWN(HMSFiji.class);
+    new BigshipGeneric.SPAWN(HMSTribal.class);
+    new BigshipGeneric.SPAWN(TroopTrans0.class);
+    new BigshipGeneric.SPAWN(TroopTrans1.class);
+    new BigshipGeneric.SPAWN(TroopTrans2.class);
+    new BigshipGeneric.SPAWN(TroopTrans3.class);
+    new BigshipGeneric.SPAWN(Transport4.class);
+    new BigshipGeneric.SPAWN(Transport5.class);
+    new BigshipGeneric.SPAWN(Transport6.class);
+    new BigshipGeneric.SPAWN(Transport7.class);
+    new BigshipGeneric.SPAWN(USSMcKean.class);
+    new ShipGeneric.SPAWN(MFPT.class);
+    new ShipGeneric.SPAWN(MFPIT.class);
+    new ShipGeneric.SPAWN(Fisherman1.class);
+    new ShipGeneric.SPAWN(Fisherman2.class);
+    new ShipGeneric.SPAWN(Boat1.class);
+    new BigshipGeneric.SPAWN(Ship0.class);
+    new BigshipGeneric.SPAWN(Ship1.class);
+    new BigshipGeneric.SPAWN(Ship2.class);
+    new BigshipGeneric.SPAWN(Ship3.class);
+    new BigshipGeneric.SPAWN(Ship4.class);
+    new BigshipGeneric.SPAWN(Tanker0.class);
+    new BigshipGeneric.SPAWN(Tanker1.class);
+    new BigshipGeneric.SPAWN(Tanker2.class);
+    new BigshipGeneric.SPAWN(TankerDmg.class);
+    new BigshipGeneric.SPAWN(Destroyer0.class);
+    new BigshipGeneric.SPAWN(Destroyer1.class);
+    new BigshipGeneric.SPAWN(Destroyer2.class);
+    new BigshipGeneric.SPAWN(DestroyerDmg.class);
+    new BigshipGeneric.SPAWN(DestroyerWreck.class);
+    new ShipGeneric.SPAWN(LCVPWreck.class);
+    new ShipGeneric.SPAWN(DLCWreck.class);
+    new ShipGeneric.SPAWN(Boat.class);
+    new BigshipGeneric.SPAWN(Carrier0.class);
+    new BigshipGeneric.SPAWN(Carrier1.class);
+    new BigshipGeneric.SPAWN(HMSFormidableCV.class);
+    new BigshipGeneric.SPAWN(HMSIndomitableCV.class);
+    new ShipGeneric.SPAWN(Barge0.class);
+    new ShipGeneric.SPAWN(Barge1.class);
+    new BigshipGeneric.SPAWN(HospitalShip.class);
+    new BigshipGeneric.SPAWN(Transport1.class);
+    new BigshipGeneric.SPAWN(Transport2.class);
+    new BigshipGeneric.SPAWN(Transport3.class);
+    new BigshipGeneric.SPAWN(TransWreck.class);
+    new BigshipGeneric.SPAWN(TransDmg.class);
+    new ShipGeneric.SPAWN(SmallWreck.class);
+    new ShipGeneric.SPAWN(Fisherman.class);
+    new ShipGeneric.SPAWN(MAS501JP.class);
+    new ShipGeneric.SPAWN(MAS501UNE.class);
+    new ShipGeneric.SPAWN(MAS501UNP.class);
+    new ShipGeneric.SPAWN(MAS501RN.class);
+    new ShipGeneric.SPAWN(DestroyerRN.class);
+    new ShipGeneric.SPAWN(DestroyerKM.class);
   }
 
-  public static class RwyTranspSqr extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTranspSqr()
-    {
-    }
-
-    public RwyTranspSqr(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class RwyTranspWide extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTranspWide()
-    {
-    }
-
-    public RwyTranspWide(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class RwyTransp extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTransp()
-    {
-    }
-
-    public RwyTransp(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class RwySteelLow extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwySteelLow()
-    {
-    }
-
-    public RwySteelLow(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class RwySteel extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwySteel()
-    {
-    }
-
-    public RwySteel(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class RwyCon extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyCon()
-    {
-    }
-
-    public RwyCon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class PilotWater_JA extends ShipGeneric
-    implements TgtShip, WeakBody
-  {
-    public PilotWater_JA()
-    {
-    }
-
-    public PilotWater_JA(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class DaihatsuLC extends ShipGeneric
+  public static class DestroyerKM extends ShipGeneric
     implements TgtShip
   {
-    public DaihatsuLC()
+    public DestroyerKM()
     {
     }
 
-    public DaihatsuLC(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public DestroyerKM(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNFishJunkA extends BigshipGeneric
+  public static class DestroyerRN extends ShipGeneric
     implements TgtShip
   {
-    public IJNFishJunkA()
+    public DestroyerRN()
     {
     }
 
-    public IJNFishJunkA(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public DestroyerRN(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNFishJunk extends BigshipGeneric
+  public static class MAS501RN extends ShipGeneric
     implements TgtShip
   {
-    public IJNFishJunk()
+    public MAS501RN()
     {
     }
 
-    public IJNFishJunk(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public MAS501RN(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNYukikazeDD45 extends BigshipGeneric
+  public static class MAS501UNP extends ShipGeneric
     implements TgtShip
   {
-    public IJNYukikazeDD45()
+    public MAS501UNP()
     {
     }
 
-    public IJNYukikazeDD45(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public MAS501UNP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNAmatsukazeDD45 extends BigshipGeneric
+  public static class MAS501UNE extends ShipGeneric
     implements TgtShip
   {
-    public IJNAmatsukazeDD45()
+    public MAS501UNE()
     {
     }
 
-    public IJNAmatsukazeDD45(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public MAS501UNE(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNYukikazeDD43 extends BigshipGeneric
+  public static class MAS501JP extends ShipGeneric
     implements TgtShip
   {
-    public IJNYukikazeDD43()
+    public MAS501JP()
     {
     }
 
-    public IJNYukikazeDD43(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public MAS501JP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNNowakiDD43 extends BigshipGeneric
+  public static class Fisherman2 extends ShipGeneric
     implements TgtShip
   {
-    public IJNNowakiDD43()
+    public Fisherman2()
     {
     }
 
-    public IJNNowakiDD43(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class IJNAmatsukazeDD43WithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNAmatsukazeDD43WithBeacon()
-    {
-    }
-
-    public IJNAmatsukazeDD43WithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Fisherman2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNAmatsukazeDD43 extends BigshipGeneric
+  public static class Fisherman1 extends ShipGeneric
     implements TgtShip
   {
-    public IJNAmatsukazeDD43()
+    public Fisherman1()
     {
     }
 
-    public IJNAmatsukazeDD43(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Fisherman1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNYukikazeDD41 extends BigshipGeneric
+  public static class Fisherman extends ShipGeneric
     implements TgtShip
   {
-    public IJNYukikazeDD41()
+    public Fisherman()
     {
     }
 
-    public IJNYukikazeDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Fisherman(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNNowakiDD41 extends BigshipGeneric
+  public static class SmallWreck extends ShipGeneric
     implements TgtShip
   {
-    public IJNNowakiDD41()
+    public SmallWreck()
     {
     }
 
-    public IJNNowakiDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public SmallWreck(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNKageroDD41 extends BigshipGeneric
+  public static class TransDmg extends BigshipGeneric
     implements TgtShip
   {
-    public IJNKageroDD41()
+    public TransDmg()
     {
     }
 
-    public IJNKageroDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TransDmg(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNArashiDD41 extends BigshipGeneric
+  public static class TransWreck extends BigshipGeneric
     implements TgtShip
   {
-    public IJNArashiDD41()
+    public TransWreck()
     {
     }
 
-    public IJNArashiDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TransWreck(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3); }  } 
+  public static class Transport7 extends BigshipGeneric implements TgtShip { public Transport7() {  } 
+    public Transport7(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3) { super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNAmatsukazeDD41 extends BigshipGeneric
+  public static class Transport3 extends BigshipGeneric
     implements TgtShip
   {
-    public IJNAmatsukazeDD41()
+    public Transport3()
     {
     }
 
-    public IJNAmatsukazeDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Transport3(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNAkizukiDD42 extends BigshipGeneric
+  public static class Transport2 extends BigshipGeneric
     implements TgtShip
   {
-    public IJNAkizukiDD42()
+    public Transport2()
     {
     }
 
-    public IJNAkizukiDD42(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Transport2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNBBGeneric extends BigshipGeneric
+  public static class Transport1 extends BigshipGeneric
     implements TgtShip
   {
-    public IJNBBGeneric()
+    public Transport1()
     {
     }
 
-    public IJNBBGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class IJNCVGeneric extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNCVGeneric()
-    {
-    }
-
-    public IJNCVGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Transport1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class IJNZuikakuCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNZuikakuCV()
-    {
-    }
-
-    public IJNZuikakuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class IJNShokakuCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNShokakuCV()
-    {
-    }
-
-    public IJNShokakuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class IJNAkagiCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNAkagiCV()
-    {
-    }
-
-    public IJNAkagiCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class PAM extends BigshipGeneric
+  public static class HospitalShip extends BigshipGeneric
     implements TgtShip
   {
-    public PAM()
+    public HospitalShip()
     {
     }
 
-    public PAM(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public HospitalShip(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Tirpitz extends BigshipGeneric
+  public static class Barge1 extends ShipGeneric
     implements TgtShip
   {
-    public Tirpitz()
+    public Barge1()
     {
     }
 
-    public Tirpitz(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Barge1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Vainamoinen extends BigshipGeneric
+  public static class Barge0 extends ShipGeneric
     implements TgtShip
   {
-    public Vainamoinen()
+    public Barge0()
     {
     }
 
-    public Vainamoinen(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Barge0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Illmarinen extends BigshipGeneric
+  public static class Carrier1 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Carrier1()
+    {
+    }
+
+    public Carrier1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Carrier0 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Carrier0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSIndomitableCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSIndomitableCV()
+    {
+    }
+
+    public HMSIndomitableCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSFormidableCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSFormidableCV()
+    {
+    }
+
+    public HMSFormidableCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Boat extends ShipGeneric
     implements TgtShip
   {
-    public Illmarinen()
+    public Boat()
     {
     }
 
-    public Illmarinen(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Boat(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class SubTypeVIIC_Sub extends BigshipGeneric
+  public static class DLCWreck extends ShipGeneric
     implements TgtShip
   {
-    public SubTypeVIIC_Sub()
+    public DLCWreck()
     {
     }
 
-    public SubTypeVIIC_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class SubTypeVIIC_SrfWithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public SubTypeVIIC_SrfWithBeacon()
-    {
-    }
-
-    public SubTypeVIIC_SrfWithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public DLCWreck(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class SubTypeVIIC_Srf extends BigshipGeneric
+  public static class LCVPWreck extends ShipGeneric
     implements TgtShip
   {
-    public SubTypeVIIC_Srf()
+    public LCVPWreck()
     {
     }
 
-    public SubTypeVIIC_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class NiobeWithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public NiobeWithBeacon()
-    {
-    }
-
-    public NiobeWithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public LCVPWreck(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Niobe extends BigshipGeneric
+  public static class DestroyerWreck extends BigshipGeneric
     implements TgtShip
   {
-    public Niobe()
+    public DestroyerWreck()
     {
     }
 
-    public Niobe(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public DestroyerWreck(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class SubmarineP extends BigshipGeneric
+  public static class DestroyerDmg extends BigshipGeneric
     implements TgtShip
   {
-    public SubmarineP()
+    public DestroyerDmg()
     {
     }
 
-    public SubmarineP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public DestroyerDmg(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Submarine extends ShipGeneric
+  public static class Destroyer2 extends BigshipGeneric
     implements TgtShip
   {
-    public Submarine()
+    public Destroyer2()
     {
     }
 
-    public Submarine(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Destroyer2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class MBoat extends BigshipGeneric
+  public static class Destroyer1 extends BigshipGeneric
     implements TgtShip
   {
-    public MBoat()
+    public Destroyer1()
     {
     }
 
-    public MBoat(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Destroyer1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Murgesku extends BigshipGeneric
+  public static class Destroyer0 extends BigshipGeneric
     implements TgtShip
   {
-    public Murgesku()
+    public Destroyer0()
     {
     }
 
-    public Murgesku(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Destroyer0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class MAS501 extends BigshipGeneric
+  public static class TankerDmg extends BigshipGeneric
     implements TgtShip
   {
-    public MAS501()
+    public TankerDmg()
     {
     }
 
-    public MAS501(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TankerDmg(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class MFP2 extends BigshipGeneric
+  public static class Tanker2 extends BigshipGeneric
     implements TgtShip
   {
-    public MFP2()
+    public Tanker2()
     {
     }
 
-    public MFP2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Tanker2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class MFP extends BigshipGeneric
+  public static class Tanker1 extends BigshipGeneric
     implements TgtShip
   {
-    public MFP()
+    public Tanker1()
     {
     }
 
-    public MFP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Tanker1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class S80 extends BigshipGeneric
+  public static class Tanker0 extends BigshipGeneric
     implements TgtShip
   {
-    public S80()
+    public Tanker0()
     {
     }
 
-    public S80(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Tanker0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class HMSDukeOfYorkBB extends BigshipGeneric
+  public static class Ship4 extends BigshipGeneric
     implements TgtShip
   {
-    public HMSDukeOfYorkBB()
+    public Ship4()
     {
     }
 
-    public HMSDukeOfYorkBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Ship4(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class HMSKingGeorgeVBB extends BigshipGeneric
+  public static class Ship3 extends BigshipGeneric
     implements TgtShip
   {
-    public HMSKingGeorgeVBB()
+    public Ship3()
     {
     }
 
-    public HMSKingGeorgeVBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Ship3(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class HMSPoWBB extends BigshipGeneric
+  public static class Ship2 extends BigshipGeneric
     implements TgtShip
   {
-    public HMSPoWBB()
+    public Ship2()
     {
     }
 
-    public HMSPoWBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class HMSIllustriousCV extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public HMSIllustriousCV()
-    {
-    }
-
-    public HMSIllustriousCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Ship2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class PilotBoatWater_US extends ShipGeneric
-    implements TgtShip, WeakBody
-  {
-    public PilotBoatWater_US()
-    {
-    }
-
-    public PilotBoatWater_US(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class PilotWater_US extends ShipGeneric
+  public static class Ship1 extends BigshipGeneric
     implements TgtShip
   {
-    public PilotWater_US()
+    public Ship1()
     {
     }
 
-    public PilotWater_US(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class USSIntrepidCV11 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSIntrepidCV11()
-    {
-    }
-
-    public USSIntrepidCV11(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Ship1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSEssexCV9 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSEssexCV9()
-    {
-    }
-
-    public USSEssexCV9(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class USSShamrockBayCVE84 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSShamrockBayCVE84()
-    {
-    }
-
-    public USSShamrockBayCVE84(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class USSKitkunBayCVE71 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSKitkunBayCVE71()
-    {
-    }
-
-    public USSKitkunBayCVE71(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class USSCasablancaCVE55 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSCasablancaCVE55()
-    {
-    }
-
-    public USSCasablancaCVE55(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class USSKiddDD661 extends BigshipGeneric
+  public static class Ship0 extends BigshipGeneric
     implements TgtShip
   {
-    public USSKiddDD661()
+    public Ship0()
     {
     }
 
-    public USSKiddDD661(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Ship0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSOBannonDD450 extends BigshipGeneric
+  public static class Boat1 extends ShipGeneric
     implements TgtShip
   {
-    public USSOBannonDD450()
+    public Boat1()
     {
     }
 
-    public USSOBannonDD450(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Boat1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3); }  } 
+  public static class MFPIT extends ShipGeneric implements TgtShip { public MFPIT() {  } 
+    public MFPIT(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3) { super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSFletcherDD445 extends BigshipGeneric
+  public static class MFPT extends ShipGeneric
     implements TgtShip
   {
-    public USSFletcherDD445()
+    public MFPT()
     {
     }
 
-    public USSFletcherDD445(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public MFPT(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSDentDD116 extends BigshipGeneric
+  public static class USSMcKean extends BigshipGeneric
     implements TgtShip
   {
-    public USSDentDD116()
+    public USSMcKean()
     {
     }
 
-    public USSDentDD116(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSMcKean(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSWardDD139 extends BigshipGeneric
+  public static class Transport6 extends BigshipGeneric
     implements TgtShip
   {
-    public USSWardDD139()
+    public Transport6()
     {
     }
 
-    public USSWardDD139(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Transport6(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSGatoSS212_Sub extends BigshipGeneric
+  public static class Transport5 extends BigshipGeneric
     implements TgtShip
   {
-    public USSGatoSS212_Sub()
+    public Transport5()
     {
     }
 
-    public USSGatoSS212_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Transport5(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSGatoSS212_Srf extends BigshipGeneric
+  public static class Transport4 extends BigshipGeneric
     implements TgtShip
   {
-    public USSGatoSS212_Srf()
+    public Transport4()
     {
     }
 
-    public USSGatoSS212_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Transport4(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSGreenlingSS213_Sub extends BigshipGeneric
+  public static class TroopTrans3 extends BigshipGeneric
     implements TgtShip
   {
-    public USSGreenlingSS213_Sub()
+    public TroopTrans3()
     {
     }
 
-    public USSGreenlingSS213_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TroopTrans3(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSGreenlingSS213_Srf extends BigshipGeneric
+  public static class TroopTrans2 extends BigshipGeneric
     implements TgtShip
   {
-    public USSGreenlingSS213_Srf()
+    public TroopTrans2()
     {
     }
 
-    public USSGreenlingSS213_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TroopTrans2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class LCVP extends ShipGeneric
+  public static class TroopTrans1 extends BigshipGeneric
     implements TgtShip
   {
-    public LCVP()
+    public TroopTrans1()
     {
     }
 
-    public LCVP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TroopTrans1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class DUKW_WAT extends ShipGeneric
+  public static class TroopTrans0 extends BigshipGeneric
     implements TgtShip
   {
-    public DUKW_WAT()
+    public TroopTrans0()
     {
     }
 
-    public DUKW_WAT(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public TroopTrans0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class LVT_2WAT extends ShipGeneric
+  public static class Italia1 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Italia1()
+    {
+    }
+
+    public Italia1(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Italia0 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Italia0()
+    {
+    }
+
+    public Italia0(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Soldati extends BigshipGeneric
     implements TgtShip
   {
-    public LVT_2WAT()
+    public Soldati()
     {
     }
 
-    public LVT_2WAT(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Soldati(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSIndianapolisCA35 extends BigshipGeneric
+  public static class Littorio extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Littorio()
+    {
+    }
+
+    public Littorio(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSFiji extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSFiji()
+    {
+    }
+
+    public HMSFiji(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSTribal extends BigshipGeneric
     implements TgtShip
   {
-    public USSIndianapolisCA35()
+    public HMSTribal()
     {
     }
 
-    public USSIndianapolisCA35(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
-
-  public static class USSBBGeneric extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSBBGeneric()
-    {
-    }
-
-    public USSBBGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public HMSTribal(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSCVGeneric extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+  public static class USSSanJacintoCVL30 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public USSCVGeneric()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSSanJacintoCVL30()
     {
     }
 
-    public USSCVGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSSanJacintoCVL30(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSSaratogaCV3 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+  public static class USSBelleauWoodCVL24 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public USSSaratogaCV3()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSBelleauWoodCVL24()
     {
     }
 
-    public USSSaratogaCV3(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSBelleauWoodCVL24(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class USSLexingtonCV2 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
+  public static class USSPrincetonCVL23 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public USSLexingtonCV2()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSPrincetonCVL23()
     {
     }
 
-    public USSLexingtonCV2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSPrincetonCVL23(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Tanker extends BigshipGeneric
-    implements TgtShip
+  public static class Destroyer_USSR_Type7_44 extends ShipGeneric
+    implements TgtShip, TypeRadar
   {
-    public Tanker()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Destroyer_USSR_Type7_44()
     {
     }
 
-    public Tanker(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Destroyer_USSR_Type7_44(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Tramp extends BigshipGeneric
-    implements TgtShip
+  public static class Aurora extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public Tramp()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Aurora()
     {
     }
 
-    public Tramp(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Aurora(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Marat extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Marat()
+    {
+    }
+
+    public Marat(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Kirov extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Kirov()
+    {
+    }
+
+    public Kirov(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
@@ -1159,157 +1158,895 @@ public abstract class Ship
     }
   }
 
-  public static class Kirov extends BigshipGeneric
-    implements TgtShip
+  public static class USSLexingtonCV2 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public Kirov()
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSLexingtonCV2()
     {
     }
 
-    public Kirov(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSLexingtonCV2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Marat extends BigshipGeneric
-    implements TgtShip
+  public static class USSSaratogaCV3 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public Marat()
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSSaratogaCV3()
     {
     }
 
-    public Marat(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSSaratogaCV3(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Aurora extends BigshipGeneric
-    implements TgtShip
+  public static class USSCVGeneric extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public Aurora()
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSCVGeneric()
     {
     }
 
-    public Aurora(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSCVGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class ShukaP extends BigshipGeneric
-    implements TgtShip
+  public static class USSBBGeneric extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public ShukaP()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSBBGeneric()
     {
     }
 
-    public ShukaP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSBBGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Shuka extends ShipGeneric
-    implements TgtShip
+  public static class USSIndianapolisCA35 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public Shuka()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSIndianapolisCA35()
     {
     }
 
-    public Shuka(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSIndianapolisCA35(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Tral extends BigshipGeneric
+  public static class USSGreenlingSS213_Srf extends BigshipGeneric
     implements TgtShip
   {
-    public Tral()
+    public USSGreenlingSS213_Srf()
     {
     }
 
-    public Tral(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSGreenlingSS213_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Destroyer_USSR_Type7_44 extends BigshipGeneric
+  public static class USSGreenlingSS213_Sub extends ShipGeneric
     implements TgtShip
   {
-    public Destroyer_USSR_Type7_44()
+    public USSGreenlingSS213_Sub()
     {
     }
 
-    public Destroyer_USSR_Type7_44(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSGreenlingSS213_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class Destroyer_USSR_Type7 extends BigshipGeneric
+  public static class USSGatoSS212_Srf extends BigshipGeneric
     implements TgtShip
   {
-    public Destroyer_USSR_Type7()
+    public USSGatoSS212_Srf()
     {
     }
 
-    public Destroyer_USSR_Type7(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSGatoSS212_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class BBK1124_1943 extends BigshipGeneric
+  public static class USSGatoSS212_Sub extends ShipGeneric
     implements TgtShip
   {
-    public BBK1124_1943()
+    public USSGatoSS212_Sub()
     {
     }
 
-    public BBK1124_1943(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSGatoSS212_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class BBK_1942 extends BigshipGeneric
-    implements TgtShip
+  public static class USSWardDD139 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public BBK_1942()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSWardDD139()
     {
     }
 
-    public BBK_1942(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSWardDD139(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class MO4 extends BigshipGeneric
+  public static class USSDentDD116 extends BigshipGeneric
     implements TgtShip
   {
-    public MO4()
+    public USSDentDD116()
     {
     }
 
-    public MO4(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSDentDD116(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
   }
 
-  public static class G5 extends BigshipGeneric
-    implements TgtShip
+  public static class USSFletcherDD445 extends BigshipGeneric
+    implements TgtShip, TypeRadar
   {
-    public G5()
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSFletcherDD445()
     {
     }
 
-    public G5(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public USSFletcherDD445(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSOBannonDD450 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSOBannonDD450()
+    {
+    }
+
+    public USSOBannonDD450(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSKiddDD661 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSKiddDD661()
+    {
+    }
+
+    public USSKiddDD661(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSCasablancaCVE55 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSCasablancaCVE55()
+    {
+    }
+
+    public USSCasablancaCVE55(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSKitkunBayCVE71 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSKitkunBayCVE71()
+    {
+    }
+
+    public USSKitkunBayCVE71(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSShamrockBayCVE84 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSShamrockBayCVE84()
+    {
+    }
+
+    public USSShamrockBayCVE84(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSEssexCV9 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSEssexCV9()
+    {
+    }
+
+    public USSEssexCV9(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class USSIntrepidCV11 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public USSIntrepidCV11()
+    {
+    }
+
+    public USSIntrepidCV11(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSIllustriousCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSIllustriousCV()
+    {
+    }
+
+    public HMSIllustriousCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSPoWBB extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSPoWBB()
+    {
+    }
+
+    public HMSPoWBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSKingGeorgeVBB extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSKingGeorgeVBB()
+    {
+    }
+
+    public HMSKingGeorgeVBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class HMSDukeOfYorkBB extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public HMSDukeOfYorkBB()
+    {
+    }
+
+    public HMSDukeOfYorkBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Murgesku extends ShipGeneric
+    implements TgtShip
+  {
+    public Murgesku()
+    {
+    }
+
+    public Murgesku(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Niobe extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Niobe()
+    {
+    }
+
+    public Niobe(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Illmarinen extends BigshipGeneric
+    implements TgtShip
+  {
+    public Illmarinen()
+    {
+    }
+
+    public Illmarinen(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Vainamoinen extends BigshipGeneric
+    implements TgtShip
+  {
+    public Vainamoinen()
+    {
+    }
+
+    public Vainamoinen(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class Tirpitz extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public Tirpitz()
+    {
+    }
+
+    public Tirpitz(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNSoryuCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range;
+    private int Type;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType()
+    {
+      return this.Type;
+    }
+
+    public IJNSoryuCV()
+    {
+      this.Range = 100000.0F;
+      this.Type = 0;
+    }
+
+    public IJNSoryuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+      this.Range = 100000.0F;
+      this.Type = 0;
+    }
+  }
+
+  public static class IJNKagaCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range;
+    private int Type;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType()
+    {
+      return this.Type;
+    }
+
+    public IJNKagaCV()
+    {
+      this.Range = 100000.0F;
+      this.Type = 0;
+    }
+
+    public IJNKagaCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+      this.Range = 100000.0F;
+      this.Type = 0;
+    }
+  }
+
+  public static class IJNHiryuCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range;
+    private int Type;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType()
+    {
+      return this.Type;
+    }
+
+    public IJNHiryuCV()
+    {
+      this.Range = 100000.0F;
+      this.Type = 0;
+    }
+
+    public IJNHiryuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+      this.Range = 100000.0F;
+      this.Type = 0;
+    }
+  }
+
+  public static class IJNAkagiCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNAkagiCV()
+    {
+    }
+
+    public IJNAkagiCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNShokakuCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNShokakuCV()
+    {
+    }
+
+    public IJNShokakuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNZuikakuCV extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNZuikakuCV()
+    {
+    }
+
+    public IJNZuikakuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNCVLGeneric extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNCVLGeneric()
+    {
+    }
+
+    public IJNCVLGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNCVGeneric extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 100000.0F;
+    private int Type = 0;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNCVGeneric()
+    {
+    }
+
+    public IJNCVGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNBBGeneric extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNBBGeneric()
+    {
+    }
+
+    public IJNBBGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNAmatsukazeDD45 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNAmatsukazeDD45()
+    {
+    }
+
+    public IJNAmatsukazeDD45(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    {
+      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+    }
+  }
+
+  public static class IJNYukikazeDD45 extends BigshipGeneric
+    implements TgtShip, TypeRadar
+  {
+    private float Range = 25000.0F;
+    private int Type = 1;
+
+    public float getRange()
+    {
+      return this.Range;
+    }
+
+    public int getType() {
+      return this.Type;
+    }
+
+    public IJNYukikazeDD45()
+    {
+    }
+
+    public IJNYukikazeDD45(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
     {
       super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }

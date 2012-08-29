@@ -4,7 +4,7 @@ public abstract class InterpolateRef extends Interpolate
 {
   public void invokeRef()
   {
-    if ((this.actor.pos != null) && (this.actor.pos.base() != null))
-      InterpolateAdapter.forceInterpolate(this.actor.pos.base());
+    if ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos != null) && (this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.base() != null))
+      InterpolateAdapter.forceInterpolate(this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.base());
   }
 }

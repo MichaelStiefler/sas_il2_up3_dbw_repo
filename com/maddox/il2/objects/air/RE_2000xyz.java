@@ -6,17 +6,16 @@ import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
-import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
+import java.io.PrintStream;
 
 public abstract class RE_2000xyz extends Scheme1
   implements TypeFighter, TypeStormovik
@@ -51,29 +50,6 @@ public abstract class RE_2000xyz extends Scheme1
       hierMesh().chunkVisible("HMask1_D0", false);
       hierMesh().chunkVisible("Pilot1_D1", true);
     }
-  }
-
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    switch (paramInt1)
-    {
-    case 19:
-      this.FM.Gears.hitCentreGear();
-      break;
-    case 3:
-      if (World.Rnd().nextInt(0, 99) < 1)
-      {
-        this.FM.AS.hitEngine(this, 0, 4);
-        hitProp(0, paramInt2, paramActor);
-        this.FM.EI.engines[0].setEngineStuck(paramActor);
-        return cut("engine1");
-      }
-
-      this.FM.AS.setEngineDies(this, 0);
-      return false;
-    }
-
-    return super.cutFM(paramInt1, paramInt2, paramActor);
   }
 
   public void rareAction(float paramFloat, boolean paramBoolean) {
@@ -135,7 +111,7 @@ public abstract class RE_2000xyz extends Scheme1
       paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, -95.0F, 0.0F);
     }
 
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, -100.0F * paramFloat, 0.0F);
+    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, -80.0F * paramFloat, 0.0F);
 
     paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, 100.0F * paramFloat, 0.0F);
 
@@ -145,7 +121,7 @@ public abstract class RE_2000xyz extends Scheme1
       paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, 95.0F, 0.0F);
     }
 
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, -100.0F * paramFloat, 0.0F);
+    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, -80.0F * paramFloat, 0.0F);
 
     paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(paramFloat, 0.11F, 0.67F, 0.0F, -85.0F), 0.0F);
 
@@ -165,15 +141,6 @@ public abstract class RE_2000xyz extends Scheme1
 
   public void moveWheelSink()
   {
-    float f = 95.0F * this.FM.CT.getGear();
-
-    resetYPRmodifier();
-    Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.2085F, 0.0F, -0.2F);
-    Aircraft.ypr[1] = (-f);
-    hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
-    Aircraft.ypr[1] = f;
-    Aircraft.xyz[1] = Aircraft.cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.2085F, 0.0F, -0.2F);
-    hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
   }
 
   protected void moveFlap(float paramFloat)
@@ -244,9 +211,10 @@ public abstract class RE_2000xyz extends Scheme1
 
     String str = paramString.toLowerCase();
 
-    if (str.startsWith("xx"))
-    {
-      int j;
+    System.out.println("HitBone called! " + str);
+    System.out.println("IN: " + paramShot.power);
+    int j;
+    if (str.startsWith("xx")) {
       if (str.startsWith("xxarmor")) {
         mydebuggunnery("Armor: Hit..");
         if (str.startsWith("xxarmorp")) {
@@ -295,9 +263,9 @@ public abstract class RE_2000xyz extends Scheme1
           this.FM.AS.setControlsDamage(paramShot.initiator, 1);
           this.FM.AS.setControlsDamage(paramShot.initiator, 0); break;
         case 4:
-          if (getEnergyPastArmor(0.1F, paramShot) <= 0.0F) {
-            break;
-          }
+          if (getEnergyPastArmor(0.1F, paramShot) <= 0.0F) break;
+          this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x8);
+
           this.FM.AS.setEngineSpecificDamage(paramShot.initiator, 0, 1);
           this.FM.AS.setEngineSpecificDamage(paramShot.initiator, 0, 6);
           mydebuggunnery("Quadrant: Hit, Engine Controls Disabled.."); break;
@@ -374,14 +342,14 @@ public abstract class RE_2000xyz extends Scheme1
             nextDMGLevels(3, 2, "VatorR_D" + chunkDamageVisible("VatorR"), paramShot.initiator);
           }
 
-          if ((str.startsWith("xxlockall")) && (getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), paramShot) > 0.0F))
+          if ((str.startsWith("xxlockalL")) && (getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), paramShot) > 0.0F))
           {
             mydebuggunnery("Lock Construction: AroneL Lock Shot Off..");
 
             nextDMGLevels(3, 2, "AroneL_D" + chunkDamageVisible("AroneL"), paramShot.initiator);
           }
 
-          if ((str.startsWith("xxlockalr")) && (getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), paramShot) > 0.0F))
+          if ((str.startsWith("xxlockalR")) && (getEnergyPastArmor(5.5F * World.Rnd().nextFloat(1.0F, 1.5F), paramShot) > 0.0F))
           {
             mydebuggunnery("Lock Construction: AroneR Lock Shot Off..");
 
@@ -469,7 +437,6 @@ public abstract class RE_2000xyz extends Scheme1
             }
           }
 
-          mydebuggunnery("Tank State: " + this.FM.AS.astateTankStates[j]);
         }
         else if (str.startsWith("xxmgun")) {
           if (str.endsWith("01")) {
@@ -484,34 +451,9 @@ public abstract class RE_2000xyz extends Scheme1
           }
           getEnergyPastArmor(World.Rnd().nextFloat(0.3F, 12.6F), paramShot);
         }
-        else
-        {
-          float f1;
-          if (!str.startsWith("xxpanel"))
-          {
-            f1 = World.Rnd().nextFloat();
-            if (f1 < 0.3F)
-              this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x8);
-            else if (f1 < 0.6F)
-              this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x40);
-            else
-              this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x10);
-          }
-          else if (!str.startsWith("xxrevi"))
-          {
-            this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x2);
-          }
-          else if (!str.startsWith("xxglass"))
-          {
-            f1 = World.Rnd().nextFloat();
-            if (f1 < 0.1F) {
-              this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x1);
-            }
-            this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x2);
-          }
-        }
       }
-    } else if (str.startsWith("xcf")) {
+    }
+    else if (str.startsWith("xcf")) {
       setControlDamage(paramShot, 0);
       setControlDamage(paramShot, 1);
       setControlDamage(paramShot, 2);
@@ -545,33 +487,31 @@ public abstract class RE_2000xyz extends Scheme1
       {
         hitChunk("VatorR", paramShot);
       }
-    } else if (str.startsWith("xwing"))
-    {
-      int k;
+    } else if (str.startsWith("xwing")) {
       if ((str.startsWith("xwinglin")) && (chunkDamageVisible("WingLIn") < 3))
       {
         if (str.startsWith("xwinglin1"))
         {
-          k = 0;
+          j = 0;
           if ((getEnergyPastArmor(0.12F, paramShot) > 0.0F) && (World.Rnd().nextFloat() < 0.2F))
           {
-            if (this.FM.AS.astateTankStates[k] == 0) {
+            if (this.FM.AS.astateTankStates[j] == 0) {
               mydebuggunnery("Fuel System: Fuel Tank Pierced..");
-              this.FM.AS.hitTank(paramShot.initiator, k, 1);
-              this.FM.AS.doSetTankState(paramShot.initiator, k, 1);
-            } else if (this.FM.AS.astateTankStates[k] == 1) {
+              this.FM.AS.hitTank(paramShot.initiator, j, 1);
+              this.FM.AS.doSetTankState(paramShot.initiator, j, 1);
+            } else if (this.FM.AS.astateTankStates[j] == 1) {
               mydebuggunnery("Fuel System: Fuel Tank Pierced (2)..");
 
-              this.FM.AS.hitTank(paramShot.initiator, k, 1);
-              this.FM.AS.doSetTankState(paramShot.initiator, k, 2);
+              this.FM.AS.hitTank(paramShot.initiator, j, 1);
+              this.FM.AS.doSetTankState(paramShot.initiator, j, 2);
             }
             if ((paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F))
             {
-              this.FM.AS.hitTank(paramShot.initiator, k, 2);
+              this.FM.AS.hitTank(paramShot.initiator, j, 2);
               mydebuggunnery("Fuel System: Fuel Tank Pierced, State Shifted..");
             }
 
-            mydebuggunnery("*** Tank " + (k + 1) + " state = " + this.FM.AS.astateTankStates[k]);
+            mydebuggunnery("*** Tank " + (j + 1) + " state = " + this.FM.AS.astateTankStates[j]);
           }
         }
         setControlDamage(paramShot, 0);
@@ -581,26 +521,26 @@ public abstract class RE_2000xyz extends Scheme1
       {
         if (str.startsWith("xwingrin1"))
         {
-          k = 2;
+          j = 2;
           if ((getEnergyPastArmor(0.12F, paramShot) > 0.0F) && (World.Rnd().nextFloat() < 0.2F))
           {
-            if (this.FM.AS.astateTankStates[k] == 0) {
+            if (this.FM.AS.astateTankStates[j] == 0) {
               mydebuggunnery("Fuel System: Fuel Tank Pierced..");
-              this.FM.AS.hitTank(paramShot.initiator, k, 1);
-              this.FM.AS.doSetTankState(paramShot.initiator, k, 1);
-            } else if (this.FM.AS.astateTankStates[k] == 1) {
+              this.FM.AS.hitTank(paramShot.initiator, j, 1);
+              this.FM.AS.doSetTankState(paramShot.initiator, j, 1);
+            } else if (this.FM.AS.astateTankStates[j] == 1) {
               mydebuggunnery("Fuel System: Fuel Tank Pierced (2)..");
 
-              this.FM.AS.hitTank(paramShot.initiator, k, 1);
-              this.FM.AS.doSetTankState(paramShot.initiator, k, 2);
+              this.FM.AS.hitTank(paramShot.initiator, j, 1);
+              this.FM.AS.doSetTankState(paramShot.initiator, j, 2);
             }
             if ((paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.5F))
             {
-              this.FM.AS.hitTank(paramShot.initiator, k, 2);
+              this.FM.AS.hitTank(paramShot.initiator, j, 2);
               mydebuggunnery("Fuel System: Fuel Tank Pierced, State Shifted..");
             }
 
-            mydebuggunnery("*** Tank " + (k + 1) + " state = " + this.FM.AS.astateTankStates[k]);
+            mydebuggunnery("*** Tank " + (j + 1) + " state = " + this.FM.AS.astateTankStates[j]);
           }
         }
         setControlDamage(paramShot, 0);
@@ -635,7 +575,7 @@ public abstract class RE_2000xyz extends Scheme1
       if ((World.Rnd().nextFloat() < 0.1F) && (getEnergyPastArmor(World.Rnd().nextFloat(1.2F, 3.435F), paramShot) > 0.0F))
       {
         mydebuggunnery("Undercarriage: Stuck..");
-        this.FM.Gears.setHydroOperable(false);
+
         this.FM.AS.setInternalDamage(paramShot.initiator, 3);
       }
     } else if (str.startsWith("xoil")) {
@@ -643,32 +583,27 @@ public abstract class RE_2000xyz extends Scheme1
         this.FM.AS.hitOil(paramShot.initiator, 0);
         mydebuggunnery("*** Engine Module: Oil Radiator Hit..");
       }
-      else if (!str.startsWith("xblister"))
-      {
-        float f2 = World.Rnd().nextFloat();
-        if (f2 < 0.5F)
-          this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x20);
-        else
-          this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x4);
-      }
-    } else if ((str.startsWith("xpilot")) || (str.startsWith("xhead")))
-    {
-      int m = 0;
-      int n;
-      if (str.endsWith("a")) {
-        m = 1;
-        n = str.charAt(6) - '1';
-      } else if (str.endsWith("b")) {
-        m = 2;
-        n = str.charAt(6) - '1';
-      } else {
-        n = str.charAt(5) - '1';
-      }hitFlesh(n, paramShot, m);
     }
+    else if ((!str.startsWith("xblister")) && ((str.startsWith("xpilot")) || (str.startsWith("xhead"))))
+    {
+      j = 0;
+      int k;
+      if (str.endsWith("a")) {
+        j = 1;
+        k = str.charAt(6) - '1';
+      } else if (str.endsWith("b")) {
+        j = 2;
+        k = str.charAt(6) - '1';
+      } else {
+        k = str.charAt(5) - '1';
+      }hitFlesh(k, paramShot, j);
+    }
+    System.out.println("OUT: " + paramShot.power);
   }
 
   protected void mydebuggunnery(String paramString)
   {
+    System.out.println(paramString);
   }
 
   static

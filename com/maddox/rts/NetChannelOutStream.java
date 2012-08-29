@@ -24,13 +24,13 @@ public class NetChannelOutStream extends NetChannel
   protected void putMessageSpawn(NetMsgSpawn paramNetMsgSpawn)
     throws IOException
   {
-    if (((paramNetMsgSpawn._sender instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgSpawn._sender).netChannelCallback(this, paramNetMsgSpawn)))
+    if (((paramNetMsgSpawn.jdField__sender_of_type_ComMaddoxRtsNetObj instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgSpawn.jdField__sender_of_type_ComMaddoxRtsNetObj).netChannelCallback(this, paramNetMsgSpawn)))
     {
       return;
     }super.putMessageSpawn(paramNetMsgSpawn);
   }
   protected void putMessageDestroy(NetMsgDestroy paramNetMsgDestroy) throws IOException {
-    if (((paramNetMsgDestroy._sender instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgDestroy._sender).netChannelCallback(this, paramNetMsgDestroy)))
+    if (((paramNetMsgDestroy.jdField__sender_of_type_ComMaddoxRtsNetObj instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgDestroy.jdField__sender_of_type_ComMaddoxRtsNetObj).netChannelCallback(this, paramNetMsgDestroy)))
     {
       return;
     }super.putMessageDestroy(paramNetMsgDestroy);
@@ -39,7 +39,7 @@ public class NetChannelOutStream extends NetChannel
     super.putMessage(paramNetMsgGuaranted);
   }
   protected void putMessage(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    if (((paramNetMsgGuaranted._sender instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgGuaranted._sender).netChannelCallback(this, paramNetMsgGuaranted)))
+    if (((paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgGuaranted.jdField__sender_of_type_ComMaddoxRtsNetObj).netChannelCallback(this, paramNetMsgGuaranted)))
     {
       return;
     }super.putMessage(paramNetMsgGuaranted);
@@ -51,29 +51,29 @@ public class NetChannelOutStream extends NetChannel
 
   public void destroy()
   {
-    if ((this.state & 0x80000000) != 0) return;
-    this.state |= -2147483648;
+    if ((this.jdField_state_of_type_Int & 0x80000000) != 0) return;
+    this.jdField_state_of_type_Int |= -2147483648;
 
-    while (!this.objects.isEmpty()) {
-      localObject1 = this.objects.nextEntry(null);
+    while (!this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.isEmpty()) {
+      localObject1 = this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.nextEntry(null);
       if (localObject1 == null) break;
       localObject2 = (NetObj)((HashMapIntEntry)localObject1).getValue();
       int i = ((HashMapIntEntry)localObject1).getKey();
-      destroyNetObj((NetObj)localObject2);
-      if (this.objects.containsKey(i)) {
-        this.objects.remove(i);
+      NetChannel.destroyNetObj((NetObj)localObject2);
+      if (this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.containsKey(i)) {
+        this.jdField_objects_of_type_ComMaddoxUtilHashMapInt.remove(i);
       }
     }
-    while (!this.mirrored.isEmpty()) {
-      localObject1 = this.mirrored.nextEntry(null);
+    while (!this.jdField_mirrored_of_type_ComMaddoxUtilHashMapExt.isEmpty()) {
+      localObject1 = this.jdField_mirrored_of_type_ComMaddoxUtilHashMapExt.nextEntry(null);
       if (localObject1 == null) break;
       localObject2 = (NetObj)((Map.Entry)localObject1).getKey();
       localObject2.countMirrors -= 1;
-      this.mirrored.remove(localObject2);
+      this.jdField_mirrored_of_type_ComMaddoxUtilHashMapExt.remove(localObject2);
       MsgNet.postRealDelChannel(localObject2, this);
     }
 
-    Object localObject1 = NetEnv.cur().objects;
+    Object localObject1 = NetEnv.cur().jdField_objects_of_type_ComMaddoxUtilHashMapInt;
     Object localObject2 = ((HashMapInt)localObject1).nextEntry(null);
     while (localObject2 != null) {
       NetObj localNetObj = (NetObj)((HashMapIntEntry)localObject2).getValue();
@@ -95,7 +95,7 @@ public class NetChannelOutStream extends NetChannel
 
   protected boolean update()
   {
-    return this.state >= 0;
+    return this.jdField_state_of_type_Int >= 0;
   }
 
   public void flush()
@@ -117,7 +117,7 @@ public class NetChannelOutStream extends NetChannel
     int i = 0;
 
     int j = getSendPacketLen(l);
-    if (l >= this.lastPacketSendTime + 65535L) {
+    if (l >= this.jdField_lastPacketSendTime_of_type_Long + 65535L) {
       if (j < 20) j = 20;
       i = 1;
     }
@@ -132,14 +132,14 @@ public class NetChannelOutStream extends NetChannel
 
     int i1 = computeSizeSendFMsgs(l);
 
-    int i2 = filteredSortMsgs.size();
+    int i2 = NetChannel.filteredSortMsgs.size();
     Object localObject;
     for (int i3 = 0; i3 < i2; i3++) {
-      localObject = (NetMsgFiltered)filteredSortMsgs.get(i3);
+      localObject = (NetMsgFiltered)NetChannel.filteredSortMsgs.get(i3);
       if ((((NetMsgFiltered)localObject)._prior >= 1.0F) || 
-        (((NetMsgFiltered)localObject)._sender == null) || (!((NetMsgFiltered)localObject)._sender.isMirror())) continue;
+        (((NetMsgFiltered)localObject).jdField__sender_of_type_ComMaddoxRtsNetObj == null) || (!((NetMsgFiltered)localObject).jdField__sender_of_type_ComMaddoxRtsNetObj.isMirror())) continue;
       ((NetMsgFiltered)localObject)._prior = 1.0F;
-      filteredMinSizeMsgs += ((NetMsgFiltered)localObject)._len;
+      NetChannel.filteredMinSizeMsgs += ((NetMsgFiltered)localObject)._len;
     }
 
     if ((i1 + n == 0) && (i == 0)) return false;
@@ -149,8 +149,8 @@ public class NetChannelOutStream extends NetChannel
       i3 = n;
       if (i3 > j) i3 = j;
       i2 = j - i3;
-      if (i2 < filteredMinSizeMsgs) {
-        i2 = filteredMinSizeMsgs;
+      if (i2 < NetChannel.filteredMinSizeMsgs) {
+        i2 = NetChannel.filteredMinSizeMsgs;
 
         j = i3 + i2;
         if (j > 1024) {
@@ -165,19 +165,19 @@ public class NetChannelOutStream extends NetChannel
       }
       if ((i3 > 0) && (i3 < n)) {
         m = computeCountSendGMsgs(i3);
-        i3 = guarantedSizeMsgs;
+        i3 = NetChannel.guarantedSizeMsgs;
         if (j - i3 > i2) i2 = j - i3; 
       }
       else {
         m = computeCountSendGMsgs(i3);
-        i3 = guarantedSizeMsgs;
+        i3 = NetChannel.guarantedSizeMsgs;
       }
       i1 = i2;
       n = i3;
     }
     else {
       m = computeCountSendGMsgs(n);
-      n = guarantedSizeMsgs;
+      n = NetChannel.guarantedSizeMsgs;
     }
 
     i1 = fillFilteredArrayMessages(l, i1);
@@ -186,7 +186,7 @@ public class NetChannelOutStream extends NetChannel
     {
       paramNetMsgOutput.clear();
 
-      this.outData.writeShort((int)(l - this.lastPacketSendTime));
+      this.outData.writeShort((int)(l - this.jdField_lastPacketSendTime_of_type_Long));
       this.outData.writeShort(k + i1 + n);
       sendTime(paramNetMsgOutput, this.sendSequenceNum++, l, k + i1 + n);
 
@@ -195,31 +195,31 @@ public class NetChannelOutStream extends NetChannel
       paramNetMsgOutput.writeByte(m);
       if (m > 0) {
         for (i2 = 0; i2 < m; i2++) {
-          NetChannelGMsgOutput localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.sendGMsgs.get(i2);
+          NetChannelGMsgOutput localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.jdField_sendGMsgs_of_type_ComMaddoxRtsNetChannelArrayList.get(i2);
           putMessage(paramNetMsgOutput, localNetChannelGMsgOutput.objIndex, localNetChannelGMsgOutput.msg, localNetChannelGMsgOutput.iObjects);
           localObject = localNetChannelGMsgOutput.msg;
           ((NetMsgGuaranted)localObject).lockDec();
           if (((NetMsgGuaranted)localObject).isRequiredAsk())
-            MsgNetAskNak.postGame(Time.current(), ((NetMsgGuaranted)localObject)._sender, true, (NetMsgGuaranted)localObject, this);
+            MsgNetAskNak.postGame(Time.current(), ((NetMsgGuaranted)localObject).jdField__sender_of_type_ComMaddoxRtsNetObj, true, (NetMsgGuaranted)localObject, this);
           localNetChannelGMsgOutput.msg = null;
         }
-        this.sendGMsgs.removeRange(0, m);
+        this.jdField_sendGMsgs_of_type_ComMaddoxRtsNetChannelArrayList.removeRange(0, m);
       }
 
-      i2 = filteredSortMsgs.size();
+      i2 = NetChannel.filteredSortMsgs.size();
       for (int i4 = 0; i4 < i2; i4++) {
-        localObject = (NetMsgFiltered)filteredSortMsgs.get(i4);
+        localObject = (NetMsgFiltered)NetChannel.filteredSortMsgs.get(i4);
         putMessage(paramNetMsgOutput, l, (NetMsgFiltered)localObject, Time.fromReal(((NetMsgFiltered)localObject)._time));
         ((NetMsgFiltered)localObject).lockDec();
       }
-      filteredSortMsgs.clear();
+      NetChannel.filteredSortMsgs.clear();
 
-      i4 = CRC16.checksum(0, paramNetMsgOutput.data(), 0, paramNetMsgOutput.dataLength());
-      paramNetMsgOutput.data()[0] = (byte)(i4 >>> 8 & 0xFF);
-      paramNetMsgOutput.data()[1] = (byte)(i4 & 0xFF);
+      int i5 = CRC16.checksum(0, paramNetMsgOutput.data(), 0, paramNetMsgOutput.dataLength());
+      paramNetMsgOutput.data()[0] = (byte)(i5 >>> 8 & 0xFF);
+      paramNetMsgOutput.data()[1] = (byte)(i5 & 0xFF);
 
       this.outData.write(paramNetMsgOutput.data(), 0, paramNetMsgOutput.size()); } catch (Exception localException) {
-      printDebug(localException);
+      NetChannel.printDebug(localException);
     }return !this.bCheckSpeed;
   }
 
@@ -237,22 +237,22 @@ public class NetChannelOutStream extends NetChannel
     this.socket = new NetEmptySocket();
     this.remoteAddress = new NetEmptyAddress();
     this.remotePort = 0;
-    this.nextPacketSendTime = (this.lastPacketSendTime = Time.current());
+    this.jdField_nextPacketSendTime_of_type_Long = (this.jdField_lastPacketSendTime_of_type_Long = Time.current());
 
-    this.state = 1;
+    this.jdField_state_of_type_Int = 1;
   }
 
   public boolean isRequeredSendPacket(long paramLong) {
-    return Time.current() > this.nextPacketSendTime;
+    return Time.current() > this.jdField_nextPacketSendTime_of_type_Long;
   }
 
   protected int getSendPacketLen(long paramLong)
   {
     if (!this.bCheckSpeed) return 1024;
-    if (paramLong < this.nextPacketSendTime)
+    if (paramLong < this.jdField_nextPacketSendTime_of_type_Long)
       return 0;
     double d1 = 10.0D;
-    double d2 = this.maxChSendSpeed * d1;
+    double d2 = this.jdField_maxChSendSpeed_of_type_Double * d1;
     if (d2 < 256.0D)
       d2 = 256.0D;
     if (d2 > 1024.0D) {
@@ -263,12 +263,12 @@ public class NetChannelOutStream extends NetChannel
 
   protected void sendTime(NetMsgOutput paramNetMsgOutput, int paramInt1, long paramLong, int paramInt2) throws IOException {
     double d = 10.0D;
-    if (this.maxChSendSpeed > 0.0D) {
-      d = paramInt2 / this.maxChSendSpeed;
+    if (this.jdField_maxChSendSpeed_of_type_Double > 0.0D) {
+      d = paramInt2 / this.jdField_maxChSendSpeed_of_type_Double;
     }
     if (d < 10.0D) d = 10.0D;
-    this.nextPacketSendTime = (paramLong + ()d);
-    this.lastPacketSendTime = paramLong;
+    this.jdField_nextPacketSendTime_of_type_Long = (paramLong + ()d);
+    this.jdField_lastPacketSendTime_of_type_Long = paramLong;
   }
 
   public void setCheckSpeed(boolean paramBoolean)
@@ -277,11 +277,11 @@ public class NetChannelOutStream extends NetChannel
   }
 
   public double getMaxSpeed() {
-    return this.maxSendSpeed;
+    return this.jdField_maxSendSpeed_of_type_Double;
   }
   public void setMaxSpeed(double paramDouble) {
-    if (paramDouble == this.maxSendSpeed) return;
-    this.maxSendSpeed = paramDouble;
-    this.maxChSendSpeed = paramDouble;
+    if (paramDouble == this.jdField_maxSendSpeed_of_type_Double) return;
+    this.jdField_maxSendSpeed_of_type_Double = paramDouble;
+    this.jdField_maxChSendSpeed_of_type_Double = paramDouble;
   }
 }

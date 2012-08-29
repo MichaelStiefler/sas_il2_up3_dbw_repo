@@ -187,7 +187,6 @@ public class GUI
     new GUICampaignStat(localGUIRoot);
     new GUICampaignStatView(localGUIRoot);
     new GUIAwards(localGUIRoot);
-    new GUIQuickStats(localGUIRoot);
     new GUINet(localGUIRoot);
     new GUINetNewClient(localGUIRoot);
     new GUINetNewServer(localGUIRoot);

@@ -25,11 +25,11 @@ public class MsgProperty extends Message
   public boolean invokeListener(Object paramObject) {
     if ((paramObject instanceof MsgPropertyListener)) {
       switch (this._action) { case 1:
-        ((MsgPropertyListener)paramObject).msgPropertyAdded((Property)this._sender); break;
+        ((MsgPropertyListener)paramObject).msgPropertyAdded((Property)this.jdField__sender_of_type_JavaLangObject); break;
       case 2:
-        ((MsgPropertyListener)paramObject).msgPropertyRemoved((Property)this._sender); break;
+        ((MsgPropertyListener)paramObject).msgPropertyRemoved((Property)this.jdField__sender_of_type_JavaLangObject); break;
       case 3:
-        ((MsgPropertyListener)paramObject).msgPropertyChanged((Property)this._sender); break;
+        ((MsgPropertyListener)paramObject).msgPropertyChanged((Property)this.jdField__sender_of_type_JavaLangObject); break;
       }
 
       return true;

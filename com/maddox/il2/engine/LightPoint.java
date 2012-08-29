@@ -41,8 +41,8 @@ public class LightPoint
   }
   public void setPos(Point3d paramPoint3d) {
     if (!Config.isUSE_RENDER()) return;
-    this.IX = (int)paramPoint3d.x; this.IY = (int)paramPoint3d.y;
-    setPos(this.cppObj, (float)paramPoint3d.x, (float)paramPoint3d.y, (float)paramPoint3d.z);
+    this.IX = (int)paramPoint3d.jdField_x_of_type_Double; this.IY = (int)paramPoint3d.jdField_y_of_type_Double;
+    setPos(this.cppObj, (float)paramPoint3d.jdField_x_of_type_Double, (float)paramPoint3d.jdField_y_of_type_Double, (float)paramPoint3d.jdField_z_of_type_Double);
   }
   public void getPos(double[] paramArrayOfDouble) {
     if (!Config.isUSE_RENDER()) return;
@@ -52,7 +52,7 @@ public class LightPoint
   public void getPos(Point3d paramPoint3d) {
     if (!Config.isUSE_RENDER()) return;
     getPos(this.cppObj, tmpf);
-    paramPoint3d.x = tmpf[0]; paramPoint3d.y = tmpf[1]; paramPoint3d.z = tmpf[2];
+    paramPoint3d.jdField_x_of_type_Double = tmpf[0]; paramPoint3d.jdField_y_of_type_Double = tmpf[1]; paramPoint3d.jdField_z_of_type_Double = tmpf[2];
   }
 
   public void setColor(float paramFloat1, float paramFloat2, float paramFloat3) {
@@ -65,7 +65,7 @@ public class LightPoint
   }
   public void setColor(Color3f paramColor3f) {
     if (!Config.isUSE_RENDER()) return;
-    setColor(this.cppObj, paramColor3f.x, paramColor3f.y, paramColor3f.z);
+    setColor(this.cppObj, paramColor3f.jdField_x_of_type_Float, paramColor3f.jdField_y_of_type_Float, paramColor3f.jdField_z_of_type_Float);
   }
   public void getColor(float[] paramArrayOfFloat) {
     if (!Config.isUSE_RENDER()) return;
@@ -74,7 +74,7 @@ public class LightPoint
   public void getColor(Color3f paramColor3f) {
     if (!Config.isUSE_RENDER()) return;
     getColor(this.cppObj, tmpf);
-    paramColor3f.x = tmpf[0]; paramColor3f.y = tmpf[1]; paramColor3f.z = tmpf[2];
+    paramColor3f.jdField_x_of_type_Float = tmpf[0]; paramColor3f.jdField_y_of_type_Float = tmpf[1]; paramColor3f.jdField_z_of_type_Float = tmpf[2];
   }
 
   public void setEmit(float paramFloat1, float paramFloat2) {

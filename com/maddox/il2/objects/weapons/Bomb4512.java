@@ -19,12 +19,5 @@ public class Bomb4512 extends Torpedo
     Property.set(localClass, "velocity", 22.200001F);
     Property.set(localClass, "traveltime", 270.20001F);
     Property.set(localClass, "startingspeed", 0.0F);
-
-    Property.set(localClass, "impactAngleMin", 14.0F);
-    Property.set(localClass, "impactAngleMax", 24.0F);
-    Property.set(localClass, "impactSpeed", 74.0F);
-    Property.set(localClass, "armingTime", 3.0F);
-    Property.set(localClass, "dropAltitude", 30.0F);
-    Property.set(localClass, "dropSpeed", 205.0F);
   }
 }

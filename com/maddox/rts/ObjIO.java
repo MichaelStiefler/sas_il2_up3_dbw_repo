@@ -112,11 +112,16 @@ public class ObjIO
   {
     try
     {
-      for (int i = 0; i < friendPackage.length; i++) try {
+      for (int i = 0; i < friendPackage.length; ) try {
           return Class.forName(friendPackage[i] + paramString);
         }
-        catch (Exception localException) {
-        } return Class.forName(paramString); } catch (Throwable localThrowable) {
+        catch (Exception localException)
+        {
+          i++;
+        }
+
+
+      return Class.forName(paramString); } catch (Throwable localThrowable) {
     }
     throw new ClassNotFoundException(localThrowable.getMessage());
   }
@@ -176,7 +181,7 @@ public class ObjIO
   }
 
   private static Field[] getFields(Class paramClass) {
-    Field[] arrayOfField = (Field[])(Field[])Property.value(paramClass, "$ClassIOFields$", null);
+    Field[] arrayOfField = (Field[])Property.value(paramClass, "$ClassIOFields$", null);
     if (arrayOfField != null)
       return arrayOfField;
     if (!Property.vars(_fldPropLst, paramClass))
@@ -185,13 +190,13 @@ public class ObjIO
     for (int j = 0; j < i; j++) {
       String str1 = (String)_fldPropLst.get(j);
       if ((str1 != null) && (str1.endsWith("$IO"))) {
-        int k = str1.indexOf('.');
-        if (k < 0)
-          k = str1.length() - "$IO".length();
-        int m = str1.indexOf('[');
-        if ((m > 0) && (m < k))
-          k = m;
-        String str2 = str1.substring(0, k);
+        int m = str1.indexOf('.');
+        if (m < 0)
+          m = str1.length() - "$IO".length();
+        int n = str1.indexOf('[');
+        if ((n > 0) && (n < m))
+          m = n;
+        String str2 = str1.substring(0, m);
         Field localField = null;
         Class localClass = paramClass;
         while (localClass != null) {
@@ -210,8 +215,8 @@ public class ObjIO
     i = _fldLst.size();
     if (i > 0) {
       arrayOfField = new Field[i];
-      for (j = 0; j < i; j++)
-        arrayOfField[j] = ((Field)_fldLst.get(j));
+      for (int k = 0; k < i; k++)
+        arrayOfField[k] = ((Field)_fldLst.get(k));
       Arrays.sort(arrayOfField, _fldsCompare);
       _fldLst.clear();
     } else {
@@ -817,7 +822,7 @@ public class ObjIO
       Class localClass = (Class)stackClasses.get(i);
       int j = 0;
       for (int k = i; k < stackPtr; k++) {
-        Object localObject = stackFields.get(k);
+        localObject = stackFields.get(k);
         if ((localObject instanceof Field)) {
           Field localField = (Field)localObject;
           if (k != i) j = Finger.incInt(j, ".");
@@ -827,9 +832,9 @@ public class ObjIO
         }
       }
       j = Finger.incInt(j, "$ObjIO");
-      Node localNode = (Node)Property.value(localClass, j, null);
-      if (localNode != null)
-        curObjectNode.set(localNode, stackObjects.get(i), curObjectObjects); 
+      Object localObject = (Node)Property.value(localClass, j, null);
+      if (localObject != null)
+        curObjectNode.set((Node)localObject, stackObjects.get(i), curObjectObjects); 
     }
   }
 
@@ -881,27 +886,27 @@ public class ObjIO
     for (int i = 0; i <= stackPtr; i++) {
       Class localClass = (Class)stackClasses.get(i);
       int j = 0;
-      Object localObject = stackFields.get(i);
-      if ((localObject instanceof Field)) {
-        Field localField1 = (Field)localObject;
-        j = Finger.Int(localField1.getName());
+      Object localObject1 = stackFields.get(i);
+      if ((localObject1 instanceof Field)) {
+        Field localField = (Field)localObject1;
+        j = Finger.Int(localField.getName());
       } else {
         j = Finger.Int("[]");
       }
       for (int k = i + 1; k <= stackPtr; k++) {
-        localObject = stackFields.get(k);
-        if ((localObject instanceof Field)) {
-          Field localField2 = (Field)localObject;
+        localObject1 = stackFields.get(k);
+        if ((localObject1 instanceof Field)) {
+          localObject2 = (Field)localObject1;
           j = Finger.incInt(j, ".");
-          j = Finger.incInt(j, localField2.getName());
+          j = Finger.incInt(j, ((Field)localObject2).getName());
         } else {
           j = Finger.incInt(j, "[]");
         }
       }
       j = Finger.incInt(j, "$IO");
-      Node localNode = (Node)Property.value(localClass, j, null);
-      if (localNode != null)
-        curFieldNode.set(localNode, stackObjects.get(i), curFieldObjects);
+      Object localObject2 = (Node)Property.value(localClass, j, null);
+      if (localObject2 != null)
+        curFieldNode.set((Node)localObject2, stackObjects.get(i), curFieldObjects);
     }
   }
 
@@ -1178,10 +1183,10 @@ public class ObjIO
       paramStringBuffer.append('"'); paramStringBuffer.append('"');
     } else {
       int i = 0;
-      char c;
+      int k;
       for (int j = 0; j < paramString.length(); j++) {
-        c = paramString.charAt(j);
-        if ((c > ' ') && (c != '=') && (c != '"') && (c != ',') && (c != '[') && (c != ']') && (c != '(') && (c != ')'))
+        k = paramString.charAt(j);
+        if ((k > 32) && (k != 61) && (k != 34) && (k != 44) && (k != 91) && (k != 93) && (k != 40) && (k != 41))
         {
           continue;
         }
@@ -1192,8 +1197,8 @@ public class ObjIO
 
       if (i != 0) {
         paramStringBuffer.append('"');
-        for (j = 0; j < paramString.length(); j++) {
-          c = paramString.charAt(j);
+        for (k = 0; k < paramString.length(); k++) {
+          char c = paramString.charAt(k);
           if (c == '"')
             paramStringBuffer.append('\\');
           paramStringBuffer.append(c);
@@ -1601,7 +1606,7 @@ public class ObjIO
       if (localResourceBundle != null) {
         _resBuf.setLength(0);
         for (int j = i; j <= stackPtr; j++) {
-          Object localObject = stackFields.get(j);
+          localObject = stackFields.get(j);
           if ((localObject instanceof Field)) {
             Field localField = (Field)localObject;
             if (j != i) _resBuf.append('.');
@@ -1610,18 +1615,18 @@ public class ObjIO
             _resBuf.append("[]");
           }
         }
-        String str = null;
+        Object localObject = null;
         try {
-          str = localResourceBundle.getString(_resBuf.toString());
+          localObject = localResourceBundle.getString(_resBuf.toString());
         } catch (Exception localException) {
         }
-        if (str != null)
-          parseRes(str);
+        if (localObject != null)
+          parseRes((String)localObject);
       }
     }
     if (curRes.isEmpty())
       return null;
-    return new Res(curRes);
+    return (Res)new Res(curRes);
   }
 
   private static void parseRes(String paramString) {
@@ -1632,7 +1637,7 @@ public class ObjIO
     String str1 = paramString.length();
     int n = -1;
     int i1 = -1;
-    while (true) {
+    do {
       if (n != -1) {
         switch (n) { case 0:
           if (curRes.name != null) break; curRes.name = paramString.substring(j, k); break;
@@ -1671,13 +1676,13 @@ public class ObjIO
         i1 = 2; str2 = str5; k = str5; m = str5 + "$TIP".length();
       }
       if (i1 < 0)
-        k = m = str1;
-      if ((n == -1) && (i1 == -1))
-        return;
+        k = m = str1; 
     }
+    while ((n != -1) || (i1 != -1));
   }
 
-  private static String getResWord(StringBuffer paramStringBuffer) {
+  private static String getResWord(StringBuffer paramStringBuffer)
+  {
     if (paramStringBuffer != null) {
       int i = 0;
 
@@ -1905,27 +1910,26 @@ public class ObjIO
     if (this.bStrValid) return;
     if (this.child != null) {
       int i = this.child.size();
-      ObjIO localObjIO;
       for (int j = 0; j < i; j++) {
-        localObjIO = (ObjIO)this.child.get(j);
-        if (localObjIO != null)
-          localObjIO.validate();
+        ObjIO localObjIO1 = (ObjIO)this.child.get(j);
+        if (localObjIO1 != null)
+          localObjIO1.validate();
       }
       _strBuf.setLength(0);
       if (this.clazz.isArray()) _strBuf.append('['); else
         _strBuf.append('(');
-      for (j = 0; j < i; j++) {
-        if (j > 0) _strBuf.append(',');
-        localObjIO = (ObjIO)this.child.get(j);
-        if (localObjIO != null) {
-          String str = localObjIO.strValue;
-          Object[] arrayOfObject1 = localObjIO.getAliasEnum();
+      for (int k = 0; k < i; k++) {
+        if (k > 0) _strBuf.append(',');
+        ObjIO localObjIO2 = (ObjIO)this.child.get(k);
+        if (localObjIO2 != null) {
+          String str = localObjIO2.strValue;
+          Object[] arrayOfObject1 = localObjIO2.getAliasEnum();
           if (arrayOfObject1 != null) {
-            Object[] arrayOfObject2 = localObjIO.getEnum();
+            Object[] arrayOfObject2 = localObjIO2.getEnum();
             if (arrayOfObject2 != arrayOfObject1) {
-              for (int k = 0; k < arrayOfObject2.length; k++) {
-                if (str.equals(arrayOfObject2[k].toString())) {
-                  str = arrayOfObject1[k].toString();
+              for (int m = 0; m < arrayOfObject2.length; m++) {
+                if (str.equals(arrayOfObject2[m].toString())) {
+                  str = arrayOfObject1[m].toString();
                   break;
                 }
               }

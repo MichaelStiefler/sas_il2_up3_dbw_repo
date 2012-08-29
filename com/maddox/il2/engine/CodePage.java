@@ -8,17 +8,17 @@ public class CodePage extends FObj
   }
 
   public int translate(int paramInt) {
-    return Translate(this.cppObj, paramInt);
+    return Translate(this.jdField_cppObj_of_type_Int, paramInt);
   }
 
   public int size()
   {
-    return Size(this.cppObj);
+    return Size(this.jdField_cppObj_of_type_Int);
   }
 
   public String nameCP()
   {
-    return NameCP(this.cppObj); } 
+    return NameCP(this.jdField_cppObj_of_type_Int); } 
   public static native CodePage get(String paramString);
 
   public static native CodePage getApp();

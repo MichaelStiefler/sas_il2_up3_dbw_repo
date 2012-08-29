@@ -44,7 +44,7 @@ public abstract class Airport extends Actor
   {
     Object localObject = null;
     double d1 = 0.0D;
-    pd.set(paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
+    pd.set(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double, paramPoint3d.jdField_z_of_type_Double);
     int i = World.cur().airports.size();
     for (int j = 0; j < i; j++) {
       Airport localAirport = (Airport)World.cur().airports.get(j);
@@ -64,8 +64,8 @@ public abstract class Airport extends Actor
           continue;
         }
       }
-      pd.z = localAirport.pos.getAbsPoint().z;
-      double d2 = pd.distanceSquared(localAirport.pos.getAbsPoint());
+      pd.jdField_z_of_type_Double = localAirport.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_z_of_type_Double;
+      double d2 = pd.distanceSquared(localAirport.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
       if ((localObject == null) || (d2 < d1)) {
         localObject = localAirport;
         d1 = d2;
@@ -90,21 +90,21 @@ public abstract class Airport extends Actor
   public static double distToNearestAirport(Point3d paramPoint3d, int paramInt1, int paramInt2) {
     Airport localAirport = nearest(paramPoint3d, paramInt1, paramInt2);
     if (localAirport == null) return 225000000.0D;
-    return localAirport.pos.getAbsPoint().distance(paramPoint3d);
+    return localAirport.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(paramPoint3d);
   }
 
   public static Airport makeLandWay(FlightModel paramFlightModel)
   {
-    paramFlightModel.AP.way.curr().getP(PlLoc);
+    paramFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getP(PlLoc);
     int i = 0;
     Airport localAirport = null;
-    int j = paramFlightModel.actor.getArmy();
+    int j = paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor.getArmy();
 
-    if ((paramFlightModel.actor instanceof TypeSailPlane)) {
+    if ((paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeSailPlane)) {
       i = 2;
       localAirport = nearest(PlLoc, j, i);
     }
-    else if (paramFlightModel.AP.way.isLandingOnShip()) {
+    else if (paramFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLandingOnShip()) {
       i = 4;
       localAirport = nearest(PlLoc, j, i);
       if (!Actor.isAlive(localAirport)) {
@@ -114,7 +114,7 @@ public abstract class Airport extends Actor
     }
     else {
       i = 3;
-      if (!(paramFlightModel.actor instanceof TypeAmphibiousPlane)) i &= -3;
+      if (!(paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeAmphibiousPlane)) i &= -3;
       localAirport = nearest(PlLoc, j, i);
       if (!Actor.isAlive(localAirport)) {
         i = 4;
@@ -122,11 +122,11 @@ public abstract class Airport extends Actor
       }
     }
 
-    Aircraft.debugprintln(paramFlightModel.actor, "Searching a place to land - Selecting RWY Type " + i);
+    Aircraft.debugprintln(paramFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Searching a place to land - Selecting RWY Type " + i);
 
     if (Actor.isAlive(localAirport)) {
       if (localAirport.landWay(paramFlightModel)) {
-        paramFlightModel.AP.way.landingAirport = localAirport;
+        paramFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.landingAirport = localAirport;
         return localAirport;
       }
       return null;
@@ -150,7 +150,7 @@ public abstract class Airport extends Actor
   }
 
   public int landingFeedback(Point3d paramPoint3d, Aircraft paramAircraft) {
-    if (paramAircraft.FM.CT.GearControl > 0.0F) return 0;
+    if (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.GearControl > 0.0F) return 0;
     if (this.landingRequest > 0) return 1;
     double d1 = 640000.0D;
     List localList = Engine.targets(); int i = localList.size();
@@ -158,15 +158,15 @@ public abstract class Airport extends Actor
       Actor localActor = (Actor)localList.get(j);
       if (((localActor instanceof Aircraft)) && (localActor != paramAircraft)) {
         Aircraft localAircraft = (Aircraft)localActor;
-        Point3d localPoint3d = localAircraft.pos.getAbsPoint();
-        double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
+        Point3d localPoint3d = localAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+        double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
         if (d2 < d1) {
-          if (((Maneuver)localAircraft.FM).get_maneuver() == 25) {
-            if ((((Maneuver)localAircraft.FM).wayCurPos instanceof Point_Runaway)) return 2;
-            if ((localAircraft.FM.AP.way.isLanding()) && (localAircraft.FM.AP.way.Cur() > 5)) return 1;
+          if (((Maneuver)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 25) {
+            if ((((Maneuver)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).wayCurPos instanceof Point_Runaway)) return 2;
+            if ((localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) && (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur() > 5)) return 1;
           }
-          if ((((Maneuver)localAircraft.FM).get_maneuver() == 26) || (((Maneuver)localAircraft.FM).get_maneuver() == 64))
+          if ((((Maneuver)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 26) || (((Maneuver)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 64))
           {
             return 2;
           }

@@ -10,10 +10,10 @@ public class EffAnimatedSprite extends Eff3D
     return new EffAnimatedSpriteActor(this, paramActorPos);
   }
   protected EffAnimatedSprite() {
-    this.cppObj = cNew(); } 
+    this.jdField_cppObj_of_type_Int = cNew(); } 
   private native int cNew();
 
-  public EffAnimatedSprite(int paramInt) { this.cppObj = paramInt; }
+  public EffAnimatedSprite(int paramInt) { this.jdField_cppObj_of_type_Int = paramInt; }
 
   static {
     GObj.loadNative();

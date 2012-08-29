@@ -62,7 +62,7 @@ public class GUIRecordPlay extends GameState
     this.sTimeCompression.setChecked(localGUIRecordSelect.bManualTimeCompression, false);
     this.sViewControls.setChecked(localGUIRecordSelect.bManualViewControls, false);
     this.sViewMessages.setChecked(localGUIRecordSelect.bDrawAllMessages, false);
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F)
+    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -99,7 +99,7 @@ public class GUIRecordPlay extends GameState
       Main.cur().netServerParams.destroy();
     if (RTSConf.cur.netEnv.control != null)
       RTSConf.cur.netEnv.control.destroy();
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F)
+    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -152,7 +152,7 @@ public class GUIRecordPlay extends GameState
 
   private void recordBad(String paramString) {
     this.loadMessageBox.close(false);
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("record.Error"), paramString, 3, 0.0F)
+    new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("record.Error"), paramString, 3, 0.0F)
     {
       public void result(int paramInt) {
         GUIRecordPlay.access$702(GUIRecordPlay.this, false);

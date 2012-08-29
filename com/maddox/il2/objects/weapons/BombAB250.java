@@ -29,19 +29,18 @@ public class BombAB250 extends Bomb
 
   public void msgCollision(Actor paramActor, String paramString1, String paramString2)
   {
-    if ((this.t1 > Time.current()) && (isFuseArmed()))
-      doFireContaineds();
+    if (this.t1 > Time.current()) doFireContaineds();
     super.msgCollision(paramActor, paramString1, paramString2);
   }
 
   private void doFireContaineds()
   {
-    Explosions.AirFlak(this.pos.getAbsPoint(), 1);
+    Explosions.AirFlak(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), 1);
     Actor localActor = null;
     if (Actor.isValid(getOwner())) {
       localActor = getOwner();
     }
-    Point3d localPoint3d = new Point3d(this.pos.getAbsPoint());
+    Point3d localPoint3d = new Point3d(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     Orient localOrient = new Orient();
     Vector3d localVector3d = new Vector3d();
     for (int i = 0; i < 108; i++) {
@@ -49,9 +48,9 @@ public class BombAB250 extends Bomb
       getSpeed(localVector3d);
       localVector3d.add(World.Rnd().nextDouble(-20.0D, 20.0D), World.Rnd().nextDouble(-20.0D, 20.0D), World.Rnd().nextDouble(-20.0D, 20.0D));
       BombSD2A localBombSD2A = new BombSD2A();
-      localBombSD2A.pos.setUpdateEnable(true);
-      localBombSD2A.pos.setAbs(localPoint3d, localOrient);
-      localBombSD2A.pos.reset();
+      localBombSD2A.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
+      localBombSD2A.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d, localOrient);
+      localBombSD2A.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       localBombSD2A.start();
       localBombSD2A.setOwner(localActor, false, false, false);
       localBombSD2A.setSpeed(localVector3d);

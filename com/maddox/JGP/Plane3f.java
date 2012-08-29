@@ -11,12 +11,12 @@ public class Plane3f
 
   public Plane3f()
   {
-    this.N.x = (this.N.y = this.N.z = 0.5773503F);
+    this.N.jdField_x_of_type_Float = (this.N.jdField_y_of_type_Float = this.N.jdField_z_of_type_Float = 0.5773503F);
     this.D = 0.0F;
   }
 
   public Plane3f(Plane3f paramPlane3f) {
-    this.N.x = paramPlane3f.N.x; this.N.y = paramPlane3f.N.y; this.N.z = paramPlane3f.N.z;
+    this.N.jdField_x_of_type_Float = paramPlane3f.N.jdField_x_of_type_Float; this.N.jdField_y_of_type_Float = paramPlane3f.N.jdField_y_of_type_Float; this.N.jdField_z_of_type_Float = paramPlane3f.N.jdField_z_of_type_Float;
     this.D = paramPlane3f.D;
   }
 
@@ -32,19 +32,19 @@ public class Plane3f
   }
 
   public final void set(Plane3f paramPlane3f) {
-    this.N.x = paramPlane3f.N.x; this.N.y = paramPlane3f.N.y; this.N.z = paramPlane3f.N.z;
+    this.N.jdField_x_of_type_Float = paramPlane3f.N.jdField_x_of_type_Float; this.N.jdField_y_of_type_Float = paramPlane3f.N.jdField_y_of_type_Float; this.N.jdField_z_of_type_Float = paramPlane3f.N.jdField_z_of_type_Float;
     this.D = paramPlane3f.D;
   }
 
   public final void set(Point3f paramPoint3f1, Point3f paramPoint3f2, Point3f paramPoint3f3)
   {
-    float f1 = paramPoint3f2.x - paramPoint3f1.x; float f4 = paramPoint3f3.x - paramPoint3f1.x;
-    float f2 = paramPoint3f2.y - paramPoint3f1.y; float f5 = paramPoint3f3.y - paramPoint3f1.y;
-    float f3 = paramPoint3f2.z - paramPoint3f1.z; float f6 = paramPoint3f3.z - paramPoint3f1.z;
+    float f1 = paramPoint3f2.jdField_x_of_type_Float - paramPoint3f1.jdField_x_of_type_Float; float f4 = paramPoint3f3.jdField_x_of_type_Float - paramPoint3f1.jdField_x_of_type_Float;
+    float f2 = paramPoint3f2.jdField_y_of_type_Float - paramPoint3f1.jdField_y_of_type_Float; float f5 = paramPoint3f3.jdField_y_of_type_Float - paramPoint3f1.jdField_y_of_type_Float;
+    float f3 = paramPoint3f2.jdField_z_of_type_Float - paramPoint3f1.jdField_z_of_type_Float; float f6 = paramPoint3f3.jdField_z_of_type_Float - paramPoint3f1.jdField_z_of_type_Float;
 
-    this.N.x = (f2 * f6 - f5 * f3);
-    this.N.y = (f4 * f3 - f1 * f6);
-    this.N.z = (f1 * f5 - f4 * f3);
+    this.N.jdField_x_of_type_Float = (f2 * f6 - f5 * f3);
+    this.N.jdField_y_of_type_Float = (f4 * f3 - f1 * f6);
+    this.N.jdField_z_of_type_Float = (f1 * f5 - f4 * f3);
     this.N.normalize();
     this.D = (-this.N.dot(paramPoint3f1));
   }
@@ -75,7 +75,7 @@ public class Plane3f
       throw new JGPException("Can't make a line from parallel planes");
     }
 
-    float[] arrayOfFloat = { this.N.x, this.N.y, this.N.z, -this.D, paramPlane3f.N.x, paramPlane3f.N.y, paramPlane3f.N.z, -paramPlane3f.D, localLine3f.A.x, localLine3f.A.y, localLine3f.A.z, 0.0F };
+    float[] arrayOfFloat = { this.N.jdField_x_of_type_Float, this.N.jdField_y_of_type_Float, this.N.jdField_z_of_type_Float, -this.D, paramPlane3f.N.jdField_x_of_type_Float, paramPlane3f.N.jdField_y_of_type_Float, paramPlane3f.N.jdField_z_of_type_Float, -paramPlane3f.D, localLine3f.A.jdField_x_of_type_Float, localLine3f.A.jdField_y_of_type_Float, localLine3f.A.jdField_z_of_type_Float, 0.0F };
     try
     {
       localLine3f.P0 = NSolvef.Solve3f(arrayOfFloat);
@@ -106,7 +106,7 @@ public class Plane3f
 
   public String toString()
   {
-    return "( " + this.N.x + "," + this.N.y + "," + this.N.z + ", " + this.D + " )";
+    return "( " + this.N.jdField_x_of_type_Float + "," + this.N.jdField_y_of_type_Float + "," + this.N.jdField_z_of_type_Float + ", " + this.D + " )";
   }
 
   public static void main(String[] paramArrayOfString) throws JGPException

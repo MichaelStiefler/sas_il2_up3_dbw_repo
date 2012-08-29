@@ -61,16 +61,15 @@ public class GUINetServer extends GameState
     }
     CmdEnv.top().exec("socket LISTENER 0");
 
-    i = NetEnv.socketsBlock().size();
-    NetSocket localNetSocket;
-    for (int j = 0; j < i; j++) {
-      localNetSocket = (NetSocket)NetEnv.socketsBlock().get(j);
-      localNetSocket.maxChannels = 0;
+    int j = NetEnv.socketsBlock().size();
+    for (int k = 0; k < j; k++) {
+      NetSocket localNetSocket1 = (NetSocket)NetEnv.socketsBlock().get(k);
+      localNetSocket1.maxChannels = 0;
     }
-    i = NetEnv.socketsNoBlock().size();
-    for (j = 0; j < i; j++) {
-      localNetSocket = (NetSocket)NetEnv.socketsNoBlock().get(j);
-      localNetSocket.maxChannels = 0;
+    j = NetEnv.socketsNoBlock().size();
+    for (int m = 0; m < j; m++) {
+      NetSocket localNetSocket2 = (NetSocket)NetEnv.socketsNoBlock().get(m);
+      localNetSocket2.maxChannels = 0;
     }
 
     GUI.activate();

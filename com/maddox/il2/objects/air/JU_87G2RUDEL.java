@@ -16,13 +16,13 @@ public class JU_87G2RUDEL extends JU_87
   public void onAircraftLoaded()
   {
     super.onAircraftLoaded();
-    this.FM.Skill = 3;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Skill = 3;
   }
 
   public void update(float paramFloat)
   {
     for (int i = 1; i < 5; i++) {
-      hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, 15.0F - 30.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
+      hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, 15.0F - 30.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator(), 0.0F);
     }
     super.update(paramFloat);
   }
@@ -38,11 +38,11 @@ public class JU_87G2RUDEL extends JU_87
 
     Property.set(localClass, "FlightModel", "FlightModels/Ju-87G-2(ofRudel).fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 10, 10 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1, 10, 10 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBK37JU87 12", "MGunBK37JU87 12", "MGunMG81t 250", "MGunMG81t 250" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBK37JU87 12", "MGunBK37JU87 12", "MGunMG81t 250", "MGunMG81t 250" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

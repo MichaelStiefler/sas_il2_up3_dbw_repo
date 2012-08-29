@@ -289,9 +289,8 @@ public abstract class PlaneGeneric extends ActorHMesh
 
     Object localObject1 = Aircraft.partNames();
     Object localObject2 = hierMesh();
-    for (int i = 1; (i < 10) && 
-      (((HierMesh)localObject2).chunkFindCheck("Pilot" + i + "_D0") >= 0); i++)
-    {
+    for (int i = 1; i < 10; i++) {
+      if (((HierMesh)localObject2).chunkFindCheck("Pilot" + i + "_D0") < 0) break;
       ((HierMesh)localObject2).chunkVisible("Pilot" + i + "_D0", false);
       if (((HierMesh)localObject2).chunkFindCheck("Head" + i + "_D0") >= 0) {
         ((HierMesh)localObject2).chunkVisible("Head" + i + "_D0", false);
@@ -321,12 +320,12 @@ public abstract class PlaneGeneric extends ActorHMesh
     }
 
     if (!paramBoolean) {
-      for (i = 0; i < localObject1.length; i++) {
-        if (((HierMesh)localObject2).chunkFindCheck(localObject1[i] + "_D0") >= 0) {
-          ((HierMesh)localObject2).chunkVisible(localObject1[i] + "_D0", false);
-          for (int j = 3; j >= 0; j--) {
-            if (((HierMesh)localObject2).chunkFindCheck(localObject1[i] + "_D" + j) >= 0) {
-              ((HierMesh)localObject2).chunkVisible(localObject1[i] + "_D" + j, true);
+      for (int j = 0; j < localObject1.length; j++) {
+        if (((HierMesh)localObject2).chunkFindCheck(localObject1[j] + "_D0") >= 0) {
+          ((HierMesh)localObject2).chunkVisible(localObject1[j] + "_D0", false);
+          for (int k = 3; k >= 0; k--) {
+            if (((HierMesh)localObject2).chunkFindCheck(localObject1[j] + "_D" + k) >= 0) {
+              ((HierMesh)localObject2).chunkVisible(localObject1[j] + "_D" + k, true);
               break;
             }
           }
@@ -345,28 +344,28 @@ public abstract class PlaneGeneric extends ActorHMesh
 
   private void Align(boolean paramBoolean1, boolean paramBoolean2)
   {
-    this.pos.getAbs(p, o);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.prop.height);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p, o);
+    p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.prop.height);
     if (!paramBoolean1) {
       o.increment(0.0F, -this.prop.pitch, 0.0F);
     }
-    Engine.land().N(p.x, p.y, n);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
     o.orient(n);
     o.increment(0.0F, this.prop.pitch, 0.0F);
 
     if (paramBoolean2)
     {
-      long l = ()(p.x % 2.3D * 221.0D + p.y % 3.4D * 211.0D * 211.0D);
+      long l = ()(p.jdField_x_of_type_Double % 2.3D * 221.0D + p.jdField_y_of_type_Double % 3.4D * 211.0D * 211.0D);
       RangeRandom localRangeRandom = new RangeRandom(l);
 
-      p.z -= localRangeRandom.nextFloat(0.1F, 0.4F);
+      p.jdField_z_of_type_Double -= localRangeRandom.nextFloat(0.1F, 0.4F);
 
       float f1 = localRangeRandom.nextFloat(-2.0F, 2.0F);
       float f2 = (localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(7.0F, 18.0F);
       o.increment(f1, 0.0F, f2);
     }
 
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public void align()
@@ -468,7 +467,7 @@ public abstract class PlaneGeneric extends ActorHMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     return paramFloat <= 0.0F ? 0.0F : paramFloat;
   }
 
@@ -481,8 +480,8 @@ public abstract class PlaneGeneric extends ActorHMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -495,15 +494,15 @@ public abstract class PlaneGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -514,10 +513,10 @@ public abstract class PlaneGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -530,7 +529,7 @@ public abstract class PlaneGeneric extends ActorHMesh
     else {
       localNetMsgGuaranted.writeShort(1);
     }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public static class SPAWN implements ActorSpawn {

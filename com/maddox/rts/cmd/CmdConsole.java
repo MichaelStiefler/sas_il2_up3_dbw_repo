@@ -25,96 +25,96 @@ public class CmdConsole extends Cmd
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
   {
     String str;
-    if (exist(paramMap, "WRAP")) {
-      if (nargs(paramMap, "WRAP") == 1) {
-        str = arg(paramMap, "WRAP", 0);
+    if (Cmd.exist(paramMap, "WRAP")) {
+      if (Cmd.nargs(paramMap, "WRAP") == 1) {
+        str = Cmd.arg(paramMap, "WRAP", 0);
         RTSConf.cur.console.bWrap = "on".equals(str);
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "WRAP" + " is " + (RTSConf.cur.console.bWrap ? "on" : "off"));
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "WRAP" + " is " + (RTSConf.cur.console.bWrap ? "on" : "off"));
       }
     }
 
-    if (exist(paramMap, "PAUSE")) {
-      if (nargs(paramMap, "PAUSE") == 1) {
-        str = arg(paramMap, "PAUSE", 0);
+    if (Cmd.exist(paramMap, "PAUSE")) {
+      if (Cmd.nargs(paramMap, "PAUSE") == 1) {
+        str = Cmd.arg(paramMap, "PAUSE", 0);
         RTSConf.cur.console.setPause("on".equals(str));
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "PAUSE" + " is " + (RTSConf.cur.console.isPaused() ? "on" : "off"));
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "PAUSE" + " is " + (RTSConf.cur.console.isPaused() ? "on" : "off"));
       }
     }
 
-    if (exist(paramMap, "LOG")) {
-      if (nargs(paramMap, "LOG") == 1) {
-        str = arg(paramMap, "LOG", 0);
+    if (Cmd.exist(paramMap, "LOG")) {
+      if (Cmd.nargs(paramMap, "LOG") == 1) {
+        str = Cmd.arg(paramMap, "LOG", 0);
         RTSConf.cur.console.log("on".equals(str));
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "LOG" + " is " + (RTSConf.cur.console.isLog() ? "on" : "off"));
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "LOG" + " is " + (RTSConf.cur.console.isLog() ? "on" : "off"));
       }
     }
 
-    if (exist(paramMap, "LOGTIME")) {
-      if (nargs(paramMap, "LOGTIME") == 1) {
-        str = arg(paramMap, "LOGTIME", 0);
+    if (Cmd.exist(paramMap, "LOGTIME")) {
+      if (Cmd.nargs(paramMap, "LOGTIME") == 1) {
+        str = Cmd.arg(paramMap, "LOGTIME", 0);
         Console.setTypeTimeInLogFile("on".equals(str));
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "LOGTIME" + " is " + (Console.isTypeTimeInLogFile() ? "on" : "off"));
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "LOGTIME" + " is " + (Console.isTypeTimeInLogFile() ? "on" : "off"));
       }
     }
 
-    if (exist(paramMap, "LOGFILE")) {
-      if (nargs(paramMap, "LOGFILE") == 1) {
-        str = arg(paramMap, "LOGFILE", 0);
+    if (Cmd.exist(paramMap, "LOGFILE")) {
+      if (Cmd.nargs(paramMap, "LOGFILE") == 1) {
+        str = Cmd.arg(paramMap, "LOGFILE", 0);
         RTSConf.cur.console.setLogFileName(str);
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "LOGFILE" + " is " + RTSConf.cur.console.logFileName());
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "LOGFILE" + " is " + RTSConf.cur.console.logFileName());
       }
     }
 
-    if (exist(paramMap, "LOAD")) {
-      if (nargs(paramMap, "LOAD") == 1) {
-        str = arg(paramMap, "LOAD", 0);
+    if (Cmd.exist(paramMap, "LOAD")) {
+      if (Cmd.nargs(paramMap, "LOAD") == 1) {
+        str = Cmd.arg(paramMap, "LOAD", 0);
         RTSConf.cur.console.load(str);
       } else {
-        ERR_HARD((String)this._properties.get("NAME") + " " + "LOAD" + " ???");
+        ERR_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "LOAD" + " ???");
       }
     }
 
-    if (exist(paramMap, "SAVE"))
-      if (nargs(paramMap, "SAVE") == 1) {
-        str = arg(paramMap, "SAVE", 0);
+    if (Cmd.exist(paramMap, "SAVE"))
+      if (Cmd.nargs(paramMap, "SAVE") == 1) {
+        str = Cmd.arg(paramMap, "SAVE", 0);
         RTSConf.cur.console.save(str);
       } else {
-        ERR_HARD((String)this._properties.get("NAME") + " " + "SAVE" + " ???");
+        ERR_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "SAVE" + " ???");
       }
     int i;
-    if (exist(paramMap, "HISTORY")) {
-      if (nargs(paramMap, "HISTORY") == 1) {
-        i = arg(paramMap, "HISTORY", 0, 128, 0, 10000);
+    if (Cmd.exist(paramMap, "HISTORY")) {
+      if (Cmd.nargs(paramMap, "HISTORY") == 1) {
+        i = Cmd.arg(paramMap, "HISTORY", 0, 128, 0, 10000);
         RTSConf.cur.console.setMaxHistoryOut(i);
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "HISTORY" + " size = " + RTSConf.cur.console.maxHistoryOut());
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "HISTORY" + " size = " + RTSConf.cur.console.maxHistoryOut());
       }
     }
 
-    if (exist(paramMap, "HISTORYCMD")) {
-      if (nargs(paramMap, "HISTORYCMD") == 1) {
-        i = arg(paramMap, "HISTORYCMD", 0, 128, 0, 10000);
+    if (Cmd.exist(paramMap, "HISTORYCMD")) {
+      if (Cmd.nargs(paramMap, "HISTORYCMD") == 1) {
+        i = Cmd.arg(paramMap, "HISTORYCMD", 0, 128, 0, 10000);
         RTSConf.cur.console.setMaxHistoryCmd(i);
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "HISTORYCMD" + " size = " + RTSConf.cur.console.maxHistoryCmd());
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "HISTORYCMD" + " size = " + RTSConf.cur.console.maxHistoryCmd());
       }
     }
 
-    if (exist(paramMap, "PAGE")) {
-      if (nargs(paramMap, "PAGE") == 1) {
-        i = arg(paramMap, "PAGE", 0, 20, 1, 100);
+    if (Cmd.exist(paramMap, "PAGE")) {
+      if (Cmd.nargs(paramMap, "PAGE") == 1) {
+        i = Cmd.arg(paramMap, "PAGE", 0, 20, 1, 100);
         RTSConf.cur.console.setPageHistoryOut(i);
       } else {
-        INFO_HARD((String)this._properties.get("NAME") + " " + "PAGE" + " size = " + RTSConf.cur.console.pageHistoryOut());
+        INFO_HARD((String)this.jdField__properties_of_type_JavaUtilHashMap.get("NAME") + " " + "PAGE" + " size = " + RTSConf.cur.console.pageHistoryOut());
       }
     }
 
-    if (exist(paramMap, "CLEAR")) {
+    if (Cmd.exist(paramMap, "CLEAR")) {
       RTSConf.cur.console.clear();
     }
 
@@ -123,18 +123,18 @@ public class CmdConsole extends Cmd
 
   public CmdConsole()
   {
-    this.param.put("WRAP", null);
-    this.param.put("CLEAR", null);
-    this.param.put("HISTORY", null);
-    this.param.put("HISTORYCMD", null);
-    this.param.put("PAGE", null);
-    this.param.put("PAUSE", null);
-    this.param.put("LOG", null);
-    this.param.put("LOGTIME", null);
-    this.param.put("LOGFILE", null);
-    this.param.put("LOAD", null);
-    this.param.put("SAVE", null);
-    this._properties.put("NAME", "console");
+    this.jdField_param_of_type_JavaUtilTreeMap.put("WRAP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("CLEAR", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HISTORY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HISTORYCMD", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PAGE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PAUSE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOG", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOGTIME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOGFILE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOAD", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SAVE", null);
+    this.jdField__properties_of_type_JavaUtilHashMap.put("NAME", "console");
     this._levelAccess = 2;
   }
 }

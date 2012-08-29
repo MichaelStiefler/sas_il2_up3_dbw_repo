@@ -14,7 +14,9 @@ public class BombGunTorpF5Bheavy extends TorpedoGun
   static
   {
     Class localClass = BombGunTorpF5Bheavy.class;
+
     Property.set(localClass, "bulletClass", BombTorpF5Bheavy.class);
+
     Property.set(localClass, "bullets", 1);
     Property.set(localClass, "shotFreq", 0.1F);
     Property.set(localClass, "external", 1);

@@ -116,7 +116,7 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     float f1 = paramGWindowTree.getTabStep();
     float f2 = paramGWindowTree.getBorderSpace();
     if (paramGWindowTree.bDrawTreeLines) {
-      k = GColor.Gray.color;
+      k = GColor.Gray.jdField_color_of_type_Int;
       for (int m = 0; m < i; m++) {
         localGTreePath1 = (GTreePath)paramGWindowTree.rows.get(m);
         int n = localGTreePath1.getPathCount();
@@ -177,7 +177,7 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     for (int k = 0; k < i; k++) {
       localGTreePath1 = (GTreePath)paramGWindowTree.rows.get(k);
       paramGWindowTree.computeSize(localGTreePath1);
-      GPoint localGPoint = paramGWindowTree.root.C.org;
+      GPoint localGPoint = paramGWindowTree.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.org;
       float f3 = paramGWindowTree.getBorderSpace();
       f3 += (localGTreePath1.getPathCount() - j) * f1;
       localGPoint.add(f3, f2);
@@ -198,10 +198,10 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
         {
           localObject = paramGWindowTree.model.getString(localGTreePath1, paramGWindowTree.isSelect(localGTreePath1), paramGWindowTree.isExpanded(localGTreePath1));
           if (localObject != null) {
-            paramGWindowTree.setCanvasFont(paramGWindowTree.font);
+            paramGWindowTree.setCanvasFont(paramGWindowTree.jdField_font_of_type_Int);
             if (localGTreePath1.equals(paramGWindowTree.selectPath)) {
               paramGWindowTree.setCanvasColorBLACK();
-              paramGWindowTree.wClient.draw(0.0F, 0.0F, paramGWindowTree._sizePathDx, paramGWindowTree._sizePathDy, this.regionWhite);
+              paramGWindowTree.wClient.draw(0.0F, 0.0F, paramGWindowTree._sizePathDx, paramGWindowTree._sizePathDy, this.jdField_regionWhite_of_type_ComMaddoxGwindowGTexRegion);
               paramGWindowTree.setCanvasColorWHITE();
             } else {
               paramGWindowTree.setCanvasColorBLACK();
@@ -216,10 +216,10 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   }
 
   public void render(GWindowTree paramGWindowTree) {
-    fillRegion(paramGWindowTree, -1, 0.0F, 0.0F, paramGWindowTree.win.dx, paramGWindowTree.win.dy);
+    fillRegion(paramGWindowTree, -1, 0.0F, 0.0F, paramGWindowTree.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowTree.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     paramGWindowTree.setCanvasColorWHITE();
-    drawBevel(paramGWindowTree, 0.0F, 0.0F, paramGWindowTree.win.dx, paramGWindowTree.win.dy, this.bevelDOWN, this.elements, false);
-    GRegion localGRegion = paramGWindowTree.root.C.clip;
+    drawBevel(paramGWindowTree, 0.0F, 0.0F, paramGWindowTree.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowTree.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements, false);
+    GRegion localGRegion = paramGWindowTree.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip;
     localGRegion.x += this.bevelDOWN.L.dx;
     localGRegion.y += this.bevelDOWN.T.dy;
     localGRegion.dx -= this.bevelDOWN.L.dx + this.bevelDOWN.R.dx;
@@ -229,16 +229,16 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public GRegion getClientRegion(GWindowTree paramGWindowTree, GRegion paramGRegion, float paramFloat) {
     paramGRegion.x = (this.bevelDOWN.L.dx + paramFloat);
     paramGRegion.y = (this.bevelDOWN.T.dy + paramFloat);
-    paramGRegion.dx = (paramGWindowTree.win.dx - paramGRegion.x - this.bevelDOWN.R.dx - paramFloat);
-    paramGRegion.dy = (paramGWindowTree.win.dy - paramGRegion.y - this.bevelDOWN.B.dy - paramFloat);
+    paramGRegion.dx = (paramGWindowTree.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGRegion.x - this.bevelDOWN.R.dx - paramFloat);
+    paramGRegion.dy = (paramGWindowTree.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGRegion.y - this.bevelDOWN.B.dy - paramFloat);
     return paramGRegion;
   }
 
   public void render(GWindowTable paramGWindowTable)
   {
     paramGWindowTable.setCanvasColorWHITE();
-    drawBevel(paramGWindowTable, 0.0F, 0.0F, paramGWindowTable.win.dx, paramGWindowTable.win.dy, this.bevelDOWN, this.elements, true);
-    GRegion localGRegion = paramGWindowTable.root.C.clip;
+    drawBevel(paramGWindowTable, 0.0F, 0.0F, paramGWindowTable.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowTable.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements, true);
+    GRegion localGRegion = paramGWindowTable.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip;
     localGRegion.x += this.bevelDOWN.L.dx;
     localGRegion.y += this.bevelDOWN.T.dy;
     localGRegion.dx -= this.bevelDOWN.L.dx + this.bevelDOWN.R.dx;
@@ -248,8 +248,8 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public GRegion getClientRegion(GWindowTable paramGWindowTable, GRegion paramGRegion, float paramFloat) {
     paramGRegion.x = (this.bevelDOWN.L.dx + paramFloat);
     paramGRegion.y = (this.bevelDOWN.T.dy + paramFloat);
-    paramGRegion.dx = (paramGWindowTable.win.dx - paramGRegion.x - this.bevelDOWN.R.dx - paramFloat);
-    paramGRegion.dy = (paramGWindowTable.win.dy - paramGRegion.y - this.bevelDOWN.B.dy - paramFloat);
+    paramGRegion.dx = (paramGWindowTable.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGRegion.x - this.bevelDOWN.R.dx - paramFloat);
+    paramGRegion.dy = (paramGWindowTable.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGRegion.y - this.bevelDOWN.B.dy - paramFloat);
     return paramGRegion;
   }
 
@@ -261,19 +261,19 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
       f = localGSize.dy;
     }
     paramGWindowTabDialogClient.setCanvasColorWHITE();
-    drawBevel(paramGWindowTabDialogClient, 0.0F, f, paramGWindowTabDialogClient.win.dx, paramGWindowTabDialogClient.win.dy - f, this.bevelTabDialogClient, this.elements, false);
+    drawBevel(paramGWindowTabDialogClient, 0.0F, f, paramGWindowTabDialogClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowTabDialogClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f, this.jdField_bevelTabDialogClient_of_type_ComMaddoxGwindowGBevel, this.elements, false);
   }
 
   public void render(GWindowTabDialogClient.Tab paramTab) {
     boolean bool = paramTab.isCurrent();
     GBevel localGBevel = bool ? this.bevelTabCUR : this.bevelTab;
     paramTab.setCanvasColorWHITE();
-    drawBevel(paramTab, 0.0F, 0.0F, paramTab.win.dx, paramTab.win.dy, localGBevel, this.elements, false);
+    drawBevel(paramTab, 0.0F, 0.0F, paramTab.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramTab.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, this.elements, false);
     this.tabReg.x = (localGBevel.L.dx + metric(this.spaceTab));
     this.tabReg.y = (localGBevel.T.dy + metric(this.spaceTab));
-    this.tabReg.dx = (paramTab.win.dx - localGBevel.L.dx - localGBevel.R.dx);
-    this.tabReg.dy = (paramTab.win.dy - localGBevel.T.dy - localGBevel.B.dy);
-    if (paramTab.pushClipRegion(this.tabReg, paramTab.bClip, 0.0F)) {
+    this.tabReg.dx = (paramTab.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx);
+    this.tabReg.dy = (paramTab.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
+    if (paramTab.pushClipRegion(this.tabReg, paramTab.jdField_bClip_of_type_Boolean, 0.0F)) {
       if (bool) {
         renderTextDialogControl(paramTab, metric(this.spaceTab), metric(this.spaceTab), this.tabReg.dx - 2.0F * metric(this.spaceTab), this.tabReg.dy - 2.0F * metric(this.spaceTab), 16777215, false);
       }
@@ -288,9 +288,9 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public GSize getMinSize(GWindowTabDialogClient.Tab paramTab, GSize paramGSize)
   {
-    paramGSize.dx = (paramTab.root.textFonts[paramTab.font].size(paramTab.cap.caption).dx + this.bevelTab.L.dx + this.bevelTab.R.dx + 2.0F * metric(this.spaceTab));
+    paramGSize.dx = (paramTab.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[paramTab.jdField_font_of_type_Int].size(paramTab.jdField_cap_of_type_ComMaddoxGwindowGCaption.caption).dx + this.bevelTab.L.dx + this.bevelTab.R.dx + 2.0F * metric(this.spaceTab));
 
-    paramGSize.dy = (paramTab.root.textFonts[paramTab.font].height + this.bevelTab.T.dy + this.bevelTab.B.dy + 2.0F * metric(this.spaceTab));
+    paramGSize.dy = (paramTab.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[paramTab.jdField_font_of_type_Int].height + this.bevelTab.T.dy + this.bevelTab.B.dy + 2.0F * metric(this.spaceTab));
 
     return paramGSize;
   }
@@ -299,20 +299,20 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   {
     GWindowComboControl.ListArea localListArea = paramGWindowComboControl.listArea;
     localListArea.setCanvasColorWHITE();
-    localListArea.draw(this.bevelBlack.L.dx, this.bevelBlack.T.dy, localListArea.win.dx - this.bevelBlack.R.dx - this.bevelBlack.L.dx, localListArea.win.dy - this.bevelBlack.B.dy - this.bevelBlack.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
+    localListArea.draw(this.bevelBlack.L.dx, this.bevelBlack.T.dy, localListArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelBlack.R.dx - this.bevelBlack.L.dx, localListArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelBlack.B.dy - this.bevelBlack.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
 
-    drawBevel(localListArea, 0.0F, 0.0F, localListArea.win.dx, localListArea.win.dy, this.bevelBlack, this.elements);
+    drawBevel(localListArea, 0.0F, 0.0F, localListArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, localListArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelBlack, this.elements);
     GRegion localGRegion = localListArea.getClientRegion();
     localGRegion.x += this.bevelBlack.L.dx + this.spaceComboList;
     localGRegion.y += this.bevelBlack.T.dy;
     localGRegion.dx -= this.bevelBlack.L.dx + this.bevelBlack.R.dx + 2.0F * this.spaceComboList;
     localGRegion.dy -= this.bevelBlack.T.dy + this.bevelBlack.B.dy;
     if (paramGWindowComboControl.scrollBar.isVisible())
-      localGRegion.dx -= paramGWindowComboControl.scrollBar.win.dx;
+      localGRegion.dx -= paramGWindowComboControl.scrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
     if (localListArea.pushClipRegion(localGRegion, true, 0.0F)) {
       localListArea.setCanvasColorBLACK();
-      localListArea.setCanvasFont(paramGWindowComboControl.font);
-      GFont localGFont = paramGWindowComboControl.root.C.font;
+      localListArea.setCanvasFont(paramGWindowComboControl.jdField_font_of_type_Int);
+      GFont localGFont = paramGWindowComboControl.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
       float f = (getComboHline() - localGFont.height) / 2.0F;
       int i = paramGWindowComboControl.listStartLine;
       for (int j = 0; j < paramGWindowComboControl.listCountLines; j++)
@@ -320,14 +320,14 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
         GSize localGSize;
         if (i == paramGWindowComboControl.listSelected) {
           localGSize = localGFont.size(paramGWindowComboControl.get(i));
-          localListArea.draw(0.0F, f, localListArea.win.dx, localGSize.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
+          localListArea.draw(0.0F, f, localListArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, localGSize.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
           localListArea.setCanvasColorWHITE();
           localListArea.draw(0.0F, f, paramGWindowComboControl.get(i));
           localListArea.setCanvasColorBLACK();
         } else if ((paramGWindowComboControl.posEnable != null) && (paramGWindowComboControl.posEnable[i] == 0)) {
           localGSize = localGFont.size(paramGWindowComboControl.get(i));
           localListArea.setCanvasColorWHITE();
-          localListArea.draw(0.0F, f, localListArea.win.dx, localGSize.dy, this.elements, 2.0F, 16.0F, 1.0F, 1.0F);
+          localListArea.draw(0.0F, f, localListArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, localGSize.dy, this.elements, 2.0F, 16.0F, 1.0F, 1.0F);
           localListArea.draw(1.0F, f + 1.0F, paramGWindowComboControl.get(i));
           localListArea.setCanvasColor(8355711);
           localListArea.draw(0.0F, f, paramGWindowComboControl.get(i));
@@ -343,23 +343,23 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   }
 
   public void setupComboList(GWindowComboControl paramGWindowComboControl) {
-    paramGWindowComboControl.listArea.win.dx = paramGWindowComboControl.win.dx;
+    paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
     paramGWindowComboControl.listCountLines = paramGWindowComboControl.listVisibleLines;
     if (paramGWindowComboControl.listCountLines > paramGWindowComboControl.size())
       paramGWindowComboControl.listCountLines = paramGWindowComboControl.size();
-    paramGWindowComboControl.listArea.win.dy = (paramGWindowComboControl.listCountLines * getComboHline() + this.bevelBlack.B.dy + this.bevelBlack.T.dy);
+    paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (paramGWindowComboControl.listCountLines * getComboHline() + this.bevelBlack.B.dy + this.bevelBlack.T.dy);
 
-    GPoint localGPoint = paramGWindowComboControl.windowToGlobal(0.0F, paramGWindowComboControl.win.dy);
-    if (localGPoint.y + paramGWindowComboControl.listArea.win.dy > paramGWindowComboControl.root.win.dy)
-      paramGWindowComboControl.listArea.win.y = (-paramGWindowComboControl.listArea.win.dy);
+    GPoint localGPoint = paramGWindowComboControl.windowToGlobal(0.0F, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+    if (localGPoint.y + paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > paramGWindowComboControl.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy)
+      paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.y = (-paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     else
-      paramGWindowComboControl.listArea.win.y = paramGWindowComboControl.win.dy;
-    paramGWindowComboControl.listArea.win.x = 0.0F;
+      paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.y = paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+    paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.x = 0.0F;
     if (paramGWindowComboControl.listCountLines < paramGWindowComboControl.size()) {
-      paramGWindowComboControl.scrollBar.win.dx = getVScrollBarW();
-      paramGWindowComboControl.scrollBar.win.dy = (paramGWindowComboControl.listCountLines * getComboHline());
-      paramGWindowComboControl.scrollBar.win.x = (paramGWindowComboControl.listArea.win.dx - paramGWindowComboControl.scrollBar.win.dx - this.bevelBlack.R.dx);
-      paramGWindowComboControl.scrollBar.win.y = this.bevelBlack.T.dy;
+      paramGWindowComboControl.scrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = getVScrollBarW();
+      paramGWindowComboControl.scrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (paramGWindowComboControl.listCountLines * getComboHline());
+      paramGWindowComboControl.scrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.x = (paramGWindowComboControl.listArea.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGWindowComboControl.scrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelBlack.R.dx);
+      paramGWindowComboControl.scrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.y = this.bevelBlack.T.dy;
       if (paramGWindowComboControl.iSelected >= 0) {
         paramGWindowComboControl.listStartLine = paramGWindowComboControl.iSelected;
         if (paramGWindowComboControl.listStartLine + paramGWindowComboControl.listCountLines > paramGWindowComboControl.size())
@@ -379,22 +379,22 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowComboControl paramGWindowComboControl) {
     paramGWindowComboControl.setCanvasColorWHITE();
-    if (paramGWindowComboControl.bEnable) {
-      paramGWindowComboControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowComboControl.win.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowComboControl.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
+    if (paramGWindowComboControl.jdField_bEnable_of_type_Boolean) {
+      paramGWindowComboControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
     }
     else
     {
-      paramGWindowComboControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowComboControl.win.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowComboControl.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 2.0F, 16.0F, 1.0F, 1.0F);
+      paramGWindowComboControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 2.0F, 16.0F, 1.0F, 1.0F);
     }
 
-    drawBevel(paramGWindowComboControl, 0.0F, 0.0F, paramGWindowComboControl.win.dx, paramGWindowComboControl.win.dy, this.bevelDOWN, this.elements, false);
+    drawBevel(paramGWindowComboControl, 0.0F, 0.0F, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowComboControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements, false);
   }
 
   public void setupComboEditBox(GWindowEditBox paramGWindowEditBox) {
-    paramGWindowEditBox.win.x = this.bevelDOWN.L.dx;
-    paramGWindowEditBox.win.y = this.bevelDOWN.T.dy;
-    paramGWindowEditBox.win.dx = (paramGWindowEditBox.parentWindow.win.dx - this.bevelDOWN.L.dx - this.bevelDOWN.R.dx - getVScrollBarW());
-    paramGWindowEditBox.win.dy = (paramGWindowEditBox.parentWindow.win.dy - this.bevelDOWN.T.dy - this.bevelDOWN.B.dy);
+    paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.x = this.bevelDOWN.L.dx;
+    paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.y = this.bevelDOWN.T.dy;
+    paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (paramGWindowEditBox.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.L.dx - this.bevelDOWN.R.dx - getVScrollBarW());
+    paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (paramGWindowEditBox.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.T.dy - this.bevelDOWN.B.dy);
   }
 
   public void setupComboButton(GWindowButtonTexture paramGWindowButtonTexture) {
@@ -402,10 +402,10 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     paramGWindowButtonTexture.texDOWN = this.SBdownButtonDOWN;
     paramGWindowButtonTexture.texDISABLE = this.SBdownButtonDISABLE;
     paramGWindowButtonTexture.texOVER = this.SBdownButtonOVER;
-    paramGWindowButtonTexture.win.dx = getVScrollBarW();
-    paramGWindowButtonTexture.win.dy = getVScrollBarH();
-    paramGWindowButtonTexture.win.x = (paramGWindowButtonTexture.parentWindow.win.dx - paramGWindowButtonTexture.win.dx - this.bevelDOWN.R.dx);
-    paramGWindowButtonTexture.win.y = this.bevelDOWN.T.dy;
+    paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = getVScrollBarW();
+    paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = getVScrollBarH();
+    paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.x = (paramGWindowButtonTexture.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx);
+    paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.y = this.bevelDOWN.T.dy;
   }
   public float getComboH() {
     return getVScrollBarH() + this.bevelDOWN.B.dy + this.bevelDOWN.T.dy;
@@ -418,57 +418,57 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   {
     paramGWindowBoxSeparate.setCanvasColorWHITE();
     if (paramGWindowBoxSeparate.exclude != null) {
-      int i = (paramGWindowBoxSeparate.win.y >= paramGWindowBoxSeparate.exclude.win.y) && (paramGWindowBoxSeparate.win.y < paramGWindowBoxSeparate.exclude.win.y + paramGWindowBoxSeparate.exclude.win.dy) ? 1 : 0;
+      int i = (paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.y >= paramGWindowBoxSeparate.exclude.jdField_win_of_type_ComMaddoxGwindowGRegion.y) && (paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.y < paramGWindowBoxSeparate.exclude.jdField_win_of_type_ComMaddoxGwindowGRegion.y + paramGWindowBoxSeparate.exclude.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) ? 1 : 0;
       float f1 = 0.0F;
       if (i != 0) {
         f2 = this.bevelSeparate.T.dx;
         this.bevelSeparate.T.dx = 0.0F;
-        drawBevel(paramGWindowBoxSeparate, 0.0F, 0.0F, paramGWindowBoxSeparate.win.dx, paramGWindowBoxSeparate.win.dy, this.bevelSeparate, this.elements);
+        drawBevel(paramGWindowBoxSeparate, 0.0F, 0.0F, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelSeparate, this.elements);
         this.bevelSeparate.T.dx = f2;
       } else {
         f2 = this.bevelSeparate.B.dx;
         this.bevelSeparate.B.dx = 0.0F;
-        drawBevel(paramGWindowBoxSeparate, 0.0F, 0.0F, paramGWindowBoxSeparate.win.dx, paramGWindowBoxSeparate.win.dy, this.bevelSeparate, this.elements);
+        drawBevel(paramGWindowBoxSeparate, 0.0F, 0.0F, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelSeparate, this.elements);
         this.bevelSeparate.B.dx = f2;
-        f1 = paramGWindowBoxSeparate.win.dy - 2.0F;
+        f1 = paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 2.0F;
       }
-      float f2 = paramGWindowBoxSeparate.exclude.win.x - paramGWindowBoxSeparate.border;
-      if (f2 > paramGWindowBoxSeparate.win.x + 2.0F)
-        drawSeparateH(paramGWindowBoxSeparate, 2.0F, f1, f2 - paramGWindowBoxSeparate.win.x - 2.0F);
-      f2 = paramGWindowBoxSeparate.exclude.win.x + paramGWindowBoxSeparate.exclude.win.dx + paramGWindowBoxSeparate.border;
-      if (f2 < paramGWindowBoxSeparate.win.x + paramGWindowBoxSeparate.win.dx - 2.0F)
-        drawSeparateH(paramGWindowBoxSeparate, f2 - paramGWindowBoxSeparate.win.x, f1, paramGWindowBoxSeparate.win.x + paramGWindowBoxSeparate.win.dx - 2.0F - f2);
+      float f2 = paramGWindowBoxSeparate.exclude.jdField_win_of_type_ComMaddoxGwindowGRegion.x - paramGWindowBoxSeparate.border;
+      if (f2 > paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.x + 2.0F)
+        drawSeparateH(paramGWindowBoxSeparate, 2.0F, f1, f2 - paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.x - 2.0F);
+      f2 = paramGWindowBoxSeparate.exclude.jdField_win_of_type_ComMaddoxGwindowGRegion.x + paramGWindowBoxSeparate.exclude.jdField_win_of_type_ComMaddoxGwindowGRegion.dx + paramGWindowBoxSeparate.border;
+      if (f2 < paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.x + paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F)
+        drawSeparateH(paramGWindowBoxSeparate, f2 - paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.x, f1, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.x + paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F - f2);
     }
     else {
-      drawBevel(paramGWindowBoxSeparate, 0.0F, 0.0F, paramGWindowBoxSeparate.win.dx, paramGWindowBoxSeparate.win.dy, this.bevelSeparate, this.elements);
+      drawBevel(paramGWindowBoxSeparate, 0.0F, 0.0F, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowBoxSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelSeparate, this.elements);
     }
   }
 
   public void render(GWindowVSeparate paramGWindowVSeparate)
   {
-    drawSeparateW(paramGWindowVSeparate, 0.0F, 0.0F, paramGWindowVSeparate.win.dy);
+    drawSeparateW(paramGWindowVSeparate, 0.0F, 0.0F, paramGWindowVSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
   }
 
   public void render(GWindowHSeparate paramGWindowHSeparate)
   {
-    drawSeparateH(paramGWindowHSeparate, 0.0F, 0.0F, paramGWindowHSeparate.win.dx);
+    drawSeparateH(paramGWindowHSeparate, 0.0F, 0.0F, paramGWindowHSeparate.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
   }
 
   public void render(GWindowVSliderInt paramGWindowVSliderInt)
   {
     paramGWindowVSliderInt.setCanvasColorWHITE();
-    paramGWindowVSliderInt.draw(0.0F, 0.0F, paramGWindowVSliderInt.win.dx, paramGWindowVSliderInt.win.dy, this.elements, this.bevelUP.Area);
-    drawSeparateW(paramGWindowVSliderInt, (int)(metric() / 2.0F), 0.0F, paramGWindowVSliderInt.win.dy);
-    if ((paramGWindowVSliderInt.bEnable) && (paramGWindowVSliderInt.isActivated())) {
-      drawBevel(paramGWindowVSliderInt, 0.0F, 0.0F, paramGWindowVSliderInt.win.dx, paramGWindowVSliderInt.win.dy, this.bevelBlack50, this.elements);
+    paramGWindowVSliderInt.draw(0.0F, 0.0F, paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, this.bevelUP.Area);
+    drawSeparateW(paramGWindowVSliderInt, (int)(metric() / 2.0F), 0.0F, paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+    if ((paramGWindowVSliderInt.jdField_bEnable_of_type_Boolean) && (paramGWindowVSliderInt.isActivated())) {
+      drawBevel(paramGWindowVSliderInt, 0.0F, 0.0F, paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelBlack50, this.elements);
     }
     drawBevel(paramGWindowVSliderInt, 0.0F, paramGWindowVSliderInt.yM, metric(), paramGWindowVSliderInt.dyM, this.bevelUP, this.elements);
     float f1 = (int)(metric() / 4.0F) - 1.0F;
-    float f2 = (paramGWindowVSliderInt.win.dy - paramGWindowVSliderInt.dyM) / (paramGWindowVSliderInt.posCount - 1);
+    float f2 = (paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGWindowVSliderInt.dyM) / (paramGWindowVSliderInt.posCount - 1);
     if (f2 < 3.0F) return;
     float f3 = getVSliderIntW() - 3.0F;
     for (int i = 0; i < paramGWindowVSliderInt.posCount; i++) {
-      boolean bool = paramGWindowVSliderInt.bEnable;
+      boolean bool = paramGWindowVSliderInt.jdField_bEnable_of_type_Boolean;
       int j;
       if ((bool) && (paramGWindowVSliderInt.posEnable != null))
         j = paramGWindowVSliderInt.posEnable[i];
@@ -479,9 +479,9 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   }
 
   public void setupVSliderIntSizes(GWindowVSliderInt paramGWindowVSliderInt) {
-    paramGWindowVSliderInt.win.dx = getVSliderIntW();
+    paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = getVSliderIntW();
     paramGWindowVSliderInt.dyM = ((int)(metric() / 4.0F) * 2);
-    paramGWindowVSliderInt.yM = (paramGWindowVSliderInt.win.dy - paramGWindowVSliderInt.dyM - (paramGWindowVSliderInt.win.dy - paramGWindowVSliderInt.dyM) / (paramGWindowVSliderInt.posCount - 1) * (paramGWindowVSliderInt.pos - paramGWindowVSliderInt.posStart));
+    paramGWindowVSliderInt.yM = (paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGWindowVSliderInt.dyM - (paramGWindowVSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGWindowVSliderInt.dyM) / (paramGWindowVSliderInt.posCount - 1) * (paramGWindowVSliderInt.pos - paramGWindowVSliderInt.posStart));
   }
   public float getVSliderIntW() { return metric(1.3F); } 
   public float getVSliderIntWmetric() { return 1.3F;
@@ -490,17 +490,17 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public void render(GWindowHSliderInt paramGWindowHSliderInt)
   {
     paramGWindowHSliderInt.setCanvasColorWHITE();
-    paramGWindowHSliderInt.draw(0.0F, 0.0F, paramGWindowHSliderInt.win.dx, paramGWindowHSliderInt.win.dy, this.elements, this.bevelUP.Area);
-    drawSeparateH(paramGWindowHSliderInt, 0.0F, paramGWindowHSliderInt.win.dy - (int)(metric() / 2.0F), paramGWindowHSliderInt.win.dx);
-    if ((paramGWindowHSliderInt.bEnable) && (paramGWindowHSliderInt.isActivated())) {
-      drawBevel(paramGWindowHSliderInt, 0.0F, 0.0F, paramGWindowHSliderInt.win.dx, paramGWindowHSliderInt.win.dy, this.bevelBlack50, this.elements);
+    paramGWindowHSliderInt.draw(0.0F, 0.0F, paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, this.bevelUP.Area);
+    drawSeparateH(paramGWindowHSliderInt, 0.0F, paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - (int)(metric() / 2.0F), paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
+    if ((paramGWindowHSliderInt.jdField_bEnable_of_type_Boolean) && (paramGWindowHSliderInt.isActivated())) {
+      drawBevel(paramGWindowHSliderInt, 0.0F, 0.0F, paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelBlack50, this.elements);
     }
-    drawBevel(paramGWindowHSliderInt, paramGWindowHSliderInt.xM, paramGWindowHSliderInt.win.dy - metric(), paramGWindowHSliderInt.dxM, metric(), this.bevelUP, this.elements);
+    drawBevel(paramGWindowHSliderInt, paramGWindowHSliderInt.xM, paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - metric(), paramGWindowHSliderInt.dxM, metric(), this.bevelUP, this.elements);
     float f1 = (int)(metric() / 4.0F) - 1.0F;
-    float f2 = (paramGWindowHSliderInt.win.dx - paramGWindowHSliderInt.dxM) / (paramGWindowHSliderInt.posCount - 1);
+    float f2 = (paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGWindowHSliderInt.dxM) / (paramGWindowHSliderInt.posCount - 1);
     if (f2 < 3.0F) return;
     for (int i = 0; i < paramGWindowHSliderInt.posCount; i++) {
-      boolean bool = paramGWindowHSliderInt.bEnable;
+      boolean bool = paramGWindowHSliderInt.jdField_bEnable_of_type_Boolean;
       int j;
       if ((bool) && (paramGWindowHSliderInt.posEnable != null))
         j = paramGWindowHSliderInt.posEnable[i];
@@ -511,9 +511,9 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   }
 
   public void setupHSliderIntSizes(GWindowHSliderInt paramGWindowHSliderInt) {
-    paramGWindowHSliderInt.win.dy = getHSliderIntH();
+    paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = getHSliderIntH();
     paramGWindowHSliderInt.dxM = ((int)(metric() / 4.0F) * 2);
-    paramGWindowHSliderInt.xM = ((paramGWindowHSliderInt.win.dx - paramGWindowHSliderInt.dxM) / (paramGWindowHSliderInt.posCount - 1) * (paramGWindowHSliderInt.pos - paramGWindowHSliderInt.posStart));
+    paramGWindowHSliderInt.xM = ((paramGWindowHSliderInt.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGWindowHSliderInt.dxM) / (paramGWindowHSliderInt.posCount - 1) * (paramGWindowHSliderInt.pos - paramGWindowHSliderInt.posStart));
   }
 
   public float getHSliderIntH() {
@@ -525,49 +525,49 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowEditNumber paramGWindowEditNumber)
   {
-    if (paramGWindowEditNumber.bEnable) paramGWindowEditNumber.setCanvasColor(paramGWindowEditNumber.color ^ 0xFFFFFFFF); else
+    if (paramGWindowEditNumber.jdField_bEnable_of_type_Boolean) paramGWindowEditNumber.setCanvasColor(paramGWindowEditNumber.jdField_color_of_type_Int ^ 0xFFFFFFFF); else
       paramGWindowEditNumber.setCanvasColorWHITE();
-    float f = paramGWindowEditNumber.win.dx;
+    float f = paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
     if (paramGWindowEditNumber.bar.isVisible())
       f -= getVScrollBarW();
-    paramGWindowEditNumber.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, f - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditNumber.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
+    paramGWindowEditNumber.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, f - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
 
     paramGWindowEditNumber.setCanvasColorWHITE();
-    drawBevel(paramGWindowEditNumber, 0.0F, 0.0F, f, paramGWindowEditNumber.win.dy, this.bevelDOWN, this.elements, false);
+    drawBevel(paramGWindowEditNumber, 0.0F, 0.0F, f, paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements, false);
   }
 
   public void setupEditNumber(GWindowEditNumber paramGWindowEditNumber) {
     if (paramGWindowEditNumber.bar.isVisible()) {
       paramGWindowEditNumber.box.setPos(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy);
-      paramGWindowEditNumber.box.setSize(paramGWindowEditNumber.win.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx - getVScrollBarW(), paramGWindowEditNumber.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy);
+      paramGWindowEditNumber.box.setSize(paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx - getVScrollBarW(), paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy);
 
-      paramGWindowEditNumber.bar.setPos(paramGWindowEditNumber.win.dx - getVScrollBarW(), 0.0F);
-      paramGWindowEditNumber.bar.setSize(getVScrollBarW(), paramGWindowEditNumber.win.dy);
+      paramGWindowEditNumber.bar.setPos(paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - getVScrollBarW(), 0.0F);
+      paramGWindowEditNumber.bar.setSize(getVScrollBarW(), paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     }
     else {
       paramGWindowEditNumber.box.setPos(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy);
-      paramGWindowEditNumber.box.setSize(paramGWindowEditNumber.win.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditNumber.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy);
+      paramGWindowEditNumber.box.setSize(paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditNumber.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy);
     }
   }
 
   public void render(GWindowEditControl paramGWindowEditControl)
   {
-    if (paramGWindowEditControl.bEnable) paramGWindowEditControl.setCanvasColor(paramGWindowEditControl.color ^ 0xFFFFFFFF); else
+    if (paramGWindowEditControl.jdField_bEnable_of_type_Boolean) paramGWindowEditControl.setCanvasColor(paramGWindowEditControl.jdField_color_of_type_Int ^ 0xFFFFFFFF); else
       paramGWindowEditControl.setCanvasColorWHITE();
-    paramGWindowEditControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowEditControl.win.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditControl.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
+    paramGWindowEditControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowEditControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
 
     paramGWindowEditControl.setCanvasColorWHITE();
-    drawBevel(paramGWindowEditControl, 0.0F, 0.0F, paramGWindowEditControl.win.dx, paramGWindowEditControl.win.dy, this.bevelDOWN, this.elements, false);
+    drawBevel(paramGWindowEditControl, 0.0F, 0.0F, paramGWindowEditControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowEditControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements, false);
     render(paramGWindowEditControl, this.bevelDOWN.L.dx);
   }
 
   public void render(GWindowEditBox paramGWindowEditBox, float paramFloat)
   {
     if ((paramGWindowEditBox.value == null) || (paramGWindowEditBox.value.length() == 0)) {
-      if ((paramGWindowEditBox.bEnable) && (paramGWindowEditBox.bCanEdit) && (paramGWindowEditBox.bShowCaret)) {
-        paramGWindowEditBox.setCanvasFont(paramGWindowEditBox.font);
-        paramGWindowEditBox.setCanvasColor(paramGWindowEditBox.color);
-        paramGWindowEditBox.draw(paramFloat, (paramGWindowEditBox.win.dy - paramGWindowEditBox.root.C.font.height) / 2.0F, "|");
+      if ((paramGWindowEditBox.jdField_bEnable_of_type_Boolean) && (paramGWindowEditBox.bCanEdit) && (paramGWindowEditBox.bShowCaret)) {
+        paramGWindowEditBox.setCanvasFont(paramGWindowEditBox.jdField_font_of_type_Int);
+        paramGWindowEditBox.setCanvasColor(paramGWindowEditBox.jdField_color_of_type_Int);
+        paramGWindowEditBox.draw(paramFloat, (paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGWindowEditBox.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height) / 2.0F, "|");
       }
       return;
     }
@@ -578,42 +578,42 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
         ((StringBuffer)localObject).append('*');
       str = ((StringBuffer)localObject).toString();
     }
-    paramGWindowEditBox.setCanvasFont(paramGWindowEditBox.font);
-    Object localObject = paramGWindowEditBox.root.C.font;
+    paramGWindowEditBox.setCanvasFont(paramGWindowEditBox.jdField_font_of_type_Int);
+    Object localObject = paramGWindowEditBox.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
     GSize localGSize = ((GFont)localObject).size("|");
     float f1 = localGSize.dx;
     localGSize = ((GFont)localObject).size(str);
-    float f2 = (paramGWindowEditBox.win.dy - localGSize.dy) / 2.0F;
+    float f2 = (paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGSize.dy) / 2.0F;
     float f3 = paramFloat;
     float f4 = 0.0F;
-    if ((localGSize.dx + 2.0F * f1 >= paramGWindowEditBox.win.dx - 2.0F * paramFloat) && (paramGWindowEditBox.bEnable) && (paramGWindowEditBox.bCanEdit)) {
+    if ((localGSize.dx + 2.0F * f1 >= paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * paramFloat) && (paramGWindowEditBox.jdField_bEnable_of_type_Boolean) && (paramGWindowEditBox.bCanEdit)) {
       if (paramGWindowEditBox.caretOffset > 0) {
         localGSize = ((GFont)localObject).size(str, 0, paramGWindowEditBox.caretOffset);
         f4 = localGSize.dx + 2.0F * f1;
       }
-      if (f4 > paramGWindowEditBox.win.dx - 2.0F * paramFloat)
-        f3 -= f4 - (paramGWindowEditBox.win.dx - 2.0F * paramFloat);
+      if (f4 > paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * paramFloat)
+        f3 -= f4 - (paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * paramFloat);
     }
-    else if (paramGWindowEditBox.align == 2) {
-      f3 = paramGWindowEditBox.win.dx - paramFloat - localGSize.dx;
-    } else if (paramGWindowEditBox.align == 1) {
-      f3 = (paramGWindowEditBox.win.dx - localGSize.dx) / 2.0F;
+    else if (paramGWindowEditBox.jdField_align_of_type_Int == 2) {
+      f3 = paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramFloat - localGSize.dx;
+    } else if (paramGWindowEditBox.jdField_align_of_type_Int == 1) {
+      f3 = (paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGSize.dx) / 2.0F;
     }
 
     _editBoxReg.x = paramFloat;
     _editBoxReg.y = 0.0F;
-    _editBoxReg.dx = (paramGWindowEditBox.win.dx - 2.0F * paramFloat);
-    _editBoxReg.dy = paramGWindowEditBox.win.dy;
+    _editBoxReg.dx = (paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * paramFloat);
+    _editBoxReg.dy = paramGWindowEditBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     f3 -= paramFloat;
-    if (paramGWindowEditBox.pushClipRegion(_editBoxReg, paramGWindowEditBox.bClip, 0.0F)) {
-      if (paramGWindowEditBox.bEnable) {
+    if (paramGWindowEditBox.pushClipRegion(_editBoxReg, paramGWindowEditBox.jdField_bClip_of_type_Boolean, 0.0F)) {
+      if (paramGWindowEditBox.jdField_bEnable_of_type_Boolean) {
         if ((paramGWindowEditBox.bAllSelected) || ((!paramGWindowEditBox.bCanEdit) && (paramGWindowEditBox.isKeyFocus()))) {
-          paramGWindowEditBox.setCanvasColor(paramGWindowEditBox.color);
+          paramGWindowEditBox.setCanvasColor(paramGWindowEditBox.jdField_color_of_type_Int);
           localGSize = ((GFont)localObject).size(str);
           paramGWindowEditBox.draw(f3, f2, localGSize.dx + f1, localGSize.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
-          paramGWindowEditBox.setCanvasColor(0xFFFFFF ^ paramGWindowEditBox.color);
+          paramGWindowEditBox.setCanvasColor(0xFFFFFF ^ paramGWindowEditBox.jdField_color_of_type_Int);
         } else {
-          paramGWindowEditBox.setCanvasColor(paramGWindowEditBox.color);
+          paramGWindowEditBox.setCanvasColor(paramGWindowEditBox.jdField_color_of_type_Int);
         }
         paramGWindowEditBox.draw(f3, f2, str);
         if (paramGWindowEditBox.bShowCaret) {
@@ -634,21 +634,21 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowEditText paramGWindowEditText)
   {
-    paramGWindowEditText.setCanvasFont(paramGWindowEditText.font);
-    GFont localGFont = paramGWindowEditText.root.C.font;
+    paramGWindowEditText.setCanvasFont(paramGWindowEditText.jdField_font_of_type_Int);
+    GFont localGFont = paramGWindowEditText.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
     GSize localGSize = localGFont.size("|");
     float f1 = -localGSize.dx / 2.0F;
 
     if (paramGWindowEditText.text.size() == 0) {
       if (paramGWindowEditText.bShowCaret) {
-        paramGWindowEditText.setCanvasFont(paramGWindowEditText.font);
-        paramGWindowEditText.setCanvasColor(paramGWindowEditText.color);
+        paramGWindowEditText.setCanvasFont(paramGWindowEditText.jdField_font_of_type_Int);
+        paramGWindowEditText.setCanvasColor(paramGWindowEditText.jdField_color_of_type_Int);
         paramGWindowEditText.draw(0.0F, 0.0F, "|");
       }
       return;
     }
 
-    paramGWindowEditText.setCanvasColor(paramGWindowEditText.color);
+    paramGWindowEditText.setCanvasColor(paramGWindowEditText.jdField_color_of_type_Int);
     float f2 = localGFont.height;
     int i = paramGWindowEditText.textPos.size();
     int j = 0;
@@ -662,47 +662,47 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
       for (int m = 0; m < i; m++) {
         localObject4 = paramGWindowEditText.itemPos(m);
         GWindowEditText.Pos localPos = GWindowEditText._tmpPos;
-        localPos.set(((GWindowEditText.PosLen)localObject4).item, ((GWindowEditText.PosLen)localObject4).ofs + ((GWindowEditText.PosLen)localObject4).len);
-        StringBuffer localStringBuffer2 = paramGWindowEditText.item(((GWindowEditText.PosLen)localObject4).item);
+        localPos.set(((GWindowEditText.PosLen)localObject4).jdField_item_of_type_Int, ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int + ((GWindowEditText.PosLen)localObject4).len);
+        StringBuffer localStringBuffer2 = paramGWindowEditText.item(((GWindowEditText.PosLen)localObject4).jdField_item_of_type_Int);
         char[] arrayOfChar = GWindowEditText._getArrayRenderBuffer(((GWindowEditText.PosLen)localObject4).len);
-        localStringBuffer2.getChars(((GWindowEditText.PosLen)localObject4).ofs, ((GWindowEditText.PosLen)localObject4).ofs + ((GWindowEditText.PosLen)localObject4).len, arrayOfChar, 0);
+        localStringBuffer2.getChars(((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int, ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int + ((GWindowEditText.PosLen)localObject4).len, arrayOfChar, 0);
         float f4 = 0.0F;
         float f5 = m * f2;
         if ((((GWindowEditText.PosLen)localObject4).isLess((GWindowEditText.Pos)localObject2)) && (((GWindowEditText.Pos)localObject1).isLess(localPos))) {
-          int n = ((GWindowEditText.PosLen)localObject4).ofs;
-          int i1 = localPos.ofs;
+          int n = ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int;
+          int i1 = localPos.jdField_ofs_of_type_Int;
           if (((GWindowEditText.PosLen)localObject4).isLess((GWindowEditText.Pos)localObject1)) {
-            n = ((GWindowEditText.Pos)localObject1).ofs;
+            n = ((GWindowEditText.Pos)localObject1).jdField_ofs_of_type_Int;
           }
           if (((GWindowEditText.Pos)localObject2).isLess(localPos)) {
-            i1 = ((GWindowEditText.Pos)localObject2).ofs;
+            i1 = ((GWindowEditText.Pos)localObject2).jdField_ofs_of_type_Int;
           }
-          if (n != ((GWindowEditText.PosLen)localObject4).ofs) {
-            localGSize = localGFont.size(arrayOfChar, 0, n - ((GWindowEditText.PosLen)localObject4).ofs);
-            paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, 0, arrayOfChar, 0, n - ((GWindowEditText.PosLen)localObject4).ofs);
+          if (n != ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int) {
+            localGSize = localGFont.size(arrayOfChar, 0, n - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int);
+            paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, 0, arrayOfChar, 0, n - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int);
             f4 += localGSize.dx;
           }
 
-          localGSize = localGFont.size(arrayOfChar, n - ((GWindowEditText.PosLen)localObject4).ofs, i1 - n);
+          localGSize = localGFont.size(arrayOfChar, n - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int, i1 - n);
           paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
-          paramGWindowEditText.setCanvasColor(0xFFFFFF ^ paramGWindowEditText.color);
-          paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, 0, arrayOfChar, n - ((GWindowEditText.PosLen)localObject4).ofs, i1 - n);
-          paramGWindowEditText.setCanvasColor(paramGWindowEditText.color);
+          paramGWindowEditText.setCanvasColor(0xFFFFFF ^ paramGWindowEditText.jdField_color_of_type_Int);
+          paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, 0, arrayOfChar, n - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int, i1 - n);
+          paramGWindowEditText.setCanvasColor(paramGWindowEditText.jdField_color_of_type_Int);
           f4 += localGSize.dx;
 
-          if (i1 != localPos.ofs) {
-            localGSize = localGFont.size(arrayOfChar, i1 - ((GWindowEditText.PosLen)localObject4).ofs, localPos.ofs - i1);
-            paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, 0, arrayOfChar, i1 - ((GWindowEditText.PosLen)localObject4).ofs, localPos.ofs - i1);
+          if (i1 != localPos.jdField_ofs_of_type_Int) {
+            localGSize = localGFont.size(arrayOfChar, i1 - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int, localPos.jdField_ofs_of_type_Int - i1);
+            paramGWindowEditText.draw(f4, f5, localGSize.dx, f2, 0, arrayOfChar, i1 - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int, localPos.jdField_ofs_of_type_Int - i1);
           }
         }
         else {
-          paramGWindowEditText.draw(f4, f5, paramGWindowEditText.win.dx, f2, 0, arrayOfChar, 0, ((GWindowEditText.PosLen)localObject4).len);
+          paramGWindowEditText.draw(f4, f5, paramGWindowEditText.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f2, 0, arrayOfChar, 0, ((GWindowEditText.PosLen)localObject4).len);
         }
 
-        if ((j != 0) || (!paramGWindowEditText.bShowCaret) || (((GWindowEditText.PosLen)localObject4).item != paramGWindowEditText.posCaret.item) || (((GWindowEditText.PosLen)localObject4).ofs > paramGWindowEditText.posCaret.ofs) || (paramGWindowEditText.posCaret.ofs > ((GWindowEditText.PosLen)localObject4).ofs + ((GWindowEditText.PosLen)localObject4).len))
+        if ((j != 0) || (!paramGWindowEditText.bShowCaret) || (((GWindowEditText.PosLen)localObject4).jdField_item_of_type_Int != paramGWindowEditText.posCaret.jdField_item_of_type_Int) || (((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int > paramGWindowEditText.posCaret.jdField_ofs_of_type_Int) || (paramGWindowEditText.posCaret.jdField_ofs_of_type_Int > ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int + ((GWindowEditText.PosLen)localObject4).len))
           continue;
         j = 1;
-        localGSize = localGFont.size(arrayOfChar, 0, paramGWindowEditText.posCaret.ofs - ((GWindowEditText.PosLen)localObject4).ofs);
+        localGSize = localGFont.size(arrayOfChar, 0, paramGWindowEditText.posCaret.jdField_ofs_of_type_Int - ((GWindowEditText.PosLen)localObject4).jdField_ofs_of_type_Int);
         paramGWindowEditText.draw(localGSize.dx + f1, f5, "|");
       }
     }
@@ -710,17 +710,17 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     {
       for (int k = 0; k < i; k++) {
         localObject2 = paramGWindowEditText.itemPos(k);
-        StringBuffer localStringBuffer1 = paramGWindowEditText.item(((GWindowEditText.PosLen)localObject2).item);
+        StringBuffer localStringBuffer1 = paramGWindowEditText.item(((GWindowEditText.PosLen)localObject2).jdField_item_of_type_Int);
         localObject4 = GWindowEditText._getArrayRenderBuffer(((GWindowEditText.PosLen)localObject2).len);
-        localStringBuffer1.getChars(((GWindowEditText.PosLen)localObject2).ofs, ((GWindowEditText.PosLen)localObject2).ofs + ((GWindowEditText.PosLen)localObject2).len, localObject4, 0);
+        localStringBuffer1.getChars(((GWindowEditText.PosLen)localObject2).jdField_ofs_of_type_Int, ((GWindowEditText.PosLen)localObject2).jdField_ofs_of_type_Int + ((GWindowEditText.PosLen)localObject2).len, localObject4, 0);
 
         float f3 = k * f2;
-        paramGWindowEditText.draw(0.0F, f3, paramGWindowEditText.win.dx, f2, 0, localObject4, 0, ((GWindowEditText.PosLen)localObject2).len);
+        paramGWindowEditText.draw(0.0F, f3, paramGWindowEditText.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f2, 0, localObject4, 0, ((GWindowEditText.PosLen)localObject2).len);
 
-        if ((j != 0) || (!paramGWindowEditText.bShowCaret) || (((GWindowEditText.PosLen)localObject2).item != paramGWindowEditText.posCaret.item) || (((GWindowEditText.PosLen)localObject2).ofs > paramGWindowEditText.posCaret.ofs) || (paramGWindowEditText.posCaret.ofs > ((GWindowEditText.PosLen)localObject2).ofs + ((GWindowEditText.PosLen)localObject2).len))
+        if ((j != 0) || (!paramGWindowEditText.bShowCaret) || (((GWindowEditText.PosLen)localObject2).jdField_item_of_type_Int != paramGWindowEditText.posCaret.jdField_item_of_type_Int) || (((GWindowEditText.PosLen)localObject2).jdField_ofs_of_type_Int > paramGWindowEditText.posCaret.jdField_ofs_of_type_Int) || (paramGWindowEditText.posCaret.jdField_ofs_of_type_Int > ((GWindowEditText.PosLen)localObject2).jdField_ofs_of_type_Int + ((GWindowEditText.PosLen)localObject2).len))
           continue;
         j = 1;
-        localGSize = localGFont.size(localObject4, 0, paramGWindowEditText.posCaret.ofs - ((GWindowEditText.PosLen)localObject2).ofs);
+        localGSize = localGFont.size(localObject4, 0, paramGWindowEditText.posCaret.jdField_ofs_of_type_Int - ((GWindowEditText.PosLen)localObject2).jdField_ofs_of_type_Int);
         paramGWindowEditText.draw(localGSize.dx + f1, f3, "|");
       }
     }
@@ -728,12 +728,12 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowEditTextControl paramGWindowEditTextControl)
   {
-    if (paramGWindowEditTextControl.bEnable) paramGWindowEditTextControl.setCanvasColor(paramGWindowEditTextControl.color ^ 0xFFFFFFFF); else
+    if (paramGWindowEditTextControl.jdField_bEnable_of_type_Boolean) paramGWindowEditTextControl.setCanvasColor(paramGWindowEditTextControl.jdField_color_of_type_Int ^ 0xFFFFFFFF); else
       paramGWindowEditTextControl.setCanvasColorWHITE();
-    paramGWindowEditTextControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowEditTextControl.win.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditTextControl.win.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
+    paramGWindowEditTextControl.draw(this.bevelDOWN.L.dx, this.bevelDOWN.T.dy, paramGWindowEditTextControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelDOWN.R.dx - this.bevelDOWN.L.dx, paramGWindowEditTextControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelDOWN.B.dy - this.bevelDOWN.T.dy, this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
 
     paramGWindowEditTextControl.setCanvasColorWHITE();
-    drawBevel(paramGWindowEditTextControl, 0.0F, 0.0F, paramGWindowEditTextControl.win.dx, paramGWindowEditTextControl.win.dy, this.bevelDOWN, this.elements, false);
+    drawBevel(paramGWindowEditTextControl, 0.0F, 0.0F, paramGWindowEditTextControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowEditTextControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements, false);
   }
   public float getBorderSizeEditTextControl() {
     return this.bevelDOWN.L.dx;
@@ -743,11 +743,11 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   {
     paramGWindowCheckBox.setCanvasColorWHITE();
     if (paramGWindowCheckBox.bChecked) {
-      if (paramGWindowCheckBox.bEnable) paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.win.dx, paramGWindowCheckBox.win.dy, this.checkBoxCheckEnable); else
-        paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.win.dx, paramGWindowCheckBox.win.dy, this.checkBoxCheckDisable);
+      if (paramGWindowCheckBox.jdField_bEnable_of_type_Boolean) paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.checkBoxCheckEnable); else
+        paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.checkBoxCheckDisable);
     }
-    else if (paramGWindowCheckBox.bEnable) paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.win.dx, paramGWindowCheckBox.win.dy, this.checkBoxUnCheckEnable); else
-      paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.win.dx, paramGWindowCheckBox.win.dy, this.checkBoxUnCheckDisable);
+    else if (paramGWindowCheckBox.jdField_bEnable_of_type_Boolean) paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.checkBoxUnCheckEnable); else
+      paramGWindowCheckBox.draw(0.0F, 0.0F, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowCheckBox.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.checkBoxUnCheckDisable);
   }
 
   public GSize getMinSize(GWindowCheckBox paramGWindowCheckBox, GSize paramGSize) {
@@ -758,36 +758,36 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowVScrollBar paramGWindowVScrollBar)
   {
-    float f1 = paramGWindowVScrollBar.yM - paramGWindowVScrollBar.uButton.win.dy;
-    float f2 = paramGWindowVScrollBar.dButton.win.y - paramGWindowVScrollBar.yM - paramGWindowVScrollBar.dyM;
+    float f1 = paramGWindowVScrollBar.yM - paramGWindowVScrollBar.uButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+    float f2 = paramGWindowVScrollBar.dButton.jdField_win_of_type_ComMaddoxGwindowGRegion.y - paramGWindowVScrollBar.yM - paramGWindowVScrollBar.dyM;
     if ((f1 < 0.0F) && (f2 < 0.0F)) return;
     paramGWindowVScrollBar.setCanvasColorWHITE();
 
     if (f1 > 0.0F) {
       if (paramGWindowVScrollBar.downState == 1)
-        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.uButton.win.dy, paramGWindowVScrollBar.win.dx, f1, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
+        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.uButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
       else
-        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.uButton.win.dy, paramGWindowVScrollBar.win.dx, f1, this.elements, 19.0F, 64.0F, 11.0F, 1.0F);
+        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.uButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f1, this.elements, 19.0F, 64.0F, 11.0F, 1.0F);
     }
     if (f2 > 0.0F)
       if (paramGWindowVScrollBar.downState == 2)
-        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.yM + paramGWindowVScrollBar.dyM, paramGWindowVScrollBar.win.dx, f2, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
+        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.yM + paramGWindowVScrollBar.dyM, paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f2, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
       else
-        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.yM + paramGWindowVScrollBar.dyM, paramGWindowVScrollBar.win.dx, f2, this.elements, 19.0F, 64.0F, 11.0F, 1.0F);
+        paramGWindowVScrollBar.draw(0.0F, paramGWindowVScrollBar.yM + paramGWindowVScrollBar.dyM, paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f2, this.elements, 19.0F, 64.0F, 11.0F, 1.0F);
   }
 
   public void setupVScrollBarSizes(GWindowVScrollBar paramGWindowVScrollBar)
   {
-    float f1 = paramGWindowVScrollBar.win.dy - 2.0F * getVScrollBarH();
+    float f1 = paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 2.0F * getVScrollBarH();
     int i = f1 >= 2.0F * metric(this.minScrollMSize) ? 1 : 0;
     float f2 = getVScrollBarH();
     if (f1 <= 0.0F) {
-      f2 = paramGWindowVScrollBar.win.dy / 2.0F;
+      f2 = paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F;
     }
     paramGWindowVScrollBar.uButton.setSize(getVScrollBarW(), f2);
     paramGWindowVScrollBar.uButton.setPos(0.0F, 0.0F);
     paramGWindowVScrollBar.dButton.setSize(getVScrollBarW(), f2);
-    paramGWindowVScrollBar.dButton.setPos(0.0F, paramGWindowVScrollBar.win.dy - f2);
+    paramGWindowVScrollBar.dButton.setPos(0.0F, paramGWindowVScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f2);
 
     if (paramGWindowVScrollBar.posMin >= paramGWindowVScrollBar.posMax) {
       if (i != 0) {
@@ -832,36 +832,36 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   }
 
   public void render(GWindowHScrollBar paramGWindowHScrollBar) {
-    float f1 = paramGWindowHScrollBar.xM - paramGWindowHScrollBar.lButton.win.dx;
-    float f2 = paramGWindowHScrollBar.rButton.win.x - paramGWindowHScrollBar.xM - paramGWindowHScrollBar.dxM;
+    float f1 = paramGWindowHScrollBar.xM - paramGWindowHScrollBar.lButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    float f2 = paramGWindowHScrollBar.rButton.jdField_win_of_type_ComMaddoxGwindowGRegion.x - paramGWindowHScrollBar.xM - paramGWindowHScrollBar.dxM;
     if ((f1 < 0.0F) && (f2 < 0.0F)) return;
     paramGWindowHScrollBar.setCanvasColorWHITE();
 
     if (f1 > 0.0F) {
       if (paramGWindowHScrollBar.downState == 1)
-        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.lButton.win.dx, 0.0F, f1, paramGWindowHScrollBar.win.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
+        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.lButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, 0.0F, f1, paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
       else
-        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.lButton.win.dx, 0.0F, f1, paramGWindowHScrollBar.win.dy, this.elements, 22.0F, 60.0F, 1.0F, 10.0F);
+        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.lButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, 0.0F, f1, paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, 22.0F, 60.0F, 1.0F, 10.0F);
     }
     if (f2 > 0.0F)
       if (paramGWindowHScrollBar.downState == 2)
-        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.xM + paramGWindowHScrollBar.dxM, 0.0F, f2, paramGWindowHScrollBar.win.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
+        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.xM + paramGWindowHScrollBar.dxM, 0.0F, f2, paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, 4.0F, 98.0F, 1.0F, 1.0F);
       else
-        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.xM + paramGWindowHScrollBar.dxM, 0.0F, f2, paramGWindowHScrollBar.win.dy, this.elements, 22.0F, 60.0F, 1.0F, 10.0F);
+        paramGWindowHScrollBar.draw(paramGWindowHScrollBar.xM + paramGWindowHScrollBar.dxM, 0.0F, f2, paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, 22.0F, 60.0F, 1.0F, 10.0F);
   }
 
   public void setupHScrollBarSizes(GWindowHScrollBar paramGWindowHScrollBar)
   {
-    float f1 = paramGWindowHScrollBar.win.dx - 2.0F * getHScrollBarW();
+    float f1 = paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * getHScrollBarW();
     int i = f1 >= 2.0F * metric(this.minScrollMSize) ? 1 : 0;
     float f2 = getHScrollBarW();
     if (f1 <= 0.0F) {
-      f2 = paramGWindowHScrollBar.win.dx / 2.0F;
+      f2 = paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F;
     }
     paramGWindowHScrollBar.lButton.setSize(f2, getHScrollBarH());
     paramGWindowHScrollBar.lButton.setPos(0.0F, 0.0F);
     paramGWindowHScrollBar.rButton.setSize(f2, getHScrollBarH());
-    paramGWindowHScrollBar.rButton.setPos(paramGWindowHScrollBar.win.dx - f2, 0.0F);
+    paramGWindowHScrollBar.rButton.setPos(paramGWindowHScrollBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - f2, 0.0F);
 
     if (paramGWindowHScrollBar.posMin >= paramGWindowHScrollBar.posMax) {
       if (i != 0) {
@@ -937,11 +937,11 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowLabel paramGWindowLabel)
   {
-    if (!paramGWindowLabel.bEnable) {
+    if (!paramGWindowLabel.jdField_bEnable_of_type_Boolean) {
       localGRegion = paramGWindowLabel.getClientRegion();
       f1 = localGRegion.dx;
       f2 = localGRegion.dy;
-      if (paramGWindowLabel.pushClipRegion(localGRegion, paramGWindowLabel.bClip, 0.0F)) {
+      if (paramGWindowLabel.pushClipRegion(localGRegion, paramGWindowLabel.jdField_bClip_of_type_Boolean, 0.0F)) {
         renderTextDialogControl(paramGWindowLabel, 1.0F, 1.0F, f1, f2, 16777215, false);
         renderTextDialogControl(paramGWindowLabel, 0.0F, 0.0F, f1, f2, 8355711, false);
         paramGWindowLabel.popClip();
@@ -950,13 +950,13 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     }
     if (paramGWindowLabel.isActivated()) {
       paramGWindowLabel.setCanvasColorWHITE();
-      drawBevel(paramGWindowLabel, 0.0F, 0.0F, paramGWindowLabel.win.dx, paramGWindowLabel.win.dy, this.bevelBlack50, this.elements);
+      drawBevel(paramGWindowLabel, 0.0F, 0.0F, paramGWindowLabel.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowLabel.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelBlack50, this.elements);
     }
     GRegion localGRegion = paramGWindowLabel.getClientRegion();
     float f1 = localGRegion.dx;
     float f2 = localGRegion.dy;
-    if (paramGWindowLabel.pushClipRegion(localGRegion, paramGWindowLabel.bClip, 0.0F)) {
-      renderTextDialogControl(paramGWindowLabel, 0.0F, 0.0F, f1, f2, paramGWindowLabel.color, paramGWindowLabel.isDefault());
+    if (paramGWindowLabel.pushClipRegion(localGRegion, paramGWindowLabel.jdField_bClip_of_type_Boolean, 0.0F)) {
+      renderTextDialogControl(paramGWindowLabel, 0.0F, 0.0F, f1, f2, paramGWindowLabel.jdField_color_of_type_Int, paramGWindowLabel.isDefault());
       paramGWindowLabel.popClip();
     }
   }
@@ -976,13 +976,13 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     GRegion localGRegion;
     float f1;
     float f2;
-    if (!paramGWindowButton.bEnable) {
-      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.win.dx, paramGWindowButton.win.dy, this.bevelUP, this.elements);
-      if (paramGWindowButton.cap != null) {
+    if (!paramGWindowButton.jdField_bEnable_of_type_Boolean) {
+      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelUP, this.elements);
+      if (paramGWindowButton.jdField_cap_of_type_ComMaddoxGwindowGCaption != null) {
         localGRegion = paramGWindowButton.getClientRegion();
         f1 = localGRegion.dx;
         f2 = localGRegion.dy;
-        if (paramGWindowButton.pushClipRegion(localGRegion, paramGWindowButton.bClip, 0.0F)) {
+        if (paramGWindowButton.pushClipRegion(localGRegion, paramGWindowButton.jdField_bClip_of_type_Boolean, 0.0F)) {
           renderTextDialogControl(paramGWindowButton, 1.0F, 1.0F, f1, f2, 16777215, false);
           renderTextDialogControl(paramGWindowButton, 0.0F, 0.0F, f1, f2, 8355711, false);
           paramGWindowButton.popClip();
@@ -990,26 +990,26 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
       }
       return;
     }
-    if ((paramGWindowButton.bDown) && (!paramGWindowButton.bDrawOnlyUP))
-      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.win.dx, paramGWindowButton.win.dy, this.bevelDOWN, this.elements);
+    if ((paramGWindowButton.jdField_bDown_of_type_Boolean) && (!paramGWindowButton.bDrawOnlyUP))
+      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWN, this.elements);
     else {
-      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.win.dx, paramGWindowButton.win.dy, this.bevelUP, this.elements);
+      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelUP, this.elements);
     }
     if ((paramGWindowButton.bDrawActive) && (paramGWindowButton.isActivated())) {
-      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.win.dx, paramGWindowButton.win.dy, this.bevelBlack, this.elements);
-      if (paramGWindowButton.bDown)
-        drawBevel(paramGWindowButton, 4.0F, 4.0F, paramGWindowButton.win.dx - 6.0F, paramGWindowButton.win.dy - 6.0F, this.bevelBlack50, this.elements);
+      drawBevel(paramGWindowButton, 0.0F, 0.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelBlack, this.elements);
+      if (paramGWindowButton.jdField_bDown_of_type_Boolean)
+        drawBevel(paramGWindowButton, 4.0F, 4.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 6.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 6.0F, this.bevelBlack50, this.elements);
       else {
-        drawBevel(paramGWindowButton, 3.0F, 3.0F, paramGWindowButton.win.dx - 6.0F, paramGWindowButton.win.dy - 6.0F, this.bevelBlack50, this.elements);
+        drawBevel(paramGWindowButton, 3.0F, 3.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 6.0F, paramGWindowButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 6.0F, this.bevelBlack50, this.elements);
       }
     }
-    if (paramGWindowButton.cap != null) {
+    if (paramGWindowButton.jdField_cap_of_type_ComMaddoxGwindowGCaption != null) {
       localGRegion = paramGWindowButton.getClientRegion();
       f1 = localGRegion.dx;
       f2 = localGRegion.dy;
-      if (paramGWindowButton.pushClipRegion(localGRegion, paramGWindowButton.bClip, 0.0F)) {
-        if (paramGWindowButton.bDown) renderTextDialogControl(paramGWindowButton, 1.0F, 1.0F, f1, f2, paramGWindowButton.color, paramGWindowButton.isDefault()); else
-          renderTextDialogControl(paramGWindowButton, 0.0F, 0.0F, f1, f2, paramGWindowButton.color, paramGWindowButton.isDefault());
+      if (paramGWindowButton.pushClipRegion(localGRegion, paramGWindowButton.jdField_bClip_of_type_Boolean, 0.0F)) {
+        if (paramGWindowButton.jdField_bDown_of_type_Boolean) renderTextDialogControl(paramGWindowButton, 1.0F, 1.0F, f1, f2, paramGWindowButton.jdField_color_of_type_Int, paramGWindowButton.isDefault()); else
+          renderTextDialogControl(paramGWindowButton, 0.0F, 0.0F, f1, f2, paramGWindowButton.jdField_color_of_type_Int, paramGWindowButton.isDefault());
         paramGWindowButton.popClip();
       }
     }
@@ -1017,19 +1017,19 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void render(GWindowButtonTexture paramGWindowButtonTexture) {
     paramGWindowButtonTexture.setCanvasColorWHITE();
-    if (paramGWindowButtonTexture.bEnable) {
+    if (paramGWindowButtonTexture.jdField_bEnable_of_type_Boolean) {
       if (paramGWindowButtonTexture.isMouseDown(0)) {
-        if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.win.dx, paramGWindowButtonTexture.win.dy, paramGWindowButtonTexture.texDOWN); else
+        if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, paramGWindowButtonTexture.texDOWN); else
           paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.texDOWN);
       } else if (paramGWindowButtonTexture.isMouseOver()) {
-        if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.win.dx, paramGWindowButtonTexture.win.dy, paramGWindowButtonTexture.texOVER); else
+        if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, paramGWindowButtonTexture.texOVER); else
           paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.texOVER);
       }
-      else if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.win.dx, paramGWindowButtonTexture.win.dy, paramGWindowButtonTexture.texUP); else {
+      else if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, paramGWindowButtonTexture.texUP); else {
         paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.texUP);
       }
     }
-    else if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.win.dx, paramGWindowButtonTexture.win.dy, paramGWindowButtonTexture.texDISABLE); else
+    else if (paramGWindowButtonTexture.bStrech) paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowButtonTexture.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, paramGWindowButtonTexture.texDISABLE); else
       paramGWindowButtonTexture.draw(0.0F, 0.0F, paramGWindowButtonTexture.texDISABLE);
   }
 
@@ -1052,23 +1052,23 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void renderTextDialogControl(GWindowDialogControl paramGWindowDialogControl, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, int paramInt, boolean paramBoolean)
   {
-    int i = paramGWindowDialogControl.font;
+    int i = paramGWindowDialogControl.jdField_font_of_type_Int;
     if ((paramBoolean) && ((i & 0x1) == 0)) i++;
-    GFont localGFont = paramGWindowDialogControl.root.textFonts[i];
+    GFont localGFont = paramGWindowDialogControl.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[i];
     paramGWindowDialogControl.setCanvasColor(paramInt);
-    GSize localGSize = localGFont.size(paramGWindowDialogControl.cap.caption);
+    GSize localGSize = localGFont.size(paramGWindowDialogControl.jdField_cap_of_type_ComMaddoxGwindowGCaption.caption);
     paramFloat2 += (paramFloat4 - localGSize.dy) / 2.0F;
-    if (paramGWindowDialogControl.align == 2)
+    if (paramGWindowDialogControl.jdField_align_of_type_Int == 2)
       paramFloat1 += paramFloat3 - localGSize.dx;
-    else if (paramGWindowDialogControl.align == 1) {
+    else if (paramGWindowDialogControl.jdField_align_of_type_Int == 1) {
       paramFloat1 += (paramFloat3 - localGSize.dx) / 2.0F;
     }
-    paramGWindowDialogControl.cap.draw(paramGWindowDialogControl, paramFloat1, paramFloat2, localGFont);
+    paramGWindowDialogControl.jdField_cap_of_type_ComMaddoxGwindowGCaption.draw(paramGWindowDialogControl, paramFloat1, paramFloat2, localGFont);
   }
   public GSize getMinSizeDialogControl(GWindowDialogControl paramGWindowDialogControl, GSize paramGSize) {
-    if (paramGWindowDialogControl.cap != null) {
-      paramGSize.dx = paramGWindowDialogControl.root.textFonts[paramGWindowDialogControl.font].size(paramGWindowDialogControl.cap.caption).dx;
-      paramGSize.dy = paramGWindowDialogControl.root.textFonts[paramGWindowDialogControl.font].height;
+    if (paramGWindowDialogControl.jdField_cap_of_type_ComMaddoxGwindowGCaption != null) {
+      paramGSize.dx = paramGWindowDialogControl.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[paramGWindowDialogControl.jdField_font_of_type_Int].size(paramGWindowDialogControl.jdField_cap_of_type_ComMaddoxGwindowGCaption.caption).dx;
+      paramGSize.dy = paramGWindowDialogControl.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[paramGWindowDialogControl.jdField_font_of_type_Int].height;
     } else {
       paramGSize.dx = 1.0F;
       paramGSize.dy = 1.0F;
@@ -1078,15 +1078,15 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public GRegion getClientRegionDialogControl(GWindowDialogControl paramGWindowDialogControl, GRegion paramGRegion, float paramFloat) {
     paramGRegion.x = paramFloat;
     paramGRegion.y = paramFloat;
-    paramGRegion.dx = (paramGWindowDialogControl.win.dx - 2.0F * paramFloat);
-    paramGRegion.dy = (paramGWindowDialogControl.win.dy - 2.0F * paramFloat);
+    paramGRegion.dx = (paramGWindowDialogControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * paramFloat);
+    paramGRegion.dy = (paramGWindowDialogControl.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 2.0F * paramFloat);
     return paramGRegion;
   }
 
   public void render(GWindowClient paramGWindowClient)
   {
     paramGWindowClient.setCanvasColorWHITE();
-    paramGWindowClient.draw(0.0F, 0.0F, paramGWindowClient.win.dx, paramGWindowClient.win.dy, this.elements, this.bevelUP.Area);
+    paramGWindowClient.draw(0.0F, 0.0F, paramGWindowClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, this.bevelUP.Area);
   }
 
   public void setupFrameCloseBox(GWindowFrameCloseBox paramGWindowFrameCloseBox)
@@ -1099,16 +1099,16 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
 
   public void frameSetCloseBoxPos(GWindowFramed paramGWindowFramed) {
     float f = metric();
-    if (f > paramGWindowFramed.root.textFonts[1].height)
-      f = paramGWindowFramed.root.textFonts[1].height;
-    paramGWindowFramed.closeBox.setPos(paramGWindowFramed.win.dx - this.bevelTitleActive.R.dx - f - metric(this.spaceFramedTitle), this.bevelTitleActive.T.dy + metric(this.spaceFramedTitle));
+    if (f > paramGWindowFramed.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[1].height)
+      f = paramGWindowFramed.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[1].height;
+    paramGWindowFramed.closeBox.setPos(paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelTitleActive.R.dx - f - metric(this.spaceFramedTitle), this.bevelTitleActive.T.dy + metric(this.spaceFramedTitle));
 
     paramGWindowFramed.closeBox.setSize(f, f);
   }
 
   public int frameHitTest(GWindowFramed paramGWindowFramed, float paramFloat1, float paramFloat2) {
     GRegion localGRegion = paramGWindowFramed.getClientRegion();
-    if ((paramFloat1 < 0.0F) || (paramFloat1 > paramGWindowFramed.win.dx) || (paramFloat2 < 0.0F) || (paramFloat2 > paramGWindowFramed.win.dy))
+    if ((paramFloat1 < 0.0F) || (paramFloat1 > paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) || (paramFloat2 < 0.0F) || (paramFloat2 > paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dy))
     {
       return 0;
     }if ((paramFloat1 >= localGRegion.x) && (paramFloat1 < localGRegion.x + localGRegion.dx) && (paramFloat2 >= localGRegion.y) && (paramFloat2 < localGRegion.y + localGRegion.dy))
@@ -1132,19 +1132,19 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   {
     float f = framedTitleHeight(paramGWindowFramed);
     paramGWindowFramed.setCanvasColorWHITE();
-    drawBevel(paramGWindowFramed, 0.0F, f, paramGWindowFramed.win.dx, paramGWindowFramed.win.dy - f, this.bevelFW, this.elements);
+    drawBevel(paramGWindowFramed, 0.0F, f, paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - f, this.bevelFW, this.elements);
 
     GBevel localGBevel = this.bevelTitleActive;
     if (!paramGWindowFramed.isActivated()) localGBevel = this.bevelTitleInactive;
-    drawBevel(paramGWindowFramed, 0.0F, 0.0F, paramGWindowFramed.win.dx, f, localGBevel, this.elements);
+    drawBevel(paramGWindowFramed, 0.0F, 0.0F, paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f, localGBevel, this.elements);
     if (paramGWindowFramed.title != null) {
       if (!paramGWindowFramed.isActivated()) paramGWindowFramed.setCanvasColor(12632256);
       paramGWindowFramed.setCanvasFont(1);
       this._titleRegion.x = this.bevelTitleActive.L.dx;
       this._titleRegion.y = this.bevelTitleActive.T.dy;
-      this._titleRegion.dx = (paramGWindowFramed.win.dx - this.bevelTitleActive.L.dx - this.bevelTitleActive.R.dx - metric());
+      this._titleRegion.dx = (paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.bevelTitleActive.L.dx - this.bevelTitleActive.R.dx - metric());
       this._titleRegion.dy = (f - this.bevelTitleActive.T.dy - this.bevelTitleActive.B.dy);
-      if (paramGWindowFramed.pushClipRegion(this._titleRegion, paramGWindowFramed.bClip, metric(this.spaceFramedTitle))) {
+      if (paramGWindowFramed.pushClipRegion(this._titleRegion, paramGWindowFramed.jdField_bClip_of_type_Boolean, metric(this.spaceFramedTitle))) {
         paramGWindowFramed.draw(0.0F, 0.0F, paramGWindowFramed.title);
         paramGWindowFramed.popClip();
       }
@@ -1154,8 +1154,8 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   private float framedTitleHeight(GWindowFramed paramGWindowFramed)
   {
     float f = metric();
-    if (f > paramGWindowFramed.root.textFonts[1].height)
-      f = paramGWindowFramed.root.textFonts[1].height;
+    if (f > paramGWindowFramed.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[1].height)
+      f = paramGWindowFramed.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[1].height;
     return f + 2.0F * metric(this.spaceFramedTitle) + this.bevelTitleActive.T.dy + this.bevelTitleActive.B.dy;
   }
 
@@ -1181,23 +1181,23 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     paramGRegion.x = (this.bevelFW.L.dx + paramFloat);
     paramGRegion.y = (framedTitleHeight(paramGWindowFramed) + this.bevelFW.T.dy + paramFloat);
     if (paramGWindowFramed.menuBar != null)
-      paramGRegion.y += paramGWindowFramed.menuBar.win.dy;
-    paramGRegion.dx = (paramGWindowFramed.win.dx - paramGRegion.x - this.bevelFW.R.dx - paramFloat);
-    paramGRegion.dy = (paramGWindowFramed.win.dy - paramGRegion.y - this.bevelFW.B.dy - paramFloat);
+      paramGRegion.y += paramGWindowFramed.menuBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+    paramGRegion.dx = (paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGRegion.x - this.bevelFW.R.dx - paramFloat);
+    paramGRegion.dy = (paramGWindowFramed.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGRegion.y - this.bevelFW.B.dy - paramFloat);
     return paramGRegion;
   }
 
   public void render(GWindowMenuItem paramGWindowMenuItem)
   {
-    if ("-".equals(paramGWindowMenuItem.cap.caption)) {
-      drawSeparateH(paramGWindowMenuItem, 0.0F, paramGWindowMenuItem.win.dy / 2.0F, paramGWindowMenuItem.win.dx);
+    if ("-".equals(paramGWindowMenuItem.jdField_cap_of_type_ComMaddoxGwindowGCaption.caption)) {
+      drawSeparateH(paramGWindowMenuItem, 0.0F, paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F, paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
       return;
     }
     paramGWindowMenuItem.setCanvasFont(0);
-    if (paramGWindowMenuItem.bEnable) {
+    if (paramGWindowMenuItem.jdField_bEnable_of_type_Boolean) {
       if (paramGWindowMenuItem == paramGWindowMenuItem.menu().selected) {
         paramGWindowMenuItem.setCanvasColorWHITE();
-        paramGWindowMenuItem.draw(0.0F, 0.0F, paramGWindowMenuItem.win.dx, paramGWindowMenuItem.win.dy, this.elements, 4.0F, 4.0F, 2.0F, 2.0F);
+        paramGWindowMenuItem.draw(0.0F, 0.0F, paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.elements, 4.0F, 4.0F, 2.0F, 2.0F);
       } else {
         paramGWindowMenuItem.setCanvasColorBLACK();
       }
@@ -1205,25 +1205,25 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     } else {
       paramGWindowMenuItem.setCanvasColorWHITE();
       renderMenuItem(paramGWindowMenuItem, 1.0F, 1.0F);
-      paramGWindowMenuItem.root.C.color.set(127, 127, 127);
+      paramGWindowMenuItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.color.set(127, 127, 127);
       renderMenuItem(paramGWindowMenuItem, 0.0F, 0.0F);
     }
   }
 
   private void renderMenuItem(GWindowMenuItem paramGWindowMenuItem, float paramFloat1, float paramFloat2) {
     if (paramGWindowMenuItem.bChecked) {
-      paramGWindowMenuItem.draw(paramFloat1, (paramGWindowMenuItem.win.dy - metric()) / 2.0F + paramFloat2, metric(), metric(), this.selectMenuIcon);
+      paramGWindowMenuItem.draw(paramFloat1, (paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - metric()) / 2.0F + paramFloat2, metric(), metric(), this.selectMenuIcon);
     }
-    paramGWindowMenuItem.cap.draw(paramGWindowMenuItem, metric() + metric(this.spaceMenuItem) + paramFloat1, paramGWindowMenuItem.win.dy - metric(this.spaceMenuItem) - paramGWindowMenuItem.root.textFonts[0].height + paramFloat2, paramGWindowMenuItem.root.textFonts[0]);
+    paramGWindowMenuItem.jdField_cap_of_type_ComMaddoxGwindowGCaption.draw(paramGWindowMenuItem, metric() + metric(this.spaceMenuItem) + paramFloat1, paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - metric(this.spaceMenuItem) - paramGWindowMenuItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].height + paramFloat2, paramGWindowMenuItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0]);
 
     if (paramGWindowMenuItem.subMenu() != null)
-      paramGWindowMenuItem.draw(paramGWindowMenuItem.win.dx - metric() + paramFloat1, (paramGWindowMenuItem.win.dy - metric()) / 2.0F + paramFloat2, metric(), metric(), this.subMenuIcon);
+      paramGWindowMenuItem.draw(paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - metric() + paramFloat1, (paramGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - metric()) / 2.0F + paramFloat2, metric(), metric(), this.subMenuIcon);
   }
 
   public GSize getMinSize(GWindowMenuItem paramGWindowMenuItem, GSize paramGSize) {
-    paramGSize.dx = (metric() + 2.0F * metric(this.spaceMenuItem) + paramGWindowMenuItem.root.textFonts[0].size(paramGWindowMenuItem.cap.caption).dx + metric());
+    paramGSize.dx = (metric() + 2.0F * metric(this.spaceMenuItem) + paramGWindowMenuItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].size(paramGWindowMenuItem.jdField_cap_of_type_ComMaddoxGwindowGCaption.caption).dx + metric());
 
-    paramGSize.dy = (2.0F * metric(this.spaceMenuItem) + paramGWindowMenuItem.root.textFonts[0].height);
+    paramGSize.dy = (2.0F * metric(this.spaceMenuItem) + paramGWindowMenuItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].height);
 
     if (paramGSize.dy < metric())
       paramGSize.dy = metric();
@@ -1235,14 +1235,14 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public void render(GWindowMenu paramGWindowMenu)
   {
     paramGWindowMenu.setCanvasColorWHITE();
-    float f = paramGWindowMenu.win.dx / paramGWindowMenu.columns;
+    float f = paramGWindowMenu.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / paramGWindowMenu.columns;
     for (int i = 0; i < paramGWindowMenu.columns; i++)
-      drawBevel(paramGWindowMenu, f * i, 0.0F, f, paramGWindowMenu.win.dy, this.bevelUP, this.elements);
+      drawBevel(paramGWindowMenu, f * i, 0.0F, f, paramGWindowMenu.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelUP, this.elements);
   }
 
   public GSize getMinSize(GWindowMenu paramGWindowMenu, GSize paramGSize) {
     paramGWindowMenu.columns = 1;
-    float f1 = paramGWindowMenu.root.win.dy - (this.bevelUP.T.dy + 2.0F * metric(this.spaceMenu) + this.bevelUP.B.dy);
+    float f1 = paramGWindowMenu.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - (this.bevelUP.T.dy + 2.0F * metric(this.spaceMenu) + this.bevelUP.B.dy);
 
     float f2 = 0.0F;
     float f3 = 0.0F;
@@ -1269,8 +1269,8 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public GRegion getClientRegion(GWindowMenu paramGWindowMenu, GRegion paramGRegion, float paramFloat) {
     paramGRegion.x = (this.bevelUP.L.dx + metric(this.spaceMenu) + paramFloat);
     paramGRegion.y = (this.bevelUP.T.dy + metric(this.spaceMenu) + paramFloat);
-    paramGRegion.dx = (paramGWindowMenu.win.dx - paramGRegion.x - this.bevelUP.R.dx - metric(this.spaceMenu) - paramFloat);
-    paramGRegion.dy = (paramGWindowMenu.win.dy - paramGRegion.y - this.bevelUP.B.dy - metric(this.spaceMenu) - paramFloat);
+    paramGRegion.dx = (paramGWindowMenu.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGRegion.x - this.bevelUP.R.dx - metric(this.spaceMenu) - paramFloat);
+    paramGRegion.dy = (paramGWindowMenu.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGRegion.y - this.bevelUP.B.dy - metric(this.spaceMenu) - paramFloat);
     return paramGRegion;
   }
 
@@ -1278,12 +1278,12 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   {
     if (paramGWindowMenuBarItem == paramGWindowMenuBarItem.menuBar().selected) {
       paramGWindowMenuBarItem.setCanvasColorWHITE();
-      drawBevel(paramGWindowMenuBarItem, 0.0F, 0.0F, paramGWindowMenuBarItem.win.dx, paramGWindowMenuBarItem.win.dy, this.bevelDOWNsmall, this.elements);
+      drawBevel(paramGWindowMenuBarItem, 0.0F, 0.0F, paramGWindowMenuBarItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowMenuBarItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelDOWNsmall, this.elements);
     } else if (paramGWindowMenuBarItem == paramGWindowMenuBarItem.menuBar().over) {
       paramGWindowMenuBarItem.setCanvasColorWHITE();
-      drawBevel(paramGWindowMenuBarItem, 0.0F, 0.0F, paramGWindowMenuBarItem.win.dx, paramGWindowMenuBarItem.win.dy, this.bevelUPsmall, this.elements);
+      drawBevel(paramGWindowMenuBarItem, 0.0F, 0.0F, paramGWindowMenuBarItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowMenuBarItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelUPsmall, this.elements);
     }
-    if (paramGWindowMenuBarItem.pushClipRegion(paramGWindowMenuBarItem.getClientRegion(), paramGWindowMenuBarItem.bClip, 0.0F)) {
+    if (paramGWindowMenuBarItem.pushClipRegion(paramGWindowMenuBarItem.getClientRegion(), paramGWindowMenuBarItem.jdField_bClip_of_type_Boolean, 0.0F)) {
       paramGWindowMenuBarItem.setCanvasColorBLACK();
       float f1 = metric(this.spaceMenuBarItem);
       float f2 = metric(this.spaceMenuBarItem);
@@ -1292,20 +1292,20 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
       else if (paramGWindowMenuBarItem == paramGWindowMenuBarItem.menuBar().over) {
         f1 = f2 = metric(this.spaceMenuBarItem) - 1.0F;
       }
-      paramGWindowMenuBarItem.cap.draw(paramGWindowMenuBarItem, f1, f2, paramGWindowMenuBarItem.root.textFonts[0], (paramGWindowMenuBarItem.menuBar().bAltDown) && (paramGWindowMenuBarItem.menuBar().over == null));
+      paramGWindowMenuBarItem.jdField_cap_of_type_ComMaddoxGwindowGCaption.draw(paramGWindowMenuBarItem, f1, f2, paramGWindowMenuBarItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0], (paramGWindowMenuBarItem.menuBar().bAltDown) && (paramGWindowMenuBarItem.menuBar().over == null));
 
       paramGWindowMenuBarItem.popClip();
     }
   }
 
   public GSize getMinSize(GWindowMenuBarItem paramGWindowMenuBarItem, GSize paramGSize) {
-    paramGSize.dx = (this.bevelUPsmall.L.dx + this.bevelUPsmall.R.dx + 2.0F * metric(this.spaceMenuBarItem) + paramGWindowMenuBarItem.root.textFonts[0].size(paramGWindowMenuBarItem.cap.caption).dx);
+    paramGSize.dx = (this.bevelUPsmall.L.dx + this.bevelUPsmall.R.dx + 2.0F * metric(this.spaceMenuBarItem) + paramGWindowMenuBarItem.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].size(paramGWindowMenuBarItem.jdField_cap_of_type_ComMaddoxGwindowGCaption.caption).dx);
 
     paramGSize.dy = getMenuBarItemHeight(paramGWindowMenuBarItem);
     return paramGSize;
   }
   protected float getMenuBarItemHeight(GWindow paramGWindow) {
-    return this.bevelUPsmall.T.dy + this.bevelUPsmall.B.dy + 2.0F * metric(this.spaceMenuBarItem) + paramGWindow.root.textFonts[0].height;
+    return this.bevelUPsmall.T.dy + this.bevelUPsmall.B.dy + 2.0F * metric(this.spaceMenuBarItem) + paramGWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].height;
   }
 
   public GRegion getClientRegion(GWindowMenuBarItem paramGWindowMenuBarItem, GRegion paramGRegion, float paramFloat)
@@ -1322,9 +1322,9 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   {
     paramGWindowMenuBar.setCanvasColorWHITE();
     GRegion localGRegion = this.bevelUP.B;
-    paramGWindowMenuBar.draw(0.0F, paramGWindowMenuBar.win.dy - this.bevelUP.B.dy, paramGWindowMenuBar.win.dx, this.bevelUP.B.dy, this.elements, localGRegion.x, localGRegion.y, localGRegion.dx, localGRegion.dy);
+    paramGWindowMenuBar.draw(0.0F, paramGWindowMenuBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelUP.B.dy, paramGWindowMenuBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.bevelUP.B.dy, this.elements, localGRegion.x, localGRegion.y, localGRegion.dx, localGRegion.dy);
     localGRegion = this.bevelUP.Area;
-    paramGWindowMenuBar.draw(0.0F, 0.0F, paramGWindowMenuBar.win.dx, paramGWindowMenuBar.win.dy - this.bevelUP.B.dy, this.elements, localGRegion.x, localGRegion.y, localGRegion.dx, localGRegion.dy);
+    paramGWindowMenuBar.draw(0.0F, 0.0F, paramGWindowMenuBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowMenuBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.bevelUP.B.dy, this.elements, localGRegion.x, localGRegion.y, localGRegion.dx, localGRegion.dy);
   }
   public GSize getMinSize(GWindowMenuBar paramGWindowMenuBar, GSize paramGSize) {
     paramGSize.dx = (2.0F * metric(this.spaceMenuBar));
@@ -1345,10 +1345,10 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public void render(GWindowStatusBar paramGWindowStatusBar)
   {
     paramGWindowStatusBar.setCanvasColorWHITE();
-    drawBevel(paramGWindowStatusBar, 0.0F, 0.0F, paramGWindowStatusBar.win.dx, paramGWindowStatusBar.win.dy, this.bevelUP, this.elements);
-    drawBevel(paramGWindowStatusBar, this.bevelUP.L.dx + metric(this.spaceStatusBar), this.bevelUP.T.dy + metric(this.spaceStatusBar), paramGWindowStatusBar.win.dx - 2.0F * metric(this.spaceStatusBar) - this.bevelUP.L.dx - this.bevelUP.R.dx, paramGWindowStatusBar.win.dy - 2.0F * metric(this.spaceStatusBar) - this.bevelUP.T.dy - this.bevelUP.B.dy, this.bevelDOWNsmall, this.elements);
+    drawBevel(paramGWindowStatusBar, 0.0F, 0.0F, paramGWindowStatusBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, paramGWindowStatusBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, this.bevelUP, this.elements);
+    drawBevel(paramGWindowStatusBar, this.bevelUP.L.dx + metric(this.spaceStatusBar), this.bevelUP.T.dy + metric(this.spaceStatusBar), paramGWindowStatusBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * metric(this.spaceStatusBar) - this.bevelUP.L.dx - this.bevelUP.R.dx, paramGWindowStatusBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - 2.0F * metric(this.spaceStatusBar) - this.bevelUP.T.dy - this.bevelUP.B.dy, this.bevelDOWNsmall, this.elements);
 
-    if (paramGWindowStatusBar.pushClipRegion(paramGWindowStatusBar.getClientRegion(), paramGWindowStatusBar.bClip, 0.0F)) {
+    if (paramGWindowStatusBar.pushClipRegion(paramGWindowStatusBar.getClientRegion(), paramGWindowStatusBar.jdField_bClip_of_type_Boolean, 0.0F)) {
       paramGWindowStatusBar.setCanvasColorBLACK();
       paramGWindowStatusBar.setCanvasFont(0);
       if ((paramGWindowStatusBar.help != null) && (!"".equals(paramGWindowStatusBar.help)))
@@ -1362,15 +1362,15 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
   public GSize getMinSize(GWindowStatusBar paramGWindowStatusBar, GSize paramGSize) {
     paramGSize.dx = (this.bevelUP.L.dx + this.bevelUP.R.dx + 4.0F * metric(this.spaceStatusBar) + this.bevelDOWNsmall.L.dx + this.bevelDOWNsmall.R.dx);
 
-    paramGSize.dy = (this.bevelUP.T.dy + this.bevelUP.B.dy + 4.0F * metric(this.spaceStatusBar) + this.bevelDOWNsmall.T.dy + this.bevelDOWNsmall.B.dy + paramGWindowStatusBar.root.textFonts[0].height);
+    paramGSize.dy = (this.bevelUP.T.dy + this.bevelUP.B.dy + 4.0F * metric(this.spaceStatusBar) + this.bevelDOWNsmall.T.dy + this.bevelDOWNsmall.B.dy + paramGWindowStatusBar.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[0].height);
 
     return paramGSize;
   }
   public GRegion getClientRegion(GWindowStatusBar paramGWindowStatusBar, GRegion paramGRegion, float paramFloat) {
     paramGRegion.x = (this.bevelUP.L.dx + 2.0F * metric(this.spaceStatusBar) + this.bevelDOWNsmall.L.dx + paramFloat);
     paramGRegion.y = (this.bevelUP.T.dy + 2.0F * metric(this.spaceStatusBar) + this.bevelDOWNsmall.T.dy + paramFloat);
-    paramGRegion.dx = (paramGWindowStatusBar.win.dx - paramGRegion.x - this.bevelUP.R.dx - 2.0F * metric(this.spaceStatusBar) - this.bevelDOWNsmall.R.dx - paramFloat);
-    paramGRegion.dy = (paramGWindowStatusBar.win.dy - paramGRegion.y - this.bevelUP.B.dy - 2.0F * metric(this.spaceStatusBar) - this.bevelDOWNsmall.B.dy - paramFloat);
+    paramGRegion.dx = (paramGWindowStatusBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - paramGRegion.x - this.bevelUP.R.dx - 2.0F * metric(this.spaceStatusBar) - this.bevelDOWNsmall.R.dx - paramFloat);
+    paramGRegion.dy = (paramGWindowStatusBar.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramGRegion.y - this.bevelUP.B.dy - 2.0F * metric(this.spaceStatusBar) - this.bevelDOWNsmall.B.dy - paramFloat);
     return paramGRegion;
   }
 
@@ -1386,9 +1386,9 @@ public class GWin95LookAndFeel extends GWindowLookAndFeel
     this.elementsStreched = GTexture.New("GUI/win95/elementss.mat");
     this.cursors = GTexture.New("GUI/win95/cursors.mat");
     this.cursorsStreched = GTexture.New("GUI/win95/cursorss.mat");
-    this.regionWhite = new GTexRegion(this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
+    this.jdField_regionWhite_of_type_ComMaddoxGwindowGTexRegion = new GTexRegion(this.elements, 5.0F, 17.0F, 1.0F, 1.0F);
     this.bevelUP.set(new GRegion(4.0F, 16.0F, 16.0F, 16.0F), new GRegion(6.0F, 18.0F, 12.0F, 12.0F));
-    this.bevelTabDialogClient = this.bevelUP;
+    this.jdField_bevelTabDialogClient_of_type_ComMaddoxGwindowGBevel = this.bevelUP;
     this.bevelDOWN.set(new GRegion(52.0F, 37.0F, 16.0F, 16.0F), new GRegion(54.0F, 39.0F, 12.0F, 12.0F));
     this.bevelUPsmall.set(new GRegion(19.0F, 60.0F, 11.0F, 10.0F), new GRegion(20.0F, 61.0F, 9.0F, 8.0F));
     this.bevelDOWNsmall.set(new GRegion(19.0F, 71.0F, 10.0F, 9.0F), new GRegion(20.0F, 72.0F, 8.0F, 7.0F));

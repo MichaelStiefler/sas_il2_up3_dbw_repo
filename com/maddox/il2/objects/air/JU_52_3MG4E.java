@@ -16,40 +16,51 @@ public class JU_52_3MG4E extends JU_52
   public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
   {
     boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    if (paramArrayOfFloat[0] < -50.0F) { paramArrayOfFloat[0] = -50.0F; bool = false;
-    } else if (paramArrayOfFloat[0] > 50.0F) { paramArrayOfFloat[0] = 50.0F; bool = false; }
+    if (paramArrayOfFloat[0] < -50.0F)
+    {
+      paramArrayOfFloat[0] = -50.0F;
+      bool = false;
+    }
+    else if (paramArrayOfFloat[0] > 50.0F)
+    {
+      paramArrayOfFloat[0] = 50.0F;
+      bool = false;
+    }
     float f = Math.abs(paramArrayOfFloat[0]);
-    if (f < 20.0F) {
-      if (paramArrayOfFloat[1] < -1.0F) { paramArrayOfFloat[1] = -1.0F; bool = false; }
+    if (f < 20.0F)
+    {
+      if (paramArrayOfFloat[1] < -1.0F)
+      {
+        paramArrayOfFloat[1] = -1.0F;
+        bool = false;
+      }
     }
-    else if (paramArrayOfFloat[1] < -5.0F) { paramArrayOfFloat[1] = -5.0F; bool = false;
+    else if (paramArrayOfFloat[1] < -5.0F)
+    {
+      paramArrayOfFloat[1] = -5.0F;
+      bool = false;
     }
-    if (paramArrayOfFloat[1] > 45.0F) { paramArrayOfFloat[1] = 45.0F; bool = false; }
+    if (paramArrayOfFloat[1] > 45.0F)
+    {
+      paramArrayOfFloat[1] = 45.0F;
+      bool = false;
+    }
     return bool;
   }
 
   public void msgShot(Shot paramShot)
   {
     setShot(paramShot);
-
-    if ((paramShot.chunkName.startsWith("WingLIn")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
-    if ((paramShot.chunkName.startsWith("WingRIn")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
-    if ((paramShot.chunkName.startsWith("Engine1")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
-    if ((paramShot.chunkName.startsWith("Engine2")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
-    }
-    if ((this.FM.AS.astateEngineStates[0] > 2) && (this.FM.AS.astateEngineStates[1] > 2)) {
-      this.FM.setCapableOfBMP(false, paramShot.initiator);
-    }
-
+    if ((paramShot.chunkName.startsWith("WingLIn")) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 1);
+    if ((paramShot.chunkName.startsWith("WingRIn")) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
+    if ((paramShot.chunkName.startsWith("Engine1")) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
+    if ((paramShot.chunkName.startsWith("Engine2")) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 1, 1);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates[0] > 2) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateEngineStates[1] > 2))
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setCapableOfBMP(false, paramShot.initiator);
     super.msgShot(paramShot);
   }
 
@@ -70,61 +81,76 @@ public class JU_52_3MG4E extends JU_52
   {
   }
 
-  public void typeBomberAdjSideslipReset() {
+  public void typeBomberAdjSideslipReset()
+  {
   }
 
-  public void typeBomberAdjSideslipPlus() {
+  public void typeBomberAdjSideslipPlus()
+  {
   }
 
-  public void typeBomberAdjSideslipMinus() {
+  public void typeBomberAdjSideslipMinus()
+  {
   }
 
-  public void typeBomberAdjAltitudeReset() {
+  public void typeBomberAdjAltitudeReset()
+  {
   }
 
-  public void typeBomberAdjAltitudePlus() {
+  public void typeBomberAdjAltitudePlus()
+  {
   }
 
-  public void typeBomberAdjAltitudeMinus() {
+  public void typeBomberAdjAltitudeMinus()
+  {
   }
 
-  public void typeBomberAdjSpeedReset() {
+  public void typeBomberAdjSpeedReset()
+  {
   }
 
-  public void typeBomberAdjSpeedPlus() {
+  public void typeBomberAdjSpeedPlus()
+  {
   }
 
-  public void typeBomberAdjSpeedMinus() {
+  public void typeBomberAdjSpeedMinus()
+  {
   }
 
-  public void typeBomberUpdate(float paramFloat) {
+  public void typeBomberUpdate(float paramFloat)
+  {
   }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
+  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted)
+    throws IOException
+  {
   }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
+  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput)
+    throws IOException
+  {
   }
 
-  static {
+  static
+  {
     Class localClass = JU_52_3MG4E.class;
     new NetAircraft.SPAWN(localClass);
-
     Property.set(localClass, "FlightModel", "FlightModels/Ju-52_3mg4e.fmd");
     Property.set(localClass, "meshName", "3do/plane/Ju-52_3mg4e/hier.him");
     Property.set(localClass, "iconFar_shortClassName", "Ju-52");
     Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
-
     Property.set(localClass, "yearService", 1939.0F);
     Property.set(localClass, "yearExpired", 1945.5F);
+    Property.set(localClass, "cockpitClass", new Class[] { CockpitJU524E.class, CockpitJU525E_GunnerOpen.class });
 
-    weaponTriggersRegister(localClass, new int[] { 10, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_BombSpawn01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 3 });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15t 250", null });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_BombSpawn01" });
 
-    weaponsRegister(localClass, "18xPara", new String[] { "MGunMG15t 250", "BombGunPara 18" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15t 250", null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "18xPara", new String[] { "MGunMG15t 250", "BombGunPara 18" });
+
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

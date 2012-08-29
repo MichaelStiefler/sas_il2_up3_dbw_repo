@@ -128,56 +128,14 @@ public class GUIBWDemoPlay extends GameState
         super.preRender();
         if (this._bStart) {
           this._bStart = false;
-          new MsgAction(72, 0.0D) {
-            public void doAction() { if (GUIBWDemoPlay.1.this._bCancel) return;
-              GUIBWDemoPlay.1.this._bStarting = true;
-              GUIBWDemoPlay.this.loadMessageBox.showModal();
-              Main.closeAllNetChannels();
-              GUIBWDemoPlay.MissionListener localMissionListener = new GUIBWDemoPlay.MissionListener(GUIBWDemoPlay.this);
-
-              Mat.setGrayScaleLoading(true);
-              Provider.setEnableBW(true);
-              for (int i = 0; i < 3; i++) {
-                Main3D.cur3D()._cinema[i].setShow(true);
-                Main3D.cur3D()._cinema[i].resetGame();
-                Main3D.cur3D()._lightsGlare[i].enterBWmode();
-                Main3D.cur3D()._sunGlare[i].enterBWmode();
-              }
-              GUIBWDemoPlay.access$202(GUIBWDemoPlay.this, Main3D.cur3D().hud.bDrawAllMessages);
-              Main3D.cur3D().hud.bDrawAllMessages = false;
-              GUIBWDemoPlay.access$302(GUIBWDemoPlay.this, World.cur().isArcade());
-              World.cur().setArcade(false);
-              GUIBWDemoPlay.access$402(GUIBWDemoPlay.this, Voice.isEnableVoices());
-              Voice.setEnableVoices(false);
-              GUIBWDemoPlay.access$502(GUIBWDemoPlay.this, RenderContext.cfgTexFlags.get(GUIBWDemoPlay.this.flagNum(512)));
-              GUIBWDemoPlay.access$702(GUIBWDemoPlay.this, RenderContext.cfgTexFlags.get(GUIBWDemoPlay.this.flagNum(16384)));
-              RenderContext.cfgTexFlags.set(GUIBWDemoPlay.this.flagNum(512), false);
-              RenderContext.cfgTexFlags.set(GUIBWDemoPlay.this.flagNum(16384), false);
-              i = RenderContext.cfgTexFlags.apply();
-              GUIBWDemoPlay.access$802(GUIBWDemoPlay.this, RenderContext.cfgHardwareShaders.get());
-              RenderContext.cfgHardwareShaders.set(0);
-              i |= RenderContext.cfgHardwareShaders.apply();
-              Engine.land().UnLoadMap();
-
-              CfgFlags localCfgFlags = (CfgFlags)CfgTools.get("MusState");
-              for (int j = 0; j < GUIBWDemoPlay.this.flagMusic.length; j++) {
-                GUIBWDemoPlay.this.flagMusic[j] = localCfgFlags.get(j);
-                localCfgFlags.set(j, false);
-              }
-              localCfgFlags.apply();
-
-              String str = Main3D.cur3D().playRecordedMission(GUIBWDemoPlay.demoFile);
-              if (str != null) {
-                BackgroundTask.removeListener(localMissionListener);
-                GUIBWDemoPlay.this.recordBad(str);
-              } else if (Main3D.cur3D().playRecordedStreams() != null) {
-                Main.cur().netMissionListener = localMissionListener;
-              } } } ;
+          new GUIBWDemoPlay.2(this, 72, 0.0D);
         }
-      } } ;
+      }
+    };
   }
 
-  public void _leave() {
+  public void _leave()
+  {
     this.msgFile = null;
     HUD.intro(null);
     HUD.introESC(null);
@@ -195,14 +153,14 @@ public class GUIBWDemoPlay extends GameState
     Main3D.cur3D().viewSet_Load();
     RenderContext.cfgTexFlags.set(flagNum(512), this.flagTEX_VERTEX_ARRAYS);
     RenderContext.cfgTexFlags.set(flagNum(16384), this.flagTEX_SECONDARY_COLOR_EXT);
-    i = RenderContext.cfgTexFlags.apply();
+    int j = RenderContext.cfgTexFlags.apply();
     RenderContext.cfgHardwareShaders.set(this.intHardwareShaders);
-    i |= RenderContext.cfgHardwareShaders.apply();
+    j |= RenderContext.cfgHardwareShaders.apply();
     Engine.land().UnLoadMap();
 
     CfgFlags localCfgFlags = (CfgFlags)CfgTools.get("MusState");
-    for (int j = 0; j < this.flagMusic.length; j++) {
-      localCfgFlags.set(j, this.flagMusic[j]);
+    for (int k = 0; k < this.flagMusic.length; k++) {
+      localCfgFlags.set(k, this.flagMusic[k]);
     }
     localCfgFlags.apply();
 

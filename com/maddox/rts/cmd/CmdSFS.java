@@ -17,11 +17,11 @@ public class CmdSFS extends Cmd
   {
     int i = 0;
     String str1;
-    if (nargs(paramMap, "MOUNT") > 0) {
-      str1 = arg(paramMap, "MOUNT", 0);
+    if (Cmd.nargs(paramMap, "MOUNT") > 0) {
+      str1 = Cmd.arg(paramMap, "MOUNT", 0);
       String str2 = null;
-      if (nargs(paramMap, "MOUNT") > 1)
-        str2 = arg(paramMap, "MOUNT", 1);
+      if (Cmd.nargs(paramMap, "MOUNT") > 1)
+        str2 = Cmd.arg(paramMap, "MOUNT", 1);
       try {
         if (str2 != null) SFS.mountAs(str1, str2, 0); else
           SFS.mount(str1, 0);
@@ -32,8 +32,8 @@ public class CmdSFS extends Cmd
       }
       i = 1;
     }
-    if (nargs(paramMap, "UNMOUNT") > 0) {
-      str1 = arg(paramMap, "UNMOUNT", 0);
+    if (Cmd.nargs(paramMap, "UNMOUNT") > 0) {
+      str1 = Cmd.arg(paramMap, "UNMOUNT", 0);
       try {
         SFS.unMount(str1);
       } catch (Exception localException1) {
@@ -50,8 +50,8 @@ public class CmdSFS extends Cmd
   }
 
   public CmdSFS() {
-    this.param.put("MOUNT", null);
-    this.param.put("UNMOUNT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("MOUNT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("UNMOUNT", null);
     this._properties.put("NAME", "sfs");
     this._levelAccess = 0;
   }

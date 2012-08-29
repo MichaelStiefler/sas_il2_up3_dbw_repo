@@ -11,22 +11,13 @@ public class LocomotiveUSSR extends LocomotiveVerm
     super(paramTrain, getMeshName(0), getMeshName(1));
   }
 
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
-    {
+  private static String getMeshName(int paramInt) {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/Prvz" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/Prvz" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()

@@ -283,20 +283,20 @@ public class Orient
     float f1 = (float)Math.cos(DEG2RAD(this.Yaw));
     float f2 = (float)Math.sin(DEG2RAD(this.Yaw));
 
-    Vt.z = paramVector3d.z;
-    Vt.x = (paramVector3d.x * f1 + paramVector3d.y * f2);
-    Vt.y = (paramVector3d.y * f1 - paramVector3d.x * f2);
+    Vt.jdField_z_of_type_Double = paramVector3d.jdField_z_of_type_Double;
+    Vt.jdField_x_of_type_Double = (paramVector3d.jdField_x_of_type_Double * f1 + paramVector3d.jdField_y_of_type_Double * f2);
+    Vt.jdField_y_of_type_Double = (paramVector3d.jdField_y_of_type_Double * f1 - paramVector3d.jdField_x_of_type_Double * f2);
 
-    setYPR(this.Yaw, -RAD2DEG((float)Math.atan2(Vt.x, Vt.z)), RAD2DEG((float)Math.asin(Vt.y)));
+    setYPR(this.Yaw, -RAD2DEG((float)Math.atan2(Vt.jdField_x_of_type_Double, Vt.jdField_z_of_type_Double)), RAD2DEG((float)Math.asin(Vt.jdField_y_of_type_Double)));
   }
 
   public void setAT0(Vector3f paramVector3f)
   {
-    set(-RAD2DEG((float)Math.atan2(paramVector3f.y, paramVector3f.x)), RAD2DEG((float)Math.atan2(paramVector3f.z, Math.sqrt(paramVector3f.x * paramVector3f.x + paramVector3f.y * paramVector3f.y))), 0.0F);
+    set(-RAD2DEG((float)Math.atan2(paramVector3f.jdField_y_of_type_Float, paramVector3f.jdField_x_of_type_Float)), RAD2DEG((float)Math.atan2(paramVector3f.z, Math.sqrt(paramVector3f.jdField_x_of_type_Float * paramVector3f.jdField_x_of_type_Float + paramVector3f.jdField_y_of_type_Float * paramVector3f.jdField_y_of_type_Float))), 0.0F);
   }
 
   public void setAT0(Vector3d paramVector3d)
   {
-    set(-RAD2DEG((float)Math.atan2(paramVector3d.y, paramVector3d.x)), RAD2DEG((float)Math.atan2(paramVector3d.z, Math.sqrt(paramVector3d.x * paramVector3d.x + paramVector3d.y * paramVector3d.y))), 0.0F);
+    set(-RAD2DEG((float)Math.atan2(paramVector3d.jdField_y_of_type_Double, paramVector3d.jdField_x_of_type_Double)), RAD2DEG((float)Math.atan2(paramVector3d.jdField_z_of_type_Double, Math.sqrt(paramVector3d.jdField_x_of_type_Double * paramVector3d.jdField_x_of_type_Double + paramVector3d.jdField_y_of_type_Double * paramVector3d.jdField_y_of_type_Double))), 0.0F);
   }
 }

@@ -32,10 +32,10 @@ public abstract class TorpedoApparatus extends Gun
   {
     newBomb();
     if (this.bomb == null) return;
-    this.bomb.pos.setUpdateEnable(true);
-    this.bomb.pos.resetAsBase();
+    this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
+    this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
 
-    if (this.bomb.pos.getAbsPoint().z > 0.0D)
+    if (this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().z > 0.0D)
     {
       Eff3DActor.New(getOwner(), this.hook, null, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1.0F);
 
@@ -57,10 +57,10 @@ public abstract class TorpedoApparatus extends Gun
   {
     try {
       this.bomb = ((Bomb)this.bulletClass.newInstance());
-      this.bomb.pos.setBase(getOwner(), this.hook, false);
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(getOwner(), this.hook, false);
 
-      this.bomb.pos.resetAsBase();
-      this.bomb.pos.setUpdateEnable(false);
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
     } catch (Exception localException) {
     }
   }

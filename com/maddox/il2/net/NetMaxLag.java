@@ -37,17 +37,18 @@ public class NetMaxLag
     long l1 = -1L;
     List localList = Engine.targets();
     int j = localList.size();
+    Object localObject;
     for (int k = 0; k < j; k++) {
-      Actor localActor = (Actor)localList.get(k);
-      if ((localActor == paramAircraft) || 
-        (!(localActor instanceof Aircraft)) || 
-        (!Actor.isAlive(localActor)) || 
-        (localActor.getArmy() == i) || 
-        (!((Aircraft)localActor).isNetPlayer())) continue;
-      double d3 = localPoint3d.distanceSquared(localActor.pos.getAbsPoint());
+      localObject = (Actor)localList.get(k);
+      if ((localObject == paramAircraft) || 
+        (!(localObject instanceof Aircraft)) || 
+        (!Actor.isAlive((Actor)localObject)) || 
+        (((Actor)localObject).getArmy() == i) || 
+        (!((Aircraft)localObject).isNetPlayer())) continue;
+      double d3 = localPoint3d.distanceSquared(((Actor)localObject).pos.getAbsPoint());
       long l2;
       if (d3 > 4000000.0D) {
-        if (paramBoolean) l2 = paramAircraft.net.masterChannel().getMaxTimeout() / 2; else
+        if (paramBoolean) l2 = paramAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel().getMaxTimeout() / 2; else
           l2 = localNetServerParams.masterChannel().getMaxTimeout() / 2;
       } else {
         double d4 = localNetServerParams.nearMaxLagTime();
@@ -60,14 +61,14 @@ public class NetMaxLag
       if ((l1 < 0L) || (l1 > l2))
         l1 = l2;
     }
-    if (l1 < 0L)
+    if (l1 < 0L) {
       return;
-    NetChannel localNetChannel;
-    if (paramBoolean) localNetChannel = paramAircraft.net.masterChannel(); else
-      localNetChannel = localNetServerParams.masterChannel();
-    if (localNetChannel == null)
+    }
+    if (paramBoolean) localObject = paramAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(); else
+      localObject = localNetServerParams.masterChannel();
+    if (localObject == null)
       return;
-    if (l1 > localNetChannel.getCurTimeoutOk()) {
+    if (l1 > ((NetChannel)localObject).getCurTimeoutOk()) {
       return;
     }
     this.lastWarningTime = d1;
@@ -82,7 +83,7 @@ public class NetMaxLag
         ((NetUser)NetEnv.host()).kick(paramAircraft.netUser());
       } else {
         Chat.sendLog(0, "user_cheatkick2", (NetUser)NetEnv.host(), null);
-        localNetChannel.destroy("You have been kicked from the server .");
+        ((NetChannel)localObject).destroy("You have been kicked from the server .");
       }
     } else if (paramBoolean) {
       String str = "user_cheating" + (this.warningCounter % 3 + 1);

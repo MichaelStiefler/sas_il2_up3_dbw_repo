@@ -80,15 +80,15 @@ public final class Furniture extends ActorMesh
 
   public void align()
   {
-    this.pos.getAbs(p);
-    p.z = Engine.land().HQ(p.x, p.y);
-    p.z += this.prop.ADD_HEIGHT + this.prop.heightAboveLandSurface;
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.jdField_z_of_type_Double = Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double);
+    p.jdField_z_of_type_Double += this.prop.ADD_HEIGHT + this.prop.heightAboveLandSurface;
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
     if (this.prop.ALIGN_TO_LAND_NORMAL) {
-      Engine.land().N(p.x, p.y, n);
+      Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
       o.orient(n);
     }
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public Object getSwitchListener(Message paramMessage) {
@@ -97,7 +97,7 @@ public final class Furniture extends ActorMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     if (paramFloat <= 0.0F) return 0.0F;
     return paramFloat;
   }

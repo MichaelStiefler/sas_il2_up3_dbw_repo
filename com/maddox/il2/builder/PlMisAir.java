@@ -166,11 +166,10 @@ public class PlMisAir extends Plugin
     this.regimentList.clear();
     List localList = Regiment.getAll();
     int i = localList.size();
-    Regiment localRegiment;
     for (int j = 0; j < i; j++) {
-      localRegiment = (Regiment)localList.get(j);
-      if (localRegiment.getArmy() == paramInt)
-        this.regimentList.add(localRegiment);
+      Regiment localRegiment1 = (Regiment)localList.get(j);
+      if (localRegiment1.getArmy() == paramInt)
+        this.regimentList.add(localRegiment1);
     }
     this.iArmyRegimentList = paramInt;
 
@@ -179,13 +178,13 @@ public class PlMisAir extends Plugin
     i = this.regimentList.size();
     if ((this.wRegiment.posEnable == null) || (this.wRegiment.posEnable.length < i))
       this.wRegiment.posEnable = new boolean[i];
-    for (j = 0; j < i; j++) {
-      localRegiment = (Regiment)this.regimentList.get(j);
-      String str = I18N.regimentShort(localRegiment.shortInfo());
+    for (int k = 0; k < i; k++) {
+      Regiment localRegiment2 = (Regiment)this.regimentList.get(k);
+      String str = I18N.regimentShort(localRegiment2.shortInfo());
       if ((str != null) && (str.length() > 0) && (str.charAt(0) == '<'))
-        str = I18N.regimentInfo(localRegiment.info());
+        str = I18N.regimentInfo(localRegiment2.info());
       this.wRegiment.add(str);
-      this.wRegiment.posEnable[j] = true;
+      this.wRegiment.posEnable[k] = true;
     }
   }
 
@@ -199,42 +198,44 @@ public class PlMisAir extends Plugin
       String str1 = paramSectFile.var(i, k);
       String str2 = str1 + "_Way";
       if (!paramSectFile.sectionExist(str1)) {
-        builder.tipErr("MissionLoad: Section '" + str1 + "' not found");
+        Plugin.builder.tipErr("MissionLoad: Section '" + str1 + "' not found");
       }
       else {
         int m = paramSectFile.sectionIndex(str2);
         if (m < 0) {
-          builder.tipErr("MissionLoad: Section '" + str2 + "' not found");
+          Plugin.builder.tipErr("MissionLoad: Section '" + str2 + "' not found");
         }
         else {
           int n = paramSectFile.vars(m);
           if (n == 0) {
-            builder.tipErr("MissionLoad: Section '" + str2 + "' is empty");
+            Plugin.builder.tipErr("MissionLoad: Section '" + str2 + "' is empty");
           }
           else {
             String str3 = paramSectFile.get(str1, "Class", (String)null);
             if (str3 == null) {
-              builder.tipErr("MissionLoad: In section '" + str1 + "' field 'Class' not present");
+              Plugin.builder.tipErr("MissionLoad: In section '" + str1 + "' field 'Class' not present");
             }
             else {
               Class localClass = null;
               try {
                 localClass = ObjIO.classForName(str3);
               } catch (Exception localException) {
-                builder.tipErr("MissionLoad: In section '" + str1 + "' field 'Class' contains unknown class");
+                Plugin.builder.tipErr("MissionLoad: In section '" + str1 + "' field 'Class' contains unknown class");
                 continue;
               }
 
               int i1 = 0;
               int i2 = 0;
               for (i1 = 0; i1 < this.type.length; i1++) {
-                for (i2 = 0; (i2 < this.type[i1].item.length) && 
-                  (this.type[i1].item[i2].clazz != localClass); i2++);
+                for (i2 = 0; i2 < this.type[i1].item.length; i2++) {
+                  if (this.type[i1].item[i2].clazz == localClass)
+                    break;
+                }
                 if (i2 < this.type[i1].item.length)
                   break;
               }
               if (i1 >= this.type.length) {
-                builder.tipErr("MissionLoad: In section '" + str1 + "' field 'Class' contains unknown class");
+                Plugin.builder.tipErr("MissionLoad: In section '" + str1 + "' field 'Class' contains unknown class");
               }
               else {
                 boolean bool1 = paramSectFile.get(str1, "OnlyAI", 0, 0, 1) == 1;
@@ -303,7 +304,7 @@ public class PlMisAir extends Plugin
                 int i15 = paramSectFile.get(str1, "StartTime", 0);
                 if (i15 < 0) i15 = 0;
 
-                PathAir localPathAir = new PathAir(builder.pathes, i1, i2);
+                PathAir localPathAir = new PathAir(Plugin.builder.pathes, i1, i2);
                 localPathAir.setArmy(localRegiment.getArmy());
                 localPathAir.sRegiment = str4;
                 localPathAir.iRegiment = i11;
@@ -323,50 +324,51 @@ public class PlMisAir extends Plugin
 
                 if (!searchEnabledSlots(localPathAir)) {
                   localPathAir.destroy();
-                  builder.tipErr("MissionLoad: Section '" + str1 + "', regiment table very small");
+                  Plugin.builder.tipErr("MissionLoad: Section '" + str1 + "', regiment table very small");
                 }
                 else {
                   localPathAir.setName(localPathAir.sRegiment + localPathAir.iSquadron + localPathAir.iWing);
                   Property.set(localPathAir, "builderPlugin", this);
                   localPathAir.drawing(this.viewMap.containsKey(i1));
-                  Object localObject = null;
+                  Object localObject1 = null;
+                  Object localObject2;
                   for (int i16 = 0; i16 < n; i16++) {
-                    String str6 = paramSectFile.var(m, i16);
+                    localObject2 = paramSectFile.var(m, i16);
                     int i17 = -1;
-                    if ("NORMFLY".equals(str6)) { i17 = 0;
-                    } else if ("TAKEOFF".equals(str6)) { i17 = 1;
-                    } else if ("LANDING".equals(str6)) { i17 = 2;
-                    } else if ("GATTACK".equals(str6)) { i17 = 3;
+                    if ("NORMFLY".equals(localObject2)) { i17 = 0;
+                    } else if ("TAKEOFF".equals(localObject2)) { i17 = 1;
+                    } else if ("LANDING".equals(localObject2)) { i17 = 2;
+                    } else if ("GATTACK".equals(localObject2)) { i17 = 3;
                     } else {
-                      builder.tipErr("MissionLoad: Section '" + str2 + "' contains unknown type waypoint");
+                      Plugin.builder.tipErr("MissionLoad: Section '" + str2 + "' contains unknown type waypoint");
                       localPathAir.destroy();
                       continue;
                     }
-                    String str7 = paramSectFile.value(m, i16);
-                    if ((str7 == null) || (str7.length() <= 0)) {
-                      builder.tipErr("MissionLoad: Section '" + str2 + "' type '" + str6 + "' is empty");
+                    String str6 = paramSectFile.value(m, i16);
+                    if ((str6 == null) || (str6.length() <= 0)) {
+                      Plugin.builder.tipErr("MissionLoad: Section '" + str2 + "' type '" + (String)localObject2 + "' is empty");
                       localPathAir.destroy();
                     }
                     else {
-                      NumberTokenizer localNumberTokenizer = new NumberTokenizer(str7);
-                      localPoint3d.x = localNumberTokenizer.next(-1.0E+030D, -1.0E+030D, 1.0E+030D);
-                      localPoint3d.y = localNumberTokenizer.next(-1.0E+030D, -1.0E+030D, 1.0E+030D);
+                      NumberTokenizer localNumberTokenizer = new NumberTokenizer(str6);
+                      localPoint3d.jdField_x_of_type_Double = localNumberTokenizer.next(-1.0E+030D, -1.0E+030D, 1.0E+030D);
+                      localPoint3d.jdField_y_of_type_Double = localNumberTokenizer.next(-1.0E+030D, -1.0E+030D, 1.0E+030D);
                       double d1 = localNumberTokenizer.next(0.0D, 0.0D, 10000.0D);
                       double d2 = localNumberTokenizer.next(0.0D, 0.0D, 1000.0D);
-                      String str8 = null;
+                      String str7 = null;
                       int i18 = 0;
-                      String str9 = null;
-                      str8 = localNumberTokenizer.next(null);
-                      if (str8 != null) {
-                        if (str8.equals("&0")) {
-                          str9 = str8;
-                          str8 = null;
-                        } else if (str8.equals("&1")) {
-                          str9 = str8;
-                          str8 = null;
+                      String str8 = null;
+                      str7 = localNumberTokenizer.next(null);
+                      if (str7 != null) {
+                        if (str7.equals("&0")) {
+                          str8 = str7;
+                          str7 = null;
+                        } else if (str7.equals("&1")) {
+                          str8 = str7;
+                          str7 = null;
                         } else {
                           i18 = localNumberTokenizer.next(0);
-                          str9 = localNumberTokenizer.next(null);
+                          str8 = localNumberTokenizer.next(null);
                         }
                       }
                       switch (i17) {
@@ -374,8 +376,8 @@ public class PlMisAir extends Plugin
                         i17 = 0;
                         break;
                       case 3:
-                        if ((str8 != null) && (str8.startsWith("Bridge")))
-                          str8 = " " + str8;
+                        if ((str7 != null) && (str7.startsWith("Bridge")))
+                          str7 = " " + str7;
                         i17 = 3;
                         break;
                       case 1:
@@ -385,18 +387,18 @@ public class PlMisAir extends Plugin
                         i17 = 2;
                       }
 
-                      localObject = new PAir(localPathAir, (PPoint)localObject, localPoint3d, i17, d1, d2);
-                      if (str8 != null) {
-                        ((PAir)localObject).iTarget = i18;
-                        ((PAir)localObject).sTarget = str8;
+                      localObject1 = new PAir(localPathAir, (PPoint)localObject1, localPoint3d, i17, d1, d2);
+                      if (str7 != null) {
+                        ((PAir)localObject1).iTarget = i18;
+                        ((PAir)localObject1).sTarget = str7;
                       }
-                      if ((str9 != null) && (str9.equals("&1")))
-                        ((PAir)localObject).bRadioSilence = true;
+                      if ((str8 != null) && (str8.equals("&1")))
+                        ((PAir)localObject1).bRadioSilence = true;
                     }
                   }
                   if (i15 > 0) {
-                    PAir localPAir = (PAir)localPathAir.point(0);
-                    localPAir.time = (i15 * 60.0D);
+                    localObject2 = (PAir)localPathAir.point(0);
+                    ((PAir)localObject2).jdField_time_of_type_Double = (i15 * 60.0D);
                     localPathAir.computeTimes(false);
                   }
                 }
@@ -409,10 +411,10 @@ public class PlMisAir extends Plugin
   }
 
   public boolean save(SectFile paramSectFile) {
-    if (builder.pathes == null)
+    if (Plugin.builder.pathes == null)
       return true;
     int i = paramSectFile.sectionIndex("Wing");
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
+    Object[] arrayOfObject = Plugin.builder.pathes.getOwnerAttached();
     for (int j = 0; j < arrayOfObject.length; j++) {
       Actor localActor = (Actor)arrayOfObject[j];
       if (localActor == null) break;
@@ -437,18 +439,18 @@ public class PlMisAir extends Plugin
         for (int n = 0; n < 4; n++)
           if (localPathAir.skill != localPathAir.skills[n])
             paramSectFile.lineAdd(m, "Skill" + n, "" + localPathAir.skills[n]);
-        for (n = 0; n < 4; n++)
-          if (localPathAir.skins[n] != null)
-            paramSectFile.lineAdd(m, "skin" + n, localPathAir.skins[n]);
-        for (n = 0; n < 4; n++)
-          if (localPathAir.noseart[n] != null)
-            paramSectFile.lineAdd(m, "noseart" + n, localPathAir.noseart[n]);
-        for (n = 0; n < 4; n++)
-          if (localPathAir.pilots[n] != null)
-            paramSectFile.lineAdd(m, "pilot" + n, localPathAir.pilots[n]);
-        for (n = 0; n < 4; n++)
-          if (localPathAir.bNumberOn[n] == 0)
-            paramSectFile.lineAdd(m, "numberOn" + n, "0");
+        for (int i1 = 0; i1 < 4; i1++)
+          if (localPathAir.skins[i1] != null)
+            paramSectFile.lineAdd(m, "skin" + i1, localPathAir.skins[i1]);
+        for (int i2 = 0; i2 < 4; i2++)
+          if (localPathAir.noseart[i2] != null)
+            paramSectFile.lineAdd(m, "noseart" + i2, localPathAir.noseart[i2]);
+        for (int i3 = 0; i3 < 4; i3++)
+          if (localPathAir.pilots[i3] != null)
+            paramSectFile.lineAdd(m, "pilot" + i3, localPathAir.pilots[i3]);
+        for (int i4 = 0; i4 < 4; i4++)
+          if (localPathAir.bNumberOn[i4] == 0)
+            paramSectFile.lineAdd(m, "numberOn" + i4, "0");
         paramSectFile.lineAdd(m, "Class", ObjIO.classGetName(this.type[localPathAir._iType].item[localPathAir._iItem].clazz));
         paramSectFile.lineAdd(m, "Fuel", "" + localPathAir.fuel);
         if (localPathAir.weapons != null)
@@ -456,28 +458,28 @@ public class PlMisAir extends Plugin
         else
           paramSectFile.lineAdd(m, "weapons", "none");
         PAir localPAir1 = (PAir)localPathAir.point(0);
-        if (localPAir1.time > 0.0D) {
-          paramSectFile.lineAdd(m, "StartTime", "" + (int)Math.round(localPAir1.time / 60.0D));
+        if (localPAir1.jdField_time_of_type_Double > 0.0D) {
+          paramSectFile.lineAdd(m, "StartTime", "" + (int)Math.round(localPAir1.jdField_time_of_type_Double / 60.0D));
         }
-        int i1 = paramSectFile.sectionAdd(str2);
-        for (int i2 = 0; i2 < k; i2++) {
-          PAir localPAir2 = (PAir)localPathAir.point(i2);
-          Point3d localPoint3d = localPAir2.pos.getAbsPoint();
+        int i5 = paramSectFile.sectionAdd(str2);
+        for (int i6 = 0; i6 < k; i6++) {
+          PAir localPAir2 = (PAir)localPathAir.point(i6);
+          Point3d localPoint3d = localPAir2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
           switch (localPAir2.type()) {
           case 0:
-            paramSectFile.lineAdd(i1, "NORMFLY", fmt(localPoint3d.x) + " " + fmt(localPoint3d.y) + " " + fmt(localPAir2.height) + " " + fmt(localPAir2.speed) + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
+            paramSectFile.lineAdd(i5, "NORMFLY", fmt(localPoint3d.jdField_x_of_type_Double) + " " + fmt(localPoint3d.jdField_y_of_type_Double) + " " + fmt(localPAir2.height) + " " + fmt(localPAir2.speed) + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
 
             break;
           case 3:
-            paramSectFile.lineAdd(i1, "GATTACK", fmt(localPoint3d.x) + " " + fmt(localPoint3d.y) + " " + fmt(localPAir2.height) + " " + fmt(localPAir2.speed) + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
+            paramSectFile.lineAdd(i5, "GATTACK", fmt(localPoint3d.jdField_x_of_type_Double) + " " + fmt(localPoint3d.jdField_y_of_type_Double) + " " + fmt(localPAir2.height) + " " + fmt(localPAir2.speed) + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
 
             break;
           case 1:
-            paramSectFile.lineAdd(i1, "TAKEOFF", fmt(localPoint3d.x) + " " + fmt(localPoint3d.y) + " 0 0" + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
+            paramSectFile.lineAdd(i5, "TAKEOFF", fmt(localPoint3d.jdField_x_of_type_Double) + " " + fmt(localPoint3d.jdField_y_of_type_Double) + " 0 0" + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
 
             break;
           case 2:
-            paramSectFile.lineAdd(i1, "LANDING", fmt(localPoint3d.x) + " " + fmt(localPoint3d.y) + " 0 0" + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
+            paramSectFile.lineAdd(i5, "LANDING", fmt(localPoint3d.jdField_x_of_type_Double) + " " + fmt(localPoint3d.jdField_y_of_type_Double) + " 0 0" + saveTarget(localPAir2) + saveRadioSilence(localPAir2));
           }
 
         }
@@ -535,25 +537,25 @@ public class PlMisAir extends Plugin
     try
     {
       Point3d localPoint3d = paramLoc.getPoint();
-      int i = builder.wSelect.comboBox1.getSelected();
-      int j = builder.wSelect.comboBox2.getSelected();
+      int i = Plugin.builder.wSelect.comboBox1.getSelected();
+      int j = Plugin.builder.wSelect.comboBox2.getSelected();
       Object localObject;
-      if (builder.selectedPath() != null) {
-        localObject = builder.selectedPath();
+      if (Plugin.builder.selectedPath() != null) {
+        localObject = Plugin.builder.selectedPath();
         if (!(localObject instanceof PathAir))
           return;
         localPathAir = (PathAir)localObject;
         if ((i - this.startComboBox1 != localPathAir._iType) || (j != localPathAir._iItem))
         {
-          builder.setSelected(null);
+          Plugin.builder.setSelected(null);
         }
       }
       PAir localPAir;
-      if (builder.selectedPoint() != null) {
-        localObject = (PAir)builder.selectedPoint();
+      if (Plugin.builder.selectedPoint() != null) {
+        localObject = (PAir)Plugin.builder.selectedPoint();
         if (((PAir)localObject).type() == 2)
           return;
-        localPAir = new PAir(builder.selectedPath(), builder.selectedPoint(), localPoint3d, 0, this.defaultHeight, this.defaultSpeed);
+        localPAir = new PAir(Plugin.builder.selectedPath(), Plugin.builder.selectedPoint(), localPoint3d, 0, this.defaultHeight, this.defaultSpeed);
       } else {
         if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length))
           return;
@@ -561,7 +563,7 @@ public class PlMisAir extends Plugin
         if ((j < 0) || (j >= this.type[i].item.length)) {
           return;
         }
-        localPathAir = new PathAir(builder.pathes, i, j);
+        localPathAir = new PathAir(Plugin.builder.pathes, i, j);
         localPathAir.setArmy(this.type[i].item[j].army);
         this.defaultArmy[this.type[i].item[j].army].load(localPathAir);
 
@@ -575,7 +577,7 @@ public class PlMisAir extends Plugin
         localPAir = new PAir(localPathAir, null, localPoint3d, 0, this.defaultHeight, this.defaultSpeed);
       }
       clampSpeed((PAir)localPAir);
-      builder.setSelected(localPAir);
+      Plugin.builder.setSelected(localPAir);
       PlMission.setChanged();
     } catch (Exception localException) {
       if ((localPathAir != null) && (localPathAir.points() == 0))
@@ -585,9 +587,9 @@ public class PlMisAir extends Plugin
   }
 
   public void changeType() {
-    int i = builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
-    int j = builder.wSelect.comboBox2.getSelected();
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (i != localPathAir._iType) return;
     localPathAir.skins = new String[4];
     localPathAir.noseart = new String[4];
@@ -616,15 +618,15 @@ public class PlMisAir extends Plugin
   }
 
   public void configure() {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisAir: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-    if (this.sectFile == null)
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
+    if (this.jdField_sectFile_of_type_JavaLangString == null)
       throw new RuntimeException("PlMisAir: field 'sectFile' not defined");
-    SectFile localSectFile = new SectFile(this.sectFile, 0);
+    SectFile localSectFile = new SectFile(this.jdField_sectFile_of_type_JavaLangString, 0);
     int i = localSectFile.sections();
     if (i <= 0)
-      throw new RuntimeException("PlMisAir: file '" + this.sectFile + "' is empty");
+      throw new RuntimeException("PlMisAir: file '" + this.jdField_sectFile_of_type_JavaLangString + "' is empty");
     this.type = new Type[i];
     for (int j = 0; j < i; j++) {
       String str1 = localSectFile.sectionName(j);
@@ -649,29 +651,30 @@ public class PlMisAir extends Plugin
 
   void viewUpdate()
   {
-    if (builder.pathes == null)
+    if (Plugin.builder.pathes == null)
       return;
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
+    Object[] arrayOfObject = Plugin.builder.pathes.getOwnerAttached();
     Object localObject;
+    PathAir localPathAir;
     for (int i = 0; i < arrayOfObject.length; i++) {
       localObject = (Actor)arrayOfObject[i];
       if (localObject == null) break;
       if ((localObject instanceof PathAir)) {
-        PathAir localPathAir = (PathAir)localObject;
+        localPathAir = (PathAir)localObject;
         localPathAir.drawing(this.viewMap.containsKey(localPathAir._iType));
       }
     }
-    if (builder.selectedPath() != null) {
-      Path localPath = builder.selectedPath();
-      if ((localPath instanceof PathAir)) {
-        localObject = (PathAir)localPath;
-        if (!this.viewMap.containsKey(((PathAir)localObject)._iType)) {
-          builder.setSelected(null);
+    if (Plugin.builder.selectedPath() != null) {
+      localObject = Plugin.builder.selectedPath();
+      if ((localObject instanceof PathAir)) {
+        localPathAir = (PathAir)localObject;
+        if (!this.viewMap.containsKey(localPathAir._iType)) {
+          Plugin.builder.setSelected(null);
         }
       }
     }
-    if (!builder.isFreeView())
-      builder.repaint();
+    if (!Plugin.builder.isFreeView())
+      Plugin.builder.repaint();
   }
 
   void viewType(int paramInt, boolean paramBoolean) {
@@ -680,42 +683,42 @@ public class PlMisAir extends Plugin
     viewUpdate();
   }
   void viewType(int paramInt) {
-    viewType(paramInt, this.viewType[paramInt].bChecked);
+    viewType(paramInt, this.viewType[paramInt].jdField_bChecked_of_type_Boolean);
   }
   public void viewTypeAll(boolean paramBoolean) {
     for (int i = 0; i < this.type.length; i++)
-      if (this.viewType[i].bChecked != paramBoolean) {
-        this.viewType[i].bChecked = paramBoolean;
+      if (this.viewType[i].jdField_bChecked_of_type_Boolean != paramBoolean) {
+        this.viewType[i].jdField_bChecked_of_type_Boolean = paramBoolean;
         viewType(i, paramBoolean);
       }
   }
 
   private void fillComboBox1()
   {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
     for (int i = 0; i < this.type.length; i++) {
-      builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
+      Plugin.builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
     }
     if (this.startComboBox1 == 0)
-      builder.wSelect.comboBox1.setSelected(0, true, false); 
+      Plugin.builder.wSelect.comboBox1.setSelected(0, true, false); 
   }
 
   private void fillComboBox2(int paramInt1, int paramInt2) {
     if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
       return;
     }
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt1) {
+      Plugin.builder.wSelect.curFilledType = paramInt1;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.type[(paramInt1 - this.startComboBox1)].item.length; i++) {
-        builder.wSelect.comboBox2.add(I18N.plane(this.type[(paramInt1 - this.startComboBox1)].item[i].name));
+        Plugin.builder.wSelect.comboBox2.add(I18N.plane(this.type[(paramInt1 - this.startComboBox1)].item[i].name));
       }
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
 
     Class localClass = this.type[paramInt1].item[paramInt2].clazz;
-    builder.wSelect.setMesh(Aircraft.getPropertyMesh(localClass, currentCountry()), false);
+    Plugin.builder.wSelect.setMesh(Aircraft.getPropertyMesh(localClass, currentCountry()), false);
   }
 
   public String[] actorInfo(Actor paramActor)
@@ -725,21 +728,21 @@ public class PlMisAir extends Plugin
 
     PAir localPAir = (PAir)paramActor;
     int i = localPathAir.pointIndx(localPAir);
-    this._actorInfo[1] = ("(" + i + ") " + timeSecToString(localPAir.time + (int)(World.getTimeofDay() * 60.0F * 60.0F)));
+    this._actorInfo[1] = ("(" + i + ") " + Plugin.timeSecToString(localPAir.jdField_time_of_type_Double + (int)(World.getTimeofDay() * 60.0F * 60.0F)));
     return this._actorInfo;
   }
 
   public void syncSelector()
   {
-    builder.wSelect.tabsClient.addTab(1, this.tabActor);
+    Plugin.builder.wSelect.tabsClient.addTab(1, this.tabActor);
     fillEditActor();
-    PathAir localPathAir1 = (PathAir)builder.selectedPath();
+    PathAir localPathAir1 = (PathAir)Plugin.builder.selectedPath();
     fillComboBox2(localPathAir1._iType + this.startComboBox1, localPathAir1._iItem);
-    builder.wSelect.tabsClient.addTab(2, this.tabWay);
+    Plugin.builder.wSelect.tabsClient.addTab(2, this.tabWay);
     fillDialogWay();
-    PathAir localPathAir2 = (PathAir)builder.selectedPath();
+    PathAir localPathAir2 = (PathAir)Plugin.builder.selectedPath();
     for (int i = 0; i < localPathAir2.planes; i++) {
-      builder.wSelect.tabsClient.addTab(i + 3, this.tabSkin[i]);
+      Plugin.builder.wSelect.tabsClient.addTab(i + 3, this.tabSkin[i]);
       fillEditSkin(i);
     }
     fillSkins();
@@ -756,11 +759,11 @@ public class PlMisAir extends Plugin
   }
 
   public void updateSelectorMesh() {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     PaintScheme localPaintScheme = Aircraft.getPropertyPaintScheme(this.type[localPathAir._iType].item[localPathAir._iItem].clazz, localPathAir.regiment().country());
 
     if (localPaintScheme != null) {
-      HierMesh localHierMesh = builder.wSelect.getHierMesh();
+      HierMesh localHierMesh = Plugin.builder.wSelect.getHierMesh();
       if (localHierMesh != null)
         localPaintScheme.prepare(this.type[localPathAir._iType].item[localPathAir._iItem].clazz, localHierMesh, localPathAir.regiment(), localPathAir.iSquadron, localPathAir.iWing, 0);
     }
@@ -769,7 +772,7 @@ public class PlMisAir extends Plugin
   public void createGUI() {
     fillComboBox1();
     fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -777,7 +780,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         if (paramInt1 != 2)
           return false;
@@ -803,10 +806,10 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginMission.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
@@ -817,12 +820,12 @@ public class PlMisAir extends Plugin
       while (i >= 0) {
         ViewItem localViewItem = null;
         if ("de".equals(RTSConf.cur.locale.getLanguage())) {
-          localViewItem = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + i18n("show"), null));
+          localViewItem = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + Plugin.i18n("show"), null));
         }
         else {
-          localViewItem = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, i18n("show") + " " + I18N.technic(this.type[i].name), null));
+          localViewItem = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("show") + " " + I18N.technic(this.type[i].name), null));
         }
-        localViewItem.bChecked = true;
+        localViewItem.jdField_bChecked_of_type_Boolean = true;
         this.viewType[i] = localViewItem;
         viewType(i, true);
         i--;
@@ -909,10 +912,10 @@ public class PlMisAir extends Plugin
     for (int i = 0; i < 4; i++)
       this.wSquadron.posEnable[i] = true;
     this._squads = paramRegiment.getOwnerAttached(this._squads);
-    for (i = 0; i < 4; i++) {
-      ResSquadron localResSquadron = (ResSquadron)this._squads[i];
+    for (int j = 0; j < 4; j++) {
+      ResSquadron localResSquadron = (ResSquadron)this._squads[j];
       if (localResSquadron == null) break;
-      this._squads[i] = null;
+      this._squads[j] = null;
       if (localResSquadron.index() != paramInt)
         this.wSquadron.posEnable[localResSquadron.index()] = isEnabledSquad(localResSquadron);
     }
@@ -927,10 +930,10 @@ public class PlMisAir extends Plugin
     for (int i = 0; i < 4; i++)
       this.wWing.posEnable[i] = true;
     this._wings = paramResSquadron.getAttached(this._wings);
-    for (i = 0; i < 4; i++) {
-      PathAir localPathAir = (PathAir)this._wings[i];
+    for (int j = 0; j < 4; j++) {
+      PathAir localPathAir = (PathAir)this._wings[j];
       if (localPathAir == null) break;
-      this._wings[i] = null;
+      this._wings[j] = null;
       if (localPathAir.iWing != paramInt)
         this.wWing.posEnable[localPathAir.iWing] = false;
     }
@@ -953,13 +956,13 @@ public class PlMisAir extends Plugin
   }
 
   public void initEditActor() {
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient() {
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient() {
       public void resized() { super.resized(); PlMisAir.this.editResized(this);
       }
     });
-    this.tabActor = builder.wSelect.tabsClient.createTab(i18n("AircraftActor"), localGWindowDialogClient);
+    this.tabActor = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("AircraftActor"), localGWindowDialogClient);
 
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, i18n("Army"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, Plugin.i18n("Army"), null));
     localGWindowDialogClient.addControl(this.wArmy = new GWindowComboControl(localGWindowDialogClient, 9.0F, 1.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -1019,7 +1022,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("Squadron"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("Squadron"), null));
     localGWindowDialogClient.addControl(this.wSquadron = new GWindowComboControl(localGWindowDialogClient, 9.0F, 5.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -1042,7 +1045,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Wing"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("Wing"), null));
     localGWindowDialogClient.addControl(this.wWing = new GWindowComboControl(localGWindowDialogClient, 9.0F, 7.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -1065,7 +1068,7 @@ public class PlMisAir extends Plugin
       }
     });
     this.lWeapons = new ArrayList();
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, i18n("Weapons"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, Plugin.i18n("Weapons"), null));
     localGWindowDialogClient.addControl(this.wWeapons = new GWindowComboControl(localGWindowDialogClient, 9.0F, 9.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false); }
@@ -1083,7 +1086,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 11.0F, 7.0F, 1.3F, i18n("Fuel"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 11.0F, 7.0F, 1.3F, Plugin.i18n("Fuel"), null));
     localGWindowDialogClient.addControl(this.wFuel = new GWindowEditControl(localGWindowDialogClient, 9.0F, 11.0F, 7.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bDelayedNotify = true;
@@ -1111,7 +1114,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 7.0F, 1.3F, i18n("Planes"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 7.0F, 1.3F, Plugin.i18n("Planes"), null));
     localGWindowDialogClient.addControl(this.wPlanes = new GWindowComboControl(localGWindowDialogClient, 9.0F, 13.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -1130,7 +1133,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 15.0F, 7.0F, 1.3F, i18n("Skill"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 15.0F, 7.0F, 1.3F, Plugin.i18n("Skill"), null));
     localGWindowDialogClient.addControl(this.wSkill = new GWindowComboControl(localGWindowDialogClient, 9.0F, 15.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -1150,7 +1153,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 17.0F, 7.0F, 1.3F, i18n("OnlyAI"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 17.0F, 7.0F, 1.3F, Plugin.i18n("OnlyAI"), null));
     localGWindowDialogClient.addControl(this.wOnlyAI = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 17.0F, null) {
       public void preRender() {
         super.preRender();
@@ -1173,7 +1176,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 19.0F, 7.0F, 1.3F, i18n("Parachute"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 19.0F, 7.0F, 1.3F, Plugin.i18n("Parachute"), null));
     localGWindowDialogClient.addControl(this.wParachute = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 19.0F, null) {
       public void preRender() {
         super.preRender();
@@ -1199,7 +1202,7 @@ public class PlMisAir extends Plugin
   }
 
   public void fillEditActor() {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     fillEditEnabled(localPathAir);
     this.wRegiment.setSelected(localPathAir.iRegiment, true, false);
@@ -1211,7 +1214,7 @@ public class PlMisAir extends Plugin
     if (localPathAir.skill != -1)
       this.wSkill.setSelected(localPathAir.skill, true, false);
     else {
-      this.wSkill.setValue(i18n("Custom"));
+      this.wSkill.setValue(Plugin.i18n("Custom"));
     }
     this.wWeapons.clear(false);
     this.lWeapons.clear();
@@ -1235,12 +1238,12 @@ public class PlMisAir extends Plugin
 
   private void fillDialogWay()
   {
-    PAir localPAir = (PAir)builder.selectedPoint();
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PAir localPAir = (PAir)Plugin.builder.selectedPoint();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     int i = localPathAir.pointIndx(localPAir);
     this.wPrev.setEnable(i > 0);
     this.wNext.setEnable(i < localPathAir.points() - 1);
-    this.wCur.cap = new GCaption("" + i + "(" + localPathAir.points() + ")");
+    this.wCur.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption("" + i + "(" + localPathAir.points() + ")");
     this.wHeight.setValue("" + (int)localPAir.height, false);
     this.wSpeed.setValue("" + (int)localPAir.speed, false);
     this.wType.setSelected(localPAir.type(), true, false);
@@ -1250,30 +1253,30 @@ public class PlMisAir extends Plugin
     if (i < localPathAir.points() - 1) this.wType.posEnable[2] = false;
     this._curPointType = localPAir.type();
 
-    j = (int)Math.round(localPAir.time / 60.0D + World.getTimeofDay() * 60.0F);
-    this.wTimeH.setValue("" + j / 60 % 24, false);
-    this.wTimeM.setValue("" + j % 60, false);
+    int k = (int)Math.round(localPAir.jdField_time_of_type_Double / 60.0D + World.getTimeofDay() * 60.0F);
+    this.wTimeH.setValue("" + k / 60 % 24, false);
+    this.wTimeM.setValue("" + k % 60, false);
     if (localPAir.getTarget() != null) {
       if ((localPAir.getTarget() instanceof PPoint)) {
         if ((localPAir.getTarget() instanceof PAir))
-          this.wTarget.cap.set(((PathAir)localPAir.getTarget().getOwner()).typedName);
+          this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(((PathAir)localPAir.getTarget().getOwner()).typedName);
         else if ((localPAir.getTarget() instanceof PNodes))
-          this.wTarget.cap.set(Property.stringValue(localPAir.getTarget().getOwner(), "i18nName", ""));
+          this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(Property.stringValue(localPAir.getTarget().getOwner(), "i18nName", ""));
         else
-          this.wTarget.cap.set(localPAir.getTarget().getOwner().name());
+          this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(localPAir.getTarget().getOwner().name());
       }
-      else this.wTarget.cap.set(Property.stringValue(localPAir.getTarget().getClass(), "i18nName", ""));
+      else this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(Property.stringValue(localPAir.getTarget().getClass(), "i18nName", ""));
     }
     else
-      this.wTarget.cap.set("");
+      this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set("");
   }
 
   public void initEditWay()
   {
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
-    this.tabWay = builder.wSelect.tabsClient.createTab(i18n("Waypoint"), localGWindowDialogClient);
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient());
+    this.tabWay = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("Waypoint"), localGWindowDialogClient);
 
-    localGWindowDialogClient.addControl(this.wPrev = new GWindowButton(localGWindowDialogClient, 1.0F, 1.0F, 5.0F, 1.6F, i18n("&Prev"), null) {
+    localGWindowDialogClient.addControl(this.wPrev = new GWindowButton(localGWindowDialogClient, 1.0F, 1.0F, 5.0F, 1.6F, Plugin.i18n("&Prev"), null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
           PAir localPAir = (PAir)Plugin.builder.selectedPoint();
@@ -1289,7 +1292,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addControl(this.wNext = new GWindowButton(localGWindowDialogClient, 9.0F, 1.0F, 5.0F, 1.6F, i18n("&Next"), null) {
+    localGWindowDialogClient.addControl(this.wNext = new GWindowButton(localGWindowDialogClient, 9.0F, 1.0F, 5.0F, 1.6F, Plugin.i18n("&Next"), null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
           PAir localPAir = (PAir)Plugin.builder.selectedPoint();
@@ -1307,8 +1310,8 @@ public class PlMisAir extends Plugin
     });
     localGWindowDialogClient.addLabel(this.wCur = new GWindowLabel(localGWindowDialogClient, 15.0F, 1.0F, 4.0F, 1.6F, "1(1)", null));
 
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, i18n("Height"), null));
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 15.0F, 3.0F, 4.0F, 1.3F, i18n("[M]"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Height"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 15.0F, 3.0F, 4.0F, 1.3F, Plugin.i18n("[M]"), null));
     localGWindowDialogClient.addControl(this.wHeight = new GWindowEditControl(localGWindowDialogClient, 9.0F, 3.0F, 5.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -1335,8 +1338,8 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("Speed"), null));
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 15.0F, 5.0F, 4.0F, 1.3F, i18n("[kM/H]"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("Speed"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 15.0F, 5.0F, 4.0F, 1.3F, Plugin.i18n("[kM/H]"), null));
     localGWindowDialogClient.addControl(this.wSpeed = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 5.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -1370,7 +1373,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Time"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("Time"), null));
     localGWindowDialogClient.addControl(this.wTimeH = new GWindowEditControl(localGWindowDialogClient, 9.0F, 7.0F, 2.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -1394,7 +1397,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, i18n("lType"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, Plugin.i18n("lType"), null));
     localGWindowDialogClient.addControl(this.wType = new GWindowComboControl(localGWindowDialogClient, 9.0F, 9.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -1407,13 +1410,13 @@ public class PlMisAir extends Plugin
 
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
-          if (PlMisAir.this._curPointType != this.iSelected) {
+          if (PlMisAir.this._curPointType != this.jdField_iSelected_of_type_Int) {
             PAir localPAir = (PAir)Plugin.builder.selectedPoint();
             int i = 1;
             if ((PlMisAir.this._curPointType == 1) || (PlMisAir.this._curPointType == 2))
               i = 0;
             int j = 1;
-            if ((this.iSelected == 1) || (this.iSelected == 2))
+            if ((this.jdField_iSelected_of_type_Int == 1) || (this.jdField_iSelected_of_type_Int == 2))
               j = 0;
             if (i != j) {
               if (j != 0) {
@@ -1429,29 +1432,29 @@ public class PlMisAir extends Plugin
                 localPAir.speed = 0.0D;
               }
             }
-            PlMisAir.access$1702(PlMisAir.this, this.iSelected);
-            localPAir.setType(this.iSelected);
+            PlMisAir.access$1702(PlMisAir.this, this.jdField_iSelected_of_type_Int);
+            localPAir.setType(this.jdField_iSelected_of_type_Int);
             PlMission.setChanged();
 
-            if ((this.iSelected == 1) || (this.iSelected == 2)) {
-              localObject = Airport.nearest(localPAir.pos.getAbsPoint(), -1, 7);
+            if ((this.jdField_iSelected_of_type_Int == 1) || (this.jdField_iSelected_of_type_Int == 2)) {
+              localObject = Airport.nearest(localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), -1, 7);
               if (localObject != null) {
-                if (((Airport)localObject).nearestRunway(localPAir.pos.getAbsPoint(), PlMisAir.nearestRunway))
-                  localPAir.pos.setAbs(PlMisAir.nearestRunway.getPoint());
+                if (((Airport)localObject).nearestRunway(localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), PlMisAir.nearestRunway))
+                  localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(PlMisAir.nearestRunway.getPoint());
                 else
-                  localPAir.pos.setAbs(((Airport)localObject).pos.getAbsPoint());
+                  localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(((Airport)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
               }
               localPAir.setTarget(null);
               localPAir.sTarget = null;
-              PlMisAir.this.wTarget.cap.set("");
+              PlMisAir.this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set("");
             } else {
               localObject = localPAir.getTarget();
               if ((localObject != null) && (
-                ((this.iSelected == 0) && (!(localObject instanceof PAir))) || ((this.iSelected == 3) && ((localObject instanceof PAir)))))
+                ((this.jdField_iSelected_of_type_Int == 0) && (!(localObject instanceof PAir))) || ((this.jdField_iSelected_of_type_Int == 3) && ((localObject instanceof PAir)))))
               {
                 localPAir.setTarget(null);
                 localPAir.sTarget = null;
-                PlMisAir.this.wTarget.cap.set("");
+                PlMisAir.this.wTarget.jdField_cap_of_type_ComMaddoxGwindowGCaption.set("");
               }
             }
 
@@ -1463,7 +1466,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 11.0F, 7.0F, 1.3F, i18n("RadioSilence"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 11.0F, 7.0F, 1.3F, Plugin.i18n("RadioSilence"), null));
     localGWindowDialogClient.addControl(this.wRadioSilence = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 11.0F, null) {
       public void preRender() {
         super.preRender();
@@ -1479,9 +1482,9 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 7.0F, 1.3F, i18n("Target"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 7.0F, 1.3F, Plugin.i18n("Target"), null));
     localGWindowDialogClient.addLabel(this.wTarget = new GWindowLabel(localGWindowDialogClient, 9.0F, 13.0F, 7.0F, 1.3F, "", null));
-    localGWindowDialogClient.addControl(this.wTargetSet = new GWindowButton(localGWindowDialogClient, 1.0F, 15.0F, 5.0F, 1.6F, i18n("&Set"), null) {
+    localGWindowDialogClient.addControl(this.wTargetSet = new GWindowButton(localGWindowDialogClient, 1.0F, 15.0F, 5.0F, 1.6F, Plugin.i18n("&Set"), null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
           Plugin.builder.beginSelectTarget();
@@ -1489,7 +1492,7 @@ public class PlMisAir extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addControl(this.wTargetClear = new GWindowButton(localGWindowDialogClient, 9.0F, 15.0F, 5.0F, 1.6F, i18n("&Clear"), null) {
+    localGWindowDialogClient.addControl(this.wTargetClear = new GWindowButton(localGWindowDialogClient, 9.0F, 15.0F, 5.0F, 1.6F, Plugin.i18n("&Clear"), null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
           PAir localPAir = (PAir)Plugin.builder.selectedPoint();
@@ -1504,8 +1507,8 @@ public class PlMisAir extends Plugin
   }
 
   private void getTimeOut() {
-    PAir localPAir = (PAir)builder.selectedPoint();
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PAir localPAir = (PAir)Plugin.builder.selectedPoint();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     String str = this.wTimeH.getValue();
     double d1 = 0.0D;
     try { d1 = Double.parseDouble(str); } catch (Exception localException1) {
@@ -1523,17 +1526,17 @@ public class PlMisAir extends Plugin
     int i = localPathAir.pointIndx(localPAir);
     if (i == 0) {
       if (localPathAir == Path.player)
-        localPAir.time = 0.0D;
+        localPAir.jdField_time_of_type_Double = 0.0D;
       else
-        localPAir.time = d3;
+        localPAir.jdField_time_of_type_Double = d3;
     } else if (localPAir.type() != 2) {
       PPoint localPPoint = localPathAir.point(i - 1);
-      double d4 = d3 - localPPoint.time;
+      double d4 = d3 - localPPoint.jdField_time_of_type_Double;
       double d5 = 0.0D;
       if (d4 <= 0.0D) {
         d5 = this.type[localPathAir._iType].item[localPathAir._iItem].speedMax;
       } else {
-        double d6 = localPPoint.pos.getAbsPoint().distance(localPAir.pos.getAbsPoint());
+        double d6 = localPPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
         d5 = d6 / d4 * 3600.0D / 1000.0D;
         if (d5 > this.type[localPathAir._iType].item[localPathAir._iItem].speedMax)
           d5 = this.type[localPathAir._iType].item[localPathAir._iItem].speedMax;
@@ -1548,22 +1551,22 @@ public class PlMisAir extends Plugin
 
   private void fillEditSkin(int paramInt)
   {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     this.wSkills[paramInt].setSelected(localPathAir.skills[paramInt], true, false);
   }
   private void fillSkins() {
     for (int i = 0; i < 4; i++) {
       this.wSkins[i].clear(false);
-      this.wSkins[i].add(i18n("Default"));
+      this.wSkins[i].add(Plugin.i18n("Default"));
     }
     try {
       String str1 = Main.cur().netFileServerSkin.primaryPath();
-      int j = builder.wSelect.comboBox1.getSelected();
+      int j = Plugin.builder.wSelect.comboBox1.getSelected();
       if ((j < this.startComboBox1) || (j >= this.startComboBox1 + this.type.length))
         return;
       j -= this.startComboBox1;
-      int k = builder.wSelect.comboBox2.getSelected();
+      int k = Plugin.builder.wSelect.comboBox2.getSelected();
       String str2 = GUIAirArming.validateFileName(this.type[j].item[k].name);
       File localFile1 = new File(HomePath.toFileSystemName(str1 + "/" + str2, 0));
 
@@ -1592,9 +1595,9 @@ public class PlMisAir extends Plugin
   }
 
   private void syncSkins() {
-    if (!(builder.selectedPath() instanceof PathAir))
+    if (!(Plugin.builder.selectedPath() instanceof PathAir))
       return;
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     for (int i = 0; i < 4; i++)
       if (!syncComboControl(this.wSkins[i], localPathAir.skins[i]))
@@ -1604,9 +1607,9 @@ public class PlMisAir extends Plugin
   private void fillNoseart() {
     for (int i = 0; i < 4; i++) {
       this.wNoseart[i].clear(false);
-      this.wNoseart[i].add(i18n("None"));
+      this.wNoseart[i].add(Plugin.i18n("None"));
     }
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null)
       return;
     Class localClass = this.type[localPathAir._iType].item[localPathAir._iItem].clazz;
@@ -1630,23 +1633,23 @@ public class PlMisAir extends Plugin
       this.wNoseart[k].setEnable(true);
     try
     {
-      String str1 = Main.cur().netFileServerNoseart.primaryPath();
-      localObject = new File(HomePath.toFileSystemName(str1, 0));
+      localObject = Main.cur().netFileServerNoseart.primaryPath();
+      File localFile1 = new File(HomePath.toFileSystemName((String)localObject, 0));
 
-      File[] arrayOfFile = ((File)localObject).listFiles();
+      File[] arrayOfFile = localFile1.listFiles();
       if (arrayOfFile != null)
         for (int m = 0; m < arrayOfFile.length; m++) {
-          File localFile = arrayOfFile[m];
-          if (localFile.isFile()) {
-            String str2 = localFile.getName();
-            String str3 = str2.toLowerCase();
-            if ((!str3.endsWith(".bmp")) || 
-              (str3.length() > 122)) continue;
-            if (BmpUtils.checkBMP8Pal(str1 + "/" + str2, 256, 512))
+          File localFile2 = arrayOfFile[m];
+          if (localFile2.isFile()) {
+            String str1 = localFile2.getName();
+            String str2 = str1.toLowerCase();
+            if ((!str2.endsWith(".bmp")) || 
+              (str2.length() > 122)) continue;
+            if (BmpUtils.checkBMP8Pal((String)localObject + "/" + str1, 256, 512))
               for (int n = 0; n < 4; n++)
-                this.wNoseart[n].add(str2);
+                this.wNoseart[n].add(str1);
             else
-              System.out.println("Noseart " + str1 + "/" + str2 + " NOT loaded");
+              System.out.println("Noseart " + (String)localObject + "/" + str1 + " NOT loaded");
           }
         }
     } catch (Exception localException) {
@@ -1656,7 +1659,7 @@ public class PlMisAir extends Plugin
   }
 
   private void syncNoseart() {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     for (int i = 0; i < 4; i++)
       if (!syncComboControl(this.wNoseart[i], localPathAir.noseart[i]))
@@ -1666,7 +1669,7 @@ public class PlMisAir extends Plugin
   private void fillPilots() {
     for (int i = 0; i < 4; i++) {
       this.wPilots[i].clear(false);
-      this.wPilots[i].add(i18n("Default"));
+      this.wPilots[i].add(Plugin.i18n("Default"));
     }
     try {
       String str1 = Main.cur().netFileServerPilot.primaryPath();
@@ -1695,7 +1698,7 @@ public class PlMisAir extends Plugin
   }
 
   private void syncPilots() {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     for (int i = 0; i < 4; i++)
       if (!syncComboControl(this.wPilots[i], localPathAir.pilots[i]))
@@ -1719,28 +1722,28 @@ public class PlMisAir extends Plugin
     return false;
   }
   private void checkEditSkinTabs() {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
-    int i = builder.wSelect.tabsClient.sizeTabs();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
+    int i = Plugin.builder.wSelect.tabsClient.sizeTabs();
     if (localPathAir.planes == i - 3)
       return;
     int j;
     if (localPathAir.planes > i - 3) {
       for (j = i - 3; j < localPathAir.planes; j++) {
-        builder.wSelect.tabsClient.addTab(j + 3, this.tabSkin[j]);
+        Plugin.builder.wSelect.tabsClient.addTab(j + 3, this.tabSkin[j]);
         fillEditSkin(j);
       }
     } else {
-      j = builder.wSelect.tabsClient.current;
-      while (builder.wSelect.tabsClient.sizeTabs() - 3 > localPathAir.planes)
-        builder.wSelect.tabsClient.removeTab(builder.wSelect.tabsClient.sizeTabs() - 1);
-      builder.wSelect.tabsClient.setCurrent(j, false);
+      j = Plugin.builder.wSelect.tabsClient.current;
+      while (Plugin.builder.wSelect.tabsClient.sizeTabs() - 3 > localPathAir.planes)
+        Plugin.builder.wSelect.tabsClient.removeTab(Plugin.builder.wSelect.tabsClient.sizeTabs() - 1);
+      Plugin.builder.wSelect.tabsClient.setCurrent(j, false);
       if ((localPathAir == Path.player) && (localPathAir.planes >= Path.playerNum))
         Path.playerNum = 0; 
     }
   }
 
   private void checkEditSkinSkills() {
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     int i = localPathAir.skills[0];
     this.wSkills[0].setSelected(localPathAir.skills[0], true, false);
@@ -1752,7 +1755,7 @@ public class PlMisAir extends Plugin
       this.wSkills[j].setSelected(localPathAir.skills[j], true, false);
     }
     if (localPathAir.skill == -1) {
-      this.wSkill.setValue(i18n("Custom"));
+      this.wSkill.setValue(Plugin.i18n("Custom"));
     } else {
       localPathAir.skill = i;
       this.wSkill.setSelected(localPathAir.skill, true, false);
@@ -1773,7 +1776,7 @@ public class PlMisAir extends Plugin
 
   private void checkMesh(int paramInt) {
     if (Actor.isValid(this.actorMesh[paramInt])) return;
-    PathAir localPathAir = (PathAir)builder.selectedPath();
+    PathAir localPathAir = (PathAir)Plugin.builder.selectedPath();
     if (localPathAir == null) return;
     Class localClass = this.type[localPathAir._iType].item[localPathAir._iItem].clazz;
     this.meshName = Aircraft.getPropertyMesh(localClass, localPathAir.regiment().country());
@@ -1790,11 +1793,11 @@ public class PlMisAir extends Plugin
     double d = 20.0D;
     this.actorMesh[paramInt] = new ActorSimpleHMesh(this.meshName);
     d = this.actorMesh[paramInt].hierMesh().visibilityR();
-    this.actorMesh[paramInt].pos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
+    this.actorMesh[paramInt].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
     d *= Math.cos(0.2617993877991494D) / Math.sin(this.camera3D[paramInt].FOV() * 3.141592653589793D / 180.0D / 2.0D);
-    this.camera3D[paramInt].pos.setAbs(new Point3d(d, 0.0D, 0.0D), new Orient(180.0F, 0.0F, 0.0F));
+    this.camera3D[paramInt].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(new Point3d(d, 0.0D, 0.0D), new Orient(180.0F, 0.0F, 0.0F));
 
-    this.camera3D[paramInt].pos.reset();
+    this.camera3D[paramInt].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
   private void prepareSkin(int paramInt, Class paramClass, String paramString) {
     if (!Actor.isValid(this.actorMesh[paramInt])) return;
@@ -1837,19 +1840,19 @@ public class PlMisAir extends Plugin
   private void initEditSkin()
   {
     for (this._planeIndx = 0; this._planeIndx < 4; this._planeIndx += 1) {
-      GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient() {
+      GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient() {
         int planeIndx = PlMisAir.this._planeIndx;
 
         public void resized() { super.resized();
-          PlMisAir.this.wSkills[this.planeIndx].setSize(this.win.dx - PlMisAir.this.wSkills[this.planeIndx].win.x - lookAndFeel().metric(1.0F), PlMisAir.this.wSkills[this.planeIndx].win.dy);
-          PlMisAir.this.wSkins[this.planeIndx].setSize(this.win.dx - PlMisAir.this.wSkins[this.planeIndx].win.x - lookAndFeel().metric(1.0F), PlMisAir.this.wSkins[this.planeIndx].win.dy);
-          PlMisAir.this.wNoseart[this.planeIndx].setSize(this.win.dx - PlMisAir.this.wNoseart[this.planeIndx].win.x - lookAndFeel().metric(1.0F), PlMisAir.this.wNoseart[this.planeIndx].win.dy);
-          PlMisAir.this.wPilots[this.planeIndx].setSize(this.win.dx - PlMisAir.this.wPilots[this.planeIndx].win.x - lookAndFeel().metric(1.0F), PlMisAir.this.wPilots[this.planeIndx].win.dy);
-          PlMisAir.this.renders[this.planeIndx].setSize(this.win.dx - PlMisAir.this.renders[this.planeIndx].win.x - lookAndFeel().metric(1.0F), this.win.dy - PlMisAir.this.renders[this.planeIndx].win.y - lookAndFeel().metric(1.0F));
+          PlMisAir.this.wSkills[this.planeIndx].setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - PlMisAir.this.wSkills[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.x - lookAndFeel().metric(1.0F), PlMisAir.this.wSkills[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+          PlMisAir.this.wSkins[this.planeIndx].setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - PlMisAir.this.wSkins[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.x - lookAndFeel().metric(1.0F), PlMisAir.this.wSkins[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+          PlMisAir.this.wNoseart[this.planeIndx].setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - PlMisAir.this.wNoseart[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.x - lookAndFeel().metric(1.0F), PlMisAir.this.wNoseart[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+          PlMisAir.this.wPilots[this.planeIndx].setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - PlMisAir.this.wPilots[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.x - lookAndFeel().metric(1.0F), PlMisAir.this.wPilots[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
+          PlMisAir.this.renders[this.planeIndx].setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - PlMisAir.this.renders[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.x - lookAndFeel().metric(1.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - PlMisAir.this.renders[this.planeIndx].jdField_win_of_type_ComMaddoxGwindowGRegion.y - lookAndFeel().metric(1.0F));
         }
       });
-      this.tabSkin[this._planeIndx] = builder.wSelect.tabsClient.createTab(i18n("Plane" + (1 + this._planeIndx)), localGWindowDialogClient);
-      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, i18n("Player"), null));
+      this.tabSkin[this._planeIndx] = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("Plane" + (1 + this._planeIndx)), localGWindowDialogClient);
+      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, Plugin.i18n("Player"), null));
       localGWindowDialogClient.addControl(this.wPlayer[this._planeIndx] =  = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 1.0F, null) {
         int planeIndx = PlMisAir.this._planeIndx;
 
@@ -1878,7 +1881,7 @@ public class PlMisAir extends Plugin
           return false;
         }
       });
-      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, i18n("Skill"), null));
+      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Skill"), null));
       localGWindowDialogClient.addControl(this.wSkills[this._planeIndx] =  = new GWindowComboControl(localGWindowDialogClient, 9.0F, 3.0F, 7.0F) {
         int planeIndx = PlMisAir.this._planeIndx;
 
@@ -1898,7 +1901,7 @@ public class PlMisAir extends Plugin
           return false;
         }
       });
-      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("Skin"), null));
+      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("Skin"), null));
       localGWindowDialogClient.addControl(this.wSkins[this._planeIndx] =  = new GWindowComboControl(localGWindowDialogClient, 9.0F, 5.0F, 7.0F) {
         int planeIndx = PlMisAir.this._planeIndx;
 
@@ -1918,7 +1921,7 @@ public class PlMisAir extends Plugin
           return false;
         }
       });
-      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Noseart"), null));
+      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("Noseart"), null));
       localGWindowDialogClient.addControl(this.wNoseart[this._planeIndx] =  = new GWindowComboControl(localGWindowDialogClient, 9.0F, 7.0F, 7.0F) {
         int planeIndx = PlMisAir.this._planeIndx;
 
@@ -1938,7 +1941,7 @@ public class PlMisAir extends Plugin
           return false;
         }
       });
-      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, i18n("Pilot"), null));
+      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, Plugin.i18n("Pilot"), null));
       localGWindowDialogClient.addControl(this.wPilots[this._planeIndx] =  = new GWindowComboControl(localGWindowDialogClient, 9.0F, 9.0F, 7.0F) {
         int planeIndx = PlMisAir.this._planeIndx;
 
@@ -1958,7 +1961,7 @@ public class PlMisAir extends Plugin
           return false;
         }
       });
-      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 11.0F, 7.0F, 1.3F, i18n("NumberOn"), null));
+      localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 11.0F, 7.0F, 1.3F, Plugin.i18n("NumberOn"), null));
       localGWindowDialogClient.addControl(this.wPlayer[this._planeIndx] =  = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 11.0F, null) {
         int planeIndx = PlMisAir.this._planeIndx;
 
@@ -1987,12 +1990,12 @@ public class PlMisAir extends Plugin
             if (Actor.isValid(PlMisAir.this.actorMesh[this.planeIndx]))
               PlMisAir.this.actorMesh[this.planeIndx].pos.setAbs(new Orient(90.0F, 0.0F, 0.0F));
           } else if (paramInt == 0) {
-            paramFloat1 -= this.win.dx / 2.0F;
-            if (Math.abs(paramFloat1) < this.win.dx / 16.0F) PlMisAir.this.animateMeshA[this.planeIndx] = 0.0F; else
-              PlMisAir.this.animateMeshA[this.planeIndx] = (-128.0F * paramFloat1 / this.win.dx);
-            paramFloat2 -= this.win.dy / 2.0F;
-            if (Math.abs(paramFloat2) < this.win.dy / 16.0F) PlMisAir.this.animateMeshT[this.planeIndx] = 0.0F; else
-              PlMisAir.this.animateMeshT[this.planeIndx] = (-128.0F * paramFloat2 / this.win.dy);
+            paramFloat1 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F;
+            if (Math.abs(paramFloat1) < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 16.0F) PlMisAir.this.animateMeshA[this.planeIndx] = 0.0F; else
+              PlMisAir.this.animateMeshA[this.planeIndx] = (-128.0F * paramFloat1 / this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
+            paramFloat2 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F;
+            if (Math.abs(paramFloat2) < this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 16.0F) PlMisAir.this.animateMeshT[this.planeIndx] = 0.0F; else
+              PlMisAir.this.animateMeshT[this.planeIndx] = (-128.0F * paramFloat2 / this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
           }
         }
       };
@@ -2023,20 +2026,20 @@ public class PlMisAir extends Plugin
     public void preRender() { PlMisAir.this.checkMesh(this.planeIndx);
       if (Actor.isValid(PlMisAir.this.actorMesh[this.planeIndx])) {
         if ((PlMisAir.this.animateMeshA[this.planeIndx] != 0.0F) || (PlMisAir.this.animateMeshT[this.planeIndx] != 0.0F)) {
-          PlMisAir.this.actorMesh[this.planeIndx].pos.getAbs(PlMisAir.this._orient);
-          PlMisAir.this._orient.set(PlMisAir.this._orient.azimut() + PlMisAir.this.animateMeshA[this.planeIndx] * Main3D.cur3D().guiManager.root.deltaTimeSec, PlMisAir.this._orient.tangage() + PlMisAir.this.animateMeshT[this.planeIndx] * Main3D.cur3D().guiManager.root.deltaTimeSec, 0.0F);
+          PlMisAir.this.actorMesh[this.planeIndx].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(PlMisAir.this._orient);
+          PlMisAir.this._orient.set(PlMisAir.this._orient.azimut() + PlMisAir.this.animateMeshA[this.planeIndx] * Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, PlMisAir.this._orient.tangage() + PlMisAir.this.animateMeshT[this.planeIndx] * Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec, 0.0F);
 
           PlMisAir.this._orient.wrap360();
-          PlMisAir.this.actorMesh[this.planeIndx].pos.setAbs(PlMisAir.this._orient);
-          PlMisAir.this.actorMesh[this.planeIndx].pos.reset();
+          PlMisAir.this.actorMesh[this.planeIndx].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(PlMisAir.this._orient);
+          PlMisAir.this.actorMesh[this.planeIndx].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         }
-        PlMisAir.this.actorMesh[this.planeIndx].draw.preRender(PlMisAir.this.actorMesh[this.planeIndx]);
+        PlMisAir.this.actorMesh[this.planeIndx].jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.preRender(PlMisAir.this.actorMesh[this.planeIndx]);
       } }
 
     public void render() {
       if (Actor.isValid(PlMisAir.this.actorMesh[this.planeIndx])) {
         Render.prepareStates();
-        PlMisAir.this.actorMesh[this.planeIndx].draw.render(PlMisAir.this.actorMesh[this.planeIndx]);
+        PlMisAir.this.actorMesh[this.planeIndx].jdField_draw_of_type_ComMaddoxIl2EngineActorDraw.render(PlMisAir.this.actorMesh[this.planeIndx]);
       }
     }
 
@@ -2053,7 +2056,7 @@ public class PlMisAir extends Plugin
 
     public void execute()
     {
-      this.bChecked = (!this.bChecked);
+      this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
       PlMisAir.this.viewType(this.indx);
     }
     public ViewItem(int paramGWindowMenu, GWindowMenu paramString1, String paramString2, String arg5) {

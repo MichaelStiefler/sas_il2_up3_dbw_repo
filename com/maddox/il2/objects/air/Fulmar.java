@@ -5,6 +5,7 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
+import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
@@ -16,6 +17,7 @@ import com.maddox.il2.fm.Motor;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
+import java.io.PrintStream;
 
 public abstract class Fulmar extends Scheme1
   implements TypeStormovik, TypeFighter
@@ -23,7 +25,7 @@ public abstract class Fulmar extends Scheme1
   public boolean bPitUnfocused = true;
   public float airBrakePos = 0.0F;
   private float suspension = 0.0F;
-
+  private Maneuver maneuver = null;
   protected float arrestor = 0.0F;
 
   float obsLookoutTimeLeft = 2.0F;
@@ -58,6 +60,10 @@ public abstract class Fulmar extends Scheme1
   {
     super.onAircraftLoaded();
 
+    this.FM.Gears.computePlaneLandPose(this.FM);
+    mydebuggunnery("H = " + this.FM.Gears.H);
+    mydebuggunnery("Pitch = " + this.FM.Gears.Pitch);
+
     if (this.thisWeaponsName.startsWith("2x"))
     {
       hierMesh().chunkVisible("WingRackL_D0", true);
@@ -75,6 +81,10 @@ public abstract class Fulmar extends Scheme1
   public Fulmar()
   {
     this.bObserverKilled = false;
+  }
+
+  public void doKillPilot(int paramInt)
+  {
   }
 
   public void doMurderPilot(int paramInt)
@@ -128,6 +138,12 @@ public abstract class Fulmar extends Scheme1
 
     }
 
+    mydebuggunnery("---------------");
+    mydebuggunnery("FM.Gears.gWheelSinking[0] = " + this.FM.Gears.gWheelSinking[0]);
+    mydebuggunnery("FM.Gears.gWheelSinking[1] = " + this.FM.Gears.gWheelSinking[1]);
+    mydebuggunnery("Wheel 1 = " + this.wheel1);
+    mydebuggunnery("Wheel 2 = " + this.wheel2);
+
     if (this.FM.getAltitude() < 3000.0F)
     {
       hierMesh().chunkVisible("HMask1_D0", false);
@@ -176,7 +192,7 @@ public abstract class Fulmar extends Scheme1
   }
 
   public void moveSteering(float paramFloat) {
-    hierMesh().chunkSetAngles("GearC2_D0", paramFloat, 0.0F, 0.0F);
+    hierMesh().chunkSetAngles("GearC3_D0", 0.0F, paramFloat, 0.0F);
   }
 
   public void moveWheelSink()
@@ -221,17 +237,6 @@ public abstract class Fulmar extends Scheme1
     resetYPRmodifier();
     Aircraft.xyz[1] = Aircraft.cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.67F);
     hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
-
-    if (paramFloat > 0.02D)
-    {
-      hierMesh().chunkVisible("Blister2move_D0", true);
-      hierMesh().chunkVisible("Blister2_D0", false);
-    }
-    else
-    {
-      hierMesh().chunkVisible("Blister2move_D0", false);
-      hierMesh().chunkVisible("Blister2_D0", true);
-    }
 
     Aircraft.xyz[1] = Aircraft.cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.68F);
     hierMesh().chunkSetLocate("Blister2_D0", Aircraft.xyz, Aircraft.ypr);
@@ -362,9 +367,18 @@ public abstract class Fulmar extends Scheme1
     }
   }
 
+  protected void hitChunk(String paramString, Shot paramShot)
+  {
+    super.hitChunk(paramString, paramShot);
+    mydebuggunnery("hitChunk " + paramString + "  " + paramShot.power);
+  }
+
   protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
   {
     int i = 0;
+
+    System.out.println("hitBone called! " + paramString);
+    System.out.println("IN: " + paramShot.power);
     int j;
     if (paramString.startsWith("xx")) {
       if (paramString.startsWith("xxarmor")) {
@@ -564,15 +578,15 @@ public abstract class Fulmar extends Scheme1
         setControlDamage(paramShot, 0);
         hitChunk("WingLIn", paramShot);
         hitChunk("Flap01", paramShot);
+        getEnergyPastArmor(1.0F, paramShot);
       }
-
       if ((paramString.startsWith("xwingrin")) && (chunkDamageVisible("WingRIn") < 3))
       {
         setControlDamage(paramShot, 0);
         hitChunk("WingRIn", paramShot);
         hitChunk("Flap02", paramShot);
+        getEnergyPastArmor(1.0F, paramShot);
       }
-
       if ((paramString.startsWith("xwinglmid")) && (chunkDamageVisible("WingLMid") < 3))
       {
         setControlDamage(paramShot, 0);
@@ -588,19 +602,19 @@ public abstract class Fulmar extends Scheme1
       if ((paramString.startsWith("xwingrout")) && (chunkDamageVisible("WingROut") < 3))
         hitChunk("WingROut", paramShot);
     }
-    else if ((paramString.startsWith("xflap01")) && (chunkDamageVisible("Flap01") < 3))
+    else if (paramString.startsWith("xflap01"))
     {
       setControlDamage(paramShot, 0);
       hitChunk("WingLIn", paramShot);
-
       hitChunk("Flap01", paramShot);
+      getEnergyPastArmor(1.0F, paramShot);
     }
-    else if ((paramString.startsWith("xflap02")) && (chunkDamageVisible("Flap02") < 3))
+    else if (paramString.startsWith("xflap02"))
     {
       setControlDamage(paramShot, 0);
       hitChunk("WingRIn", paramShot);
-
       hitChunk("Flap02", paramShot);
+      getEnergyPastArmor(1.0F, paramShot);
     }
     else if (paramString.startsWith("xarone")) {
       if ((paramString.startsWith("xaronel")) && (chunkDamageVisible("AroneL") < 1))
@@ -647,6 +661,7 @@ public abstract class Fulmar extends Scheme1
       }
       hitFlesh(k, paramShot, j);
     }
+    System.out.println("OUT: " + paramShot.power);
   }
 
   public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
@@ -696,6 +711,6 @@ public abstract class Fulmar extends Scheme1
   {
     Class localClass = CLASS.THIS();
     new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "originCountry", PaintScheme.countryBritain);
+    Property.set(localClass, "originCountry", PaintScheme.countryItaly);
   }
 }

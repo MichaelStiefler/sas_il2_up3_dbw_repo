@@ -140,9 +140,9 @@ public abstract class Plugin
       }
     }
 
-    k = all.size();
-    for (int m = 0; m < k; m++)
-      ((Plugin)(Plugin)all.get(m)).configure();
+    int m = all.size();
+    for (int n = 0; n < m; n++)
+      ((Plugin)all.get(n)).configure();
   }
 
   public static String timeSecToString(double paramDouble) {
@@ -157,37 +157,37 @@ public abstract class Plugin
   protected static void doRender3D() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).render3D(); 
+      ((Plugin)all.get(j)).render3D(); 
   }
 
   protected static void doPreRenderMap2D() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).preRenderMap2D(); 
+      ((Plugin)all.get(j)).preRenderMap2D(); 
   }
 
   protected static void doRenderMap2DBefore() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).renderMap2DBefore(); 
+      ((Plugin)all.get(j)).renderMap2DBefore(); 
   }
 
   protected static void doRenderMap2D() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).renderMap2D(); 
+      ((Plugin)all.get(j)).renderMap2D(); 
   }
 
   protected static void doRenderMap2DAfter() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).renderMap2DAfter(); 
+      ((Plugin)all.get(j)).renderMap2DAfter(); 
   }
 
   protected static void doCreateGUI() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).createGUI(); 
+      ((Plugin)all.get(j)).createGUI(); 
   }
 
   protected static void doStart() {
@@ -196,124 +196,85 @@ public abstract class Plugin
     playerIcon = IconDraw.get("icons/player.mat");
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).start(); 
+      ((Plugin)all.get(j)).start(); 
   }
 
   protected static void doInsert(Loc paramLoc, boolean paramBoolean) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).insert(paramLoc, paramBoolean);
-  }
-
-  protected static String mis_doGetProperties(Actor paramActor) {
-    String str = "";
-    for (int i = 0; i < all.size(); i++) {
-      str = str + ((Plugin)all.get(i)).mis_getProperties(paramActor);
-    }
-    return str;
-  }
-
-  protected static Actor mis_doInsert(Loc paramLoc, String paramString) {
-    Actor localActor = null;
-    for (int i = 0; i < all.size(); i++) {
-      localActor = ((Plugin)all.get(i)).mis_insert(paramLoc, paramString);
-      if (localActor != null) {
-        return localActor;
-      }
-    }
-    return localActor;
-  }
-
-  protected static boolean mis_doValidateSelected(int paramInt1, int paramInt2) {
-    int i = 0;
-    for (int j = 0; j < all.size(); j++) {
-      i = (i != 0) || (((Plugin)all.get(j)).mis_validateSelected(paramInt1, paramInt2)) ? 1 : 0;
-    }
-    return i;
-  }
-
-  public String mis_getProperties(Actor paramActor) {
-    return "";
-  }
-
-  public Actor mis_insert(Loc paramLoc, String paramString) {
-    return null;
-  }
-
-  public boolean mis_validateSelected(int paramInt1, int paramInt2) {
-    return false;
+      ((Plugin)all.get(j)).insert(paramLoc, paramBoolean); 
   }
 
   protected static void doFillPopUpMenu(GWindowMenuPopUp paramGWindowMenuPopUp, Point3d paramPoint3d) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).fillPopUpMenu(paramGWindowMenuPopUp, paramPoint3d);
+      ((Plugin)all.get(j)).fillPopUpMenu(paramGWindowMenuPopUp, paramPoint3d);
   }
 
   protected static void doBeginFill(Point3d paramPoint3d) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).beginFill(paramPoint3d); 
+      ((Plugin)all.get(j)).beginFill(paramPoint3d); 
   }
 
   protected static void doFill(Point3d paramPoint3d) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).fill(paramPoint3d); 
+      ((Plugin)all.get(j)).fill(paramPoint3d); 
   }
 
   protected static void doEndFill(Point3d paramPoint3d) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).endFill(paramPoint3d); 
+      ((Plugin)all.get(j)).endFill(paramPoint3d); 
   }
 
   protected static void doDelete(Loc paramLoc) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).delete(paramLoc); 
+      ((Plugin)all.get(j)).delete(paramLoc); 
   }
 
   protected static void doDeleteAll() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).deleteAll(); 
+      ((Plugin)all.get(j)).deleteAll(); 
   }
 
   protected static void doAfterDelete() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).afterDelete(); 
+      ((Plugin)all.get(j)).afterDelete(); 
   }
 
   protected static void doSelectAll() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).selectAll(); 
+      ((Plugin)all.get(j)).selectAll(); 
   }
 
   protected static void doChangeType(boolean paramBoolean1, boolean paramBoolean2) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).changeType(paramBoolean1, paramBoolean2); 
+      ((Plugin)all.get(j)).changeType(paramBoolean1, paramBoolean2); 
   }
 
   protected static void doViewTypeAll(boolean paramBoolean) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).viewTypeAll(paramBoolean); 
+      ((Plugin)all.get(j)).viewTypeAll(paramBoolean); 
   }
 
   protected static void doLoad(SectFile paramSectFile) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).load(paramSectFile); 
+      ((Plugin)all.get(j)).load(paramSectFile); 
   }
 
   protected static boolean doSave(SectFile paramSectFile) {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      if (!((Plugin)(Plugin)all.get(j)).save(paramSectFile))
+      if (!((Plugin)all.get(j)).save(paramSectFile))
         return false;
     return true;
   }
@@ -321,26 +282,21 @@ public abstract class Plugin
     builder.mapLoaded();
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).mapLoaded(); 
+      ((Plugin)all.get(j)).mapLoaded(); 
   }
 
   protected static void doFreeResources() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      ((Plugin)(Plugin)all.get(j)).freeResources(); 
+      ((Plugin)all.get(j)).freeResources(); 
   }
 
   protected static boolean doExitBuilder() {
     int i = all.size();
     for (int j = 0; j < i; j++)
-      if (!((Plugin)(Plugin)all.get(j)).exitBuilder())
+      if (!((Plugin)all.get(j)).exitBuilder())
         return false;
     return true;
-  }
-
-  public static ArrayList zutiGetAllActors()
-  {
-    return all;
   }
 
   static

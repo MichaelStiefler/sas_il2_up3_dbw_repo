@@ -68,8 +68,8 @@ public class AR_234B2 extends AR_234
     for (int i = 0; i < 2; i++)
       try {
         this.booster[i] = new BombStarthilfe109500();
-        this.booster[i].pos.setBase(this, findHook("_BoosterH" + (i + 1)), false);
-        this.booster[i].pos.resetAsBase();
+        this.booster[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, findHook("_BoosterH" + (i + 1)), false);
+        this.booster[i].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
         this.booster[i].drawing(true);
       } catch (Exception localException) {
         debugprintln("Structure corrupt - can't hang Starthilferakete..");
@@ -86,7 +86,7 @@ public class AR_234B2 extends AR_234
     case 37:
     case 38:
       doCutBoosters();
-      this.FM.AS.setGliderBoostOff();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderBoostOff();
       this.bHasBoosters = false;
     }
 
@@ -96,27 +96,27 @@ public class AR_234B2 extends AR_234
   public void update(float paramFloat)
   {
     super.update(paramFloat);
-    if (!(this.FM instanceof Pilot)) return;
+    if (!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) return;
 
     if (this.bHasBoosters) {
-      if ((this.FM.getAltitude() > 300.0F) && (this.boosterFireOutTime == -1L) && (this.FM.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() > 300.0F) && (this.boosterFireOutTime == -1L) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Loc.z != 0.0D) && (World.Rnd().nextFloat() < 0.05F)) {
         doCutBoosters();
-        this.FM.AS.setGliderBoostOff();
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderBoostOff();
         this.bHasBoosters = false;
       }
-      if ((this.bHasBoosters) && (this.boosterFireOutTime == -1L) && (this.FM.Gears.onGround()) && (this.FM.EI.getPowerOutput() > 0.8F) && (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6) && (this.FM.getSpeedKMH() > 20.0F))
+      if ((this.bHasBoosters) && (this.boosterFireOutTime == -1L) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.onGround()) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getPowerOutput() > 0.8F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getStage() == 6) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeedKMH() > 20.0F))
       {
         this.boosterFireOutTime = (Time.current() + 30000L);
         doFireBoosters();
-        this.FM.AS.setGliderBoostOn();
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderBoostOn();
       }
       if ((this.bHasBoosters) && (this.boosterFireOutTime > 0L)) {
         if (Time.current() < this.boosterFireOutTime) {
-          this.FM.producedAF.x += 20000.0D;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.producedAF.x += 20000.0D;
         }
         if (Time.current() > this.boosterFireOutTime + 10000L) {
           doCutBoosters();
-          this.FM.AS.setGliderBoostOff();
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setGliderBoostOff();
           this.bHasBoosters = false;
         }
       }
@@ -215,19 +215,19 @@ public class AR_234B2 extends AR_234
   }
 
   public void typeBomberAdjSideslipPlus() {
-    this.fSightCurSideslip += 0.05F;
+    this.fSightCurSideslip += 0.1F;
     if (this.fSightCurSideslip > 3.0F) {
       this.fSightCurSideslip = 3.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10.0F) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
   }
 
   public void typeBomberAdjSideslipMinus() {
-    this.fSightCurSideslip -= 0.05F;
+    this.fSightCurSideslip -= 0.1F;
     if (this.fSightCurSideslip < -3.0F) {
       this.fSightCurSideslip = -3.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10.0F) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
   }
 
   public void typeBomberAdjAltitudeReset() {
@@ -273,7 +273,7 @@ public class AR_234B2 extends AR_234
   }
 
   public void typeBomberUpdate(float paramFloat) {
-    if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
+    if (Math.abs(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.getKren()) > 4.5D) {
       this.fSightCurReadyness -= 0.0666666F * paramFloat;
       if (this.fSightCurReadyness < 0.0F) {
         this.fSightCurReadyness = 0.0F;
@@ -293,13 +293,13 @@ public class AR_234B2 extends AR_234
         this.bSightBombDump = true;
       }
       if (this.bSightBombDump)
-        if (this.FM.isTick(3, 0)) {
-          if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].haveBullets())) {
-            this.FM.CT.WeaponControl[3] = true;
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTick(3, 0)) {
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].haveBullets())) {
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = true;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
           }
         }
-        else this.FM.CT.WeaponControl[3] = false;
+        else this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = false;
     }
   }
 
@@ -343,25 +343,25 @@ public class AR_234B2 extends AR_234
     Property.set(localClass, "cockpitClass", new Class[] { CockpitAR_234B2.class, CockpitAR_234B2_Bombardier.class });
     Property.set(localClass, "LOSElevation", 1.14075F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev01", "_ExternalDev02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 9, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev01", "_ExternalDev02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, null, null, null });
 
-    weaponsRegister(localClass, "2xtyped", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, null, "FuelTankGun_Type_D", "FuelTankGun_Type_D" });
+    Aircraft.weaponsRegister(localClass, "2xtyped", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, null, "FuelTankGun_Type_D", "FuelTankGun_Type_D" });
 
-    weaponsRegister(localClass, "3xsc500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSC500 1", "BombGunSC500 1", "BombGunSC500 1", null, null });
+    Aircraft.weaponsRegister(localClass, "3xsc500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSC500 1", "BombGunSC500 1", "BombGunSC500 1", null, null });
 
-    weaponsRegister(localClass, "3xsd500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSD500 1", "BombGunSD500 1", "BombGunSD500 1", null, null });
+    Aircraft.weaponsRegister(localClass, "3xsd500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSD500 1", "BombGunSD500 1", "BombGunSD500 1", null, null });
 
-    weaponsRegister(localClass, "1xsc1000", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, "BombGunSC1000 1", null, null });
+    Aircraft.weaponsRegister(localClass, "1xsc1000", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", null, null, "BombGunSC1000 1", null, null });
 
-    weaponsRegister(localClass, "1xsc10002xsc250", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC1000 1", null, null });
+    Aircraft.weaponsRegister(localClass, "1xsc10002xsc250", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC1000 1", null, null });
 
-    weaponsRegister(localClass, "3xab250", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunAB250 1", "BombGunAB250 1", "BombGunAB250 1", null, null });
+    Aircraft.weaponsRegister(localClass, "3xab250", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunAB250 1", "BombGunAB250 1", "BombGunAB250 1", null, null });
 
-    weaponsRegister(localClass, "3xab500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunAB500 1", "BombGunAB500 1", "BombGunAB500 1", null, null });
+    Aircraft.weaponsRegister(localClass, "3xab500", new String[] { "MGunMG15120k 200", "MGunMG15120k 200", "BombGunAB500 1", "BombGunAB500 1", "BombGunAB500 1", null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
   }
 }

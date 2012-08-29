@@ -578,35 +578,35 @@ public class DeviceLink
     };
     new ParameterPilot(53, "pilot", "MagnetoPlus") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().EI.isSelectionHasControlMagnetos()) && (World.getPlayerFM().EI.getFirstSelected() != null) && (World.getPlayerFM().EI.getFirstSelected().getControlMagnetos() < 3);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMagnetos()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos() < 3);
       }
 
       public boolean get_accessible()
       {
-        return (super.get_accessible()) && (World.getPlayerFM().EI.getFirstSelected() != null);
+        return (super.get_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null);
       }
 
       public void get(List paramList) {
-        answer("" + World.getPlayerFM().EI.getFirstSelected().getControlMagnetos());
+        answer("" + World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos());
       }
     };
     new ParameterPilot(54, "pilot", "MagnetoMinus") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().EI.isSelectionHasControlMagnetos()) && (World.getPlayerFM().EI.getFirstSelected() != null) && (World.getPlayerFM().EI.getFirstSelected().getControlMagnetos() > 0);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlMagnetos()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos() > 0);
       }
 
       public boolean get_accessible()
       {
-        return (super.get_accessible()) && (World.getPlayerFM().EI.getFirstSelected() != null);
+        return (super.get_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null);
       }
 
       public void get(List paramList) {
-        answer("" + World.getPlayerFM().EI.getFirstSelected().getControlMagnetos());
+        answer("" + World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlMagnetos());
       }
     };
     new ParameterPilot(55, "pilot", "CompressorPlus") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().EI.isSelectionHasControlCompressor()) && (World.getPlayerFM().EI.getFirstSelected() != null) && (World.cur().diffCur.ComplexEManagement);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlCompressor()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null) && (World.cur().diffCur.ComplexEManagement);
       }
 
       public void get(List paramList)
@@ -616,7 +616,7 @@ public class DeviceLink
     };
     new ParameterPilot(56, "pilot", "CompressorMinus") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().EI.isSelectionHasControlCompressor()) && (World.getPlayerFM().EI.getFirstSelected() != null) && (World.cur().diffCur.ComplexEManagement);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlCompressor()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null) && (World.cur().diffCur.ComplexEManagement);
       }
 
       public void get(List paramList)
@@ -701,39 +701,39 @@ public class DeviceLink
     };
     new ParameterPilot(81, "pilot", "EngineFeather") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().EI.isSelectionHasControlFeather()) && (World.getPlayerFM().EI.getFirstSelected() != null) && (World.cur().diffCur.ComplexEManagement);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlFeather()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null) && (World.cur().diffCur.ComplexEManagement);
       }
 
       public boolean get_accessible()
       {
-        return (super.get_accessible()) && (World.getPlayerFM().EI.isSelectionHasControlFeather()) && (World.getPlayerFM().EI.getFirstSelected() != null);
+        return (super.get_accessible()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.isSelectionHasControlFeather()) && (World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected() != null);
       }
 
       public void get(List paramList)
       {
-        answer("" + World.getPlayerFM().EI.getFirstSelected().getControlFeather());
+        answer("" + World.getPlayerFM().jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getFirstSelected().getControlFeather());
       }
     };
     new ParameterPilot(82, "pilot", "Gear") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasGearControl) && (!World.getPlayerFM().Gears.onGround()) && (World.getPlayerFM().Gears.isHydroOperable());
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasGearControl) && (!World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) && (World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.isHydroOperable());
       }
 
       public void get(List paramList)
       {
-        answer("" + fmt(World.getPlayerFM().CT.GearControl));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl));
       }
     };
     new ParameterPilot(83, "pilot", "AIRCRAFT_GEAR_UP_MANUAL") {
       public boolean get_accessible() { return false; } 
       public boolean set_accessible() {
-        return (super.set_accessible()) && (!World.getPlayerFM().Gears.onGround()) && (World.getPlayerFM().CT.GearControl > 0.0F) && (World.getPlayerFM().Gears.isOperable()) && (!World.getPlayerFM().Gears.isHydroOperable());
+        return (super.set_accessible()) && (!World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) && (World.getPlayerFM().CT.GearControl > 0.0F) && (World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.isOperable()) && (!World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.isHydroOperable());
       }
     };
     new ParameterPilot(84, "pilot", "AIRCRAFT_GEAR_DOWN_MANUAL") {
       public boolean get_accessible() { return false; } 
       public boolean set_accessible() {
-        return (super.set_accessible()) && (!World.getPlayerFM().Gears.onGround()) && (World.getPlayerFM().CT.GearControl < 1.0F) && (World.getPlayerFM().Gears.isOperable()) && (!World.getPlayerFM().Gears.isHydroOperable());
+        return (super.set_accessible()) && (!World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround()) && (World.getPlayerFM().CT.GearControl < 1.0F) && (World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.isOperable()) && (!World.getPlayerFM().jdField_Gears_of_type_ComMaddoxIl2FmGear.isHydroOperable());
       }
     };
     new ParameterPilot(85, "pilot", "Radiator") {
@@ -744,11 +744,11 @@ public class DeviceLink
     };
     new ParameterPilot(86, "pilot", "AIRCRAFT_TOGGLE_AIRBRAKE") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasAirBrakeControl);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAirBrakeControl);
       }
 
       public void get(List paramList) {
-        answer(World.getPlayerFM().CT.AirBrakeControl == 0.0F ? "0" : "1");
+        answer(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl == 0.0F ? "0" : "1");
       }
     };
     new ParameterPilot(87, "pilot", "AIRCRAFT_TAILWHEELLOCK") {
@@ -775,7 +775,7 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
       public void get(List paramList) {
         answer(World.getPlayerFM().CT.WeaponControl[0] != 0 ? "1" : "0");
@@ -786,7 +786,7 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
       public void get(List paramList) {
         answer(World.getPlayerFM().CT.WeaponControl[1] != 0 ? "1" : "0");
@@ -797,7 +797,7 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
       public void get(List paramList) {
         answer(World.getPlayerFM().CT.WeaponControl[2] != 0 ? "1" : "0");
@@ -808,7 +808,7 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
       public void get(List paramList) {
         answer(World.getPlayerFM().CT.WeaponControl[3] != 0 ? "1" : "0");
@@ -819,10 +819,10 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
       public void get(List paramList) {
-        answer((World.getPlayerFM().CT.WeaponControl[0] != 0) && (World.getPlayerFM().CT.WeaponControl[1] != 0) ? "1" : "0");
+        answer((World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[0] != 0) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[1] != 0) ? "1" : "0");
       }
     };
     new ParameterPilot(95, "pilot", "GunPods") {
@@ -862,26 +862,26 @@ public class DeviceLink
     };
     new ParameterPilot(95, "pilot", "WINGFOLD") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasWingControl);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasWingControl);
       }
       public void get(List paramList) {
-        answer(World.getPlayerFM().CT.getWing() > 0.99F ? "1" : "0");
+        answer(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.getWing() > 0.99F ? "1" : "0");
       }
     };
     new ParameterPilot(106, "pilot", "COCKPITDOOR") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasCockpitDoorControl);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasCockpitDoorControl);
       }
       public void get(List paramList) {
-        answer(World.getPlayerFM().CT.getCockpitDoor() > 0.99F ? "1" : "0");
+        answer(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor() > 0.99F ? "1" : "0");
       }
     };
     new ParameterPilot(107, "pilot", "AIRCRAFT_CARRIERHOOK") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasArrestorControl);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasArrestorControl);
       }
       public void get(List paramList) {
-        answer(World.getPlayerFM().CT.arrestorControl > 0.5F ? "1" : "0");
+        answer(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.arrestorControl > 0.5F ? "1" : "0");
       }
     };
     new ParameterPilot(108, "pilot", "AIRCRAFT_BRAKESHOE") {
@@ -897,10 +897,10 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
       public void get(List paramList) {
-        answer(this.cmd.isActive() ? "1" : "0");
+        answer(this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.isActive() ? "1" : "0");
       }
     };
     new ParameterMouseMove(111, "gunner", "Mouse") {
@@ -920,26 +920,26 @@ public class DeviceLink
     };
     new ParameterMove(42, "move", "aileron") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (!World.getPlayerFM().CT.StabilizerControl);
+        return (super.set_accessible()) && (!World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl);
       }
       public void get(List paramList) {
-        answer("" + fmt(World.getPlayerFM().CT.AileronControl));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl));
       }
     };
     new ParameterMove(43, "move", "elevator") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (!World.getPlayerFM().CT.StabilizerControl);
+        return (super.set_accessible()) && (!World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl);
       }
       public void get(List paramList) {
-        answer("" + fmt(World.getPlayerFM().CT.ElevatorControl));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl));
       }
     };
     new ParameterMove(44, "move", "rudder") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (!World.getPlayerFM().CT.StabilizerControl);
+        return (super.set_accessible()) && (!World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.StabilizerControl);
       }
       public void get(List paramList) {
-        answer("" + fmt(World.getPlayerFM().CT.RudderControl));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl));
       }
     };
     new ParameterMove(45, "move", "brakes") {
@@ -959,26 +959,26 @@ public class DeviceLink
     };
     new ParameterMove(47, "move", "trimaileron") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasAileronTrim);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasAileronTrim);
       }
       public void get(List paramList) {
-        answer("" + fmt(World.getPlayerFM().CT.getTrimAileronControl() * 2.0F));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl() * 2.0F));
       }
     };
     new ParameterMove(48, "move", "trimelevator") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasElevatorTrim);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasElevatorTrim);
       }
       public void get(List paramList) {
-        answer("" + fmt(World.getPlayerFM().CT.getTrimElevatorControl() * 2.0F));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl() * 2.0F));
       }
     };
     new ParameterMove(49, "move", "trimrudder") {
       public boolean set_accessible() {
-        return (super.set_accessible()) && (World.getPlayerFM().CT.bHasRudderTrim);
+        return (super.set_accessible()) && (World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.bHasRudderTrim);
       }
       public void get(List paramList) {
-        answer("" + fmt(World.getPlayerFM().CT.getTrimRudderControl() * 2.0F));
+        answer("" + fmt(World.getPlayerFM().jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl() * 2.0F));
       }
     };
     new ParameterView(150, "aircraftView", "changeCockpit") {
@@ -1034,7 +1034,7 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
     };
     new ParameterView(190, "aircraftView", "ViewEnemyAir");
@@ -1084,14 +1084,14 @@ public class DeviceLink
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
     };
     new ParameterMisc(215, "$$$misc", "radioMuteKey") {
       public void set(List paramList) {
         if ((paramList == null) || (paramList.size() != 1)) return;
         boolean bool = "1".equals(paramList.get(0));
-        HotKeyCmd.exec(bool, this.cmd.hotKeyCmdEnv().name(), this.cmd.name());
+        HotKeyCmd.exec(bool, this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv().name(), this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.name());
       }
     };
     new ParameterMisc(217, "timeCompression", "timeSpeedUp") { public boolean set_accessible() { return (super.set_accessible()) && (Time.isEnableChangeSpeed());
@@ -1155,8 +1155,8 @@ public class DeviceLink
       }
       receiveParam(j, this.inArg);
     }
-
-    while (this.outList.size() > 0) {
+    do
+    {
       j = PACKET_SIZE - 1;
       localObject = this.outPacket.getData();
       int k = 0;
@@ -1175,9 +1175,11 @@ public class DeviceLink
       this.outPacket.setLength(k);
       this.serverSocket.send(this.outPacket);
     }
+    while (this.outList.size() > 0);
   }
 
-  private void do_answer(int paramInt, String paramString) {
+  private void do_answer(int paramInt, String paramString)
+  {
     if (this.inOutBuf.length() > 0)
       this.inOutBuf.delete(0, this.inOutBuf.length());
     this.inOutBuf.append("/" + paramInt);
@@ -1274,13 +1276,13 @@ public class DeviceLink
           char c2 = receiveChar(false);
           if ((c2 == '\\') || (c2 == '/')) {
             this.inputMsg.fixed();
-            this.inOutBuf.append(c2);
-          } else {
-            this.inputMsg.reset();
-            break;
+            this.inOutBuf.append(c2); continue;
           }
-          continue;
-        }this.inputMsg.reset();
+          this.inputMsg.reset();
+          break;
+        }
+
+        this.inputMsg.reset();
         break;
       }
 
@@ -1628,11 +1630,11 @@ public class DeviceLink
 
     public boolean set_accessible()
     {
-      if (!this.cmd.isEnabled()) return false;
-      HotKeyCmdEnv localHotKeyCmdEnv = this.cmd.hotKeyCmdEnv();
+      if (!this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.isEnabled()) return false;
+      HotKeyCmdEnv localHotKeyCmdEnv = this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.hotKeyCmdEnv();
       if (!localHotKeyCmdEnv.isEnabled()) return false;
       if (!HotKeyEnv.isEnabled(localHotKeyCmdEnv.name())) return false;
-      return (isFMValid()) && (!this.cmd.isActive());
+      return (isFMValid()) && (!this.jdField_cmd_of_type_ComMaddoxRtsHotKeyCmd.isActive());
     }
 
     public ParameterGunner(int paramString1, String paramString2, String arg4) {

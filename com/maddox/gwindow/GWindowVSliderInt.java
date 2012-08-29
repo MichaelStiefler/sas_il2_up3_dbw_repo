@@ -55,19 +55,19 @@ public class GWindowVSliderInt extends GWindowDialogControl
   {
     switch (paramInt) {
     case 40:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setScrollPos(false, true);
       return;
     case 38:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setScrollPos(true, true);
       return;
     case 35:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setPos(this.posStart, true);
       return;
     case 36:
-      if ((paramBoolean) && (this.bEnable))
+      if ((paramBoolean) && (this.jdField_bEnable_of_type_Boolean))
         setPos(this.posStart + this.posCount - 1, true);
       return;
     case 37:
@@ -78,7 +78,7 @@ public class GWindowVSliderInt extends GWindowDialogControl
 
   public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
     super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if (!this.bEnable) { mouseCapture(false); return; }
+    if (!this.jdField_bEnable_of_type_Boolean) { mouseCapture(false); return; }
     if (paramInt != 0) return;
     if ((isMouseCaptured()) && (!paramBoolean)) {
       mouseCapture(false);
@@ -104,13 +104,13 @@ public class GWindowVSliderInt extends GWindowDialogControl
 
   public void mouseMove(float paramFloat1, float paramFloat2)
   {
-    if ((this.bEnable) && (isMouseCaptured()))
+    if ((this.jdField_bEnable_of_type_Boolean) && (isMouseCaptured()))
       setPos((int)((this.mouseSlidingY - paramFloat2) / this.win.dy * this.posCount + this.posSlidingSave + 0.5F), this.bSlidingNotify); 
   }
 
   public void mouseRelMove(float paramFloat1, float paramFloat2, float paramFloat3) {
-    if ((this.bEnable) && (!isMouseCaptured()) && (this.root.mouseRelMoveZ != 0.0F))
-      setScrollPos(this.root.mouseRelMoveZ > 0.0F, true);
+    if ((this.jdField_bEnable_of_type_Boolean) && (!isMouseCaptured()) && (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseRelMoveZ != 0.0F))
+      setScrollPos(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseRelMoveZ > 0.0F, true);
   }
 
   public void render()

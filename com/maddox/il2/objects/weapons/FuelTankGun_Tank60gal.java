@@ -7,7 +7,9 @@ public class FuelTankGun_Tank60gal extends FuelTankGun
   static
   {
     Class localClass = FuelTankGun_Tank60gal.class;
+
     Property.set(localClass, "bulletClass", FuelTank_Tank60gal.class);
+
     Property.set(localClass, "bullets", 1);
     Property.set(localClass, "shotFreq", 0.25F);
     Property.set(localClass, "external", 1);

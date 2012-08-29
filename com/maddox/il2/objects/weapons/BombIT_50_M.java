@@ -4,6 +4,20 @@ import com.maddox.rts.Property;
 
 public class BombIT_50_M extends Bomb
 {
+  static Class _mthclass$(String paramString)
+  {
+    Class localClass;
+    try
+    {
+      localClass = Class.forName(paramString);
+    }
+    catch (ClassNotFoundException localClassNotFoundException)
+    {
+      throw new NoClassDefFoundError(localClassNotFoundException.getMessage());
+    }
+    return localClass;
+  }
+
   static
   {
     Class localClass = BombIT_50_M.class;

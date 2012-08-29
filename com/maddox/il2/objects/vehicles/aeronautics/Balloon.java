@@ -180,8 +180,8 @@ public class Balloon extends ActorMesh
       this.st = 2;
 
       Loc localLoc = new Loc();
-      localLoc.set(this.pos.getAbs());
-      localLoc.getPoint().z += this.balloonCenterOffset;
+      localLoc.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
+      localLoc.getPoint().jdField_z_of_type_Double += this.balloonCenterOffset;
 
       Explosions.HydrogenBalloonExplosion(localLoc, null);
 
@@ -212,23 +212,23 @@ public class Balloon extends ActorMesh
 
     this.anchor = paramAeroanchoredGeneric;
 
-    this.anchor.pos.getAbs(this.curPos);
+    this.anchor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.curPos);
 
     this.height_stay = (Engine.land().HQ(this.curPos.x, this.curPos.y) + paramFloat1);
     this.height_top = paramFloat2;
 
     if (paramBoolean) {
       this.st = 1;
-      this.curPos.z = this.height_top;
+      this.curPos.jdField_z_of_type_Double = this.height_top;
     } else {
       this.st = 0;
-      this.curPos.z = this.height_stay;
+      this.curPos.jdField_z_of_type_Double = this.height_stay;
     }
 
-    o.setYPR(this.anchor.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    o.setYPR(this.anchor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
 
-    this.pos.setAbs(this.curPos, o);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.curPos, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     setArmy(this.anchor.getArmy());
 
@@ -262,9 +262,9 @@ public class Balloon extends ActorMesh
     public boolean tick()
     {
       if (Balloon.this.st == 1) {
-        Balloon.this.curPos.z += Balloon.this.speedOfGoUp;
-        if (Balloon.this.curPos.z >= Balloon.this.height_top) {
-          Balloon.this.curPos.z = Balloon.this.height_top;
+        Balloon.this.curPos.jdField_z_of_type_Double += Balloon.this.speedOfGoUp;
+        if (Balloon.this.curPos.jdField_z_of_type_Double >= Balloon.this.height_top) {
+          Balloon.this.curPos.jdField_z_of_type_Double = Balloon.this.height_top;
           return false;
         }
         Balloon.this.pos.setAbs(Balloon.this.curPos);

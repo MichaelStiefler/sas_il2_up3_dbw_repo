@@ -45,8 +45,8 @@ public class CmdWindow extends Cmd
       int i = 0;
       String str1 = null;
       String str2 = Provider.isGLloaded() ? Provider.GLname() : "";
-      if (nargs(paramMap, "PROVIDER") > 0) {
-        str1 = arg(paramMap, "PROVIDER", 0);
+      if (Cmd.nargs(paramMap, "PROVIDER") > 0) {
+        str1 = Cmd.arg(paramMap, "PROVIDER", 0);
         if ((!Provider.isGLloaded()) || (str1.compareToIgnoreCase(str2) != 0)) {
           i = 1;
         }
@@ -56,35 +56,35 @@ public class CmdWindow extends Cmd
       int j;
       if (paramMap.containsKey("_$$")) {
         i2 = bool1 ? 2560 : ScreenMode.startup().width();
-        j = arg(paramMap, "_$$", 0, 640, 160, i2);
+        j = Cmd.arg(paramMap, "_$$", 0, 640, 160, i2);
       } else {
         j = Config.cur.windowWidth;
       }
       int k;
-      if (nargs(paramMap, "_$$") > 1) {
+      if (Cmd.nargs(paramMap, "_$$") > 1) {
         i2 = bool1 ? 1820 : ScreenMode.startup().height();
-        k = arg(paramMap, "_$$", 1, 480, 120, 1820);
+        k = Cmd.arg(paramMap, "_$$", 1, 480, 120, 1820);
       } else {
         k = j * 3 / 4;
       }
       int m;
-      if (nargs(paramMap, "_$$") > 2) {
-        if (bool1) m = arg(paramMap, "_$$", 2, 16, 16, 32); else
+      if (Cmd.nargs(paramMap, "_$$") > 2) {
+        if (bool1) m = Cmd.arg(paramMap, "_$$", 2, 16, 16, 32); else
           m = ScreenMode.startup().colourBits();
       }
       else if (bool1) m = Config.cur.windowColourBits; else
         m = ScreenMode.startup().colourBits();
       int n;
-      if (nargs(paramMap, "_$$") > 3) {
-        n = arg(paramMap, "_$$", 3, 16, 16, 32);
+      if (Cmd.nargs(paramMap, "_$$") > 3) {
+        n = Cmd.arg(paramMap, "_$$", 3, 16, 16, 32);
       }
       else if (m == Config.cur.windowColourBits)
         n = Config.cur.windowDepthBits;
       else
         n = m;
       int i1;
-      if (nargs(paramMap, "_$$") > 4)
-        i1 = arg(paramMap, "_$$", 4, 0, 0, 8);
+      if (Cmd.nargs(paramMap, "_$$") > 4)
+        i1 = Cmd.arg(paramMap, "_$$", 4, 0, 0, 8);
       else {
         i1 = Config.cur.windowStencilBits;
       }
@@ -203,9 +203,9 @@ public class CmdWindow extends Cmd
   }
 
   public CmdWindow() {
-    this.param.put("FULL", null);
-    this.param.put("NOFULL", null);
-    this.param.put("PROVIDER", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FULL", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NOFULL", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PROVIDER", null);
     this._properties.put("NAME", "window");
     this._levelAccess = 1;
   }

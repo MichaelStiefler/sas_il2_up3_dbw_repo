@@ -18,8 +18,8 @@ public class LightEnvXY extends LightEnv
     int i;
     int j;
     if (paramFloat <= 64.0F) {
-      i = (int)paramPoint3d.x / 256;
-      j = (int)paramPoint3d.y / 256;
+      i = (int)paramPoint3d.jdField_x_of_type_Double / 256;
+      j = (int)paramPoint3d.jdField_y_of_type_Double / 256;
       HashMapExt localHashMapExt1 = this.mapXY.get(j, i);
       if (localHashMapExt1 == null)
         return 0;
@@ -27,10 +27,10 @@ public class LightEnvXY extends LightEnv
       this.countLights = 0;
       pointsStamped(localHashMapExt1);
     } else {
-      i = (int)(paramPoint3d.x - paramFloat) / 256;
-      j = (int)(paramPoint3d.x + paramFloat) / 256;
-      int k = (int)(paramPoint3d.y - paramFloat) / 256;
-      int m = (int)(paramPoint3d.y + paramFloat) / 256;
+      i = (int)(paramPoint3d.jdField_x_of_type_Double - paramFloat) / 256;
+      j = (int)(paramPoint3d.jdField_x_of_type_Double + paramFloat) / 256;
+      int k = (int)(paramPoint3d.jdField_y_of_type_Double - paramFloat) / 256;
+      int m = (int)(paramPoint3d.jdField_y_of_type_Double + paramFloat) / 256;
       LightPoint.curStamp += 1;
       this.countLights = 0;
       for (int n = k; n <= m; n++) {

@@ -21,8 +21,8 @@ public class CockpitA_20C_BGunner extends CockpitGunner
   public void moveGun(Orient paramOrient)
   {
     super.moveGun(paramOrient);
-    this.mesh.chunkSetAngles("Turret1A", 0.0F, -paramOrient.getYaw(), 0.0F);
-    this.mesh.chunkSetAngles("Turret1B", 0.0F, paramOrient.getTangage(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1A", 0.0F, -paramOrient.getYaw(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1B", 0.0F, paramOrient.getTangage(), 0.0F);
   }
 
   public void clipAnglesGun(Orient paramOrient) {
@@ -44,15 +44,15 @@ public class CockpitA_20C_BGunner extends CockpitGunner
 
   protected void interpTick()
   {
-    this.mesh.chunkSetAngles("Turret1A_D0", 0.0F, aircraft().FM.turret[0].tu[0], 0.0F);
-    this.mesh.chunkSetAngles("Turret1B_D0", 0.0F, aircraft().FM.turret[0].tu[1], 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1A_D0", 0.0F, aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].tu[0], 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1B_D0", 0.0F, aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].tu[1], 0.0F);
 
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-    if (this.bGunFire) {
+      this.jdField_bGunFire_of_type_Boolean = false;
+    }this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
+    if (this.jdField_bGunFire_of_type_Boolean) {
       if (this.hook1 == null) {
         this.hook1 = new HookNamed(aircraft(), "_MGUN09");
       }
@@ -63,22 +63,22 @@ public class CockpitA_20C_BGunner extends CockpitGunner
   public void doGunFire(boolean paramBoolean)
   {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
+      this.jdField_bGunFire_of_type_Boolean = false;
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+    else this.jdField_bGunFire_of_type_Boolean = paramBoolean;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
   }
 
   public void reflectCockpitState()
   {
-    if (this.fm.AS.astateCockpitState != 0) {
-      this.mesh.chunkVisible("Z_Holes1_D1", true);
-      this.mesh.chunkVisible("Z_Holes2_D1", true);
-      this.mesh.chunkVisible("Z_Holes3_D1", true);
-      this.mesh.chunkVisible("Z_Holes4_D1", true);
-      this.mesh.chunkVisible("Z_Holes5_D1", true);
+    if (this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.AS.astateCockpitState != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes1_D1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes2_D1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes3_D1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes4_D1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Holes5_D1", true);
     }
   }
 
@@ -95,25 +95,25 @@ public class CockpitA_20C_BGunner extends CockpitGunner
   {
     HierMesh localHierMesh = aircraft().hierMesh();
     Mat localMat = localHierMesh.material(localHierMesh.materialFind("Glass2"));
-    this.mesh.materialReplace("Glass2", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Glass2", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Gloss1D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D0o"));
-    this.mesh.materialReplace("Gloss2D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Gloss2D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Matt1D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Pilot1"));
-    this.mesh.materialReplace("Pilot1", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Pilot1", localMat);
   }
 
   protected void reflectPlaneToModel()
   {
     HierMesh localHierMesh = aircraft().hierMesh();
-    this.mesh.chunkVisible("Pilot2_D0", localHierMesh.isChunkVisible("Pilot2_D0"));
-    this.mesh.chunkVisible("HMask2_D0", localHierMesh.isChunkVisible("HMask2_D0"));
-    this.mesh.chunkVisible("Pilot2_D1", localHierMesh.isChunkVisible("Pilot2_D1"));
-    this.mesh.chunkVisible("Turret1A_D0", localHierMesh.isChunkVisible("Turret1A_D0"));
-    this.mesh.chunkVisible("Turret1B_D0", localHierMesh.isChunkVisible("Turret1B_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Pilot2_D0", localHierMesh.isChunkVisible("Pilot2_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("HMask2_D0", localHierMesh.isChunkVisible("HMask2_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Pilot2_D1", localHierMesh.isChunkVisible("Pilot2_D1"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Turret1A_D0", localHierMesh.isChunkVisible("Turret1A_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Turret1B_D0", localHierMesh.isChunkVisible("Turret1B_D0"));
   }
 
   public CockpitA_20C_BGunner()

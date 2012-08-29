@@ -15,7 +15,7 @@ public class BombSD2A extends Bomb
     Property.set(localClass, "mesh", "3DO/Arms/SD-2A/mono.sim");
 
     Property.set(localClass, "radius", 25.0F);
-    Property.set(localClass, "power", 0.2126F);
+    Property.set(localClass, "power", 1.01F);
 
     Property.set(localClass, "powerType", 1);
     Property.set(localClass, "kalibr", 0.0775F);

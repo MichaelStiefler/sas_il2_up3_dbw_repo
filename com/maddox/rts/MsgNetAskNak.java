@@ -11,7 +11,7 @@ public class MsgNetAskNak extends Message
     MsgNetAskNak localMsgNetAskNak = (MsgNetAskNak)cache.get();
     localMsgNetAskNak.bAsk = paramBoolean;
     localMsgNetAskNak.guaranted = paramNetMsgGuaranted;
-    localMsgNetAskNak._sender = paramNetChannel;
+    localMsgNetAskNak.jdField__sender_of_type_JavaLangObject = paramNetChannel;
     localMsgNetAskNak.post(64, paramObject, paramLong);
   }
 
@@ -20,7 +20,7 @@ public class MsgNetAskNak extends Message
     MsgNetAskNak localMsgNetAskNak = (MsgNetAskNak)cache.get();
     localMsgNetAskNak.bAsk = paramBoolean;
     localMsgNetAskNak.guaranted = paramNetMsgGuaranted;
-    localMsgNetAskNak._sender = paramNetChannel;
+    localMsgNetAskNak.jdField__sender_of_type_JavaLangObject = paramNetChannel;
     localMsgNetAskNak.post(0, paramObject, paramLong);
   }
 
@@ -31,8 +31,8 @@ public class MsgNetAskNak extends Message
 
   public boolean invokeListener(Object paramObject) {
     if ((paramObject instanceof MsgNetAskNakListener)) {
-      if (this.bAsk) ((MsgNetAskNakListener)paramObject).msgNetAsk(this.guaranted, (NetChannel)this._sender); else
-        ((MsgNetAskNakListener)paramObject).msgNetNak(this.guaranted, (NetChannel)this._sender);
+      if (this.bAsk) ((MsgNetAskNakListener)paramObject).msgNetAsk(this.guaranted, (NetChannel)this.jdField__sender_of_type_JavaLangObject); else
+        ((MsgNetAskNakListener)paramObject).msgNetNak(this.guaranted, (NetChannel)this.jdField__sender_of_type_JavaLangObject);
       return true;
     }
     return false;

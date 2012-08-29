@@ -6,9 +6,9 @@ public class BombGunPhBall extends BombGun
 {
   public void setBombDelay(float paramFloat)
   {
-    this.bombDelay = 0.0F;
-    if (this.bomb != null)
-      this.bomb.delayExplosion = this.bombDelay;
+    this.jdField_bombDelay_of_type_Float = 0.0F;
+    if (this.jdField_bomb_of_type_ComMaddoxIl2ObjectsWeaponsBomb != null)
+      this.jdField_bomb_of_type_ComMaddoxIl2ObjectsWeaponsBomb.delayExplosion = this.jdField_bombDelay_of_type_Float;
   }
 
   static {

@@ -158,13 +158,7 @@ public class RTSConf
     this.mainWindow = paramMainWindow;
     this.keyboard = new Keyboard();
     this.mouse = new Mouse(paramIniFile, paramString + "_mouse");
-
-    int j = paramIniFile.get("rts", "JoyProfile", 0, 0, 3);
-    if (j > 0)
-      this.joy = new Joy(paramIniFile, paramString + "_joystick" + j);
-    else {
-      this.joy = new Joy(paramIniFile, paramString + "_joystick");
-    }
+    this.joy = new Joy(paramIniFile, paramString + "_joystick");
     this.trackIR = new TrackIR(paramIniFile, paramString + "_trackIR");
     this.netEnv = new NetEnv();
     this.cmdEnv = new CmdEnv();

@@ -9,22 +9,18 @@ public class MGunM4_75 extends MGunAircraftGeneric
   public GunProperties createProperties()
   {
     GunProperties localGunProperties = super.createProperties();
-
     localGunProperties.bCannon = true;
     localGunProperties.bUseHookAsRel = true;
-
     localGunProperties.fireMesh = null;
     localGunProperties.fire = "3DO/Effects/GunFire/75mm/GunFire.eff";
     localGunProperties.sprite = null;
     localGunProperties.smoke = null;
     localGunProperties.shells = null;
-    localGunProperties.sound = "weapon.air_cannon_75";
-
+    localGunProperties.sound = "weapon.MGunM4_75";
     localGunProperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
-    localGunProperties.emitI = 10.0F;
-    localGunProperties.emitR = 3.0F;
+    localGunProperties.emitI = 2.5F;
+    localGunProperties.emitR = 1.5F;
     localGunProperties.emitTime = 0.03F;
-
     localGunProperties.aimMinDist = 100.0F;
     localGunProperties.aimMaxDist = 5000.0F;
     localGunProperties.weaponType = -1;
@@ -33,11 +29,10 @@ public class MGunM4_75 extends MGunAircraftGeneric
     localGunProperties.traceFreq = 1;
     localGunProperties.bullets = 25;
     localGunProperties.bulletsCluster = 1;
-
     localGunProperties.bullet = new BulletProperties[] { new BulletProperties() };
 
     localGunProperties.bullet[0].massa = 6.65F;
-    localGunProperties.bullet[0].kalibr = 0.005006251F;
+    localGunProperties.bullet[0].kalibr = 0.0050063F;
     localGunProperties.bullet[0].speed = 610.0F;
     localGunProperties.bullet[0].power = 0.675F;
     localGunProperties.bullet[0].powerType = 0;
@@ -46,7 +41,6 @@ public class MGunM4_75 extends MGunAircraftGeneric
     localGunProperties.bullet[0].traceTrail = "effects/Smokes/SmokeBlack_BuletteTrail.eff";
     localGunProperties.bullet[0].traceColor = -654299393;
     localGunProperties.bullet[0].timeLife = 30.0F;
-
     return localGunProperties;
   }
 }

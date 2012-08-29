@@ -57,15 +57,15 @@ public final class Mountain extends ActorLandMesh
 
   public void align()
   {
-    this.pos.getAbs(p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
     p.z = 0.0D;
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    this.pos.setAbs(p, o);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     if (paramFloat <= 0.0F) return 0.0F;
     return paramFloat;
   }

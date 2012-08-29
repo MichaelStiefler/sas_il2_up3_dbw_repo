@@ -41,9 +41,9 @@ public class Point3d extends Tuple3d
 
   public final double distanceSquared(Point3d paramPoint3d)
   {
-    double d1 = this.x - paramPoint3d.x;
-    double d2 = this.y - paramPoint3d.y;
-    double d3 = this.z - paramPoint3d.z;
+    double d1 = this.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double;
+    double d2 = this.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double;
+    double d3 = this.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double;
     return d1 * d1 + d2 * d2 + d3 * d3;
   }
 
@@ -54,18 +54,18 @@ public class Point3d extends Tuple3d
 
   public final double distanceL1(Point3d paramPoint3d)
   {
-    return Math.abs(this.x - paramPoint3d.x) + Math.abs(this.y - paramPoint3d.y) + Math.abs(this.z - paramPoint3d.z);
+    return Math.abs(this.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double) + Math.abs(this.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double) + Math.abs(this.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double);
   }
 
   public final double distanceLinf(Point3d paramPoint3d)
   {
-    return Math.max(Math.max(Math.abs(this.x - paramPoint3d.x), Math.abs(this.y - paramPoint3d.y)), Math.abs(this.z - paramPoint3d.z));
+    return Math.max(Math.max(Math.abs(this.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double), Math.abs(this.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double)), Math.abs(this.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double));
   }
 
   public final void project(Point4d paramPoint4d)
   {
-    this.x = (paramPoint4d.x / paramPoint4d.w);
-    this.y = (paramPoint4d.y / paramPoint4d.w);
-    this.z = (paramPoint4d.z / paramPoint4d.w);
+    this.jdField_x_of_type_Double = (paramPoint4d.jdField_x_of_type_Double / paramPoint4d.jdField_w_of_type_Double);
+    this.jdField_y_of_type_Double = (paramPoint4d.jdField_y_of_type_Double / paramPoint4d.jdField_w_of_type_Double);
+    this.jdField_z_of_type_Double = (paramPoint4d.jdField_z_of_type_Double / paramPoint4d.jdField_w_of_type_Double);
   }
 }

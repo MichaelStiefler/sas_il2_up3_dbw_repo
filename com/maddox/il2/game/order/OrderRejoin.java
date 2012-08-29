@@ -20,12 +20,12 @@ class OrderRejoin extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
-      if (localPilot.Group != null) {
-        Maneuver localManeuver = (Maneuver)Player().FM;
-        if ((localAircraft.getWing() == Player().getWing()) && (localPilot.Group != localManeuver.Group) && (localManeuver.Group != null)) localPilot.Group.rejoinToGroup(localManeuver.Group);
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      if (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) {
+        Maneuver localManeuver = (Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+        if ((localAircraft.getWing() == Player().getWing()) && (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup) && (localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null)) localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.rejoinToGroup(localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
         if ((isEnableVoice()) && (localAircraft != Player()) && (
           (localAircraft.getWing() == Player().getWing()) || (CommandSet()[i].aircIndex() == 0)))
           Voice.speakRejoin(localAircraft);
@@ -36,9 +36,9 @@ class OrderRejoin extends Order
           localPilot.clear_stack();
           localPilot.set_maneuver(65);
         } else {
-          localPilot.Group.setFormationAndScale(0, 1.0F, false);
-          localPilot.Group.setGroupTask(1);
-          localPilot.Group.timeOutForTaskSwitch = 480;
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setFormationAndScale(0, 1.0F, false);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(1);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.timeOutForTaskSwitch = 480;
         }
       }
     }

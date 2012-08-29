@@ -31,7 +31,7 @@ public class Vector3d extends Tuple3d
 
   public final void cross(Tuple3d paramTuple3d1, Tuple3d paramTuple3d2)
   {
-    set(paramTuple3d1.y * paramTuple3d2.z - paramTuple3d1.z * paramTuple3d2.y, paramTuple3d1.z * paramTuple3d2.x - paramTuple3d1.x * paramTuple3d2.z, paramTuple3d1.x * paramTuple3d2.y - paramTuple3d1.y * paramTuple3d2.x);
+    set(paramTuple3d1.jdField_y_of_type_Double * paramTuple3d2.jdField_z_of_type_Double - paramTuple3d1.jdField_z_of_type_Double * paramTuple3d2.jdField_y_of_type_Double, paramTuple3d1.jdField_z_of_type_Double * paramTuple3d2.jdField_x_of_type_Double - paramTuple3d1.jdField_x_of_type_Double * paramTuple3d2.jdField_z_of_type_Double, paramTuple3d1.jdField_x_of_type_Double * paramTuple3d2.jdField_y_of_type_Double - paramTuple3d1.jdField_y_of_type_Double * paramTuple3d2.jdField_x_of_type_Double);
   }
 
   public final double normalize(Tuple3d paramTuple3d)
@@ -43,20 +43,20 @@ public class Vector3d extends Tuple3d
   public final double normalize()
   {
     double d = Math.max(length(), 1.0E-075D);
-    this.x /= d;
-    this.y /= d;
-    this.z /= d;
+    this.jdField_x_of_type_Double /= d;
+    this.jdField_y_of_type_Double /= d;
+    this.jdField_z_of_type_Double /= d;
     return d;
   }
 
   public final double dot(Tuple3d paramTuple3d)
   {
-    return this.x * paramTuple3d.x + this.y * paramTuple3d.y + this.z * paramTuple3d.z;
+    return this.jdField_x_of_type_Double * paramTuple3d.jdField_x_of_type_Double + this.jdField_y_of_type_Double * paramTuple3d.jdField_y_of_type_Double + this.jdField_z_of_type_Double * paramTuple3d.jdField_z_of_type_Double;
   }
 
   public final double lengthSquared()
   {
-    return this.x * this.x + this.y * this.y + this.z * this.z;
+    return this.jdField_x_of_type_Double * this.jdField_x_of_type_Double + this.jdField_y_of_type_Double * this.jdField_y_of_type_Double + this.jdField_z_of_type_Double * this.jdField_z_of_type_Double;
   }
 
   public final double length()
@@ -66,9 +66,9 @@ public class Vector3d extends Tuple3d
 
   public final double angle(Vector3d paramVector3d)
   {
-    double d1 = this.y * paramVector3d.z - this.z * paramVector3d.y;
-    double d2 = this.z * paramVector3d.x - this.x * paramVector3d.z;
-    double d3 = this.x * paramVector3d.y - this.y * paramVector3d.x;
+    double d1 = this.jdField_y_of_type_Double * paramVector3d.jdField_z_of_type_Double - this.jdField_z_of_type_Double * paramVector3d.jdField_y_of_type_Double;
+    double d2 = this.jdField_z_of_type_Double * paramVector3d.jdField_x_of_type_Double - this.jdField_x_of_type_Double * paramVector3d.jdField_z_of_type_Double;
+    double d3 = this.jdField_x_of_type_Double * paramVector3d.jdField_y_of_type_Double - this.jdField_y_of_type_Double * paramVector3d.jdField_x_of_type_Double;
     double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
 
     return Math.abs(Math.atan2(d4, dot(paramVector3d)));

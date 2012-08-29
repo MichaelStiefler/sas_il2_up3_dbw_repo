@@ -7,18 +7,18 @@ import com.maddox.il2.engine.Loc;
 
 public class BulletParabolaGeneric extends Bullet
 {
-  public BulletParabolaGeneric(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
+  public BulletParabolaGeneric(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong)
   {
-    super(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
+    super(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong);
   }
 
   public void move(float paramFloat)
   {
-    if (this.gun == null) return;
+    if (this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric == null) return;
 
-    this.p0.set(this.p1);
-    this.p1.scaleAdd(paramFloat, this.speed, this.p0);
-    this.speed.z += this.gun.bulletAG[indx()] * paramFloat;
+    this.jdField_p0_of_type_ComMaddoxJGPPoint3d.set(this.jdField_p1_of_type_ComMaddoxJGPPoint3d);
+    this.jdField_p1_of_type_ComMaddoxJGPPoint3d.scaleAdd(paramFloat, this.jdField_speed_of_type_ComMaddoxJGPVector3d, this.jdField_p0_of_type_ComMaddoxJGPPoint3d);
+    this.jdField_speed_of_type_ComMaddoxJGPVector3d.z += this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.bulletAG[indx()] * paramFloat;
   }
 
   public void timeOut()

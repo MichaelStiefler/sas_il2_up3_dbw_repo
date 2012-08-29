@@ -25,8 +25,8 @@ public class CmdServer extends Cmd
 
     int i = 1;
     String str;
-    if ((!USGS.isUsed()) && (nargs(paramMap, "NAME") > 0)) {
-      str = args(paramMap, "NAME");
+    if ((!USGS.isUsed()) && (Cmd.nargs(paramMap, "NAME") > 0)) {
+      str = Cmd.args(paramMap, "NAME");
       Main.cur().netServerParams.setServerName(str);
       Config.cur.netServerName = str;
       i = 0;
@@ -34,16 +34,16 @@ public class CmdServer extends Cmd
 
     if ((!USGS.isUsed()) && (paramMap.containsKey("PWD"))) {
       i = 0;
-      if (nargs(paramMap, "PWD") > 0) {
-        str = args(paramMap, "PWD");
+      if (Cmd.nargs(paramMap, "PWD") > 0) {
+        str = Cmd.args(paramMap, "PWD");
         Main.cur().netServerParams.setPassword(str);
       } else {
         Main.cur().netServerParams.setPassword(null);
       }
     }
 
-    if (nargs(paramMap, "DESCRIPTION") > 0) {
-      str = args(paramMap, "DESCRIPTION");
+    if (Cmd.nargs(paramMap, "DESCRIPTION") > 0) {
+      str = Cmd.args(paramMap, "DESCRIPTION");
       Main.cur().netServerParams.serverDescription = str;
       Config.cur.netServerDescription = str;
       Main.cur().netServerParams.USGSupdate();
@@ -64,9 +64,9 @@ public class CmdServer extends Cmd
 
   public CmdServer()
   {
-    this.param.put("NAME", null);
-    this.param.put("DESCRIPTION", null);
-    this.param.put("PWD", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NAME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("DESCRIPTION", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PWD", null);
 
     this._properties.put("NAME", "server");
     this._levelAccess = 1;

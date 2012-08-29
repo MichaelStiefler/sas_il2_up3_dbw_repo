@@ -11,12 +11,12 @@ class CfgFlagsEngine extends CfgGObj
 
   public String name()
   {
-    return Name(this.cppObj);
+    return Name(this.jdField_cppObj_of_type_Int);
   }
 
   public boolean isPermanent()
   {
-    return IsPermanent(this.cppObj);
+    return IsPermanent(this.jdField_cppObj_of_type_Int);
   }
 
   public boolean isEnabled()
@@ -27,13 +27,13 @@ class CfgFlagsEngine extends CfgGObj
   public void load(IniFile paramIniFile, String paramString)
   {
     CfgTools.load(this, paramIniFile, paramString);
-    this.iniFile = paramIniFile;
-    this.iniSect = paramString;
+    this.jdField_iniFile_of_type_ComMaddoxRtsIniFile = paramIniFile;
+    this.jdField_iniSect_of_type_JavaLangString = paramString;
   }
 
   public void save()
   {
-    save(this.iniFile, this.iniSect);
+    save(this.jdField_iniFile_of_type_ComMaddoxRtsIniFile, this.jdField_iniSect_of_type_JavaLangString);
   }
 
   public void save(IniFile paramIniFile, String paramString)
@@ -45,16 +45,16 @@ class CfgFlagsEngine extends CfgGObj
   {
     if (!isEnabled())
       return 0;
-    int i = FirstFlag(this.cppObj);
-    int j = CountFlags(this.cppObj);
+    int i = FirstFlag(this.jdField_cppObj_of_type_Int);
+    int j = CountFlags(this.jdField_cppObj_of_type_Int);
     int k = 0;
     for (int m = 0; m < j; m++) {
-      if (IsEnabledFlag(this.cppObj, i)) {
-        boolean bool1 = Get(this.cppObj, i);
+      if (IsEnabledFlag(this.jdField_cppObj_of_type_Int, i)) {
+        boolean bool1 = Get(this.jdField_cppObj_of_type_Int, i);
         boolean bool2 = (this.flags & 1 << m) != 0;
         if (bool2 != bool1) {
-          k |= GetFlagStatus(this.cppObj, i);
-          Set(this.cppObj, i, bool2);
+          k |= GetFlagStatus(this.jdField_cppObj_of_type_Int, i);
+          Set(this.jdField_cppObj_of_type_Int, i, bool2);
         }
       }
       i++;
@@ -64,15 +64,15 @@ class CfgFlagsEngine extends CfgGObj
 
   public int applyStatus()
   {
-    int i = FirstFlag(this.cppObj);
-    int j = CountFlags(this.cppObj);
+    int i = FirstFlag(this.jdField_cppObj_of_type_Int);
+    int j = CountFlags(this.jdField_cppObj_of_type_Int);
     int k = 0;
     for (int m = 0; m < j; m++) {
-      if (IsEnabledFlag(this.cppObj, i)) {
-        boolean bool1 = Get(this.cppObj, i);
+      if (IsEnabledFlag(this.jdField_cppObj_of_type_Int, i)) {
+        boolean bool1 = Get(this.jdField_cppObj_of_type_Int, i);
         boolean bool2 = (this.flags & 1 << m) != 0;
         if (bool2 != bool1)
-          k |= GetFlagStatus(this.cppObj, i);
+          k |= GetFlagStatus(this.jdField_cppObj_of_type_Int, i);
       }
       i++;
     }
@@ -81,15 +81,15 @@ class CfgFlagsEngine extends CfgGObj
 
   public void reset()
   {
-    int i = FirstFlag(this.cppObj);
-    int j = CountFlags(this.cppObj);
+    int i = FirstFlag(this.jdField_cppObj_of_type_Int);
+    int j = CountFlags(this.jdField_cppObj_of_type_Int);
     this.flags = 0;
     for (int k = 0; k < j; k++) {
-      if (IsEnabledFlag(this.cppObj, i)) {
-        if (Get(this.cppObj, i))
+      if (IsEnabledFlag(this.jdField_cppObj_of_type_Int, i)) {
+        if (Get(this.jdField_cppObj_of_type_Int, i))
           this.flags |= 1 << k;
       }
-      else if (GetDefaultFlag(this.cppObj, i)) {
+      else if (GetDefaultFlag(this.jdField_cppObj_of_type_Int, i)) {
         this.flags |= 1 << k;
       }
       i++;
@@ -98,12 +98,12 @@ class CfgFlagsEngine extends CfgGObj
 
   public int firstFlag()
   {
-    return FirstFlag(this.cppObj);
+    return FirstFlag(this.jdField_cppObj_of_type_Int);
   }
 
   public int countFlags()
   {
-    return CountFlags(this.cppObj);
+    return CountFlags(this.jdField_cppObj_of_type_Int);
   }
 
   public boolean defaultFlag(int paramInt)
@@ -111,7 +111,7 @@ class CfgFlagsEngine extends CfgGObj
     int i = clamp(paramInt, firstFlag(), countFlags());
     if (i != paramInt)
       return false;
-    return GetDefaultFlag(this.cppObj, i);
+    return GetDefaultFlag(this.jdField_cppObj_of_type_Int, i);
   }
 
   public String nameFlag(int paramInt)
@@ -119,7 +119,7 @@ class CfgFlagsEngine extends CfgGObj
     int i = clamp(paramInt, firstFlag(), countFlags());
     if (i != paramInt)
       return "Unknown";
-    return NameFlag(this.cppObj, i);
+    return NameFlag(this.jdField_cppObj_of_type_Int, i);
   }
 
   public boolean isPermanentFlag(int paramInt)
@@ -127,7 +127,7 @@ class CfgFlagsEngine extends CfgGObj
     int i = clamp(paramInt, firstFlag(), countFlags());
     if (i != paramInt)
       return false;
-    return IsPermanentFlag(this.cppObj, i);
+    return IsPermanentFlag(this.jdField_cppObj_of_type_Int, i);
   }
 
   public boolean isEnabledFlag(int paramInt)
@@ -135,7 +135,7 @@ class CfgFlagsEngine extends CfgGObj
     int i = clamp(paramInt, firstFlag(), countFlags());
     if (i != paramInt)
       return false;
-    return IsEnabledFlag(this.cppObj, i);
+    return IsEnabledFlag(this.jdField_cppObj_of_type_Int, i);
   }
 
   public boolean get(int paramInt)
@@ -143,13 +143,13 @@ class CfgFlagsEngine extends CfgGObj
     int i = clamp(paramInt, firstFlag(), countFlags());
     if (i != paramInt)
       return false;
-    return Get(this.cppObj, i);
+    return Get(this.jdField_cppObj_of_type_Int, i);
   }
 
   public void set(int paramInt, boolean paramBoolean)
   {
     int i = clamp(paramInt, firstFlag(), countFlags());
-    if ((i == paramInt) && (IsEnabledFlag(this.cppObj, i)))
+    if ((i == paramInt) && (IsEnabledFlag(this.jdField_cppObj_of_type_Int, i)))
       if (paramBoolean) this.flags |= 1 << i - firstFlag(); else
         this.flags &= (1 << i - firstFlag() ^ 0xFFFFFFFF);
   }
@@ -157,25 +157,25 @@ class CfgFlagsEngine extends CfgGObj
   public int apply(int paramInt)
   {
     int i = clamp(paramInt, firstFlag(), countFlags());
-    if ((i != paramInt) || (!IsEnabledFlag(this.cppObj, i)))
+    if ((i != paramInt) || (!IsEnabledFlag(this.jdField_cppObj_of_type_Int, i)))
       return 0;
-    boolean bool1 = Get(this.cppObj, i);
+    boolean bool1 = Get(this.jdField_cppObj_of_type_Int, i);
     boolean bool2 = (this.flags & 1 << i - firstFlag()) != 0;
     if (bool2 == bool1) return 0;
-    int j = GetFlagStatus(this.cppObj, i);
-    Set(this.cppObj, i, bool2);
+    int j = GetFlagStatus(this.jdField_cppObj_of_type_Int, i);
+    Set(this.jdField_cppObj_of_type_Int, i, bool2);
     return j;
   }
 
   public int applyStatus(int paramInt)
   {
     int i = clamp(paramInt, firstFlag(), countFlags());
-    if ((i != paramInt) || (!IsEnabledFlag(this.cppObj, i)))
+    if ((i != paramInt) || (!IsEnabledFlag(this.jdField_cppObj_of_type_Int, i)))
       return 0;
-    boolean bool1 = Get(this.cppObj, i);
+    boolean bool1 = Get(this.jdField_cppObj_of_type_Int, i);
     boolean bool2 = (this.flags & 1 << i - firstFlag()) != 0;
     if (bool2 == bool1) return 0;
-    int j = GetFlagStatus(this.cppObj, i);
+    int j = GetFlagStatus(this.jdField_cppObj_of_type_Int, i);
     return j;
   }
 

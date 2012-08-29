@@ -34,9 +34,9 @@ public class CmdKick extends Cmd
     HashMap localHashMap = new HashMap();
 
     if (paramMap.containsKey("_$$")) {
-      int i = nargs(paramMap, "_$$");
+      int i = Cmd.nargs(paramMap, "_$$");
       for (int j = 0; j < i; j++) {
-        String str1 = arg(paramMap, "_$$", j);
+        String str1 = Cmd.arg(paramMap, "_$$", j);
         for (int k = 0; k < NetEnv.hosts().size(); k++) {
           NetUser localNetUser = (NetUser)NetEnv.hosts().get(k);
           String str2 = localNetUser.uniqueName();

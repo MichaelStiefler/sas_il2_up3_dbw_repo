@@ -39,16 +39,16 @@ public class SoundPreset extends Preset
     super(paramString);
     map.put(paramString, this);
     try {
-      if (!enabled) return;
+      if (!BaseObject.enabled) return;
       SectFile localSectFile = new SectFile("presets/sounds/" + paramString + ".prs");
-      this.handle = jniGet(paramString);
-      if (this.handle == 0) this.handle = jniCreate(paramString);
+      this.jdField_handle_of_type_Int = Preset.jniGet(paramString);
+      if (this.jdField_handle_of_type_Int == 0) this.jdField_handle_of_type_Int = jniCreate(paramString);
       onCreate();
       load(localSectFile, "");
     }
     catch (Exception localException) {
-      printf("Cannot load sound preset " + paramString + " (" + localException + ")");
-      this.handle = 0;
+      BaseObject.printf("Cannot load sound preset " + paramString + " (" + localException + ")");
+      this.jdField_handle_of_type_Int = 0;
     }
   }
 
@@ -83,7 +83,7 @@ public class SoundPreset extends Preset
     this.obstrLF = paramSectFile.get(str2, "obstrLF", 0.0F);
     this.eaxRoom = paramSectFile.get(str2, "eaxRoom", 0.0F);
 
-    jniSetMutable(this.handle, paramSectFile.get(str2, "mutable", false));
+    jniSetMutable(this.jdField_handle_of_type_Int, paramSectFile.get(str2, "mutable", false));
 
     int i = paramSectFile.sectionIndex("spl");
     if (i >= 0) {
@@ -113,7 +113,7 @@ public class SoundPreset extends Preset
         if (i4 == 0) i4 = -1;
         if ((k & i4) != 0) throw new Exception("Invalid spl flags");
         k |= i4;
-        jniSetSPL(this.handle, f1, f2, i4);
+        jniSetSPL(this.jdField_handle_of_type_Int, f1, f2, i4);
       }
     }
 
@@ -159,15 +159,15 @@ public class SoundPreset extends Preset
     if (paramSectFile.get(str2, "pmax", false)) this.fxFlags |= 65536;
     if (paramSectFile.get(str2, "music", false)) this.fxCaps |= 4096;
     int j = paramSectFile.get(str2, "forcectrl", -1);
-    if (this.handle != 0) {
-      jniSetProperties(this.handle, this.type, this.fxFlags, AudioDevice.vObj.handle);
-      jniSetEAX(this.handle, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
+    if (this.jdField_handle_of_type_Int != 0) {
+      jniSetProperties(this.jdField_handle_of_type_Int, this.type, this.fxFlags, AudioDevice.vObj.jdField_handle_of_type_Int);
+      jniSetEAX(this.jdField_handle_of_type_Int, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
       localObject1 = null;
       if ((this.fxCaps & 0x1000) != 0) localObject1 = AudioDevice.vMusic;
       else if (paramSectFile.get(str2, "voice", false)) localObject1 = AudioDevice.vVoice;
       else if ((this.fxFlags & 0x4000) == 0) localObject1 = AudioDevice.vObj;
-      if (localObject1 != null) jniSetVGroup(this.handle, ((VGroup)localObject1).handle);
-      jniForceControl(this.handle, j);
+      if (localObject1 != null) jniSetVGroup(this.jdField_handle_of_type_Int, ((VGroup)localObject1).jdField_handle_of_type_Int);
+      jniForceControl(this.jdField_handle_of_type_Int, j);
     }
 
     Object localObject1 = paramSectFile.get(str2, "controls", (String)null);
@@ -177,13 +177,14 @@ public class SoundPreset extends Preset
       StringTokenizer localStringTokenizer1 = new StringTokenizer((String)localObject1);
       while (localStringTokenizer1.hasMoreTokens()) {
         String str3 = localStringTokenizer1.nextToken();
-        localObject2 = ControlInfo.get(str3, jniGetControlList(this.handle));
-        if (localObject2 != null)
-        {
-          ((SoundControl)localObject2).load(paramSectFile, paramString + "." + str3);
-          this.controls.add(localObject2);
+        localObject2 = ControlInfo.get(str3, jniGetControlList(this.jdField_handle_of_type_Int));
+        if (localObject2 == null) {
+          continue;
         }
+        ((SoundControl)localObject2).load(paramSectFile, paramString + "." + str3);
+        this.controls.add(localObject2);
       }
+
     }
 
     int n = paramSectFile.sectionIndex(paramString + "samples");
@@ -196,7 +197,7 @@ public class SoundPreset extends Preset
         localObject3 = new Sample((String)localObject2);
         ((Sample)localObject3).load(paramSectFile, "sample." + (String)localObject2);
         this.sources.add(localObject3);
-        jniAddSample(this.handle, ((Sample)localObject3).handle);
+        jniAddSample(this.jdField_handle_of_type_Int, ((Sample)localObject3).jdField_handle_of_type_Int);
       }
     }
 
@@ -205,7 +206,7 @@ public class SoundPreset extends Preset
       if (this.emitters == null) this.emitters = new ArrayList(32);
       for (i2 = 0; i2 < paramSectFile.vars(n); i2++) {
         localObject2 = paramSectFile.line(n, i2);
-        localObject3 = new Emitter((String)localObject2, this.handle);
+        localObject3 = new Emitter((String)localObject2, this.jdField_handle_of_type_Int);
         ((Emitter)localObject3).load(paramSectFile, "emit." + (String)localObject2);
         this.emitters.add(localObject3);
       }
@@ -233,7 +234,7 @@ public class SoundPreset extends Preset
     else {
       System.out.println("params: mix = " + this.eaxMix + ", occlusion = " + this.occlusion + ", lf = " + this.occlLF + ", room = " + this.eaxRoom);
     }
-    if (this.handle != 0) jniSetEAX(this.handle, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
+    if (this.jdField_handle_of_type_Int != 0) jniSetEAX(this.jdField_handle_of_type_Int, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
   }
 
   protected void onCreate()
@@ -242,10 +243,10 @@ public class SoundPreset extends Preset
 
   protected int createObject()
   {
-    if (this.handle == 0) return 0;
-    int i = jniGetFreeObject(this.handle, this.fxCaps);
+    if (this.jdField_handle_of_type_Int == 0) return 0;
+    int i = Preset.jniGetFreeObject(this.jdField_handle_of_type_Int, this.fxCaps);
     if (i == 0) {
-      i = jniCreateObject(this.handle, this.fxCaps);
+      i = Preset.jniCreateObject(this.jdField_handle_of_type_Int, this.fxCaps);
     }
     return i;
   }

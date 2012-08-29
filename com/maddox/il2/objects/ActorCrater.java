@@ -40,12 +40,12 @@ public class ActorCrater extends ActorMesh
   public ActorCrater(String paramString, Loc paramLoc, float paramFloat) {
     super(paramString, paramLoc);
 
-    this.pos.getAbs(p, o);
-    p.z = Engine.land().HQ(p.x, p.y);
-    Engine.land().N(p.x, p.y, normal);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p, o);
+    p.z = Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, normal);
     o.orient(normal);
-    this.pos.setAbs(p, o);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     drawing(true);
     collide(true);

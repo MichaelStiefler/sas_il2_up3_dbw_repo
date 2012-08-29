@@ -43,14 +43,11 @@ public class MXY_7 extends Scheme2a
   private Eff3DActor[] dust = { null, null, null };
   private Eff3DActor[] trail = { null, null, null };
   private Eff3DActor[] sprite = { null, null, null };
-
   private boolean bNeedSetup = true;
   private long dtime = -1L;
   private Actor queen_last = null;
   private long queen_time = 0L;
-
   private Actor target_ = null;
-
   private Actor queen_ = null;
   private int dockport_;
 
@@ -61,7 +58,7 @@ public class MXY_7 extends Scheme2a
     {
       paramArrayOfBoolean[0] = false;
     }
-    else paramArrayOfBoolean[0] = true;
+    else paramArrayOfBoolean[0] = true; 
   }
 
   public void onAircraftLoaded()
@@ -70,9 +67,13 @@ public class MXY_7 extends Scheme2a
     if (Config.isUSE_RENDER())
       for (int i = 0; i < 3; i++) {
         this.flame[i] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboJRD1100F.eff", -1.0F);
+
         this.dust[i] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboJRD1100D.eff", -1.0F);
+
         this.trail[i] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboJRD1100T.eff", -1.0F);
+
         this.sprite[i] = Eff3DActor.New(this, findHook("_Engine" + (i + 1) + "EF_01"), null, 1.0F, "3DO/Effects/Aircraft/TurboJRD1100S.eff", -1.0F);
+
         Eff3DActor.setIntesity(this.flame[i], 0.0F);
         Eff3DActor.setIntesity(this.dust[i], 0.0F);
         Eff3DActor.setIntesity(this.trail[i], 0.0F);
@@ -82,22 +83,21 @@ public class MXY_7 extends Scheme2a
 
   public void doMurderPilot(int paramInt)
   {
-    if (paramInt != 0) return;
-    hierMesh().chunkVisible("Pilot1_D0", false);
-    hierMesh().chunkVisible("Head1_D0", false);
-    hierMesh().chunkVisible("Pilot1_D1", true);
-    hierMesh().chunkVisible("HMask1_D0", false);
+    if (paramInt == 0) {
+      hierMesh().chunkVisible("Pilot1_D0", false);
+      hierMesh().chunkVisible("Head1_D0", false);
+      hierMesh().chunkVisible("Pilot1_D1", true);
+      hierMesh().chunkVisible("HMask1_D0", false);
+    }
   }
 
-  protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
-  {
+  protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d) {
     if (paramString.startsWith("xcf")) {
       hitChunk("CF", paramShot);
     } else if (paramString.startsWith("xtail")) {
       if (chunkDamageVisible("Tail1") < 1)
         hitChunk("Tail1", paramShot);
-    }
-    else if (paramString.startsWith("xkeel1")) {
+    } else if (paramString.startsWith("xkeel1")) {
       hitChunk("Keel1", paramShot);
     } else if (paramString.startsWith("xkeel2")) {
       hitChunk("Keel2", paramShot);
@@ -110,13 +110,11 @@ public class MXY_7 extends Scheme2a
     } else if (paramString.startsWith("xvator")) {
       hitChunk("VatorL", paramShot);
     } else if (paramString.startsWith("xwing")) {
-      if (paramString.startsWith("xwinglin")) {
+      if (paramString.startsWith("xwinglin"))
         hitChunk("WingLIn", paramShot);
-      }
       if (paramString.startsWith("xwingrin"))
         hitChunk("WingRIn", paramShot);
-    }
-    else if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead"))) {
+    } else if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead"))) {
       int i = 0;
       int j;
       if (paramString.endsWith("a")) {
@@ -127,13 +125,11 @@ public class MXY_7 extends Scheme2a
         j = paramString.charAt(6) - '1';
       } else {
         j = paramString.charAt(5) - '1';
-      }
-      hitFlesh(j, paramShot, i);
+      }hitFlesh(j, paramShot, i);
     }
   }
 
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
+  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor) {
     switch (paramInt1) {
     case 3:
     case 19:
@@ -148,17 +144,16 @@ public class MXY_7 extends Scheme2a
     hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -30.0F * paramFloat, 0.0F);
   }
 
-  public void msgEndAction(Object paramObject, int paramInt)
-  {
+  public void msgEndAction(Object paramObject, int paramInt) {
     super.msgEndAction(paramObject, paramInt);
     switch (paramInt) {
     case 2:
-      Actor localActor = null;
+      Object localObject = null;
+      Actor localActor;
       if (Actor.isValid(this.queen_last))
         localActor = this.queen_last;
-      else {
+      else
         localActor = Engine.cur.actorLand;
-      }
       MsgExplosion.send(this, null, this.FM.Loc, localActor, 0.0F, 600.0F, 0, 600.0F);
     }
   }
@@ -166,32 +161,33 @@ public class MXY_7 extends Scheme2a
   protected void doExplosion()
   {
     super.doExplosion();
-    World.cur(); if (this.FM.Loc.z - 10.0D < World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y))
+    double d = this.FM.Loc.z - 10.0D;
+    World.cur();
+    if (d < World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y))
       if (Engine.land().isWater(this.FM.Loc.x, this.FM.Loc.y))
         Explosions.BOMB250_Water(this.FM.Loc, 1.0F, 1.0F);
       else
-        Explosions.BOMB250_Land(this.FM.Loc, 1.0F, 1.0F, true);
+        Explosions.BOMB250_Land(this.FM.Loc, 1.0F, 1.0F);
   }
 
   public void update(float paramFloat)
   {
-    if (this.bNeedSetup) {
+    if (this.bNeedSetup)
       checkAsDrone();
-    }
-
     if ((this.FM instanceof Maneuver)) {
       if (typeDockableIsDocked()) {
-        if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
+        if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode()))
+        {
           ((Maneuver)this.FM).unblock();
           ((Maneuver)this.FM).set_maneuver(48);
           ((Maneuver)this.FM).AP.way.setCur(((Aircraft)this.queen_).FM.AP.way.Cur());
+
           ((Pilot)this.FM).setDumbTime(3000L);
         }
-      }
-      else if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
-        if (this.FM.EI.engines[0].getStage() == 0) {
+      } else if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode()))
+      {
+        if (this.FM.EI.engines[0].getStage() == 0)
           this.FM.EI.setEngineRunning();
-        }
         if (this.dtime > 0L) {
           ((Maneuver)this.FM).setBusy(false);
           ((Maneuver)this.FM).Group.leaderGroup = null;
@@ -205,38 +201,36 @@ public class MXY_7 extends Scheme2a
           }
         }
       }
-
     }
-
     super.update(paramFloat);
     if (this.FM.AS.isMaster()) {
       for (int i = 0; i < 3; i++) {
         if ((this.FM.CT.PowerControl > 0.77F) && (this.FM.EI.engines[i].getStage() == 0) && (this.FM.M.fuel > 0.0F) && (!typeDockableIsDocked()))
         {
           this.FM.EI.engines[i].setStage(this, 6);
-        }
-        if (((this.FM.CT.PowerControl >= 0.77F) || (this.FM.EI.engines[i].getStage() <= 0)) && (this.FM.M.fuel != 0.0F))
+        }if (((this.FM.CT.PowerControl >= 0.77F) || (this.FM.EI.engines[i].getStage() <= 0)) && (this.FM.M.fuel != 0.0F)) {
           continue;
+        }
         this.FM.EI.engines[i].setEngineStops(this);
       }
-
       if (Config.isUSE_RENDER())
         for (i = 0; i < 3; i++)
           if ((this.FM.EI.engines[i].getw() > 50.0F) && (this.FM.EI.engines[i].getStage() == 6))
+          {
             this.FM.AS.setSootState(this, i, 1);
-          else
-            this.FM.AS.setSootState(this, i, 0);
+          }
+          else this.FM.AS.setSootState(this, i, 0);
     }
   }
 
   public void rareAction(float paramFloat, boolean paramBoolean)
   {
     super.rareAction(paramFloat, paramBoolean);
-    if ((paramBoolean) && 
-      (this.FM.AP.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).FM.Or.getKren()) < 3.0F))
+    if ((paramBoolean) && (this.FM.AP.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).FM.Or.getKren()) < 3.0F))
     {
       if (this.FM.isPlayers()) {
-        if (((this.FM instanceof RealFlightModel)) && (!((RealFlightModel)this.FM).isRealMode())) {
+        if (((this.FM instanceof RealFlightModel)) && (!((RealFlightModel)this.FM).isRealMode()))
+        {
           typeDockableAttemptDetach();
           ((Maneuver)this.FM).set_maneuver(22);
           ((Maneuver)this.FM).setCheckStrike(false);
@@ -253,22 +247,22 @@ public class MXY_7 extends Scheme2a
     }
   }
 
-  public void missionStarting()
-  {
+  public void missionStarting() {
     checkAsDrone();
   }
 
-  private void checkAsDrone()
-  {
+  private void checkAsDrone() {
     if (this.target_ == null) {
-      if (this.FM.AP.way.curr().getTarget() == null) this.FM.AP.way.next();
+      if (this.FM.AP.way.curr().getTarget() == null)
+        this.FM.AP.way.next();
       this.target_ = this.FM.AP.way.curr().getTarget();
       if ((Actor.isValid(this.target_)) && ((this.target_ instanceof Wing))) {
         Wing localWing = (Wing)this.target_;
         int i = aircIndex();
         if (Actor.isValid(localWing.airc[i]))
           this.target_ = localWing.airc[i];
-        else this.target_ = null;
+        else
+          this.target_ = null;
       }
     }
     if ((Actor.isValid(this.target_)) && ((this.target_ instanceof G4M2E))) {
@@ -278,67 +272,59 @@ public class MXY_7 extends Scheme2a
         ((TypeDockable)this.target_).typeDockableRequestAttach(this, 0, true);
       }
     }
-
     this.bNeedSetup = false;
     this.target_ = null;
   }
 
-  public int typeDockableGetDockport()
-  {
-    if (typeDockableIsDocked()) {
+  public int typeDockableGetDockport() {
+    if (typeDockableIsDocked())
       return this.dockport_;
-    }
     return -1;
   }
+
   public Actor typeDockableGetQueen() {
     return this.queen_;
   }
 
-  public boolean typeDockableIsDocked()
-  {
+  public boolean typeDockableIsDocked() {
     return Actor.isValid(this.queen_);
   }
 
-  public void typeDockableAttemptAttach()
-  {
-    if (!this.FM.AS.isMaster()) {
-      return;
-    }
-
-    if (!typeDockableIsDocked())
-    {
+  public void typeDockableAttemptAttach() {
+    if ((this.FM.AS.isMaster()) && 
+      (!typeDockableIsDocked())) {
       Aircraft localAircraft = War.getNearestFriend(this);
       if ((localAircraft instanceof G4M2E))
-      {
         ((TypeDockable)localAircraft).typeDockableRequestAttach(this);
-      }
     }
   }
 
-  public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+  public void typeDockableAttemptDetach()
+  {
+    if ((this.FM.AS.isMaster()) && (typeDockableIsDocked()) && (Actor.isValid(this.queen_)))
     {
-      if (typeDockableIsDocked())
-      {
-        if (Actor.isValid(this.queen_))
-          ((TypeDockable)this.queen_).typeDockableRequestDetach(this); 
-      }
+      ((TypeDockable)this.queen_).typeDockableRequestDetach(this);
     }
   }
 
-  public void typeDockableRequestAttach(Actor paramActor) {
+  public void typeDockableRequestAttach(Actor paramActor)
+  {
   }
 
-  public void typeDockableRequestDetach(Actor paramActor) {
+  public void typeDockableRequestDetach(Actor paramActor)
+  {
   }
 
-  public void typeDockableRequestAttach(Actor paramActor, int paramInt, boolean paramBoolean) {
+  public void typeDockableRequestAttach(Actor paramActor, int paramInt, boolean paramBoolean)
+  {
   }
 
-  public void typeDockableRequestDetach(Actor paramActor, int paramInt, boolean paramBoolean) {
+  public void typeDockableRequestDetach(Actor paramActor, int paramInt, boolean paramBoolean)
+  {
   }
 
-  public void typeDockableDoAttachToDrone(Actor paramActor, int paramInt) {
+  public void typeDockableDoAttachToDrone(Actor paramActor, int paramInt)
+  {
   }
 
   public void typeDockableDoDetachFromDrone(int paramInt) {
@@ -351,38 +337,28 @@ public class MXY_7 extends Scheme2a
     this.queen_time = 0L;
   }
 
-  public void typeDockableDoDetachFromQueen(int paramInt)
-  {
-    if (this.dockport_ != paramInt) {
-      return;
+  public void typeDockableDoDetachFromQueen(int paramInt) {
+    if (this.dockport_ == paramInt) {
+      this.queen_last = this.queen_;
+      this.queen_time = Time.current();
+      this.queen_ = null;
+      this.dockport_ = 0;
     }
-    this.queen_last = this.queen_;
-    this.queen_time = Time.current();
-    this.queen_ = null;
-    this.dockport_ = 0;
   }
 
   public void typeDockableReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException
   {
-    if (typeDockableIsDocked())
-    {
+    if (typeDockableIsDocked()) {
       paramNetMsgGuaranted.writeByte(1);
       ActorNet localActorNet = null;
-      if (Actor.isValid(this.queen_))
-      {
+      if (Actor.isValid(this.queen_)) {
         localActorNet = this.queen_.net;
-
         if (localActorNet.countNoMirrors() > 0)
-        {
           localActorNet = null;
-        }
       }
       paramNetMsgGuaranted.writeByte(this.dockport_);
-
       paramNetMsgGuaranted.writeNetObj(localActorNet);
-    }
-    else
-    {
+    } else {
       paramNetMsgGuaranted.writeByte(0);
     }
   }
@@ -418,23 +394,21 @@ public class MXY_7 extends Scheme2a
   static
   {
     Class localClass = MXY_7.class;
-    new NetAircraft.SPAWN(localClass);
 
+    new NetAircraft.SPAWN(localClass);
     Property.set(localClass, "iconFar_shortClassName", "MXY");
     Property.set(localClass, "meshName", "3DO/Plane/MXY-7-11(Multi1)/hier.him");
+
     Property.set(localClass, "PaintScheme", new PaintSchemeSpecial());
     Property.set(localClass, "originCountry", PaintScheme.countryJapan);
-
     Property.set(localClass, "yearService", 1945.0F);
     Property.set(localClass, "yearExpired", 1945.0F);
-
     Property.set(localClass, "FlightModel", "FlightModels/MXY-7-11.fmd");
+    Property.set(localClass, "cockpitClass", CockpitMXY_7.class);
 
-    weaponTriggersRegister(localClass, new int[] { 0 });
-    weaponHooksRegister(localClass, new String[] { "_Clip00" });
-
-    weaponsRegister(localClass, "default", new String[] { null });
-
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_Clip00" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

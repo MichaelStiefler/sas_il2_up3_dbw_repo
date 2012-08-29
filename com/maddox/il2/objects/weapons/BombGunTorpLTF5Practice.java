@@ -4,20 +4,22 @@ import com.maddox.rts.Property;
 
 public class BombGunTorpLTF5Practice extends TorpedoGun
 {
-  public void setBombDelay(float paramFloat)
+  static
+  {
+    Class var_class = BombGunTorpLTF5Practice.class;
+
+    Property.set(var_class, "bulletClass", BombTorpLTF5Practice.class);
+
+    Property.set(var_class, "bullets", 1);
+    Property.set(var_class, "shotFreq", 0.1F);
+    Property.set(var_class, "external", 1);
+    Property.set(var_class, "sound", "weapon.bombgun_torpedo");
+  }
+
+  public void setBombDelay(float f)
   {
     this.bombDelay = 0.0F;
     if (this.bomb != null)
       this.bomb.delayExplosion = this.bombDelay;
-  }
-
-  static
-  {
-    Class localClass = BombGunTorpLTF5Practice.class;
-    Property.set(localClass, "bulletClass", BombTorpLTF5Practice.class);
-    Property.set(localClass, "bullets", 1);
-    Property.set(localClass, "shotFreq", 0.1F);
-    Property.set(localClass, "external", 1);
-    Property.set(localClass, "sound", "weapon.bombgun_torpedo");
   }
 }

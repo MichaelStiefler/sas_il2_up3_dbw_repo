@@ -25,8 +25,8 @@ public class GUISwitchN extends GWindowDialogControl
   {
     if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
 
-    paramFloat1 -= this.win.dx / 2.0F;
-    paramFloat2 -= this.win.dy / 2.0F;
+    paramFloat1 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F;
+    paramFloat2 -= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F;
     float f1 = (float)(Math.atan2(paramFloat2, paramFloat1) * 180.0D / 3.141592653589793D);
     if (f1 < 0.0F) f1 += 360.0F;
     float f2 = this.angleStep / 2.0F;
@@ -64,18 +64,18 @@ public class GUISwitchN extends GWindowDialogControl
   }
 
   public GSize getMinSize(GSize paramGSize) {
-    paramGSize.dx = this.win.dx;
-    paramGSize.dy = this.win.dy;
+    paramGSize.dx = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    paramGSize.dy = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     return paramGSize;
   }
 
   public void setPosC(float paramFloat1, float paramFloat2) {
-    super.setPos(paramFloat1 - this.win.dx / 2.0F, paramFloat2 - this.win.dy / 2.0F);
+    super.setPos(paramFloat1 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F, paramFloat2 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F);
   }
 
   public void resolutionChanged() {
-    this.win.dx = x1024(this.texDx);
-    this.win.dy = y1024(this.texDy);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = x1024(this.texDx);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = y1024(this.texDy);
     if (this.cfg != null)
       refresh();
   }

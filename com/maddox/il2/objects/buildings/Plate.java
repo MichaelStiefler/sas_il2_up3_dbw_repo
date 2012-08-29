@@ -70,17 +70,17 @@ public final class Plate extends ActorMesh
   {
     mesh().setFastShadowVisibility(2);
 
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + 0.25D);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.z = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + 0.25D);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
     o.orient(n);
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     if (paramFloat <= 0.0F) return 0.0F;
     return paramFloat;
   }

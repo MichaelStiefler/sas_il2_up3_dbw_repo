@@ -24,11 +24,11 @@ public class NetUserRegiment extends Regiment
   public boolean isUserDefined() { return true; }
 
   private void setBranch(String paramString) {
-    this.branch = paramString.toLowerCase().intern();
-    if (branchMap.containsKey(this.branch))
-      this.country = ((String)branchMap.get(this.branch));
+    this.jdField_branch_of_type_JavaLangString = paramString.toLowerCase().intern();
+    if (Regiment.branchMap.containsKey(this.jdField_branch_of_type_JavaLangString))
+      this.jdField_country_of_type_JavaLangString = ((String)Regiment.branchMap.get(this.jdField_branch_of_type_JavaLangString));
     else
-      this.country = this.branch;
+      this.jdField_country_of_type_JavaLangString = this.jdField_branch_of_type_JavaLangString;
   }
 
   public String fileNameTga()
@@ -42,20 +42,20 @@ public class NetUserRegiment extends Regiment
     return "".equals(this.fileNameTga);
   }
   public void setId(char[] paramArrayOfChar) {
-    this.id = paramArrayOfChar;
-    this.sid = new String(this.id);
+    this.jdField_id_of_type_ArrayOfChar = paramArrayOfChar;
+    this.sid = new String(this.jdField_id_of_type_ArrayOfChar);
   }
 
   public void setGruppeNumber(int paramInt) {
-    this.gruppeNumber = paramInt;
+    this.jdField_gruppeNumber_of_type_Int = paramInt;
   }
 
   public boolean equals(String paramString1, String paramString2, char[] paramArrayOfChar, int paramInt)
   {
-    if (!paramString1.equals(this.branch)) return false;
+    if (!paramString1.equals(this.jdField_branch_of_type_JavaLangString)) return false;
     if (!paramString2.equals(this.ownerFileNameBmp)) return false;
-    if ((paramArrayOfChar[0] != this.id[0]) || (paramArrayOfChar[1] != this.id[1])) return false;
-    return paramInt == this.gruppeNumber;
+    if ((paramArrayOfChar[0] != this.jdField_id_of_type_ArrayOfChar[0]) || (paramArrayOfChar[1] != this.jdField_id_of_type_ArrayOfChar[1])) return false;
+    return paramInt == this.jdField_gruppeNumber_of_type_Int;
   }
 
   public void setLocalFileNameBmp(String paramString)

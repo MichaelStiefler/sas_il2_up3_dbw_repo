@@ -39,13 +39,13 @@ public class YAK_9B extends YAK
 
   public void update(float paramFloat)
   {
-    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
+    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.EI.engines[0].getControlRadiator(), 0.0F);
     super.update(paramFloat);
 
     int i = 0;
-    if (this.FM.CT.Weapons[3] != null) {
-      for (int j = 0; j < this.FM.CT.Weapons[3].length; j++) {
-        if ((this.FM.CT.Weapons[3][j] != null) && (this.FM.CT.Weapons[3][j].haveBullets())) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) {
+      for (int j = 0; j < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length; j++) {
+        if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][j] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][j].haveBullets())) {
           i++;
         }
       }
@@ -54,23 +54,23 @@ public class YAK_9B extends YAK
     switch (i) {
     case 0:
     default:
-      this.FM.setGCenter(0.1F);
-      this.FM.setGC_Gear_Shift(0.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGCenter(0.1F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGC_Gear_Shift(0.0F);
       break;
     case 1:
-      this.FM.setGCenter(0.1F - f);
-      this.FM.setGC_Gear_Shift(0.0F + f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGCenter(0.1F - f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGC_Gear_Shift(0.0F + f);
     case 2:
-      this.FM.setGCenter(0.1F - 2.0F * f);
-      this.FM.setGC_Gear_Shift(0.0F + 2.0F * f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGCenter(0.1F - 2.0F * f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGC_Gear_Shift(0.0F + 2.0F * f);
       break;
     case 3:
-      this.FM.setGCenter(0.1F - 3.0F * f);
-      this.FM.setGC_Gear_Shift(0.0F + 3.0F * f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGCenter(0.1F - 3.0F * f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGC_Gear_Shift(0.0F + 3.0F * f);
       break;
     case 4:
-      this.FM.setGCenter(0.1F - 4.0F * f);
-      this.FM.setGC_Gear_Shift(0.0F + 4.0F * f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGCenter(0.1F - 4.0F * f);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setGC_Gear_Shift(0.0F + 4.0F * f);
     }
   }
 
@@ -90,21 +90,21 @@ public class YAK_9B extends YAK
     Property.set(localClass, "cockpitClass", CockpitYAK_9D.class);
     Property.set(localClass, "LOSElevation", 0.6432F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "3fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunNull 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "3fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunNull 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2ptab", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB" });
+    Aircraft.weaponsRegister(localClass, "2ptab", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB" });
 
-    weaponsRegister(localClass, "4ptab", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB" });
+    Aircraft.weaponsRegister(localClass, "4ptab", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

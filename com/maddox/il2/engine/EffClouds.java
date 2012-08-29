@@ -7,119 +7,200 @@ import com.maddox.sound.SoundFX;
 public class EffClouds extends GObj
   implements Destroy
 {
-  private boolean bShow = true;
+  private boolean bShow;
   private int type;
   private float height;
-  protected SoundFX sound = null;
-  protected float vmax = 1.0F;
-
+  protected SoundFX sound;
+  protected float vmax;
   private static float[] farr3 = new float[3];
+
+  static
+  {
+    GObj.loadNative();
+  }
 
   public boolean isShow()
   {
-    return this.bShow; } 
-  public void setShow(boolean paramBoolean) { this.bShow = paramBoolean; } 
-  public int type() {
-    return this.type; } 
-  public float height() { return this.height;
+    return this.bShow;
   }
 
-  public void soundUpdate(double paramDouble)
+  public void setShow(boolean flag)
   {
-    if (this.sound != null) {
-      float f1 = (float)paramDouble; float f2 = 1.0F; float f3 = 200.0F;
-      if (f1 > this.height) {
-        f1 -= this.height;
-        if (f1 < f3) f2 = 1.0F - f1 / f3; else
-          f2 = 0.0F;
+    this.bShow = flag;
+  }
+
+  public int type()
+  {
+    return this.type;
+  }
+
+  public float height()
+  {
+    return this.height;
+  }
+
+  public void soundUpdate(double d)
+  {
+    if (this.sound != null)
+    {
+      float f = (float)d;
+      float f1 = 1.0F;
+      float f2 = 1100.0F;
+      if (f > this.height)
+      {
+        f -= this.height;
+        if (f < f2)
+        {
+          f1 = 1.0F - f / f2;
+        }
+        else {
+          f1 = 0.0F;
+        }
       }
-      this.sound.setVolume(f2 * this.vmax);
+      this.sound.setVolume(f1 * this.vmax);
     }
   }
 
-  protected void setRainSound(int paramInt)
+  protected void setRainSound(int i)
   {
-    int i = Engine.land().config.month;
-    int j = (i <= 10) && (i >= 4) && (paramInt >= 5) ? 1 : 0;
-    if (j != 0) {
-      if (this.sound == null) this.sound = new SoundFX("objects.rain");
-      if (this.sound != null) {
-        this.sound.setUsrFlag(paramInt - 5);
+    int j = Engine.land().config.month;
+    boolean flag = ((j <= 10) && (j >= 4) && (i >= 5) && (i <= 6)) || (i > 7);
+    if (flag)
+    {
+      if (this.sound == null)
+      {
+        this.sound = new SoundFX("objects.rain");
+      }
+      if (this.sound != null)
+      {
+        this.sound.setUsrFlag(i - 5);
         this.sound.play();
       }
     }
-    else if (this.sound != null) {
+    else if (this.sound != null)
+    {
       this.sound.clear();
       this.sound.cancel();
       this.sound = null;
     }
   }
 
-  public void setType(int paramInt)
+  public void setType(int i)
   {
-    if (this.cppObj == 0) {
+    if (this.cppObj == 0)
+    {
       setRainSound(0);
       return;
     }
-    this.type = paramInt;
-    SetType(this.cppObj, paramInt);
-    setRainSound(paramInt);
+    this.type = i;
+    if (i == 8)
+    {
+      i = 4;
+    }
+    SetType(this.cppObj, i);
+    setRainSound(i);
   }
 
-  public void setHeight(float paramFloat) {
-    if (this.cppObj == 0) return;
-    this.height = paramFloat;
-    SetHeight(this.cppObj, paramFloat);
+  public void setHeight(float f)
+  {
+    if (this.cppObj == 0)
+    {
+      return;
+    }
+
+    this.height = f;
+    SetHeight(this.cppObj, f);
   }
 
-  public boolean getRandomCloudPos(Point3d paramPoint3d) {
-    if (this.cppObj == 0) return false;
-    boolean bool = GetRandomCloudPos(this.cppObj, farr3);
-    if (!bool) return false;
-    paramPoint3d.x = farr3[0]; paramPoint3d.y = farr3[1]; paramPoint3d.z = farr3[2];
+  public boolean getRandomCloudPos(Point3d point3d)
+  {
+    if (this.cppObj == 0)
+    {
+      return false;
+    }
+    boolean flag = GetRandomCloudPos(this.cppObj, farr3);
+    if (!flag)
+    {
+      return false;
+    }
+
+    point3d.x = farr3[0];
+    point3d.y = farr3[1];
+    point3d.z = farr3[2];
     return true;
   }
 
-  public float getVisibility(Point3d paramPoint3d1, Point3d paramPoint3d2)
+  public float getVisibility(Point3d point3d, Point3d point3d1)
   {
-    return GetVisibility(this.cppObj, (float)paramPoint3d1.x, (float)paramPoint3d1.y, (float)paramPoint3d1.z, (float)paramPoint3d2.x, (float)paramPoint3d2.y, (float)paramPoint3d2.z);
+    return GetVisibility(this.cppObj, (float)point3d.x, (float)point3d.y, (float)point3d.z, (float)point3d1.x, (float)point3d1.y, (float)point3d1.z);
   }
 
   public int preRender()
   {
-    if ((!this.bShow) || (this.cppObj == 0)) return 0;
+    if ((!this.bShow) || (this.cppObj == 0))
+    {
+      return 0;
+    }
+
     return PreRender(this.cppObj);
   }
 
-  public void render() {
-    if ((!this.bShow) || (this.cppObj == 0)) return;
+  public void render()
+  {
+    if ((!this.bShow) || (this.cppObj == 0))
+    {
+      return;
+    }
+
     Render(this.cppObj);
   }
 
-  public void destroy() {
+  public void destroy()
+  {
     setRainSound(0);
-    if (!isDestroyed()) {
+    if (!isDestroyed())
+    {
       Destroy(this.cppObj);
       this.cppObj = 0;
     }
   }
 
-  public boolean isDestroyed() {
+  public boolean isDestroyed()
+  {
     return this.cppObj == 0;
   }
-  public EffClouds(boolean paramBoolean, int paramInt, float paramFloat) {
+
+  public EffClouds(boolean flag, int i, float f)
+  {
     super(0);
-    this.height = paramFloat;
-    this.type = paramInt;
-    int i = paramInt;
-    if (paramBoolean) i |= 16;
-    this.cppObj = Load(i, paramFloat);
-    if (this.cppObj == 0) throw new GObjException("EffClouds not created");
-    setRainSound(paramInt);
+
+    this.bShow = true;
+    this.sound = null;
+    this.vmax = 1.0F;
+    this.height = f;
+    this.type = i;
+    int j = i;
+    if (flag)
+    {
+      j |= 16;
+    }
+    this.cppObj = Load(j, f);
+    if (this.cppObj == 0)
+    {
+      throw new GObjException("EffClouds not created");
+    }
+
+    setRainSound(i);
   }
 
-  public EffClouds(int paramInt) {
-    super(paramInt); } 
+  public EffClouds(int i)
+  {
+    super(i);
+    this.bShow = true;
+    this.sound = null;
+    this.vmax = 1.0F;
+  }
+
   private native int Load(int paramInt, float paramFloat);
 
   private native void Destroy(int paramInt);
@@ -135,7 +216,4 @@ public class EffClouds extends GObj
   private native int PreRender(int paramInt);
 
   private native void Render(int paramInt);
-
-  static { GObj.loadNative();
-  }
 }

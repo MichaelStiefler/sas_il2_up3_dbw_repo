@@ -17,7 +17,7 @@ public class GWindowTabDialogClient extends GWindowDialogClient
   }
   public void addTab(String paramString, GWindow paramGWindow) {
     Tab localTab = (Tab)create(new Tab());
-    localTab.cap = new GCaption(paramString);
+    localTab.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(paramString);
     localTab.client = paramGWindow;
     paramGWindow.parentWindow = this;
     paramGWindow.hideWindow();
@@ -26,7 +26,7 @@ public class GWindowTabDialogClient extends GWindowDialogClient
   }
   public void addTab(int paramInt, String paramString, GWindow paramGWindow) {
     Tab localTab = (Tab)create(new Tab());
-    localTab.cap = new GCaption(paramString);
+    localTab.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(paramString);
     localTab.client = paramGWindow;
     paramGWindow.parentWindow = this;
     paramGWindow.hideWindow();
@@ -35,7 +35,7 @@ public class GWindowTabDialogClient extends GWindowDialogClient
   }
   public Tab createTab(String paramString, GWindow paramGWindow) {
     Tab localTab = (Tab)create(new Tab());
-    localTab.cap = new GCaption(paramString);
+    localTab.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(paramString);
     localTab.client = paramGWindow;
     localTab.hideWindow();
     paramGWindow.parentWindow = this;
@@ -102,9 +102,9 @@ public class GWindowTabDialogClient extends GWindowDialogClient
       float f = 0.0F;
       for (int j = this.firstView; j < this.tabs.size(); j++) {
         Tab localTab = (Tab)this.tabs.get(j);
-        f += localTab.win.dx;
+        f += localTab.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
       }
-      if (f <= this.win.dx) return;
+      if (f <= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) return;
       this.firstView = i;
     }
     resized();
@@ -112,34 +112,33 @@ public class GWindowTabDialogClient extends GWindowDialogClient
 
   public void resized() {
     float f1 = 0.0F;
-    Object localObject;
     for (int i = 0; i < this.firstView; i++) {
-      Tab localTab = (Tab)this.tabs.get(i);
-      localObject = localTab.getMinSize();
-      f1 += ((GSize)localObject).dx;
+      Tab localTab1 = (Tab)this.tabs.get(i);
+      GSize localGSize1 = localTab1.getMinSize();
+      f1 += localGSize1.dx;
     }
     f1 = -f1;
     float f2 = 0.0F;
     for (int j = 0; j < this.tabs.size(); j++) {
-      localObject = (Tab)this.tabs.get(j);
-      GSize localGSize = ((Tab)localObject).getMinSize();
-      if (j == this.current) ((Tab)localObject).setSize(localGSize.dx, localGSize.dy + lookAndFeel().bevelTabDialogClient.T.dy); else
-        ((Tab)localObject).setSize(localGSize.dx, localGSize.dy);
-      ((Tab)localObject).setPos(f1, 0.0F);
-      ((Tab)localObject).client.setPos(lookAndFeel().bevelTabDialogClient.L.dx, ((Tab)localObject).win.dy + lookAndFeel().bevelTabDialogClient.B.dy);
+      Tab localTab2 = (Tab)this.tabs.get(j);
+      GSize localGSize2 = localTab2.getMinSize();
+      if (j == this.current) localTab2.setSize(localGSize2.dx, localGSize2.dy + lookAndFeel().bevelTabDialogClient.T.dy); else
+        localTab2.setSize(localGSize2.dx, localGSize2.dy);
+      localTab2.setPos(f1, 0.0F);
+      localTab2.client.setPos(lookAndFeel().bevelTabDialogClient.L.dx, localTab2.jdField_win_of_type_ComMaddoxGwindowGRegion.dy + lookAndFeel().bevelTabDialogClient.B.dy);
 
-      ((Tab)localObject).client.setSize(this.win.dx - lookAndFeel().bevelTabDialogClient.L.dx - lookAndFeel().bevelTabDialogClient.R.dx, this.win.dy - lookAndFeel().bevelTabDialogClient.B.dy - lookAndFeel().bevelTabDialogClient.T.dy - ((Tab)localObject).win.dy);
+      localTab2.client.setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().bevelTabDialogClient.L.dx - lookAndFeel().bevelTabDialogClient.R.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - lookAndFeel().bevelTabDialogClient.B.dy - lookAndFeel().bevelTabDialogClient.T.dy - localTab2.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
 
-      if (j == this.current) ((Tab)localObject).client.showWindow(); else
-        ((Tab)localObject).client.hideWindow();
-      f1 += ((Tab)localObject).win.dx;
-      f2 += ((Tab)localObject).win.dx;
+      if (j == this.current) localTab2.client.showWindow(); else
+        localTab2.client.hideWindow();
+      f1 += localTab2.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+      f2 += localTab2.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
     }
-    if ((f2 > this.win.dx) || (this.firstView > 0)) {
+    if ((f2 > this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) || (this.firstView > 0)) {
       this.lButton.setSize(lookAndFeel().getHScrollBarW(), lookAndFeel().getHScrollBarH());
       this.rButton.setSize(lookAndFeel().getHScrollBarW(), lookAndFeel().getHScrollBarH());
-      this.lButton.setPos(this.win.dx - this.lButton.win.dx - this.rButton.win.dx, 0.0F);
-      this.rButton.setPos(this.win.dx - this.rButton.win.dx, 0.0F);
+      this.lButton.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.lButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.rButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, 0.0F);
+      this.rButton.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.rButton.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, 0.0F);
       this.lButton.showWindow();
       this.rButton.showWindow();
     } else {
@@ -168,8 +167,8 @@ public class GWindowTabDialogClient extends GWindowDialogClient
     float f1 = 0.0F;
     float f2 = 0.0F;
     for (int i = 0; i < this.tabs.size(); i++) {
-      Tab localTab2 = (Tab)this.tabs.get(i);
-      localTab2.client.getMinSize(paramGSize);
+      localTab = (Tab)this.tabs.get(i);
+      localTab.client.getMinSize(paramGSize);
       if (f1 < paramGSize.dx) f1 = paramGSize.dx;
       if (f2 >= paramGSize.dy) continue; f2 = paramGSize.dy;
     }
@@ -177,8 +176,8 @@ public class GWindowTabDialogClient extends GWindowDialogClient
 
     f2 += lookAndFeel().bevelTabDialogClient.T.dy + lookAndFeel().bevelTabDialogClient.B.dx;
 
-    Tab localTab1 = (Tab)this.tabs.get(0);
-    localTab1.getMinSize(paramGSize);
+    Tab localTab = (Tab)this.tabs.get(0);
+    localTab.getMinSize(paramGSize);
     paramGSize.dx += f1;
     paramGSize.dy += f2;
     return paramGSize;

@@ -7,7 +7,7 @@ public class PaintSchemeBCSPar03 extends PaintSchemeBMPar03
 {
   public String typedNameNum(Class paramClass, Regiment paramRegiment, int paramInt1, int paramInt2, int paramInt3)
   {
-    if (paramRegiment.country() == countryUSA) {
+    if (paramRegiment.country() == PaintScheme.countryUSA) {
       return "" + (paramInt3 >= 10 ? "" + paramInt3 : new StringBuffer().append("0").append(paramInt3).toString()) + "*";
     }
 
@@ -19,25 +19,25 @@ public class PaintSchemeBCSPar03 extends PaintSchemeBMPar03
     super.prepareNum(paramClass, paramHierMesh, paramRegiment, paramInt1, paramInt2, paramInt3);
     int i = paramRegiment.gruppeNumber() - 1;
 
-    if (paramRegiment.country() == countryPoland) {
+    if (paramRegiment.country() == PaintScheme.countryPoland) {
       changeMat(paramHierMesh, "Overlay1", "psBCS03POLCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
 
-      changeMat(paramClass, paramHierMesh, "Overlay2", "polishcheckerboard", "Polish/checkerboard.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay2", "polishcheckerboard", "Polish/checkerboard.tga", 1.0F, 1.0F, 1.0F);
       return;
     }
 
-    if (paramRegiment.country() == countryRussia) {
-      changeMat(paramHierMesh, "Overlay1", "psBCS03RUSCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", psRussianBomberColor[paramInt1][0], psRussianBomberColor[paramInt1][1], psRussianBomberColor[paramInt1][2], psRussianBomberColor[paramInt1][0], psRussianBomberColor[paramInt1][1], psRussianBomberColor[paramInt1][2]);
+    if (paramRegiment.country() == PaintScheme.countryRussia) {
+      changeMat(paramHierMesh, "Overlay1", "psBCS03RUSCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2], PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2]);
 
-      changeMat(paramClass, paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", psRussianBomberColor[paramInt1][0], psRussianBomberColor[paramInt1][1], psRussianBomberColor[paramInt1][2]);
+      changeMat(paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2]);
 
-      changeMat(paramClass, paramHierMesh, "Overlay6", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
       return;
     }
 
-    if (paramRegiment.country() == countryUSA) {
+    if (paramRegiment.country() == PaintScheme.countryUSA) {
       paramInt3 = clampToLiteral(paramInt3);
       changeMat(paramHierMesh, "Overlay1", "psBCS03USAREGI" + paramRegiment.id(), "British/" + paramRegiment.aid()[0] + ".tga", "British/" + paramRegiment.aid()[1] + ".tga", 0.1F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F);
 
@@ -47,15 +47,15 @@ public class PaintSchemeBCSPar03 extends PaintSchemeBMPar03
 
       changeMat(paramHierMesh, "Overlay3", "psBCS03USARNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "null.tga", "British/" + (char)(65 + paramInt3 - 1) + ".tga", 1.0F, 1.0F, 1.0F, 0.960784F, 0.745098F, 0.145098F);
 
-      changeMat(paramClass, paramHierMesh, "Overlay6", "whitestar1", "States/whitestar1.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "whitestar1", "States/whitestar1.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "whitestar1", "States/whitestar1.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "whitestar1", "States/whitestar1.tga", 1.0F, 1.0F, 1.0F);
       return;
     }
   }
 
   public void prepareNumOff(Class paramClass, HierMesh paramHierMesh, Regiment paramRegiment, int paramInt1, int paramInt2, int paramInt3)
   {
-    if (paramRegiment.country() == countryRussia)
-      changeMat(paramClass, paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", psRussianBomberColor[paramInt1][0], psRussianBomberColor[paramInt1][1], psRussianBomberColor[paramInt1][2]);
+    if (paramRegiment.country() == PaintScheme.countryRussia)
+      changeMat(paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2]);
   }
 }

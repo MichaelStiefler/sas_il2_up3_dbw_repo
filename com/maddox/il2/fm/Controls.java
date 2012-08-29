@@ -1,73 +1,69 @@
 package com.maddox.il2.fm;
 
+import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.BulletEmitter;
-import com.maddox.il2.engine.Orientation;
-import com.maddox.il2.game.AircraftHotKeys;
-import com.maddox.il2.game.HUD;
+import com.maddox.il2.engine.Interpolate;
+import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetAircraft;
+import com.maddox.il2.objects.air.P_51Mustang;
 import com.maddox.il2.objects.air.SU_26M2;
-import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.weapons.BombGun;
 import com.maddox.il2.objects.weapons.FuelTank;
 import com.maddox.il2.objects.weapons.FuelTankGun;
-import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
+import com.maddox.il2.objects.weapons.RocketGun4andHalfInch;
 import com.maddox.rts.Time;
 
 public class Controls
 {
-  public float Sensitivity = 1.0F;
-  public float PowerControl = 0.0F;
+  public float Sensitivity;
+  public float PowerControl;
   public boolean afterburnerControl;
-  public float GearControl = 0.0F;
-  public float wingControl = 0.0F;
-  public float cockpitDoorControl = 0.0F;
-  public float arrestorControl = 0.5F;
-  public float FlapsControl = 0.0F;
-  public float AileronControl = 0.0F;
-  public float ElevatorControl = 0.0F;
-  public float RudderControl = 0.0F;
-  public float BrakeControl = 0.0F;
-  private float StepControl = 1.0F;
-  private boolean bStepControlAuto = true;
-  private float MixControl = 1.0F;
-  private int MagnetoControl = 3;
-  private int CompressorControl = 0;
-  public float BayDoorControl = 0.0F;
-  public float AirBrakeControl = 0.0F;
-  private float trimAileronControl = 0.0F;
-  private float trimElevatorControl = 0.0F;
-  private float trimRudderControl = 0.0F;
-  public float trimAileron = 0.0F;
-  public float trimElevator = 0.0F;
-  public float trimRudder = 0.0F;
-  private float RadiatorControl = 0.0F;
-  private boolean bRadiatorControlAuto = true;
-  public boolean StabilizerControl = false;
-  public boolean[] WeaponControl = new boolean[21];
-
-  public boolean[] saveWeaponControl = new boolean[4];
-
-  public boolean bHasGearControl = true;
-  public boolean bHasWingControl = false;
-  public boolean bHasCockpitDoorControl = false;
-  public boolean bHasArrestorControl = false;
-  public boolean bHasFlapsControl = true;
-  public boolean bHasFlapsControlRed = false;
-  public boolean bHasAileronControl = true;
-  public boolean bHasElevatorControl = true;
-  public boolean bHasRudderControl = true;
-  public boolean bHasBrakeControl = true;
-
-  public boolean bHasAirBrakeControl = true;
-
-  public boolean bHasLockGearControl = true;
-  public boolean bHasAileronTrim = true;
-  public boolean bHasRudderTrim = true;
-  public boolean bHasElevatorTrim = true;
-
-  public BulletEmitter[][] Weapons = new BulletEmitter[21][];
+  public float GearControl;
+  public float wingControl;
+  public float cockpitDoorControl;
+  public float arrestorControl;
+  public float FlapsControl;
+  public float AileronControl;
+  public float ElevatorControl;
+  public float RudderControl;
+  public float BrakeControl;
+  private float StepControl;
+  private boolean bStepControlAuto;
+  private float MixControl;
+  private int MagnetoControl;
+  private int CompressorControl;
+  public float BayDoorControl;
+  public float AirBrakeControl;
+  private float trimAileronControl;
+  private float trimElevatorControl;
+  private float trimRudderControl;
+  public float trimAileron;
+  public float trimElevator;
+  public float trimRudder;
+  private float RadiatorControl;
+  private boolean bRadiatorControlAuto;
+  public boolean StabilizerControl;
+  public boolean[] WeaponControl;
+  public boolean[] saveWeaponControl;
+  public boolean bHasGearControl;
+  public boolean bHasWingControl;
+  public boolean bHasCockpitDoorControl;
+  public boolean bHasArrestorControl;
+  public boolean bHasFlapsControl;
+  public boolean bHasFlapsControlRed;
+  public boolean bHasAileronControl;
+  public boolean bHasElevatorControl;
+  public boolean bHasRudderControl;
+  public boolean bHasBrakeControl;
+  public boolean bHasAirBrakeControl;
+  public boolean bHasLockGearControl;
+  public boolean bHasAileronTrim;
+  public boolean bHasRudderTrim;
+  public boolean bHasElevatorTrim;
+  public BulletEmitter[][] Weapons;
   public byte CTL;
   public byte WCT;
   public int TWCT;
@@ -81,41 +77,101 @@ public class Controls
   private float Elevators;
   private float Rudder;
   private float Brake;
-  private float Step = 1.0F;
+  private float Step;
   private float radiator;
   private float airBrake;
   private float Ev;
   private int tick;
-  public float AilThr = 100.0F;
-  public float AilThr3 = 1000000.0F;
-  public float RudThr = 100.0F;
-  public float RudThr2 = 10000.0F;
-  public float ElevThr = 112.0F;
-  public float ElevThr2 = 12544.0F;
-
-  public float dvGear = 0.2F;
-  public float dvWing = 0.1F;
-  public float dvCockpitDoor = 0.1F;
-  public float dvAirbrake = 0.5F;
-  public int electricPropUp;
-  public int electricPropDn = 0;
-  public boolean bUseElectricProp;
-  private final int POWERCONTROLNUM = 6;
-  public float[] PowerControlArr = new float[6];
-  public float[] StepControlArr = new float[6];
+  public float AilThr;
+  public float AilThr3;
+  public float RudThr;
+  public float RudThr2;
+  public float ElevThr;
+  public float ElevThr2;
+  public float dvGear;
+  public float dvWing;
+  public float dvCockpitDoor;
+  public float dvAirbrake;
   private FlightModelMain FM;
   private static float tmpF;
   private static Vector3d tmpV3d = new Vector3d();
 
+  public boolean bHasBayDoors = false;
+  private float fSaveCockpitDoor;
+  private float fSaveCockpitDoorControl;
+  private float fSaveSideDoor;
+  private float fSaveSideDoorControl;
+  public boolean bMoveSideDoor = false;
+
+  private int COCKPIT_DOOR = 1;
+  private int SIDE_DOOR = 2;
+
+  private int LEFT = 1;
+  private int RIGHT = 2;
+  private int iToggleRocketSide = this.LEFT;
+  private int iToggleBombSide = this.LEFT;
+  private long lWeaponTime = System.currentTimeMillis();
+  private boolean bIsMustang = false;
+
   public Controls(FlightModelMain paramFlightModelMain)
   {
+    this.Sensitivity = 1.0F;
+    this.PowerControl = 0.0F;
+    this.GearControl = 0.0F;
+    this.wingControl = 0.0F;
+    this.cockpitDoorControl = 0.0F;
+    this.arrestorControl = 0.5F;
+    this.FlapsControl = 0.0F;
+    this.AileronControl = 0.0F;
+    this.ElevatorControl = 0.0F;
+    this.RudderControl = 0.0F;
+    this.BrakeControl = 0.0F;
+    this.StepControl = 1.0F;
+    this.bStepControlAuto = true;
+    this.MixControl = 1.0F;
+    this.MagnetoControl = 3;
+    this.CompressorControl = 0;
+    this.BayDoorControl = 0.0F;
+    this.AirBrakeControl = 0.0F;
+    this.trimAileronControl = 0.0F;
+    this.trimElevatorControl = 0.0F;
+    this.trimRudderControl = 0.0F;
+    this.trimAileron = 0.0F;
+    this.trimElevator = 0.0F;
+    this.trimRudder = 0.0F;
+    this.RadiatorControl = 0.0F;
+    this.bRadiatorControlAuto = true;
+    this.StabilizerControl = false;
+    this.WeaponControl = new boolean[20];
+    this.saveWeaponControl = new boolean[4];
+    this.bHasGearControl = true;
+    this.bHasWingControl = false;
+    this.bHasCockpitDoorControl = false;
+    this.bHasArrestorControl = false;
+    this.bHasFlapsControl = true;
+    this.bHasFlapsControlRed = false;
+    this.bHasAileronControl = true;
+    this.bHasElevatorControl = true;
+    this.bHasRudderControl = true;
+    this.bHasBrakeControl = true;
+    this.bHasAirBrakeControl = true;
+    this.bHasLockGearControl = true;
+    this.bHasAileronTrim = true;
+    this.bHasRudderTrim = true;
+    this.bHasElevatorTrim = true;
+    this.Weapons = new BulletEmitter[20][];
+    this.Step = 1.0F;
+    this.AilThr = 100.0F;
+    this.AilThr3 = 1000000.0F;
+    this.RudThr = 100.0F;
+    this.RudThr2 = 10000.0F;
+    this.ElevThr = 112.0F;
+    this.ElevThr2 = 12544.0F;
+    this.dvGear = 0.2F;
+    this.dvWing = 0.1F;
+    this.dvCockpitDoor = 0.1F;
+    this.dvAirbrake = 0.5F;
     this.FM = paramFlightModelMain;
-
-    for (int i = 0; i < 6; i++) {
-      this.PowerControlArr[i] = 0.0F;
-    }
-    for (i = 0; i < 6; i++)
-      this.StepControlArr[i] = 1.0F;
   }
 
   public void set(Controls paramControls)
@@ -136,7 +192,8 @@ public class Controls
     this.dvAirbrake = paramControls.dvAirbrake;
   }
 
-  public void CalcTresholds() {
+  public void CalcTresholds()
+  {
     this.AilThr3 = (this.AilThr * this.AilThr * this.AilThr);
     this.RudThr2 = (this.RudThr * this.RudThr);
     this.ElevThr2 = (this.ElevThr * this.ElevThr);
@@ -146,9 +203,8 @@ public class Controls
   {
     if (this.bHasGearControl)
       this.GearControl = (this.Gear = 1.0F);
-    else {
+    else
       this.Gear = 1.0F;
-    }
     this.FlapsControl = (this.Flaps = 0.0F);
     this.StepControl = 1.0F;
     this.bStepControlAuto = true;
@@ -159,28 +215,36 @@ public class Controls
 
   public void setFixedGear(boolean paramBoolean)
   {
-    if (paramBoolean) {
+    if (paramBoolean)
+    {
       this.Gear = 1.0F;
       this.GearControl = 0.0F;
     }
   }
 
-  public void setGearAirborne() {
+  public void setGearAirborne()
+  {
     if (this.bHasGearControl)
       this.GearControl = (this.Gear = 0.0F);
   }
 
-  public void setGear(float paramFloat) {
+  public void setGear(float paramFloat)
+  {
     this.Gear = paramFloat;
   }
-  public void setGearBraking() {
+
+  public void setGearBraking()
+  {
     this.Brake = 1.0F;
   }
-  public void forceFlaps(float paramFloat) {
+
+  public void forceFlaps(float paramFloat)
+  {
     this.Flaps = paramFloat;
   }
 
-  public void forceGear(float paramFloat) {
+  public void forceGear(float paramFloat)
+  {
     if (this.bHasGearControl)
       this.Gear = (this.GearControl = paramFloat);
     else
@@ -194,260 +258,318 @@ public class Controls
     ((Aircraft)this.FM.actor).moveWingFold(paramFloat);
   }
 
-  public void forceArrestor(float paramFloat) {
+  public void forceArrestor(float paramFloat)
+  {
     this.arrestor = paramFloat;
     ((Aircraft)this.FM.actor).moveArrestorHook(paramFloat);
   }
 
   public void setPowerControl(float paramFloat)
   {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 1.1F) paramFloat = 1.1F;
-    this.PowerControl = paramFloat;
-
-    for (int i = 0; i < 6; i++)
-      if ((i < this.FM.EI.getNum()) && (this.FM.EI.bCurControl[i] != 0))
-        this.PowerControlArr[i] = paramFloat;
-  }
-
-  public void setPowerControl(float paramFloat, int paramInt)
-  {
-    if (paramFloat < 0.0F) {
+    if (paramFloat < 0.0F)
       paramFloat = 0.0F;
-    }
-    if (paramFloat > 1.1F) {
+    if (paramFloat > 1.1F)
       paramFloat = 1.1F;
-    }
-    this.PowerControlArr[paramInt] = paramFloat;
-    if (paramInt == 0)
-      this.PowerControl = paramFloat;
+    this.PowerControl = paramFloat;
   }
 
-  public float getPowerControl() {
+  public float getPowerControl()
+  {
     return this.PowerControl;
   }
 
   public void setStepControl(float paramFloat)
   {
-    if (!this.bUseElectricProp)
-    {
-      if (paramFloat > 1.0F) paramFloat = 1.0F;
-      if (paramFloat < 0.0F) paramFloat = 0.0F;
-      this.StepControl = paramFloat;
-
-      for (int i = 0; i < 6; i++) {
-        if ((i >= this.FM.EI.getNum()) || (this.FM.EI.bCurControl[i] == 0))
-          continue;
-        this.StepControlArr[i] = paramFloat;
-      }
-
-      HUD.log(AircraftHotKeys.hudLogPowerId, "PropPitch", new Object[] { new Integer(Math.round(getStepControl() * 100.0F)) });
-    }
-  }
-
-  public void setStepControl(float paramFloat, int paramInt)
-  {
-    if (!this.bUseElectricProp)
-    {
-      if (paramFloat > 1.0F) {
-        paramFloat = 1.0F;
-      }
-      if (paramFloat < 0.0F) {
-        paramFloat = 0.0F;
-      }
-      this.StepControlArr[paramInt] = paramFloat;
-
-      if (!getStepControlAuto(paramInt))
-        HUD.log(AircraftHotKeys.hudLogPowerId, "PropPitch", new Object[] { new Integer(Math.round(getStepControl(paramInt) * 100.0F)) });
-    }
+    if (paramFloat > 1.0F)
+      paramFloat = 1.0F;
+    if (paramFloat < 0.0F)
+      paramFloat = 0.0F;
+    this.StepControl = paramFloat;
   }
 
   public void setStepControlAuto(boolean paramBoolean)
   {
     this.bStepControlAuto = paramBoolean;
   }
-  public float getStepControl() {
+
+  public float getStepControl()
+  {
     return this.StepControl;
   }
-  public boolean getStepControlAuto() {
+
+  public boolean getStepControlAuto()
+  {
     return this.bStepControlAuto;
   }
 
-  public boolean getStepControlAuto(int paramInt)
+  public void setRadiatorControl(float paramFloat)
   {
-    if (paramInt < this.FM.EI.getNum())
-    {
-      return (!this.FM.EI.engines[paramInt].isHasControlProp()) || (this.FM.EI.engines[paramInt].getControlPropAuto());
-    }
-
-    return true;
-  }
-
-  public float getStepControl(int paramInt)
-  {
-    return this.StepControlArr[paramInt];
-  }
-
-  public void setElectricPropUp(boolean paramBoolean)
-  {
-    if (this.bUseElectricProp)
-    {
-      if (paramBoolean)
-      {
-        this.electricPropUp = 1;
-      }
-      else
-        this.electricPropUp = 0;
-    }
-  }
-
-  public void setElectricPropDn(boolean paramBoolean)
-  {
-    if (this.bUseElectricProp)
-    {
-      if (paramBoolean)
-      {
-        this.electricPropDn = 1;
-      }
-      else
-        this.electricPropDn = 0;
-    }
-  }
-
-  public void setRadiatorControl(float paramFloat) {
-    if (paramFloat > 1.0F) paramFloat = 1.0F;
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
+    if (paramFloat > 1.0F)
+      paramFloat = 1.0F;
+    if (paramFloat < 0.0F)
+      paramFloat = 0.0F;
     this.RadiatorControl = paramFloat;
   }
-  public void setRadiatorControlAuto(boolean paramBoolean, EnginesInterface paramEnginesInterface) {
+
+  public void setRadiatorControlAuto(boolean paramBoolean, EnginesInterface paramEnginesInterface)
+  {
     this.bRadiatorControlAuto = paramBoolean;
     if (paramEnginesInterface.getFirstSelected() != null)
       this.radiator = paramEnginesInterface.getFirstSelected().getControlRadiator();
   }
 
-  public float getRadiatorControl() {
+  public float getRadiatorControl()
+  {
     return this.RadiatorControl;
   }
-  public boolean getRadiatorControlAuto() {
+
+  public boolean getRadiatorControlAuto()
+  {
     return this.bRadiatorControlAuto;
   }
-  public float getRadiator() {
+
+  public float getRadiator()
+  {
     return this.radiator;
   }
 
-  public void setMixControl(float paramFloat) {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 1.2F) paramFloat = 1.2F;
+  public void setMixControl(float paramFloat)
+  {
+    if (paramFloat < 0.0F)
+      paramFloat = 0.0F;
+    if (paramFloat > 1.2F)
+      paramFloat = 1.2F;
     this.MixControl = paramFloat;
   }
-  public float getMixControl() {
+
+  public float getMixControl()
+  {
     return this.MixControl;
   }
 
-  public void setAfterburnerControl(boolean paramBoolean) {
+  public void setAfterburnerControl(boolean paramBoolean)
+  {
     this.afterburnerControl = paramBoolean;
   }
-  public boolean getAfterburnerControl() {
+
+  public boolean getAfterburnerControl()
+  {
     return this.afterburnerControl;
   }
 
-  public void setMagnetoControl(int paramInt) {
-    if (paramInt < 0) paramInt = 0;
-    if (paramInt > 3) paramInt = 3;
+  public void setMagnetoControl(int paramInt)
+  {
+    if (paramInt < 0)
+      paramInt = 0;
+    if (paramInt > 3)
+      paramInt = 3;
     this.MagnetoControl = paramInt;
   }
-  public int getMagnetoControl() {
+
+  public int getMagnetoControl()
+  {
     return this.MagnetoControl;
   }
 
-  public void setCompressorControl(int paramInt) {
-    if (paramInt < 0) paramInt = 0;
-    if (paramInt > this.FM.EI.engines[0].compressorMaxStep) paramInt = this.FM.EI.engines[0].compressorMaxStep;
+  public void setCompressorControl(int paramInt)
+  {
+    if (paramInt < 0)
+      paramInt = 0;
+    if (paramInt > this.FM.EI.engines[0].compressorMaxStep)
+      paramInt = this.FM.EI.engines[0].compressorMaxStep;
     this.CompressorControl = paramInt;
   }
-  public int getCompressorControl() {
+
+  public int getCompressorControl()
+  {
     return this.CompressorControl;
   }
 
-  public void setTrimAileronControl(float paramFloat) {
+  public void setTrimAileronControl(float paramFloat)
+  {
     this.trimAileronControl = paramFloat;
   }
-  public float getTrimAileronControl() {
+
+  public float getTrimAileronControl()
+  {
     return this.trimAileronControl;
   }
-  public void setTrimElevatorControl(float paramFloat) {
+
+  public void setTrimElevatorControl(float paramFloat)
+  {
     this.trimElevatorControl = paramFloat;
   }
-  public float getTrimElevatorControl() {
+
+  public float getTrimElevatorControl()
+  {
     return this.trimElevatorControl;
   }
-  public void setTrimRudderControl(float paramFloat) {
+
+  public void setTrimRudderControl(float paramFloat)
+  {
     this.trimRudderControl = paramFloat;
   }
-  public float getTrimRudderControl() {
+
+  public float getTrimRudderControl()
+  {
     return this.trimRudderControl;
   }
 
   public void interpolate(Controls paramControls, float paramFloat)
   {
     this.PowerControl = FMMath.interpolate(this.PowerControl, paramControls.PowerControl, paramFloat);
-
     this.FlapsControl = FMMath.interpolate(this.FlapsControl, paramControls.FlapsControl, paramFloat);
     this.AileronControl = FMMath.interpolate(this.AileronControl, paramControls.AileronControl, paramFloat);
     this.ElevatorControl = FMMath.interpolate(this.ElevatorControl, paramControls.ElevatorControl, paramFloat);
     this.RudderControl = FMMath.interpolate(this.RudderControl, paramControls.RudderControl, paramFloat);
     this.BrakeControl = FMMath.interpolate(this.BrakeControl, paramControls.BrakeControl, paramFloat);
   }
-  public float getGear() {
-    return this.Gear; } 
-  public float getWing() { return this.wing; } 
-  public float getCockpitDoor() {
+
+  public float getGear()
+  {
+    return this.Gear;
+  }
+
+  public float getWing()
+  {
+    return this.wing;
+  }
+
+  public float getCockpitDoor()
+  {
     return this.cockpitDoor;
   }
-  public void forceCockpitDoor(float paramFloat) {
+
+  public void forceCockpitDoor(float paramFloat)
+  {
     this.cockpitDoor = paramFloat;
   }
-  public float getArrestor() { return this.arrestor; } 
-  public float getFlap() { return this.Flaps; } 
-  public float getAileron() { return this.Ailerons; } 
-  public float getElevator() { return this.Elevators; } 
-  public float getRudder() { return this.Rudder; } 
-  public float getBrake() { return this.Brake; } 
-  public float getPower() { return this.Power; } 
-  public float getStep() { return this.Step; } 
-  public float getBayDoor() {
-    return this.BayDoorControl; } 
-  public float getAirBrake() { return this.airBrake; }
 
-  private float filter(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5) {
+  public float getArrestor()
+  {
+    return this.arrestor;
+  }
+
+  public float getFlap()
+  {
+    return this.Flaps;
+  }
+
+  public float getAileron()
+  {
+    return this.Ailerons;
+  }
+
+  public float getElevator()
+  {
+    return this.Elevators;
+  }
+
+  public float getRudder()
+  {
+    return this.Rudder;
+  }
+
+  public float getBrake()
+  {
+    return this.Brake;
+  }
+
+  public float getPower()
+  {
+    return this.Power;
+  }
+
+  public float getStep()
+  {
+    return this.Step;
+  }
+
+  public float getBayDoor()
+  {
+    return this.BayDoorControl;
+  }
+
+  public float getAirBrake()
+  {
+    return this.airBrake;
+  }
+
+  private float filter(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5)
+  {
     float f1 = (float)Math.exp(-paramFloat1 / paramFloat4);
-
     float f2 = paramFloat2 + (paramFloat3 - paramFloat2) * f1;
-    if (f2 < paramFloat2) { f2 += paramFloat5 * paramFloat1; if (f2 > paramFloat2) f2 = paramFloat2; 
+    if (f2 < paramFloat2)
+    {
+      f2 += paramFloat5 * paramFloat1;
+      if (f2 > paramFloat2)
+        f2 = paramFloat2;
     }
-    else if (f2 > paramFloat2) { f2 -= paramFloat5 * paramFloat1; if (f2 < paramFloat2) f2 = paramFloat2; 
+    else if (f2 > paramFloat2)
+    {
+      f2 -= paramFloat5 * paramFloat1;
+      if (f2 < paramFloat2)
+        f2 = paramFloat2;
     }
     return f2;
   }
 
-  private float clamp01(float paramFloat) {
-    if (paramFloat < 0.0F) paramFloat = 0.0F; else if (paramFloat > 1.0F) paramFloat = 1.0F;
+  private float clamp01(float paramFloat)
+  {
+    if (paramFloat < 0.0F) {
+      paramFloat = 0.0F;
+    }
+    else if (paramFloat > 1.0F)
+      paramFloat = 1.0F;
     return paramFloat;
   }
 
-  private float clamp0115(float paramFloat) {
-    if (paramFloat < 0.0F) paramFloat = 0.0F; else if (paramFloat > 1.1F) paramFloat = 1.1F;
+  private float clamp0115(float paramFloat)
+  {
+    if (paramFloat < 0.0F) {
+      paramFloat = 0.0F;
+    }
+    else if (paramFloat > 1.1F)
+      paramFloat = 1.1F;
     return paramFloat;
   }
 
-  private float clamp11(float paramFloat) {
-    if (paramFloat < -1.0F) paramFloat = -1.0F; else if (paramFloat > 1.0F) paramFloat = 1.0F;
+  private float clamp11(float paramFloat)
+  {
+    if (paramFloat < -1.0F) {
+      paramFloat = -1.0F;
+    }
+    else if (paramFloat > 1.0F)
+      paramFloat = 1.0F;
     return paramFloat;
   }
 
-  private float clampA(float paramFloat1, float paramFloat2) {
-    if (paramFloat1 < -paramFloat2) paramFloat1 = -paramFloat2; else if (paramFloat1 > paramFloat2) paramFloat1 = paramFloat2;
+  private float clampA(float paramFloat1, float paramFloat2)
+  {
+    if (paramFloat1 < -paramFloat2) {
+      paramFloat1 = -paramFloat2;
+    }
+    else if (paramFloat1 > paramFloat2)
+      paramFloat1 = paramFloat2;
     return paramFloat1;
+  }
+
+  public void setActiveDoor(int paramInt)
+  {
+    if ((paramInt != this.SIDE_DOOR) && (this.bMoveSideDoor)) {
+      this.fSaveSideDoor = this.cockpitDoor;
+      this.fSaveSideDoorControl = this.cockpitDoorControl;
+      this.cockpitDoor = this.fSaveCockpitDoor;
+      this.cockpitDoorControl = this.fSaveCockpitDoorControl;
+      this.bMoveSideDoor = false;
+    }
+    else if ((paramInt == this.SIDE_DOOR) && (!this.bMoveSideDoor)) {
+      this.fSaveCockpitDoor = this.cockpitDoor;
+      this.fSaveCockpitDoorControl = this.cockpitDoorControl;
+      this.cockpitDoor = this.fSaveSideDoor;
+      this.cockpitDoorControl = this.fSaveSideDoorControl;
+      this.bMoveSideDoor = true;
+    }
   }
 
   public void update(float paramFloat1, float paramFloat2, EnginesInterface paramEnginesInterface, boolean paramBoolean)
@@ -461,211 +583,136 @@ public class Controls
     float f2 = 1.0F;
     float f3 = 1.0F;
     float f4 = paramFloat2 * paramFloat2;
-    if (paramFloat2 > this.AilThr) f1 = Math.max(0.2F, this.AilThr3 / (f4 * paramFloat2));
-    if (f4 > this.RudThr2) f2 = Math.max(0.2F, this.RudThr2 / f4);
-    if (f4 > this.ElevThr2) f3 = Math.max(0.4F, this.ElevThr2 / f4);
+    if (paramFloat2 > this.AilThr)
+      f1 = Math.max(0.2F, this.AilThr3 / (f4 * paramFloat2));
+    if (f4 > this.RudThr2)
+      f2 = Math.max(0.2F, this.RudThr2 / f4);
+    if (f4 > this.ElevThr2)
+      f3 = Math.max(0.4F, this.ElevThr2 / f4);
     f1 *= this.Sensitivity;
     f2 *= this.Sensitivity;
     f3 *= this.Sensitivity;
-
-    if ((this.Elevators >= 0.0F) && 
-      (!(this.FM.actor instanceof SU_26M2)))
-    {
+    if ((this.Elevators >= 0.0F) && (!(this.FM.actor instanceof SU_26M2)))
       f3 = f2;
-    }
-    int k;
-    if (!paramBoolean2) {
-      if ((this.FM instanceof RealFlightModel))
-      {
-        float f5 = 0.0F;
-        for (k = 0; k < paramEnginesInterface.getNum(); k++)
-        {
-          this.PowerControlArr[k] = clamp0115(this.PowerControlArr[k]);
-          paramEnginesInterface.engines[k].setControlThrottle(this.PowerControlArr[k]);
-          if (this.PowerControlArr[k] > f5) {
-            f5 = this.PowerControlArr[k];
-          }
-        }
-        if (paramBoolean1) {
-          this.Power = f5;
-        } else {
-          this.Power = filter(paramFloat1, f5, this.Power, 5.0F, 0.01F * paramFloat1);
-          paramEnginesInterface.setThrottle(this.Power);
-        }
-      }
+    if (!paramBoolean2)
+    {
+      this.PowerControl = clamp0115(this.PowerControl);
+      if (paramBoolean1)
+        this.Power = this.PowerControl;
       else
-      {
-        this.PowerControl = clamp0115(this.PowerControl);
-
-        if (paramBoolean1)
-        {
-          this.Power = this.PowerControl;
-        }
-        else this.Power = filter(paramFloat1, this.PowerControl, this.Power, 5.0F, 0.01F * paramFloat1);
-
-        paramEnginesInterface.setThrottle(this.Power);
-      }
-
+        this.Power = filter(paramFloat1, this.PowerControl, this.Power, 5.0F, 0.01F * paramFloat1);
+      paramEnginesInterface.setThrottle(this.Power);
     }
-
-    if (!paramBoolean2) {
+    if (!paramBoolean2)
       paramEnginesInterface.setAfterburnerControl(this.afterburnerControl);
-    }
-
-    if (!paramBoolean2) {
+    if (!paramBoolean2)
+    {
       this.StepControl = clamp01(this.StepControl);
-      int i;
-      if ((this.bUseElectricProp) && ((this.FM instanceof RealFlightModel)))
+      if ((this.bStepControlAuto) && (paramEnginesInterface.getFirstSelected() != null))
       {
-        paramEnginesInterface.setPropAuto(this.bStepControlAuto);
-
-        i = this.electricPropUp - this.electricPropDn;
-        if (i < 0)
-          HUD.log(AircraftHotKeys.hudLogPowerId, "elPropDn");
-        else if (i > 0)
-          HUD.log(AircraftHotKeys.hudLogPowerId, "elPropUp");
-        paramEnginesInterface.setPropDelta(i);
-      }
-
-      if ((this.bStepControlAuto) && (paramEnginesInterface.getFirstSelected() != null)) {
-        if (paramEnginesInterface.isSelectionAllowsAutoProp()) {
+        if (paramEnginesInterface.isSelectionAllowsAutoProp())
+        {
           paramEnginesInterface.setPropAuto(true);
-        } else {
+        }
+        else {
           paramEnginesInterface.setPropAuto(false);
           this.bStepControlAuto = false;
         }
-
       }
-      else if ((this.FM instanceof RealFlightModel))
-      {
-        if (!this.bUseElectricProp) {
-          for (i = 0; i < paramEnginesInterface.getNum(); i++)
-          {
-            this.StepControlArr[i] = clamp01(this.StepControlArr[i]);
-            paramEnginesInterface.engines[i].setControlPropAuto(false);
-            paramEnginesInterface.engines[i].setControlProp(this.StepControlArr[i]);
-          }
-
-        }
-
-      }
-      else
-      {
+      else {
         this.Step = filter(paramFloat1, this.StepControl, this.Step, 0.2F, 0.02F);
         paramEnginesInterface.setPropAuto(false);
         paramEnginesInterface.setProp(this.Step);
       }
-
     }
-
     this.RadiatorControl = clamp01(this.RadiatorControl);
     this.radiator = filter(paramFloat1, this.RadiatorControl, this.radiator, 999.90002F, 0.2F);
-    if ((this.bRadiatorControlAuto) && (paramEnginesInterface.getFirstSelected() != null)) {
-      if (paramEnginesInterface.isSelectionAllowsAutoRadiator()) {
+    if ((this.bRadiatorControlAuto) && (paramEnginesInterface.getFirstSelected() != null))
+    {
+      if (paramEnginesInterface.isSelectionAllowsAutoRadiator())
+      {
         paramEnginesInterface.updateRadiator(paramFloat1);
-      } else {
+      }
+      else {
         paramEnginesInterface.setRadiator(this.radiator);
         this.bRadiatorControlAuto = false;
       }
     }
-    else paramEnginesInterface.setRadiator(this.radiator);
-
-    if (!paramBoolean2) {
+    else {
+      paramEnginesInterface.setRadiator(this.radiator);
+    }
+    if (!paramBoolean2)
       paramEnginesInterface.setMagnetos(this.MagnetoControl);
-    }
-
-    if ((!paramBoolean2) && (paramBoolean1))
-    {
+    if (!paramBoolean2)
       paramEnginesInterface.setCompressorStep(this.CompressorControl);
-    }
-
-    if (!paramBoolean2) {
+    if (!paramBoolean2)
       paramEnginesInterface.setMix(this.MixControl);
-    }
-
-    if ((this.bHasGearControl) || (paramBoolean2)) {
+    if ((this.bHasGearControl) || (paramBoolean2))
+    {
       this.GearControl = clamp01(this.GearControl);
-
       this.Gear = filter(paramFloat1, this.GearControl, this.Gear, 999.90002F, this.dvGear);
     }
-
     if ((this.bHasAirBrakeControl) || (paramBoolean2))
-    {
       this.airBrake = filter(paramFloat1, this.AirBrakeControl, this.airBrake, 999.90002F, this.dvAirbrake);
-    }
-
-    if (this.bHasWingControl) {
-      this.wing = filter(paramFloat1, this.wingControl, this.wing, 999.90002F, this.dvWing);
-      if ((this.wing > 0.01F) && (this.wing < 0.99F)) {
-        this.FM.doRequestFMSFX(1, (int)(100.0F * this.wing));
-      }
-
-    }
-
-    if (this.bHasCockpitDoorControl) {
-      this.cockpitDoor = filter(paramFloat1, this.cockpitDoorControl, this.cockpitDoor, 999.90002F, this.dvCockpitDoor);
-    }
-
-    if ((this.bHasArrestorControl) || (paramBoolean2))
+    if (this.bHasWingControl)
     {
-      if ((this.arrestorControl == 0.0F) || (this.arrestorControl == 1.0F)) {
-        this.arrestor = filter(paramFloat1, this.arrestorControl, this.arrestor, 999.90002F, 0.2F);
-      }
-
+      this.wing = filter(paramFloat1, this.wingControl, this.wing, 999.90002F, this.dvWing);
+      if ((this.wing > 0.01F) && (this.wing < 0.99F))
+        this.FM.doRequestFMSFX(1, (int)(100.0F * this.wing));
     }
-
-    if ((this.bHasFlapsControl) || (paramBoolean2)) {
+    if (this.bHasCockpitDoorControl)
+      this.cockpitDoor = filter(paramFloat1, this.cockpitDoorControl, this.cockpitDoor, 999.90002F, this.dvCockpitDoor);
+    if (((this.bHasArrestorControl) || (paramBoolean2)) && ((this.arrestorControl == 0.0F) || (this.arrestorControl == 1.0F)))
+      this.arrestor = filter(paramFloat1, this.arrestorControl, this.arrestor, 999.90002F, 0.2F);
+    if ((this.bHasFlapsControl) || (paramBoolean2))
+    {
       this.FlapsControl = clamp01(this.FlapsControl);
       if (this.Flaps > this.FlapsControl)
         this.Flaps = filter(paramFloat1, this.FlapsControl, this.Flaps, 999.0F, Aircraft.cvt(this.FM.getSpeedKMH(), 150.0F, 280.0F, 0.15F, 0.25F));
-      else {
+      else
         this.Flaps = filter(paramFloat1, this.FlapsControl, this.Flaps, 999.0F, Aircraft.cvt(this.FM.getSpeedKMH(), 150.0F, 280.0F, 0.15F, 0.02F));
-      }
-
     }
-
     if (this.StabilizerControl)
     {
       this.AileronControl = (-0.2F * this.FM.Or.getKren() - 2.0F * (float)this.FM.getW().x);
       tmpV3d.set(this.FM.Vwld);
       tmpV3d.normalize();
-      float f6 = (float)(-500.0D * (tmpV3d.z - 0.001D));
-      if (f6 > 0.8F) f6 = 0.8F;
-      if (f6 < -0.8F) f6 = -0.8F;
-      this.ElevatorControl = (f6 - 0.2F * this.FM.Or.getTangage() - 0.05F * this.FM.AOA + 25.0F * (float)this.FM.getW().y);
+      float f5 = (float)(-500.0D * (tmpV3d.z - 0.001D));
+      if (f5 > 0.8F)
+        f5 = 0.8F;
+      if (f5 < -0.8F)
+        f5 = -0.8F;
+      this.ElevatorControl = (f5 - 0.2F * this.FM.Or.getTangage() - 0.05F * this.FM.AOA + 25.0F * (float)this.FM.getW().y);
       this.RudderControl = (-0.2F * this.FM.AOS + 20.0F * (float)this.FM.getW().z);
     }
-
-    if ((this.bHasAileronControl) || (paramBoolean2)) {
+    if ((this.bHasAileronControl) || (paramBoolean2))
+    {
       this.trimAileron = filter(paramFloat1, this.trimAileronControl, this.trimAileron, 999.90002F, 0.25F);
       this.AileronControl = clamp11(this.AileronControl);
       tmpF = clampA(this.AileronControl, f1);
-      this.Ailerons = filter(paramFloat1, (1.0F + (this.trimAileron * tmpF > 0.0F ? -1.0F : 1.0F) * Math.abs(this.trimAileron)) * tmpF + this.trimAileron, this.Ailerons, 0.2F * (1.0F + 0.3F * Math.abs(this.AileronControl)), 0.025F);
+      this.Ailerons = filter(paramFloat1, (1.0F + (this.trimAileron * tmpF <= 0.0F ? 1.0F : -1.0F) * Math.abs(this.trimAileron)) * tmpF + this.trimAileron, this.Ailerons, 0.2F * (1.0F + 0.3F * Math.abs(this.AileronControl)), 0.025F);
     }
-
-    if ((this.bHasElevatorControl) || (paramBoolean2)) {
+    if ((this.bHasElevatorControl) || (paramBoolean2))
+    {
       this.trimElevator = filter(paramFloat1, this.trimElevatorControl, this.trimElevator, 999.90002F, 0.25F);
       this.ElevatorControl = clamp11(this.ElevatorControl);
       tmpF = clampA(this.ElevatorControl, f3);
-      this.Ev = filter(paramFloat1, (1.0F + (this.trimElevator * tmpF > 0.0F ? -1.0F : 1.0F) * Math.abs(this.trimElevator)) * tmpF + this.trimElevator, this.Ev, 0.3F * (1.0F + 0.3F * Math.abs(this.ElevatorControl)), 0.022F);
-
+      this.Ev = filter(paramFloat1, (1.0F + (this.trimElevator * tmpF <= 0.0F ? 1.0F : -1.0F) * Math.abs(this.trimElevator)) * tmpF + this.trimElevator, this.Ev, 0.3F * (1.0F + 0.3F * Math.abs(this.ElevatorControl)), 0.022F);
       if ((this.FM.actor instanceof SU_26M2))
         this.Elevators = clamp11(this.Ev);
-      else {
+      else
         this.Elevators = clamp11(this.Ev - 0.25F * (1.0F - f3));
-      }
-
     }
-
-    if ((this.bHasRudderControl) || (paramBoolean2)) {
+    if ((this.bHasRudderControl) || (paramBoolean2))
+    {
       this.trimRudder = filter(paramFloat1, this.trimRudderControl, this.trimRudder, 999.90002F, 0.25F);
       this.RudderControl = clamp11(this.RudderControl);
       tmpF = clampA(this.RudderControl, f2);
-      this.Rudder = filter(paramFloat1, (1.0F + (this.trimRudder * tmpF > 0.0F ? -1.0F : 1.0F) * Math.abs(this.trimRudder)) * tmpF + this.trimRudder, this.Rudder, 0.35F * (1.0F + 0.3F * Math.abs(this.RudderControl)), 0.025F);
+      this.Rudder = filter(paramFloat1, (1.0F + (this.trimRudder * tmpF <= 0.0F ? 1.0F : -1.0F) * Math.abs(this.trimRudder)) * tmpF + this.trimRudder, this.Rudder, 0.35F * (1.0F + 0.3F * Math.abs(this.RudderControl)), 0.025F);
     }
-
     this.BrakeControl = clamp01(this.BrakeControl);
-    if ((this.bHasBrakeControl) || (paramBoolean2)) {
+    if ((this.bHasBrakeControl) || (paramBoolean2))
+    {
       if (this.BrakeControl > this.Brake)
         this.Brake += 0.3F * paramFloat1;
       else
@@ -674,183 +721,218 @@ public class Controls
     else {
       this.Brake = 0.0F;
     }
-
-    if (this.tick == Time.tickCounter()) return;
+    if (this.tick == Time.tickCounter())
+      return;
     this.tick = Time.tickCounter();
-
-    this.CTL = (byte)((this.GearControl > 0.5F ? 1 : 0) | (this.FlapsControl > 0.2F ? 2 : 0) | (this.BrakeControl > 0.2F ? 4 : 0) | (this.RadiatorControl > 0.5F ? 8 : 0) | (this.BayDoorControl > 0.5F ? 16 : 0) | (this.AirBrakeControl > 0.5F ? 32 : 0));
-
-    this.WCT = (byte)(this.WCT & 0xFFFFFFFC);
+    this.CTL = (byte)((this.GearControl <= 0.5F ? 0 : 1) | (this.FlapsControl <= 0.2F ? 0 : 2) | (this.BrakeControl <= 0.2F ? 0 : 4) | (this.RadiatorControl <= 0.5F ? 0 : 8) | (this.BayDoorControl <= 0.5F ? 0 : 16) | (this.AirBrakeControl <= 0.5F ? 0 : 32));
+    this.WCT = (byte)(this.WCT & 0xFC);
     this.TWCT &= 252;
-    int j = 0; for (int m = 1; (j < this.WeaponControl.length) && (m < 256); m <<= 1) {
-      if (this.WeaponControl[j] != 0) { this.WCT = (byte)(this.WCT | m); this.TWCT |= m;
+    int i = 0;
+    for (int j = 1; (i < this.WeaponControl.length) && (j < 256); j <<= 1)
+    {
+      if (this.WeaponControl[i] != 0)
+      {
+        this.WCT = (byte)(this.WCT | j);
+        this.TWCT |= j;
       }
-      j++;
+      i++;
     }
 
-    for (j = 0; j < 4; j++) {
-      this.saveWeaponControl[j] = this.WeaponControl[j];
+    for (int k = 0; k < 4; k++) {
+      this.saveWeaponControl[k] = this.WeaponControl[k];
     }
-    for (j = 0; j < this.Weapons.length; j++)
-      if (this.Weapons[j] != null)
-        switch (j)
+    for (int m = 0; m < this.Weapons.length; m++)
+      if (this.Weapons[m] != null)
+      {
+        int i1;
+        switch (m)
         {
         case 2:
         case 3:
-          int n = this.WeaponControl[j] != 0 ? 1 : 0;
-          if (n == 0) continue;
-          for (k = 0; k < this.Weapons[j].length; k += 2) {
-            if (((this.Weapons[j][k] instanceof FuelTankGun)) || 
-              (!this.Weapons[j][k].haveBullets())) continue;
-            this.Weapons[j][k].shots(n);
-            if (this.Weapons[j][k].getHookName().startsWith("_BombSpawn")) {
-              this.BayDoorControl = 1.0F;
+          int n = this.WeaponControl[m] != 0 ? 1 : 0;
+          if (n == 0) {
+            continue;
+          }
+          try
+          {
+            if (((Aircraft)this.FM.actor instanceof P_51Mustang))
+              this.bIsMustang = true;
+          }
+          catch (Throwable localThrowable)
+          {
+          }
+          if ((this.bIsMustang) && (System.currentTimeMillis() <= this.lWeaponTime + 250L / ()Time.speed())) continue;
+          i1 = -1;
+          for (int i2 = 0; i2 < this.Weapons[m].length; i2 += 2)
+          {
+            if (((this.Weapons[m][i2] instanceof FuelTankGun)) || (!this.Weapons[m][i2].haveBullets()))
+              continue;
+            if ((this.bHasBayDoors) && (this.Weapons[m][i2].getHookName().startsWith("_BombSpawn"))) {
+              if (this.BayDoorControl == 1.0F)
+                this.Weapons[m][i2].shots(n);
+            } else {
+              if ((!this.bIsMustang) || ((this.Weapons[m][i2] instanceof RocketGun4andHalfInch)) || (((this.Weapons[m][i2] instanceof RocketGun)) && (this.iToggleRocketSide == this.LEFT)) || (((this.Weapons[m][i2] instanceof BombGun)) && (this.iToggleBombSide == this.LEFT)))
+              {
+                this.Weapons[m][i2].shots(n);
+              }
+              if (this.Weapons[m][i2].getHookName().startsWith("_BombSpawn"))
+                this.BayDoorControl = 1.0F;
             }
-            if (((this.Weapons[j][k] instanceof BombGun)) && (!((BombGun)this.Weapons[j][k]).isCassette())) {
-              break;
+            if (((!(this.Weapons[m][i2] instanceof BombGun)) || (((BombGun)this.Weapons[m][i2]).isCassette())) && ((!(this.Weapons[m][i2] instanceof RocketGun)) || (((RocketGun)this.Weapons[m][i2]).isCassette())))
+              continue;
+            i1 = i2;
+            this.lWeaponTime = System.currentTimeMillis();
+            break;
+          }
+
+          for (int i3 = 1; i3 < this.Weapons[m].length; i3 += 2)
+          {
+            if (((this.Weapons[m][i3] instanceof FuelTankGun)) || (!this.Weapons[m][i3].haveBullets()))
+              continue;
+            if ((this.bHasBayDoors) && (this.Weapons[m][i3].getHookName().startsWith("_BombSpawn"))) {
+              if (this.BayDoorControl == 1.0F)
+                this.Weapons[m][i3].shots(n);
             }
-            if (((this.Weapons[j][k] instanceof RocketGun)) && (!((RocketGun)this.Weapons[j][k]).isCassette())) {
-              break;
-            }
-            if (((this.Weapons[j][k] instanceof RocketBombGun)) && (!((RocketBombGun)this.Weapons[j][k]).isCassette()))
+            else if ((!this.bIsMustang) || ((this.Weapons[m][i3] instanceof RocketGun4andHalfInch)) || (((this.Weapons[m][i3] instanceof RocketGun)) && (this.iToggleRocketSide == this.RIGHT)) || (((this.Weapons[m][i3] instanceof BombGun)) && (this.iToggleBombSide == this.RIGHT)))
             {
-              break;
+              this.Weapons[m][i3].shots(n);
+            }
+            if (((!(this.Weapons[m][i3] instanceof BombGun)) || (((BombGun)this.Weapons[m][i3]).isCassette())) && ((!(this.Weapons[m][i3] instanceof RocketGun)) || (((RocketGun)this.Weapons[m][i3]).isCassette())))
+              continue;
+            i1 = i3;
+            this.lWeaponTime = System.currentTimeMillis();
+            break;
+          }
+
+          if (i1 != -1) {
+            if ((this.Weapons[m][i1] instanceof BombGun)) {
+              if (this.iToggleBombSide == this.LEFT) this.iToggleBombSide = this.RIGHT; else {
+                this.iToggleBombSide = this.LEFT;
+              }
+            }
+            else if (!(this.Weapons[m][i1] instanceof RocketGun4andHalfInch)) {
+              if (this.iToggleRocketSide == this.LEFT) this.iToggleRocketSide = this.RIGHT; else {
+                this.iToggleRocketSide = this.LEFT;
+              }
             }
           }
-          for (k = 1; k < this.Weapons[j].length; k += 2) {
-            if (((this.Weapons[j][k] instanceof FuelTankGun)) || 
-              (!this.Weapons[j][k].haveBullets())) continue;
-            this.Weapons[j][k].shots(n);
-            if (((this.Weapons[j][k] instanceof BombGun)) && (!((BombGun)this.Weapons[j][k]).isCassette())) {
-              break;
-            }
-            if (((this.Weapons[j][k] instanceof RocketGun)) && (!((RocketGun)this.Weapons[j][k]).isCassette())) {
-              break;
-            }
-            if (((this.Weapons[j][k] instanceof RocketBombGun)) && (!((RocketBombGun)this.Weapons[j][k]).isCassette()))
-            {
-              break;
-            }
-          }
-          this.WeaponControl[j] = false;
-          break;
+
+          if (this.bIsMustang) continue;
+          this.WeaponControl[m] = false; break;
         default:
-          int i1 = 0;
-          for (k = 0; k < this.Weapons[j].length; k++) {
-            this.Weapons[j][k].shots(this.WeaponControl[j] != 0 ? -1 : 0);
-            i1 = (i1 != 0) || (this.Weapons[j][k].haveBullets()) ? 1 : 0;
-          }
-          if ((this.WeaponControl[j] == 0) || (i1 != 0) || (!this.FM.isPlayers())) continue;
-          ForceFeedback.fxTriggerShake(j, false);
+          for (i1 = 0; i1 < this.Weapons[m].length; i1++)
+            this.Weapons[m][i1].shots(this.WeaponControl[m] != 0 ? -1 : 0);
         }
+      }
   }
 
   public float getWeaponMass()
   {
     int i = this.Weapons.length;
-
     float f = 0.0F;
-
-    for (int k = 0; k < i; k++)
-      if (this.Weapons[k] != null) {
-        int m = this.Weapons[k].length;
-        for (int j = 0; j < m; j++) {
-          BulletEmitter localBulletEmitter = this.Weapons[k][j];
-          if ((localBulletEmitter != null) && (!(localBulletEmitter instanceof FuelTankGun))) {
-            int n = localBulletEmitter.countBullets();
-            if (n < 0) {
-              n = 1;
-              if (((localBulletEmitter instanceof BombGun)) && (((BombGun)localBulletEmitter).isCassette())) {
-                n = 10;
-              }
-            }
-            f += localBulletEmitter.bulletMassa() * n;
-          }
+    for (int j = 0; j < i; j++) {
+      if (this.Weapons[j] == null)
+        continue;
+      int k = this.Weapons[j].length;
+      for (int m = 0; m < k; m++)
+      {
+        BulletEmitter localBulletEmitter = this.Weapons[j][m];
+        if ((localBulletEmitter == null) || ((localBulletEmitter instanceof FuelTankGun)))
+          continue;
+        int n = localBulletEmitter.countBullets();
+        if (n < 0)
+        {
+          n = 1;
+          if (((localBulletEmitter instanceof BombGun)) && (((BombGun)localBulletEmitter).isCassette()))
+            n = 10;
         }
+        f += localBulletEmitter.bulletMassa() * n;
       }
+
+    }
+
     return f;
   }
 
   public int getWeaponCount(int paramInt)
   {
-    if ((paramInt >= this.Weapons.length) || (this.Weapons[paramInt] == null)) return 0;
-    int k = this.Weapons[paramInt].length;
+    if ((paramInt >= this.Weapons.length) || (this.Weapons[paramInt] == null))
+      return 0;
+    int i = this.Weapons[paramInt].length;
     int j;
-    for (int i = j = 0; j < k; j++) {
+    int k = j = 0;
+    for (; j < i; j++)
+    {
       BulletEmitter localBulletEmitter = this.Weapons[paramInt][j];
-      if ((localBulletEmitter == null) || ((localBulletEmitter instanceof FuelTankGun))) continue; i += localBulletEmitter.countBullets();
-    }
-    return i;
-  }
-
-  public boolean dropFuelTanks()
-  {
-    int k = 0;
-    for (int i = 0; i < this.Weapons.length; i++) {
-      if (this.Weapons[i] != null) {
-        for (int j = 0; j < this.Weapons[i].length; j++) {
-          if ((!(this.Weapons[i][j] instanceof FuelTankGun)) || 
-            (!this.Weapons[i][j].haveBullets())) continue;
-          this.Weapons[i][j].shots(1);
-          k = 1;
-        }
+      if ((localBulletEmitter != null) && (!(localBulletEmitter instanceof FuelTankGun))) {
+        k += localBulletEmitter.countBullets();
       }
-    }
-    if (k != 0) {
-      ((Aircraft)this.FM.actor).replicateDropFuelTanks();
-      this.FM.M.onFuelTanksChanged();
     }
     return k;
   }
 
-  public boolean dropExternalStores(boolean paramBoolean)
+  public boolean dropFuelTanks()
   {
-    boolean bool = ((Aircraft)this.FM.actor).dropExternalStores(paramBoolean);
-    if (bool)
-    {
-      this.FM.AS.externalStoresDropped = true;
-      ((Aircraft)this.FM.actor).replicateDropExternalStores();
+    int i = 0;
+    for (int j = 0; j < this.Weapons.length; j++) {
+      if (this.Weapons[j] == null)
+        continue;
+      for (int k = 0; k < this.Weapons[j].length; k++) {
+        if ((!(this.Weapons[j][k] instanceof FuelTankGun)) || (!this.Weapons[j][k].haveBullets()))
+          continue;
+        this.Weapons[j][k].shots(1);
+        i = 1;
+      }
+
     }
-    return bool;
+
+    if (i != 0)
+    {
+      ((Aircraft)this.FM.actor).replicateDropFuelTanks();
+      this.FM.M.onFuelTanksChanged();
+    }
+    return i;
   }
 
   public FuelTank[] getFuelTanks()
   {
-    int k = 0;
-    int j;
-    for (int i = 0; i < this.Weapons.length; i++) {
-      if (this.Weapons[i] != null) {
-        for (j = 0; j < this.Weapons[i].length; j++) {
-          if ((this.Weapons[i][j] instanceof FuelTankGun)) {
-            k++;
-          }
+    int i = 0;
+    for (int j = 0; j < this.Weapons.length; j++) {
+      if (this.Weapons[j] == null)
+        continue;
+      for (int k = 0; k < this.Weapons[j].length; k++) {
+        if ((this.Weapons[j][k] instanceof FuelTankGun)) {
+          i++;
         }
       }
     }
-    FuelTank[] arrayOfFuelTank = new FuelTank[k];
-    for (i = k = 0; i < this.Weapons.length; i++) {
-      if (this.Weapons[i] != null) {
-        for (j = 0; j < this.Weapons[i].length; j++)
-          if ((this.Weapons[i][j] instanceof FuelTankGun))
-            arrayOfFuelTank[(k++)] = ((FuelTankGun)this.Weapons[i][j]).getFuelTank();
+    FuelTank[] arrayOfFuelTank = new FuelTank[i];
+    int m;
+    for (int n = m = 0; n < this.Weapons.length; n++) {
+      if (this.Weapons[n] == null)
+        continue;
+      for (int i1 = 0; i1 < this.Weapons[n].length; i1++) {
+        if ((this.Weapons[n][i1] instanceof FuelTankGun)) {
+          arrayOfFuelTank[(m++)] = ((FuelTankGun)this.Weapons[n][i1]).getFuelTank();
+        }
       }
     }
     return arrayOfFuelTank;
   }
 
-  public void resetControl(int paramInt) {
-    switch (paramInt) {
+  public void resetControl(int paramInt)
+  {
+    switch (paramInt)
+    {
     case 0:
       this.AileronControl = 0.0F;
       this.Ailerons = 0.0F;
       this.trimAileron = 0.0F;
-
       break;
     case 1:
       this.ElevatorControl = 0.0F;
       this.Elevators = 0.0F;
       this.trimElevator = 0.0F;
-
       break;
     case 2:
       this.RudderControl = 0.0F;

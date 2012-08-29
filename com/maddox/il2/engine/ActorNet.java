@@ -28,7 +28,7 @@ public abstract class ActorNet extends NetObj
         }
       }
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 

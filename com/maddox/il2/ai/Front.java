@@ -83,12 +83,11 @@ public class Front
   }
 
   public static void checkAircraftCaptured(Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.FM == null)) return;
     if (Actor.isAlive(paramAircraft)) {
-      if (paramAircraft.FM.isOk()) return;
+      if (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isOk()) return;
       if (!isCaptured(paramAircraft)) return;
-      for (int i = 0; i < paramAircraft.FM.crew; i++) {
-        if ((paramAircraft.FM.AS.isPilotDead(i)) || (paramAircraft.FM.AS.isPilotParatrooper(i)))
+      for (int i = 0; i < paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.crew; i++) {
+        if ((paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(i)) || (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotParatrooper(i)))
           continue;
         EventLog.onCaptured(paramAircraft, i);
         if ((!Config.isUSE_RENDER()) || 
@@ -106,7 +105,7 @@ public class Front
   public static boolean isCaptured(Actor paramActor)
   {
     if ((paramActor == null) || (paramActor.pos == null)) return false;
-    return isCaptured(paramActor.getArmy(), paramActor.pos.getAbsPoint().x, paramActor.pos.getAbsPoint().y);
+    return isCaptured(paramActor.getArmy(), paramActor.pos.getAbsPoint().jdField_x_of_type_Double, paramActor.pos.getAbsPoint().jdField_y_of_type_Double);
   }
 
   public static boolean isCaptured(int paramInt, double paramDouble1, double paramDouble2)
@@ -124,7 +123,7 @@ public class Front
     for (int k = 0; k < j; k++) {
       Marker localMarker = (Marker)localList1.get(k);
       if (paramInt == localMarker.army) {
-        d3 = (localMarker.x - paramDouble1) * (localMarker.x - paramDouble1) + (localMarker.y - paramDouble2) * (localMarker.y - paramDouble2);
+        double d3 = (localMarker.jdField_x_of_type_Double - paramDouble1) * (localMarker.jdField_x_of_type_Double - paramDouble1) + (localMarker.jdField_y_of_type_Double - paramDouble2) * (localMarker.jdField_y_of_type_Double - paramDouble2);
         if (d1 > d3) {
           d1 = d3;
           localObject = localMarker;
@@ -132,29 +131,30 @@ public class Front
       }
     }
     if (localObject == null) {
-      return true; } double d2 = localObject.x;
-    double d3 = localObject.y;
-    double d4 = paramDouble1;
-    double d5 = paramDouble2;
-    double d10;
-    while (true) { double d6 = (d2 - d4) * (d2 - d4) + (d3 - d5) * (d3 - d5);
-      if (d6 <= 1000000.0D)
+      return true;
+    }
+    double d2 = localObject.jdField_x_of_type_Double;
+    double d4 = localObject.jdField_y_of_type_Double;
+    double d5 = paramDouble1;
+    double d6 = paramDouble2;
+    while (true) {
+      double d7 = (d2 - d5) * (d2 - d5) + (d4 - d6) * (d4 - d6);
+      if (d7 <= 1000000.0D)
         break;
-      double d8 = (d2 + d4) * 0.5D;
-      d10 = (d3 + d5) * 0.5D;
+      double d8 = (d2 + d5) * 0.5D;
+      d10 = (d4 + d6) * 0.5D;
       i = army(d8, d10);
       if (i == paramInt) {
         d2 = d8;
-        d3 = d10;
-      } else {
-        d4 = d8;
-        d5 = d10;
+        d4 = d10; continue;
       }
+      d5 = d8;
+      d6 = d10;
     }
 
-    d2 = (d2 + d4) * 0.5D;
-    d3 = (d3 + d5) * 0.5D;
-    d1 = (d2 - paramDouble1) * (d2 - paramDouble1) + (d3 - paramDouble2) * (d3 - paramDouble2);
+    d2 = (d2 + d5) * 0.5D;
+    d4 = (d4 + d6) * 0.5D;
+    d1 = (d2 - paramDouble1) * (d2 - paramDouble1) + (d4 - paramDouble2) * (d4 - paramDouble2);
 
     if (d1 >= 2500000000.0D) {
       return true;
@@ -166,17 +166,17 @@ public class Front
       if (((localActor instanceof Aircraft)) || 
         (paramInt == localActor.getArmy())) continue;
       Point3d localPoint3d = localActor.pos.getAbsPoint();
-      d10 = (localPoint3d.x - paramDouble1) * (localPoint3d.x - paramDouble1) + (localPoint3d.y - paramDouble2) * (localPoint3d.y - paramDouble2);
+      d10 = (localPoint3d.jdField_x_of_type_Double - paramDouble1) * (localPoint3d.jdField_x_of_type_Double - paramDouble1) + (localPoint3d.jdField_y_of_type_Double - paramDouble2) * (localPoint3d.jdField_y_of_type_Double - paramDouble2);
       if (d10 < 1000000.0D) {
         return true;
       }
     }
 
-    double d7 = Math.sqrt(d1) / 50000.0D;
-    double d9 = paramDouble1 + paramDouble2;
-    if (d9 < 0.0D) d9 = -d9;
-    d9 -= (int)d9;
-    return 0.6D + d7 * 0.5D + (d9 - 0.5D) >= 0.5D;
+    double d9 = Math.sqrt(d1) / 50000.0D;
+    double d10 = paramDouble1 + paramDouble2;
+    if (d10 < 0.0D) d10 = -d10;
+    d10 -= (int)d10;
+    return 0.6D + d9 * 0.5D + (d10 - 0.5D) >= 0.5D;
   }
 
   public static int army(double paramDouble1, double paramDouble2) {
@@ -190,7 +190,7 @@ public class Front
     double d1 = 90000000000.0D;
     for (int k = 0; k < i; k++) {
       Marker localMarker = (Marker)this.allMarkers.get(k);
-      double d2 = (localMarker.x - paramDouble1) * (localMarker.x - paramDouble1) + (localMarker.y - paramDouble2) * (localMarker.y - paramDouble2);
+      double d2 = (localMarker.jdField_x_of_type_Double - paramDouble1) * (localMarker.jdField_x_of_type_Double - paramDouble1) + (localMarker.jdField_y_of_type_Double - paramDouble2) * (localMarker.jdField_y_of_type_Double - paramDouble2);
       if (d1 > d2) {
         j = localMarker.army;
         d1 = d2;
@@ -224,8 +224,8 @@ public class Front
         int m = localNumberTokenizer.next(1, 1, Army.amountNet() - 1);
         if ((m <= Army.amountSingle() - 1) || (Mission.isDogfight())) {
           Marker localMarker = new Marker();
-          localMarker.x = d1;
-          localMarker.y = d2;
+          localMarker.jdField_x_of_type_Double = d1;
+          localMarker.jdField_y_of_type_Double = d2;
           localMarker.army = m;
           localMarker._armyMask = (1 << m - 1);
           this.allMarkers.add(localMarker);
@@ -299,12 +299,12 @@ public class Front
     double d2 = localCameraOrtho2D.worldYOffset + (localCameraOrtho2D.right - localCameraOrtho2D.left) / localCameraOrtho2D.worldScale * 0.5D;
     double d3 = localCameraOrtho2D.worldXOffset + (localCameraOrtho2D.top - localCameraOrtho2D.bottom) / localCameraOrtho2D.worldScale * 0.5D;
     double d4 = 90000000000.0D;
-    Marker localMarker2;
+
     for (int i1 = 0; i1 < k; i1++) {
-      localMarker2 = (Marker)this.allMarkers.get(i1);
-      d6 = localMarker2.x - d3;
-      double d7 = localMarker2.y - d2;
-      localMarker2._d2 = (d6 * d6 + d7 * d7);
+      Marker localMarker2 = (Marker)this.allMarkers.get(i1);
+      double d5 = localMarker2.jdField_x_of_type_Double - d3;
+      d7 = localMarker2.jdField_y_of_type_Double - d2;
+      localMarker2._d2 = (d5 * d5 + d7 * d7);
       if (d4 > localMarker2._d2) {
         d4 = localMarker2._d2;
       }
@@ -314,11 +314,11 @@ public class Front
     d4 += (localCameraOrtho2D.right - localCameraOrtho2D.left + (localCameraOrtho2D.top - localCameraOrtho2D.bottom)) / localCameraOrtho2D.worldScale;
     d4 *= d4;
     m = 0;
-    for (i1 = 0; i1 < k; i1++) {
-      localMarker2 = (Marker)this.allMarkers.get(i1);
-      if (d4 > localMarker2._d2) {
-        this.markers.add(localMarker2);
-        m |= localMarker2._armyMask;
+    for (int i2 = 0; i2 < k; i2++) {
+      Marker localMarker3 = (Marker)this.allMarkers.get(i2);
+      if (d4 > localMarker3._d2) {
+        this.markers.add(localMarker3);
+        m |= localMarker3._armyMask;
       }
     }
 
@@ -329,28 +329,28 @@ public class Front
     }
 
     k = this.markers.size();
-    double d5 = this.camWorldYOffset - 0.5D * d1;
-    double d6 = this.camWorldXOffset - 0.5D * d1;
-    int i2 = 0;
+    double d6 = this.camWorldYOffset - 0.5D * d1;
+    double d7 = this.camWorldXOffset - 0.5D * d1;
     int i3 = 0;
+    int i4 = 0;
     m = 0;
-    int i7;
-    for (int i4 = 0; i4 < j; i4++) {
-      double d8 = d5 + i4 * d1;
-      for (i7 = 0; i7 < i; i7++) {
-        double d9 = d6 + i7 * d1;
+    int i8;
+    for (int i5 = 0; i5 < j; i5++) {
+      double d8 = d6 + i5 * d1;
+      for (i8 = 0; i8 < i; i8++) {
+        double d9 = d7 + i8 * d1;
         double d10 = d4;
-        for (int i9 = 0; i9 < k; i9++) {
-          Marker localMarker3 = (Marker)this.markers.get(i9);
-          double d11 = (localMarker3.x - d9) * (localMarker3.x - d9) + (localMarker3.y - d8) * (localMarker3.y - d8);
+        for (int i12 = 0; i12 < k; i12++) {
+          Marker localMarker4 = (Marker)this.markers.get(i12);
+          double d11 = (localMarker4.jdField_x_of_type_Double - d9) * (localMarker4.jdField_x_of_type_Double - d9) + (localMarker4.jdField_y_of_type_Double - d8) * (localMarker4.jdField_y_of_type_Double - d8);
           if (d10 > d11) {
             d10 = d11;
-            i2 = localMarker3.army;
-            i3 = localMarker3._armyMask;
+            i3 = localMarker4.army;
+            i4 = localMarker4._armyMask;
           }
         }
-        this.mask[(i * i4 + i7)] = (byte)i2;
-        m |= i3;
+        this.mask[(i * i5 + i8)] = (byte)i3;
+        m |= i4;
       }
     }
     this.markers.clear();
@@ -359,52 +359,51 @@ public class Front
       this.bExistFront = false;
       return;
     }
-    int i5;
-    int i6;
-    for (i4 = 1; i4 < j - 1; i4++) {
-      for (i5 = 1; i5 < i - 1; i5++) {
-        i6 = i4 * i + i5;
-        m = this.mask[i6];
-        if ((m == this.mask[(i6 - 1)]) && (m == this.mask[(i6 + 1)]) && (m == this.mask[(i6 - i)]) && (m == this.mask[(i6 + i)]))
+
+    for (int i6 = 1; i6 < j - 1; i6++) {
+      for (i7 = 1; i7 < i - 1; i7++) {
+        i8 = i6 * i + i7;
+        m = this.mask[i8];
+        if ((m == this.mask[(i8 - 1)]) && (m == this.mask[(i8 + 1)]) && (m == this.mask[(i8 - i)]) && (m == this.mask[(i8 + i)]))
         {
-          this.mask2[i6] = 0;
+          this.mask2[i8] = 0;
         }
-        else this.mask2[i6] = (byte)m;
+        else this.mask2[i8] = (byte)m;
       }
 
     }
 
-    for (i4 = 1; i4 < j - 1; i4++) {
-      for (i5 = 1; i5 < i - 1; i5++) {
-        i6 = i4 * i + i5;
-        i7 = this.mask2[i6];
-        if (i7 == 0) {
-          this.mask[i6] = 0;
+    for (int i7 = 1; i7 < j - 1; i7++) {
+      for (i8 = 1; i8 < i - 1; i8++) {
+        int i9 = i7 * i + i8;
+        int i10 = this.mask2[i9];
+        if (i10 == 0) {
+          this.mask[i9] = 0;
         } else {
-          int i8 = 0;
-          if (this.mask2[(i6 + 1)] == i7) {
-            if ((this.mask2[(i6 + i)] != this.mask2[(i6 - i + 1)]) && (this.mask2[(i6 - i)] != this.mask2[(i6 + i + 1)]))
+          int i11 = 0;
+          if (this.mask2[(i9 + 1)] == i10) {
+            if ((this.mask2[(i9 + i)] != this.mask2[(i9 - i + 1)]) && (this.mask2[(i9 - i)] != this.mask2[(i9 + i + 1)]))
             {
-              i8 |= 1;
+              i11 |= 1;
             }
-          } else if ((this.mask2[(i6 + i + 1)] == i7) && 
-            (this.mask2[(i6 + i)] != i7) && 
-            (this.mask2[(i6 + i)] != this.mask2[(i6 + 1)])) {
-            i8 |= 2;
+          } else if ((this.mask2[(i9 + i + 1)] == i10) && 
+            (this.mask2[(i9 + i)] != i10) && 
+            (this.mask2[(i9 + i)] != this.mask2[(i9 + 1)])) {
+            i11 |= 2;
           }
 
-          if (this.mask2[(i6 + i)] == i7) {
-            if ((this.mask2[(i6 - 1)] != this.mask2[(i6 + i + 1)]) && (this.mask2[(i6 + i - 1)] != this.mask2[(i6 + 1)]))
+          if (this.mask2[(i9 + i)] == i10) {
+            if ((this.mask2[(i9 - 1)] != this.mask2[(i9 + i + 1)]) && (this.mask2[(i9 + i - 1)] != this.mask2[(i9 + 1)]))
             {
-              i8 |= 4;
+              i11 |= 4;
             }
-          } else if ((this.mask2[(i6 + i - 1)] == i7) && 
-            (this.mask2[(i6 - 1)] != i7) && 
-            (this.mask2[(i6 - 1)] != this.mask2[(i6 + i)])) {
-            i8 |= 8;
+          } else if ((this.mask2[(i9 + i - 1)] == i10) && 
+            (this.mask2[(i9 - 1)] != i10) && 
+            (this.mask2[(i9 - 1)] != this.mask2[(i9 + i)])) {
+            i11 |= 8;
           }
 
-          this.mask[i6] = (byte)i8;
+          this.mask[i9] = (byte)i11;
         }
       }
     }
@@ -414,14 +413,14 @@ public class Front
   public void _preRender(boolean paramBoolean)
   {
     CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)Render.currentCamera();
-    if (!this.tilesChanged)
+    if (!this.tilesChanged) {
       this.tilesChanged = ((this.prevNCountMarkers != this.allMarkers.size()) || (this.prevCamLeft != localCameraOrtho2D.left) || (this.prevCamBottom != localCameraOrtho2D.bottom) || (this.prevCamWorldScale != localCameraOrtho2D.worldScale) || (this.prevCamWorldXOffset != localCameraOrtho2D.worldXOffset) || (this.prevCamWorldYOffset != localCameraOrtho2D.worldYOffset));
-    int i;
-    Marker localMarker;
+    }
+
     if ((!this.tilesChanged) && (paramBoolean)) {
-      for (i = 0; i < this.prevNCountMarkers; i++) {
-        localMarker = (Marker)this.allMarkers.get(i);
-        if ((localMarker.x != localMarker._x) || (localMarker.y != localMarker._y)) {
+      for (int i = 0; i < this.prevNCountMarkers; i++) {
+        Marker localMarker1 = (Marker)this.allMarkers.get(i);
+        if ((localMarker1.jdField_x_of_type_Double != localMarker1._x) || (localMarker1.jdField_y_of_type_Double != localMarker1._y)) {
           this.tilesChanged = true;
           break;
         }
@@ -435,10 +434,10 @@ public class Front
       this.prevCamWorldScale = localCameraOrtho2D.worldScale;
       this.prevCamWorldXOffset = localCameraOrtho2D.worldXOffset;
       this.prevCamWorldYOffset = localCameraOrtho2D.worldYOffset;
-      for (i = 0; i < this.prevNCountMarkers; i++) {
-        localMarker = (Marker)this.allMarkers.get(i);
-        Marker.access$002(localMarker, localMarker.x);
-        Marker.access$102(localMarker, localMarker.y);
+      for (int j = 0; j < this.prevNCountMarkers; j++) {
+        Marker localMarker2 = (Marker)this.allMarkers.get(j);
+        Marker.access$002(localMarker2, localMarker2.jdField_x_of_type_Double);
+        Marker.access$102(localMarker2, localMarker2.jdField_y_of_type_Double);
       }
       this.tilesChanged = false;
       this.bTilesUpdated = true;
@@ -466,7 +465,7 @@ public class Front
     d2 += 32.0D * this.tStep;
     d3 = Landscape.HQ((float)d1, (float)d2);
     this.main.project2d(d1, d2, d3, this.pointLand1);
-    Render.drawTile((float)this.pointLand0.x, (float)this.pointLand0.y, (float)(this.pointLand1.x - this.pointLand0.x), (float)(this.pointLand1.y - this.pointLand0.y), 0.0F, paramMat, paramInt, 0.0F, 0.0F, 1.0F, 1.0F);
+    Render.drawTile((float)this.pointLand0.jdField_x_of_type_Double, (float)this.pointLand0.jdField_y_of_type_Double, (float)(this.pointLand1.jdField_x_of_type_Double - this.pointLand0.jdField_x_of_type_Double), (float)(this.pointLand1.jdField_y_of_type_Double - this.pointLand0.jdField_y_of_type_Double), 0.0F, paramMat, paramInt, 0.0F, 0.0F, 1.0F, 1.0F);
   }
 
   public void _render(boolean paramBoolean)

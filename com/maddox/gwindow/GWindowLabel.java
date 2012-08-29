@@ -24,11 +24,4 @@ public class GWindowLabel extends GWindowDialogControl
     this.align = 0;
     doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
   }
-
-  public GWindowLabel(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString1, String paramString2, int paramInt) {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    this.align = paramInt;
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
 }

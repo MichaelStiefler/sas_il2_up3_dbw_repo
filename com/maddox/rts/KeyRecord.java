@@ -451,7 +451,7 @@ public class KeyRecord
         }
         postTo(this.out, localNetMsgGuaranted);
         this.out.flush(); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
 
@@ -468,7 +468,7 @@ public class KeyRecord
                 localMsgEvent.p5 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() != 0) {
                   localMsgEvent.p6 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() != 0) {
                     localMsgEvent.p7 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() != 0) {
-                      localMsgEvent.p8 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() != 0) { localMsgEvent.p9 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() != 0); }
+                      localMsgEvent.p8 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() != 0) { localMsgEvent.p9 = paramNetMsgInput.readInt(); if (paramNetMsgInput.available() == 0); }
                     }
                   }
                 }

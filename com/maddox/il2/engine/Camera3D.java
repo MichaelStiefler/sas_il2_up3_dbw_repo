@@ -22,14 +22,14 @@ public class Camera3D extends Camera
   {
     this.FOV = paramFloat1;
 
-    this.ZNear = paramFloat2; this.ZFar = paramFloat3;
+    this.jdField_ZNear_of_type_Float = paramFloat2; this.jdField_ZFar_of_type_Float = paramFloat3;
   }
 
   public void set(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
   {
     this.FOV = paramFloat1;
 
-    this.ZNear = paramFloat2; this.ZFar = paramFloat3;
+    this.jdField_ZNear_of_type_Float = paramFloat2; this.jdField_ZFar_of_type_Float = paramFloat3;
     this.aspect = paramFloat4;
   }
 
@@ -50,21 +50,21 @@ public class Camera3D extends Camera
     if (this.FOV <= 0.0F) {
       return false;
     }
-    SetZOrder(Render.current().getZOrder());
+    Camera.SetZOrder(Render.current().getZOrder());
 
-    SetViewportCrop(paramFloat, paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramInt7, paramInt8, paramInt9, paramInt10);
+    Camera.SetViewportCrop(paramFloat, paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramInt7, paramInt8, paramInt9, paramInt10);
 
-    SetFOV(this.FOV, this.ZNear, this.ZFar);
+    Camera.SetFOV(this.FOV, this.jdField_ZNear_of_type_Float, this.jdField_ZFar_of_type_Float);
 
-    this.pos.getRender(tmpP, tmpO);
-    tmpd[0] = tmpP.x; tmpd[1] = tmpP.y; tmpd[2] = tmpP.z;
-    tmpd[3] = (-tmpO.azimut());
-    tmpd[4] = tmpO.tangage();
-    tmpd[5] = (-tmpO.kren());
-    SetCameraPos(tmpd);
-    GetVirtOrigin(tmpOr);
-    this.XOffset = tmpOr[0];
-    this.YOffset = tmpOr[1];
+    this.pos.getRender(Camera.tmpP, Camera.tmpO);
+    Camera.tmpd[0] = Camera.tmpP.x; Camera.tmpd[1] = Camera.tmpP.y; Camera.tmpd[2] = Camera.tmpP.z;
+    Camera.tmpd[3] = (-Camera.tmpO.azimut());
+    Camera.tmpd[4] = Camera.tmpO.tangage();
+    Camera.tmpd[5] = (-Camera.tmpO.kren());
+    Camera.SetCameraPos(Camera.tmpd);
+    Camera.GetVirtOrigin(Camera.tmpOr);
+    this.XOffset = Camera.tmpOr[0];
+    this.YOffset = Camera.tmpOr[1];
 
     return true;
   }

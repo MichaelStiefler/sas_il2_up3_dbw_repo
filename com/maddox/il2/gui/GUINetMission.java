@@ -1,7 +1,6 @@
 package com.maddox.il2.gui;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3d;
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
@@ -19,17 +18,12 @@ import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.game.ZutiTimer_Refly;
 import com.maddox.il2.net.Chat;
 import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.Paratrooper;
-import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.rts.NetEnv;
 
 public class GUINetMission extends GameState
@@ -48,75 +42,9 @@ public class GUINetMission extends GameState
   public GUIButton bBack;
   public GUIButton bTrack;
   protected boolean bEnableReFly;
-  protected static ZutiTimer_Refly reflyTimer = null;
-  private static Paratrooper playerParatrooper = null;
-
-  public static void setReflyTimer(ZutiTimer_Refly paramZutiTimer_Refly)
-  {
-    reflyTimer = paramZutiTimer_Refly;
-  }
-
-  public static void setPlayerParatrooper(Paratrooper paramParatrooper)
-  {
-    playerParatrooper = paramParatrooper;
-  }
-
-  private static boolean isStationaryOnCarrierDeck()
-  {
-    if ((World.getPlayerFM() != null) && (World.getPlayerFM().Gears.isUnderDeck()))
-    {
-      if ((World.getPlayerFM().brakeShoeLastCarrier != null) && ((World.getPlayerFM().brakeShoeLastCarrier instanceof BigshipGeneric)))
-      {
-        BigshipGeneric localBigshipGeneric = (BigshipGeneric)World.getPlayerFM().brakeShoeLastCarrier;
-        Vector3d localVector3d1 = new Vector3d();
-        localBigshipGeneric.getSpeed(localVector3d1);
-        Vector3d localVector3d2 = new Vector3d();
-        World.getPlayerFM().getSpeed(localVector3d2);
-        if (Math.abs(localVector3d2.length() - localVector3d1.length()) < 0.5D)
-          return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean isOkToReFly()
-  {
-    Aircraft localAircraft = World.getPlayerAircraft();
-    if ((World.isPlayerParatrooper()) && (!World.isPlayerDead()) && (playerParatrooper != null) && (playerParatrooper.isChuteSafelyOpened()))
-    {
-      return true;
-    }
-    if ((localAircraft != null) && (!World.isPlayerParatrooper()) && (!World.isPlayerDead()))
-    {
-      if ((World.getPlayerFM().brakeShoe) || (isStationaryOnCarrierDeck()))
-        return true;
-      if ((World.getPlayerFM().isCapableOfBMP()) && (World.getPlayerFM().isCapableOfACM()) && (World.getPlayerFM().Gears.onGround()) && (localAircraft.getSpeed(null) < 1.0D))
-      {
-        return true;
-      }
-    }
-    return false;
-  }
 
   public static boolean isEnableReFly()
   {
-    if (NetAircraft.ZUTI_REFLY_OWERRIDE)
-      return true;
-    if (Main.cur().mission.zutiMisc_DisableReflyForMissionDuration)
-      return false;
-    if (Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied)
-    {
-      if (ZutiSupportMethods.ZUTI_KIA_COUNTER > Main.cur().mission.zutiMisc_MaxAllowedKIA)
-        return false;
-      if ((ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED) || (isOkToReFly()))
-      {
-        reflyTimer = null;
-        return true;
-      }
-
-      return false;
-    }
-
     if (Main.cur().netServerParams.isCoop())
       return false;
     if (!Actor.isValid(World.getPlayerAircraft()))
@@ -139,18 +67,8 @@ public class GUINetMission extends GameState
     {
       return true;
     }
-    if (World.isPlayerParatrooper())
-    {
-      return true;
-    }
 
-    Aircraft localAircraft = World.getPlayerAircraft();
-
-    if ((localAircraft != null) && ((localAircraft.FM.brakeShoe) || (isStationaryOnCarrierDeck()))) {
-      return true;
-    }
-
-    return (localAircraft != null) && (localAircraft.FM.Gears.isAnyDamaged()) && (localAircraft.FM.Gears.onGround());
+    return World.isPlayerParatrooper();
   }
 
   public void _leave()
@@ -177,7 +95,7 @@ public class GUINetMission extends GameState
       }
     } else if (Actor.isAlive(World.getPlayerAircraft())) {
       localObject = World.getPlayerAircraft();
-      if ((!((Aircraft)localObject).FM.isOk()) && (Front.isCaptured((Actor)localObject))) {
+      if ((!((Aircraft)localObject).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isOk()) && (Front.isCaptured((Actor)localObject))) {
         World.setPlayerCaptured();
         if (Config.isUSE_RENDER()) HUD.log("PlayerCAPT");
         Chat.sendLog(1, "gore_captured", (NetUser)NetEnv.host(), null);
@@ -191,36 +109,32 @@ public class GUINetMission extends GameState
       if (World.getPlayerAircraft().isAlive()) {
         Aircraft localAircraft = World.getPlayerAircraft();
         Object localObject = World.getPlayerAircraft();
-        FlightModel localFlightModel = World.getPlayerAircraft().FM;
+        FlightModel localFlightModel = World.getPlayerAircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
         boolean bool = false;
 
-        if (localFlightModel.isWasAirborne())
+        while (localFlightModel.isWasAirborne())
         {
           if (localFlightModel.isStationedOnGround()) {
             if (localFlightModel.isNearAirdrome()) {
-              if (localFlightModel.isTakenMortalDamage())
-                Chat.sendLogRnd(2, "gore_crashland", localAircraft, null);
-              else
-                Chat.sendLogRnd(2, "gore_lands", localAircraft, null);
-            }
-            else {
-              localObject = localAircraft.getDamager();
-              bool = true;
-              if (!World.isPlayerParatrooper()) {
-                if (Engine.cur.land.isWater(localFlightModel.Loc.x, localFlightModel.Loc.y))
-                  Chat.sendLogRnd(2, "gore_swim", localAircraft, null);
-                else {
-                  Chat.sendLogRnd(2, "gore_ditch", localAircraft, null);
-                }
+              if (localFlightModel.isTakenMortalDamage()) {
+                Chat.sendLogRnd(2, "gore_crashland", localAircraft, null); break;
               }
+              Chat.sendLogRnd(2, "gore_lands", localAircraft, null); break;
             }
 
-          }
-          else if ((localFlightModel.isTakenMortalDamage()) || (!localFlightModel.isCapableOfBMP())) {
             localObject = localAircraft.getDamager();
             bool = true;
+            if (World.isPlayerParatrooper()) break;
+            if (Engine.cur.land.isWater(localFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.x, localFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.y)) {
+              Chat.sendLogRnd(2, "gore_swim", localAircraft, null); break;
+            }
+            Chat.sendLogRnd(2, "gore_ditch", localAircraft, null); break;
           }
 
+          if ((!localFlightModel.isTakenMortalDamage()) && (localFlightModel.isCapableOfBMP())) break;
+          localObject = localAircraft.getDamager();
+          bool = true;
+          break;
         }
 
         if (!Actor.isValid((Actor)localObject))

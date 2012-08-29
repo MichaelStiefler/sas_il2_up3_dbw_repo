@@ -68,8 +68,8 @@ public final class StrengthProperties
     }
     tryToReadStrengthProperties(paramString1, paramSectFile, paramString3, tmpf6);
 
-    for (i = 0; i < 6; i++) {
-      if (tmpf6[i] < 0.0F) {
+    for (int j = 0; j < 6; j++) {
+      if (tmpf6[j] < 0.0F) {
         System.out.println(paramString1 + ": " + "Not enough strength data  in '" + paramString3 + "'");
 
         return false;
@@ -77,9 +77,9 @@ public final class StrengthProperties
     }
 
     this.SHOT_MIN_ENERGY = -1.0F;
-    for (i = 0; i < caliber2energy.length; i += 2) {
-      if (caliber2energy[i] == tmpf6[0]) {
-        this.SHOT_MIN_ENERGY = caliber2energy[(i + 1)];
+    for (int k = 0; k < caliber2energy.length; k += 2) {
+      if (caliber2energy[k] == tmpf6[0]) {
+        this.SHOT_MIN_ENERGY = caliber2energy[(k + 1)];
       }
     }
     if (this.SHOT_MIN_ENERGY <= 0.0F) {

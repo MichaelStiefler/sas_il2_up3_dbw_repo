@@ -37,7 +37,7 @@ class PropertyObserver extends Property
       arrayOfObject1 = this.listeners.toArray();
       invokeStack.add(arrayOfObject1);
     } else {
-      Object[] arrayOfObject2 = (Object[])(Object[])invokeStack.get(invokeStackPtr);
+      Object[] arrayOfObject2 = (Object[])invokeStack.get(invokeStackPtr);
       arrayOfObject1 = this.listeners.toArray(arrayOfObject2);
       if (arrayOfObject1 != arrayOfObject2)
         this.listeners.set(invokeStackPtr, arrayOfObject1);

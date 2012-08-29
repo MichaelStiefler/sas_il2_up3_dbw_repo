@@ -17,7 +17,6 @@ import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.NetMsgGuaranted;
@@ -37,18 +36,18 @@ public class JU_88MSTL extends JU_88
     super.msgEndAction(paramObject, paramInt);
     switch (paramInt) {
     case 2:
-      MsgExplosion.send(this, null, this.FM.Loc, this.droneInitiator, 0.0F, 4550.0F, 0, 890.0F);
+      MsgExplosion.send(this, null, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this.droneInitiator, 0.0F, 4550.0F, 0, 890.0F);
     }
   }
 
   protected void doExplosion()
   {
     super.doExplosion();
-    World.cur(); if (this.FM.Loc.z - 300.0D < World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y))
-      if (Engine.land().isWater(this.FM.Loc.x, this.FM.Loc.y))
-        Explosions.bomb1000_water(this.FM.Loc, 1.0F, 1.0F);
+    World.cur(); if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.z - 300.0D < World.land().HQ_Air(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double))
+      if (Engine.land().isWater(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double))
+        Explosions.bomb1000_water(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, 1.0F, 1.0F);
       else
-        Explosions.bomb1000_land(this.FM.Loc, 1.0F, 1.0F, true);
+        Explosions.bomb1000_land(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, 1.0F, 1.0F);
   }
 
   public void msgShot(Shot paramShot)
@@ -56,22 +55,22 @@ public class JU_88MSTL extends JU_88
     setShot(paramShot);
     if ((paramShot.chunkName.startsWith("WingLMid")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("WingRMid")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 3, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 3, 1);
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, 1);
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 2, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 2, 1);
     if ((paramShot.chunkName.startsWith("Engine1")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
     if ((paramShot.chunkName.startsWith("Engine2")) && 
       (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 1, 1);
     }
     super.msgShot(paramShot);
   }
@@ -85,7 +84,7 @@ public class JU_88MSTL extends JU_88
   }
 
   public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
     {
       for (int i = 0; i < this.drones.length; i++) {
         if (!Actor.isValid(this.drones[i]))
@@ -105,13 +104,13 @@ public class JU_88MSTL extends JU_88
       if (paramActor != this.drones[i])
         continue;
       Aircraft localAircraft = (Aircraft)paramActor;
-      if (localAircraft.FM.AS.isMaster())
-        if (this.FM.AS.isMaster())
+      if (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
         {
           typeDockableRequestDetach(paramActor, i, true);
         }
         else
-          this.FM.AS.netToMaster(33, i, 1, paramActor);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(33, i, 1, paramActor);
     }
   }
 
@@ -121,30 +120,30 @@ public class JU_88MSTL extends JU_88
       return;
     }
     if (paramBoolean) {
-      if (this.FM.AS.isMaster()) {
-        this.FM.AS.netToMirrors(34, paramInt, 1, paramActor);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMirrors(34, paramInt, 1, paramActor);
         typeDockableDoAttachToDrone(paramActor, paramInt);
       } else {
-        this.FM.AS.netToMaster(34, paramInt, 1, paramActor);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(34, paramInt, 1, paramActor);
       }
     }
-    else if (this.FM.AS.isMaster()) {
+    else if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
       if (!Actor.isValid(this.drones[paramInt])) {
-        this.FM.AS.netToMirrors(34, paramInt, 1, paramActor);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMirrors(34, paramInt, 1, paramActor);
         typeDockableDoAttachToDrone(paramActor, paramInt);
       }
     }
-    else this.FM.AS.netToMaster(34, paramInt, 0, paramActor);
+    else this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(34, paramInt, 0, paramActor);
   }
 
   public void typeDockableRequestDetach(Actor paramActor, int paramInt, boolean paramBoolean)
   {
     if (paramBoolean)
-      if (this.FM.AS.isMaster()) {
-        this.FM.AS.netToMirrors(35, paramInt, 1, paramActor);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMirrors(35, paramInt, 1, paramActor);
         typeDockableDoDetachFromDrone(paramInt);
       } else {
-        this.FM.AS.netToMaster(35, paramInt, 1, paramActor);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netToMaster(35, paramInt, 1, paramActor);
       }
   }
 
@@ -211,32 +210,26 @@ public class JU_88MSTL extends JU_88
 
   protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
   {
-    if (this.FM.AS.isMaster()) {
-      if (paramInt1 == 2) {
-        typeDockableRequestDetach(this.drones[0], 0, true);
-      }
-      if ((paramInt1 == 13) && (paramInt2 == 0))
-      {
-        nextDMGLevels(4, 1, "CF_D0", this);
-        return true;
-      }
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) && 
+      (paramInt1 == 2)) {
+      typeDockableRequestDetach(this.drones[0], 0, true);
     }
+
     return super.cutFM(paramInt1, paramInt2, paramActor);
   }
 
   public void update(float paramFloat)
   {
-    if ((this.FM instanceof Pilot)) {
-      ((Pilot)this.FM).setDumbTime(9999L);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) {
+      ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(9999L);
     }
-    if (((this.FM instanceof Maneuver)) && 
-      (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6))
+    if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) && 
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getStage() == 6) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6))
     {
-      ((Maneuver)this.FM).set_maneuver(44);
-      ((Maneuver)this.FM).setSpeedMode(-1);
+      ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(44);
+      ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setSpeedMode(-1);
     }
 
-    this.FM.CT.bHasGearControl = (!this.FM.Gears.onGround());
     super.update(paramFloat);
   }
 
@@ -254,11 +247,11 @@ public class JU_88MSTL extends JU_88
 
     Property.set(localClass, "FlightModel", "FlightModels/Ju-88A-4Mistel.fmd");
 
-    weaponTriggersRegister(localClass, new int[] { 9 });
-    weaponHooksRegister(localClass, new String[] { "_Dockport0" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_Dockport0" });
 
-    weaponsRegister(localClass, "default", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { null });
 
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

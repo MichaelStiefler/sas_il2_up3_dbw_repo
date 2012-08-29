@@ -4,9 +4,7 @@ import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orientation;
-import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -33,16 +31,9 @@ public class B_25J1 extends B_25
     switch (paramInt1) {
     case 19:
       killPilot(this, 4);
-      hierMesh().chunkVisible("Wire2_D0", false);
     }
 
     return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
-
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    this.FM.AS.wantBeaconsNet(true);
   }
 
   public void rareAction(float paramFloat, boolean paramBoolean)
@@ -50,7 +41,7 @@ public class B_25J1 extends B_25
     super.rareAction(paramFloat, paramBoolean);
 
     for (int i = 1; i < 7; i++)
-      if (this.FM.getAltitude() < 3000.0F)
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F)
         hierMesh().chunkVisible("HMask" + i + "_D0", false);
       else
         hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
@@ -59,12 +50,12 @@ public class B_25J1 extends B_25
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
     super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true;
   }
 
   public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
@@ -102,24 +93,24 @@ public class B_25J1 extends B_25
     return bool;
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 0:
     case 1:
       break;
     case 2:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
       break;
     case 4:
-      this.FM.turret[2].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
       break;
     case 5:
-      this.FM.turret[3].setHealth(paramFloat);
-      this.FM.turret[4].setHealth(paramFloat);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[4].bIsOperable = false;
     }
   }
 
@@ -173,19 +164,19 @@ public class B_25J1 extends B_25
   }
 
   public void typeBomberAdjSideslipPlus() {
-    this.fSightCurSideslip += 0.05F;
+    this.fSightCurSideslip += 0.1F;
     if (this.fSightCurSideslip > 3.0F) {
       this.fSightCurSideslip = 3.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10.0F) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
   }
 
   public void typeBomberAdjSideslipMinus() {
-    this.fSightCurSideslip -= 0.05F;
+    this.fSightCurSideslip -= 0.1F;
     if (this.fSightCurSideslip < -3.0F) {
       this.fSightCurSideslip = -3.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Float(this.fSightCurSideslip * 10.0F) });
+    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
   }
 
   public void typeBomberAdjAltitudeReset() {
@@ -231,7 +222,7 @@ public class B_25J1 extends B_25
   }
 
   public void typeBomberUpdate(float paramFloat) {
-    if (Math.abs(this.FM.Or.getKren()) > 4.5D) {
+    if (Math.abs(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.getKren()) > 4.5D) {
       this.fSightCurReadyness -= 0.0666666F * paramFloat;
       if (this.fSightCurReadyness < 0.0F) {
         this.fSightCurReadyness = 0.0F;
@@ -251,13 +242,13 @@ public class B_25J1 extends B_25
         this.bSightBombDump = true;
       }
       if (this.bSightBombDump)
-        if (this.FM.isTick(3, 0)) {
-          if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].haveBullets())) {
-            this.FM.CT.WeaponControl[3] = true;
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTick(3, 0)) {
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].haveBullets())) {
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = true;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
           }
         }
-        else this.FM.CT.WeaponControl[3] = false;
+        else this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = false;
     }
   }
 
@@ -306,34 +297,34 @@ public class B_25J1 extends B_25
 
     Property.set(localClass, "LOSElevation", 0.73425F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 10, 11, 11, 12, 12, 13, 14, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2 });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 10, 11, 11, 12, 12, 13, 14, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2, 2, 2 });
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN13", "_MGUN14", "_MGUN15", "_MGUN16", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN11", "_MGUN12", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_BombSpawn02", "_BombSpawn03", "_BombSpawn01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08" });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN13", "_MGUN14", "_MGUN15", "_MGUN16", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN11", "_MGUN12", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_BombSpawn02", "_BombSpawn03", "_BombSpawn01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08", "_ExternalDev09", "_ExternalDev10", "_ExternalDev11", "_ExternalDev12", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalRock07", "_ExternalRock08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "40xParaF", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunParafrag8 20", "BombGunParafrag8 20", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "40xParaF", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunParafrag8 20", "BombGunParafrag8 20", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "12x100lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun50kg 6", "BombGun50kg 6", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "12x100lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun50kg 6", "BombGun50kg 6", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "3x250lbs3x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbs 1", "BombGun500lbs 1", "BombGun500lbs 1", "BombGunNull 1", "BombGun250lbs 1", "BombGun250lbs 1", "BombGun250lbs 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "3x250lbs3x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbs 1", "BombGun500lbs 1", "BombGun500lbs 1", "BombGunNull 1", "BombGun250lbs 1", "BombGun250lbs 1", "BombGun250lbs 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "6x250lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun250lbs 3", "BombGun250lbs 3", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "6x250lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun250lbs 3", "BombGun250lbs 3", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbs 2", "BombGun500lbs 2", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbs 2", "BombGun500lbs 2", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4x500lbs1x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun1000lbs 1", "BombGunNull 1", null, null, null, null, "BombGun500lbs 2", "BombGun500lbs 2", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4x500lbs1x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun1000lbs 1", "BombGunNull 1", null, null, null, null, "BombGun500lbs 2", "BombGun500lbs 2", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "6x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbs 3", "BombGun500lbs 3", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "6x500lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbs 3", "BombGun500lbs 3", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun1000lbs 1", "BombGun1000lbs 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun1000lbs 1", "BombGun1000lbs 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "3x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun1000lbs 1", "BombGunNull 1", null, null, null, null, "BombGun1000lbs 1", "BombGun1000lbs 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "3x1000lbs", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun1000lbs 1", "BombGunNull 1", null, null, null, null, "BombGun1000lbs 1", "BombGun1000lbs 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "10x50kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB50 5", "BombGunFAB50 5", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "10x50kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB50 5", "BombGunFAB50 5", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "8x100kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB100 4", "BombGunFAB100 4", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "8x100kg", new String[] { "MGunBrowning50ki 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50kpzl 400", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 450", "MGunBrowning50t 400", "MGunBrowning50t 400", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB100 4", "BombGunFAB100 4", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

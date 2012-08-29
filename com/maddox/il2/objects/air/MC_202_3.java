@@ -24,11 +24,11 @@ public class MC_202_3 extends MC_202xyz
     Property.set(localClass, "cockpitClass", CockpitMC_202.class);
     Property.set(localClass, "LOSElevation", 0.81305F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127siMC202 370", "MGunBredaSAFAT127siMC202 370" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127si 370", "MGunBredaSAFAT127si 370" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

@@ -18,8 +18,8 @@ class OrderAttack_My_Target extends Order
   public void run() {
     Actor localActor = Selector.getTarget();
     if (localActor == null) {
-      Maneuver localManeuver = (Maneuver)Player().FM;
-      if (localManeuver.target != null) localActor = localManeuver.target.actor;
+      Maneuver localManeuver = (Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      if (localManeuver.target != null) localActor = localManeuver.target.jdField_actor_of_type_ComMaddoxIl2EngineActor;
       else if (localManeuver.target_ground != null) localActor = localManeuver.target_ground;
     }
 
@@ -27,27 +27,27 @@ class OrderAttack_My_Target extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       int j = 0;
       Object localObject;
       if ((localActor != null) && ((localActor instanceof Aircraft))) {
-        localPilot.Group.setATargMode(9);
-        localObject = ((Maneuver)((Aircraft)localActor).FM).Group;
-        if ((localPilot.Group != null) && (localObject != null)) {
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setATargMode(9);
+        localObject = ((Maneuver)((Aircraft)localActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup;
+        if ((localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) && (localObject != null)) {
           if (OrdersTree.curOrdersTree.alone())
-            if ((localPilot.Group.grTask != 3) && (((Maneuver)Player().FM).Group == localPilot.Group)) {
-              AirGroup localAirGroup = new AirGroup(localPilot.Group);
-              localPilot.Group.delAircraft(localAircraft);
+            if ((localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.grTask != 3) && (((Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup)) {
+              AirGroup localAirGroup = new AirGroup(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+              localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(localAircraft);
               localAirGroup.addAircraft(localAircraft);
             } else {
               localPilot.aggressiveWingman = true;
             }
           localPilot.targetAll();
-          localPilot.Group.targetGroup = ((AirGroup)localObject);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.targetGroup = ((AirGroup)localObject);
           localPilot.target = null;
-          localPilot.Group.setGroupTask(3);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(3);
           j = 1;
           if ((isEnableVoice()) && (localAircraft != Player()) && (localPilot.canAttack()))
             if ((localAircraft.getWing() == Player().getWing()) || (localAircraft.aircIndex() == 0))
@@ -57,15 +57,15 @@ class OrderAttack_My_Target extends Order
         }
       } else if (localActor != null) {
         if ((OrdersTree.curOrdersTree.alone()) && 
-          (localPilot.Group.grTask != 4) && (((Maneuver)Player().FM).Group == localPilot.Group)) {
-          localObject = new AirGroup(localPilot.Group);
-          localPilot.Group.delAircraft(localAircraft);
+          (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.grTask != 4) && (((Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup)) {
+          localObject = new AirGroup(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(localAircraft);
           ((AirGroup)localObject).addAircraft(localAircraft);
         }
 
-        localPilot.Group.setGTargMode(0);
-        localPilot.Group.setGTargMode(localActor);
-        localObject = localPilot.Group.setGAttackObject(localPilot.Group.numInGroup(localAircraft));
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGTargMode(0);
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGTargMode(localActor);
+        localObject = localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGAttackObject(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.numInGroup(localAircraft));
         if (localObject != null) {
           if ((isEnableVoice()) && (localAircraft != Player()))
             if ((localAircraft.getWing() == Player().getWing()) || (localAircraft.aircIndex() == 0))
@@ -73,7 +73,7 @@ class OrderAttack_My_Target extends Order
             else
               Voice.speakOk(localAircraft);
           localPilot.target_ground = null;
-          localPilot.Group.setGroupTask(4);
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(4);
           j = 1;
         }
       }

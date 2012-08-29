@@ -18,8 +18,8 @@ import java.io.PrintStream;
 
 public class GameTrack extends NetObj
 {
-  public static final int SINGLE_VERSION = 130;
-  public static final int NET_VERSION = 103;
+  public static final int SINGLE_VERSION = 129;
+  public static final int NET_VERSION = 102;
   public static final int HUD_log_Integer = 0;
   public static final int HUD_log_Id = 1;
   public static final int HUD_log_RightBottom = 2;
@@ -90,7 +90,7 @@ public class GameTrack extends NetObj
       NetMissionTrack.startedRecording();
     }
     catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 

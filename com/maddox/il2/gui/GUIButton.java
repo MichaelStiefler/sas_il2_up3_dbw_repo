@@ -27,35 +27,35 @@ public class GUIButton extends GWindowDialogControl
     setCanvasColorWHITE();
     GTexRegion localGTexRegion = this.texUP;
     if (this.bDown) localGTexRegion = this.texDOWN;
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, localGTexRegion);
+    draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float, localGTexRegion);
   }
 
   public void setPosSize(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
     GTexRegion localGTexRegion = this.texUP;
 
     float f1 = 1.0F;
-    float f2 = localGTexRegion.dx;
+    float f2 = localGTexRegion.jdField_dx_of_type_Float;
     while (f2 / f1 > paramFloat3) f1 += 1.0F;
     f2 /= f1;
     f1 = 1.0F;
-    float f3 = localGTexRegion.dy;
+    float f3 = localGTexRegion.jdField_dy_of_type_Float;
     while (f3 / f1 > paramFloat4) f1 += 1.0F;
     f3 /= f1;
 
-    this.win.x = Math.round(paramFloat1);
-    this.win.y = Math.round(paramFloat2);
-    this.win.dx = Math.round(paramFloat3);
-    this.win.dy = Math.round(paramFloat4);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.x = Math.round(paramFloat1);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.y = Math.round(paramFloat2);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float = Math.round(paramFloat3);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float = Math.round(paramFloat4);
   }
 
   public void setPosC(float paramFloat1, float paramFloat2)
   {
-    super.setPos(paramFloat1 - this.win.dx / 2.0F, paramFloat2 - this.win.dy / 2.0F);
+    super.setPos(paramFloat1 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float / 2.0F, paramFloat2 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float / 2.0F);
   }
 
   public void resolutionChanged() {
-    this.win.dx = x1024(this.texUP.dx);
-    this.win.dy = y1024(this.texUP.dy);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float = x1024(this.texUP.jdField_dx_of_type_Float);
+    this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float = y1024(this.texUP.jdField_dy_of_type_Float);
   }
 
   public void created() {

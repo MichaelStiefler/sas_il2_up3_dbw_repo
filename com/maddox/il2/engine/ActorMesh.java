@@ -35,9 +35,9 @@ public abstract class ActorMesh extends Actor
   public void visibilityAsBase(boolean paramBoolean) {
     if (((this.flags & 0x2) != 0) == paramBoolean) return;
     super.visibilityAsBase(paramBoolean);
-    if ((this.pos != null) && (this.pos.actor() != this) && (this.pos.base() != null))
-      if (paramBoolean) this.pos.base().pos.addChildren(this); else
-        this.pos.base().pos.removeChildren(this);
+    if ((this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.actor() != this) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base() != null))
+      if (paramBoolean) this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.addChildren(this); else
+        this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.removeChildren(this);
   }
 
   public void destroy()
@@ -51,31 +51,31 @@ public abstract class ActorMesh extends Actor
   }
 
   protected ActorMesh() {
-    if (isStaticPos()) this.pos = new ActorPosStatic(this); else
-      this.pos = new ActorPosMove(this);
-    this.draw = new ActorMeshDraw();
+    if (isStaticPos()) this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic(this); else
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new ActorMeshDraw();
   }
   protected ActorMesh(Loc paramLoc) {
-    if (isStaticPos()) this.pos = new ActorPosStatic(this, paramLoc); else
-      this.pos = new ActorPosMove(this, paramLoc);
-    this.draw = new ActorMeshDraw();
+    if (isStaticPos()) this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic(this, paramLoc); else
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this, paramLoc);
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new ActorMeshDraw();
   }
   protected ActorMesh(ActorPos paramActorPos) {
-    this.pos = paramActorPos;
-    this.draw = new ActorMeshDraw();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = paramActorPos;
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new ActorMeshDraw();
   }
   public void setMesh(String paramString) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
+    int i = (mesh() != null) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) ? 1 : 0;
     this.mesh = new Mesh(paramString);
     if (i != 0)
-      this.pos.actorChanged(); 
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.actorChanged(); 
   }
 
   public void setMesh(Mesh paramMesh) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
+    int i = (mesh() != null) && (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) ? 1 : 0;
     this.mesh = paramMesh;
     if (i != 0)
-      this.pos.actorChanged();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.actorChanged();
   }
 
   public ActorMesh(String paramString) {
@@ -112,9 +112,9 @@ public abstract class ActorMesh extends Actor
   {
     paramActorHMesh.hierMesh().setCurChunk(paramInt);
     paramActorHMesh.getChunkLocTimeAbs(L1);
-    if (isStaticPos()) this.pos = new ActorPosStatic(this, L1); else
-      this.pos = new ActorPosMove(this, L1);
+    if (isStaticPos()) this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic(this, L1); else
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this, L1);
     this.mesh = new Mesh(paramActorHMesh.hierMesh());
-    this.draw = new ActorMeshDraw();
+    this.jdField_draw_of_type_ComMaddoxIl2EngineActorDraw = new ActorMeshDraw();
   }
 }

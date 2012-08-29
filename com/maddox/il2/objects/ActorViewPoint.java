@@ -17,17 +17,17 @@ public class ActorViewPoint extends Actor
   public void setViewActor(Actor paramActor)
   {
     if (!Actor.isValid(paramActor)) return;
-    this.pos.setBase(paramActor, this.hook, true);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, this.hook, true);
   }
 
   public void createNetObject(NetChannel paramNetChannel, int paramInt)
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public Object getSwitchListener(Message paramMessage)
@@ -35,7 +35,7 @@ public class ActorViewPoint extends Actor
     return this;
   }
   public ActorViewPoint() {
-    this.pos = new ActorPosMove(this, new Loc());
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this, new Loc());
     this.hook = new HookUpdate();
     this.acoustics = Engine.worldAcoustics();
   }

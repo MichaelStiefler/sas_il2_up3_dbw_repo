@@ -42,27 +42,21 @@ public class HE_111H2 extends HE_111
 
     Property.set(localClass, "cockpitClass", new Class[] { CockpitHE_111H2.class, CockpitHE_111H2_Bombardier.class, CockpitHE_111H2_NGunner.class, CockpitHE_111H2_TGunner.class, CockpitHE_111H2_BGunner.class, CockpitHE_111H2_LGunner.class, CockpitHE_111H2_RGunner.class });
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "30xSC50", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4" });
+    Aircraft.weaponsRegister(localClass, "30xSC50", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC50 3", "BombGunSC50 3", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4", "BombGunSC50 4" });
 
-    weaponsRegister(localClass, "20xSC70", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 3" });
+    Aircraft.weaponsRegister(localClass, "20xSC70", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 3", "BombGunSC70 3", "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 3", "BombGunSC70 3" });
 
-    weaponsRegister(localClass, "2SC250A", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", null, null, "BombGunSC50 2", "BombGunSC50 2", "BombGunSC50 2", "BombGunSC50 2" });
+    Aircraft.weaponsRegister(localClass, "2SC250A", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", null, null, "BombGunSC50 2", "BombGunSC50 2", "BombGunSC50 2", "BombGunSC50 2" });
 
-    weaponsRegister(localClass, "2SC250B", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", null, null, "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 2" });
+    Aircraft.weaponsRegister(localClass, "2SC250B", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", null, null, "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 2" });
 
-    weaponsRegister(localClass, "4xSC250", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4xSC250", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", null, null, null, null });
 
-    weaponsRegister(localClass, "4SC250A", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC50 2", "BombGunSC50 2", "BombGunSC50 2", "BombGunSC50 2" });
-
-    weaponsRegister(localClass, "4SC250B", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 2", "BombGunSC70 2" });
-
-    weaponsRegister(localClass, "8xSC250", new String[] { "MGunMG15t 150", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

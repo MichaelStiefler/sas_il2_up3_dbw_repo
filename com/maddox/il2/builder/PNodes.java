@@ -85,22 +85,22 @@ public class PNodes extends PPoint
     PNodes localPNodes = (PNodes)localPath.point(0);
     _curP.set(localPNodes.posXYZ[0], localPNodes.posXYZ[1], localPNodes.posXYZ[2]);
 
-    Point3d localPoint3d = localPNodes.pos.getAbsPoint();
+    Point3d localPoint3d = localPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     if (!localPoint3d.equals(_curP)) {
-      localPNodes.pos.setAbs(_curP);
-      localPNodes.pos.reset();
+      localPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_curP);
+      localPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
       _curP.set(localPNodes.posXYZ[4], localPNodes.posXYZ[5], localPNodes.posXYZ[6]);
 
-      ((PathChief)localPath).placeUnits(localPNodes.pos.getAbsPoint(), _curP);
+      ((PathChief)localPath).placeUnits(localPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), _curP);
     }
     for (int i = 1; i < localPath.points(); i++) {
       localPNodes = (PNodes)localPath.point(i - 1);
       int j = localPNodes.posXYZ.length / 4 - 1;
       _curP.set(localPNodes.posXYZ[(j * 4 + 0)], localPNodes.posXYZ[(j * 4 + 1)], localPNodes.posXYZ[(j * 4 + 2)]);
 
-      localPath.point(i).pos.setAbs(_curP);
-      localPath.point(i).pos.reset();
+      localPath.point(i).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_curP);
+      localPath.point(i).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     }
   }
 
@@ -110,13 +110,13 @@ public class PNodes extends PPoint
     if (i >= 0) {
       PathFind.setMoverType(i);
     }
-    this.pos.getAbs(_movePrevP);
-    this.pos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(_movePrevP);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
     align();
     int j = localPath.points();
     if (j == 1) {
       if (!PathFind.setStartPoint(0, this)) {
-        this.pos.setAbs(_movePrevP);
+        this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_movePrevP);
         throw new ActorException("PathPoint not Reacheable");
       }
     } else {
@@ -126,7 +126,7 @@ public class PNodes extends PPoint
         localPNodes1 = (PNodes)localPath.point(k - 1);
         if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.isPointReacheable(0, this)))
         {
-          this.pos.setAbs(_movePrevP);
+          this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_movePrevP);
           throw new ActorException("PathPoint not Reacheable");
         }
         localPNodes1.posXYZ = PathFind.buildPath(0, this);
@@ -135,7 +135,7 @@ public class PNodes extends PPoint
         localPNodes1 = (PNodes)localPath.point(k + 1);
         if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.isPointReacheable(0, this)))
         {
-          this.pos.setAbs(_movePrevP);
+          this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_movePrevP);
           throw new ActorException("PathPoint not Reacheable");
         }
         this.posXYZ = PathFind.buildPath(0, this);
@@ -146,7 +146,7 @@ public class PNodes extends PPoint
         PNodes localPNodes2 = (PNodes)localPath.point(k + 1);
         if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.setStartPoint(1, localPNodes2)) || (!PathFind.isPointReacheable(0, this)) || (!PathFind.isPointReacheable(1, this)))
         {
-          this.pos.setAbs(_movePrevP);
+          this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(_movePrevP);
           throw new ActorException("PathPoint not Reacheable");
         }
         localPNodes1.posXYZ = PathFind.buildPath(0, this);
@@ -154,7 +154,7 @@ public class PNodes extends PPoint
         reversePathXY(this.posXYZ);
       }
     }
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     syncPathPos();
   }
 

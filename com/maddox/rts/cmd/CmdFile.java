@@ -158,8 +158,8 @@ public class CmdFile extends Cmd
   }
 
   public CmdFile() {
-    this.param.put("BREAK", null);
-    this.param.put("CURENV", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BREAK", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("CURENV", null);
     this._properties.put("NAME", "file");
     this._levelAccess = 1;
   }

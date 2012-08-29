@@ -13,14 +13,14 @@ public class CW_21 extends CW21xyz
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers())
       bChangedPit = true;
   }
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers())
       bChangedPit = true;
   }
 
@@ -46,7 +46,7 @@ public class CW_21 extends CW21xyz
 
   public void moveSteering(float paramFloat)
   {
-    if (this.FM.CT.getGear() < 0.98F)
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() < 0.98F)
     {
       return;
     }
@@ -70,14 +70,13 @@ public class CW_21 extends CW21xyz
     Property.set(localClass, "yearService", 1940.6F);
     Property.set(localClass, "yearExpired", 1945.0F);
     Property.set(localClass, "FlightModel", "FlightModels/CW-21.fmd");
-    Property.set(localClass, "cockpitClass", CockpitCW_21.class);
+
     Property.set(localClass, "LOSElevation", 0.764106F);
     Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0 });
 
     Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303sipzl 300", "MGunBrowning303sipzl 300", "MGunBrowning303sipzl 300", "MGunBrowning303sipzl 300" });
-    weaponsRegister(localClass, "2x303_2x05", new String[] { "MGunBrowning303sipzl 300", "MGunBrowning303sipzl 300", "MGunBrowning50si 225", "MGunBrowning50si 225" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303ki 300", "MGunBrowning303ki 300", "MGunBrowning303ki 300", "MGunBrowning303ki 300" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

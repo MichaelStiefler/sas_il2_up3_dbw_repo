@@ -49,8 +49,8 @@ public class MachineGunFlak25mm_x3_JA extends MGunAntiAirGeneric
     return 54.0F;
   }
 
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
+  public Bullet createNextBullet(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong)
   {
-    return new BulletAntiAirSmallUSSR(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong, this.explAddTimeT);
+    return new BulletAntiAirSmallUSSR(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong, this.explAddTimeT);
   }
 }

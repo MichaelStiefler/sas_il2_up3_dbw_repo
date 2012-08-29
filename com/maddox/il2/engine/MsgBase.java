@@ -52,11 +52,11 @@ public class MsgBase extends Message
   public boolean invokeListener(Object paramObject) {
     if ((paramObject instanceof MsgBaseListener)) {
       switch (this._id) { case 0:
-        ((MsgBaseListener)paramObject).msgBaseAttach((Actor)this._sender); break;
+        ((MsgBaseListener)paramObject).msgBaseAttach((Actor)this.jdField__sender_of_type_JavaLangObject); break;
       case 1:
-        ((MsgBaseListener)paramObject).msgBaseDetach((Actor)this._sender); break;
+        ((MsgBaseListener)paramObject).msgBaseDetach((Actor)this.jdField__sender_of_type_JavaLangObject); break;
       case 2:
-        ((MsgBaseListener)paramObject).msgBaseChange((Actor)this._sender, this._hook, this._oldBase, this._oldHook);
+        ((MsgBaseListener)paramObject).msgBaseChange((Actor)this.jdField__sender_of_type_JavaLangObject, this._hook, this._oldBase, this._oldHook);
       }
       return true;
     }

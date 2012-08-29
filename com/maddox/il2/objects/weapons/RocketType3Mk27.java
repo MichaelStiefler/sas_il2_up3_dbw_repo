@@ -23,14 +23,14 @@ public class RocketType3Mk27 extends Rocket
 
   private final void doFireContaineds()
   {
-    Explosions.AirFlak(this.pos.getAbsPoint(), 1);
+    Explosions.AirFlak(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), 1);
 
     Actor localActor = null;
     if (Actor.isValid(getOwner())) {
       localActor = getOwner();
     }
 
-    Point3d localPoint3d = new Point3d(this.pos.getAbsPoint());
+    Point3d localPoint3d = new Point3d(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     Orient localOrient = new Orient();
     Vector3d localVector3d = new Vector3d();
     for (int i = 0; i < 145; i++) {
@@ -40,9 +40,9 @@ public class RocketType3Mk27 extends Rocket
       localVector3d.add(World.Rnd().nextDouble(-75.0D, 75.0D), World.Rnd().nextDouble(-75.0D, 75.0D), World.Rnd().nextDouble(-75.0D, 75.0D));
       RocketPhBall localRocketPhBall = new RocketPhBall();
       localRocketPhBall.start(-1.0F);
-      localRocketPhBall.pos.setUpdateEnable(true);
-      localRocketPhBall.pos.setAbs(localPoint3d, localOrient);
-      localRocketPhBall.pos.reset();
+      localRocketPhBall.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
+      localRocketPhBall.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d, localOrient);
+      localRocketPhBall.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
       localRocketPhBall.setOwner(localActor, false, false, false);
       localRocketPhBall.setSpeed(localVector3d);

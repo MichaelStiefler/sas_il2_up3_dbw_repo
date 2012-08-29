@@ -186,7 +186,7 @@ public class AudioDevice extends BaseObject
   public static native void done();
 
   public static void flush() { String str = jniFlush();
-    if (str != null) printf(str);
+    if (str != null) BaseObject.printf(str);
 
     VoiceFX.tick();
     SoundListener.flush();

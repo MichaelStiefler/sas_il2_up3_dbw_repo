@@ -47,15 +47,15 @@ public class Shot
     if (d2 <= 9.999999747378752E-005D) {
       d1 = paramFloat3;
     } else {
-      double d3 = paramVector3d.x * paramVector3d.x + paramVector3d.y * paramVector3d.y;
-      double d4 = paramVector3d.z * paramVector3d.z;
+      double d3 = paramVector3d.jdField_x_of_type_Double * paramVector3d.jdField_x_of_type_Double + paramVector3d.jdField_y_of_type_Double * paramVector3d.jdField_y_of_type_Double;
+      double d4 = paramVector3d.jdField_z_of_type_Double * paramVector3d.jdField_z_of_type_Double;
       if (d4 >= d3 * 0.5D * 0.5D) {
-        double d5 = Math.abs(paramVector3d.z) / d2;
+        double d5 = Math.abs(paramVector3d.jdField_z_of_type_Double) / d2;
         d1 = (paramBoolean ? paramFloat6 : paramFloat4) / Math.sqrt(d5);
       }
       else
       {
-        float f1 = Geom.RAD2DEG((float)Math.atan2(paramVector3d.y, paramVector3d.x));
+        float f1 = Geom.RAD2DEG((float)Math.atan2(paramVector3d.jdField_y_of_type_Double, paramVector3d.jdField_x_of_type_Double));
         AnglesFork localAnglesFork = new AnglesFork(f1, paramOrient.getYaw());
         f1 = localAnglesFork.getAbsDiffDeg();
 

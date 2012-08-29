@@ -86,17 +86,17 @@ public class Rope extends Actor
       return;
     }
 
-    Point3d localPoint3d = paramActor.pos.getAbsPoint();
+    Point3d localPoint3d = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     float f = paramActor.collisionR();
 
     double d1 = collision_getCylinderR() + f;
 
-    if ((localPoint3d.z - d1 > this.height_stay) || (localPoint3d.z + d1 < this.height_down))
+    if ((localPoint3d.jdField_z_of_type_Double - d1 > this.height_stay) || (localPoint3d.jdField_z_of_type_Double + d1 < this.height_down))
     {
       return;
     }
 
-    v.sub(localPoint3d, paramActor.pos.getCurrentPoint());
+    v.sub(localPoint3d, paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrentPoint());
 
     if (v.lengthSquared() <= 0.0004D)
     {
@@ -105,17 +105,17 @@ public class Rope extends Actor
 
     p3.set(this.curPos);
     p2.set(this.curPos);
-    p3.z = this.height_stay;
-    p2.z = this.height_down;
+    p3.jdField_z_of_type_Double = this.height_stay;
+    p2.jdField_z_of_type_Double = this.height_down;
 
     p0.set(p3);
     p1.set(p2);
     p0.add(v);
     p1.add(v);
 
-    if (v.x * v.x + v.y * v.y <= 0.0004D)
+    if (v.jdField_x_of_type_Double * v.jdField_x_of_type_Double + v.jdField_y_of_type_Double * v.jdField_y_of_type_Double <= 0.0004D)
     {
-      if (v.z >= 0.0D)
+      if (v.jdField_z_of_type_Double >= 0.0D)
       {
         p1.set(p2);
       } else {
@@ -123,16 +123,16 @@ public class Rope extends Actor
         p1.set(p3);
       }
 
-      if (CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, f) < 0.0D)
+      if (CollideEnvXY.intersectLineSphere(p0.jdField_x_of_type_Double, p0.jdField_y_of_type_Double, p0.jdField_z_of_type_Double, p1.jdField_x_of_type_Double, p1.jdField_y_of_type_Double, p1.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, f) < 0.0D)
       {
         return;
       }
 
-      Loc localLoc1 = paramActor.pos.getAbs();
+      Loc localLoc1 = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
 
       localObject = ((ActorMesh)paramActor).mesh();
 
-      double d3 = ((Mesh)localObject).detectCollisionLine(paramActor.pos.getAbs(), p0, p1);
+      double d3 = ((Mesh)localObject).detectCollisionLine(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), p0, p1);
 
       if ((d3 >= 0.0D) && (d3 <= 1.0D)) {
         long l1 = Time.tick() + ()(d3 * Time.tickLenFms());
@@ -180,11 +180,11 @@ public class Rope extends Actor
       return;
     }
 
-    Loc localLoc2 = paramActor.pos.getAbs();
+    Loc localLoc2 = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
 
     Object localObject = ((ActorHMesh)paramActor).hierMesh();
 
-    int i = ((HierMesh)localObject).detectCollision_Quad_Multi(paramActor.pos.getAbs(), p0, p1, p2, p3);
+    int i = ((HierMesh)localObject).detectCollision_Quad_Multi(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), p0, p1, p2, p3);
 
     for (int j = 0; j < i; j++) {
       double d4 = HierMesh.collisionDistMulti(j);
@@ -227,19 +227,19 @@ public class Rope extends Actor
 
     this.anchor = paramAeroanchoredGeneric;
 
-    this.anchor.pos.getAbs(this.curPos);
+    this.anchor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.curPos);
 
-    this.height_down = Engine.land().HQ(this.curPos.x, this.curPos.y);
+    this.height_down = Engine.land().HQ(this.curPos.jdField_x_of_type_Double, this.curPos.jdField_y_of_type_Double);
     this.height_stay = (this.height_down + paramFloat1);
 
     this.st = 0;
-    this.curPos.z = this.height_stay;
+    this.curPos.jdField_z_of_type_Double = this.height_stay;
 
-    o.setYPR(this.anchor.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    o.setYPR(this.anchor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
 
-    this.pos = new ActorPosMove(this);
-    this.pos.setAbs(this.curPos, o);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.curPos, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     locStraightUp.set(this.curPos, o);
 
@@ -268,30 +268,30 @@ public class Rope extends Actor
         return 0;
       }
 
-      Rope.this.pos.getRender(Rope.p0);
+      Rope.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(Rope.p0);
 
-      double d1 = Rope.p0.z - Rope.this.height_down - 0.01D;
+      double d1 = Rope.p0.jdField_z_of_type_Double - Rope.this.height_down - 0.01D;
       if (d1 <= 0.0D) {
         return 0;
       }
 
-      Rope.p1.x = Rope.p0.x;
-      Rope.p1.y = Rope.p0.y;
-      Rope.p0.z -= d1 * 0.5D;
+      Rope.p1.jdField_x_of_type_Double = Rope.p0.jdField_x_of_type_Double;
+      Rope.p1.jdField_y_of_type_Double = Rope.p0.jdField_y_of_type_Double;
+      Rope.p1.jdField_z_of_type_Double = (Rope.p0.jdField_z_of_type_Double - d1 * 0.5D);
       if (!Render.currentCamera().isSphereVisible(Rope.p1, (float)(d1 * 0.5D))) {
         return 0;
       }
 
       int i = 1 + (int)(d1 / Rope.this.ropeSegLen);
 
-      Rope.p2.x = Rope.p0.x;
-      Rope.p2.y = Rope.p0.y;
+      Rope.p2.jdField_x_of_type_Double = Rope.p0.jdField_x_of_type_Double;
+      Rope.p2.jdField_y_of_type_Double = Rope.p0.jdField_y_of_type_Double;
       double d2 = Rope.this.ropeSegLen * 0.5D;
 
       int j = 0;
 
       for (int k = 0; k < i; k++) {
-        Rope.p2.z = (Rope.p0.z - k * Rope.this.ropeSegLen - d2);
+        Rope.p2.jdField_z_of_type_Double = (Rope.p0.jdField_z_of_type_Double - k * Rope.this.ropeSegLen - d2);
         Rope.locStraightUp.set(Rope.p2);
 
         Rope.this.ropeMesh.setPos(Rope.locStraightUp);
@@ -309,30 +309,30 @@ public class Rope extends Actor
     {
       super.render(paramActor);
 
-      Rope.this.pos.getRender(Rope.p0);
+      Rope.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(Rope.p0);
 
-      double d1 = Rope.p0.z - Rope.this.height_down - 0.01D;
+      double d1 = Rope.p0.jdField_z_of_type_Double - Rope.this.height_down - 0.01D;
       if (d1 <= 0.0D) {
         return;
       }
 
-      Rope.p1.x = Rope.p0.x;
-      Rope.p1.y = Rope.p0.y;
-      Rope.p0.z -= d1 * 0.5D;
+      Rope.p1.jdField_x_of_type_Double = Rope.p0.jdField_x_of_type_Double;
+      Rope.p1.jdField_y_of_type_Double = Rope.p0.jdField_y_of_type_Double;
+      Rope.p1.jdField_z_of_type_Double = (Rope.p0.jdField_z_of_type_Double - d1 * 0.5D);
       if (!Render.currentCamera().isSphereVisible(Rope.p1, (float)(d1 * 0.5D))) {
         return;
       }
 
-      Render.currentCamera().pos.getAbs(Rope.p3);
+      Render.currentCamera().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Rope.p3);
 
       int i = 1 + (int)(d1 / Rope.this.ropeSegLen);
 
-      Rope.p2.x = Rope.p0.x;
-      Rope.p2.y = Rope.p0.y;
+      Rope.p2.jdField_x_of_type_Double = Rope.p0.jdField_x_of_type_Double;
+      Rope.p2.jdField_y_of_type_Double = Rope.p0.jdField_y_of_type_Double;
       double d2 = Rope.this.ropeSegLen * 0.5D;
 
       for (int j = 0; j < i; j++) {
-        Rope.p2.z = (Rope.p0.z - j * Rope.this.ropeSegLen - d2);
+        Rope.p2.jdField_z_of_type_Double = (Rope.p0.jdField_z_of_type_Double - j * Rope.this.ropeSegLen - d2);
 
         if (!Render.currentCamera().isSphereVisible(Rope.p2, (float)d2))
         {
@@ -378,11 +378,11 @@ public class Rope extends Actor
           }
 
           Render.drawBeginLines(0);
-          float tmp443_442 = (float)Rope.p2.x; Rope.lineXYZ[3] = tmp443_442; Rope.lineXYZ[0] = tmp443_442;
-          float tmp461_460 = (float)Rope.p2.y; Rope.lineXYZ[4] = tmp461_460; Rope.lineXYZ[1] = tmp461_460;
-          Rope.lineXYZ[2] = (float)(Rope.access$800().z - Rope.access$700(Rope.this) * 0.5F);
-          Rope.lineXYZ[5] = (float)(Rope.access$800().z + Rope.access$700(Rope.this) * 0.5F);
-          Render.drawLines(Rope.lineXYZ, 2, 1.0F, (tmp461_460 << 24) + 328965, Render.LineFlags, 0);
+          float tmp439_438 = (float)Rope.p2.jdField_x_of_type_Double; Rope.lineXYZ[3] = tmp439_438; Rope.lineXYZ[0] = tmp439_438;
+          float tmp457_456 = (float)Rope.p2.jdField_y_of_type_Double; Rope.lineXYZ[4] = tmp457_456; Rope.lineXYZ[1] = tmp457_456;
+          Rope.lineXYZ[2] = (float)(Rope.access$800().jdField_z_of_type_Double - Rope.access$700(Rope.this) * 0.5F);
+          Rope.lineXYZ[5] = (float)(Rope.access$800().jdField_z_of_type_Double + Rope.access$700(Rope.this) * 0.5F);
+          Render.drawLines(Rope.lineXYZ, 2, 1.0F, (tmp457_456 << 24) + 328965, Render.LineFlags, 0);
           Render.drawEnd();
         }
       }
@@ -398,8 +398,8 @@ public class Rope extends Actor
     public boolean tick()
     {
       if (Rope.this.st == 1) {
-        Rope.this.curPos.z -= Rope.this.speedOfFall;
-        if (Rope.this.curPos.z <= Rope.this.height_down) {
+        Rope.this.curPos.jdField_z_of_type_Double -= Rope.this.speedOfFall;
+        if (Rope.this.curPos.jdField_z_of_type_Double <= Rope.this.height_down) {
           Rope.this.anchor.ropeDisappeared();
           Rope.access$402(Rope.this, null);
           Rope.access$002(Rope.this, 2);
@@ -407,13 +407,13 @@ public class Rope extends Actor
           Rope.this.postDestroy();
           return false;
         }
-        Rope.this.pos.setAbs(Rope.this.curPos);
+        Rope.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Rope.this.curPos);
         return true;
       }
 
       if (Rope.this.st == 0)
       {
-        Rope.this.pos.setAbs(Rope.this.curPos);
+        Rope.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Rope.this.curPos);
         return true;
       }
 

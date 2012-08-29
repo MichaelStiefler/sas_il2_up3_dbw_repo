@@ -22,8 +22,8 @@ public class AirGroupList
     AirGroupList localAirGroupList = this;
     while (localAirGroupList != null) {
       localAirGroupList.G = null;
-      if (localAirGroupList.next != null) { localAirGroupList = localAirGroupList.next; continue; }
-      localAirGroupList = null;
+      if (localAirGroupList.next != null) localAirGroupList = localAirGroupList.next; else
+        localAirGroupList = null;
     }
   }
 

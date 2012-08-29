@@ -39,7 +39,7 @@ public class DreamEnvXY extends DreamEnv
   }
 
   public boolean isSleep(Point3d paramPoint3d) {
-    return isSleep(paramPoint3d.x, paramPoint3d.y);
+    return isSleep(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double);
   }
 
   public boolean isSleep(int paramInt1, int paramInt2) {
@@ -149,7 +149,7 @@ public class DreamEnvXY extends DreamEnv
     if (this.resetGlobalListener.size() > 0) {
       int[] arrayOfInt = this.fireXY.keyList();
       for (m = 0; m < arrayOfInt.length; m++) {
-        int n = arrayOfInt[m];
+        n = arrayOfInt[m];
         if (n > -2147483647) {
           this.squareWakeup.add(n);
         }
@@ -157,8 +157,8 @@ public class DreamEnvXY extends DreamEnv
       makeArrayIndx(this.squareWakeup);
       this.squareWakeup.clear();
 
-      for (m = 0; m < this.resetGlobalListener.size(); m++) {
-        Actor localActor3 = (Actor)this.resetGlobalListener.get(m);
+      for (int n = 0; n < this.resetGlobalListener.size(); n++) {
+        Actor localActor3 = (Actor)this.resetGlobalListener.get(n);
         if (Actor.isValid(localActor3)) {
           this.msgDreamGlobal.send(localActor3, true, this.xIndx.size(), this.xIndx.array(), this.yIndx.array());
           this.globalListener.add(localActor3);
@@ -172,10 +172,10 @@ public class DreamEnvXY extends DreamEnv
 
   protected void changedListenerPos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    int i = (int)(paramPoint3d1.x / 200.0D);
-    int j = (int)(paramPoint3d1.y / 200.0D);
-    int k = (int)(paramPoint3d2.x / 200.0D);
-    int m = (int)(paramPoint3d2.y / 200.0D);
+    int i = (int)(paramPoint3d1.jdField_x_of_type_Double / 200.0D);
+    int j = (int)(paramPoint3d1.jdField_y_of_type_Double / 200.0D);
+    int k = (int)(paramPoint3d2.jdField_x_of_type_Double / 200.0D);
+    int m = (int)(paramPoint3d2.jdField_y_of_type_Double / 200.0D);
     if ((i != k) || (j != m)) {
       this.listenerXY.remove(j, i, paramActor);
       this.listenerXY.put(m, k, paramActor, null);
@@ -191,16 +191,16 @@ public class DreamEnvXY extends DreamEnv
 
   protected void addListener(Actor paramActor) {
     Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-    int i = (int)(localPoint3d.x / 200.0D);
-    int j = (int)(localPoint3d.y / 200.0D);
+    int i = (int)(localPoint3d.jdField_x_of_type_Double / 200.0D);
+    int j = (int)(localPoint3d.jdField_y_of_type_Double / 200.0D);
     this.listenerXY.put(j, i, paramActor, null);
     this.listenerChanges.put(paramActor, null);
   }
 
   protected void removeListener(Actor paramActor) {
     Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-    int i = (int)(localPoint3d.x / 200.0D);
-    int j = (int)(localPoint3d.y / 200.0D);
+    int i = (int)(localPoint3d.jdField_x_of_type_Double / 200.0D);
+    int j = (int)(localPoint3d.jdField_y_of_type_Double / 200.0D);
     this.listenerXY.remove(j, i, paramActor);
     this.listenerChanges.remove(paramActor);
   }
@@ -227,19 +227,19 @@ public class DreamEnvXY extends DreamEnv
     if (!this.fireCenterXY.isEmpty()) {
       int[] arrayOfInt1 = this.fireCenterXY.keyList();
       int[] arrayOfInt2 = this.fireCenterXY.values();
-      int k;
       int m;
       int n;
       int i1;
+      int i2;
       for (int i = 0; i < arrayOfInt1.length; i++) {
         int j = arrayOfInt1[i];
         if (j > -2147483647) {
-          k = arrayOfInt2[i];
+          int k = arrayOfInt2[i];
           if (k != 0) {
             m = (j >> 16) - this.fireSquares / 2;
             n = (short)(j & 0xFFFF) - this.fireSquares / 2;
             for (i1 = 0; i1 < this.fireSquares; i1++) {
-              for (int i2 = 0; i2 < this.fireSquares; i2++) {
+              for (i2 = 0; i2 < this.fireSquares; i2++) {
                 int i3 = keyXY(i2 + n, i1 + m);
                 int i4 = this.fireUpdateXY.getIndex(i3);
                 if (i4 >= 0)
@@ -257,26 +257,26 @@ public class DreamEnvXY extends DreamEnv
       if (!this.fireUpdateXY.isEmpty()) {
         int[] arrayOfInt3 = this.fireUpdateXY.keyList();
         int[] arrayOfInt4 = this.fireUpdateXY.values();
-        for (k = 0; k < arrayOfInt3.length; k++) {
-          m = arrayOfInt3[k];
-          if (m > -2147483647) {
-            n = arrayOfInt4[k];
-            i1 = this.fireXY.getIndex(m);
-            if (i1 >= 0) {
-              if (n == 0)
+        for (m = 0; m < arrayOfInt3.length; m++) {
+          n = arrayOfInt3[m];
+          if (n > -2147483647) {
+            i1 = arrayOfInt4[m];
+            i2 = this.fireXY.getIndex(n);
+            if (i2 >= 0) {
+              if (i1 == 0)
               {
-                this.fireXY.removeByIndex(i1);
+                this.fireXY.removeByIndex(i2);
                 this.fireXY.validate();
 
-                this.squareSleep.add(m);
+                this.squareSleep.add(n);
               } else {
-                this.fireXY.setByIndex(i1, n);
+                this.fireXY.setByIndex(i2, i1);
               }
             }
-            else if (n > 0) {
-              this.fireXY.put(m, n);
+            else if (i1 > 0) {
+              this.fireXY.put(n, i1);
 
-              this.squareWakeup.add(m);
+              this.squareWakeup.add(n);
             }
           }
         }
@@ -352,7 +352,7 @@ public class DreamEnvXY extends DreamEnv
   }
 
   private int keyXY(Point3d paramPoint3d) {
-    return (int)(paramPoint3d.x / 200.0D) & 0xFFFF | (int)(paramPoint3d.y / 200.0D) << 16;
+    return (int)(paramPoint3d.jdField_x_of_type_Double / 200.0D) & 0xFFFF | (int)(paramPoint3d.jdField_y_of_type_Double / 200.0D) << 16;
   }
   private int keyXY(int paramInt1, int paramInt2) {
     return paramInt1 & 0xFFFF | paramInt2 << 16;

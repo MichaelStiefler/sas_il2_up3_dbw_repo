@@ -120,7 +120,7 @@ public abstract class GunGeneric extends Actor
 
   public boolean isShots()
   {
-    return this.interpolater.bExecuted;
+    return this.interpolater.jdField_bExecuted_of_type_Boolean;
   }
 
   public void shots(int paramInt)
@@ -130,7 +130,7 @@ public abstract class GunGeneric extends Actor
 
   public void shots(int paramInt, float paramFloat)
   {
-    if ((!this.interpolater.bExecuted) && (paramInt != 0))
+    if ((!this.interpolater.jdField_bExecuted_of_type_Boolean) && (paramInt != 0))
     {
       if (bullets() == 0)
         return;
@@ -145,23 +145,23 @@ public abstract class GunGeneric extends Actor
       }
       this.curShotStep = 0.0D;
       this.curShots = paramInt;
-      this.interpolater.bExecuted = true;
+      this.interpolater.jdField_bExecuted_of_type_Boolean = true;
       if (this.prop.bUseHookAsRel) {
-        this.pos.setUpdateEnable(true);
-        this.pos.resetAsBase();
+        this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
+        this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
       }
-    } else if ((this.interpolater.bExecuted) && (paramInt != 0))
+    } else if ((this.interpolater.jdField_bExecuted_of_type_Boolean) && (paramInt != 0))
     {
       this.curShots = paramInt;
-    } else if ((this.interpolater.bExecuted) && (paramInt == 0))
+    } else if ((this.interpolater.jdField_bExecuted_of_type_Boolean) && (paramInt == 0))
     {
       if (this.bStarted) {
         doEffects(false);
         this.bStarted = false;
       }
-      this.interpolater.bExecuted = false;
+      this.interpolater.jdField_bExecuted_of_type_Boolean = false;
       if (this.prop.bUseHookAsRel)
-        this.pos.setUpdateEnable(false);
+        this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
     }
   }
 
@@ -227,10 +227,10 @@ public abstract class GunGeneric extends Actor
   protected void fireCannon()
   {
     if (prop_fire() != null) {
-      Eff3DActor.New(this.pos, 1.0F, prop_fire(), -1.0F);
+      Eff3DActor.New(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos, 1.0F, prop_fire(), -1.0F);
     }
     if (this.prop.smoke != null) {
-      Eff3DActor.New(this.pos, 1.0F, this.prop.smoke, -1.0F);
+      Eff3DActor.New(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos, 1.0F, this.prop.smoke, -1.0F);
     }
     doSound(true);
   }
@@ -338,30 +338,21 @@ public abstract class GunGeneric extends Actor
   {
     set(paramActor, paramString);
     if ((paramLoc != null) && (this.shells != null)) {
-      this.shells.pos.setRel(paramLoc);
-      this.shells.pos.setBase(paramActor, null, false);
+      this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(paramLoc);
+      this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, null, false);
       this.shells.visibilityAsBase(true);
-      this.shells.pos.setUpdateEnable(false);
+      this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
     }
   }
 
   public void set(Actor paramActor, String paramString1, String paramString2) {
     set(paramActor, paramString1);
-    if ((paramString2 != null) && (this.shells != null))
-    {
-      try
-      {
-        this.shells.pos.setBase(paramActor, paramActor.findHook(paramString2), false);
-        this.shells.visibilityAsBase(true);
-        if (this.prop.bUseHookAsRel)
-        {
-          this.shells.pos.changeHookToRel();
-          this.shells.pos.setUpdateEnable(false);
-        }
-      }
-      catch (Exception localException)
-      {
-        this.shells = null;
+    if ((paramString2 != null) && (this.shells != null)) {
+      this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, paramActor.findHook(paramString2), false);
+      this.shells.visibilityAsBase(true);
+      if (this.prop.bUseHookAsRel) {
+        this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
+        this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
       }
     }
   }
@@ -377,21 +368,21 @@ public abstract class GunGeneric extends Actor
   {
     loadProperties();
     this.hookName = paramString;
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
     setOwner(paramActor);
     Object localObject;
     if (paramString != null) {
       localObject = paramActor.findHook(paramString);
-      this.pos.setBase(paramActor, (Hook)localObject, false);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, (Hook)localObject, false);
       this.chunkIndx = ((Hook)localObject).chunkNum();
     } else {
-      this.pos.setBase(paramActor, null, false);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, null, false);
       this.chunkIndx = -1;
     }
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     if (this.prop.bUseHookAsRel) {
-      this.pos.changeHookToRel();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
     }
     if (prop_fireMesh() != null) {
       this.fireMesh = new MeshShared(prop_fireMesh());
@@ -400,7 +391,7 @@ public abstract class GunGeneric extends Actor
     if (!this.prop.bCannon)
     {
       if (prop_fire() != null) {
-        this.fire = Eff3DActor.New(this.pos, 1.0F, prop_fire(), -1.0F);
+        this.fire = Eff3DActor.New(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos, 1.0F, prop_fire(), -1.0F);
         if (this.fire != null) {
           this.fire.setUseIntensityAsSwitchDraw(true);
           Eff3DActor.setIntesity(this.fire, 0.0F);
@@ -409,7 +400,7 @@ public abstract class GunGeneric extends Actor
       }
 
       if (this.prop.smoke != null) {
-        this.smoke = Eff3DActor.New(this.pos, 1.0F, this.prop.smoke, -1.0F);
+        this.smoke = Eff3DActor.New(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos, 1.0F, this.prop.smoke, -1.0F);
         if (this.smoke != null) {
           this.smoke.setUseIntensityAsSwitchDraw(true);
           Eff3DActor.setIntesity(this.smoke, 0.0F);
@@ -419,8 +410,8 @@ public abstract class GunGeneric extends Actor
     }
 
     if (this.prop.sound != null) {
-      this.pos.getAbs(loc);
-      loc.sub(paramActor.pos.getAbs());
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(loc);
+      loc.sub(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
 
       if (this.prop.sound != null) {
         this.sound = paramActor.newSound(this.prop.sound, false);
@@ -436,34 +427,28 @@ public abstract class GunGeneric extends Actor
     }
 
     if (prop_sprite() != null) {
-      this.sprite = Eff3DActor.New(this.pos, 1.0F, prop_sprite(), -1.0F);
+      this.sprite = Eff3DActor.New(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos, 1.0F, prop_sprite(), -1.0F);
       if (this.sprite != null) {
         this.sprite.drawing(false);
       }
     }
 
     if ((this.prop.emitColor != null) && (this.prop.emitR > 0.0F)) {
-      this.pos.getAbs(loc);
-      loc.sub(paramActor.pos.getAbs());
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(loc);
+      loc.sub(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
       this.light = new LightPointActor(new LightPoint(), loc.getPoint());
       this.light.light.setColor(this.prop.emitColor.x, this.prop.emitColor.y, this.prop.emitColor.z);
       this.light.light.setEmit(0.0F, this.prop.emitR);
       paramActor.draw.lightMap().put(getClass().getName() + paramString, this.light);
     }
 
-    if (this.prop.shells != null)
-    {
-      if ((this.prop.shells.equals("3DO/Effects/GunShells/GunShells.eff")) && (this.prop.bullet[0].kalibr > 0.0002F))
-      {
-        this.prop.shells = "3DO/Effects/GunShells/MediumShells.eff";
-      }
-
+    if (this.prop.shells != null) {
       this.shells = Eff3DActor.NewPosMove(linit, 1.0F, this.prop.shells, -1.0F);
       if (this.shells != null)
       {
         this.shells.setUseIntensityAsSwitchDraw(true);
         Eff3DActor.setIntesity(this.shells, 0.0F);
-        this.shells.pos.setBase(this, null, false);
+        this.shells.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this, null, false);
       }
     }
 
@@ -477,7 +462,7 @@ public abstract class GunGeneric extends Actor
 
     paramActor.interpPut(this.interpolater, null, -1L, null);
     if (this.prop.bUseHookAsRel)
-      this.pos.setUpdateEnable(false);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
   }
 
   class Draw extends ActorDraw
@@ -498,20 +483,18 @@ public abstract class GunGeneric extends Actor
           if (l2 <= l1) {
             GunGeneric.this.light.light.setEmit(0.0F, GunGeneric.this.prop.emitR);
             GunGeneric.this.bLighting = false;
-          }
-          else {
-            float f1 = 0.525F - World.Sun().Ambient;
-            float f2 = GunGeneric.this.prop.emitI * f1;
+          } else {
+            float f1 = GunGeneric.this.prop.emitI;
             if (l1 > GunGeneric.this.lastShotTime) {
-              float f3 = 2.0F * (float)(l1 - GunGeneric.this.lastShotTime) / (float)(l2 - GunGeneric.this.lastShotTime);
-              if (f3 < 1.0F)
-                f2 *= f3;
+              float f2 = 2.0F * (float)(l1 - GunGeneric.this.lastShotTime) / (float)(l2 - GunGeneric.this.lastShotTime);
+              if (f2 < 1.0F)
+                f1 *= f2;
             }
-            GunGeneric.this.light.light.setEmit(f2, GunGeneric.this.prop.emitR * f1);
+            GunGeneric.this.light.light.setEmit(f1, GunGeneric.this.prop.emitR);
             if (!GunGeneric.this.prop.bUseHookAsRel)
             {
-              GunGeneric.this.pos.getAbs(GunGeneric.loc);
-              GunGeneric.loc.sub(GunGeneric.this.getOwner().pos.getAbs());
+              GunGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(GunGeneric.loc);
+              GunGeneric.loc.sub(GunGeneric.this.getOwner().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
               GunGeneric.loc.get(GunGeneric.this.light.relPos);
             }
           }
@@ -520,13 +503,13 @@ public abstract class GunGeneric extends Actor
       if (!GunGeneric.this.bStarted)
         return 0;
       if (GunGeneric.this.fireMesh != null) {
-        GunGeneric.this.pos.getRender(GunGeneric.loc);
+        GunGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(GunGeneric.loc);
         return GunGeneric.this.fireMesh.preRender(GunGeneric.loc.getPoint());
       }
       return 0;
     }
     public void render(Actor paramActor) {
-      GunGeneric.this.pos.getRender(GunGeneric.loc);
+      GunGeneric.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(GunGeneric.loc);
       if (!GunGeneric.this.fireMesh.putToRenderArray(GunGeneric.loc)) {
         GunGeneric.this.fireMesh.setPos(GunGeneric.loc);
         GunGeneric.this.fireMesh.render();

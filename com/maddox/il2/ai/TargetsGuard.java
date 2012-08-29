@@ -12,7 +12,6 @@ import com.maddox.rts.NetEnv;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TargetsGuard
   implements MsgTimeOutListener
@@ -24,8 +23,6 @@ public class TargetsGuard
   private boolean bTaskComplete = false;
   private int checkType;
   private ArrayList targets = new ArrayList();
-  public ArrayList zutiTargetNamesToRemove;
-  public ArrayList zutiTargetPosToRemove;
 
   public boolean isAlive()
   {
@@ -172,7 +169,7 @@ public class TargetsGuard
 
   public void doMissionComplete() {
     if (Mission.isNet()) {
-      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight())) {
+      if (Main.cur().netServerParams.isCoop()) {
         if (Main.cur().netServerParams.isMaster())
           ((NetUser)NetEnv.host()).coopMissionComplete(this.bTaskComplete);
         if (NetUser.getArmyCoopWinner() == 1) {
@@ -236,16 +233,5 @@ public class TargetsGuard
     this.ticker = new MsgTimeOut(null);
     this.ticker.setNotCleanAfterSend();
     this.ticker.setListener(this);
-
-    this.zutiTargetNamesToRemove = new ArrayList();
-    this.zutiTargetPosToRemove = new ArrayList();
-  }
-
-  public List zutiGetTargets()
-  {
-    if (this.targets == null) {
-      this.targets = new ArrayList();
-    }
-    return this.targets;
   }
 }

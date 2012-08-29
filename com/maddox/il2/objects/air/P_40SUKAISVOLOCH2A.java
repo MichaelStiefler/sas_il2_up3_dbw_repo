@@ -22,11 +22,11 @@ public class P_40SUKAISVOLOCH2A extends P_40SUKAISVOLOCH
     Property.set(localClass, "cockpitClass", CockpitP_40B.class);
     Property.set(localClass, "LOSElevation", 1.0728F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning303k 300", "MGunBrowning303k 240", "MGunBrowning303k 300", "MGunBrowning303k 240" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

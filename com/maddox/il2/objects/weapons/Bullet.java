@@ -54,7 +54,7 @@ public class Bullet extends BulletGeneric
   public boolean collided(Actor paramActor, String paramString, double paramDouble) {
     tmpP.interpolate(this.p0, this.p1, paramDouble);
 
-    if (((this.flags & 0x2000) != 0) && (Actor.isValid(this.owner)) && (Actor.isValid(paramActor)) && (this.owner.getArmy() != paramActor.getArmy()))
+    if (((this.jdField_flags_of_type_Int & 0x2000) != 0) && (Actor.isValid(this.jdField_owner_of_type_ComMaddoxIl2EngineActor)) && (Actor.isValid(paramActor)) && (this.jdField_owner_of_type_ComMaddoxIl2EngineActor.getArmy() != paramActor.getArmy()))
     {
       if ((paramActor instanceof ActorMesh)) {
         localObject1 = ((ActorMesh)paramActor).mesh();
@@ -74,43 +74,43 @@ public class Bullet extends BulletGeneric
           }
         }
       }
-      this.speed.scale(2.0D);
+      this.jdField_speed_of_type_ComMaddoxJGPVector3d.scale(2.0D);
     }
 
-    vf.set(this.speed);
+    vf.set(this.jdField_speed_of_type_ComMaddoxJGPVector3d);
     Object localObject1 = properties();
-    if ((this.owner != null) && ((this.owner == World.getPlayerAircraft()) || (this.owner == World.getPlayerGunner())) && (!(paramActor instanceof ActorLand)))
+    if ((this.jdField_owner_of_type_ComMaddoxIl2EngineActor != null) && ((this.jdField_owner_of_type_ComMaddoxIl2EngineActor == World.getPlayerAircraft()) || (this.jdField_owner_of_type_ComMaddoxIl2EngineActor == World.getPlayerGunner())) && (!(paramActor instanceof ActorLand)))
     {
-      World.cur().scoreCounter.bulletsHit += this.gun.prop.bulletsCluster;
+      World.cur().scoreCounter.bulletsHit += this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.prop.bulletsCluster;
       if ((paramActor instanceof Aircraft))
-        World.cur().scoreCounter.bulletsHitAir += this.gun.prop.bulletsCluster;
+        World.cur().scoreCounter.bulletsHitAir += this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.prop.bulletsCluster;
     }
     float f1 = ((BulletProperties)localObject1).massa;
     Object localObject2 = null;
     Shot localShot;
     if (((BulletProperties)localObject1).cumulativePower > 0.0F) {
-      for (int j = 0; j < this.gun.prop.bulletsCluster; j++) {
-        localShot = MsgShot.send(paramActor, paramString, tmpP, vf, f1, this.owner, ((BulletProperties)localObject1).cumulativePower, 1, paramDouble);
+      for (int j = 0; j < this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.prop.bulletsCluster; j++) {
+        localShot = MsgShot.send(paramActor, paramString, tmpP, vf, f1, this.jdField_owner_of_type_ComMaddoxIl2EngineActor, ((BulletProperties)localObject1).cumulativePower, 1, paramDouble);
 
         if (!Actor.isValid(paramActor)) return true;
         if (j != 0) continue; localObject2 = localShot;
       }
       Explosions.generateShot(paramActor, localObject2);
     } else {
-      double d = this.speed.length();
+      double d = this.jdField_speed_of_type_ComMaddoxJGPVector3d.length();
       float f2 = (float)(f1 * d * d / 2.0D);
-      for (int k = 0; k < this.gun.prop.bulletsCluster; k++) {
+      for (int k = 0; k < this.jdField_gun_of_type_ComMaddoxIl2EngineGunGeneric.prop.bulletsCluster; k++) {
         if (((BulletProperties)localObject1).powerRadius == 0.0F) {
-          localShot = MsgShot.send(paramActor, paramString, tmpP, vf, f1, this.owner, f2, ((BulletProperties)localObject1).power == 0.0F ? 2 : 3, paramDouble);
+          localShot = MsgShot.send(paramActor, paramString, tmpP, vf, f1, this.jdField_owner_of_type_ComMaddoxIl2EngineActor, f2, ((BulletProperties)localObject1).power == 0.0F ? 2 : 3, paramDouble);
         }
         else {
-          localShot = MsgShot.send(paramActor, paramString, tmpP, vf, f1, this.owner, f2, 0, paramDouble);
+          localShot = MsgShot.send(paramActor, paramString, tmpP, vf, f1, this.jdField_owner_of_type_ComMaddoxIl2EngineActor, f2, 0, paramDouble);
         }
 
         if (!Actor.isValid(paramActor)) return true;
         if (k == 0) localObject2 = localShot;
         if ((((BulletProperties)localObject1).power > 0.0F) && (((BulletProperties)localObject1).powerRadius > 0.0F)) {
-          MsgExplosion.send(paramActor, paramString, tmpP, this.owner, f1, ((BulletProperties)localObject1).power + 0.03F * f1, ((BulletProperties)localObject1).powerType, ((BulletProperties)localObject1).powerRadius);
+          MsgExplosion.send(paramActor, paramString, tmpP, this.jdField_owner_of_type_ComMaddoxIl2EngineActor, f1, ((BulletProperties)localObject1).power + 0.03F * f1, ((BulletProperties)localObject1).powerType, ((BulletProperties)localObject1).powerRadius);
         }
       }
 
@@ -122,12 +122,12 @@ public class Bullet extends BulletGeneric
     return true;
   }
 
-  public Bullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
+  public Bullet(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong)
   {
-    super(paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
-    if ((this.owner != null) && ((this.owner.equals(World.getPlayerAircraft())) || (this.owner.isContainOwner(World.getPlayerAircraft()))) && (!World.cur().diffCur.Realistic_Gunnery))
+    super(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong);
+    if ((this.jdField_owner_of_type_ComMaddoxIl2EngineActor != null) && ((this.jdField_owner_of_type_ComMaddoxIl2EngineActor.equals(World.getPlayerAircraft())) || (this.jdField_owner_of_type_ComMaddoxIl2EngineActor.isContainOwner(World.getPlayerAircraft()))) && (!World.cur().diffCur.Realistic_Gunnery))
     {
-      this.flags |= 1073741824;
+      this.jdField_flags_of_type_Int |= 1073741824;
     }
   }
 }

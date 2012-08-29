@@ -16,8 +16,6 @@ import com.maddox.il2.engine.CfgGObj;
 import com.maddox.rts.CfgFlags;
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.CfgTools;
-import com.maddox.rts.CmdEnv;
-import com.maddox.rts.MsgAction;
 import com.maddox.rts.ScreenMode;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,12 +53,11 @@ public class WindowPreferences
         screenModes.add(localObject1);
       }
     }
-    if (screenModes.size() > 0)
-    {
-      localGWindowScrollingDialogClient1 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
+    if (screenModes.size() > 0) {
+      localObject1 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
 
-      localGWindowTabDialogClient.addTab("Video", localGWindowScrollingDialogClient1);
-      localObject1 = (GWindowDialogClient)localGWindowScrollingDialogClient1.create(new GWindowDialogClient() {
+      localGWindowTabDialogClient.addTab("Video", (GWindow)localObject1);
+      localGWindowDialogClient1 = (GWindowDialogClient)((GWindowScrollingDialogClient)localObject1).create(new GWindowDialogClient() {
         public void created() { super.created();
           setMetricSize(24.0F, 14.0F); }
 
@@ -74,24 +71,17 @@ public class WindowPreferences
         {
         }
       });
-      localGWindowScrollingDialogClient1.fixed = ((GWindowDialogClient)localObject1);
+      ((GWindowScrollingDialogClient)localObject1).fixed = localGWindowDialogClient1;
 
-      ((GWindowDialogClient)localObject1).addLabel(new GWindowLabel((GWindow)localObject1, 2.0F, 2.0F, 8.0F, ((GWindowDialogClient)localObject1).lookAndFeel().getComboHmetric(), "Resolution", null));
+      localGWindowDialogClient1.addLabel(new GWindowLabel(localGWindowDialogClient1, 2.0F, 2.0F, 8.0F, localGWindowDialogClient1.lookAndFeel().getComboHmetric(), "Resolution", null));
 
-      ((GWindowDialogClient)localObject1).addControl(WindowPreferences.comboResolution = new GWindowComboControl((GWindow)localObject1, 10.0F, 2.0F, 12.0F)
+      localGWindowDialogClient1.addControl(WindowPreferences.comboResolution = new GWindowComboControl(localGWindowDialogClient1, 10.0F, 2.0F, 12.0F)
       {
         public boolean notify(int paramInt1, int paramInt2) {
           if (paramInt1 == 2)
           {
-            new MsgAction(64, 0.2D, "") {
-              public void doAction(Object paramObject) {
-                int i = WindowPreferences.2.this.getSelected();
-                ScreenMode localScreenMode = (ScreenMode)WindowPreferences.screenModes.get(i);
-                CmdEnv.top().exec("window " + localScreenMode.width() + " " + localScreenMode.height() + " " + localScreenMode.colourBits() + " " + localScreenMode.colourBits() + " FULL");
+            new WindowPreferences.3(this, 64, 0.2D, "");
 
-                WindowPreferences.2.this.setSelected(WindowPreferences._findVideoMode(ScreenMode.current()), true, false);
-              }
-            };
             return true;
           }
           return super.notify(paramInt1, paramInt2);
@@ -106,10 +96,10 @@ public class WindowPreferences
       comboResolution.resized();
     }
 
-    GWindowScrollingDialogClient localGWindowScrollingDialogClient1 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
+    Object localObject1 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
 
-    localGWindowTabDialogClient.addTab("Render", localGWindowScrollingDialogClient1);
-    Object localObject1 = (GWindowDialogClient)localGWindowScrollingDialogClient1.create(new GWindowDialogClient() {
+    localGWindowTabDialogClient.addTab("Render", (GWindow)localObject1);
+    GWindowDialogClient localGWindowDialogClient1 = (GWindowDialogClient)((GWindowScrollingDialogClient)localObject1).create(new GWindowDialogClient() {
       public void created() { super.created();
         setMetricSize(24.0F, 53.0F); }
 
@@ -123,33 +113,33 @@ public class WindowPreferences
       {
       }
     });
-    localGWindowScrollingDialogClient1.fixed = ((GWindowDialogClient)localObject1);
+    ((GWindowScrollingDialogClient)localObject1).fixed = localGWindowDialogClient1;
 
-    createCfgInt((GWindowDialogClient)localObject1, 2.0F, 2.0F, 8.0F, 10.0F, 8.0F, "TexQual", true);
-    createCfgInt((GWindowDialogClient)localObject1, 4.0F, 2.0F, 8.0F, 10.0F, 8.0F, "TexMipFilter", true);
-    createCfgInt((GWindowDialogClient)localObject1, 6.0F, 2.0F, 8.0F, 10.0F, 8.0F, "LandDetails", true);
-    createCfgInt((GWindowDialogClient)localObject1, 8.0F, 2.0F, 8.0F, 10.0F, 8.0F, "LandShading", true);
-    createCfgInt((GWindowDialogClient)localObject1, 10.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Forest", true);
-    createCfgInt((GWindowDialogClient)localObject1, 12.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Sky", true);
+    createCfgInt(localGWindowDialogClient1, 2.0F, 2.0F, 8.0F, 10.0F, 8.0F, "TexQual", true);
+    createCfgInt(localGWindowDialogClient1, 4.0F, 2.0F, 8.0F, 10.0F, 8.0F, "TexMipFilter", true);
+    createCfgInt(localGWindowDialogClient1, 6.0F, 2.0F, 8.0F, 10.0F, 8.0F, "LandDetails", true);
+    createCfgInt(localGWindowDialogClient1, 8.0F, 2.0F, 8.0F, 10.0F, 8.0F, "LandShading", true);
+    createCfgInt(localGWindowDialogClient1, 10.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Forest", true);
+    createCfgInt(localGWindowDialogClient1, 12.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Sky", true);
 
-    createCfgInt((GWindowDialogClient)localObject1, 15.0F, 2.0F, 8.0F, 10.0F, 8.0F, "DynamicalLights", true);
-    createCfgInt((GWindowDialogClient)localObject1, 17.0F, 2.0F, 8.0F, 10.0F, 8.0F, "DiffuseLight", true);
-    createCfgInt((GWindowDialogClient)localObject1, 19.0F, 2.0F, 8.0F, 10.0F, 8.0F, "SpecularLight", true);
-    createCfgInt((GWindowDialogClient)localObject1, 21.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Specular", true);
-    createCfgInt((GWindowDialogClient)localObject1, 23.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Shadows", true);
-    createCfgFlag((GWindowDialogClient)localObject1, 25.0F, 10.0F, 2.0F, 8.0F, "ShadowsFlags", 0, true);
+    createCfgInt(localGWindowDialogClient1, 15.0F, 2.0F, 8.0F, 10.0F, 8.0F, "DynamicalLights", true);
+    createCfgInt(localGWindowDialogClient1, 17.0F, 2.0F, 8.0F, 10.0F, 8.0F, "DiffuseLight", true);
+    createCfgInt(localGWindowDialogClient1, 19.0F, 2.0F, 8.0F, 10.0F, 8.0F, "SpecularLight", true);
+    createCfgInt(localGWindowDialogClient1, 21.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Specular", true);
+    createCfgInt(localGWindowDialogClient1, 23.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Shadows", true);
+    createCfgFlag(localGWindowDialogClient1, 25.0F, 10.0F, 2.0F, 8.0F, "ShadowsFlags", 0, true);
 
     CfgFlags localCfgFlags = (CfgFlags)CfgTools.get("TexFlags");
     int k = localCfgFlags.firstFlag();
     int m = localCfgFlags.countFlags();
     for (int n = 0; n < m; n++) {
-      createCfgFlag((GWindowDialogClient)localObject1, 28.0F + n * 1.5F, 14.0F, 2.0F, 12.0F, "TexFlags", n + k, true);
+      createCfgFlag(localGWindowDialogClient1, 28.0F + n * 1.5F, 14.0F, 2.0F, 12.0F, "TexFlags", n + k, true);
     }
 
-    GWindowScrollingDialogClient localGWindowScrollingDialogClient2 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
+    GWindowScrollingDialogClient localGWindowScrollingDialogClient = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
 
-    localGWindowTabDialogClient.addTab("Sound", localGWindowScrollingDialogClient2);
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)localGWindowScrollingDialogClient2.create(new GWindowDialogClient() {
+    localGWindowTabDialogClient.addTab("Sound", localGWindowScrollingDialogClient);
+    GWindowDialogClient localGWindowDialogClient2 = (GWindowDialogClient)localGWindowScrollingDialogClient.create(new GWindowDialogClient() {
       public void created() { super.created();
         setMetricSize(24.0F, 28.0F); }
 
@@ -163,7 +153,7 @@ public class WindowPreferences
       {
       }
     });
-    localGWindowScrollingDialogClient2.fixed = localGWindowDialogClient;
+    localGWindowScrollingDialogClient.fixed = localGWindowDialogClient2;
 
     float f = 2.0F;
     Collection localCollection = CfgTools.all();
@@ -174,8 +164,8 @@ public class WindowPreferences
       localObject2 = localIterator.next();
       if (((localObject2 instanceof CfgInt)) && (!(localObject2 instanceof CfgGObj))) {
         localObject3 = (CfgInt)localObject2;
-        if (((CfgInt)localObject3).countStates() > 8) createSlider(localGWindowDialogClient, f, 2.0F, 8.0F, 10.0F, 8.0F, ((CfgInt)localObject3).name(), true); else
-          createCfgInt(localGWindowDialogClient, f, 2.0F, 8.0F, 10.0F, 8.0F, ((CfgInt)localObject3).name(), true);
+        if (((CfgInt)localObject3).countStates() > 8) createSlider(localGWindowDialogClient2, f, 2.0F, 8.0F, 10.0F, 8.0F, ((CfgInt)localObject3).name(), true); else
+          createCfgInt(localGWindowDialogClient2, f, 2.0F, 8.0F, 10.0F, 8.0F, ((CfgInt)localObject3).name(), true);
         f += 2.0F;
       }
     }
@@ -189,7 +179,7 @@ public class WindowPreferences
         k = ((CfgFlags)localObject3).firstFlag();
         m = ((CfgFlags)localObject3).countFlags();
         for (int i1 = 0; i1 < m; i1++) {
-          createCfgFlag(localGWindowDialogClient, f, 14.0F, 2.0F, 12.0F, ((CfgFlags)localObject3).name(), i1 + k, true);
+          createCfgFlag(localGWindowDialogClient2, f, 14.0F, 2.0F, 12.0F, ((CfgFlags)localObject3).name(), i1 + k, true);
           f += 1.5F;
         }
       }
@@ -265,7 +255,7 @@ public class WindowPreferences
     }
     public boolean notify(int paramInt1, int paramInt2) {
       if (paramInt1 == 2) {
-        this.bChecked = (!this.bChecked);
+        this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
         if (this.bUpdate) {
           this.cfg.set(this.iFlag, isChecked());
           int i = this.cfg.apply(this.iFlag);
@@ -323,12 +313,12 @@ public class WindowPreferences
     public void refresh(boolean paramBoolean) {
       int i = this.cfg.countStates();
       int j = this.cfg.firstState();
-      if (this.posEnable == null)
-        this.posEnable = new boolean[i];
+      if (this.jdField_posEnable_of_type_ArrayOfBoolean == null)
+        this.jdField_posEnable_of_type_ArrayOfBoolean = new boolean[i];
       for (int k = 0; k < i; k++) {
         if (paramBoolean)
           add(this.cfg.nameState(k + j));
-        this.posEnable[k] = this.cfg.isEnabledState(k + j);
+        this.jdField_posEnable_of_type_ArrayOfBoolean[k] = this.cfg.isEnabledState(k + j);
       }
       this.cfg.reset();
     }
@@ -373,9 +363,9 @@ public class WindowPreferences
       this.cfg = paramCfgInt;
       int i = paramCfgInt.countStates();
       int j = paramCfgInt.firstState();
-      this.posEnable = new boolean[i];
+      this.jdField_posEnable_of_type_ArrayOfBoolean = new boolean[i];
       for (int k = 0; k < i; k++) {
-        this.posEnable[k] = paramCfgInt.isEnabledState(k + j);
+        this.jdField_posEnable_of_type_ArrayOfBoolean[k] = paramCfgInt.isEnabledState(k + j);
       }
       paramCfgInt.reset();
       setPos(paramCfgInt.get(), false);

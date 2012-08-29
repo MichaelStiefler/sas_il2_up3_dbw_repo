@@ -47,7 +47,7 @@ public abstract class ActorPos
       {
         continue;
       }
-      ((Hook)(Hook)localActor2.pos.baseHook()).baseChanged(localActor1);
+      ((Hook)localActor2.pos.baseHook()).baseChanged(localActor1);
     }
 
     inValidate(false);

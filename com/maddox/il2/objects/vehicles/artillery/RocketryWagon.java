@@ -149,8 +149,8 @@ public class RocketryWagon extends ActorMesh
     }
 
     computeCurLoc(this.sta, f, tmpL);
-    this.pos.setAbs(tmpL);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(tmpL);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     if (!interpEnd("move"))
       interpPut(new Move(), "move", paramLong2, null); 
@@ -199,13 +199,13 @@ public class RocketryWagon extends ActorMesh
       if ((RocketryWagon.this.sta != 1) || 
         (RocketryWagon.this.sta == 1))
       {
-        double d = Engine.land().HQ_Air(RocketryWagon.tmpL.getPoint().x, RocketryWagon.tmpL.getPoint().y);
-        if (RocketryWagon.tmpL.getPoint().z <= d) {
-          if (Engine.land().isWater(RocketryWagon.tmpL.getPoint().x, RocketryWagon.tmpL.getPoint().y)) {
+        double d = Engine.land().HQ_Air(RocketryWagon.tmpL.getPoint().jdField_x_of_type_Double, RocketryWagon.tmpL.getPoint().jdField_y_of_type_Double);
+        if (RocketryWagon.tmpL.getPoint().jdField_z_of_type_Double <= d) {
+          if (Engine.land().isWater(RocketryWagon.tmpL.getPoint().jdField_x_of_type_Double, RocketryWagon.tmpL.getPoint().jdField_y_of_type_Double)) {
             Explosions.WreckageDrop_Water(RocketryWagon.tmpL.getPoint());
             RocketryWagon.access$202(RocketryWagon.this, 0L);
           } else {
-            RocketryWagon.tmpL.getPoint().z = d;
+            RocketryWagon.tmpL.getPoint().jdField_z_of_type_Double = d;
             RocketryWagon.access$202(RocketryWagon.this, RocketryWagon.access$700(World.Rnd().nextFloat(15.0F, 25.0F)));
           }
           RocketryWagon.access$102(RocketryWagon.this, -2);

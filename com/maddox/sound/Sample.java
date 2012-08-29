@@ -144,10 +144,10 @@ public class Sample extends BaseObject
       while (localStringTokenizer.hasMoreTokens()) {
         String str2 = localStringTokenizer.nextToken();
         SoundControl localSoundControl = ControlInfo.get(str2, jniGetControlList(this.handle));
-        if (localSoundControl != null)
-        {
-          localSoundControl.load(paramSectFile, paramString + "." + str2);
+        if (localSoundControl == null) {
+          continue;
         }
+        localSoundControl.load(paramSectFile, paramString + "." + str2);
       }
     }
   }

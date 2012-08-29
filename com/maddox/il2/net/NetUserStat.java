@@ -33,8 +33,8 @@ public class NetUserStat
   public float tCCountry;
   public float rating;
   public double score = 0.0D;
-  public int[] enemyKill = new int[10];
-  public int[] friendKill = new int[10];
+  public int[] enemyKill = new int[9];
+  public int[] friendKill = new int[9];
   public int bulletsFire;
   public int bulletsHit;
   public int bulletsHitAir;
@@ -53,7 +53,6 @@ public class NetUserStat
   public void read(NetMsgInput paramNetMsgInput)
     throws IOException
   {
-    int i = getNumOfScoreItems();
     this.nMissions = paramNetMsgInput.readInt();
     this.nSorties = paramNetMsgInput.readInt();
     this.nTakeoffs = paramNetMsgInput.readInt();
@@ -71,8 +70,8 @@ public class NetUserStat
     this.tCCountry = paramNetMsgInput.readFloat();
     this.rating = paramNetMsgInput.readFloat();
     this.score = paramNetMsgInput.readFloat();
-    for (int j = 0; j < i; j++) this.enemyKill[j] = paramNetMsgInput.readInt();
-    for (j = 0; j < i; j++) this.friendKill[j] = paramNetMsgInput.readInt();
+    for (int i = 0; i < 9; i++) this.enemyKill[i] = paramNetMsgInput.readInt();
+    for (int j = 0; j < 9; j++) this.friendKill[j] = paramNetMsgInput.readInt();
     this.bulletsFire = paramNetMsgInput.readInt();
     this.bulletsHit = paramNetMsgInput.readInt();
     this.bulletsHitAir = paramNetMsgInput.readInt();
@@ -101,8 +100,8 @@ public class NetUserStat
     paramNetMsgOutput.writeFloat(this.tCCountry);
     paramNetMsgOutput.writeFloat(this.rating);
     paramNetMsgOutput.writeFloat((float)this.score);
-    for (int i = 0; i < 10; i++) paramNetMsgOutput.writeInt(this.enemyKill[i]);
-    for (i = 0; i < 10; i++) paramNetMsgOutput.writeInt(this.friendKill[i]);
+    for (int i = 0; i < 9; i++) paramNetMsgOutput.writeInt(this.enemyKill[i]);
+    for (int j = 0; j < 9; j++) paramNetMsgOutput.writeInt(this.friendKill[j]);
     paramNetMsgOutput.writeInt(this.bulletsFire);
     paramNetMsgOutput.writeInt(this.bulletsHit);
     paramNetMsgOutput.writeInt(this.bulletsHitAir);
@@ -132,8 +131,8 @@ public class NetUserStat
     if (this.tCCountry != 0.0F) return false;
     if (this.rating != 0.0F) return false;
     if (this.score != 0.0D) return false;
-    for (int i = 0; i < 10; i++) if (this.enemyKill[i] != 0) return false;
-    for (i = 0; i < 10; i++) if (this.friendKill[i] != 0) return false;
+    for (int i = 0; i < 9; i++) if (this.enemyKill[i] != 0) return false;
+    for (int j = 0; j < 9; j++) if (this.friendKill[j] != 0) return false;
     if (this.bulletsFire != 0) return false;
     if (this.bulletsHit != 0) return false;
     if (this.bulletsHitAir != 0) return false;
@@ -147,8 +146,8 @@ public class NetUserStat
   {
     if (this.score != paramNetUserStat.score) return false;
     if (this.curPlayerState != paramNetUserStat.curPlayerState) return false;
-    for (int i = 0; i < 10; i++) if (this.enemyKill[i] != paramNetUserStat.enemyKill[i]) return false;
-    for (i = 0; i < 10; i++) if (this.friendKill[i] != paramNetUserStat.friendKill[i]) return false;
+    for (int i = 0; i < 9; i++) if (this.enemyKill[i] != paramNetUserStat.enemyKill[i]) return false;
+    for (int j = 0; j < 9; j++) if (this.friendKill[j] != paramNetUserStat.friendKill[j]) return false;
     if (this.bulletsFire != paramNetUserStat.bulletsFire) return false;
     if (this.bulletsHit != paramNetUserStat.bulletsHit) return false;
     if (this.bulletsHitAir != paramNetUserStat.bulletsHitAir) return false;
@@ -177,8 +176,8 @@ public class NetUserStat
     this.tCCountry = 0.0F;
     this.rating = 0.0F;
     this.score = 0.0D;
-    for (int i = 0; i < 10; i++) this.enemyKill[i] = 0;
-    for (i = 0; i < 10; i++) this.friendKill[i] = 0;
+    for (int i = 0; i < 9; i++) this.enemyKill[i] = 0;
+    for (int j = 0; j < 9; j++) this.friendKill[j] = 0;
     this.bulletsFire = 0;
     this.bulletsHit = 0;
     this.bulletsHitAir = 0;
@@ -208,8 +207,8 @@ public class NetUserStat
     this.tCCountry = paramNetUserStat.tCCountry;
     this.rating = paramNetUserStat.rating;
     this.score = paramNetUserStat.score;
-    for (int i = 0; i < 10; i++) this.enemyKill[i] = paramNetUserStat.enemyKill[i];
-    for (i = 0; i < 10; i++) this.friendKill[i] = paramNetUserStat.friendKill[i];
+    for (int i = 0; i < 9; i++) this.enemyKill[i] = paramNetUserStat.enemyKill[i];
+    for (int j = 0; j < 9; j++) this.friendKill[j] = paramNetUserStat.friendKill[j];
     this.bulletsFire = paramNetUserStat.bulletsFire;
     this.bulletsHit = paramNetUserStat.bulletsHit;
     this.bulletsHitAir = paramNetUserStat.bulletsHitAir;
@@ -239,8 +238,8 @@ public class NetUserStat
     this.tCCountry += paramNetUserStat.tCCountry;
     this.rating += paramNetUserStat.rating;
     this.score += paramNetUserStat.score;
-    for (int i = 0; i < 10; i++) this.enemyKill[i] += paramNetUserStat.enemyKill[i];
-    for (i = 0; i < 10; i++) this.friendKill[i] += paramNetUserStat.friendKill[i];
+    for (int i = 0; i < 9; i++) this.enemyKill[i] += paramNetUserStat.enemyKill[i];
+    for (int j = 0; j < 9; j++) this.friendKill[j] += paramNetUserStat.friendKill[j];
     this.bulletsFire += paramNetUserStat.bulletsFire;
     this.bulletsHit += paramNetUserStat.bulletsHit;
     this.bulletsHitAir += paramNetUserStat.bulletsHitAir;
@@ -257,16 +256,17 @@ public class NetUserStat
     double d1 = 0.0D;
     ArrayList localArrayList = localScoreCounter.enemyItems;
     for (int i = 0; i < localArrayList.size(); i++) {
-      ScoreItem localScoreItem1 = (ScoreItem)localArrayList.get(i);
-      this.enemyKill[localScoreItem1.type] += 1;
-      d1 += localScoreItem1.score;
+      ScoreItem localScoreItem = (ScoreItem)localArrayList.get(i);
+      this.enemyKill[localScoreItem.type] += 1;
+      d1 += localScoreItem.score;
     }
     double d2 = 0.0D;
     localArrayList = localScoreCounter.friendItems;
+    Object localObject;
     for (int j = 0; j < localArrayList.size(); j++) {
-      ScoreItem localScoreItem2 = (ScoreItem)localArrayList.get(j);
-      this.friendKill[localScoreItem2.type] += 1;
-      d2 += localScoreItem2.score;
+      localObject = (ScoreItem)localArrayList.get(j);
+      this.friendKill[((ScoreItem)localObject).type] += 1;
+      d2 += ((ScoreItem)localObject).score;
     }
 
     if (localScoreCounter.bPlayerDead)
@@ -317,8 +317,8 @@ public class NetUserStat
       if (World.land() != null)
         this.tNight = World.land().nightTime(localScoreCounter.todStart, (int)this.tTotal);
       if (Config.isUSE_RENDER()) {
-        Main3D localMain3D = Main3D.cur3D();
-        if ((localMain3D.clouds != null) && (localMain3D.clouds.type() > 2))
+        localObject = Main3D.cur3D();
+        if ((((Main3D)localObject).clouds != null) && (((Main3D)localObject).clouds.type() > 2))
           this.tIns = this.tTotal;
       }
       if (localScoreCounter.bCrossCountry) {
@@ -336,16 +336,6 @@ public class NetUserStat
     if (localScoreCounter.bPlayerStateUnknown) this.curPlayerState |= 32;
 
     if (paramBoolean)
-      localScoreCounter.resetGame(); 
-  }
-
-  private int getNumOfScoreItems() {
-    if (!NetMissionTrack.isPlaying()) {
-      return 10;
-    }
-    int i = NetMissionTrack.playingVersion();
-    if (i < 103)
-      return 9;
-    return 10;
+      localScoreCounter.resetGame();
   }
 }

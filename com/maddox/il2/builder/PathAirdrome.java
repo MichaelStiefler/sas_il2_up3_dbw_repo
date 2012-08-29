@@ -34,8 +34,8 @@ public class PathAirdrome extends Path
     localStringBuffer.append(i);
     for (int j = 0; j < i; j++) {
       PPoint localPPoint = paramPathAirdrome.point(j);
-      localStringBuffer.append(" "); localStringBuffer.append(localPPoint.pos.getAbsPoint().x);
-      localStringBuffer.append(" "); localStringBuffer.append(localPPoint.pos.getAbsPoint().y);
+      localStringBuffer.append(" "); localStringBuffer.append(localPPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().x);
+      localStringBuffer.append(" "); localStringBuffer.append(localPPoint.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().y);
     }
     return localStringBuffer.toString();
   }

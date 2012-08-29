@@ -11,7 +11,6 @@ import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.TableFunctions;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.ZutiTargetsSupportMethods;
 import com.maddox.il2.ai.ground.Obstacle;
 import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.ai.ground.TgtTank;
@@ -108,7 +107,7 @@ public abstract class StationaryGeneric extends ActorHMesh
       return;
     }
 
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
+    float f1 = Shot.panzerThickness(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
 
     f1 *= Rnd(0.93F, 1.07F);
 
@@ -251,12 +250,12 @@ public abstract class StationaryGeneric extends ActorHMesh
 
   private void Align()
   {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.z = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + this.heightAboveLandSurface);
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
     o.orient(n);
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public void align()
@@ -378,7 +377,7 @@ public abstract class StationaryGeneric extends ActorHMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     return paramFloat <= 0.0F ? 0.0F : paramFloat;
   }
 
@@ -391,8 +390,8 @@ public abstract class StationaryGeneric extends ActorHMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -405,14 +404,14 @@ public abstract class StationaryGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
       localNetMsgGuaranted.writeByte(100);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -423,10 +422,10 @@ public abstract class StationaryGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -439,7 +438,7 @@ public abstract class StationaryGeneric extends ActorHMesh
     else {
       localNetMsgGuaranted.writeShort(1);
     }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public static class SPAWN implements ActorSpawn {
@@ -612,33 +611,22 @@ public abstract class StationaryGeneric extends ActorHMesh
       if (paramNetMsgInput.isGuaranted())
       {
         Object localObject;
-        switch (paramNetMsgInput.readByte())
-        {
+        switch (paramNetMsgInput.readByte()) {
         case 73:
           if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted);
+            localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
+            post((NetMsgGuaranted)localObject);
           }
           int i = paramNetMsgInput.readShort();
           if (i > 0)
           {
             if (StationaryGeneric.this.dying != 1) {
               StationaryGeneric.this.Die(null, 1, false);
-              try
-              {
-                ZutiTargetsSupportMethods.staticActorDied(StationaryGeneric.this);
-              }
-              catch (Exception localException1)
-              {
-                System.out.println("StationaryGeneric error, ID_01: " + localException1.toString());
-              }
             }
           }
-
           return true;
         case 68:
-          if (isMirrored())
-          {
+          if (isMirrored()) {
             localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
             post((NetMsgGuaranted)localObject);
           }
@@ -646,16 +634,7 @@ public abstract class StationaryGeneric extends ActorHMesh
             localObject = paramNetMsgInput.readNetObj();
             Actor localActor = localObject == null ? null : ((ActorNet)localObject).actor();
             StationaryGeneric.this.Die(localActor, 1, true);
-            try
-            {
-              ZutiTargetsSupportMethods.staticActorDied(StationaryGeneric.this);
-            }
-            catch (Exception localException2)
-            {
-              System.out.println("StationaryGeneric error, ID_02: " + localException2.toString());
-            }
           }
-
           return true;
         case 100:
           localObject = new NetMsgGuaranted(paramNetMsgInput, 1);

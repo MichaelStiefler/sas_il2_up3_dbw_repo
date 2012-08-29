@@ -11,9 +11,7 @@ public class ScoreItem
   public static final int TRAIN = 6;
   public static final int SHIP = 7;
   public static final int AIRSTATIC = 8;
-  public static final int RADIO = 9;
-  public static final int _ALL_ = 10;
-  public static final int _ALL_409 = 9;
+  public static final int _ALL_ = 9;
   public static final int TARGET_PRIMARY = 100;
   public static final int TARGET_SECONDARY = 101;
   public static final int TARGET_SECRET = 102;

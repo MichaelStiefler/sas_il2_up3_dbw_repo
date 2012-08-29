@@ -23,11 +23,11 @@ public class P_80A extends P_80
     Property.set(localClass, "cockpitClass", CockpitYP_80.class);
     Property.set(localClass, "LOSElevation", 0.965F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

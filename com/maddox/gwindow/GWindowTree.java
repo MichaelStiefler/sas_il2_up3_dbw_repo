@@ -45,11 +45,11 @@ public class GWindowTree extends GWindow
   }
 
   public float getTabStep() {
-    return Math.round(this.root.textFonts[this.font].height + 3.0F) & 0xFFFFFFFC;
+    return Math.round(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.font].height + 3.0F) & 0xFFFFFFFC;
   }
 
   public float getMonoHeightRows() {
-    return Math.round(this.root.textFonts[this.font].height + 3.0F) & 0xFFFFFFFC;
+    return Math.round(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.font].height + 3.0F) & 0xFFFFFFFC;
   }
 
   public void setRootVisible(boolean paramBoolean) {
@@ -63,12 +63,14 @@ public class GWindowTree extends GWindow
     return this.expandedState.containsKey(paramGTreePath);
   }
   public boolean isVisible(GTreePath paramGTreePath) {
-    if (paramGTreePath == null) return false;
-    while (paramGTreePath != null) {
+    if (paramGTreePath == null) return false; do
+    {
       if (!isExpanded(paramGTreePath))
         return false;
       paramGTreePath = paramGTreePath.getParentPath();
     }
+    while (paramGTreePath != null);
+
     return true;
   }
 
@@ -284,7 +286,7 @@ public class GWindowTree extends GWindow
       if (this._sizePathDy <= 0.0F) {
         str = this.model.getString(paramGTreePath, bool2, bool1);
         if (str != null) {
-          this._sizePathDy = this.root.textFonts[this.font].height;
+          this._sizePathDy = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.font].height;
         } else {
           i = 0;
           this._sizePathDy = getMonoHeightRows();
@@ -296,7 +298,7 @@ public class GWindowTree extends GWindow
       if (i != 0)
         str = this.model.getString(paramGTreePath, bool2, bool1);
       if (str != null)
-        this._sizePathDx = this.root.textFonts[this.font].size(str).dx;
+        this._sizePathDx = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.font].size(str).dx;
       else
         this._sizePathDx = 0.0F;
     }
@@ -330,7 +332,7 @@ public class GWindowTree extends GWindow
       return f;
     String str = this.model.getString(paramGTreePath, bool2, bool1);
     if (str != null) {
-      return this.root.textFonts[this.font].height;
+      return this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.font].height;
     }
     return getMonoHeightRows();
   }
@@ -356,7 +358,7 @@ public class GWindowTree extends GWindow
       this.editor = ((GWindowCellEdit)this.wClient.create(new GWindowEditControl()));
     }
     this.editor.setCellEditValue(localObject);
-    float f = this.wClient.win.dx;
+    float f = this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
     f -= (this.selectPath.getPathCount() - this.model.getRoot().getPathCount()) * getTabStep();
     if (this.bDrawIcons)
       f -= getTabStep();
@@ -406,12 +408,12 @@ public class GWindowTree extends GWindow
       if (i != 0) f2 -= lookAndFeel().getVScrollBarW();
       if (k == 2) break;
       if (this.bEnableHScrollBar)
-        j = this.wClient.win.dx > f2 ? 1 : 0;
+        j = this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dx > f2 ? 1 : 0;
       if (this.bEnableVScrollBar)
-        i = this.wClient.win.dy > f1 ? 1 : 0;
+        i = this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > f1 ? 1 : 0;
     }
     if (i != 0) {
-      this.vSB.setRange(0.0F, this.wClient.win.dy, f1, getMonoHeightRows(), this.vSB.pos);
+      this.vSB.setRange(0.0F, this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, f1, getMonoHeightRows(), this.vSB.pos);
       this.vSB.setSize(lookAndFeel().getVScrollBarW(), f1);
       this.vSB.setPos(this._clientRegion.x + f2, this._clientRegion.y);
       this.vSB.showWindow();
@@ -420,7 +422,7 @@ public class GWindowTree extends GWindow
       this.vSB.hideWindow();
     }
     if (j != 0) {
-      this.hSB.setRange(0.0F, this.wClient.win.dx, f2, getTabStep(), this.hSB.pos);
+      this.hSB.setRange(0.0F, this.wClient.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, f2, getTabStep(), this.hSB.pos);
       this.hSB.setSize(f2, lookAndFeel().getHScrollBarH());
       this.hSB.setPos(this._clientRegion.x, this._clientRegion.y + f1);
       this.hSB.showWindow();

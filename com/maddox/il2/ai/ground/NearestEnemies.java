@@ -9,9 +9,6 @@ import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.Paratrooper;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import java.util.List;
 
 public class NearestEnemies
@@ -69,8 +66,11 @@ public class NearestEnemies
 
     }
 
-    for (int i = nearNUsed - 1; (i >= 0) && 
-      (paramDouble < nearDSq[i]); i--);
+    for (int i = nearNUsed - 1; i >= 0; i--) {
+      if (paramDouble >= nearDSq[i]) {
+        break;
+      }
+    }
     i++;
     if (i >= nearNUsed) {
       if (nearNUsed < 3) {
@@ -117,23 +117,18 @@ public class NearestEnemies
     for (int k = 0; k < i; k++) {
       Actor localActor = (Actor)localList.get(k);
 
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        continue;
-      }
-
       if ((((Prey)localActor).HitbyMask() & usedWeaponsMask) == 0)
       {
         continue;
       }
 
-      int m = localActor.getArmy();
-      if ((m == 0) || (m == paramInt))
+      int n = localActor.getArmy();
+      if ((n == 0) || (n == paramInt))
       {
         continue;
       }
       Point3d localPoint3d = localActor.pos.getAbsPoint();
-      double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y);
+      double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double);
 
       if (d2 > d1)
       {
@@ -152,10 +147,13 @@ public class NearestEnemies
         j = 1;
       }
 
-      for (int n = nearNUsed - 1; (n >= 0) && 
-        (d2 < nearDSq[n]); n--);
-      n++;
-      if (n >= nearNUsed) {
+      for (int i1 = nearNUsed - 1; i1 >= 0; i1--) {
+        if (d2 >= nearDSq[i1]) {
+          break;
+        }
+      }
+      i1++;
+      if (i1 >= nearNUsed) {
         if (nearNUsed < 3) {
           nearAct[nearNUsed] = localActor;
           nearDSq[nearNUsed] = d2;
@@ -164,20 +162,20 @@ public class NearestEnemies
       }
       else
       {
-        int i1;
+        int i2;
         if (nearNUsed < 3) {
-          i1 = nearNUsed - 1;
+          i2 = nearNUsed - 1;
           nearNUsed += 1;
         }
         else {
-          i1 = nearNUsed - 2;
+          i2 = nearNUsed - 2;
         }
-        for (; i1 >= n; i1--) {
-          nearAct[(i1 + 1)] = nearAct[i1];
-          nearDSq[(i1 + 1)] = nearDSq[i1];
+        for (; i2 >= i1; i2--) {
+          nearAct[(i2 + 1)] = nearAct[i2];
+          nearDSq[(i2 + 1)] = nearDSq[i2];
         }
-        nearAct[n] = localActor;
-        nearDSq[n] = d2;
+        nearAct[i1] = localActor;
+        nearDSq[i1] = d2;
       }
     }
 
@@ -189,14 +187,15 @@ public class NearestEnemies
       return nearAct[World.Rnd().nextInt(nearNUsed)];
     }
 
-    k = 1;
-    while ((k < nearNUsed) && 
-      (!(nearAct[k] instanceof Paratrooper)))
-    {
-      k++;
+    int m = 1;
+    while (m < nearNUsed) {
+      if ((nearAct[m] instanceof Paratrooper)) {
+        break;
+      }
+      m++;
     }
 
-    return nearAct[World.Rnd().nextInt(k)];
+    return nearAct[World.Rnd().nextInt(m)];
   }
 
   public static Actor getAFoundFlyingPlane(Point3d paramPoint3d, double paramDouble, int paramInt, float paramFloat)
@@ -223,7 +222,7 @@ public class NearestEnemies
       }
       Point3d localPoint3d = localActor.pos.getAbsPoint();
 
-      double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
+      double d2 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
       if (d2 > d1)
       {
@@ -233,13 +232,16 @@ public class NearestEnemies
       {
         continue;
       }
-      if (localPoint3d.z - World.land().HQ(localPoint3d.x, localPoint3d.y) < paramFloat)
+      if (localPoint3d.jdField_z_of_type_Double - World.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) < paramFloat)
       {
         continue;
       }
 
-      for (int m = nearNUsed - 1; (m >= 0) && 
-        (d2 < nearDSq[m]); m--);
+      for (int m = nearNUsed - 1; m >= 0; m--) {
+        if (d2 >= nearDSq[m]) {
+          break;
+        }
+      }
       m++;
       if (m >= nearNUsed) {
         if (nearNUsed < 3) {

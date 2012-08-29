@@ -22,7 +22,6 @@ import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.Selector;
-import com.maddox.il2.game.ZutiNetReceiveMethods;
 import com.maddox.il2.game.order.OrdersTree;
 import com.maddox.il2.gui.GUIAirArming;
 import com.maddox.il2.gui.GUINetAircraft;
@@ -316,7 +315,7 @@ public class NetUser extends NetHost
         localNetMsgGuaranted.writeByte(paramBoolean ? 7 : 5);
         _st.write(localNetMsgGuaranted);
         postTo(Main.cur().netServerParams.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     }
   }
@@ -335,7 +334,7 @@ public class NetUser extends NetHost
       else
         post(localNetMsgGuaranted); 
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
   private void getIncStat(NetMsgInput paramNetMsgInput, boolean paramBoolean) throws IOException {
@@ -371,7 +370,7 @@ public class NetUser extends NetHost
         localNetMsgGuaranted.writeByte(2);
         localNetMsgGuaranted.writeByte(this.bornPlace);
         post(localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     if ((this.bornPlace >= 0) && (World.cur().bornPlaces != null) && (this.bornPlace < World.cur().bornPlaces.size()) && (Main.cur().netServerParams != null))
     {
@@ -385,7 +384,7 @@ public class NetUser extends NetHost
         for (int i = 0; i < arrayOfPoint_Stay.length; i++) {
           if (arrayOfPoint_Stay[i] != null) {
             Point_Stay localPoint_Stay = arrayOfPoint_Stay[i][(arrayOfPoint_Stay[i].length - 1)];
-            double d2 = (localPoint_Stay.x - localBornPlace.place.x) * (localPoint_Stay.x - localBornPlace.place.x) + (localPoint_Stay.y - localBornPlace.place.y) * (localPoint_Stay.y - localBornPlace.place.y);
+            double d2 = (localPoint_Stay.jdField_x_of_type_Float - localBornPlace.place.jdField_x_of_type_Double) * (localPoint_Stay.jdField_x_of_type_Float - localBornPlace.place.jdField_x_of_type_Double) + (localPoint_Stay.jdField_y_of_type_Float - localBornPlace.place.jdField_y_of_type_Double) * (localPoint_Stay.jdField_y_of_type_Float - localBornPlace.place.jdField_y_of_type_Double);
 
             if ((d2 > d1) || 
               (((NetUser)NetEnv.host()).airdromeStay == i)) continue;
@@ -416,8 +415,8 @@ public class NetUser extends NetHost
       localNetMsgGuaranted.writeByte(3);
       localNetMsgGuaranted.writeByte(paramInt1);
       localNetMsgGuaranted.writeInt(paramInt2);
-      postTo(this.masterChannel, localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      postTo(this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
+      NetObj.printDebug(localException);
     }
   }
 
@@ -428,7 +427,7 @@ public class NetUser extends NetHost
       localNetMsgGuaranted.writeByte(1);
       postTo(paramNetChannel, localNetMsgGuaranted);
       paramNetChannel.userState = 1; } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -482,7 +481,7 @@ public class NetUser extends NetHost
             localNetMsgGuaranted.writeByte(this.place);
             localNetMsgGuaranted.writeNetObj(this);
             NetEnv.host().postTo(localNetChannel, localNetMsgGuaranted); } catch (Exception localException2) {
-            printDebug(localException2);
+            NetObj.printDebug(localException2);
           }
         }
       }
@@ -493,7 +492,7 @@ public class NetUser extends NetHost
         ((NetMsgGuaranted)localObject).writeByte(13);
         ((NetMsgGuaranted)localObject).writeByte(paramInt);
         postTo(localNetServerParams.masterChannel(), (NetMsgGuaranted)localObject); } catch (Exception localException1) {
-        printDebug(localException1);
+        NetObj.printDebug(localException1);
       }
     }
   }
@@ -538,7 +537,7 @@ public class NetUser extends NetHost
           localNetMsgGuaranted1.writeByte(16);
           localNetMsgGuaranted1.writeNetObj(this);
           NetEnv.host().post(localNetMsgGuaranted1); } catch (Exception localException1) {
-          printDebug(localException1);
+          NetObj.printDebug(localException1);
         }
     }
     else {
@@ -546,7 +545,7 @@ public class NetUser extends NetHost
         NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted();
         localNetMsgGuaranted2.writeByte(15);
         postTo(localNetServerParams.masterChannel(), localNetMsgGuaranted2); } catch (Exception localException2) {
-        printDebug(localException2);
+        NetObj.printDebug(localException2);
       }
     }
   }
@@ -589,7 +588,7 @@ public class NetUser extends NetHost
         localNetMsgGuaranted.writeByte(18);
         localNetMsgGuaranted.writeByte(paramBoolean ? 1 : 0);
         post(localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
     setArmyCoopWinner(paramBoolean);
   }
@@ -630,7 +629,7 @@ public class NetUser extends NetHost
           localNetMsgGuaranted.writeShort(k);
         }
         post(localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
   }
 
@@ -655,7 +654,7 @@ public class NetUser extends NetHost
 
       Voice.setSyncMode(i);
       Voice.speak(j, k, str, arrayOfInt, 1, false, bool); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -712,7 +711,7 @@ public class NetUser extends NetHost
       localNetMsgGuaranted.writeByte(19);
       localNetMsgGuaranted.writeNetObj(localNetObj);
       postTo(localNetServerParams.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -729,7 +728,7 @@ public class NetUser extends NetHost
         localNetMsgGuaranted.writeByte(20);
         localNetMsgGuaranted.writeByte(paramInt);
         postTo(localNetServerParams.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       } 
   }
 
@@ -753,7 +752,7 @@ public class NetUser extends NetHost
         ((NetMsgGuaranted)localObject).writeByte(paramInt);
         ((NetMsgGuaranted)localObject).writeNetObj(paramActor.net);
         postTo(localNetServerParams.masterChannel(), (NetMsgGuaranted)localObject); } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
   }
 
@@ -767,7 +766,7 @@ public class NetUser extends NetHost
       localNetMsgGuaranted.writeByte(23);
       localNetMsgGuaranted.writeNetObj(paramActor.net);
       post(localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -796,7 +795,7 @@ public class NetUser extends NetHost
         if (paramNetChannel == null) post(localNetMsgGuaranted); else
           postTo(paramNetChannel, localNetMsgGuaranted); 
       } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
   }
 
@@ -815,7 +814,7 @@ public class NetUser extends NetHost
       localNetMsgGuaranted.writeFloat(paramFloat2);
       localNetMsgGuaranted.writeFloat(paramFloat3);
       post(localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -830,7 +829,7 @@ public class NetUser extends NetHost
       float f3 = paramNetMsgInput.readFloat();
       EventLog.type(i, f1, str1, str2, j, f2, f3, false);
       replicateEventLog(i, f1, str1, str2, j, f2, f3); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -840,11 +839,8 @@ public class NetUser extends NetHost
       return true;
     paramNetMsgInput.reset();
     int i = paramNetMsgInput.readByte();
-
-    if (ZutiNetReceiveMethods.processReceivedMessage(this, paramNetMsgInput, (byte)i))
-      return true;
     int i1;
-    if ((isMirror()) && (paramNetMsgInput.channel() == this.masterChannel))
+    if ((isMirror()) && (paramNetMsgInput.channel() == this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel))
     {
       Object localObject2;
       NetUser localNetUser;
@@ -857,7 +853,7 @@ public class NetUser extends NetHost
         if (paramNetMsgInput.channel().userState == -1) {
           paramNetMsgInput.channel().userState = 1;
           if ((Mission.cur() != null) && (Mission.cur().netObj() != null)) {
-            MsgNet.postRealNewChannel(Mission.cur().netObj(), this.masterChannel);
+            MsgNet.postRealNewChannel(Mission.cur().netObj(), this.jdField_masterChannel_of_type_ComMaddoxRtsNetChannel);
           }
         }
         return true;
@@ -878,7 +874,7 @@ public class NetUser extends NetHost
             localNetMsgGuaranted1.writeByte(j);
             localNetMsgGuaranted1.writeNetObj((NetObj)localObject2);
             post(localNetMsgGuaranted1); } catch (Exception localException3) {
-            printDebug(localException3);
+            NetObj.printDebug(localException3);
           }
         return true;
       case 16:
@@ -892,7 +888,7 @@ public class NetUser extends NetHost
             ((NetMsgGuaranted)localObject2).writeByte(16);
             ((NetMsgGuaranted)localObject2).writeNetObj(localNetUser);
             post((NetMsgGuaranted)localObject2); } catch (Exception localException1) {
-            printDebug(localException1);
+            NetObj.printDebug(localException1);
           }
         return true;
       case 17:
@@ -921,7 +917,7 @@ public class NetUser extends NetHost
             ((NetMsgGuaranted)localObject3).writeByte(18);
             ((NetMsgGuaranted)localObject3).writeByte(k != 0 ? 1 : 0);
             post((NetMsgGuaranted)localObject3); } catch (Exception localException2) {
-            printDebug(localException2);
+            NetObj.printDebug(localException2);
           }
         setClientMissionComplete(k);
         return true;
@@ -1335,7 +1331,7 @@ public class NetUser extends NetHost
       else
         postTo(paramNetChannel, localNetMsgGuaranted); 
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1430,7 +1426,7 @@ public class NetUser extends NetHost
       else
         postTo(paramNetChannel, localNetMsgGuaranted); 
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1537,7 +1533,7 @@ public class NetUser extends NetHost
       else
         postTo(paramNetChannel, localNetMsgGuaranted); 
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1621,7 +1617,7 @@ public class NetUser extends NetHost
       else
         postTo(paramNetChannel, localNetMsgGuaranted); 
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1695,24 +1691,24 @@ public class NetUser extends NetHost
         String str = Chat.radioSpawn.getChannelName(j);
         if (str.equals(((NetUser)NetEnv.host()).radio()))
           continue;
-        int k = 0;
+        int m = 0;
         List localList = NetEnv.hosts();
-        for (int m = 0; m < localList.size(); m++) {
-          NetUser localNetUser = (NetUser)localList.get(m);
+        for (int n = 0; n < localList.size(); n++) {
+          NetUser localNetUser = (NetUser)localList.get(n);
           if (str.equals(localNetUser.radio)) {
-            k = 1;
+            m = 1;
             break;
           }
         }
-        if (k != 0)
+        if (m != 0)
           continue;
         if (localObject == null)
           localObject = new ArrayList();
         ((ArrayList)localObject).add(str);
       }
       if (localObject != null) {
-        for (j = 0; j < ((ArrayList)localObject).size(); j++) {
-          Chat.radioSpawn.kill((String)((ArrayList)localObject).get(j));
+        for (int k = 0; k < ((ArrayList)localObject).size(); k++) {
+          Chat.radioSpawn.kill((String)((ArrayList)localObject).get(k));
         }
       }
     }
@@ -1727,7 +1723,7 @@ public class NetUser extends NetHost
       }
       post((NetMsgGuaranted)localObject);
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1751,7 +1747,7 @@ public class NetUser extends NetHost
             localNetUser.tryPostChatTimeSpeed(); } } ;
       }
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1780,7 +1776,7 @@ public class NetUser extends NetHost
   public void destroy() {
     super.destroy();
     if ((isMirror()) && (NetEnv.isServer()) && 
-      (!((Connect)NetEnv.cur().connect).banned.isExist(this.shortName)))
+      (!((Connect)NetEnv.cur().connect).banned.isExist(this.jdField_shortName_of_type_JavaLangString)))
       Chat.sendLog(0, "user_leaves", shortName(), null);
     if (Actor.isValid(this.netUserRegiment))
       this.netUserRegiment.destroy();
@@ -1812,14 +1808,14 @@ public class NetUser extends NetHost
       }
 
       NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this);
-      localNetMsgSpawn.write255(this.shortName);
+      localNetMsgSpawn.write255(this.jdField_shortName_of_type_JavaLangString);
       localNetMsgSpawn.writeByte(this.bornPlace);
       localNetMsgSpawn.writeByte(this.place);
       localNetMsgSpawn.writeShort(this.idChannelFirst);
       if (isMirror()) {
-        if (this.path != null) {
-          for (int j = 0; j < this.path.length; j++)
-            localNetMsgSpawn.writeNetObj(this.path[j]);
+        if (this.jdField_path_of_type_ArrayOfComMaddoxRtsNetHost != null) {
+          for (int j = 0; j < this.jdField_path_of_type_ArrayOfComMaddoxRtsNetHost.length; j++)
+            localNetMsgSpawn.writeNetObj(this.jdField_path_of_type_ArrayOfComMaddoxRtsNetHost[j]);
         }
         if (i == 0)
           localNetMsgSpawn.writeNetObj(NetEnv.host());
@@ -1857,7 +1853,7 @@ public class NetUser extends NetHost
       }
 
       replicateDotRange(paramNetChannel); } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
   }
 
@@ -1915,7 +1911,7 @@ public class NetUser extends NetHost
       Object localObject2;
       if ((localObject1 instanceof NetAircraft)) {
         localObject2 = (NetAircraft)localObject1;
-        localIntHashtable = ((NetAircraft.AircraftNet)((NetAircraft)localObject2).net).filterTable;
+        localIntHashtable = ((NetAircraft.AircraftNet)((NetAircraft)localObject2).jdField_net_of_type_ComMaddoxIl2EngineActorNet).filterTable;
         localActorPos = ((NetAircraft)localObject2).pos;
       } else if ((localObject1 instanceof NetGunner)) {
         localObject2 = (NetGunner)localObject1;
@@ -1959,7 +1955,7 @@ public class NetUser extends NetHost
       Object localObject2;
       if ((localObject1 instanceof NetAircraft)) {
         localObject2 = (NetAircraft)localObject1;
-        localIntHashtable = ((NetAircraft.AircraftNet)((NetAircraft)localObject2).net).filterTable;
+        localIntHashtable = ((NetAircraft.AircraftNet)((NetAircraft)localObject2).jdField_net_of_type_ComMaddoxIl2EngineActorNet).filterTable;
       }
       else if ((localObject1 instanceof NetGunner)) {
         localObject2 = (NetGunner)localObject1;

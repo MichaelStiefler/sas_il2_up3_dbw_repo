@@ -13,17 +13,17 @@ public class ActorMeshDraw extends ActorDraw
     Mesh localMesh = localActorMesh.mesh();
     if (localMesh == null) return 0;
     if ((localMesh instanceof MeshShared)) {
-      if ((this.lightMap == null) && (this.sounds == null)) {
-        localActorMesh.pos.getRender(p);
+      if ((this.jdField_lightMap_of_type_ComMaddoxUtilHashMapExt == null) && (this.sounds == null)) {
+        localActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(p);
         return localMesh.preRender(p);
       }
-      localActorMesh.pos.getRender(l);
+      localActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(l);
       lightUpdate(l, true);
       soundUpdate(paramActor, l);
       return localMesh.preRender(l.getPoint());
     }
 
-    localActorMesh.pos.getRender(l);
+    localActorMesh.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(l);
     localMesh.setPos(l);
     lightUpdate(l, true);
     soundUpdate(paramActor, l);
@@ -33,9 +33,9 @@ public class ActorMeshDraw extends ActorDraw
   public void render(Actor paramActor)
   {
     Mesh localMesh = ((ActorMesh)paramActor).mesh();
-    paramActor.pos.getRender(l);
+    paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(l);
     if ((localMesh instanceof MeshShared)) {
-      if (this.lightMap == null)
+      if (this.jdField_lightMap_of_type_ComMaddoxUtilHashMapExt == null)
         lightUpdate(l, false);
       if (Render.currentLightEnv().prepareForRender(l.getPoint(), localMesh.visibilityR()) == 0) {
         if (!((MeshShared)localMesh).putToRenderArray(l)) {
@@ -56,7 +56,7 @@ public class ActorMeshDraw extends ActorDraw
   public void renderShadowProjective(Actor paramActor) {
     Mesh localMesh = ((ActorMesh)paramActor).mesh();
     if ((localMesh instanceof MeshShared)) {
-      paramActor.pos.getRender(l);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(l);
       if (!((MeshShared)localMesh).putToRenderArray(l)) {
         localMesh.setPos(l);
         localMesh.renderShadowProjective();
@@ -69,7 +69,7 @@ public class ActorMeshDraw extends ActorDraw
   public void renderShadowVolume(Actor paramActor) {
     Mesh localMesh = ((ActorMesh)paramActor).mesh();
     if ((localMesh instanceof MeshShared)) {
-      paramActor.pos.getRender(l);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(l);
       if (!((MeshShared)localMesh).putToRenderArray(l)) {
         localMesh.setPos(l);
         localMesh.renderShadowVolume();
@@ -82,7 +82,7 @@ public class ActorMeshDraw extends ActorDraw
   public void renderShadowVolumeHQ(Actor paramActor) {
     Mesh localMesh = ((ActorMesh)paramActor).mesh();
     if ((localMesh instanceof MeshShared)) {
-      paramActor.pos.getRender(l);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(l);
       if (!((MeshShared)localMesh).putToRenderArray(l)) {
         localMesh.setPos(l);
         localMesh.renderShadowVolumeHQ();

@@ -22,26 +22,26 @@ public class Triangle3f
   public final void set(Triangle2f paramTriangle2f)
   {
     try {
-      this.P[0].set(paramTriangle2f.P[0].x, paramTriangle2f.P[0].y, 0.0F);
-      this.P[1].set(paramTriangle2f.P[1].x, paramTriangle2f.P[1].y, 0.0F);
-      this.P[2].set(paramTriangle2f.P[2].x, paramTriangle2f.P[2].y, 0.0F);
+      this.P[0].set(paramTriangle2f.P[0].jdField_x_of_type_Float, paramTriangle2f.P[0].jdField_y_of_type_Float, 0.0F);
+      this.P[1].set(paramTriangle2f.P[1].jdField_x_of_type_Float, paramTriangle2f.P[1].jdField_y_of_type_Float, 0.0F);
+      this.P[2].set(paramTriangle2f.P[2].jdField_x_of_type_Float, paramTriangle2f.P[2].jdField_y_of_type_Float, 0.0F);
     } catch (Exception localException) {
-      this.P[0] = new Point3f(paramTriangle2f.P[0].x, paramTriangle2f.P[0].y, 0.0F);
-      this.P[1] = new Point3f(paramTriangle2f.P[1].x, paramTriangle2f.P[1].y, 0.0F);
-      this.P[2] = new Point3f(paramTriangle2f.P[2].x, paramTriangle2f.P[2].y, 0.0F);
+      this.P[0] = new Point3f(paramTriangle2f.P[0].jdField_x_of_type_Float, paramTriangle2f.P[0].jdField_y_of_type_Float, 0.0F);
+      this.P[1] = new Point3f(paramTriangle2f.P[1].jdField_x_of_type_Float, paramTriangle2f.P[1].jdField_y_of_type_Float, 0.0F);
+      this.P[2] = new Point3f(paramTriangle2f.P[2].jdField_x_of_type_Float, paramTriangle2f.P[2].jdField_y_of_type_Float, 0.0F);
     }
   }
 
   public final void set2(Triangle2f paramTriangle2f)
   {
     try {
-      this.P[0].set(paramTriangle2f.P[0].x, paramTriangle2f.P[0].y, this.P[0].z);
-      this.P[1].set(paramTriangle2f.P[1].x, paramTriangle2f.P[1].y, this.P[1].z);
-      this.P[2].set(paramTriangle2f.P[2].x, paramTriangle2f.P[2].y, this.P[2].z);
+      this.P[0].set(paramTriangle2f.P[0].jdField_x_of_type_Float, paramTriangle2f.P[0].jdField_y_of_type_Float, this.P[0].jdField_z_of_type_Float);
+      this.P[1].set(paramTriangle2f.P[1].jdField_x_of_type_Float, paramTriangle2f.P[1].jdField_y_of_type_Float, this.P[1].jdField_z_of_type_Float);
+      this.P[2].set(paramTriangle2f.P[2].jdField_x_of_type_Float, paramTriangle2f.P[2].jdField_y_of_type_Float, this.P[2].jdField_z_of_type_Float);
     } catch (Exception localException) {
-      this.P[0] = new Point3f(paramTriangle2f.P[0].x, paramTriangle2f.P[0].y, 0.0F);
-      this.P[1] = new Point3f(paramTriangle2f.P[1].x, paramTriangle2f.P[1].y, 0.0F);
-      this.P[2] = new Point3f(paramTriangle2f.P[2].x, paramTriangle2f.P[2].y, 0.0F);
+      this.P[0] = new Point3f(paramTriangle2f.P[0].jdField_x_of_type_Float, paramTriangle2f.P[0].jdField_y_of_type_Float, 0.0F);
+      this.P[1] = new Point3f(paramTriangle2f.P[1].jdField_x_of_type_Float, paramTriangle2f.P[1].jdField_y_of_type_Float, 0.0F);
+      this.P[2] = new Point3f(paramTriangle2f.P[2].jdField_x_of_type_Float, paramTriangle2f.P[2].jdField_y_of_type_Float, 0.0F);
     }
   }
 

@@ -93,7 +93,7 @@ public final class MouseDX
         }
         if (bR_RU)
         {
-          int tmp226_225 = 0; this.param[1] = tmp226_225; this.param[0] = tmp226_225;
+          int tmp218_217 = 0; this.param[1] = tmp218_217; this.param[0] = tmp218_217;
         }
       }
       RTSConf.cur.mouse.flushMove();

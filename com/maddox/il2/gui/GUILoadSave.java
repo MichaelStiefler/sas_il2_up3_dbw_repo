@@ -240,7 +240,7 @@ public class GUILoadSave extends GameState
       GUILoadSave.this.wEdit.setValue(str);
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
@@ -253,7 +253,7 @@ public class GUILoadSave extends GameState
       super();
       this.bColumnsSizable = false;
       addColumn(GUILoadSave.this.getListName(), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       this.bNotify = true;
       this.wClient.bNotify = true;
       resized();

@@ -95,37 +95,37 @@ public class IconDraw
 
   public static void setColor(int paramInt)
   {
-    colorf.x = ((paramInt & 0xFF) / 255.0F);
-    colorf.y = ((paramInt >> 8 & 0xFF) / 255.0F);
-    colorf.z = ((paramInt >> 16 & 0xFF) / 255.0F);
-    colorf.w = ((paramInt >> 24 & 0xFF) / 255.0F);
+    colorf.jdField_x_of_type_Float = ((paramInt & 0xFF) / 255.0F);
+    colorf.jdField_y_of_type_Float = ((paramInt >> 8 & 0xFF) / 255.0F);
+    colorf.jdField_z_of_type_Float = ((paramInt >> 16 & 0xFF) / 255.0F);
+    colorf.jdField_w_of_type_Float = ((paramInt >> 24 & 0xFF) / 255.0F);
     color = paramInt;
   }
 
   public static void setColor(int paramInt1, int paramInt2, int paramInt3) {
-    colorf.x = (paramInt1 / 255.0F);
-    colorf.y = (paramInt2 / 255.0F);
-    colorf.z = (paramInt3 / 255.0F);
+    colorf.jdField_x_of_type_Float = (paramInt1 / 255.0F);
+    colorf.jdField_y_of_type_Float = (paramInt2 / 255.0F);
+    colorf.jdField_z_of_type_Float = (paramInt3 / 255.0F);
     colorClamp();
   }
   public static void setColor(int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
-    colorf.x = (paramInt1 / 255.0F);
-    colorf.y = (paramInt2 / 255.0F);
-    colorf.z = (paramInt3 / 255.0F);
-    colorf.w = (paramInt4 / 255.0F);
+    colorf.jdField_x_of_type_Float = (paramInt1 / 255.0F);
+    colorf.jdField_y_of_type_Float = (paramInt2 / 255.0F);
+    colorf.jdField_z_of_type_Float = (paramInt3 / 255.0F);
+    colorf.jdField_w_of_type_Float = (paramInt4 / 255.0F);
     colorClamp();
   }
   public static void setColor(float paramFloat1, float paramFloat2, float paramFloat3) {
-    colorf.x = paramFloat1;
-    colorf.y = paramFloat2;
-    colorf.z = paramFloat3;
+    colorf.jdField_x_of_type_Float = paramFloat1;
+    colorf.jdField_y_of_type_Float = paramFloat2;
+    colorf.jdField_z_of_type_Float = paramFloat3;
     colorClamp();
   }
   public static void setColor(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    colorf.x = paramFloat1;
-    colorf.y = paramFloat2;
-    colorf.z = paramFloat3;
-    colorf.w = paramFloat4;
+    colorf.jdField_x_of_type_Float = paramFloat1;
+    colorf.jdField_y_of_type_Float = paramFloat2;
+    colorf.jdField_z_of_type_Float = paramFloat3;
+    colorf.jdField_w_of_type_Float = paramFloat4;
     colorClamp();
   }
   public static void setColor(Color4f paramColor4f) {
@@ -137,11 +137,11 @@ public class IconDraw
   }
 
   protected static void colorClamp() {
-    if (colorf.x < 0.0F) colorf.x = 0.0F; if (colorf.x > 1.0F) colorf.x = 1.0F;
-    if (colorf.y < 0.0F) colorf.y = 0.0F; if (colorf.y > 1.0F) colorf.y = 1.0F;
-    if (colorf.z < 0.0F) colorf.z = 0.0F; if (colorf.z > 1.0F) colorf.z = 1.0F;
-    if (colorf.w < 0.0F) colorf.w = 0.0F; if (colorf.w > 1.0F) colorf.w = 1.0F;
-    color = (int)(255.0F * colorf.x + 0.5D) | (int)(255.0F * colorf.y + 0.5D) << 8 | (int)(255.0F * colorf.z + 0.5D) << 16 | (int)(255.0F * colorf.w + 0.5D) << 24;
+    if (colorf.jdField_x_of_type_Float < 0.0F) colorf.jdField_x_of_type_Float = 0.0F; if (colorf.jdField_x_of_type_Float > 1.0F) colorf.jdField_x_of_type_Float = 1.0F;
+    if (colorf.jdField_y_of_type_Float < 0.0F) colorf.jdField_y_of_type_Float = 0.0F; if (colorf.jdField_y_of_type_Float > 1.0F) colorf.jdField_y_of_type_Float = 1.0F;
+    if (colorf.jdField_z_of_type_Float < 0.0F) colorf.jdField_z_of_type_Float = 0.0F; if (colorf.jdField_z_of_type_Float > 1.0F) colorf.jdField_z_of_type_Float = 1.0F;
+    if (colorf.jdField_w_of_type_Float < 0.0F) colorf.jdField_w_of_type_Float = 0.0F; if (colorf.jdField_w_of_type_Float > 1.0F) colorf.jdField_w_of_type_Float = 1.0F;
+    color = (int)(255.0F * colorf.jdField_x_of_type_Float + 0.5D) | (int)(255.0F * colorf.jdField_y_of_type_Float + 0.5D) << 8 | (int)(255.0F * colorf.jdField_z_of_type_Float + 0.5D) << 16 | (int)(255.0F * colorf.jdField_w_of_type_Float + 0.5D) << 24;
   }
 
   public static void setScrSize(int paramInt1, int paramInt2)

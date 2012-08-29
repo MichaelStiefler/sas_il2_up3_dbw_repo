@@ -42,9 +42,9 @@ public class MGunBredaSAFATSM77s extends MGunAircraftGeneric
     localGunProperties.bullet[0].power = 0.00092F;
     localGunProperties.bullet[0].powerType = 0;
     localGunProperties.bullet[0].powerRadius = 0.0F;
-    localGunProperties.bullet[0].traceMesh = "3do/effects/tracers/20mmRed/mono.sim";
+    localGunProperties.bullet[0].traceMesh = "3do/effects/tracers/20mmwhite/mono.sim";
     localGunProperties.bullet[0].traceTrail = null;
-    localGunProperties.bullet[0].traceColor = -654311169;
+    localGunProperties.bullet[0].traceColor = -754974721;
     localGunProperties.bullet[0].timeLife = 2.5F;
 
     localGunProperties.bullet[1].massa = 0.0114F;

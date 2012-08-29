@@ -51,40 +51,40 @@ public class FreeFlyXYZ
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(false, "X-") {
-      public void begin() { FreeFlyXYZ.this.v.x += -1.0D; } 
-      public void end() { FreeFlyXYZ.this.v.x -= -1.0D;
+      public void begin() { FreeFlyXYZ.this.v.jdField_x_of_type_Double += -1.0D; } 
+      public void end() { FreeFlyXYZ.this.v.jdField_x_of_type_Double -= -1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(false, "X+") {
-      public void begin() { FreeFlyXYZ.this.v.x += 1.0D; } 
-      public void end() { FreeFlyXYZ.this.v.x -= 1.0D;
+      public void begin() { FreeFlyXYZ.this.v.jdField_x_of_type_Double += 1.0D; } 
+      public void end() { FreeFlyXYZ.this.v.jdField_x_of_type_Double -= 1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(false, "Y-") {
-      public void begin() { FreeFlyXYZ.this.v.y += -1.0D; } 
-      public void end() { FreeFlyXYZ.this.v.y -= -1.0D;
+      public void begin() { FreeFlyXYZ.this.v.jdField_y_of_type_Double += -1.0D; } 
+      public void end() { FreeFlyXYZ.this.v.jdField_y_of_type_Double -= -1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(false, "Y+") {
-      public void begin() { FreeFlyXYZ.this.v.y += 1.0D; } 
-      public void end() { FreeFlyXYZ.this.v.y -= 1.0D;
+      public void begin() { FreeFlyXYZ.this.v.jdField_y_of_type_Double += 1.0D; } 
+      public void end() { FreeFlyXYZ.this.v.jdField_y_of_type_Double -= 1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(false, "Z-") {
-      public void begin() { FreeFlyXYZ.this.v.z += -1.0D; } 
-      public void end() { FreeFlyXYZ.this.v.z -= -1.0D;
+      public void begin() { FreeFlyXYZ.this.v.jdField_z_of_type_Double += -1.0D; } 
+      public void end() { FreeFlyXYZ.this.v.jdField_z_of_type_Double -= -1.0D;
       }
     });
     HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(false, "Z+") {
-      public void begin() { FreeFlyXYZ.this.v.z += 1.0D; } 
-      public void end() { FreeFlyXYZ.this.v.z -= 1.0D; }  } );
+      public void begin() { FreeFlyXYZ.this.v.jdField_z_of_type_Double += 1.0D; } 
+      public void end() { FreeFlyXYZ.this.v.jdField_z_of_type_Double -= 1.0D; }  } );
   }
 
   public static void setActor(Actor paramActor) {
     adapter._setActor(paramActor);
   }
   private void _setActor(Actor paramActor) { if (this.interpolator != null) {
-      if (this.interpolator.actor == paramActor) {
+      if (this.interpolator.jdField_actor_of_type_ComMaddoxIl2EngineActor == paramActor) {
         this.interpolator.bActive = true;
         return;
       }
@@ -101,7 +101,7 @@ public class FreeFlyXYZ
   }
   private Actor _getActor() { if ((this.interpolator != null) && 
       (this.interpolator.bActive)) {
-      return this.interpolator.actor;
+      return this.interpolator.jdField_actor_of_type_ComMaddoxIl2EngineActor;
     }
     return null; }
 
@@ -148,15 +148,15 @@ public class FreeFlyXYZ
         return false;
       float f1 = Time.tickLenFs();
 
-      this.actor.pos.getAbs(FreeFlyXYZ.this.P, FreeFlyXYZ.this.O);
+      this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.getAbs(FreeFlyXYZ.this.P, FreeFlyXYZ.this.O);
       float f2 = FreeFlyXYZ.this.O.azimut() + FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.vAzimut * FreeFlyXYZ.this.speedAzimut * f1;
 
-      FreeFlyXYZ.this.P.x += FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.v.x * FreeFlyXYZ.this.speedXYZ * f1;
-      FreeFlyXYZ.this.P.y += FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.v.y * FreeFlyXYZ.this.speedXYZ * f1;
-      FreeFlyXYZ.this.P.z += FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.v.z * FreeFlyXYZ.this.speedXYZ * f1;
+      FreeFlyXYZ.this.P.jdField_x_of_type_Double += FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.v.jdField_x_of_type_Double * FreeFlyXYZ.this.speedXYZ * f1;
+      FreeFlyXYZ.this.P.jdField_y_of_type_Double += FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.v.jdField_y_of_type_Double * FreeFlyXYZ.this.speedXYZ * f1;
+      FreeFlyXYZ.this.P.jdField_z_of_type_Double += FreeFlyXYZ.this.vMul * FreeFlyXYZ.this.v.jdField_z_of_type_Double * FreeFlyXYZ.this.speedXYZ * f1;
       FreeFlyXYZ.this.O.set(f2, FreeFlyXYZ.this.O.tangage(), FreeFlyXYZ.this.O.kren());
       FreeFlyXYZ.this.O.wrap();
-      this.actor.pos.setAbs(FreeFlyXYZ.this.P, FreeFlyXYZ.this.O);
+      this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.setAbs(FreeFlyXYZ.this.P, FreeFlyXYZ.this.O);
       return true;
     }
   }

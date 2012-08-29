@@ -30,8 +30,8 @@ public class CmdSpeedBar extends Cmd
   }
 
   public CmdSpeedBar() {
-    this.param.put("SHOW", null);
-    this.param.put("HIDE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SHOW", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HIDE", null);
     this._properties.put("NAME", "speedbar");
     this._levelAccess = 1;
   }

@@ -28,8 +28,6 @@ public class BombGun extends Interpolate
   protected int shotStep;
   protected float bombDelay = 0.0F;
   protected SoundFX sound;
-  protected long armingTime = 2000L;
-
   protected float bulletMassa = 0.048F;
   private int curShotStep;
   private int curShots;
@@ -64,7 +62,7 @@ public class BombGun extends Interpolate
       return GunEmpty.get();
     if ((paramInt == -1) || (nameEQ(paramHierMesh, paramInt, this.hook.chunkNum()))) {
       this.ready = false;
-      this.bExecuted = true;
+      this.jdField_bExecuted_of_type_Boolean = true;
       return GunEmpty.get();
     }
     return this;
@@ -72,8 +70,8 @@ public class BombGun extends Interpolate
 
   protected int bullets()
   {
-    return this.actor != null ? this.bulletss - this.actor.hashCode() : 0; } 
-  protected void bullets(int paramInt) { if (this.actor != null) this.bulletss = (paramInt + this.actor.hashCode()); else this.bulletss = 0;
+    return this.jdField_actor_of_type_ComMaddoxIl2EngineActor != null ? this.bulletss - this.jdField_actor_of_type_ComMaddoxIl2EngineActor.hashCode() : 0; } 
+  protected void bullets(int paramInt) { if (this.jdField_actor_of_type_ComMaddoxIl2EngineActor != null) this.bulletss = (paramInt + this.jdField_actor_of_type_ComMaddoxIl2EngineActor.hashCode()); else this.bulletss = 0;
   }
 
   public void hide(boolean paramBoolean)
@@ -138,7 +136,7 @@ public class BombGun extends Interpolate
 
   public boolean isShots()
   {
-    return this.bExecuted;
+    return this.jdField_bExecuted_of_type_Boolean;
   }
 
   public void shots(int paramInt, float paramFloat) {
@@ -151,20 +149,20 @@ public class BombGun extends Interpolate
     if ((isCassette()) && (paramInt != 0)) paramInt = bullets();
     if ((bullets() == -1) && (paramInt == -1)) paramInt = 25;
 
-    if ((!this.bExecuted) && (paramInt != 0))
+    if ((!this.jdField_bExecuted_of_type_Boolean) && (paramInt != 0))
     {
       if (bullets() == 0)
         return;
       if ((this.bomb instanceof FuelTank)) bullets(1);
       this.curShotStep = 0;
       this.curShots = paramInt;
-      this.bExecuted = true;
-    } else if ((this.bExecuted) && (paramInt != 0))
+      this.jdField_bExecuted_of_type_Boolean = true;
+    } else if ((this.jdField_bExecuted_of_type_Boolean) && (paramInt != 0))
     {
       this.curShots = paramInt;
-    } else if ((this.bExecuted) && (paramInt == 0))
+    } else if ((this.jdField_bExecuted_of_type_Boolean) && (paramInt == 0))
     {
-      this.bExecuted = false;
+      this.jdField_bExecuted_of_type_Boolean = false;
     }
   }
 
@@ -172,19 +170,19 @@ public class BombGun extends Interpolate
   {
     this.bTickShot = false;
     if (this.curShotStep == 0) {
-      if ((bullets() == 0) || (this.curShots == 0) || (!Actor.isValid(this.actor))) {
+      if ((bullets() == 0) || (this.curShots == 0) || (!Actor.isValid(this.jdField_actor_of_type_ComMaddoxIl2EngineActor))) {
         shots(0);
         return;
       }
-      if ((this.actor instanceof Aircraft)) {
-        FlightModel localFlightModel = ((Aircraft)this.actor).FM;
+      if ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Aircraft)) {
+        FlightModel localFlightModel = ((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).FM;
         if (localFlightModel.getOverload() < 0.0F)
           return;
       }
       this.bTickShot = true;
       if (this.bomb != null) {
-        this.bomb.pos.setUpdateEnable(true);
-        this.bomb.pos.resetAsBase();
+        this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(true);
+        this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
         this.bomb.start();
 
         if (this.sound != null) this.sound.play();
@@ -210,15 +208,13 @@ public class BombGun extends Interpolate
     {
       this.bomb = ((Bomb)this.bulletClass.newInstance());
       this.bomb.index = (this.numBombs++);
-      this.bomb.pos.setBase(this.actor, this.hook, false);
-      this.bomb.pos.changeHookToRel();
-      this.bomb.pos.resetAsBase();
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, this.hook, false);
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
       if (!this.bExternal) this.bomb.drawing(false); else
         this.bomb.visibilityAsBase(true);
-      this.bomb.pos.setUpdateEnable(false);
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
       this.bomb.delayExplosion = this.bombDelay;
-
-      this.bomb.armingTime = this.armingTime;
     } catch (Exception localException) {
     }
   }
@@ -239,7 +235,7 @@ public class BombGun extends Interpolate
 
   public void set(Actor paramActor, String paramString)
   {
-    this.actor = paramActor;
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor = paramActor;
     Class localClass = getClass();
 
     this.bExternal = Property.containsValue(localClass, "external");
@@ -261,12 +257,12 @@ public class BombGun extends Interpolate
 
     String str = Property.stringValue(getClass(), "sound", null);
     if (str != null) {
-      this.bomb.pos.getAbs(loc);
-      loc.sub(this.actor.pos.getAbs());
+      this.bomb.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(loc);
+      loc.sub(this.jdField_actor_of_type_ComMaddoxIl2EngineActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
 
-      this.sound = this.actor.newSound(str, false);
+      this.sound = this.jdField_actor_of_type_ComMaddoxIl2EngineActor.newSound(str, false);
       if (this.sound != null) {
-        SoundFX localSoundFX = this.actor.getRootFX();
+        SoundFX localSoundFX = this.jdField_actor_of_type_ComMaddoxIl2EngineActor.getRootFX();
         if (localSoundFX != null) {
           this.sound.setParent(localSoundFX);
           this.sound.setPosition(loc.getPoint());
@@ -274,13 +270,6 @@ public class BombGun extends Interpolate
       }
     }
 
-    this.actor.interpPut(this, null, -1L, null);
-  }
-
-  public void setArmingTime(long paramLong)
-  {
-    this.armingTime = paramLong;
-    if (this.bomb != null)
-      this.bomb.armingTime = paramLong;
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.interpPut(this, null, -1L, null);
   }
 }

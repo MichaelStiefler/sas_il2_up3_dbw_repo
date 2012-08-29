@@ -20,40 +20,40 @@ class OrderCover_Me extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
-      Maneuver localManeuver = (Maneuver)Player().FM;
-      if (localPilot.Group != null)
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      Maneuver localManeuver = (Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      if (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null)
       {
         Object localObject;
         if (OrdersTree.curOrdersTree.alone()) {
-          if (localPilot.Group.grTask != 3) {
-            if (((Maneuver)Player().FM).Group == localPilot.Group) {
-              localObject = new AirGroup(localPilot.Group);
-              localPilot.Group.delAircraft(localAircraft);
+          if (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.grTask != 3) {
+            if (((Maneuver)Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup) {
+              localObject = new AirGroup(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
+              localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.delAircraft(localAircraft);
               ((AirGroup)localObject).addAircraft(localAircraft);
             }
           } else {
-            if ((localPilot.Group != localManeuver.Group) && (localManeuver.Group != null)) localPilot.Group.rejoinToGroup(localManeuver.Group);
+            if ((localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup) && (localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null)) localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.rejoinToGroup(localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
             localPilot.aggressiveWingman = false;
           }
         }
-        else if ((localAircraft == Wingman()) && (localPilot.Group != localManeuver.Group) && (localManeuver.Group != null)) localPilot.Group.rejoinToGroup(localManeuver.Group);
+        else if ((localAircraft == Wingman()) && (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup) && (localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null)) localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.rejoinToGroup(localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup);
 
-        localPilot.airClient = Player().FM;
+        localPilot.airClient = Player().jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
         if (localManeuver.danger != null) {
           localObject = (Maneuver)localManeuver.danger;
           localPilot.target = ((FlightModel)localObject);
-          if (((Maneuver)localObject).Group != null) {
-            localPilot.Group.targetGroup = ((Maneuver)localObject).Group;
-            localPilot.Group.setGroupTask(3);
+          if (((Maneuver)localObject).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) {
+            localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.targetGroup = ((Maneuver)localObject).jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup;
+            localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(3);
           }
 
         }
-        else if ((localManeuver.Group != localPilot.Group) && (localManeuver.Group != null)) {
-          localPilot.Group.clientGroup = localManeuver.Group;
-          localPilot.Group.setGroupTask(2);
+        else if ((localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup) && (localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null)) {
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.clientGroup = localManeuver.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup;
+          localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setGroupTask(2);
         } else if ((!localPilot.isBusy()) && (localAircraft != Player())) {
           localPilot.followOffset.set(300.0D, (localAircraft.aircIndex() - 2) * 50.0F, 20.0D);
           localPilot.set_task(5);

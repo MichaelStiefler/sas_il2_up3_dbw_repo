@@ -129,16 +129,16 @@ public class Cinema extends Render
       makeBlockPassive(i, paramLong, paramRangeRandom, true);
     }
 
-    for (i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
       if (paramRangeRandom.nextInt(100) > 20) {
-        makeBlockActive(i, paramLong, paramRangeRandom);
+        makeBlockActive(j, paramLong, paramRangeRandom);
       }
     }
 
-    for (i = 0; i < 4; i++) {
-      long l = paramRangeRandom.nextLong(0L, this.blocks[i].timeEnd - this.blocks[i].timeStart);
-      this.blocks[i].timeStart -= l;
-      this.blocks[i].timeEnd -= l;
+    for (int k = 0; k < 4; k++) {
+      long l = paramRangeRandom.nextLong(0L, this.blocks[k].timeEnd - this.blocks[k].timeStart);
+      this.blocks[k].timeStart -= l;
+      this.blocks[k].timeEnd -= l;
     }
   }
 
@@ -189,8 +189,8 @@ public class Cinema extends Render
       {
         Point3f localPoint3f = this.blocks[i].scratches[j];
 
-        float f4 = f1 + localPoint3f.x;
-        float f5 = f2 * localPoint3f.y;
+        float f4 = f1 + localPoint3f.jdField_x_of_type_Float;
+        float f5 = f2 * localPoint3f.jdField_y_of_type_Float;
         float f6 = localPoint3f.z * 0.5F;
 
         RandomVector.getTimedStepped(4, paramLong * 67L, tmp, 12 + i * 17 + j * 7);
@@ -238,9 +238,9 @@ public class Cinema extends Render
       if (!this.blocks[i].active) {
         continue;
       }
-      float f5 = this.blocks[i].offs - 0.04F;
-      float f6 = this.blocks[i].offs + 0.15F + 0.04F;
-      if ((f2 > f6) || (f3 < f5)) {
+      f4 = this.blocks[i].offs - 0.04F;
+      float f5 = this.blocks[i].offs + 0.15F + 0.04F;
+      if ((f2 > f5) || (f3 < f4)) {
         continue;
       }
       makeBlockPassive(paramInt, paramLong, paramRangeRandom, false);
@@ -434,19 +434,19 @@ public class Cinema extends Render
     gl.Vertex2f(0.5F, 0.5F);
     gl.Color4f(f11, f12, f13, f14 * 1.0F);
     for (int m = 0; m < 36; m++) {
-      gl.Vertex2f(circleScr[m].x, circleScr[m].y);
+      gl.Vertex2f(circleScr[m].jdField_x_of_type_Float, circleScr[m].jdField_y_of_type_Float);
     }
-    gl.Vertex2f(circleScr[0].x, circleScr[0].y);
+    gl.Vertex2f(circleScr[0].jdField_x_of_type_Float, circleScr[0].jdField_y_of_type_Float);
     gl.End();
 
-    for (m = 0; m < 4; m++) {
+    for (int n = 0; n < 4; n++) {
       gl.Begin(6);
       gl.Color4f(f11, f12, f13, f14 * 0.92F);
-      gl.Vertex2f(cornerScr[m].x, cornerScr[m].y);
+      gl.Vertex2f(cornerScr[n].jdField_x_of_type_Float, cornerScr[n].jdField_y_of_type_Float);
       gl.Color4f(f11, f12, f13, f14 * 1.0F);
-      for (int n = 0; n < 10; n++) {
-        int i1 = (m * 9 + n) % 36;
-        gl.Vertex2f(circleScr[i1].x, circleScr[i1].y);
+      for (int i1 = 0; i1 < 10; i1++) {
+        int i2 = (n * 9 + i1) % 36;
+        gl.Vertex2f(circleScr[i2].jdField_x_of_type_Float, circleScr[i2].jdField_y_of_type_Float);
       }
       gl.End();
     }

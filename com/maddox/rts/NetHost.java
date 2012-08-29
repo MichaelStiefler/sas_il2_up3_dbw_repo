@@ -1,7 +1,5 @@
 package com.maddox.rts;
 
-import com.maddox.il2.game.Main;
-import com.maddox.il2.net.NetServerParams;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,42 +17,10 @@ public class NetHost extends NetObj
     return super.toString();
   }
 
-  private String getCleanedString(String paramString)
-  {
-    if ((Main.cur().netServerParams == null) || (!Main.cur().netServerParams.filterUserNames))
-    {
-      return paramString;
-    }
-    StringBuffer localStringBuffer = new StringBuffer();
-    for (int i = 0; i < paramString.length(); i++)
-    {
-      int j = paramString.charAt(i);
-      if (!isCharValid(j))
-        continue;
-      localStringBuffer.append(paramString.charAt(i));
-    }
-
-    return localStringBuffer.toString();
-  }
-
-  private boolean isCharValid(int paramInt)
-  {
-    if ((paramInt >= 33) && (paramInt <= 160)) {
-      return true;
-    }
-
-    if ((paramInt >= 1025) && (paramInt <= 1119)) {
-      return true;
-    }
-    return (paramInt >= 1168) && (paramInt <= 1257);
-  }
-
-  public String shortName()
-  {
+  public String shortName() {
     return this.shortName;
   }
   public void setShortName(String paramString) {
-    paramString = getCleanedString(paramString);
     if (isMaster()) {
       this.shortName = paramString;
       if (isMirrored())
@@ -63,7 +29,7 @@ public class NetHost extends NetObj
           localNetMsgGuaranted.writeByte(0);
           localNetMsgGuaranted.write255(paramString);
           post(localNetMsgGuaranted); } catch (Exception localException) {
-          printDebug(localException);
+          NetObj.printDebug(localException);
         }
     }
   }
@@ -115,7 +81,6 @@ public class NetHost extends NetObj
 
   public NetMsgSpawn netReplicate(NetChannel paramNetChannel) throws IOException {
     NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this);
-    this.shortName = getCleanedString(this.shortName);
     localNetMsgSpawn.write255(this.shortName);
     if (isMirror()) {
       if (this.path != null) {
@@ -130,22 +95,20 @@ public class NetHost extends NetObj
   public NetHost(String paramString) {
     super(null, -1);
 
-    this.shortName = getCleanedString(paramString);
+    this.shortName = paramString;
     this.path = null;
     NetEnv.cur().host = this;
   }
 
-  public NetHost(NetChannel paramNetChannel, int paramInt, String paramString, NetHost[] paramArrayOfNetHost)
-  {
+  public NetHost(NetChannel paramNetChannel, int paramInt, String paramString, NetHost[] paramArrayOfNetHost) {
     super(null, -1, paramNetChannel, paramInt);
 
-    this.shortName = getCleanedString(paramString);
+    this.shortName = paramString;
     this.path = paramArrayOfNetHost;
     NetEnv.hosts().add(this);
   }
 
-  static
-  {
+  static {
     Spawn.add(NetHost.class, new SPAWN());
   }
 

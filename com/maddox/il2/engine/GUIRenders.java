@@ -45,37 +45,37 @@ public class GUIRenders extends GWindow
     this.rootViewY = this.view[1];
     this.rootViewDX = this.view[2];
     this.rootViewDY = this.view[3];
-    float f1 = this.root.C.org.x;
-    float f2 = this.root.C.org.y;
-    float f3 = this.win.dx;
-    float f4 = this.win.dy;
-    float f5 = f1 - this.root.C.clip.x;
+    float f1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.org.x;
+    float f2 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.org.y;
+    float f3 = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    float f4 = this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+    float f5 = f1 - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.x;
     this.bRendersClipped = true;
     if (f5 < 0.0F) {
       f3 += f5; if (f3 <= 0.0F) return;
-      f1 = this.root.C.clip.x;
+      f1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.x;
       f5 = 0.0F;
     }
-    f5 = f3 + f5 - this.root.C.clip.dx;
+    f5 = f3 + f5 - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.dx;
     if (f5 > 0.0F) {
       f3 -= f5; if (f3 <= 0.0F) return;
     }
 
-    f5 = f2 - this.root.C.clip.y;
+    f5 = f2 - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.y;
     if (f5 < 0.0F) {
       f4 += f5; if (f4 <= 0.0F) return;
-      f2 = this.root.C.clip.y;
+      f2 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.y;
       f5 = 0.0F;
     }
-    f5 = f4 + f5 - this.root.C.clip.dy;
+    f5 = f4 + f5 - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.dy;
     if (f5 > 0.0F) {
       f4 -= f5; if (f4 <= 0.0F) return;
     }
     this.bRendersClipped = false;
-    this.curX = (this.rootViewX + Math.round(this.root.C.org.x));
-    this.curY = (this.rootViewY + this.rootViewDY - Math.round(this.root.C.org.y) - Math.round(this.win.dy));
-    this.curDX = Math.round(this.win.dx);
-    this.curDY = Math.round(this.win.dy);
+    this.curX = (this.rootViewX + Math.round(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.org.x));
+    this.curY = (this.rootViewY + this.rootViewDY - Math.round(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.org.y) - Math.round(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy));
+    this.curDX = Math.round(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx);
+    this.curDY = Math.round(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
     this.clipX = (this.rootViewX + Math.round(f1));
     this.clipY = (this.rootViewY + this.rootViewDY - Math.round(f2) - Math.round(f4));
     this.clipDX = Math.round(f3);
@@ -162,43 +162,43 @@ public class GUIRenders extends GWindow
 
     protected void pushRenders()
     {
-      this.parentRender = currentRender;
-      this.parentCamera = currentCamera;
-      this.parentLightEnv = currentLightEnv;
-      currentRenders = this;
+      this.parentRender = Renders.currentRender;
+      this.parentCamera = Renders.currentCamera;
+      this.parentLightEnv = Renders.currentLightEnv;
+      Renders.currentRenders = this;
     }
     protected void popRenders(boolean paramBoolean) {
-      currentRender = this.parentRender;
-      currentCamera = this.parentCamera;
-      currentLightEnv = this.parentLightEnv;
-      currentRenders = this.parentRender.renders();
+      Renders.currentRender = this.parentRender;
+      Renders.currentCamera = this.parentCamera;
+      Renders.currentLightEnv = this.parentLightEnv;
+      Renders.currentRenders = this.parentRender.renders();
       this.parentRender = null;
-      currentCamera.activate(1.0F, RendersMain.width(), RendersMain.height(), GUIRenders.this.rootViewX, GUIRenders.this.rootViewY, GUIRenders.this.rootViewDX, GUIRenders.this.rootViewDY);
+      Renders.currentCamera.activate(1.0F, RendersMain.width(), RendersMain.height(), GUIRenders.this.rootViewX, GUIRenders.this.rootViewY, GUIRenders.this.rootViewDX, GUIRenders.this.rootViewDY);
 
       if (!paramBoolean)
-        currentLightEnv.activate(); 
+        Renders.currentLightEnv.activate(); 
     }
 
     protected void activateCamera() {
-      currentCamera.activate(1.0F, RendersMain.width(), RendersMain.height(), GUIRenders.this.wViewX, GUIRenders.this.wViewY, GUIRenders.this.wViewDX, GUIRenders.this.wViewDY, GUIRenders.this.wClipX, GUIRenders.this.wClipY, GUIRenders.this.wClipDX, GUIRenders.this.wClipDY);
+      Renders.currentCamera.activate(1.0F, RendersMain.width(), RendersMain.height(), GUIRenders.this.wViewX, GUIRenders.this.wViewY, GUIRenders.this.wViewDX, GUIRenders.this.wViewDY, GUIRenders.this.wClipX, GUIRenders.this.wClipY, GUIRenders.this.wClipDX, GUIRenders.this.wClipDY);
     }
 
     public void doPreRender()
     {
       pushRenders();
 
-      int j = this.renderSet.size();
+      int j = this.jdField_renderSet_of_type_JavaUtilTreeSet.size();
       for (int i = 0; i < j; i++) {
-        currentRender = (Render)this.renderArray[i];
-        if (currentRender == null)
+        Renders.currentRender = (Render)this.jdField_renderArray_of_type_ArrayOfJavaLangObject[i];
+        if (Renders.currentRender == null)
           break;
-        currentCamera = currentRender.getCamera();
-        if ((!currentRender.isShow()) || (currentCamera == null) || 
+        Renders.currentCamera = Renders.currentRender.getCamera();
+        if ((!Renders.currentRender.isShow()) || (Renders.currentCamera == null) || 
           (!RenderContext.bPreRenderEnable)) continue;
         GUIRenders.this.computeClip();
         if (!GUIRenders.this.bWClipped) {
           activateCamera();
-          currentRender.preRender();
+          Renders.currentRender.preRender();
         }
 
       }
@@ -208,27 +208,27 @@ public class GUIRenders extends GWindow
 
     public void doRender() {
       pushRenders();
-      int j = this.renderSet.size();
+      int j = this.jdField_renderSet_of_type_JavaUtilTreeSet.size();
       for (int i = 0; i < j; i++) {
-        currentRender = (Render)this.renderArray[i];
-        if (currentRender == null)
+        Renders.currentRender = (Render)this.jdField_renderArray_of_type_ArrayOfJavaLangObject[i];
+        if (Renders.currentRender == null)
           break;
-        currentCamera = currentRender.getCamera();
-        if ((currentRender.isShow()) && (currentCamera != null)) {
+        Renders.currentCamera = Renders.currentRender.getCamera();
+        if ((Renders.currentRender.isShow()) && (Renders.currentCamera != null)) {
           GUIRenders.this.computeClip();
           if (!GUIRenders.this.bWClipped) {
             _clearViewPort();
 
             activateCamera();
-            currentLightEnv = currentRender.getLightEnv();
-            if (currentLightEnv == null) currentLightEnv = Engine.cur.lightEnv;
-            currentLightEnv.activate();
+            Renders.currentLightEnv = Renders.currentRender.getLightEnv();
+            if (Renders.currentLightEnv == null) Renders.currentLightEnv = Engine.cur.lightEnv;
+            Renders.currentLightEnv.activate();
             Render.prepareStates();
-            currentRender.render();
+            Renders.currentRender.render();
             Render.flush();
           }
           if (Time.isPaused())
-            currentCamera.pos.updateCurrent();
+            Renders.currentCamera.pos.updateCurrent();
         }
       }
       popRenders(false);
@@ -236,37 +236,37 @@ public class GUIRenders extends GWindow
 
     public void resized() {
       if (width() * 3 / 4 == height()) {
-        this.aspectView[0] = 0.0F;
-        this.aspectView[1] = 0.0F;
-        this.aspectView[2] = 1.0F;
-        this.aspectView[3] = 1.0F;
+        this.jdField_aspectView_of_type_ArrayOfFloat[0] = 0.0F;
+        this.jdField_aspectView_of_type_ArrayOfFloat[1] = 0.0F;
+        this.jdField_aspectView_of_type_ArrayOfFloat[2] = 1.0F;
+        this.jdField_aspectView_of_type_ArrayOfFloat[3] = 1.0F;
       }
       else
       {
         float f;
         if (width() * 3 / 4 > height()) {
           f = (float)((width() - height() * 4.0D / 3.0D) / 2.0D / width());
-          this.aspectView[0] = f;
-          this.aspectView[2] = (1.0F - 2.0F * f);
-          this.aspectView[1] = 0.0F;
-          this.aspectView[3] = 1.0F;
+          this.jdField_aspectView_of_type_ArrayOfFloat[0] = f;
+          this.jdField_aspectView_of_type_ArrayOfFloat[2] = (1.0F - 2.0F * f);
+          this.jdField_aspectView_of_type_ArrayOfFloat[1] = 0.0F;
+          this.jdField_aspectView_of_type_ArrayOfFloat[3] = 1.0F;
         } else {
-          this.aspectView[0] = 0.0F;
-          this.aspectView[2] = 1.0F;
+          this.jdField_aspectView_of_type_ArrayOfFloat[0] = 0.0F;
+          this.jdField_aspectView_of_type_ArrayOfFloat[2] = 1.0F;
           f = (float)((height() - width() * 3.0D / 4.0D) / 2.0D / height());
-          this.aspectView[1] = f;
-          this.aspectView[3] = (1.0F - 2.0F * f);
+          this.jdField_aspectView_of_type_ArrayOfFloat[1] = f;
+          this.jdField_aspectView_of_type_ArrayOfFloat[3] = (1.0F - 2.0F * f);
         }
       }
-      int j = this.renderSet.size();
+      int j = this.jdField_renderSet_of_type_JavaUtilTreeSet.size();
       for (int i = 0; i < j; i++) {
-        Render localRender = (Render)this.renderArray[i];
+        Render localRender = (Render)this.jdField_renderArray_of_type_ArrayOfJavaLangObject[i];
         localRender.contextResize(width(), height());
       }
     }
 
     private void _clearViewPort() {
-      if ((currentRender.isClearColor()) || (currentRender.isClearDepth()) || (currentRender.isClearStencil()))
+      if ((Renders.currentRender.isClearColor()) || (Renders.currentRender.isClearDepth()) || (Renders.currentRender.isClearStencil()))
       {
         Render.clearStates();
         gl.Disable(3553);
@@ -282,13 +282,13 @@ public class GUIRenders extends GWindow
         gl.MatrixMode(5888);
         gl.LoadIdentity();
 
-        if (currentRender.isClearColor()) {
-          Color4f localColor4f = currentRender.getClearColor();
-          gl.Color4f(localColor4f.x, localColor4f.y, localColor4f.z, localColor4f.w);
-          if (localColor4f.w == 0.0F) {
+        if (Renders.currentRender.isClearColor()) {
+          Color4f localColor4f = Renders.currentRender.getClearColor();
+          gl.Color4f(localColor4f.x, localColor4f.y, localColor4f.z, localColor4f.jdField_w_of_type_Float);
+          if (localColor4f.jdField_w_of_type_Float == 0.0F) {
             gl.Enable(3042);
             gl.BlendFunc(0, 1);
-          } else if (localColor4f.w != 1.0F) {
+          } else if (localColor4f.jdField_w_of_type_Float != 1.0F) {
             gl.Enable(3042);
             gl.BlendFunc(770, 771);
           }
@@ -298,8 +298,8 @@ public class GUIRenders extends GWindow
           gl.BlendFunc(0, 1);
         }
         float f;
-        if (currentRender.isClearDepth()) {
-          f = -currentRender.getClearDepth();
+        if (Renders.currentRender.isClearDepth()) {
+          f = -Renders.currentRender.getClearDepth();
           gl.DepthFunc(519);
           gl.Enable(2929);
           gl.DepthMask(true);
@@ -309,7 +309,7 @@ public class GUIRenders extends GWindow
           gl.DepthMask(false);
         }
 
-        if ((currentRender.bClearStencil) && (Config.cur.windowStencilBits != 0)) {
+        if ((Renders.currentRender.bClearStencil) && (Config.cur.windowStencilBits != 0)) {
           gl.Enable(2960);
           gl.StencilFunc(519, 0, -1);
           gl.StencilOp(0, 0, 0);
@@ -322,7 +322,7 @@ public class GUIRenders extends GWindow
         gl.Vertex3f(GUIRenders.this.wClipX, GUIRenders.this.wClipY + GUIRenders.this.wClipDY, f);
         gl.End();
 
-        if ((currentRender.bClearStencil) && (Config.cur.windowStencilBits != 0)) {
+        if ((Renders.currentRender.bClearStencil) && (Config.cur.windowStencilBits != 0)) {
           gl.StencilOp(7680, 7680, 7680);
           gl.Disable(2960);
         }
@@ -339,8 +339,8 @@ public class GUIRenders extends GWindow
 
     public int frame() {
       return RendersMain.frame(); } 
-    public int width() { return (int)GUIRenders.this.win.dx; } 
-    public int height() { return (int)GUIRenders.this.win.dy; } 
+    public int width() { return (int)GUIRenders.this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx; } 
+    public int height() { return (int)GUIRenders.this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy; } 
     public GLContext glContext() { return RendersMain.glContext(); } 
     public void setGlContext(GLContext paramGLContext) {  }
 

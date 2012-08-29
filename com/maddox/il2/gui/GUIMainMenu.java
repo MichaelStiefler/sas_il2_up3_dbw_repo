@@ -5,7 +5,6 @@ import com.maddox.gwindow.GTexRegion;
 import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowFramed;
-import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
@@ -174,15 +173,8 @@ public class GUIMainMenu extends GameState
         return true;
       }
       if (paramGWindow == GUIMainMenu.this.bExit) {
-        new GWindowMessageBox(this.root, 20.0F, true, GUIMainMenu.this.i18n("main.ConfirmQuit"), GUIMainMenu.this.i18n("main.ReallyQuit"), 1, 0.0F)
-        {
-          public void result(int paramInt) {
-            if (paramInt == 3)
-              Main.doGameExit();
-            else
-              GUIMainMenu.this.client.activateWindow();
-          }
-        };
+        new GUIMainMenu.1(this, this.root, 20.0F, true, GUIMainMenu.this.i18n("main.ConfirmQuit"), GUIMainMenu.this.i18n("main.ReallyQuit"), 1, 0.0F);
+
         return true;
       }
       return super.notify(paramGWindow, paramInt1, paramInt2);

@@ -152,7 +152,7 @@ public class SunGlare extends Render
   {
     rayDir.set(World.Sun().ToSun);
     axisZ.set(rayDir);
-    if (Math.abs(axisZ.z) > 0.5D)
+    if (Math.abs(axisZ.jdField_z_of_type_Double) > 0.5D)
       axisX.set(1.0D, 0.0D, 0.0D);
     else {
       axisX.set(0.0D, 0.0D, 1.0D);
@@ -165,7 +165,7 @@ public class SunGlare extends Render
     float f1 = 0.009F;
     float f2 = 0.0F;
 
-    paramPoint3f.x = 0.0F;
+    paramPoint3f.jdField_x_of_type_Float = 0.0F;
 
     VisibilityChecker.checkLandObstacle = true;
     VisibilityChecker.checkCabinObstacle = true;
@@ -207,7 +207,7 @@ public class SunGlare extends Render
       }
     }
 
-    paramPoint3f.x = VisibilityChecker.resultAng;
+    paramPoint3f.jdField_x_of_type_Float = VisibilityChecker.resultAng;
     return f2;
   }
 
@@ -237,10 +237,10 @@ public class SunGlare extends Render
       i = 1;
 
       float f4 = 50.0F;
-      if (resAngle.x >= f4) {
+      if (resAngle.jdField_x_of_type_Float >= f4) {
         f2 = 0.0F;
       } else {
-        f5 = resAngle.x / f4;
+        f5 = resAngle.jdField_x_of_type_Float / f4;
         f2 = 0.5F * (Geom.cosDeg(f5 * 180.0F) + 1.0F);
         if (f2 >= 1.0F) {
           f2 = 1.0F;
@@ -253,10 +253,10 @@ public class SunGlare extends Render
       }
 
       f5 = 50.0F;
-      if (resAngle.x >= f5) {
+      if (resAngle.jdField_x_of_type_Float >= f5) {
         f3 = 0.0F;
       } else {
-        float f6 = resAngle.x / f5;
+        float f6 = resAngle.jdField_x_of_type_Float / f5;
         f3 = 0.5F * (Geom.cosDeg(f6 * 180.0F) + 1.0F);
       }
       if (f1 > 0.003921569F) {
@@ -334,7 +334,7 @@ public class SunGlare extends Render
 
       tmpp2.scale(0.625D);
 
-      gl.Color4f((float)tmpp2.x, (float)tmpp2.y, (float)tmpp2.z, 1.0F - this.curGlare * 0.5F);
+      gl.Color4f((float)tmpp2.jdField_x_of_type_Double, (float)tmpp2.jdField_y_of_type_Double, (float)tmpp2.jdField_z_of_type_Double, 1.0F - this.curGlare * 0.5F);
 
       gl.Vertex2f(1.0F, 1.0F);
       gl.Vertex2f(1.0F, 0.0F);
@@ -350,13 +350,13 @@ public class SunGlare extends Render
       tmpp1.set(rayDir);
       tmpp1.scale(30000.0D);
       tmpp1.add(VisibilityChecker.nosePos);
-      if (!Main3D.cur3D().project2d_norm(tmpp1.x, tmpp1.y, tmpp1.z, tmpp2)) {
+      if (!Main3D.cur3D().project2d_norm(tmpp1.jdField_x_of_type_Double, tmpp1.jdField_y_of_type_Double, tmpp1.jdField_z_of_type_Double, tmpp2)) {
         Main3D.cur3D().setRenderIndx(0);
         return;
       }
 
-      f5 = ((float)tmpp2.x + 1.0F) * 0.5F;
-      float f7 = ((float)tmpp2.y + 1.0F) * 0.5F;
+      f5 = ((float)tmpp2.jdField_x_of_type_Double + 1.0F) * 0.5F;
+      float f7 = ((float)tmpp2.jdField_y_of_type_Double + 1.0F) * 0.5F;
 
       float f8 = this.curSun <= 0.4F ? 1.0F : 1.0F + 0.3F * ((this.curSun - 0.4F) / 0.6F);
 
@@ -370,7 +370,7 @@ public class SunGlare extends Render
       }
 
       f11 = Geom.tanDeg(Main3D.cur3D().camera3D.FOV() * 0.5F);
-      float f12 = (float)tmpp2.x * f11;
+      float f12 = (float)tmpp2.jdField_x_of_type_Double * f11;
       f12 *= -90.0F;
 
       gl.BindTexture(3553, this.Tex[0]);

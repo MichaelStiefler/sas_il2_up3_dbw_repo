@@ -23,13 +23,13 @@ public class KI_27_OTSU extends KI_27
     Property.set(localClass, "cockpitClass", CockpitKI_27OTSU.class);
     Property.set(localClass, "LOSElevation", 0.74185F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303s 500", "MGunBrowning303s 500", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303s 500", "MGunBrowning303s 500", null, null, null, null });
 
-    weaponsRegister(localClass, "4x25", new String[] { "MGunBrowning303s 500", "MGunBrowning303s 500", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1" });
+    Aircraft.weaponsRegister(localClass, "4x25", new String[] { "MGunBrowning303s 500", "MGunBrowning303s 500", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

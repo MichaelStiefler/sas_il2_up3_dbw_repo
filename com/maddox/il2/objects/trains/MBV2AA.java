@@ -119,7 +119,7 @@ public class MBV2AA extends Wagon
     FiringDevice.access$202(paramFiringDevice, paramFloat2);
     hierMesh().chunkSetAngles("Head" + paramFiringDevice.id, paramFiringDevice.headYaw, 0.0F, 0.0F);
     hierMesh().chunkSetAngles("Gun" + paramFiringDevice.id, -paramFiringDevice.gunPitch, 0.0F, 0.0F);
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
   }
 
   private void eraseGuns()
@@ -187,7 +187,6 @@ public class MBV2AA extends Wagon
       this.ignoreTNT = 16.0F;
       this.killTNT = 42.0F;
       this.bodyMaterial = 2;
-      Loc localLoc;
       for (int i = 0; i < 3; i++) {
         this.arms[i] = new FiringDevice();
         FiringDevice.access$302(this.arms[i], i);
@@ -200,50 +199,50 @@ public class MBV2AA extends Wagon
           this.arms[i].gun.set(this, "ShellStart" + i);
           this.arms[i].gun.loadBullets(-1);
         }
-        localLoc = new Loc();
+        Loc localLoc1 = new Loc();
         hierMesh().setCurChunk("Head" + i);
-        hierMesh().getChunkLocObj(localLoc);
+        hierMesh().getChunkLocObj(localLoc1);
         FiringDevice.access$502(this.arms[i], new Point3d());
-        localLoc.get(this.arms[i].fireOffset);
+        localLoc1.get(this.arms[i].fireOffset);
         FiringDevice.access$602(this.arms[i], new Orient());
-        localLoc.get(this.arms[i].fireOrient);
+        localLoc1.get(this.arms[i].fireOrient);
         FiringDevice.access$002(this.arms[i], new Aim(this, isNetMirror()));
         try {
           this.arms[i].gunClass = Class.forName("com.maddox.il2.objects.weapons.CannonZIS3");
         } catch (Exception localException2) {
         }
       }
-      for (i = 3; i < 10; i++) {
-        this.arms[i] = new FiringDevice();
-        FiringDevice.access$302(this.arms[i], i);
-        if ((i == 7) || (i == 9)) {
-          FiringDevice.access$402(this.arms[i], new MGunDA762t());
+      for (int j = 3; j < 10; j++) {
+        this.arms[j] = new FiringDevice();
+        FiringDevice.access$302(this.arms[j], j);
+        if ((j == 7) || (j == 9)) {
+          FiringDevice.access$402(this.arms[j], new MGunDA762t());
         }
         else {
-          FiringDevice.access$402(this.arms[i], new MMGunShKASt());
+          FiringDevice.access$402(this.arms[j], new MMGunShKASt());
         }
-        if (this.arms[i].gun == null)
+        if (this.arms[j].gun == null)
         {
           System.out.println("Train: Gun is not created");
         }
         else {
-          this.arms[i].gun.set(this, "ShellStart" + i);
-          this.arms[i].gun.loadBullets(-1);
+          this.arms[j].gun.set(this, "ShellStart" + j);
+          this.arms[j].gun.loadBullets(-1);
         }
-        localLoc = new Loc();
-        hierMesh().setCurChunk("Head" + i);
-        hierMesh().getChunkLocObj(localLoc);
-        FiringDevice.access$502(this.arms[i], new Point3d());
-        localLoc.get(this.arms[i].fireOffset);
-        FiringDevice.access$602(this.arms[i], new Orient());
-        localLoc.get(this.arms[i].fireOrient);
-        FiringDevice.access$002(this.arms[i], new Aim(this, isNetMirror()));
+        Loc localLoc2 = new Loc();
+        hierMesh().setCurChunk("Head" + j);
+        hierMesh().getChunkLocObj(localLoc2);
+        FiringDevice.access$502(this.arms[j], new Point3d());
+        localLoc2.get(this.arms[j].fireOffset);
+        FiringDevice.access$602(this.arms[j], new Orient());
+        localLoc2.get(this.arms[j].fireOrient);
+        FiringDevice.access$002(this.arms[j], new Aim(this, isNetMirror()));
         try {
-          if ((i == 7) || (i == 9)) {
-            this.arms[i].gunClass = Class.forName("com.maddox.il2.objects.weapons.MGunDA762t");
+          if ((j == 7) || (j == 9)) {
+            this.arms[j].gunClass = Class.forName("com.maddox.il2.objects.weapons.MGunDA762t");
           }
           else {
-            this.arms[i].gunClass = Class.forName("com.maddox.il2.objects.weapons.MMGunShKASt");
+            this.arms[j].gunClass = Class.forName("com.maddox.il2.objects.weapons.MMGunShKASt");
           }
         }
         catch (Exception localException3)
@@ -374,7 +373,7 @@ public class MBV2AA extends Wagon
       NearestEnemies.set(this.arms[i].WEAPONS_MASK, KmHourToMSec(100.0F), 9999.9004F);
     }
 
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), this.arms[i].ATTACK_MAX_RADIUS, getArmy());
+    localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.arms[i].ATTACK_MAX_RADIUS, getArmy());
     if (localActor == null)
       return null;
     if (!(localActor instanceof Prey))
@@ -384,12 +383,12 @@ public class MBV2AA extends Wagon
     }
     FiringDevice localFiringDevice = GetFiringDevice(paramAim);
     BulletProperties localBulletProperties = null;
-    if (localFiringDevice.gun.prop != null)
+    if (localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties != null)
     {
-      k = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+      k = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (k < 0)
         return null;
-      localBulletProperties = localFiringDevice.gun.prop.bullet[k];
+      localBulletProperties = localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[k];
     }
     int k = ((Prey)localActor).chooseShotpoint(localBulletProperties);
     if (k < 0)
@@ -452,7 +451,7 @@ public class MBV2AA extends Wagon
 
     if ((localFiringDevice.gun instanceof CannonMidrangeGeneric))
     {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (i < 0)
         return 0;
       ((CannonMidrangeGeneric)localFiringDevice.gun).setBulletType(i);
@@ -468,7 +467,7 @@ public class MBV2AA extends Wagon
     Point3d localPoint3d2 = Aimer.GetHunterFirePoint();
     float f2 = 0.19F;
     double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
+    double d2 = localPoint3d1.jdField_z_of_type_Double;
     localPoint3d1.sub(localPoint3d2);
     localPoint3d1.scale(Rnd(0.98D, 1.02D));
     localPoint3d1.add(localPoint3d2);
@@ -476,7 +475,7 @@ public class MBV2AA extends Wagon
     if (f1 > 0.001F)
     {
       Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d3);
       tmpv.sub(localPoint3d1, localPoint3d3);
       double d3 = tmpv.length();
       if (d3 > 0.001D)
@@ -486,7 +485,7 @@ public class MBV2AA extends Wagon
           f5 = 200.0F;
         float f6 = f5 * 0.01F;
         localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
+        double d4 = localPoint3d3.jdField_x_of_type_Double * localPoint3d3.jdField_x_of_type_Double + localPoint3d3.jdField_y_of_type_Double * localPoint3d3.jdField_y_of_type_Double + localPoint3d3.jdField_z_of_type_Double * localPoint3d3.jdField_z_of_type_Double;
         if (d4 > 0.01D)
         {
           float f7 = (float)tmpv.dot(localPoint3d3);
@@ -513,9 +512,9 @@ public class MBV2AA extends Wagon
         f2 += f6;
       }
     }
-    if (World.Sun().ToSun.z < -0.15F)
+    if (World.Sun().ToSun.jdField_z_of_type_Float < -0.15F)
     {
-      f3 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
+      f3 = (-World.Sun().ToSun.jdField_z_of_type_Float - 0.15F) / 0.13F;
       if (f3 >= 1.0F)
         f3 = 1.0F;
       if (((paramActor instanceof Aircraft)) && (Time.current() - ((Aircraft)paramActor).tmSearchlighted < 1000L))
@@ -545,16 +544,16 @@ public class MBV2AA extends Wagon
       localLoc = new Loc();
       hierMesh().setCurChunk("Head1");
       hierMesh().getChunkLocObj(localLoc);
-      localOrient.add(localLoc.getOrient(), this.pos.getAbs().getOrient());
+      localOrient.add(localLoc.getOrient(), this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient());
     }
     else if (localFiringDevice.id == 9) {
       localLoc = new Loc();
       hierMesh().setCurChunk("Head2");
       hierMesh().getChunkLocObj(localLoc);
-      localOrient.add(localLoc.getOrient(), this.pos.getAbs().getOrient());
+      localOrient.add(localLoc.getOrient(), this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient());
     }
     else {
-      localOrient.add(this.arms[FiringDevice.access$300(localFiringDevice)].fireOrient, this.pos.getAbs().getOrient());
+      localOrient.add(this.arms[FiringDevice.access$300(localFiringDevice)].fireOrient, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient());
       localOrient.setYPR(localOrient.getYaw(), localOrient.getPitch(), localOrient.getRoll());
     }
     int j = paramAim.setRotationForTargeting(this, localOrient, localPoint3d2, this.arms[FiringDevice.access$300(localFiringDevice)].headYaw, this.arms[FiringDevice.access$300(localFiringDevice)].gunPitch, localVector3d, f2, f1, this.arms[localFiringDevice.id].HEAD_YAW_RANGE, this.arms[localFiringDevice.id].GUN_MIN_PITCH, this.arms[localFiringDevice.id].GUN_MAX_PITCH, f5, (float)d2, 0.0F);

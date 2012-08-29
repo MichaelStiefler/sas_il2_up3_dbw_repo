@@ -4,12 +4,12 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class SPITFIRE5C4 extends SPITFIRE5
+public class SPITFIRE5C4 extends SPITFIRE
 {
   public static void moveGear(HierMesh paramHierMesh, float paramFloat)
   {
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(paramFloat, 0.0F, 0.6F, 0.0F, -95.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(paramFloat, 0.2F, 1.0F, 0.0F, -95.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(paramFloat, 0.0F, 0.6F, 0.0F, -95.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(paramFloat, 0.2F, 1.0F, 0.0F, -95.0F), 0.0F);
   }
 
   protected void moveGear(float paramFloat)
@@ -20,10 +20,10 @@ public class SPITFIRE5C4 extends SPITFIRE5
 
   public void moveWheelSink() {
     resetYPRmodifier();
-    xyz[2] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
-    hierMesh().chunkSetLocate("GearL3_D0", xyz, ypr);
-    xyz[2] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
-    hierMesh().chunkSetLocate("GearR3_D0", xyz, ypr);
+    Aircraft.xyz[2] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
+    hierMesh().chunkSetLocate("GearL3_D0", Aircraft.xyz, Aircraft.ypr);
+    Aircraft.xyz[2] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
+    hierMesh().chunkSetLocate("GearR3_D0", Aircraft.xyz, Aircraft.ypr);
   }
 
   static
@@ -40,13 +40,13 @@ public class SPITFIRE5C4 extends SPITFIRE5
     Property.set(localClass, "yearService", 1941.0F);
     Property.set(localClass, "yearExpired", 1946.5F);
 
-    Property.set(localClass, "FlightModel", "FlightModels/Spitfire-F-Vc-4H-M45-12-trop.fmd");
+    Property.set(localClass, "FlightModel", "FlightModels/SpitfireVB.fmd");
     Property.set(localClass, "cockpitClass", CockpitSpit5C.class);
     Property.set(localClass, "LOSElevation", 0.5926F);
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });
-    weaponsRegister(localClass, "default", new String[] { "MGunHispanoMkIki 120", "MGunHispanoMkIki 120", "MGunHispanoMkIki 120", "MGunHispanoMkIki 120" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunHispanoMkIki 120", "MGunHispanoMkIki 120", "MGunHispanoMkIki 120", "MGunHispanoMkIki 120" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

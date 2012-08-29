@@ -20,10 +20,10 @@ public class CmdAcoustics extends Cmd
 
   public CmdAcoustics()
   {
-    this.param.put("list", null);
-    this.param.put("set", null);
-    this.param.put("save", null);
-    this.param.put("select", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("list", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("set", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("save", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("select", null);
     this._properties.put("NAME", "acc");
     this._levelAccess = 0;
   }
@@ -34,7 +34,7 @@ public class CmdAcoustics extends Cmd
     if (!paramMap.isEmpty())
     {
       if (paramMap.containsKey("_$$")) {
-        System.out.println("Unknown command :" + arg(paramMap, "_$$", 0));
+        System.out.println("Unknown command :" + Cmd.arg(paramMap, "_$$", 0));
       }
       else
       {
@@ -48,7 +48,7 @@ public class CmdAcoustics extends Cmd
           }
         }
         if (paramMap.containsKey("select")) {
-          localObject = arg(paramMap, "select", 0);
+          localObject = Cmd.arg(paramMap, "select", 0);
           this.rev = null;
           if (SoundListener.acc.reverbs != null) {
             if (((String)localObject).compareToIgnoreCase("eax1") == 0) { this.rev = SoundListener.acc.reverbs[0];
@@ -64,7 +64,7 @@ public class CmdAcoustics extends Cmd
           }
         }
         if (paramMap.containsKey("set")) {
-          this.rev.set(arg(paramMap, "set", 0), arg(paramMap, "set", 1));
+          this.rev.set(Cmd.arg(paramMap, "set", 0), Cmd.arg(paramMap, "set", 1));
         }
         if (paramMap.containsKey("save"))
           if (SoundListener.acc == null) System.out.println("Listener acoustics is null"); else

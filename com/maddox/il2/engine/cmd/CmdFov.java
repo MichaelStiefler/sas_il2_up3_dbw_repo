@@ -13,7 +13,7 @@ public class CmdFov extends Cmd
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
   {
     if (paramMap.containsKey("_$$")) {
-      float f = arg(paramMap, "_$$", 0, 70.0F, 10.0F, 170.0F);
+      float f = Cmd.arg(paramMap, "_$$", 0, 70.0F, 10.0F, 170.0F);
       Camera3D localCamera3D2 = (Camera3D)Actor.getByName("camera");
       localCamera3D2.set(f);
       Render localRender = (Render)Actor.getByName("renderCockpit");

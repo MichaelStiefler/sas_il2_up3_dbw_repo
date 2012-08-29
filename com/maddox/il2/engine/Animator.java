@@ -17,23 +17,23 @@ public class Animator extends Interpolate
   protected Loc loc0 = new Loc();
 
   public boolean isRun() {
-    return this.bExecuted;
+    return this.jdField_bExecuted_of_type_Boolean;
   }
 
   public String getCur()
   {
-    return this.bExecuted ? this.move.name : null;
+    return this.jdField_bExecuted_of_type_Boolean ? this.move.name : null;
   }
 
   public AnimatedActor animatedActor()
   {
-    return (AnimatedActor)this.actor;
+    return (AnimatedActor)this.jdField_actor_of_type_ComMaddoxIl2EngineActor;
   }
 
   public Hook getLandHook()
   {
     if (this.landHook == null)
-      this.landHook = this.actor.findHook("ground_level");
+      this.landHook = this.jdField_actor_of_type_ComMaddoxIl2EngineActor.findHook("ground_level");
     return this.landHook;
   }
 
@@ -63,13 +63,13 @@ public class Animator extends Interpolate
   public void start(String paramString, double paramDouble1, double paramDouble2, Message paramMessage, double paramDouble3)
   {
     if (isRun()) stop(false);
-    this.msgEnd = paramMessage;
+    this.jdField_msgEnd_of_type_ComMaddoxRtsMessage = paramMessage;
     this.speed = paramDouble3;
     this.move = this.moves.get(paramString);
-    this.bExecuted = true;
+    this.jdField_bExecuted_of_type_Boolean = true;
     this.countMoves = 0.0D;
     this.time0 = timeCurrent();
-    this.actor.pos.getAbs(this.loc0);
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.getAbs(this.loc0);
     this.lenStep = this.move.fullStepLen(this, paramDouble3);
     this.lenToEnd = this.move.setup(this, this.loc0, paramDouble1, paramDouble2, paramDouble3);
     if ((this.lenToEnd > 0.001D) && (this.lenStep > 0.001D)) {
@@ -107,13 +107,13 @@ public class Animator extends Interpolate
   public void start(String paramString, double paramDouble1, Message paramMessage, double paramDouble2)
   {
     if (isRun()) stop(false);
-    this.msgEnd = paramMessage;
+    this.jdField_msgEnd_of_type_ComMaddoxRtsMessage = paramMessage;
     this.speed = paramDouble2;
     this.move = this.moves.get(paramString);
-    this.bExecuted = true;
+    this.jdField_bExecuted_of_type_Boolean = true;
     this.countMoves = paramDouble1;
     this.time0 = timeCurrent();
-    this.actor.pos.getAbs(this.loc0);
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.getAbs(this.loc0);
     if (paramDouble1 != 0.0D) {
       tick();
     } else {
@@ -130,21 +130,21 @@ public class Animator extends Interpolate
 
   public void stop(boolean paramBoolean)
   {
-    if (!this.bExecuted) return;
-    this.bExecuted = false;
-    if ((paramBoolean) && (this.msgEnd != null)) {
-      if ((!this.msgEnd.busy()) && (Actor.isValid(this.actor))) {
-        this.msgEnd.setListener(this.actor);
-        this.msgEnd.setTime(timeCurrent());
-        this.msgEnd.setSender(this);
-        this.msgEnd.post();
+    if (!this.jdField_bExecuted_of_type_Boolean) return;
+    this.jdField_bExecuted_of_type_Boolean = false;
+    if ((paramBoolean) && (this.jdField_msgEnd_of_type_ComMaddoxRtsMessage != null)) {
+      if ((!this.jdField_msgEnd_of_type_ComMaddoxRtsMessage.busy()) && (Actor.isValid(this.jdField_actor_of_type_ComMaddoxIl2EngineActor))) {
+        this.jdField_msgEnd_of_type_ComMaddoxRtsMessage.setListener(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
+        this.jdField_msgEnd_of_type_ComMaddoxRtsMessage.setTime(timeCurrent());
+        this.jdField_msgEnd_of_type_ComMaddoxRtsMessage.setSender(this);
+        this.jdField_msgEnd_of_type_ComMaddoxRtsMessage.post();
       }
-      this.msgEnd = null;
+      this.jdField_msgEnd_of_type_ComMaddoxRtsMessage = null;
     }
   }
 
   protected long timeCurrent() {
-    return this.actor.isRealTime() ? Time.currentReal() : Time.current();
+    return this.jdField_actor_of_type_ComMaddoxIl2EngineActor.isRealTime() ? Time.currentReal() : Time.current();
   }
 
   public boolean tick() {
@@ -165,18 +165,18 @@ public class Animator extends Interpolate
         this.move.fullStep(this, this.loc0, this.speed);
       }
     }
-
-    if (d * this.lenStep >= this.lenToEnd) {
-      d = this.lenToEnd / this.lenStep;
-      stop(true);
+    else {
+      if (d * this.lenStep >= this.lenToEnd) {
+        d = this.lenToEnd / this.lenStep;
+        stop(true);
+      }
+      while (d > 1.0D) {
+        d -= 1.0D;
+        this.time0 += this.move.time;
+        this.lenToEnd -= this.lenStep;
+        this.move.fullStep(this, this.loc0, this.speed);
+      }
     }
-    while (d > 1.0D) {
-      d -= 1.0D;
-      this.time0 += this.move.time;
-      this.lenToEnd -= this.lenStep;
-      this.move.fullStep(this, this.loc0, this.speed);
-    }
-
     this.move.step(this, this.loc0, getLandHook(), this.speed, d);
     return true;
   }

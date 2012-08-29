@@ -18,14 +18,14 @@ class OrderChange_Formation_To_7 extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
-      if (localPilot.Group != null) {
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      if (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) {
         if ((isEnableVoice()) && (CommandSet()[i] != Player()) && (
           (CommandSet()[i].getWing() == Player().getWing()) || (CommandSet()[i].aircIndex() == 0)))
           Voice.speakLineAstern(CommandSet()[i]);
-        localPilot.Group.setFormationAndScale(5, localPilot.formationScale, true);
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setFormationAndScale(5, localPilot.formationScale, true);
       }
     }
     Voice.setSyncMode(0);

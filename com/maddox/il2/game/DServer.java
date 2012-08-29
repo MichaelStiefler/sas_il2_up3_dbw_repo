@@ -108,17 +108,17 @@ public class DServer extends Main
       Main.cur().netServerParams.setType(48);
     }
 
-    if (this.netGameSpy != null) {
+    if (this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy != null) {
       Main.cur().netServerParams.setType(32);
       List localList = NetEnv.socketsBlock();
       if ((localList != null) && (localList.size() > 0))
-        this.netGameSpy.set(null, (NetSocket)localList.get(0), Config.cur.netLocalPort);
+        this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.set(null, (NetSocket)localList.get(0), Config.cur.netLocalPort);
     } else {
-      this.netGameSpyListener = new GameSpy();
+      this.jdField_netGameSpyListener_of_type_ComMaddoxIl2NetGameSpy = new GameSpy();
       if (USGS.isUsed())
-        this.netGameSpyListener.setListenerOnly(USGS.room);
+        this.jdField_netGameSpyListener_of_type_ComMaddoxIl2NetGameSpy.setListenerOnly(USGS.room);
       else {
-        this.netGameSpyListener.setListenerOnly(null);
+        this.jdField_netGameSpyListener_of_type_ComMaddoxIl2NetGameSpy.setListenerOnly(null);
       }
     }
 
@@ -155,31 +155,31 @@ public class DServer extends Main
           boolean bool2;
           String str;
           synchronized (this.oCommandSync) {
-            bool1 = this.bCommand;
+            bool1 = this.jdField_bCommand_of_type_Boolean;
             bool2 = this.bCommandNet;
             str = this.sCommand;
-            this.bCommand = false;
+            this.jdField_bCommand_of_type_Boolean = false;
           }
           if (bool1) {
             if (bool2) {
-              if (this.consoleServer != null) this.consoleServer.bEnableType = false;
+              if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = false;
               System.out.println(str);
-              if (this.consoleServer != null) this.consoleServer.bEnableType = true; 
+              if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = true; 
             }
             else {
-              if (this.consoleServer != null) this.consoleServer.type(str + "\n");
+              if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.type(str + "\n");
               RTSConf.cur.console.logFilePrintln(str);
             }
 
             RTSConf.cur.console.getEnv().exec(str);
 
             if (bool2) {
-              if (this.consoleServer != null) this.consoleServer.bEnableType = false;
+              if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = false;
               System.out.print(RTSConf.cur.console._getPrompt());
               System.out.flush();
-              if (this.consoleServer != null) this.consoleServer.bEnableType = true;
+              if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = true;
             }
-            if (this.consoleServer != null) this.consoleServer.typeNum();
+            if (this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.typeNum();
           }
 
           RTSConf.cur.loopMsgs();
@@ -254,7 +254,7 @@ public class DServer extends Main
 
   public static void main(String[] paramArrayOfString)
   {
-    System.out.println("IL2 FB dedicated server v4.10.1m");
+    System.out.println("IL2 FB dedicated server v4.09m");
 
     args = paramArrayOfString;
 
@@ -279,9 +279,9 @@ public class DServer extends Main
         if ("-room".equals(args[j])) {
           j++;
           if (j < args.length) {
-            localDServer.netGameSpy = new GameSpy();
-            localDServer.netGameSpy.roomName = args[j];
-            localDServer.netGameSpy.set(args[j], null, 0);
+            localDServer.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy = new GameSpy();
+            localDServer.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.roomName = args[j];
+            localDServer.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.set(args[j], null, 0);
           }
         } else if ("-master".equals(args[j])) {
           j++;
@@ -316,10 +316,10 @@ public class DServer extends Main
       while ((RTSConf.cur != null) && (!RTSConf.isRequestExitApp())) {
         try {
           if (i != 0) {
-            if (DServer.this.consoleServer != null) DServer.this.consoleServer.bEnableType = false;
+            if (DServer.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) DServer.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = false;
             System.out.print(RTSConf.cur.console.getEnv().curNumCmd() + 1 + ">");
             System.out.flush();
-            if (DServer.this.consoleServer != null) DServer.this.consoleServer.bEnableType = true;
+            if (DServer.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null) DServer.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.bEnableType = true;
             i = 0;
           }
           int j = 0;
@@ -330,39 +330,41 @@ public class DServer extends Main
           }
           if (j < 0)
             break;
-          while ((j > 0) && 
-            (this.inputBuf[(j - 1)] < 32)) j--;
+          do {
+            if (this.inputBuf[(j - 1)] >= 32) break; j--;
+          }
+          while (j > 0);
 
           if (j > 0) {
             while (true) {
-              synchronized (DServer.this.oCommandSync) {
+              synchronized (DServer.this.jdField_oCommandSync_of_type_JavaLangObject) {
                 if (RTSConf.isRequestExitApp()) break;
-                if (!DServer.this.bCommand) {
+                if (!DServer.this.jdField_bCommand_of_type_Boolean) {
                   DServer.this.sCommand = new String(this.inputBuf, 0, j);
                   DServer.this.bCommandNet = false;
-                  DServer.this.bCommand = true;
+                  DServer.this.jdField_bCommand_of_type_Boolean = true;
                   break;
                 }
-              }
-              try {
-                Thread.sleep(10L); } catch (Exception localException3) {
-              }
-            }
-            while (true) {
-              synchronized (DServer.this.oCommandSync) {
-                if (RTSConf.isRequestExitApp()) break;
-                if (!DServer.this.bCommand)
-                  break; 
               }
               try {
                 Thread.sleep(10L); } catch (Exception localException4) {
               }
             }
+            while (true) {
+              synchronized (DServer.this.jdField_oCommandSync_of_type_JavaLangObject) {
+                if (RTSConf.isRequestExitApp()) break;
+                if (!DServer.this.jdField_bCommand_of_type_Boolean)
+                  break; 
+              }
+              try {
+                Thread.sleep(10L); } catch (Exception localException5) {
+              }
+            }
             i = 1;
           } else {
             RTSConf.cur.console.logFilePrintln("");
-            if (DServer.this.consoleServer != null)
-              DServer.this.consoleServer.type("\n");
+            if (DServer.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer != null)
+              DServer.this.jdField_consoleServer_of_type_ComMaddoxIl2GameMain$ConsoleServer.type("\n");
             System.out.print(RTSConf.cur.console.getEnv().curNumCmd() + 1 + ">");
             System.out.flush();
           } } catch (Exception localException1) {
@@ -396,8 +398,8 @@ public class DServer extends Main
 
     public Object exec(CmdEnv paramCmdEnv, Map paramMap)
     {
-      if (DServer.this.netGameSpy != null) {
-        DServer.this.netGameSpy.sendExiting();
+      if (DServer.this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy != null) {
+        DServer.this.jdField_netGameSpy_of_type_ComMaddoxIl2NetGameSpy.sendExiting();
       }
       Main.doGameExit();
       return null;

@@ -68,9 +68,8 @@ public class UnicodeTo8bit
           int m = 0;
           int n = 0;
           int i1 = k;
-          for (int i2 = 0; (i2 < 4) && 
-            (n == 0); i2++)
-          {
+          for (int i2 = 0; i2 < 4; i2++) {
+            if (n != 0) break;
             i = paramString.charAt(k++);
             switch (i) { case 48:
             case 49:
@@ -145,21 +144,21 @@ public class UnicodeTo8bit
 
           }
 
-          if (n == 0) {
+          if (n == 0)
             localStringBuffer.append((char)m);
-          }
-          continue; } if (i == 116) { localStringBuffer.append('\t'); continue; }
-        if (i == 114) { localStringBuffer.append('\r'); continue; }
-        if (i == 110) { localStringBuffer.append('\n'); continue; }
-        if (i == 102) { localStringBuffer.append('\f'); continue;
         }
-        localStringBuffer.append('\\');
-        localStringBuffer.append(i); continue;
+        else if (i == 116) { localStringBuffer.append('\t');
+        } else if (i == 114) { localStringBuffer.append('\r');
+        } else if (i == 110) { localStringBuffer.append('\n');
+        } else if (i == 102) { localStringBuffer.append('\f');
+        } else {
+          localStringBuffer.append('\\');
+          localStringBuffer.append(i);
+        }
+      } else {
+        localStringBuffer.append(i);
       }
-
-      localStringBuffer.append(i);
     }
-
     return localStringBuffer.toString();
   }
   private static char toHex(int paramInt) {

@@ -5,7 +5,6 @@ import com.maddox.JGP.Geom;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.ScoreCounter;
@@ -31,7 +30,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
-import com.maddox.il2.fm.Wind;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.Chat;
 import com.maddox.il2.objects.ActorLand;
@@ -49,15 +47,6 @@ import java.util.AbstractCollection;
 public class Bomb extends ActorMesh
   implements MsgCollisionRequestListener, MsgCollisionListener
 {
-  private long started;
-  private long impact;
-  private boolean isArmed = true;
-  public long armingTime = 2000L;
-
-  static Vector3d spd = new Vector3d();
-  static Orient Or = new Orient();
-  static Point3d P = new Point3d();
-
   protected float delayExplosion = 0.0F;
   float curTm;
   protected Vector3d speed = new Vector3d();
@@ -93,61 +82,61 @@ public class Bomb extends ActorMesh
 
   public void msgCollision(Actor paramActor, String paramString1, String paramString2)
   {
-    this.pos.getTime(Time.current(), p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
 
-    this.impact = (Time.current() - this.started);
-
-    if ((this.impact < this.armingTime) && (this.isArmed))
+    while ((paramActor != null) && ((paramActor instanceof ActorLand)) && (isPointApplicableForJump()))
     {
-      this.isArmed = false;
-    }
-
-    if ((paramActor != null) && ((paramActor instanceof ActorLand)) && (isPointApplicableForJump()))
-    {
-      if (this.speed.z >= 0.0D) {
+      if (this.speed.jdField_z_of_type_Double >= 0.0D) {
         return;
       }
 
       float f1 = (float)this.speed.length();
-      if (f1 >= 30.0F)
+      if (f1 < 30.0F)
       {
-        dir.set(this.speed);
-        dir.scale(1.0F / f1);
-        if (-dir.z < 0.31F)
-        {
-          this.pos.getAbs(or);
-          dirN.set(1.0F, 0.0F, 0.0F);
-          or.transform(dirN);
-
-          if (dir.dot(dirN) >= 0.91F)
-          {
-            float f2 = -dir.z;
-            f2 *= 3.225807F;
-            f2 = 0.85F - 0.35F * f2;
-            f2 *= World.Rnd().nextFloat(0.85F, 1.0F);
-
-            this.speed.scale(f2);
-            this.speed.z *= f2;
-            if (this.speed.z < 0.0D) this.speed.z = (-this.speed.z);
-
-            p.z = Engine.land().HQ(p.x, p.y);
-            this.pos.setAbs(p);
-
-            if (this.M >= 200.0F) f2 = 1.0F;
-            else if (this.M <= 5.0F) f2 = 0.0F; else
-              f2 = (this.M - 5.0F) / 195.0F;
-            float f3 = 3.5F + f2 * 12.0F;
-            if (Engine.land().isWater(p.x, p.y))
-              Explosions.SomethingDrop_Water(p, f3);
-            else {
-              Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
-            }
-
-            return;
-          }
-        }
+        break;
       }
+
+      dir.set(this.speed);
+      dir.scale(1.0F / f1);
+      if (-dir.jdField_z_of_type_Float >= 0.31F)
+      {
+        break;
+      }
+
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(or);
+      dirN.set(1.0F, 0.0F, 0.0F);
+      or.transform(dirN);
+
+      if (dir.dot(dirN) < 0.91F)
+      {
+        break;
+      }
+
+      float f2 = -dir.jdField_z_of_type_Float;
+      f2 *= 3.225807F;
+      f2 = 0.85F - 0.35F * f2;
+      f2 *= World.Rnd().nextFloat(0.85F, 1.0F);
+
+      this.speed.scale(f2);
+      this.speed.jdField_z_of_type_Double *= f2;
+      if (this.speed.jdField_z_of_type_Double < 0.0D) this.speed.jdField_z_of_type_Double = (-this.speed.jdField_z_of_type_Double);
+
+      p.jdField_z_of_type_Double = Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p);
+
+      if (this.M >= 200.0F) f2 = 1.0F;
+      else if (this.M <= 5.0F) f2 = 0.0F; else
+        f2 = (this.M - 5.0F) / 195.0F;
+      float f3 = 3.5F + f2 * 12.0F;
+      if (Engine.land().isWater(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double))
+        Explosions.SomethingDrop_Water(p, f3);
+      else {
+        Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
+      }
+
+      return;
     }
+
     if ((getOwner() == World.getPlayerAircraft()) && (!(paramActor instanceof ActorLand))) {
       World.cur().scoreCounter.bombHit += 1;
       if ((Mission.isNet()) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer())) {
@@ -155,13 +144,13 @@ public class Bomb extends ActorMesh
       }
     }
     if (this.delayExplosion > 0.0F) {
-      this.pos.getTime(Time.current(), loc);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), loc);
       collide(false);
       drawing(false);
 
       DelayParam localDelayParam = new DelayParam(paramActor, paramString2, loc);
-      if (p.z < Engine.land().HQ(p.x, p.y) + 5.0D) {
-        if (Engine.land().isWater(p.x, p.y))
+      if (p.jdField_z_of_type_Double < Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) + 5.0D) {
+        if (Engine.land().isWater(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double))
           Explosions.Explode10Kg_Water(p, 2.0F, 2.0F);
         else {
           Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
@@ -177,7 +166,7 @@ public class Bomb extends ActorMesh
   }
 
   private boolean isPointApplicableForJump() {
-    if (Engine.land().isWater(p.x, p.y)) {
+    if (Engine.land().isWater(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double)) {
       return true;
     }
 
@@ -185,12 +174,12 @@ public class Bomb extends ActorMesh
     bPlateExist = false;
     bPlateGround = false;
     p.get(corn);
-    Engine.drawEnv().getFiltered((AbstractCollection)null, corn.x - f, corn.y - f, corn.x + f, corn.y + f, 1, plateFilter);
+    Engine.drawEnv().getFiltered((AbstractCollection)null, corn.jdField_x_of_type_Double - f, corn.jdField_y_of_type_Double - f, corn.jdField_x_of_type_Double + f, corn.jdField_y_of_type_Double + f, 1, plateFilter);
 
     if (bPlateExist) {
       return true;
     }
-    int i = Engine.cur.land.HQ_RoadTypeHere(p.x, p.y);
+    int i = Engine.cur.land.HQ_RoadTypeHere(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double);
     switch (i) { case 1:
       return true;
     case 2:
@@ -206,7 +195,7 @@ public class Bomb extends ActorMesh
   {
     DelayParam localDelayParam = (DelayParam)paramObject;
     if (Actor.isValid(localDelayParam.other)) {
-      localDelayParam.other.pos.getTime(Time.current(), __loc);
+      localDelayParam.other.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), __loc);
       localDelayParam.loc.add(__loc);
       doExplosion(localDelayParam.other, localDelayParam.otherChunk, localDelayParam.loc.getPoint());
     } else {
@@ -215,53 +204,21 @@ public class Bomb extends ActorMesh
   }
 
   protected void doExplosion(Actor paramActor, String paramString) {
-    this.pos.getTime(Time.current(), p);
-
-    if (isArmed()) {
-      doExplosion(paramActor, paramString, p);
-    }
-    else {
-      if (p.z < Engine.land().HQ(p.x, p.y) + 5.0D)
-      {
-        if (Engine.land().isWater(p.x, p.y))
-          Explosions.Explode10Kg_Water(p, 2.0F, 2.0F);
-        else {
-          Explosions.Explode10Kg_Land(p, 2.0F, 2.0F);
-        }
-      }
-      destroy();
-    }
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getTime(Time.current(), p);
+    doExplosion(paramActor, paramString, p);
   }
-
-  protected void doExplosion(Actor paramActor, String paramString, Point3d paramPoint3d)
-  {
+  protected void doExplosion(Actor paramActor, String paramString, Point3d paramPoint3d) {
     Class localClass = getClass();
     float f1 = Property.floatValue(localClass, "power", 1000.0F);
     int i = Property.intValue(localClass, "powerType", 0);
     float f2 = Property.floatValue(localClass, "radius", 150.0F);
+    MsgExplosion.send(paramActor, paramString, paramPoint3d, getOwner(), this.M, f1, i, f2);
 
-    if (isArmed())
-    {
-      MsgExplosion.send(paramActor, paramString, paramPoint3d, getOwner(), this.M, f1, i, f2);
-      com.maddox.il2.objects.ActorCrater.initOwner = getOwner();
+    com.maddox.il2.objects.ActorCrater.initOwner = getOwner();
+    Explosions.generate(paramActor, paramPoint3d, f1, i, f2);
+    com.maddox.il2.objects.ActorCrater.initOwner = null;
 
-      Explosions.generate(paramActor, paramPoint3d, f1, i, f2, !Mission.isNet());
-      com.maddox.il2.objects.ActorCrater.initOwner = null;
-      destroy();
-    }
-    else {
-      destroy();
-    }
-  }
-
-  private boolean isArmed()
-  {
-    return (this.isArmed) || ((this instanceof BombSD2A)) || ((this instanceof BombSD4HL)) || ((this instanceof BombB22EZ));
-  }
-
-  public boolean isFuseArmed()
-  {
-    return this.isArmed;
+    destroy();
   }
 
   public void interpolateTick()
@@ -330,15 +287,6 @@ public class Bomb extends ActorMesh
     }
     super.getSpeed(this.speed);
 
-    if ((paramFloat2 > 35.0F) && 
-      (World.cur().diffCur.Wind_N_Turbulence)) {
-      Point3d localPoint3d = new Point3d();
-      Vector3d localVector3d = new Vector3d();
-      this.pos.getAbs(localPoint3d);
-      World.wind().getVectorWeapon(localPoint3d, localVector3d);
-      this.speed.add(-localVector3d.x, -localVector3d.y, 0.0D);
-    }
-
     this.S = (float)(3.141592653589793D * paramFloat1 * paramFloat1 / 4.0D);
     this.M = paramFloat2;
 
@@ -371,29 +319,14 @@ public class Bomb extends ActorMesh
     Class localClass = getClass();
     init(Property.floatValue(localClass, "kalibr", 0.082F), Property.floatValue(localClass, "massa", 6.8F));
 
-    this.started = Time.current();
-
     this.curTm = 0.0F;
 
-    setOwner(this.pos.base(), false, false, false);
-    this.pos.setBase(null, null, true);
-    this.pos.setAbs(this.pos.getCurrent());
-    this.pos.getAbs(or);
+    setOwner(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base(), false, false, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, true);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getCurrent());
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(or);
     randomizeStart(or, this.rotAxis, this.M, Property.intValue(localClass, "randomOrient", 0));
-    this.pos.setAbs(or);
-
-    getSpeed(spd);
-    this.pos.getAbs(P, Or);
-    Vector3d localVector3d = new Vector3d(0.0D, 0.0D, 0.0D);
-
-    localVector3d.x += World.Rnd().nextFloat_Dome(-2.0F, 2.0F);
-    localVector3d.y += World.Rnd().nextFloat_Dome(-1.2F, 1.2F);
-
-    Or.transform(localVector3d);
-    spd.add(localVector3d);
-    setSpeed(spd);
-
-    getSpeed(spd);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(or);
 
     collide(true);
     interpPut(new Interpolater(), null, Time.current(), null);
@@ -404,7 +337,7 @@ public class Bomb extends ActorMesh
       World.cur(); localObject = World.getPlayerFM();
       ((FlightModel)localObject).M.computeParasiteMass(((FlightModel)localObject).CT.Weapons);
 
-      ((FlightModel)localObject).getW().y -= 0.0004F * Math.min(this.M, 50.0F);
+      ((FlightModel)localObject).getW().jdField_y_of_type_Double -= 0.0004F * Math.min(this.M, 50.0F);
     }
 
     if (Property.containsValue(localClass, "emitColor")) {
@@ -482,7 +415,7 @@ public class Bomb extends ActorMesh
       Bomb.corn1.set(Bomb.corn);
       Loc localLoc = paramActor.pos.getAbs();
       localLoc.transformInv(Bomb.corn1);
-      if ((Bomb.plateBox[0] - 2.5F < Bomb.corn1.x) && (Bomb.corn1.x < Bomb.plateBox[3] + 2.5F) && (Bomb.plateBox[1] - 2.5F < Bomb.corn1.y) && (Bomb.corn1.y < Bomb.plateBox[4] + 2.5F))
+      if ((Bomb.plateBox[0] - 2.5F < Bomb.corn1.jdField_x_of_type_Double) && (Bomb.corn1.jdField_x_of_type_Double < Bomb.plateBox[3] + 2.5F) && (Bomb.plateBox[1] - 2.5F < Bomb.corn1.jdField_y_of_type_Double) && (Bomb.corn1.jdField_y_of_type_Double < Bomb.plateBox[4] + 2.5F))
       {
         Bomb.access$302(true);
         Bomb.access$402(((Plate)paramActor).isGround());

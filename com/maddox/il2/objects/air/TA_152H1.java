@@ -25,15 +25,15 @@ public class TA_152H1 extends FW_190
   }
   protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
   public void moveSteering(float paramFloat) {
-    if (this.FM.CT.getGear() < 0.98F) return;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() < 0.98F) return;
     hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -paramFloat, 0.0F);
   }
   public void moveWheelSink() {
     resetYPRmodifier();
-    xyz[1] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
-    hierMesh().chunkSetLocate("GearL2a_D0", xyz, ypr);
-    xyz[1] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
-    hierMesh().chunkSetLocate("GearR2a_D0", xyz, ypr);
+    Aircraft.xyz[1] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0], 0.0F, 0.44F, 0.0F, 0.44F);
+    hierMesh().chunkSetLocate("GearL2a_D0", Aircraft.xyz, Aircraft.ypr);
+    Aircraft.xyz[1] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1], 0.0F, 0.44F, 0.0F, 0.44F);
+    hierMesh().chunkSetLocate("GearR2a_D0", Aircraft.xyz, Aircraft.ypr);
   }
 
   public void update(float paramFloat)
@@ -41,14 +41,14 @@ public class TA_152H1 extends FW_190
     for (int i = 1; i < 15; i++) {
       hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10.0F * this.kangle, 0.0F);
     }
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
-    if (this.FM.Loc.z > 9000.0D) {
-      if (!this.FM.EI.engines[0].getControlAfterburner()) {
-        this.FM.EI.engines[0].setAfterburnerType(2);
+    this.kangle = (0.95F * this.kangle + 0.05F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator());
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Loc.z > 9000.0D) {
+      if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlAfterburner()) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].setAfterburnerType(2);
       }
     }
-    else if (!this.FM.EI.engines[0].getControlAfterburner()) {
-      this.FM.EI.engines[0].setAfterburnerType(1);
+    else if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlAfterburner()) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].setAfterburnerType(1);
     }
 
     super.update(paramFloat);
@@ -61,7 +61,7 @@ public class TA_152H1 extends FW_190
 
     Property.set(localClass, "iconFar_shortClassName", "Ta.152");
     Property.set(localClass, "meshName", "3DO/Plane/Ta-152H-1/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar06());
+    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
 
     Property.set(localClass, "yearService", 1944.6F);
     Property.set(localClass, "yearExpired", 1948.0F);
@@ -70,11 +70,11 @@ public class TA_152H1 extends FW_190
     Property.set(localClass, "cockpitClass", CockpitTA_152.class);
     Property.set(localClass, "LOSElevation", 0.764106F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON03", "_CANNON04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON03", "_CANNON04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMK108k 90", "MGunMG15120s  175", "MGunMG15120s  175" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMK108k 90", "MGunMG15120s  175", "MGunMG15120s  175" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null });
   }
 }

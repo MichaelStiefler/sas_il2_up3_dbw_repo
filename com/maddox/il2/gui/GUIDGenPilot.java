@@ -154,8 +154,8 @@ public class GUIDGenPilot extends GameState
 
     public void created()
     {
-      this.fixed = (GUIDGenPilot.this.wInfo = (GUIDGenPilot.Info)create(new GUIDGenPilot.Info(GUIDGenPilot.this)));
-      this.fixed.bNotify = true;
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = (GUIDGenPilot.this.wInfo = (GUIDGenPilot.Info)create(new GUIDGenPilot.Info(GUIDGenPilot.this)));
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient.bNotify = true;
       this.bNotify = true;
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
@@ -169,17 +169,17 @@ public class GUIDGenPilot extends GameState
         GUIDGenPilot.this.wInfo.computeSize();
       }
       super.resized();
-      if (this.vScroll.isVisible()) {
+      if (this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible()) {
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
       }
     }
 
     public void render() {
       setCanvasColorWHITE();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
     }
   }
 
@@ -197,19 +197,19 @@ public class GUIDGenPilot extends GameState
 
     public void render() {
       if (GUIDGenPilot.this.pilot == null) return;
-      this.clipRegion.set(this.root.C.clip);
+      this.clipRegion.set(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip);
       pushClip();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
       this.clipRegion.y += localGBevel.T.dy + 2.0F;
       this.clipRegion.dy -= localGBevel.T.dy + localGBevel.B.dy + 4.0F;
-      this.root.C.clip.set(this.clipRegion);
+      this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.set(this.clipRegion);
 
       if (GUIDGenPilot.this.bMatPhotoValid) {
-        i = this.root.C.alpha;
-        this.root.C.alpha = 255;
+        i = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
         setCanvasColorWHITE();
         draw(x1024(32.0F), y1024(32.0F), x1024(192.0F), y1024(256.0F), GUIDGenPilot.this.matPhoto, 0.0F, 0.0F, 192.0F, 256.0F);
-        this.root.C.alpha = i;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = i;
       }
 
       GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(128.0F), x1024(480.0F), 1.0F);
@@ -222,7 +222,7 @@ public class GUIDGenPilot extends GameState
       GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(320.0F), x1024(112.0F), 1.0F);
 
       setCanvasColorBLACK();
-      this.root.C.font = this.fnt;
+      this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font = this.fnt;
       draw(x1024(272.0F), y1024(112.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Name"));
       draw(x1024(272.0F), y1024(144.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Surname"));
       draw(x1024(272.0F), y1024(176.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Rank"));
@@ -246,9 +246,9 @@ public class GUIDGenPilot extends GameState
       int i = (int)y1024(352.0F);
       for (int k = 0; k < GUIDGenPilot.this.pilot.events.size(); k++) {
         String str = (String)GUIDGenPilot.this.pilot.events.get(k);
-        int m = drawLines(x1024(288.0F), i, str, 0, str.length(), x1024(590.0F), this.root.C.font.height - this.root.C.font.descender);
+        int m = drawLines(x1024(288.0F), i, str, 0, str.length(), x1024(590.0F), this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.descender);
 
-        int j = (int)(i + m * (this.root.C.font.height - this.root.C.font.descender));
+        int j = (int)(i + m * (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.descender));
       }
 
       popClip();
@@ -259,16 +259,16 @@ public class GUIDGenPilot extends GameState
       for (int i = 0; i < GUIDGenPilot.this.pilot.events.size(); i++) {
         String str = (String)GUIDGenPilot.this.pilot.events.get(i);
         int j = computeLines(str, 0, str.length(), x1024(590.0F));
-        this.dy = (int)(this.dy + j * (this.root.C.font.height - this.root.C.font.descender));
+        this.dy = (int)(this.dy + j * (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height - this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.descender));
       }
-      this.dy = (int)(this.dy - 2.0F * this.root.C.font.descender);
+      this.dy = (int)(this.dy - 2.0F * this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.descender);
       computeSize();
     }
     public void computeSize() {
-      this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-      this.win.dy = this.parentWindow.win.dy;
-      if (this.dy > this.win.dy)
-        this.win.dy = this.dy;
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW());
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+      if (this.dy > this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy)
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = this.dy;
     }
   }
 
@@ -285,11 +285,11 @@ public class GUIDGenPilot extends GameState
       super.render();
       if (GUIDGenPilot.this.lastAward != null) {
         setCanvasColorWHITE();
-        int i = this.root.C.alpha;
-        this.root.C.alpha = 255;
-        if (this.bDown) draw(this.win.dx / 5.0F + 1.0F, this.win.dy / 5.0F + 1.0F, 3.0F * this.win.dx / 5.0F, 3.0F * this.win.dy / 5.0F, GUIDGenPilot.this.lastAward); else
-          draw(this.win.dx / 5.0F, this.win.dy / 5.0F, 3.0F * this.win.dx / 5.0F, 3.0F * this.win.dy / 5.0F, GUIDGenPilot.this.lastAward);
-        this.root.C.alpha = i;
+        int i = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
+        if (this.bDown) draw(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F + 1.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F + 1.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F, GUIDGenPilot.this.lastAward); else
+          draw(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 5.0F, 3.0F * this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 5.0F, GUIDGenPilot.this.lastAward);
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = i;
       }
     }
 

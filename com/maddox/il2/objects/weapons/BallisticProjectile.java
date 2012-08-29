@@ -23,10 +23,10 @@ public class BallisticProjectile extends Actor
 
   public BallisticProjectile(Point3d paramPoint3d, Vector3d paramVector3d, float paramFloat)
   {
-    this.pos = new ActorPosMove(this);
-    this.pos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
 
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
     this.v = new Vector3d(paramVector3d);
     this.v.scale(Time.tickConstLenFs());
     this.ttl = (Time.current() + ()(paramFloat * 1000.0F));
@@ -35,9 +35,9 @@ public class BallisticProjectile extends Actor
 
   public void interpolateStep()
   {
-    this.pos.getAbs(tmpp);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(tmpp);
     tmpp.add(this.v);
-    this.pos.setAbs(tmpp);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(tmpp);
 
     this.v.z -= Atmosphere.g() * Time.tickLenFs() * Time.tickLenFs();
     if (Time.current() > this.ttl) postDestroy();

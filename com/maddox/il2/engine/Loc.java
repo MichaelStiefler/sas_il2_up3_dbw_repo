@@ -93,9 +93,9 @@ public class Loc
   public float getKren() {
     return this.O.getKren();
   }
-  public double getX() { return this.P.x; } 
-  public double getY() { return this.P.y; } 
-  public double getZ() { return this.P.z; } 
+  public double getX() { return this.P.jdField_x_of_type_Double; } 
+  public double getY() { return this.P.jdField_y_of_type_Double; } 
+  public double getZ() { return this.P.jdField_z_of_type_Double; } 
   public Point3d getPoint() {
     return this.P; } 
   public Orient getOrient() { return this.O; }
@@ -114,7 +114,7 @@ public class Loc
 
   public void get(double[] paramArrayOfDouble)
   {
-    paramArrayOfDouble[0] = this.P.x; paramArrayOfDouble[1] = this.P.y; paramArrayOfDouble[2] = this.P.z;
+    paramArrayOfDouble[0] = this.P.jdField_x_of_type_Double; paramArrayOfDouble[1] = this.P.jdField_y_of_type_Double; paramArrayOfDouble[2] = this.P.jdField_z_of_type_Double;
     paramArrayOfDouble[3] = this.O.getAzimut(); paramArrayOfDouble[4] = this.O.getTangage(); paramArrayOfDouble[5] = this.O.getKren();
   }
 
@@ -154,9 +154,9 @@ public class Loc
   {
     this.O.getMatrix(M3);
     paramMatrix4d.set(M3);
-    paramMatrix4d.m03 = this.P.x;
-    paramMatrix4d.m13 = this.P.y;
-    paramMatrix4d.m23 = this.P.z;
+    paramMatrix4d.m03 = this.P.jdField_x_of_type_Double;
+    paramMatrix4d.m13 = this.P.jdField_y_of_type_Double;
+    paramMatrix4d.m23 = this.P.jdField_z_of_type_Double;
   }
 
   public void getOrientMatrix(Matrix3d paramMatrix3d)

@@ -28,8 +28,8 @@ public class MsgAddListener extends Message
     MsgAddListener localMsgAddListener = (MsgAddListener)cache.get();
     localMsgAddListener._listener = paramObject2;
     localMsgAddListener._param = paramObject3;
-    if ((paramInt & 0x40) != 0) localMsgAddListener._time = Time.currentReal(); else
-      localMsgAddListener._time = Time.current();
+    if ((paramInt & 0x40) != 0) localMsgAddListener.jdField__time_of_type_Long = Time.currentReal(); else
+      localMsgAddListener.jdField__time_of_type_Long = Time.current();
     localMsgAddListener.post(paramInt, paramObject1);
   }
 
@@ -38,7 +38,7 @@ public class MsgAddListener extends Message
     MsgAddListener localMsgAddListener = (MsgAddListener)cache.get();
     localMsgAddListener._listener = paramObject2;
     localMsgAddListener._param = paramObject3;
-    localMsgAddListener._time = paramLong;
+    localMsgAddListener.jdField__time_of_type_Long = paramLong;
     localMsgAddListener.post(paramInt, paramObject1);
   }
 
@@ -47,7 +47,7 @@ public class MsgAddListener extends Message
     MsgAddListener localMsgAddListener = (MsgAddListener)cache.get();
     localMsgAddListener._listener = paramObject2;
     localMsgAddListener._param = paramObject3;
-    localMsgAddListener._time = paramLong;
+    localMsgAddListener.jdField__time_of_type_Long = paramLong;
     localMsgAddListener._tickPos = paramInt2;
     localMsgAddListener.post(paramInt1, paramObject1);
   }

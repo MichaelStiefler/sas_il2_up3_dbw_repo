@@ -22,13 +22,13 @@ public class J2M3 extends J2M
     Property.set(localClass, "cockpitClass", CockpitJ2M3.class);
     Property.set(localClass, "LOSElevation", 1.113F);
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 1, 1, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1, 1, 1, 3, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunHo5k 210", "MGunHo5k 190", "MGunHo5k 190", "MGunHo5k 210", null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunHo5k 210", "MGunHo5k 190", "MGunHo5k 190", "MGunHo5k 210", null, null });
 
-    weaponsRegister(localClass, "2x60", new String[] { "MGunHo5k 210", "MGunHo5k 190", "MGunHo5k 190", "MGunHo5k 210", "BombGun60kgJ 1", "BombGun60kgJ 1" });
+    Aircraft.weaponsRegister(localClass, "2x60", new String[] { "MGunHo5k 210", "MGunHo5k 190", "MGunHo5k 190", "MGunHo5k 210", "BombGun60kgJ 1", "BombGun60kgJ 1" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
   }
 }

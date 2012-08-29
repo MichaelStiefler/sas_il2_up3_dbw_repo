@@ -22,8 +22,6 @@ import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.D3A;
 import com.maddox.il2.objects.air.F4U;
@@ -31,17 +29,13 @@ import com.maddox.il2.objects.air.G4M2E;
 import com.maddox.il2.objects.air.I_16TYPE24DRONE;
 import com.maddox.il2.objects.air.JU_87;
 import com.maddox.il2.objects.air.MXY_7;
-import com.maddox.il2.objects.air.R_5xyz;
 import com.maddox.il2.objects.air.Scheme4;
 import com.maddox.il2.objects.air.TB_3_4M_34R_SPB;
 import com.maddox.il2.objects.air.TypeBNZFighter;
-import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.air.TypeDiveBomber;
 import com.maddox.il2.objects.air.TypeDockable;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGlider;
-import com.maddox.il2.objects.air.TypeGuidedBombCarrier;
-import com.maddox.il2.objects.air.TypeHasToKG;
 import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.air.TypeTNBFighter;
 import com.maddox.il2.objects.bridges.Bridge;
@@ -49,12 +43,8 @@ import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.il2.objects.weapons.BombGunPara;
 import com.maddox.il2.objects.weapons.BombGunParafrag8;
-import com.maddox.il2.objects.weapons.ParaTorpedoGun;
-import com.maddox.il2.objects.weapons.RocketGunFritzX;
-import com.maddox.il2.objects.weapons.RocketGunHS_293;
 import com.maddox.il2.objects.weapons.TorpedoGun;
 import java.io.PrintStream;
 
@@ -149,8 +139,8 @@ public class AirGroup
     for (int j = 0; j < i; j++)
       AirGroupList.addAirGroup(this.enemies, 0, AirGroupList.getGroup(paramAirGroup.enemies[0], j));
     i = AirGroupList.length(paramAirGroup.friends[0]);
-    for (j = 0; j < i; j++)
-      AirGroupList.addAirGroup(this.friends, 0, AirGroupList.getGroup(paramAirGroup.friends[0], j));
+    for (int k = 0; k < i; k++)
+      AirGroupList.addAirGroup(this.friends, 0, AirGroupList.getGroup(paramAirGroup.friends[0], k));
     this.rejoinGroup = paramAirGroup;
     this.gTargetPreference = paramAirGroup.gTargetPreference;
     this.aTargetPreference = paramAirGroup.aTargetPreference;
@@ -200,7 +190,7 @@ public class AirGroup
   public void release()
   {
     for (int i = 0; i < this.nOfAirc; i++) {
-      if (this.airc[i] != null) ((Maneuver)this.airc[i].FM).Group = null;
+      if (this.airc[i] != null) ((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group = null;
       this.airc[i] = null;
     }
     this.nOfAirc = 0;
@@ -224,32 +214,34 @@ public class AirGroup
       System.out.print("Group > 16 in squadron " + this.sq.name());
       return;
     }
-    if (paramAircraft.getSquadron() == this.sq)
-    {
-      for (i = 0; (i < this.nOfAirc) && 
-        (this.airc[i].getSquadron() == this.sq) && (this.airc[i].getWing().indexInSquadron() * 4 + this.airc[i].aircIndex() <= paramAircraft.getWing().indexInSquadron() * 4 + paramAircraft.aircIndex()); i++);
+    int i;
+    if (paramAircraft.getSquadron() == this.sq) {
+      for (i = 0; i < this.nOfAirc; i++) {
+        if ((this.airc[i].getSquadron() != this.sq) || (this.airc[i].getWing().indexInSquadron() * 4 + this.airc[i].aircIndex() > paramAircraft.getWing().indexInSquadron() * 4 + paramAircraft.aircIndex()))
+          break;
+      }
     }
-
-    int i = this.nOfAirc;
+    else
+      i = this.nOfAirc;
     for (int j = this.nOfAirc - 1; j >= i; j--) {
       this.airc[(j + 1)] = this.airc[j];
     }
     this.airc[i] = paramAircraft;
     if (this.w != null) {
-      paramAircraft.FM.AP.way = new Way(this.w);
-      paramAircraft.FM.AP.way.setCur(this.w.Cur());
+      paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way = new Way(this.w);
+      paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(this.w.Cur());
     }
     this.nOfAirc += 1;
 
-    if ((paramAircraft.FM instanceof Maneuver))
-      ((Maneuver)paramAircraft.FM).Group = this;
+    if ((paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver))
+      ((Maneuver)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group = this;
   }
 
   public void delAircraft(Aircraft paramAircraft)
   {
     for (int i = 0; i < this.nOfAirc; i++) {
       if (paramAircraft == this.airc[i]) {
-        ((Maneuver)this.airc[i].FM).Group = null;
+        ((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group = null;
         for (int j = i; j < this.nOfAirc - 1; j++) {
           this.airc[j] = this.airc[(j + 1)];
         }
@@ -264,9 +256,9 @@ public class AirGroup
   {
     for (int i = 0; i < this.nOfAirc; i++)
       if (paramAircraft1 == this.airc[i]) {
-        ((Maneuver)paramAircraft1.FM).Group = null;
-        ((Maneuver)paramAircraft2.FM).Group = this;
-        ((Maneuver)paramAircraft2.FM).setBusy(false);
+        ((Maneuver)paramAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group = null;
+        ((Maneuver)paramAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group = this;
+        ((Maneuver)paramAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setBusy(false);
         this.airc[i] = paramAircraft2;
         return;
       }
@@ -287,8 +279,8 @@ public class AirGroup
   {
     if (paramAirGroup == null) return;
     for (int i = 0; i < this.nOfAirc; i++)
-      if ((this.airc[i].FM instanceof Maneuver)) {
-        Maneuver localManeuver = (Maneuver)this.airc[i].FM;
+      if ((this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) {
+        Maneuver localManeuver = (Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
         if ((!(localManeuver instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver).isRealMode())) {
           if (localManeuver.get_maneuver() == 26) return;
           if (localManeuver.get_maneuver() == 64) return;
@@ -297,12 +289,12 @@ public class AirGroup
     this.w = null;
     this.w = new Way(paramAirGroup.w);
     this.w.setCur(paramAirGroup.w.Cur());
-    for (i = 0; i < this.nOfAirc; i++) {
-      this.airc[i].FM.AP.way = null;
-      this.airc[i].FM.AP.way = new Way(paramAirGroup.w);
-      this.airc[i].FM.AP.way.setCur(paramAirGroup.w.Cur());
+    for (int j = 0; j < this.nOfAirc; j++) {
+      this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way = null;
+      this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way = new Way(paramAirGroup.w);
+      this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(paramAirGroup.w.Cur());
     }
-    Formation.leaderOffset(this.airc[0].FM, this.formationType, this.airc[0].FM.Offset);
+    Formation.leaderOffset(this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel, this.formationType, this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d);
     this.leaderGroup = paramAirGroup;
     this.leaderGroup.grAttached += 1;
     this.grTask = 1;
@@ -348,10 +340,10 @@ public class AirGroup
     this.fInterpolation = paramBoolean;
     for (int i = 1; i < this.nOfAirc; i++) {
       if ((this.airc[i] instanceof TypeGlider)) return;
-      ((Maneuver)this.airc[i].FM).formationScale = paramFloat;
-      Formation.gather(this.airc[i].FM, paramByte, tmpV);
-      if (!paramBoolean) this.airc[i].FM.Offset.set(tmpV);
-      this.formationType = ((Maneuver)this.airc[i].FM).formationType;
+      ((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).formationScale = paramFloat;
+      Formation.gather(this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel, paramByte, tmpV);
+      if (!paramBoolean) this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d.set(tmpV);
+      this.formationType = ((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).formationType;
     }
     if ((this.grTask == 1) || (this.grTask == 2)) setTaskAndManeuver(0);
     this.oldFType = paramByte; this.oldFScale = paramFloat; this.oldFInterp = paramBoolean;
@@ -364,12 +356,12 @@ public class AirGroup
       for (int j = 1; j < this.nOfAirc; j++)
         if (Actor.isAlive(this.airc[j])) {
           if ((this.airc[j] instanceof TypeGlider)) return;
-          Formation.gather(this.airc[j].FM, this.formationType, tmpV);
-          tmpV1.sub(tmpV, this.airc[j].FM.Offset);
+          Formation.gather(this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel, this.formationType, tmpV);
+          tmpV1.sub(tmpV, this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d);
           float f = (float)tmpV1.length();
           if (f != 0.0F) {
             i = 1;
-            if (f < 0.1F) { this.airc[j].FM.Offset.set(tmpV);
+            if (f < 0.1F) { this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d.set(tmpV);
             } else
             {
               double d = 0.0004D * tmpV1.length();
@@ -377,7 +369,7 @@ public class AirGroup
 
               tmpV1.normalize();
               tmpV1.scale(d);
-              this.airc[j].FM.Offset.add(tmpV1);
+              this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Offset_of_type_ComMaddoxJGPVector3d.add(tmpV1);
             }
           }
         }
@@ -390,7 +382,7 @@ public class AirGroup
   {
     for (int i = 0; i < this.nOfAirc; i++) {
       for (int j = 0; j < paramAirGroup.nOfAirc; j++) {
-        tmpV.sub(this.airc[i].FM.Loc, paramAirGroup.airc[j].FM.Loc);
+        tmpV.sub(this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, paramAirGroup.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
         if (tmpV.lengthSquared() < 50000000.0D) return true;
       }
     }
@@ -428,19 +420,19 @@ public class AirGroup
     if ((this.grTask == 1) || (this.grTask == 2)) setTaskAndManeuver(0);
     else
       for (int i = 0; i < this.nOfAirc; i++) {
-        if (((Maneuver)this.airc[i].FM).isBusy()) continue; setTaskAndManeuver(i);
+        if (((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isBusy()) continue; setTaskAndManeuver(i);
       }
   }
 
   public void dropBombs()
   {
     for (int i = 0; i < this.nOfAirc; i++) {
-      if (((Maneuver)this.airc[i].FM).isBusy()) continue; ((Maneuver)this.airc[i].FM).bombsOut = true;
+      if (((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isBusy()) continue; ((Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).bombsOut = true;
     }
     if (this.friends[0] != null) {
-      i = AirGroupList.length(this.friends[0]);
-      for (int j = 0; j < i; j++) {
-        AirGroup localAirGroup = AirGroupList.getGroup(this.friends[0], j);
+      int j = AirGroupList.length(this.friends[0]);
+      for (int k = 0; k < j; k++) {
+        AirGroup localAirGroup = AirGroupList.getGroup(this.friends[0], k);
         if ((localAirGroup == null) || (localAirGroup.leaderGroup != this)) continue; localAirGroup.dropBombs();
       }
     }
@@ -453,7 +445,7 @@ public class AirGroup
         (i == paramInt) || (
         (i == paramInt + 1) && (this.airc[i].aircIndex() == this.airc[paramInt].aircIndex() + 1))))
         continue;
-      Maneuver localManeuver = (Maneuver)this.airc[i].FM;
+      Maneuver localManeuver = (Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if (((localManeuver.get_task() == 7) || (localManeuver.get_task() == 6) || (localManeuver.get_task() == 4)) && (localManeuver.isOk()))
       {
         return this.airc[i];
@@ -465,9 +457,9 @@ public class AirGroup
   public boolean waitGroup(int paramInt)
   {
     Aircraft localAircraft = firstOkAirc(paramInt);
-    Maneuver localManeuver = (Maneuver)this.airc[paramInt].FM;
+    Maneuver localManeuver = (Maneuver)this.airc[paramInt].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     if (localAircraft != null) {
-      localManeuver.airClient = localAircraft.FM;
+      localManeuver.airClient = localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       localManeuver.set_task(1);
       localManeuver.clear_stack();
       localManeuver.set_maneuver(59);
@@ -550,7 +542,7 @@ public class AirGroup
         else if ((this.aTargetPreference == 8) && (!(localAirGroup.airc[0] instanceof TypeFighter))) j = 1;
         if (j != 0) {
           for (int m = 0; m < localAirGroup.nOfAirc; m++) {
-            if ((!Actor.isAlive(localAirGroup.airc[m])) || (!localAirGroup.airc[m].FM.isCapableOfBMP()) || (localAirGroup.airc[m].FM.isTakenMortalDamage())) {
+            if ((!Actor.isAlive(localAirGroup.airc[m])) || (!localAirGroup.airc[m].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isCapableOfBMP()) || (localAirGroup.airc[m].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage())) {
               continue;
             }
             j = 1;
@@ -573,7 +565,7 @@ public class AirGroup
   {
     int i = 0;
     for (int j = 0; j < this.nOfAirc; j++) {
-      Maneuver localManeuver = (Maneuver)this.airc[j].FM;
+      Maneuver localManeuver = (Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if (((localManeuver instanceof RealFlightModel)) && (((RealFlightModel)localManeuver).isRealMode()) && (this.airc[j].aircIndex() == 0))
       {
         i = 1;
@@ -591,7 +583,7 @@ public class AirGroup
   {
     int i = 0;
     for (int j = 0; j < this.nOfAirc; j++) {
-      Maneuver localManeuver = (Maneuver)this.airc[j].FM;
+      Maneuver localManeuver = (Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if (((localManeuver instanceof RealFlightModel)) && (((RealFlightModel)localManeuver).isRealMode()) && (this.airc[j].aircIndex() == 0))
       {
         i = 1;
@@ -607,19 +599,19 @@ public class AirGroup
 
   public void switchWayPoint()
   {
-    Maneuver localManeuver = (Maneuver)this.airc[0].FM;
-    tmpV.sub(this.w.curr().getP(), localManeuver.Loc);
+    Maneuver localManeuver = (Maneuver)this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+    tmpV.sub(this.w.curr().getP(), localManeuver.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
     float f1 = (float)tmpV.lengthSquared();
     int i = this.w.Cur();
     this.w.next();
-    tmpV.sub(this.w.curr().getP(), localManeuver.Loc);
+    tmpV.sub(this.w.curr().getP(), localManeuver.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
     float f2 = (float)tmpV.lengthSquared();
     this.w.setCur(i);
     if (f1 > f2) {
-      String str = this.airc[0].FM.AP.way.curr().getTargetName();
-      this.airc[0].FM.AP.way.next();
+      String str = this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTargetName();
+      this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
       this.w.next();
-      if ((this.airc[0].FM.AP.way.curr().Action == 0) && (this.airc[0].FM.AP.way.curr().getTarget() == null)) this.airc[0].FM.AP.way.curr().setTarget(str);
+      if ((this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 0) && (this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget() == null)) this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().setTarget(str);
       if (this.w.curr().getTarget() == null) this.w.curr().setTarget(str);
     }
   }
@@ -627,11 +619,11 @@ public class AirGroup
   public boolean isWingman(int paramInt)
   {
     if (paramInt < 0) return false;
-    Maneuver localManeuver = (Maneuver)this.airc[paramInt].FM;
+    Maneuver localManeuver = (Maneuver)this.airc[paramInt].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     if (((this.airc[paramInt].aircIndex() & 0x1) != 0) && (!localManeuver.aggressiveWingman)) {
-      if (paramInt > 0) localManeuver.Leader = this.airc[(paramInt - 1)].FM; else
+      if (paramInt > 0) localManeuver.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = this.airc[(paramInt - 1)].jdField_FM_of_type_ComMaddoxIl2FmFlightModel; else
         return false;
-      if ((localManeuver.Leader != null) && (this.airc[(paramInt - 1)].aircIndex() == this.airc[paramInt].aircIndex() - 1) && (this.enemyFighters) && (Actor.isAlive(this.airc[(paramInt - 1)])) && (((Maneuver)localManeuver.Leader).isOk()))
+      if ((localManeuver.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel != null) && (this.airc[(paramInt - 1)].aircIndex() == this.airc[paramInt].aircIndex() - 1) && (this.enemyFighters) && (Actor.isAlive(this.airc[(paramInt - 1)])) && (((Maneuver)localManeuver.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel).isOk()))
         return true;
     }
     return false;
@@ -642,9 +634,9 @@ public class AirGroup
     Aircraft localAircraft = null;
     if ((paramAirGroup != null) && (paramAirGroup.nOfAirc > 0)) localAircraft = paramAirGroup.airc[com.maddox.il2.ai.World.Rnd().nextInt(0, paramAirGroup.nOfAirc - 1)];
     if ((localAircraft != null) && (
-      (!Actor.isAlive(localAircraft)) || (!localAircraft.FM.isCapableOfBMP()) || (localAircraft.FM.isTakenMortalDamage()))) {
+      (!Actor.isAlive(localAircraft)) || (!localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isCapableOfBMP()) || (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage()))) {
       for (int i = 0; i < paramAirGroup.nOfAirc; i++) {
-        if ((Actor.isAlive(paramAirGroup.airc[i])) && (paramAirGroup.airc[i].FM.isCapableOfBMP()) && (!paramAirGroup.airc[i].FM.isTakenMortalDamage())) {
+        if ((Actor.isAlive(paramAirGroup.airc[i])) && (paramAirGroup.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isCapableOfBMP()) && (!paramAirGroup.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTakenMortalDamage())) {
           localAircraft = paramAirGroup.airc[i];
         }
       }
@@ -665,7 +657,7 @@ public class AirGroup
     if (localAircraft != null) { this.aTargWasFound = true; this.aTargDestroyed = false; }
     if ((localAircraft == null) && (this.aTargWasFound)) { this.aTargDestroyed = true; this.aTargWasFound = false;
     }
-    if (localAircraft != null) return localAircraft.FM;
+    if (localAircraft != null) return localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     return null;
   }
 
@@ -673,14 +665,11 @@ public class AirGroup
   {
     if (paramInt > this.nOfAirc - 1) return;
     if (paramInt < 0) return;
-    Maneuver localManeuver1 = (Maneuver)this.airc[paramInt].FM;
+    Maneuver localManeuver1 = (Maneuver)this.airc[paramInt].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     Maneuver localManeuver3;
     Maneuver localManeuver2;
     Maneuver localManeuver4;
     int i;
-    int i1;
-    int k;
-    int n;
     switch (this.grTask)
     {
     case 1:
@@ -688,37 +677,42 @@ public class AirGroup
       localManeuver2 = null;
       localManeuver4 = null;
       tmpV.set(0.0D, 0.0D, 0.0D);
-      for (i = 0; i < this.nOfAirc; i++) {
-        localManeuver3 = (Maneuver)this.airc[i].FM;
-        if ((this.airc[i] instanceof TypeGlider)) { localManeuver3.accurate_set_FOLLOW(); } else {
-          tmpV.add(localManeuver3.Offset);
-          if ((localManeuver3.isBusy()) && ((!(localManeuver3 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver3).isRealMode()) || (!localManeuver3.isOk())))
-            continue;
-          localManeuver3.Leader = null;
+      i = 0; break;
+    case 4:
+    case 3:
+    case 2:
+    case 5:
+    case 6: } while (true) { localManeuver3 = (Maneuver)this.airc[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+      int j;
+      if ((this.airc[i] instanceof TypeGlider)) { localManeuver3.accurate_set_FOLLOW(); } else {
+        tmpV.add(localManeuver3.jdField_Offset_of_type_ComMaddoxJGPVector3d);
+        if ((!localManeuver3.isBusy()) || (((localManeuver3 instanceof RealFlightModel)) && (((RealFlightModel)localManeuver3).isRealMode()) && (localManeuver3.isOk())))
+        {
+          localManeuver3.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = null;
           if ((this.leaderGroup == null) || (this.leaderGroup.nOfAirc == 0)) {
             localManeuver3.accurate_set_task_maneuver(3, 21);
           }
-          else if (((Maneuver)this.leaderGroup.airc[0].FM).isBusy()) {
+          else if (((Maneuver)this.leaderGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isBusy()) {
             localManeuver3.accurate_set_task_maneuver(3, 21);
           } else {
             localManeuver3.accurate_set_FOLLOW();
             localManeuver3.followOffset.set(tmpV);
-            localManeuver3.Leader = this.leaderGroup.airc[0].FM;
+            localManeuver3.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = this.leaderGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
           }
 
           tmpV.set(0.0D, 0.0D, 0.0D);
-          for (int j = i + 1; j < this.nOfAirc; j++) {
-            localManeuver2 = (Maneuver)this.airc[j].FM;
-            tmpV.add(localManeuver2.Offset);
+          for (j = i + 1; j < this.nOfAirc; j++) {
+            localManeuver2 = (Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+            tmpV.add(localManeuver2.jdField_Offset_of_type_ComMaddoxJGPVector3d);
             if (!localManeuver2.isBusy()) {
               localManeuver2.accurate_set_FOLLOW();
               if ((this.airc[j] instanceof TypeGlider)) continue;
               if (localManeuver4 == null) {
                 localManeuver2.followOffset.set(tmpV);
-                localManeuver2.Leader = localManeuver3;
+                localManeuver2.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = localManeuver3;
               } else {
-                localManeuver2.followOffset.set(localManeuver2.Offset);
-                localManeuver2.Leader = localManeuver4;
+                localManeuver2.followOffset.set(localManeuver2.jdField_Offset_of_type_ComMaddoxJGPVector3d);
+                localManeuver2.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = localManeuver4;
               }
             }
             if ((localManeuver2 instanceof RealFlightModel)) {
@@ -729,17 +723,21 @@ public class AirGroup
           break;
         }
       }
-      break;
-    case 4:
-      if (localManeuver1.isBusy())
+      i++; if (i < this.nOfAirc)
+      {
+        continue;
+      }
+
+      if ((goto 2405) || 
+        (localManeuver1.isBusy()))
         break;
-      if ((localManeuver1.target_ground == null) || (!Actor.isAlive(localManeuver1.target_ground)) || (localManeuver1.Loc.distance(localManeuver1.target_ground.pos.getAbsPoint()) > 3000.0D))
+      if ((localManeuver1.target_ground == null) || (!Actor.isAlive(localManeuver1.target_ground)) || (localManeuver1.jdField_Loc_of_type_ComMaddoxJGPPoint3d.distance(localManeuver1.target_ground.pos.getAbsPoint()) > 3000.0D))
       {
         localManeuver1.target_ground = setGAttackObject(paramInt);
       }if (localManeuver1.target_ground == null) {
         if ((waitGroup(paramInt)) || (paramInt != 0)) break;
-        if (localManeuver1.AP.way.curr().Action == 3) {
-          localManeuver1.AP.way.next();
+        if (localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3) {
+          localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
         }
         setGroupTask(1);
       }
@@ -756,7 +754,7 @@ public class AirGroup
           if ((this.airc[paramInt] instanceof TB_3_4M_34R_SPB))
             ((TB_3_4M_34R_SPB)this.airc[paramInt]).typeDockableAttemptDetach();
         }
-        if (((localManeuver1.AP.way.Cur() == localManeuver1.AP.way.size() - 1) && (localManeuver1.AP.way.curr().Action == 3)) || ((this.airc[paramInt] instanceof MXY_7)))
+        if (((localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur() == localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.size() - 1) && (localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3)) || ((this.airc[paramInt] instanceof MXY_7)))
         {
           localManeuver1.kamikaze = true;
           localManeuver1.set_task(7);
@@ -764,37 +762,39 @@ public class AirGroup
           localManeuver1.set_maneuver(46);
         }
         else {
-          i = 1;
-          if (localManeuver1.hasRockets()) i = 0;
-          if ((localManeuver1.CT.Weapons[0] != null) && (localManeuver1.CT.Weapons[0][0] != null) && (localManeuver1.CT.Weapons[0][0].bulletMassa() > 0.05F) && (localManeuver1.CT.Weapons[0][0].countBullets() > 0))
+          j = 1;
+          if (localManeuver1.hasRockets()) j = 0;
+          if ((localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[0] != null) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[0][0] != null) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[0][0].bulletMassa() > 0.05F) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[0][0].countBullets() > 0))
           {
-            i = 0;
-          }if (((i != 0) && (localManeuver1.CT.getWeaponMass() < 7.0F)) || (localManeuver1.CT.getWeaponMass() < 1.0F)) {
+            j = 0;
+          }if (((j != 0) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.getWeaponMass() < 7.0F)) || (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.getWeaponMass() < 1.0F)) {
             Voice.speakEndOfAmmo(this.airc[paramInt]);
             if ((waitGroup(paramInt)) || (paramInt != 0)) break;
-            if (localManeuver1.AP.way.curr().Action == 3) {
-              localManeuver1.AP.way.next();
+            if (localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3) {
+              localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
             }
             setGroupTask(1);
           }
           else
           {
+            int m;
+            int n;
             if (((localManeuver1.target_ground instanceof Prey)) && ((((Prey)localManeuver1.target_ground).HitbyMask() & 0x1) == 0))
             {
               float f = 0.0F;
-              for (int m = 0; m < 4; m++) {
-                if (localManeuver1.CT.Weapons[m] != null) {
-                  for (i1 = 0; i1 < localManeuver1.CT.Weapons[m].length; i1++) {
-                    if ((localManeuver1.CT.Weapons[m][i1] == null) || (localManeuver1.CT.Weapons[m][i1].countBullets() == 0) || 
-                      (localManeuver1.CT.Weapons[m][i1].bulletMassa() <= f)) continue;
-                    f = localManeuver1.CT.Weapons[m][i1].bulletMassa();
+              for (m = 0; m < 4; m++) {
+                if (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[m] != null) {
+                  for (n = 0; n < localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[m].length; n++) {
+                    if ((localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[m][n] == null) || (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[m][n].countBullets() == 0) || 
+                      (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[m][n].bulletMassa() <= f)) continue;
+                    f = localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[m][n].bulletMassa();
                   }
                 }
               }
 
               if ((f < 0.08F) || (((localManeuver1.target_ground instanceof TgtShip)) && (f < 0.55F)))
               {
-                localManeuver1.AP.way.next();
+                localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
                 localManeuver1.set_task(1);
                 localManeuver1.clear_stack();
                 localManeuver1.set_maneuver(21);
@@ -803,112 +803,51 @@ public class AirGroup
               }
             }
 
-            if (localManeuver1.CT.Weapons[3] != null) {
-              for (k = 0; k < localManeuver1.CT.Weapons[3].length; k++)
-              {
-                if ((localManeuver1.CT.Weapons[3][k] == null) || ((localManeuver1.CT.Weapons[3][k] instanceof BombGunNull)) || (localManeuver1.CT.Weapons[3][k].countBullets() == 0)) {
-                  continue;
-                }
-                if ((localManeuver1.CT.Weapons[3][k] instanceof ParaTorpedoGun))
-                {
+            if ((localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0] != null) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0].countBullets() != 0)) {
+              if ((localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0] instanceof TorpedoGun)) {
+                if ((localManeuver1.target_ground instanceof TgtShip)) {
+                  localManeuver1.set_task(7);
+                  localManeuver1.clear_stack();
+                  localManeuver1.set_maneuver(51);
+                } else {
                   localManeuver1.set_task(7);
                   localManeuver1.clear_stack();
                   localManeuver1.set_maneuver(43);
-                  return;
                 }
-                if ((localManeuver1.CT.Weapons[3][k] instanceof TorpedoGun)) {
-                  if ((localManeuver1.target_ground instanceof TgtShip)) {
-                    localManeuver1.set_task(7);
-                    localManeuver1.clear_stack();
-                    if ((localManeuver1.target_ground instanceof BigshipGeneric))
-                    {
-                      BigshipGeneric localBigshipGeneric = (BigshipGeneric)localManeuver1.target_ground;
-
-                      if (((this.airc[paramInt] instanceof TypeHasToKG)) && (!localBigshipGeneric.zutiIsStatic()) && (this.airc[paramInt].FM.Skill >= 2) && (localBigshipGeneric.collisionR() > 50.0F))
-                      {
-                        localManeuver1.set_maneuver(81); return;
-                      }
-
-                      localManeuver1.set_maneuver(51); return;
-                    }
-
-                    localManeuver1.set_maneuver(51); return;
-                  }
-
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(43); return;
-                }
-
-                if (((this.airc[paramInt] instanceof TypeGuidedBombCarrier)) && ((localManeuver1.CT.Weapons[3][k] instanceof RocketGunHS_293))) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(79);
-                  return;
-                }
-                if (((this.airc[paramInt] instanceof TypeGuidedBombCarrier)) && ((localManeuver1.CT.Weapons[3][k] instanceof RocketGunFritzX))) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(80);
-                  return;
-                }
-                if ((localManeuver1.CT.Weapons[3][k] instanceof BombGunPara)) {
-                  this.w.curr().setTarget(null);
-                  localManeuver1.target_ground = null;
-                  this.grTask = 1;
-                  setTaskAndManeuver(paramInt);
-                  return;
-                }
-                if ((localManeuver1.CT.Weapons[3][k].bulletMassa() < 10.0F) && (!(localManeuver1.CT.Weapons[3][k] instanceof BombGunParafrag8))) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(52);
-                  return;
-                }
-                if (((this.airc[paramInt] instanceof TypeDiveBomber)) && (localManeuver1.Alt > 1200.0F)) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(50);
-                  return;
-                }
-                if (k != localManeuver1.CT.Weapons[3].length - 1)
-                  continue;
+              }
+              else if ((localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0] instanceof BombGunPara)) {
+                this.w.curr().setTarget(null);
+                localManeuver1.target_ground = null;
+                this.grTask = 1;
+                setTaskAndManeuver(paramInt);
+              }
+              else if ((localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0].bulletMassa() < 10.0F) && (!(localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][0] instanceof BombGunParafrag8))) {
+                localManeuver1.set_task(7);
+                localManeuver1.clear_stack();
+                localManeuver1.set_maneuver(52);
+              }
+              else if (((this.airc[paramInt] instanceof TypeDiveBomber)) && (localManeuver1.Alt > 1200.0F)) {
+                localManeuver1.set_task(7);
+                localManeuver1.clear_stack();
+                localManeuver1.set_maneuver(50);
+              }
+              else {
                 localManeuver1.set_task(7);
                 localManeuver1.clear_stack();
                 localManeuver1.set_maneuver(43);
-                return;
               }
-
             }
-
-            if (((localManeuver1.target_ground instanceof BridgeSegment)) && (!localManeuver1.hasRockets())) {
+            else if (((localManeuver1.target_ground instanceof BridgeSegment)) && (!localManeuver1.hasRockets())) {
               localManeuver1.set_task(1);
               localManeuver1.clear_stack();
               localManeuver1.set_maneuver(59);
               localManeuver1.target_ground = null;
             }
-            else if (((this.airc[paramInt] instanceof F4U)) && (localManeuver1.CT.Weapons[2] != null) && (localManeuver1.CT.Weapons[2][0].bulletMassa() > 100.0D) && (localManeuver1.CT.Weapons[2][0].countBullets() > 0))
+            else if (((this.airc[paramInt] instanceof F4U)) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[2] != null) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[2][0].bulletMassa() > 100.0D) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[2][0].countBullets() > 0))
             {
               localManeuver1.set_task(7);
               localManeuver1.clear_stack();
               localManeuver1.set_maneuver(47);
-            }
-            else if ((this.airc[paramInt] instanceof R_5xyz)) {
-              if (((R_5xyz)this.airc[paramInt]).strafeWithGuns)
-              {
-                localManeuver1.set_task(7);
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(43);
-              }
-              else
-              {
-                this.w.curr().setTarget(null);
-                localManeuver1.target_ground = null;
-                this.grTask = 1;
-                setTaskAndManeuver(paramInt);
-                this.grTask = 4;
-              }
-
             }
             else if (((this.airc[paramInt] instanceof TypeFighter)) || ((this.airc[paramInt] instanceof TypeStormovik))) {
               localManeuver1.set_task(7);
@@ -921,133 +860,138 @@ public class AirGroup
               this.grTask = 1;
               setTaskAndManeuver(paramInt);
               this.grTask = 4;
-            }
-          }
-        }
-      }
-      break;
-    case 3:
-      if (localManeuver1.isBusy()) break;
-      if ((!(localManeuver1 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver1).isRealMode())) {
-        localManeuver1.bombsOut = true;
-        localManeuver1.CT.dropFuelTanks();
-      }
-      if (isWingman(paramInt))
-      {
-        localManeuver1.airClient = localManeuver1.Leader;
-        localManeuver1.followOffset.set(200.0D, 0.0D, 20.0D);
-        localManeuver1.set_task(5);
-        localManeuver1.clear_stack();
-        localManeuver1.set_maneuver(65);
-      }
-      else
-      {
-        localManeuver1.airClient = null;
-        k = 1;
-        if (inCorridor(localManeuver1.Loc)) k = 0;
-        if (k != 0) {
-          n = this.w.Cur();
-          this.w.next();
-          if (inCorridor(localManeuver1.Loc)) k = 0;
-          this.w.setCur(n);
-          if (k != 0) {
-            n = this.w.Cur();
-            this.w.prev();
-            if (inCorridor(localManeuver1.Loc)) k = 0;
-            this.w.setCur(n);
-          }
-        }
-        if (k != 0) {
-          localManeuver1.set_task(3);
-          localManeuver1.clear_stack();
-          localManeuver1.set_maneuver(21);
-        }
-        else
-        {
-          if ((localManeuver1.target == null) || (!((Maneuver)localManeuver1.target).isOk()) || (localManeuver1.Loc.distance(localManeuver1.target.Loc) > 4000.0D))
-            localManeuver1.target = setAAttackObject(paramInt);
-          if ((localManeuver1.target == null) || (!localManeuver1.hasCourseWeaponBullets())) {
-            if ((waitGroup(paramInt)) || (paramInt != 0)) break;
-            setGroupTask(1);
-          }
-          else
-          {
-            localManeuver1.set_task(6);
-            if ((localManeuver1.target.actor instanceof TypeFighter)) {
-              if (((localManeuver1.actor instanceof TypeBNZFighter)) || (localManeuver1.VmaxH > localManeuver1.target.VmaxH + 30.0F) || (((localManeuver1.target.actor instanceof TypeTNBFighter)) && (!(localManeuver1.actor instanceof TypeTNBFighter))))
-              {
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(62);
-              }
-              else {
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(27);
-              }
-            }
-            else if ((localManeuver1.target.actor instanceof TypeStormovik))
-            {
-              ((Pilot)localManeuver1).attackStormoviks();
-            }
-            else
-            {
-              ((Pilot)localManeuver1).attackBombers();
-            }
-          }
-        }
-      }
-      break;
-    case 2:
-      localManeuver3 = null;
-      localManeuver2 = null;
-      localManeuver4 = null;
-      tmpV.set(0.0D, 0.0D, 0.0D);
-      for (n = 0; n < this.nOfAirc; n++) {
-        localManeuver3 = (Maneuver)this.airc[n].FM;
-        tmpV.add(localManeuver3.Offset);
-        if ((localManeuver3.isBusy()) && (n != this.nOfAirc - 1) && ((!(localManeuver3 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver3).isRealMode())))
-          continue;
-        localManeuver3.Leader = null;
-        if ((this.clientGroup != null) && (this.clientGroup.nOfAirc > 0) && (this.clientGroup.airc[0] != null)) {
-          localManeuver3.airClient = this.clientGroup.airc[0].FM;
-          localManeuver3.accurate_set_task_maneuver(5, 59);
-        } else {
-          localManeuver3.accurate_set_task_maneuver(3, 21);
-        }
-        tmpV.set(0.0D, 0.0D, 0.0D);
-        for (i1 = n + 1; i1 < this.nOfAirc; i1++) {
-          localManeuver2 = (Maneuver)this.airc[i1].FM;
-          tmpV.add(localManeuver2.Offset);
-          if (!localManeuver2.isBusy()) {
-            localManeuver2.accurate_set_FOLLOW();
-            if (localManeuver4 == null) {
-              localManeuver2.followOffset.set(tmpV);
-              localManeuver2.Leader = localManeuver3;
-            } else {
-              localManeuver2.followOffset.set(localManeuver2.Offset);
-              localManeuver2.Leader = localManeuver4;
-            }
-          }
-          if ((localManeuver2 instanceof RealFlightModel)) {
-            if ((this.airc[i1].aircIndex() & 0x1) != 0) continue; localManeuver4 = localManeuver2; } else {
-            localManeuver4 = null;
-          }
-        }
-        break;
-      }
 
-      break;
-    case 5:
-      if (!localManeuver1.isBusy()) break; return;
-    case 6:
-      if (!localManeuver1.isBusy()) break; return;
-    default:
-      if (localManeuver1.isBusy()) return;
-      localManeuver1.set_maneuver(21);
-    }
+              break;
+
+              if (localManeuver1.isBusy()) break;
+              if ((!(localManeuver1 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver1).isRealMode())) {
+                localManeuver1.bombsOut = true;
+                localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.dropFuelTanks();
+              }
+              if (isWingman(paramInt))
+              {
+                localManeuver1.airClient = localManeuver1.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel;
+                localManeuver1.followOffset.set(200.0D, 0.0D, 20.0D);
+                localManeuver1.set_task(5);
+                localManeuver1.clear_stack();
+                localManeuver1.set_maneuver(65);
+              }
+              else
+              {
+                localManeuver1.airClient = null;
+                int k = 1;
+                if (inCorridor(localManeuver1.jdField_Loc_of_type_ComMaddoxJGPPoint3d)) k = 0;
+                if (k != 0) {
+                  m = this.w.Cur();
+                  this.w.next();
+                  if (inCorridor(localManeuver1.jdField_Loc_of_type_ComMaddoxJGPPoint3d)) k = 0;
+                  this.w.setCur(m);
+                  if (k != 0) {
+                    m = this.w.Cur();
+                    this.w.prev();
+                    if (inCorridor(localManeuver1.jdField_Loc_of_type_ComMaddoxJGPPoint3d)) k = 0;
+                    this.w.setCur(m);
+                  }
+                }
+                if (k != 0) {
+                  localManeuver1.set_task(3);
+                  localManeuver1.clear_stack();
+                  localManeuver1.set_maneuver(21);
+                }
+                else
+                {
+                  if ((localManeuver1.target == null) || (!((Maneuver)localManeuver1.target).isOk()) || (localManeuver1.jdField_Loc_of_type_ComMaddoxJGPPoint3d.distance(localManeuver1.target.jdField_Loc_of_type_ComMaddoxJGPPoint3d) > 4000.0D))
+                    localManeuver1.target = setAAttackObject(paramInt);
+                  if ((localManeuver1.target == null) || (!localManeuver1.hasCourseWeaponBullets())) {
+                    if ((waitGroup(paramInt)) || (paramInt != 0)) break;
+                    setGroupTask(1);
+                  }
+                  else
+                  {
+                    localManeuver1.set_task(6);
+                    if ((localManeuver1.target.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeFighter)) {
+                      if (((localManeuver1.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeBNZFighter)) || (localManeuver1.VmaxH > localManeuver1.target.VmaxH + 30.0F) || (((localManeuver1.target.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeTNBFighter)) && (!(localManeuver1.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeTNBFighter))))
+                      {
+                        localManeuver1.clear_stack();
+                        localManeuver1.set_maneuver(62);
+                      }
+                      else {
+                        localManeuver1.clear_stack();
+                        localManeuver1.set_maneuver(27);
+                      }
+                    }
+                    else if ((localManeuver1.target.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof TypeStormovik))
+                    {
+                      ((Pilot)localManeuver1).attackStormoviks();
+                    }
+                    else
+                    {
+                      ((Pilot)localManeuver1).attackBombers();
+
+                      break;
+
+                      localManeuver3 = null;
+                      localManeuver2 = null;
+                      localManeuver4 = null;
+                      tmpV.set(0.0D, 0.0D, 0.0D);
+                      m = 0;
+                      while (true) { localManeuver3 = (Maneuver)this.airc[m].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+                        tmpV.add(localManeuver3.jdField_Offset_of_type_ComMaddoxJGPVector3d);
+                        if ((!localManeuver3.isBusy()) || (m == this.nOfAirc - 1) || (((localManeuver3 instanceof RealFlightModel)) && (((RealFlightModel)localManeuver3).isRealMode())))
+                        {
+                          localManeuver3.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = null;
+                          if ((this.clientGroup != null) && (this.clientGroup.nOfAirc > 0) && (this.clientGroup.airc[0] != null)) {
+                            localManeuver3.airClient = this.clientGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+                            localManeuver3.accurate_set_task_maneuver(5, 59);
+                          } else {
+                            localManeuver3.accurate_set_task_maneuver(3, 21);
+                          }
+                          tmpV.set(0.0D, 0.0D, 0.0D);
+                          for (n = m + 1; n < this.nOfAirc; n++) {
+                            localManeuver2 = (Maneuver)this.airc[n].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+                            tmpV.add(localManeuver2.jdField_Offset_of_type_ComMaddoxJGPVector3d);
+                            if (!localManeuver2.isBusy()) {
+                              localManeuver2.accurate_set_FOLLOW();
+                              if (localManeuver4 == null) {
+                                localManeuver2.followOffset.set(tmpV);
+                                localManeuver2.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = localManeuver3;
+                              } else {
+                                localManeuver2.followOffset.set(localManeuver2.jdField_Offset_of_type_ComMaddoxJGPVector3d);
+                                localManeuver2.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = localManeuver4;
+                              }
+                            }
+                            if ((localManeuver2 instanceof RealFlightModel)) {
+                              if ((this.airc[n].aircIndex() & 0x1) != 0) continue; localManeuver4 = localManeuver2; } else {
+                              localManeuver4 = null;
+                            }
+                          }
+                        }
+                        else
+                        {
+                          m++; if (m < this.nOfAirc)
+                          {
+                            continue;
+                          }
+
+                          if ((goto 2405) || 
+                            (!localManeuver1.isBusy())) break; return;
+
+                          if (!localManeuver1.isBusy()) break; return;
+
+                          if (localManeuver1.isBusy()) return;
+                          localManeuver1.set_maneuver(21);
+                        } } 
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } }
   }
 
-  public void update()
-  {
+  public void update() {
     if ((this.nOfAirc == 0) || (this.airc[0] == null)) return;
     for (int i = 1; i < this.nOfAirc; i++) {
       if (!Actor.isAlive(this.airc[i])) {
@@ -1055,70 +999,69 @@ public class AirGroup
         i--;
       }
     }
-    Maneuver localManeuver1 = (Maneuver)this.airc[0].FM;
+    Maneuver localManeuver1 = (Maneuver)this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     if (this.leaderGroup != null) {
       if (this.leaderGroup.nOfAirc == 0) { detachGroup(this.leaderGroup);
       } else if (this.leaderGroup.airc[0] == null) { detachGroup(this.leaderGroup);
       }
-      else if (this.leaderGroup.airc[0].FM.AP.way.isLanding()) {
+      else if (this.leaderGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) {
         detachGroup(this.leaderGroup);
       } else {
-        localManeuver1.AP.way.setCur(this.leaderGroup.w.Cur());
-        if ((localManeuver1.get_maneuver() == 21) && (!((Maneuver)this.leaderGroup.airc[0].FM).isBusy())) {
+        localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(this.leaderGroup.w.Cur());
+        if ((localManeuver1.get_maneuver() == 21) && (!((Maneuver)this.leaderGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isBusy())) {
           setTaskAndManeuver(0);
         }
       }
 
     }
 
-    if (this.w == null) this.w = new Way(localManeuver1.AP.way);
-    if ((!localManeuver1.AP.way.isLanding()) && (localManeuver1.isOk())) this.w.setCur(localManeuver1.AP.way.Cur());
+    if (this.w == null) this.w = new Way(localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way);
+    if ((!localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) && (localManeuver1.isOk())) this.w.setCur(localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur());
     int j;
-    if (!localManeuver1.AP.way.isLanding())
+    if (!localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding())
       for (j = 1; j < this.nOfAirc; j++) {
-        if ((((Maneuver)this.airc[j].FM).AP.way.isLanding()) || (((Maneuver)this.airc[j].FM).isBusy()))
+        if ((((Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()) || (((Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isBusy()))
           continue;
-        ((Maneuver)this.airc[j].FM).AP.way.setCur(this.w.Cur());
+        ((Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(this.w.Cur());
       }
-    if ((localManeuver1.AP.way.curr().isRadioSilence()) || (Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-      for (j = 0; j < this.nOfAirc; j++) ((Maneuver)this.airc[j].FM).silence = true;
+    if (localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().isRadioSilence())
+      for (j = 0; j < this.nOfAirc; j++) ((Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).silence = true;
     else {
-      for (j = 0; j < this.nOfAirc; j++) ((Maneuver)this.airc[j].FM).silence = false;
+      for (j = 0; j < this.nOfAirc; j++) ((Maneuver)this.airc[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).silence = false;
     }
 
-    this.Pos.set(localManeuver1.Loc);
+    this.Pos.set(localManeuver1.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
 
     if (this.formationType == -1) setFormationAndScale(0, 1.0F, true);
 
     if (this.timeOutForTaskSwitch == 0)
     {
       int n;
-      Maneuver localManeuver2;
       Object localObject;
       switch (this.w.curr().Action) {
       case 3:
-        j = (this.w.curr().getTarget() != null) || ((this.airc[0] instanceof TypeFighter)) || (((this.airc[0] instanceof TypeStormovik)) && ((!(this.airc[0] instanceof TypeBomber)) || (this.airc[0].FM.getAltitude() < 2500.0F))) || ((this.airc[0] instanceof D3A)) || ((this.airc[0] instanceof MXY_7)) || ((this.airc[0] instanceof JU_87)) ? 1 : 0;
+        j = (this.w.curr().getTarget() != null) || ((this.airc[0] instanceof TypeFighter)) || ((this.airc[0] instanceof TypeStormovik)) || ((this.airc[0] instanceof D3A)) || ((this.airc[0] instanceof MXY_7)) || ((this.airc[0] instanceof JU_87)) ? 1 : 0;
 
         if (this.grTask == 4) {
           this.WeWereInGAttack = true;
           bool1 = somebodyGAttacks();
           n = 0;
           for (int i2 = 0; i2 < this.nOfAirc; i2++) {
-            localManeuver2 = (Maneuver)this.airc[i2].FM;
+            Maneuver localManeuver2 = (Maneuver)this.airc[i2].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
             if (localManeuver2.gattackCounter < 7) continue; n = 1;
           }
           if ((!bool1) || (n != 0) || (this.gTargDestroyed)) {
-            this.airc[0].FM.AP.way.next();
+            this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
             this.w.next();
             setGroupTask(1);
-            for (i2 = 1; i2 < this.nOfAirc; i2++) {
-              localManeuver2 = (Maneuver)this.airc[i2].FM;
-              localManeuver2.push(57);
-              localManeuver2.pop();
+            for (int i4 = 1; i4 < this.nOfAirc; i4++) {
+              Maneuver localManeuver4 = (Maneuver)this.airc[i4].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+              localManeuver4.push(57);
+              localManeuver4.pop();
             }
             setFormationAndScale(0, 1.0F, true);
             if (n != 0)
-              for (i2 = 0; i2 < this.nOfAirc; i2++) ((Maneuver)this.airc[i2].FM).gattackCounter = 0;
+              for (int i6 = 0; i6 < this.nOfAirc; i6++) ((Maneuver)this.airc[i6].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).gattackCounter = 0;
           }
         }
         else if (this.grTask == 3) {
@@ -1130,7 +1073,7 @@ public class AirGroup
             setGroupTask(1);
             if (!bool1) this.timeOutForTaskSwitch = 90;
             for (n = 1; n < this.nOfAirc; n++) {
-              localObject = (Maneuver)this.airc[n].FM;
+              localObject = (Maneuver)this.airc[n].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
               if (!((Maneuver)localObject).isBusy()) {
                 ((Maneuver)localObject).push(57);
                 ((Maneuver)localObject).pop();
@@ -1141,11 +1084,9 @@ public class AirGroup
         if ((this.grTask != 1) || (this.w.curr().Action != 3)) break;
         this.gTargWasFound = false; this.gTargDestroyed = false;
         this.gTargMode = 0;
-        if (j == 0) {
-          break;
-        }
-        setFormationAndScale(9, 8.0F, true);
-        if (localManeuver1.AP.getWayPointDistance() >= 5000.0F) break;
+        if (j == 0) break;
+        setFormationAndScale(5, 8.0F, true);
+        if (localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.getWayPointDistance() >= 5000.0F) break;
         boolean bool1 = false;
         if (this.w.curr().getTarget() != null) {
           setGTargMode(this.w.curr().getTarget());
@@ -1155,21 +1096,18 @@ public class AirGroup
             {
               setGroupTask(4);
               Voice.speakBeginGattack(this.airc[0]);
-            } else if (localManeuver1.AP.getWayPointDistance() < 1500.0F) { bool1 = true; } 
+            } else if (localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.getWayPointDistance() < 1500.0F) { bool1 = true; } 
           } else {
             bool1 = true;
           } } else {
           bool1 = true;
-        }if (bool1) {
-          Engine.land(); tmpP3d.set(this.w.curr().x(), this.w.curr().y(), Landscape.HQ(this.w.curr().x(), this.w.curr().y()));
-          setGTargMode(tmpP3d, 800.0F);
-          localManeuver1.target_ground = setGAttackObject(0);
-          if (localManeuver1.target_ground != null) {
-            setGroupTask(4);
-            Voice.speakBeginGattack(this.airc[0]);
-          }
-        }
-        break;
+        }if (!bool1) break;
+        Engine.land(); tmpP3d.set(this.w.curr().x(), this.w.curr().y(), Landscape.HQ(this.w.curr().x(), this.w.curr().y()));
+        setGTargMode(tmpP3d, 800.0F);
+        localManeuver1.target_ground = setGAttackObject(0);
+        if (localManeuver1.target_ground == null) break;
+        setGroupTask(4);
+        Voice.speakBeginGattack(this.airc[0]); break;
       case 0:
       case 2:
         if (this.grTask == 2)
@@ -1190,11 +1128,11 @@ public class AirGroup
             setGroupTask(1);
             setFormationAndScale(0, 1.0F, true);
           }
-          if ((this.clientGroup == null) || (this.clientGroup.nOfAirc == 0) || (this.clientGroup.w.Cur() >= this.clientGroup.w.size() - 1) || (this.clientGroup.airc[0].FM.AP.way.isLanding()))
+          if ((this.clientGroup == null) || (this.clientGroup.nOfAirc == 0) || (this.clientGroup.w.Cur() >= this.clientGroup.w.size() - 1) || (this.clientGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.isLanding()))
           {
-            localManeuver1.AP.way.next();
-            this.w.setCur(localManeuver1.AP.way.Cur());
-            for (k = 1; k < this.nOfAirc; k++) ((Maneuver)this.airc[k].FM).AP.way.setCur(this.w.Cur());
+            localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
+            this.w.setCur(localManeuver1.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur());
+            for (k = 1; k < this.nOfAirc; k++) ((Maneuver)this.airc[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(this.w.Cur());
             setGroupTask(1);
             setFormationAndScale(0, 1.0F, true);
           }
@@ -1208,54 +1146,54 @@ public class AirGroup
             this.WeWereInGAttack = true;
             if (AirGroupList.length(this.enemies[0]) != this.oldEnemyNum) setGroupTask(3);
             bool2 = somebodyAttacks();
-            if ((!bool2) || (this.aTargDestroyed)) {
-              setGroupTask(1);
-              setFormationAndScale(0, 1.0F, false);
-              if (!bool2) this.timeOutForTaskSwitch = 90;
-              for (n = 1; n < this.nOfAirc; n++) {
-                localObject = (Maneuver)this.airc[n].FM;
-                if (!((Maneuver)localObject).isBusy()) {
-                  ((Maneuver)localObject).push(57);
-                  ((Maneuver)localObject).pop();
-                }
+            if ((bool2) && (!this.aTargDestroyed)) break;
+            setGroupTask(1);
+            setFormationAndScale(0, 1.0F, false);
+            if (!bool2) this.timeOutForTaskSwitch = 90;
+            for (n = 1; n < this.nOfAirc; n++) {
+              localObject = (Maneuver)this.airc[n].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+              if (!((Maneuver)localObject).isBusy()) {
+                ((Maneuver)localObject).push(57);
+                ((Maneuver)localObject).pop();
               }
             }
           }
           else
           {
             int i3;
+            int i5;
             if (this.grTask == 4) {
               this.WeWereInGAttack = true;
               bool2 = somebodyGAttacks();
               n = 0;
               for (i3 = 0; i3 < this.nOfAirc; i3++) {
-                localManeuver2 = (Maneuver)this.airc[i3].FM;
-                if (localManeuver2.gattackCounter < 7) continue; n = 1;
+                Maneuver localManeuver3 = (Maneuver)this.airc[i3].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+                if (localManeuver3.gattackCounter < 7) continue; n = 1;
               }
-              if ((!bool2) || (n != 0) || (this.gTargDestroyed)) {
-                setGroupTask(1);
-                setFormationAndScale(0, 1.0F, true);
-                for (i3 = 1; i3 < this.nOfAirc; i3++) {
-                  localManeuver2 = (Maneuver)this.airc[i3].FM;
-                  localManeuver2.push(57);
-                  localManeuver2.pop();
-                }
-                if (n != 0)
-                  for (i3 = 0; i3 < this.nOfAirc; i3++) ((Maneuver)this.airc[i3].FM).gattackCounter = 0; 
+              if ((bool2) && (n == 0) && (!this.gTargDestroyed)) break;
+              setGroupTask(1);
+              setFormationAndScale(0, 1.0F, true);
+              for (i5 = 1; i5 < this.nOfAirc; i5++) {
+                Maneuver localManeuver5 = (Maneuver)this.airc[i5].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+                localManeuver5.push(57);
+                localManeuver5.pop();
               }
+              if (n == 0) break;
+              for (int i7 = 0; i7 < this.nOfAirc; i7++) ((Maneuver)this.airc[i7].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).gattackCounter = 0; 
             }
-            else {
+            else
+            {
               if (this.grTask != 1) break;
               if ((this.WeWereInGAttack) || (this.gTargMode != 0)) {
                 this.WeWereInGAttack = false;
                 this.gTargMode = 0;
                 setFormationAndScale(0, 1.0F, false);
-                ((Maneuver)this.airc[0].FM).WeWereInGAttack = true;
+                ((Maneuver)this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).WeWereInGAttack = true;
               }
               if (this.WeWereInAttack) {
                 this.WeWereInAttack = false;
                 setFormationAndScale(0, 1.0F, false);
-                ((Maneuver)this.airc[0].FM).WeWereInAttack = true;
+                ((Maneuver)this.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).WeWereInAttack = true;
               }
               if ((this.w.Cur() > 0) && (this.grAttached == 0) && (this.oldFType == 0)) {
                 this.w.curr().getP(tmpP);
@@ -1276,21 +1214,21 @@ public class AirGroup
               if (this.w.curr().getTarget() != null) {
                 Actor localActor = this.w.curr().getTargetActorRandom();
                 if ((localActor != null) && ((localActor instanceof Aircraft))) {
-                  tmpV.sub(((Aircraft)localActor).FM.Loc, this.Pos);
+                  tmpV.sub(((Aircraft)localActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d, this.Pos);
                   if (tmpV.lengthSquared() < 144000000.0D) {
                     if (localActor.getArmy() == this.airc[0].getArmy()) {
                       if (((this.airc[0] instanceof TypeFighter)) && (!localManeuver1.hasBombs()) && (!localManeuver1.hasRockets())) {
                         if (this.w.Cur() < this.w.size() - 2) {
-                          this.clientGroup = ((Maneuver)((Aircraft)localActor).FM).Group;
+                          this.clientGroup = ((Maneuver)((Aircraft)localActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group;
                           setGroupTask(2);
                           setFormationAndScale(0, 2.5F, true);
                         }
                       }
-                      else attachGroup(((Maneuver)((Aircraft)localActor).FM).Group);
+                      else attachGroup(((Maneuver)((Aircraft)localActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group);
 
                     }
                     else if (((this.airc[0] instanceof TypeFighter)) || ((this.airc[0] instanceof TypeStormovik))) {
-                      this.targetGroup = ((Maneuver)((Aircraft)localActor).FM).Group;
+                      this.targetGroup = ((Maneuver)((Aircraft)localActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group;
                       setGroupTask(3);
                     }
                   }
@@ -1301,8 +1239,8 @@ public class AirGroup
                 int i1 = 0;
                 if ((this.airc[0] instanceof TypeStormovik)) {
                   i3 = AirGroupList.length(this.enemies[0]);
-                  for (int i4 = 0; i4 < i3; i4++) {
-                    AirGroup localAirGroup = AirGroupList.getGroup(this.enemies[0], i4);
+                  for (i5 = 0; i5 < i3; i5++) {
+                    AirGroup localAirGroup = AirGroupList.getGroup(this.enemies[0], i5);
                     if ((localAirGroup != null) && (localAirGroup.nOfAirc != 0) && (!(localAirGroup.airc[0] instanceof TypeFighter))) {
                       i1 = 1;
                       this.targetGroup = localAirGroup;
@@ -1322,19 +1260,17 @@ public class AirGroup
                 }
                 if ((i1 == 0) && ((this.airc[0] instanceof TypeFighter))) {
                   for (i3 = 0; i3 < this.nOfAirc; i3++) {
-                    if (!((Maneuver)this.airc[i3].FM).canAttack()) continue; i1 = 1;
-                  }if ((i1 != 0) && (localManeuver1.CT.getWeaponMass() > 220.0F)) {
+                    if (!((Maneuver)this.airc[i3].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).canAttack()) continue; i1 = 1;
+                  }if ((i1 != 0) && (localManeuver1.jdField_CT_of_type_ComMaddoxIl2FmControls.getWeaponMass() > 220.0F)) {
                     i1 = 0;
                   }
                 }
                 if (i1 != 0) setGroupTask(3);
               }
 
-              if (this.rejoinGroup != null) rejoinToGroup(this.rejoinGroup); 
-            }
+              if (this.rejoinGroup == null) break; rejoinToGroup(this.rejoinGroup); } 
           }
-        }
-        break;
+        }break;
       case 1:
       default:
         this.grTask = 1;

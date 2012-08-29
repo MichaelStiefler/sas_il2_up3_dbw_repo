@@ -19,17 +19,17 @@ class OrderTighten_Formation extends Order
     for (int i = 0; i < CommandSet().length; i++) {
       Aircraft localAircraft = CommandSet()[i];
       if ((!Actor.isAlive(localAircraft)) || 
-        (!(localAircraft.FM instanceof Pilot)) || 
-        (!Actor.isAlive(localAircraft.FM.actor))) continue;
-      Pilot localPilot = (Pilot)(Pilot)localAircraft.FM;
+        (!(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Pilot)) || 
+        (!Actor.isAlive(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor))) continue;
+      Pilot localPilot = (Pilot)localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if ((isEnableVoice()) && (CommandSet()[i] != Player()) && (
         (CommandSet()[i].getWing() == Player().getWing()) || (CommandSet()[i].aircIndex() == 0)))
         Voice.speakTightFormation(CommandSet()[i]);
-      if ((localPilot.Group != null) && (localPilot.Group.nOfAirc > 0) && (localPilot == localPilot.Group.airc[0].FM)) {
-        Maneuver localManeuver = (Maneuver)localPilot.Group.airc[(localPilot.Group.nOfAirc - 1)].FM;
+      if ((localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup != null) && (localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.nOfAirc > 0) && (localPilot == localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.airc[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel)) {
+        Maneuver localManeuver = (Maneuver)localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.airc[(localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.nOfAirc - 1)].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
         float f = localManeuver.formationScale * 0.667F;
         if (f < 0.9F) f = 0.9F;
-        localPilot.Group.setFormationAndScale(localManeuver.formationType, f, true);
+        localPilot.jdField_Group_of_type_ComMaddoxIl2AiAirAirGroup.setFormationAndScale(localManeuver.formationType, f, true);
       }
     }
     Voice.setSyncMode(0);

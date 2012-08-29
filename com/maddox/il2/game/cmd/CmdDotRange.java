@@ -44,12 +44,12 @@ public class CmdDotRange extends Cmd
       }
       if ((paramMap.containsKey("DOT")) || (paramMap.containsKey("COLOR")) || (paramMap.containsKey("TYPE")) || (paramMap.containsKey("NAME")) || (paramMap.containsKey("ID")) || (paramMap.containsKey("RANGE")))
       {
-        double d1 = arg(paramMap, "DOT", 0, -1.0D) * 1000.0D;
-        double d2 = arg(paramMap, "COLOR", 0, -1.0D) * 1000.0D;
-        double d3 = arg(paramMap, "TYPE", 0, -1.0D) * 1000.0D;
-        double d4 = arg(paramMap, "NAME", 0, -1.0D) * 1000.0D;
-        double d5 = arg(paramMap, "ID", 0, -1.0D) * 1000.0D;
-        double d6 = arg(paramMap, "RANGE", 0, -1.0D) * 1000.0D;
+        double d1 = Cmd.arg(paramMap, "DOT", 0, -1.0D) * 1000.0D;
+        double d2 = Cmd.arg(paramMap, "COLOR", 0, -1.0D) * 1000.0D;
+        double d3 = Cmd.arg(paramMap, "TYPE", 0, -1.0D) * 1000.0D;
+        double d4 = Cmd.arg(paramMap, "NAME", 0, -1.0D) * 1000.0D;
+        double d5 = Cmd.arg(paramMap, "ID", 0, -1.0D) * 1000.0D;
+        double d6 = Cmd.arg(paramMap, "RANGE", 0, -1.0D) * 1000.0D;
 
         if (bool1) {
           Main.cur().dotRangeFriendly.set(d1, d2, d3, d4, d5, d6);
@@ -79,15 +79,15 @@ public class CmdDotRange extends Cmd
   }
 
   public CmdDotRange() {
-    this.param.put("DEFAULT", null);
-    this.param.put("FRIENDLY", null);
-    this.param.put("FOE", null);
-    this.param.put("DOT", null);
-    this.param.put("COLOR", null);
-    this.param.put("TYPE", null);
-    this.param.put("NAME", null);
-    this.param.put("ID", null);
-    this.param.put("RANGE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("DEFAULT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FRIENDLY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("FOE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("DOT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("COLOR", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TYPE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NAME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ID", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("RANGE", null);
     this._properties.put("NAME", "mp_dotrange");
     this._levelAccess = 1;
   }

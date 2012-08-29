@@ -133,8 +133,10 @@ public class GTreePath
       int j = paramGTreePath.getPathCount();
       if (j < i)
         return false;
-      while (j-- > i)
+      do
         paramGTreePath = paramGTreePath.getParentPath();
+      while (j-- > i);
+
       return equals(paramGTreePath);
     }
     return false;

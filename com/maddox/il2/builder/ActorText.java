@@ -59,27 +59,27 @@ public class ActorText extends Actor
 
   private boolean isVisible()
   {
-    if (p2d.x + this.w < x0) return false;
-    if (p2d.x > x1) return false;
-    if (p2d.y + this.h < y0) return false;
-    return p2d.y <= y1;
+    if (p2d.jdField_x_of_type_Double + this.w < x0) return false;
+    if (p2d.jdField_x_of_type_Double > x1) return false;
+    if (p2d.jdField_y_of_type_Double + this.h < y0) return false;
+    return p2d.jdField_y_of_type_Double <= y1;
   }
 
   public void render2d()
   {
     if (this.w == 0.0F) return;
     if (this.bLevel[renderLevel] == 0) return;
-    p2d.x = ((this.pos.getAbsPoint().x - Plugin.builder.camera2D.worldXOffset) * Plugin.builder.camera2D.worldScale);
+    p2d.jdField_x_of_type_Double = ((this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_x_of_type_Double - Plugin.builder.camera2D.worldXOffset) * Plugin.builder.camera2D.worldScale);
 
-    p2d.y = ((this.pos.getAbsPoint().y - Plugin.builder.camera2D.worldYOffset) * Plugin.builder.camera2D.worldScale);
+    p2d.jdField_y_of_type_Double = ((this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_y_of_type_Double - Plugin.builder.camera2D.worldYOffset) * Plugin.builder.camera2D.worldScale);
 
     switch (this.align) { case 1:
-      p2d.x -= this.w / 2.0F; break;
+      p2d.jdField_x_of_type_Double -= this.w / 2.0F; break;
     case 2:
-      p2d.x -= this.w;
+      p2d.jdField_x_of_type_Double -= this.w;
     }
     if (isVisible())
-      tfont[this.font].output(0xFF000000 | gcolor[this.color].color, (float)p2d.x, (float)p2d.y, 0.0F, this.text);
+      tfont[this.font].output(0xFF000000 | gcolor[this.color].color, (float)p2d.jdField_x_of_type_Double, (float)p2d.jdField_y_of_type_Double, 0.0F, this.text);
   }
 
   private void computeSizes()
@@ -130,10 +130,10 @@ public class ActorText extends Actor
   }
   public ActorText(Point3d paramPoint3d) {
     this.flags |= 8192;
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
     IconDraw.create(this);
     if (paramPoint3d != null) {
-      this.pos.setAbs(paramPoint3d);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
       align();
     }
     drawing(true);

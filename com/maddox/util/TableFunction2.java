@@ -13,8 +13,8 @@ public class TableFunction2
 
   private static TableFunction2 find(String paramString) {
     for (int i = 0; i < functions.size(); i++) {
-      if (paramString.equalsIgnoreCase(((TableFunction2)(TableFunction2)functions.get(i)).name)) {
-        return (TableFunction2)(TableFunction2)functions.get(i);
+      if (paramString.equalsIgnoreCase(((TableFunction2)functions.get(i)).name)) {
+        return (TableFunction2)functions.get(i);
       }
     }
     return null;
@@ -70,22 +70,22 @@ public class TableFunction2
     for (int m = 0; m < j; m++) {
       this.arg0[m] = localNumberTokenizer.nextFloat();
     }
-    for (m = 0; m < k; m++) {
-      localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, 1 + m));
-      this.arg1[m] = localNumberTokenizer.nextFloat();
-      for (int n = 0; n < j; n++) {
-        this.val[m][n] = localNumberTokenizer.nextFloat();
+    for (int n = 0; n < k; n++) {
+      localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, 1 + n));
+      this.arg1[n] = localNumberTokenizer.nextFloat();
+      for (i1 = 0; i1 < j; i1++) {
+        this.val[n][i1] = localNumberTokenizer.nextFloat();
       }
 
     }
 
-    for (m = 1; m < j; m++) {
-      if (this.arg0[(m - 1)] >= this.arg0[m]) {
+    for (int i1 = 1; i1 < j; i1++) {
+      if (this.arg0[(i1 - 1)] >= this.arg0[i1]) {
         TableError("arg0 non-increasing");
       }
     }
-    for (m = 1; m < k; m++)
-      if (this.arg1[(m - 1)] >= this.arg1[m])
+    for (int i2 = 1; i2 < k; i2++)
+      if (this.arg1[(i2 - 1)] >= this.arg1[i2])
         TableError("arg1 non-increasing");
   }
 

@@ -60,7 +60,7 @@ public class GUINetServerNGenProp extends GameState
     long l = i * 60L * 60L * 1000L + j * 60L * 1000L;
     Main.cur().netServerParams.timeoutNGEN = l;
     Main.cur().netServerParams.bLandedNGEN = this.sLand.isChecked();
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F)
+    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -101,7 +101,7 @@ public class GUINetServerNGenProp extends GameState
   private void missionBad(String paramString) {
     this.loadMessageBox.close(false);
     this.loadMessageBox = null;
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.Error"), paramString, 3, 0.0F) {
+    new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("netsms.Error"), paramString, 3, 0.0F) {
       public void result(int paramInt) {
       }
     };
@@ -190,10 +190,10 @@ public class GUINetServerNGenProp extends GameState
       localMenuItem.key = str1;
       localMenuItem.name = localSectFile.get("$locale", str1, str1);
       for (int m = 0; m < k; m++) {
-        String str3 = localSectFile.var(j, m);
-        String str4 = localSectFile.value(j, m);
-        localMenuItem.keys.add(str3);
-        localMenuItem.names.add(str4);
+        str2 = localSectFile.var(j, m);
+        String str3 = localSectFile.value(j, m);
+        localMenuItem.keys.add(str2);
+        localMenuItem.names.add(str3);
       }
       String str2 = localSectFile.get("$select", str1, (String)null);
       if (str2 != null)
@@ -410,21 +410,14 @@ public class GUINetServerNGenProp extends GameState
       if (!isCellEditable(paramInt1, paramInt2)) return null;
 
       this.indxMenu = paramInt1;
-      1 local1;
-      GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.wClient.create(local1 = new GWindowComboControl() {
-        GUINetServerNGenProp.MenuItem item = (GUINetServerNGenProp.MenuItem)GUINetServerNGenProp.Menu.this.lst.get(GUINetServerNGenProp.Menu.this.indxMenu);
+      GUINetServerNGenProp.5 local5;
+      GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.jdField_wClient_of_type_ComMaddoxGwindowGWindowTable$Client.create(local5 = new GUINetServerNGenProp.5(this));
 
-        public boolean notify(int paramInt1, int paramInt2) { boolean bool = super.notify(paramInt1, paramInt2);
-          if (paramInt1 == 2)
-            this.item.select = paramInt2;
-          return bool;
-        }
-      });
-      local1.setEditable(false);
+      local5.setEditable(false);
       GUINetServerNGenProp.MenuItem localMenuItem = (GUINetServerNGenProp.MenuItem)this.lst.get(this.indxMenu);
       for (int i = 0; i < localMenuItem.keys.size(); i++)
-        local1.add((String)localMenuItem.names.get(i));
-      local1.setSelected(localMenuItem.select, true, false);
+        local5.add((String)localMenuItem.names.get(i));
+      local5.setSelected(localMenuItem.select, true, false);
       return localGWindowCellEdit;
     }
 
@@ -467,16 +460,16 @@ public class GUINetServerNGenProp extends GameState
       this.bSelectRow = true;
       addColumn(I18N.gui("ngenp.name"), null);
       addColumn(I18N.gui("ngenp.state"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(10.0F);
       getColumn(1).setRelativeDx(12.0F);
       alignColumns();
       this.bNotify = true;
-      this.wClient.bNotify = true;
+      this.jdField_wClient_of_type_ComMaddoxGwindowGWindowTable$Client.bNotify = true;
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Menu(GWindow arg2) {

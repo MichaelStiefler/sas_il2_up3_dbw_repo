@@ -25,10 +25,10 @@ public class GUINetStatDialog extends GWindowFramed
   public void doRender(boolean paramBoolean)
   {
     boolean bool = GUI.chatDlg.isTransparent();
-    int i = this.root.C.alpha;
-    if (bool) this.root.C.alpha = 0;
+    int i = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+    if (bool) this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 0;
     super.doRender(paramBoolean);
-    if (bool) this.root.C.alpha = i; 
+    if (bool) this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = i; 
   }
 
   public void preRender()
@@ -43,8 +43,8 @@ public class GUINetStatDialog extends GWindowFramed
     this.clientWindow = this.wClient;
     this.wTable = new Table(this.wClient);
     super.afterCreated();
-    this.closeBox.hideWindow();
-    this.closeBox = null;
+    this.jdField_closeBox_of_type_ComMaddoxGwindowGWindowFrameCloseBox.hideWindow();
+    this.jdField_closeBox_of_type_ComMaddoxGwindowGWindowFrameCloseBox = null;
   }
 
   public GUINetStatDialog(GWindow paramGWindow) {
@@ -62,7 +62,7 @@ public class GUINetStatDialog extends GWindowFramed
 
     public void resized()
     {
-      GUINetStatDialog.this.wTable.setPosSize(0.0F, 0.0F, this.win.dx, this.win.dy);
+      GUINetStatDialog.this.wTable.setPosSize(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
       super.resized();
     }
   }
@@ -75,7 +75,7 @@ public class GUINetStatDialog extends GWindowFramed
     }
     public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
       if (GUI.chatDlg.isTransparent())
-        this.root.C.alpha = 255;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
       setCanvasFont(0);
       if (paramBoolean) {
         setCanvasColorBLACK();
@@ -101,7 +101,7 @@ public class GUINetStatDialog extends GWindowFramed
         draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
       }
       if (GUI.chatDlg.isTransparent())
-        this.root.C.alpha = 0; 
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 0; 
     }
 
     public void setSelect(int paramInt1, int paramInt2) {
@@ -121,7 +121,7 @@ public class GUINetStatDialog extends GWindowFramed
       addColumn("Name", null);
       addColumn("Ping", null);
       addColumn("Score", null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       getColumn(0).setRelativeDx(4.0F);
       getColumn(1).setRelativeDx(2.0F);
       getColumn(2).setRelativeDx(2.0F);
@@ -131,7 +131,7 @@ public class GUINetStatDialog extends GWindowFramed
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

@@ -44,8 +44,8 @@ public class BombParafrag8 extends Bomb
     if (this.bOnChute) {
       getSpeed(v3d);
       v3d.scale(0.97D);
-      if (v3d.z < -2.0D) {
-        v3d.z += 1.1F * Time.tickConstLenFs();
+      if (v3d.jdField_z_of_type_Double < -2.0D) {
+        v3d.jdField_z_of_type_Double += 1.1F * Time.tickConstLenFs();
       }
       setSpeed(v3d);
     } else if (this.curTm > this.ttcurTM) {
@@ -74,7 +74,7 @@ public class BombParafrag8 extends Bomb
     Property.set(localClass, "power", 4.0F);
     Property.set(localClass, "powerType", 1);
     Property.set(localClass, "kalibr", 0.2F);
-    Property.set(localClass, "massa", 10.4F);
+    Property.set(localClass, "massa", 8.0F);
     Property.set(localClass, "sound", "weapon.bomb_phball");
   }
 }

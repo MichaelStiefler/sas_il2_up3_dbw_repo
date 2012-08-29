@@ -38,9 +38,9 @@ public class KryptoOutputFilter extends FilterOutputStream
   {
     if (this.key != null) {
       this.sw = ((this.sw + 1) % this.key.length);
-      this.out.write(paramInt ^ this.key[this.sw]);
+      this.jdField_out_of_type_JavaIoOutputStream.write(paramInt ^ this.key[this.sw]);
     } else {
-      this.out.write(paramInt);
+      this.jdField_out_of_type_JavaIoOutputStream.write(paramInt);
     }
   }
 
@@ -50,9 +50,9 @@ public class KryptoOutputFilter extends FilterOutputStream
     if (this.key != null)
       for (int i = 0; i < paramInt2; i++) {
         this.sw = ((this.sw + 1) % this.key.length);
-        this.out.write(paramArrayOfByte[(paramInt1 + i)] ^ this.key[this.sw]);
+        this.jdField_out_of_type_JavaIoOutputStream.write(paramArrayOfByte[(paramInt1 + i)] ^ this.key[this.sw]);
       }
     else
-      this.out.write(paramArrayOfByte, paramInt1, paramInt2);
+      this.jdField_out_of_type_JavaIoOutputStream.write(paramArrayOfByte, paramInt1, paramInt2);
   }
 }

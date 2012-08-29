@@ -78,8 +78,8 @@ public class CockpitKI_43 extends CockpitPilot
     HotKeyEnv.enable("PanView", false);
     HotKeyEnv.enable("SnapView", false);
     this.bEntered = true;
-    this.mesh.chunkVisible("SuperReticle", true);
-    this.mesh.chunkVisible("Z_BoxTinter", true);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("SuperReticle", true);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_BoxTinter", true);
   }
   private void leave() {
     if (!this.bEntered) return;
@@ -93,8 +93,8 @@ public class CockpitKI_43 extends CockpitPilot
     HotKeyEnv.enable("PanView", bool);
     HotKeyEnv.enable("SnapView", bool);
     this.bEntered = false;
-    this.mesh.chunkVisible("SuperReticle", false);
-    this.mesh.chunkVisible("Z_BoxTinter", false);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("SuperReticle", false);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_BoxTinter", false);
   }
   public void destroy() {
     leave();
@@ -110,10 +110,10 @@ public class CockpitKI_43 extends CockpitPilot
 
   protected float waypointAzimuth()
   {
-    WayPoint localWayPoint = this.fm.AP.way.curr();
+    WayPoint localWayPoint = this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.AP.way.curr();
     if (localWayPoint == null) return 0.0F;
     localWayPoint.getP(this.tmpP);
-    this.tmpV.sub(this.tmpP, this.fm.Loc);
+    this.tmpV.sub(this.tmpP, this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
     float f = (float)(57.295779513082323D * Math.atan2(-this.tmpV.y, this.tmpV.x));
     while (f <= -180.0F) {
       f += 180.0F;
@@ -134,8 +134,8 @@ public class CockpitKI_43 extends CockpitPilot
 
     interpPut(new Interpolater(), null, Time.current(), null);
 
-    if (this.acoustics != null)
-      this.acoustics.globFX = new ReverbFXRoom(0.45F);
+    if (this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics != null)
+      this.jdField_acoustics_of_type_ComMaddoxSoundAcoustics.globFX = new ReverbFXRoom(0.45F);
   }
 
   public void reflectWorldToInstruments(float paramFloat)
@@ -146,98 +146,98 @@ public class CockpitKI_43 extends CockpitPilot
     }
 
     resetYPRmodifier();
-    xyz[1] = cvt(this.fm.CT.getCockpitDoor(), 0.01F, 0.99F, 0.0F, 0.59F);
-    this.mesh.chunkSetLocate("Canopy", xyz, ypr);
+    Cockpit.xyz[1] = cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getCockpitDoor(), 0.01F, 0.99F, 0.0F, 0.59F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("Canopy", Cockpit.xyz, Cockpit.ypr);
 
-    this.mesh.chunkSetAngles("Z_ReViTinter", cvt(interp(this.setNew.dimPos, this.setOld.dimPos, paramFloat), 0.0F, 1.0F, 0.0F, 180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_BoxTinter", cvt(interp(this.setNew.dimPos, this.setOld.dimPos, paramFloat), 0.0F, 1.0F, 0.0F, 180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Radiat", 0.0F, -45.0F * this.fm.EI.engines[0].getControlRadiator(), 0.0F);
-    this.mesh.chunkSetAngles("Z_Throtle1", 70.449997F * this.setNew.throttle, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("zPitch1", 77.0F * this.setNew.prop, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("zMix1", 64.099998F * this.setNew.mix, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_PedalBase", 10.0F * this.fm.CT.getRudder(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_RightPedal", 10.0F * this.fm.CT.getRudder(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_LeftPedal", 10.0F * this.fm.CT.getRudder(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Column", (this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.fm.CT.AileronControl) * 8.0F, 0.0F, -(this.pictElev = 0.85F * this.pictElev + 0.15F * this.fm.CT.ElevatorControl) * 8.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_ReViTinter", cvt(interp(this.setNew.dimPos, this.setOld.dimPos, paramFloat), 0.0F, 1.0F, 0.0F, 180.0F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_BoxTinter", cvt(interp(this.setNew.dimPos, this.setOld.dimPos, paramFloat), 0.0F, 1.0F, 0.0F, 180.0F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Radiat", 0.0F, -45.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator(), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Throtle1", 70.449997F * this.setNew.throttle, 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zPitch1", 77.0F * this.setNew.prop, 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zMix1", 64.099998F * this.setNew.mix, 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_PedalBase", 10.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder(), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_RightPedal", 10.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder(), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_LeftPedal", 10.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRudder(), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Column", (this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl) * 8.0F, 0.0F, -(this.pictElev = 0.85F * this.pictElev + 0.15F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl) * 8.0F);
 
-    if ((this.fm.AS.astateCockpitState & 0x40) == 0) {
-      this.mesh.chunkSetAngles("Z_Altimeter2", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, 7200.0F), 0.0F, 0.0F);
-      this.mesh.chunkSetAngles("Z_Altimeter1", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, 720.0F), 0.0F, 0.0F);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x40) == 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Altimeter2", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, 7200.0F), 0.0F, 0.0F);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Altimeter1", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, 720.0F), 0.0F, 0.0F);
     }
-    this.mesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 1000.0F, 0.0F, 20.0F), speedometerScale), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(Pitot.Indicator((float)this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.z, this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getSpeedKMH()), 0.0F, 1000.0F, 0.0F, 20.0F), speedometerScale), 0.0F, 0.0F);
 
-    this.w.set(this.fm.getW());
-    this.fm.Or.transform(this.w);
-    this.mesh.chunkSetAngles("Z_TurnBank1", cvt(this.w.z, -0.23562F, 0.23562F, 30.0F, -30.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_TurnBank2", cvt(getBall(8.0D), -8.0F, 8.0F, -16.0F, 16.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Climb1", floatindex(cvt(this.setNew.vspeed, -30.0F, 30.0F, 0.5F, 6.5F), vsiNeedleScale), 0.0F, 0.0F);
+    this.w.set(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getW());
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.Or.transform(this.w);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_TurnBank1", cvt(this.w.z, -0.23562F, 0.23562F, 30.0F, -30.0F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_TurnBank2", cvt(getBall(8.0D), -8.0F, 8.0F, -16.0F, 16.0F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Climb1", floatindex(cvt(this.setNew.vspeed, -30.0F, 30.0F, 0.5F, 6.5F), vsiNeedleScale), 0.0F, 0.0F);
 
-    this.mesh.chunkSetAngles("Z_Compass2", -this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_RPM1", cvt(this.fm.EI.engines[0].getRPM(), 0.0F, 3000.0F, 0.0F, 335.0F), 0.0F, 0.0F);
-    if ((this.fm.AS.astateCockpitState & 0x40) == 0) {
-      this.mesh.chunkSetAngles("Z_Fuel1", cvt(this.fm.M.fuel > 1.0F ? 0.26F : 0.0F, 0.0F, 2.0F, 0.0F, -360.0F), 0.0F, 0.0F);
-      this.mesh.chunkSetAngles("Z_Oil1", cvt(this.fm.EI.engines[0].tOilOut, 0.0F, 130.0F, 0.0F, 295.5F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Compass2", -this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_RPM1", cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getRPM(), 0.0F, 3000.0F, 0.0F, 335.0F), 0.0F, 0.0F);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x40) == 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Fuel1", cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel > 1.0F ? 0.26F : 0.0F, 0.0F, 2.0F, 0.0F, -360.0F), 0.0F, 0.0F);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Oil1", cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].tOilOut, 0.0F, 130.0F, 0.0F, 295.5F), 0.0F, 0.0F);
     }
-    this.mesh.chunkSetAngles("Z_Pres1", cvt(this.setNew.manifold, 0.2000681F, 2.066576F, -144.75F, 193.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Oilpres1", cvt(1.0F + 0.05F * this.fm.EI.engines[0].tOilOut, 0.0F, 5.5F, 0.0F, 295.5F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Temp1", cvt(this.fm.EI.engines[0].tWaterOut, 0.0F, 130.0F, 0.0F, 76.800003F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Temp2", cvt(this.fm.EI.engines[0].tWaterOut, 0.0F, 200.0F, 0.0F, 64.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Fuel2", 0.0F, cvt(this.fm.M.fuel, 0.0F, 400.0F, 0.0F, 282.5F), 0.0F);
-    this.mesh.chunkSetAngles("Z_Fuel3", 0.0F, cvt(this.fm.M.fuel, 0.0F, 400.0F, 0.0F, 247.0F), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Pres1", cvt(this.setNew.manifold, 0.2000681F, 2.066576F, -144.75F, 193.0F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Oilpres1", cvt(1.0F + 0.05F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].tOilOut, 0.0F, 5.5F, 0.0F, 295.5F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Temp1", cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].tWaterOut, 0.0F, 130.0F, 0.0F, 76.800003F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Temp2", cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].tWaterOut, 0.0F, 200.0F, 0.0F, 64.0F), 0.0F, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Fuel2", 0.0F, cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel, 0.0F, 400.0F, 0.0F, 282.5F), 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Z_Fuel3", 0.0F, cvt(this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel, 0.0F, 400.0F, 0.0F, 247.0F), 0.0F);
 
-    this.mesh.chunkVisible("Z_Green1", this.fm.CT.getGear() > 0.99F);
-    this.mesh.chunkVisible("Z_Red1", this.fm.CT.getGear() < 0.01F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Green1", this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear() > 0.99F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Red1", this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear() < 0.01F);
   }
 
   public void reflectCockpitState()
   {
-    if ((this.fm.AS.astateCockpitState & 0x2) != 0) {
-      this.mesh.chunkVisible("XGlassDamage2", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x2) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage2", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x1) != 0) {
-      this.mesh.chunkVisible("XGlassDamage3", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x1) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage3", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x40) != 0) {
-      this.mesh.chunkVisible("Panel_D0", false);
-      this.mesh.chunkVisible("Panel_D1", true);
-      this.mesh.chunkVisible("Z_Speedometer1", false);
-      this.mesh.chunkVisible("Z_TurnBank1", false);
-      this.mesh.chunkVisible("Z_TurnBank2", false);
-      this.mesh.chunkVisible("Z_Climb1", false);
-      this.mesh.chunkVisible("Z_Pres1", false);
-      this.mesh.chunkVisible("Z_RPM1", false);
-      this.mesh.chunkVisible("Z_Oilpres1", false);
-      this.mesh.chunkVisible("Z_Temp1", false);
-      this.mesh.chunkVisible("Z_Temp2", false);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x40) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Panel_D0", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Panel_D1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Speedometer1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_TurnBank1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_TurnBank2", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Climb1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Pres1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_RPM1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Oilpres1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Temp1", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_Temp2", false);
     }
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
-      this.mesh.chunkVisible("XGlassDamage1", true);
-      this.mesh.chunkVisible("XHullDamage1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x4) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XHullDamage1", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0) {
-      this.mesh.chunkVisible("XHullDamage3", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x8) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XHullDamage3", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x80) != 0) {
-      this.mesh.chunkVisible("Z_OilSplats_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x80) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Z_OilSplats_D1", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0) {
-      this.mesh.chunkVisible("XHullDamage2", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x10) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XHullDamage2", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x20) != 0) {
-      this.mesh.chunkVisible("XHullDamage1", true);
-      this.mesh.chunkVisible("XGlassDamage4", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x20) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XHullDamage1", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("XGlassDamage4", true);
     }
   }
 
   public void toggleDim()
   {
-    this.cockpitDimControl = (!this.cockpitDimControl);
+    this.jdField_cockpitDimControl_of_type_Boolean = (!this.jdField_cockpitDimControl_of_type_Boolean);
   }
 
   public void toggleLight()
   {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl)
+    this.jdField_cockpitLightControl_of_type_Boolean = (!this.jdField_cockpitLightControl_of_type_Boolean);
+    if (this.jdField_cockpitLightControl_of_type_Boolean)
       setNightMats(true);
     else
       setNightMats(false);
@@ -247,17 +247,17 @@ public class CockpitKI_43 extends CockpitPilot
   {
     HierMesh localHierMesh = aircraft().hierMesh();
     Mat localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Matt1D0o", localMat);
     localMat = localHierMesh.material(localHierMesh.materialFind("Pilot2"));
-    this.mesh.materialReplace("Pilot2", localMat);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.materialReplace("Pilot2", localMat);
   }
 
   protected void reflectPlaneToModel()
   {
     HierMesh localHierMesh = aircraft().hierMesh();
-    this.mesh.chunkVisible("Pilot2_D0", localHierMesh.isChunkVisible("Pilot2_D0"));
-    this.mesh.chunkVisible("Pilot2_D1", localHierMesh.isChunkVisible("Pilot2_D1"));
-    this.mesh.chunkVisible("Turret1B_D0", localHierMesh.isChunkVisible("Turret1B_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Pilot2_D0", localHierMesh.isChunkVisible("Pilot2_D0"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Pilot2_D1", localHierMesh.isChunkVisible("Pilot2_D1"));
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("Turret1B_D0", localHierMesh.isChunkVisible("Turret1B_D0"));
   }
 
   class Interpolater extends InterpolateRef
@@ -268,7 +268,7 @@ public class CockpitKI_43 extends CockpitPilot
 
     public boolean tick()
     {
-      if (CockpitKI_43.this.fm != null) {
+      if (CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel != null) {
         CockpitKI_43.access$102(CockpitKI_43.this, CockpitKI_43.this.setOld); CockpitKI_43.access$202(CockpitKI_43.this, CockpitKI_43.this.setNew); CockpitKI_43.access$302(CockpitKI_43.this, CockpitKI_43.this.setTmp);
 
         if (CockpitKI_43.this.cockpitDimControl) {
@@ -276,20 +276,20 @@ public class CockpitKI_43 extends CockpitPilot
         }
         else if (CockpitKI_43.this.setNew.dimPos > 0.0F) CockpitKI_43.this.setNew.dimPos = (CockpitKI_43.this.setOld.dimPos - 0.03F);
 
-        CockpitKI_43.this.setNew.manifold = (0.8F * CockpitKI_43.this.setOld.manifold + 0.2F * CockpitKI_43.this.fm.EI.engines[0].getManifoldPressure());
-        CockpitKI_43.this.setNew.throttle = (0.8F * CockpitKI_43.this.setOld.throttle + 0.2F * CockpitKI_43.this.fm.CT.PowerControl);
-        CockpitKI_43.this.setNew.prop = (0.8F * CockpitKI_43.this.setOld.prop + 0.2F * CockpitKI_43.this.fm.EI.engines[0].getControlProp());
-        CockpitKI_43.this.setNew.mix = (0.8F * CockpitKI_43.this.setOld.mix + 0.2F * CockpitKI_43.this.fm.EI.engines[0].getControlMix());
+        CockpitKI_43.this.setNew.manifold = (0.8F * CockpitKI_43.this.setOld.manifold + 0.2F * CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getManifoldPressure());
+        CockpitKI_43.this.setNew.throttle = (0.8F * CockpitKI_43.this.setOld.throttle + 0.2F * CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.CT.PowerControl);
+        CockpitKI_43.this.setNew.prop = (0.8F * CockpitKI_43.this.setOld.prop + 0.2F * CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlProp());
+        CockpitKI_43.this.setNew.mix = (0.8F * CockpitKI_43.this.setOld.mix + 0.2F * CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlMix());
 
-        CockpitKI_43.this.setNew.man = (0.92F * CockpitKI_43.this.setOld.man + 0.08F * CockpitKI_43.this.fm.EI.engines[0].getManifoldPressure());
-        CockpitKI_43.this.setNew.altimeter = CockpitKI_43.this.fm.getAltitude();
+        CockpitKI_43.this.setNew.man = (0.92F * CockpitKI_43.this.setOld.man + 0.08F * CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getManifoldPressure());
+        CockpitKI_43.this.setNew.altimeter = CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getAltitude();
 
         float f = CockpitKI_43.this.waypointAzimuth();
-        CockpitKI_43.this.setNew.azimuth.setDeg(CockpitKI_43.this.setOld.azimuth.getDeg(1.0F), CockpitKI_43.this.fm.Or.azimut());
+        CockpitKI_43.this.setNew.azimuth.setDeg(CockpitKI_43.this.setOld.azimuth.getDeg(1.0F), CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.Or.azimut());
         CockpitKI_43.this.setNew.waypointDeviation.setDeg(CockpitKI_43.this.setOld.waypointDeviation.getDeg(0.1F), f - CockpitKI_43.this.setOld.azimuth.getDeg(1.0F) + World.Rnd().nextFloat(-5.0F, 5.0F));
         CockpitKI_43.this.setNew.waypointAzimuth.setDeg(CockpitKI_43.this.setOld.waypointAzimuth.getDeg(1.0F), f);
 
-        CockpitKI_43.this.setNew.vspeed = (0.5F * CockpitKI_43.this.setOld.vspeed + 0.5F * CockpitKI_43.this.fm.getVertSpeed());
+        CockpitKI_43.this.setNew.vspeed = (0.5F * CockpitKI_43.this.setOld.vspeed + 0.5F * CockpitKI_43.this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.getVertSpeed());
       }
 
       return true;

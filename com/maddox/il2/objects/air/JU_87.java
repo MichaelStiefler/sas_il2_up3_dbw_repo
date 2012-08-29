@@ -15,7 +15,6 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -34,12 +33,6 @@ public abstract class JU_87 extends Scheme1
   public static boolean bChangedPit = false;
 
   public float fDiveRecoveryAlt = 750.0F;
-
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    this.FM.AS.wantBeaconsNet(true);
-  }
 
   protected void moveAileron(float paramFloat)
   {
@@ -70,12 +63,12 @@ public abstract class JU_87 extends Scheme1
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
     super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true;
   }
 
   public void moveSteering(float paramFloat)
@@ -84,64 +77,62 @@ public abstract class JU_87 extends Scheme1
   }
   public void moveWheelSink() {
     resetYPRmodifier();
-    xyz[2] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.35F, 0.0F, 0.3F);
-    hierMesh().chunkSetLocate("GearL33_D0", xyz, ypr);
-    xyz[2] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.35F, 0.0F, 0.3F);
-    hierMesh().chunkSetLocate("GearR33_D0", xyz, ypr);
+    Aircraft.xyz[2] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[0], 0.0F, 0.35F, 0.0F, 0.3F);
+    hierMesh().chunkSetLocate("GearL33_D0", Aircraft.xyz, Aircraft.ypr);
+    Aircraft.xyz[2] = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelSinking[1], 0.0F, 0.35F, 0.0F, 0.3F);
+    hierMesh().chunkSetLocate("GearR33_D0", Aircraft.xyz, Aircraft.ypr);
   }
 
   public void update(float paramFloat)
   {
-    if ((this == World.getPlayerAircraft()) && ((this.FM instanceof RealFlightModel)))
+    if ((this == World.getPlayerAircraft()) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)))
     {
-      if (((RealFlightModel)this.FM).isRealMode()) { switch (this.diveMechStage) {
+      if (((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode()) { switch (this.diveMechStage) {
         case 0:
-          if ((this.bNDives) && (this.FM.CT.AirBrakeControl == 1.0F) && (this.FM.Loc.z > this.fDiveRecoveryAlt)) {
+          if ((this.bNDives) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl == 1.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double > this.fDiveRecoveryAlt)) {
             this.diveMechStage += 1;
             this.bNDives = false;
           }
           else {
-            this.bNDives = (this.FM.CT.AirBrakeControl != 1.0F);
+            this.bNDives = (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl != 1.0F);
           }break;
         case 1:
-          this.FM.CT.setTrimElevatorControl(-0.65F);
-          this.FM.CT.trimElevator = -0.65F;
-          if ((this.FM.CT.AirBrakeControl != 0.0F) && (this.FM.CT.saveWeaponControl[3] == 0) && ((this.FM.CT.Weapons[3] == null) || (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].countBullets() != 0)) && ((this.FM.Loc.z >= this.fDiveRecoveryAlt) || ((this instanceof JU_87D5))))
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(-0.65F);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.trimElevator = -0.65F;
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl != 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.saveWeaponControl[3] == 0) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] == null) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].countBullets() != 0)) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double >= this.fDiveRecoveryAlt) || ((this instanceof JU_87D5))))
           {
             break;
           }
-          if (this.FM.CT.AirBrakeControl == 0.0F) {
+          if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl == 0.0F) {
             this.diveMechStage += 1;
           }
-          if ((this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].countBullets() == 0)) {
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].countBullets() == 0)) {
             this.diveMechStage += 1;
           }
-          if (this.FM.Loc.z >= this.fDiveRecoveryAlt) break;
+          if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double >= this.fDiveRecoveryAlt) break;
           this.diveMechStage += 1;
           if (!World.cur().diffCur.Limited_Ammo) break;
           this.bDropsBombs = true; break;
         case 2:
-          if (this.FM.isTick(41, 0)) {
-            this.FM.CT.setTrimElevatorControl(0.85F);
-            this.FM.CT.trimElevator = 0.85F;
-          }
-          if ((this.FM.CT.AirBrakeControl != 0.0F) && (this.FM.Or.getTangage() <= 0.0F)) break; this.diveMechStage += 1; break;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(0.95F);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.trimElevator = 0.95F;
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl != 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.getTangage() <= 0.0F)) break; this.diveMechStage += 1; break;
         case 3:
-          this.FM.CT.setTrimElevatorControl(0.0F);
-          this.FM.CT.trimElevator = 0.0F;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(0.0F);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.trimElevator = 0.0F;
           this.diveMechStage = 0;
         }
       } else {
-        this.FM.CT.setTrimElevatorControl(0.0F);
-        this.FM.CT.trimElevator = 0.0F;
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(0.0F);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.trimElevator = 0.0F;
       }
 
     }
 
     if ((this.bDropsBombs) && 
-      (this.FM.isTick(3, 0)) && 
-      (this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].haveBullets())) {
-      this.FM.CT.WeaponControl[3] = true;
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTick(3, 0)) && 
+      (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].haveBullets())) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = true;
     }
 
     super.update(paramFloat);
@@ -160,7 +151,7 @@ public abstract class JU_87 extends Scheme1
   {
     super.rareAction(paramFloat, paramBoolean);
 
-    if (this.FM.getAltitude() < 3000.0F) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F) {
       hierMesh().chunkVisible("HMask1_D0", false);
       hierMesh().chunkVisible("HMask2_D0", false);
     } else {
@@ -169,12 +160,12 @@ public abstract class JU_87 extends Scheme1
     }
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt) {
     case 1:
-      if (this.FM.turret.length <= 0) break;
-      this.FM.turret[0].setHealth(paramFloat);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length <= 0) break;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
     }
   }
 
@@ -214,16 +205,16 @@ public abstract class JU_87 extends Scheme1
   {
     switch (paramInt1) {
     case 33:
-      this.FM.AS.hitTank(this, 0, 6);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, 0, 6);
       return super.cutFM(34, paramInt2, paramActor);
     case 36:
-      this.FM.AS.hitTank(this, 1, 6);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(this, 1, 6);
       return super.cutFM(37, paramInt2, paramActor);
     case 34:
-      this.FM.cut(9, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(9, paramInt2, paramActor);
       break;
     case 37:
-      this.FM.cut(10, paramInt2, paramActor);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.cut(10, paramInt2, paramActor);
     case 35:
     }
     return super.cutFM(paramInt1, paramInt2, paramActor);
@@ -235,18 +226,18 @@ public abstract class JU_87 extends Scheme1
 
     if (paramExplosion.chunkName != null) {
       if (paramExplosion.chunkName.startsWith("CF")) {
-        if (World.Rnd().nextFloat() < 0.005F) this.FM.AS.setControlsDamage(paramExplosion.initiator, 0);
-        if (World.Rnd().nextFloat() < 0.005F) this.FM.AS.setControlsDamage(paramExplosion.initiator, 1);
-        if (World.Rnd().nextFloat() < 0.005F) this.FM.AS.setControlsDamage(paramExplosion.initiator, 2);
+        if (World.Rnd().nextFloat() < 0.005F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramExplosion.initiator, 0);
+        if (World.Rnd().nextFloat() < 0.005F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramExplosion.initiator, 1);
+        if (World.Rnd().nextFloat() < 0.005F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramExplosion.initiator, 2);
       }
       if ((paramExplosion.chunkName.startsWith("Engine")) && 
         (paramExplosion.power > 0.011F)) {
-        this.FM.AS.hitOil(paramExplosion.initiator, 0);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitOil(paramExplosion.initiator, 0);
       }
 
       if (paramExplosion.chunkName.startsWith("Tail")) {
-        if (World.Rnd().nextFloat() < 0.01F) this.FM.AS.setControlsDamage(paramExplosion.initiator, 1);
-        if (World.Rnd().nextFloat() < 0.11F) this.FM.AS.setControlsDamage(paramExplosion.initiator, 2);
+        if (World.Rnd().nextFloat() < 0.01F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramExplosion.initiator, 1);
+        if (World.Rnd().nextFloat() < 0.11F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramExplosion.initiator, 2);
       }
     }
     super.msgExplosion(paramExplosion);
@@ -258,25 +249,25 @@ public abstract class JU_87 extends Scheme1
 
     if ((paramShot.chunkName.startsWith("WingLIn")) && 
       (getEnergyPastArmor(1.0F, paramShot) > 0.0F) && (paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.61F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 0, World.Rnd().nextInt(1, 2));
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 0, World.Rnd().nextInt(1, 2));
     }
 
     if ((paramShot.chunkName.startsWith("WingRIn")) && 
       (getEnergyPastArmor(1.0F, paramShot) > 0.0F) && (paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.61F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 1, World.Rnd().nextInt(1, 2));
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitTank(paramShot.initiator, 1, World.Rnd().nextInt(1, 2));
     }
 
     if (paramShot.chunkName.startsWith("Tail")) {
-      if (World.Rnd().nextFloat() < 0.005F) this.FM.AS.setControlsDamage(paramShot.initiator, 1);
-      if (World.Rnd().nextFloat() < 0.005F) this.FM.AS.setControlsDamage(paramShot.initiator, 2);
+      if (World.Rnd().nextFloat() < 0.005F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramShot.initiator, 1);
+      if (World.Rnd().nextFloat() < 0.005F) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramShot.initiator, 2);
     }
 
     if ((paramShot.chunkName.startsWith("Wing")) && (getEnergyPastArmor(4.35F, paramShot) > 0.0F) && 
-      (World.Rnd().nextFloat() < 0.05F)) this.FM.AS.setControlsDamage(paramShot.initiator, 0);
+      (World.Rnd().nextFloat() < 0.05F)) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setControlsDamage(paramShot.initiator, 0);
 
     if (paramShot.chunkName.startsWith("Engine")) {
       if (World.Rnd().nextFloat() < 9.999F * paramShot.mass) {
-        this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitEngine(paramShot.initiator, 0, 1);
       }
       if ((paramShot.chunkName.endsWith("_D2")) && (World.Rnd().nextFloat() < 0.75F)) {
         return;
@@ -284,25 +275,25 @@ public abstract class JU_87 extends Scheme1
     }
 
     if (paramShot.chunkName.startsWith("Pilot1")) {
-      if ((Pd.z > 0.7599999904632568D) && (v1.x < 0.0D)) {
+      if ((Aircraft.Pd.jdField_z_of_type_Double > 0.7599999904632568D) && (Aircraft.v1.jdField_x_of_type_Double < 0.0D)) {
         killPilot(paramShot.initiator, 0);
         if ((paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
         return;
       }
-      if (paramShot.power * Math.abs(v1.x) > 10370.0D) {
-        this.FM.AS.hitPilot(paramShot.initiator, 1, (int)(paramShot.mass * 1000.0F * 0.5F));
+      if (paramShot.power * Math.abs(Aircraft.v1.jdField_x_of_type_Double) > 10370.0D) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitPilot(paramShot.initiator, 1, (int)(paramShot.mass * 1000.0F * 0.5F));
       }
       paramShot.chunkName = "CF_D0";
     }
 
     if (paramShot.chunkName.startsWith("Pilot2")) {
-      if ((Pd.z > 0.7599999904632568D) && (v1.x > 0.0D)) {
+      if ((Aircraft.Pd.jdField_z_of_type_Double > 0.7599999904632568D) && (Aircraft.v1.jdField_x_of_type_Double > 0.0D)) {
         killPilot(paramShot.initiator, 1);
         if ((paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
         return;
       }
-      if (paramShot.power * Math.abs(v1.x) > 10370.0D) {
-        this.FM.AS.hitPilot(paramShot.initiator, 1, (int)(paramShot.mass * 1000.0F * 0.5F));
+      if (paramShot.power * Math.abs(Aircraft.v1.jdField_x_of_type_Double) > 10370.0D) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.hitPilot(paramShot.initiator, 1, (int)(paramShot.mass * 1000.0F * 0.5F));
       }
       paramShot.chunkName = "CF_D0";
     }

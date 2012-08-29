@@ -138,11 +138,11 @@ public class NetMissionTrack
       localPrintWriter.println(paramFloat);
       localPrintWriter.flush(); localPrintWriter.close();
       localPrintWriter = new PrintWriter(io.createStream("version"));
-      localPrintWriter.println(103);
+      localPrintWriter.println(102);
       if (isPlaying())
         localPrintWriter.println(playingOriginalVersion());
       else
-        localPrintWriter.println(103);
+        localPrintWriter.println(102);
       localPrintWriter.flush(); localPrintWriter.close();
       OutputStream localOutputStream = io.createStream("traffic");
       netOut = new NetChannelOutStream(localOutputStream, 3);

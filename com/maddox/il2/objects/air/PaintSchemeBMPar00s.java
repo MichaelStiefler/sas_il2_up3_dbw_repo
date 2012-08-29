@@ -27,16 +27,16 @@ public class PaintSchemeBMPar00s extends PaintSchemeBMPar00
         changeMat(paramHierMesh, "Overlay2", "psBM00SLVKRNUM" + i + paramInt1 + paramInt3 + j, "Slovakian2/0.tga", "Slovakian2/" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
       }
 
-      changeMat(paramClass, paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
 
       return;
     }
 
     if (paramRegiment.country() == PaintScheme.countryGermany)
     {
-      changeMat(paramClass, paramHierMesh, "Overlay6", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "haken1", "German/" + (World.cur().isHakenAllowed() ? "haken1.tga" : "hakenfake.tga"), 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay6", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "haken1", "German/" + (World.cur().isHakenAllowed() ? "haken1.tga" : "hakenfake.tga"), 1.0F, 1.0F, 1.0F);
       return;
     }
   }

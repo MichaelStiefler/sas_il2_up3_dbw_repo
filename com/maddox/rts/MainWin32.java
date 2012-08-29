@@ -36,25 +36,25 @@ public class MainWin32 extends MainWindow
   {
     int i = LoopMsgs();
     if (i != 0) {
-      if (((i & 0x2) != 0) && (this.hWnd != 0)) {
-        this.hWnd = 0;
-        this.bCreated = false;
+      if (((i & 0x2) != 0) && (this.jdField_hWnd_of_type_Int != 0)) {
+        this.jdField_hWnd_of_type_Int = 0;
+        this.jdField_bCreated_of_type_Boolean = false;
         SendAction(2);
       }
       if ((i & 0x4) != 0) {
-        this.cx = Width();
-        this.cy = Height();
-        this.cxFull = WidthFull();
-        this.cyFull = HeightFull();
+        this.jdField_cx_of_type_Int = Width();
+        this.jdField_cy_of_type_Int = Height();
+        this.jdField_cxFull_of_type_Int = WidthFull();
+        this.jdField_cyFull_of_type_Int = HeightFull();
         SendAction(4);
       }
       if ((i & 0x8) != 0) {
-        this.posX = PosX();
-        this.posY = PosY();
+        this.jdField_posX_of_type_Int = PosX();
+        this.jdField_posY_of_type_Int = PosY();
         SendAction(8);
       }
       if ((i & 0x10) != 0) {
-        this.bFocused = IsFocused();
+        this.jdField_bFocused_of_type_Boolean = IsFocused();
         SendAction(16);
       }
     }
@@ -62,51 +62,51 @@ public class MainWin32 extends MainWindow
 
   public boolean create(String paramString, int paramInt1, int paramInt2)
   {
-    if (this.hWnd != 0) destroy();
-    this.hWnd = Create(paramString, paramInt1, paramInt2);
-    if (this.hWnd == 0) return false;
-    this.bCreated = true;
-    this.bFullScreen = true;
-    this.cx = Width();
-    this.cy = Height();
-    this.cxFull = WidthFull();
-    this.cyFull = HeightFull();
-    this.posX = PosX();
-    this.posY = PosY();
-    this.bFocused = IsFocused();
+    if (this.jdField_hWnd_of_type_Int != 0) destroy();
+    this.jdField_hWnd_of_type_Int = Create(paramString, paramInt1, paramInt2);
+    if (this.jdField_hWnd_of_type_Int == 0) return false;
+    this.jdField_bCreated_of_type_Boolean = true;
+    this.jdField_bFullScreen_of_type_Boolean = true;
+    this.jdField_cx_of_type_Int = Width();
+    this.jdField_cy_of_type_Int = Height();
+    this.jdField_cxFull_of_type_Int = WidthFull();
+    this.jdField_cyFull_of_type_Int = HeightFull();
+    this.jdField_posX_of_type_Int = PosX();
+    this.jdField_posY_of_type_Int = PosY();
+    this.jdField_bFocused_of_type_Boolean = IsFocused();
     SendAction(1);
     return true;
   }
 
   public boolean create(String paramString, boolean paramBoolean1, boolean paramBoolean2, int paramInt1, int paramInt2)
   {
-    if (this.hWnd != 0) destroy();
-    this.hWnd = Create(paramString, paramBoolean1, paramBoolean2, paramInt1, paramInt2);
-    if (this.hWnd == 0) return false;
-    this.bCreated = true;
-    this.bFullScreen = false;
-    this.cx = Width();
-    this.cy = Height();
-    this.cxFull = WidthFull();
-    this.cyFull = HeightFull();
-    this.posX = PosX();
-    this.posY = PosY();
-    this.bFocused = IsFocused();
+    if (this.jdField_hWnd_of_type_Int != 0) destroy();
+    this.jdField_hWnd_of_type_Int = Create(paramString, paramBoolean1, paramBoolean2, paramInt1, paramInt2);
+    if (this.jdField_hWnd_of_type_Int == 0) return false;
+    this.jdField_bCreated_of_type_Boolean = true;
+    this.jdField_bFullScreen_of_type_Boolean = false;
+    this.jdField_cx_of_type_Int = Width();
+    this.jdField_cy_of_type_Int = Height();
+    this.jdField_cxFull_of_type_Int = WidthFull();
+    this.jdField_cyFull_of_type_Int = HeightFull();
+    this.jdField_posX_of_type_Int = PosX();
+    this.jdField_posY_of_type_Int = PosY();
+    this.jdField_bFocused_of_type_Boolean = IsFocused();
     SendAction(1);
     return true;
   }
 
   public void destroy()
   {
-    if (this.hWnd == 0) return;
+    if (this.jdField_hWnd_of_type_Int == 0) return;
     Destroy();
-    this.hWnd = 0;
-    this.bCreated = false;
+    this.jdField_hWnd_of_type_Int = 0;
+    this.jdField_bCreated_of_type_Boolean = false;
     SendAction(2);
   }
 
   public void setTitle(String paramString) {
-    if (this.hWnd == 0) return;
+    if (this.jdField_hWnd_of_type_Int == 0) return;
     SetTitle(paramString); } 
   public native void setFocus();
 

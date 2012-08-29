@@ -200,9 +200,9 @@ public class Matrix4d
 
   public final void get(Tuple3d paramTuple3d)
   {
-    paramTuple3d.x = this.m03;
-    paramTuple3d.y = this.m13;
-    paramTuple3d.z = this.m23;
+    paramTuple3d.jdField_x_of_type_Double = this.m03;
+    paramTuple3d.jdField_y_of_type_Double = this.m13;
+    paramTuple3d.jdField_z_of_type_Double = this.m23;
   }
 
   public final void getRotationScale(Matrix3f paramMatrix3f)
@@ -272,24 +272,24 @@ public class Matrix4d
   public final void setRow(int paramInt, Tuple4d paramTuple4d)
   {
     if (paramInt == 0) {
-      this.m00 = paramTuple4d.x;
-      this.m01 = paramTuple4d.y;
-      this.m02 = paramTuple4d.z;
+      this.m00 = paramTuple4d.jdField_x_of_type_Double;
+      this.m01 = paramTuple4d.jdField_y_of_type_Double;
+      this.m02 = paramTuple4d.jdField_z_of_type_Double;
       this.m03 = paramTuple4d.w;
     } else if (paramInt == 1) {
-      this.m10 = paramTuple4d.x;
-      this.m11 = paramTuple4d.y;
-      this.m12 = paramTuple4d.z;
+      this.m10 = paramTuple4d.jdField_x_of_type_Double;
+      this.m11 = paramTuple4d.jdField_y_of_type_Double;
+      this.m12 = paramTuple4d.jdField_z_of_type_Double;
       this.m13 = paramTuple4d.w;
     } else if (paramInt == 2) {
-      this.m20 = paramTuple4d.x;
-      this.m21 = paramTuple4d.y;
-      this.m22 = paramTuple4d.z;
+      this.m20 = paramTuple4d.jdField_x_of_type_Double;
+      this.m21 = paramTuple4d.jdField_y_of_type_Double;
+      this.m22 = paramTuple4d.jdField_z_of_type_Double;
       this.m23 = paramTuple4d.w;
     } else if (paramInt == 3) {
-      this.m30 = paramTuple4d.x;
-      this.m31 = paramTuple4d.y;
-      this.m32 = paramTuple4d.z;
+      this.m30 = paramTuple4d.jdField_x_of_type_Double;
+      this.m31 = paramTuple4d.jdField_y_of_type_Double;
+      this.m32 = paramTuple4d.jdField_z_of_type_Double;
       this.m33 = paramTuple4d.w;
     }
   }
@@ -322,24 +322,24 @@ public class Matrix4d
   public final void getRow(int paramInt, Tuple4d paramTuple4d)
   {
     if (paramInt == 0) {
-      paramTuple4d.x = this.m00;
-      paramTuple4d.y = this.m01;
-      paramTuple4d.z = this.m02;
+      paramTuple4d.jdField_x_of_type_Double = this.m00;
+      paramTuple4d.jdField_y_of_type_Double = this.m01;
+      paramTuple4d.jdField_z_of_type_Double = this.m02;
       paramTuple4d.w = this.m03;
     } else if (paramInt == 1) {
-      paramTuple4d.x = this.m10;
-      paramTuple4d.y = this.m11;
-      paramTuple4d.z = this.m12;
+      paramTuple4d.jdField_x_of_type_Double = this.m10;
+      paramTuple4d.jdField_y_of_type_Double = this.m11;
+      paramTuple4d.jdField_z_of_type_Double = this.m12;
       paramTuple4d.w = this.m13;
     } else if (paramInt == 2) {
-      paramTuple4d.x = this.m20;
-      paramTuple4d.y = this.m21;
-      paramTuple4d.z = this.m22;
+      paramTuple4d.jdField_x_of_type_Double = this.m20;
+      paramTuple4d.jdField_y_of_type_Double = this.m21;
+      paramTuple4d.jdField_z_of_type_Double = this.m22;
       paramTuple4d.w = this.m23;
     } else if (paramInt == 3) {
-      paramTuple4d.x = this.m30;
-      paramTuple4d.y = this.m31;
-      paramTuple4d.z = this.m32;
+      paramTuple4d.jdField_x_of_type_Double = this.m30;
+      paramTuple4d.jdField_y_of_type_Double = this.m31;
+      paramTuple4d.jdField_z_of_type_Double = this.m32;
       paramTuple4d.w = this.m33;
     }
   }
@@ -397,24 +397,24 @@ public class Matrix4d
   public final void setColumn(int paramInt, Tuple4d paramTuple4d)
   {
     if (paramInt == 0) {
-      this.m00 = paramTuple4d.x;
-      this.m10 = paramTuple4d.y;
-      this.m20 = paramTuple4d.z;
+      this.m00 = paramTuple4d.jdField_x_of_type_Double;
+      this.m10 = paramTuple4d.jdField_y_of_type_Double;
+      this.m20 = paramTuple4d.jdField_z_of_type_Double;
       this.m30 = paramTuple4d.w;
     } else if (paramInt == 1) {
-      this.m01 = paramTuple4d.x;
-      this.m11 = paramTuple4d.y;
-      this.m21 = paramTuple4d.z;
+      this.m01 = paramTuple4d.jdField_x_of_type_Double;
+      this.m11 = paramTuple4d.jdField_y_of_type_Double;
+      this.m21 = paramTuple4d.jdField_z_of_type_Double;
       this.m31 = paramTuple4d.w;
     } else if (paramInt == 2) {
-      this.m02 = paramTuple4d.x;
-      this.m12 = paramTuple4d.y;
-      this.m22 = paramTuple4d.z;
+      this.m02 = paramTuple4d.jdField_x_of_type_Double;
+      this.m12 = paramTuple4d.jdField_y_of_type_Double;
+      this.m22 = paramTuple4d.jdField_z_of_type_Double;
       this.m32 = paramTuple4d.w;
     } else if (paramInt == 3) {
-      this.m03 = paramTuple4d.x;
-      this.m13 = paramTuple4d.y;
-      this.m23 = paramTuple4d.z;
+      this.m03 = paramTuple4d.jdField_x_of_type_Double;
+      this.m13 = paramTuple4d.jdField_y_of_type_Double;
+      this.m23 = paramTuple4d.jdField_z_of_type_Double;
       this.m33 = paramTuple4d.w;
     }
   }
@@ -447,24 +447,24 @@ public class Matrix4d
   public final void getColumn(int paramInt, Tuple4d paramTuple4d)
   {
     if (paramInt == 0) {
-      paramTuple4d.x = this.m00;
-      paramTuple4d.y = this.m10;
-      paramTuple4d.z = this.m20;
+      paramTuple4d.jdField_x_of_type_Double = this.m00;
+      paramTuple4d.jdField_y_of_type_Double = this.m10;
+      paramTuple4d.jdField_z_of_type_Double = this.m20;
       paramTuple4d.w = this.m30;
     } else if (paramInt == 1) {
-      paramTuple4d.x = this.m01;
-      paramTuple4d.y = this.m11;
-      paramTuple4d.z = this.m21;
+      paramTuple4d.jdField_x_of_type_Double = this.m01;
+      paramTuple4d.jdField_y_of_type_Double = this.m11;
+      paramTuple4d.jdField_z_of_type_Double = this.m21;
       paramTuple4d.w = this.m31;
     } else if (paramInt == 2) {
-      paramTuple4d.x = this.m02;
-      paramTuple4d.y = this.m12;
-      paramTuple4d.z = this.m22;
+      paramTuple4d.jdField_x_of_type_Double = this.m02;
+      paramTuple4d.jdField_y_of_type_Double = this.m12;
+      paramTuple4d.jdField_z_of_type_Double = this.m22;
       paramTuple4d.w = this.m32;
     } else if (paramInt == 3) {
-      paramTuple4d.x = this.m03;
-      paramTuple4d.y = this.m13;
-      paramTuple4d.z = this.m23;
+      paramTuple4d.jdField_x_of_type_Double = this.m03;
+      paramTuple4d.jdField_y_of_type_Double = this.m13;
+      paramTuple4d.jdField_z_of_type_Double = this.m23;
       paramTuple4d.w = this.m33;
     }
   }
@@ -593,49 +593,49 @@ public class Matrix4d
 
   public final void set(Quat4d paramQuat4d)
   {
-    setFromQuat(paramQuat4d.x, paramQuat4d.y, paramQuat4d.z, paramQuat4d.w);
+    setFromQuat(paramQuat4d.jdField_x_of_type_Double, paramQuat4d.jdField_y_of_type_Double, paramQuat4d.jdField_z_of_type_Double, paramQuat4d.w);
   }
 
   public final void set(AxisAngle4d paramAxisAngle4d)
   {
-    setFromAxisAngle(paramAxisAngle4d.x, paramAxisAngle4d.y, paramAxisAngle4d.z, paramAxisAngle4d.angle);
+    setFromAxisAngle(paramAxisAngle4d.jdField_x_of_type_Double, paramAxisAngle4d.jdField_y_of_type_Double, paramAxisAngle4d.jdField_z_of_type_Double, paramAxisAngle4d.angle);
   }
 
   public final void set(Quat4f paramQuat4f)
   {
-    setFromQuat(paramQuat4f.x, paramQuat4f.y, paramQuat4f.z, paramQuat4f.w);
+    setFromQuat(paramQuat4f.jdField_x_of_type_Float, paramQuat4f.jdField_y_of_type_Float, paramQuat4f.jdField_z_of_type_Float, paramQuat4f.w);
   }
 
   public final void set(AxisAngle4f paramAxisAngle4f)
   {
-    setFromAxisAngle(paramAxisAngle4f.x, paramAxisAngle4f.y, paramAxisAngle4f.z, paramAxisAngle4f.angle);
+    setFromAxisAngle(paramAxisAngle4f.jdField_x_of_type_Float, paramAxisAngle4f.jdField_y_of_type_Float, paramAxisAngle4f.jdField_z_of_type_Float, paramAxisAngle4f.angle);
   }
 
   public final void set(Quat4d paramQuat4d, Tuple3d paramTuple3d, double paramDouble)
   {
     set(paramQuat4d);
     mulRotationScale(paramDouble);
-    this.m03 = paramTuple3d.x;
-    this.m13 = paramTuple3d.y;
-    this.m23 = paramTuple3d.z;
+    this.m03 = paramTuple3d.jdField_x_of_type_Double;
+    this.m13 = paramTuple3d.jdField_y_of_type_Double;
+    this.m23 = paramTuple3d.jdField_z_of_type_Double;
   }
 
   public final void set(Quat4f paramQuat4f, Tuple3d paramTuple3d, double paramDouble)
   {
     set(paramQuat4f);
     mulRotationScale(paramDouble);
-    this.m03 = paramTuple3d.x;
-    this.m13 = paramTuple3d.y;
-    this.m23 = paramTuple3d.z;
+    this.m03 = paramTuple3d.jdField_x_of_type_Double;
+    this.m13 = paramTuple3d.jdField_y_of_type_Double;
+    this.m23 = paramTuple3d.jdField_z_of_type_Double;
   }
 
   public final void set(Quat4f paramQuat4f, Tuple3f paramTuple3f, float paramFloat)
   {
     set(paramQuat4f);
     mulRotationScale(paramFloat);
-    this.m03 = paramTuple3f.x;
-    this.m13 = paramTuple3f.y;
-    this.m23 = paramTuple3f.z;
+    this.m03 = paramTuple3f.jdField_x_of_type_Float;
+    this.m13 = paramTuple3f.jdField_y_of_type_Float;
+    this.m23 = paramTuple3f.jdField_z_of_type_Float;
   }
 
   public final void set(Matrix4d paramMatrix4d)
@@ -699,9 +699,9 @@ public class Matrix4d
 
   public final void set(Tuple3d paramTuple3d, double paramDouble)
   {
-    this.m00 = paramDouble; this.m01 = 0.0D; this.m02 = 0.0D; this.m03 = (paramDouble * paramTuple3d.x);
-    this.m10 = 0.0D; this.m11 = paramDouble; this.m12 = 0.0D; this.m13 = (paramDouble * paramTuple3d.y);
-    this.m20 = 0.0D; this.m21 = 0.0D; this.m22 = paramDouble; this.m23 = (paramDouble * paramTuple3d.z);
+    this.m00 = paramDouble; this.m01 = 0.0D; this.m02 = 0.0D; this.m03 = (paramDouble * paramTuple3d.jdField_x_of_type_Double);
+    this.m10 = 0.0D; this.m11 = paramDouble; this.m12 = 0.0D; this.m13 = (paramDouble * paramTuple3d.jdField_y_of_type_Double);
+    this.m20 = 0.0D; this.m21 = 0.0D; this.m22 = paramDouble; this.m23 = (paramDouble * paramTuple3d.jdField_z_of_type_Double);
     this.m30 = 0.0D; this.m31 = 0.0D; this.m32 = 0.0D; this.m33 = 1.0D;
   }
 
@@ -723,9 +723,9 @@ public class Matrix4d
 
   public final void setTranslation(Tuple3d paramTuple3d)
   {
-    this.m03 = paramTuple3d.x;
-    this.m13 = paramTuple3d.y;
-    this.m23 = paramTuple3d.z;
+    this.m03 = paramTuple3d.jdField_x_of_type_Double;
+    this.m13 = paramTuple3d.jdField_y_of_type_Double;
+    this.m23 = paramTuple3d.jdField_z_of_type_Double;
   }
 
   public final void rotX(double paramDouble)
@@ -859,7 +859,7 @@ public class Matrix4d
 
   public final void transform(Tuple4d paramTuple4d1, Tuple4d paramTuple4d2)
   {
-    paramTuple4d2.set(this.m00 * paramTuple4d1.x + this.m01 * paramTuple4d1.y + this.m02 * paramTuple4d1.z + this.m03 * paramTuple4d1.w, this.m10 * paramTuple4d1.x + this.m11 * paramTuple4d1.y + this.m12 * paramTuple4d1.z + this.m13 * paramTuple4d1.w, this.m20 * paramTuple4d1.x + this.m21 * paramTuple4d1.y + this.m22 * paramTuple4d1.z + this.m23 * paramTuple4d1.w, this.m30 * paramTuple4d1.x + this.m31 * paramTuple4d1.y + this.m32 * paramTuple4d1.z + this.m33 * paramTuple4d1.w);
+    paramTuple4d2.set(this.m00 * paramTuple4d1.jdField_x_of_type_Double + this.m01 * paramTuple4d1.jdField_y_of_type_Double + this.m02 * paramTuple4d1.jdField_z_of_type_Double + this.m03 * paramTuple4d1.w, this.m10 * paramTuple4d1.jdField_x_of_type_Double + this.m11 * paramTuple4d1.jdField_y_of_type_Double + this.m12 * paramTuple4d1.jdField_z_of_type_Double + this.m13 * paramTuple4d1.w, this.m20 * paramTuple4d1.jdField_x_of_type_Double + this.m21 * paramTuple4d1.jdField_y_of_type_Double + this.m22 * paramTuple4d1.jdField_z_of_type_Double + this.m23 * paramTuple4d1.w, this.m30 * paramTuple4d1.jdField_x_of_type_Double + this.m31 * paramTuple4d1.jdField_y_of_type_Double + this.m32 * paramTuple4d1.jdField_z_of_type_Double + this.m33 * paramTuple4d1.w);
   }
 
   public final void transform(Tuple4d paramTuple4d)
@@ -869,7 +869,7 @@ public class Matrix4d
 
   public final void transform(Tuple4f paramTuple4f1, Tuple4f paramTuple4f2)
   {
-    paramTuple4f2.set((float)(this.m00 * paramTuple4f1.x + this.m01 * paramTuple4f1.y + this.m02 * paramTuple4f1.z + this.m03 * paramTuple4f1.w), (float)(this.m10 * paramTuple4f1.x + this.m11 * paramTuple4f1.y + this.m12 * paramTuple4f1.z + this.m13 * paramTuple4f1.w), (float)(this.m20 * paramTuple4f1.x + this.m21 * paramTuple4f1.y + this.m22 * paramTuple4f1.z + this.m23 * paramTuple4f1.w), (float)(this.m30 * paramTuple4f1.x + this.m31 * paramTuple4f1.y + this.m32 * paramTuple4f1.z + this.m33 * paramTuple4f1.w));
+    paramTuple4f2.set((float)(this.m00 * paramTuple4f1.jdField_x_of_type_Float + this.m01 * paramTuple4f1.jdField_y_of_type_Float + this.m02 * paramTuple4f1.jdField_z_of_type_Float + this.m03 * paramTuple4f1.w), (float)(this.m10 * paramTuple4f1.jdField_x_of_type_Float + this.m11 * paramTuple4f1.jdField_y_of_type_Float + this.m12 * paramTuple4f1.jdField_z_of_type_Float + this.m13 * paramTuple4f1.w), (float)(this.m20 * paramTuple4f1.jdField_x_of_type_Float + this.m21 * paramTuple4f1.jdField_y_of_type_Float + this.m22 * paramTuple4f1.jdField_z_of_type_Float + this.m23 * paramTuple4f1.w), (float)(this.m30 * paramTuple4f1.jdField_x_of_type_Float + this.m31 * paramTuple4f1.jdField_y_of_type_Float + this.m32 * paramTuple4f1.jdField_z_of_type_Float + this.m33 * paramTuple4f1.w));
   }
 
   public final void transform(Tuple4f paramTuple4f)
@@ -879,7 +879,7 @@ public class Matrix4d
 
   public final void transform(Point3d paramPoint3d1, Point3d paramPoint3d2)
   {
-    paramPoint3d2.set(this.m00 * paramPoint3d1.x + this.m01 * paramPoint3d1.y + this.m02 * paramPoint3d1.z + this.m03, this.m10 * paramPoint3d1.x + this.m11 * paramPoint3d1.y + this.m12 * paramPoint3d1.z + this.m13, this.m20 * paramPoint3d1.x + this.m21 * paramPoint3d1.y + this.m22 * paramPoint3d1.z + this.m23);
+    paramPoint3d2.set(this.m00 * paramPoint3d1.jdField_x_of_type_Double + this.m01 * paramPoint3d1.jdField_y_of_type_Double + this.m02 * paramPoint3d1.jdField_z_of_type_Double + this.m03, this.m10 * paramPoint3d1.jdField_x_of_type_Double + this.m11 * paramPoint3d1.jdField_y_of_type_Double + this.m12 * paramPoint3d1.jdField_z_of_type_Double + this.m13, this.m20 * paramPoint3d1.jdField_x_of_type_Double + this.m21 * paramPoint3d1.jdField_y_of_type_Double + this.m22 * paramPoint3d1.jdField_z_of_type_Double + this.m23);
   }
 
   public final void transform(Point3d paramPoint3d)
@@ -889,7 +889,7 @@ public class Matrix4d
 
   public final void transform(Point3f paramPoint3f1, Point3f paramPoint3f2)
   {
-    paramPoint3f2.set((float)(this.m00 * paramPoint3f1.x + this.m01 * paramPoint3f1.y + this.m02 * paramPoint3f1.z + this.m03), (float)(this.m10 * paramPoint3f1.x + this.m11 * paramPoint3f1.y + this.m12 * paramPoint3f1.z + this.m13), (float)(this.m20 * paramPoint3f1.x + this.m21 * paramPoint3f1.y + this.m22 * paramPoint3f1.z + this.m23));
+    paramPoint3f2.set((float)(this.m00 * paramPoint3f1.jdField_x_of_type_Float + this.m01 * paramPoint3f1.jdField_y_of_type_Float + this.m02 * paramPoint3f1.jdField_z_of_type_Float + this.m03), (float)(this.m10 * paramPoint3f1.jdField_x_of_type_Float + this.m11 * paramPoint3f1.jdField_y_of_type_Float + this.m12 * paramPoint3f1.jdField_z_of_type_Float + this.m13), (float)(this.m20 * paramPoint3f1.jdField_x_of_type_Float + this.m21 * paramPoint3f1.jdField_y_of_type_Float + this.m22 * paramPoint3f1.jdField_z_of_type_Float + this.m23));
   }
 
   public final void transform(Point3f paramPoint3f)
@@ -899,7 +899,7 @@ public class Matrix4d
 
   public final void transform(Tuple3d paramTuple3d1, Tuple3d paramTuple3d2)
   {
-    paramTuple3d2.set(this.m00 * paramTuple3d1.x + this.m01 * paramTuple3d1.y + this.m02 * paramTuple3d1.z, this.m10 * paramTuple3d1.x + this.m11 * paramTuple3d1.y + this.m12 * paramTuple3d1.z, this.m20 * paramTuple3d1.x + this.m21 * paramTuple3d1.y + this.m22 * paramTuple3d1.z);
+    paramTuple3d2.set(this.m00 * paramTuple3d1.jdField_x_of_type_Double + this.m01 * paramTuple3d1.jdField_y_of_type_Double + this.m02 * paramTuple3d1.jdField_z_of_type_Double, this.m10 * paramTuple3d1.jdField_x_of_type_Double + this.m11 * paramTuple3d1.jdField_y_of_type_Double + this.m12 * paramTuple3d1.jdField_z_of_type_Double, this.m20 * paramTuple3d1.jdField_x_of_type_Double + this.m21 * paramTuple3d1.jdField_y_of_type_Double + this.m22 * paramTuple3d1.jdField_z_of_type_Double);
   }
 
   public final void transform(Tuple3d paramTuple3d)
@@ -909,7 +909,7 @@ public class Matrix4d
 
   public final void transform(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
   {
-    paramTuple3f2.set((float)(this.m00 * paramTuple3f1.x + this.m01 * paramTuple3f1.y + this.m02 * paramTuple3f1.z), (float)(this.m10 * paramTuple3f1.x + this.m11 * paramTuple3f1.y + this.m12 * paramTuple3f1.z), (float)(this.m20 * paramTuple3f1.x + this.m21 * paramTuple3f1.y + this.m22 * paramTuple3f1.z));
+    paramTuple3f2.set((float)(this.m00 * paramTuple3f1.jdField_x_of_type_Float + this.m01 * paramTuple3f1.jdField_y_of_type_Float + this.m02 * paramTuple3f1.jdField_z_of_type_Float), (float)(this.m10 * paramTuple3f1.jdField_x_of_type_Float + this.m11 * paramTuple3f1.jdField_y_of_type_Float + this.m12 * paramTuple3f1.jdField_z_of_type_Float), (float)(this.m20 * paramTuple3f1.jdField_x_of_type_Float + this.m21 * paramTuple3f1.jdField_y_of_type_Float + this.m22 * paramTuple3f1.jdField_z_of_type_Float));
   }
 
   public final void transform(Tuple3f paramTuple3f)
@@ -1083,9 +1083,9 @@ public class Matrix4d
 
   private void setTranslation(Tuple3f paramTuple3f)
   {
-    this.m03 = paramTuple3f.x;
-    this.m13 = paramTuple3f.y;
-    this.m23 = paramTuple3f.z;
+    this.m03 = paramTuple3f.jdField_x_of_type_Float;
+    this.m13 = paramTuple3f.jdField_y_of_type_Float;
+    this.m23 = paramTuple3f.jdField_z_of_type_Float;
   }
   private void setFromQuat(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
     double d1 = paramDouble1 * paramDouble1 + paramDouble2 * paramDouble2 + paramDouble3 * paramDouble3 + paramDouble4 * paramDouble4;

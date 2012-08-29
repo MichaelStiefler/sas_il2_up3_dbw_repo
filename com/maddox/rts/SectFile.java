@@ -170,28 +170,28 @@ public class SectFile
         str1.getChars(0, i, strBuf, 0);
         strPtr = 0; strEnd = i;
         removeComments();
-        if (strEnd - strPtr > 0)
+        if (strEnd - strPtr <= 0)
+          continue;
+        if ((strBuf[strPtr] == '[') && (strBuf[(strEnd - 1)] == ']'))
         {
-          if ((strBuf[strPtr] == '[') && (strBuf[(strEnd - 1)] == ']'))
-          {
-            if (strEnd - strPtr > 2) {
-              strPtr += 1; strEnd -= 1;
-              localArrayList1 = new ArrayList();
-              localArrayList2 = new ArrayList();
-              this.sectNames.add(new String(strBuf, strPtr, strEnd - strPtr));
-              this.sectVars.add(localArrayList1);
-              this.sectValues.add(localArrayList2);
-            }
+          if (strEnd - strPtr > 2) {
+            strPtr += 1; strEnd -= 1;
+            localArrayList1 = new ArrayList();
+            localArrayList2 = new ArrayList();
+            this.sectNames.add(new String(strBuf, strPtr, strEnd - strPtr));
+            this.sectVars.add(localArrayList1);
+            this.sectValues.add(localArrayList2); continue;
           }
-          else if (localArrayList1 != null) {
-            String str2 = readVariable();
-            if (str2 != null) {
-              localArrayList1.add(str2);
-              localArrayList2.add(readValue());
-            }
+        }
+        if (localArrayList1 != null) {
+          String str2 = readVariable();
+          if (str2 != null) {
+            localArrayList1.add(str2);
+            localArrayList2.add(readValue());
           }
         }
       }
+
       if (paramInputStreamReader == null)
         localBufferedReader.close();
       return true;
@@ -207,8 +207,9 @@ public class SectFile
 
   private void removeComments()
   {
-    while ((strPtr < strEnd) && 
-      (strBuf[strPtr] <= ' ')) strPtr += 1;
+    while (strPtr < strEnd) {
+      if (strBuf[strPtr] > ' ') break; strPtr += 1;
+    }
 
     if (this.bComment) {
       int i = strPtr;
@@ -235,15 +236,17 @@ public class SectFile
 
     }
 
-    while ((strEnd > strPtr) && 
-      (strBuf[(strEnd - 1)] <= ' ')) strEnd -= 1;
+    while (strEnd > strPtr) {
+      if (strBuf[(strEnd - 1)] > ' ') break; strEnd -= 1;
+    }
   }
 
   private String readVariable()
   {
     int i = strPtr;
-    while ((i < strEnd) && 
-      (strBuf[i] > ' ')) i++;
+    while (i < strEnd) {
+      if (strBuf[i] <= ' ') break; i++;
+    }
 
     String str = new String(strBuf, strPtr, i - strPtr);
     strPtr = i;
@@ -251,8 +254,9 @@ public class SectFile
   }
 
   private String readValue() {
-    while ((strPtr < strEnd) && 
-      (strBuf[strPtr] <= ' ')) strPtr += 1;
+    while (strPtr < strEnd) {
+      if (strBuf[strPtr] > ' ') break; strPtr += 1;
+    }
 
     if (strPtr >= strEnd)
       return "";
@@ -305,7 +309,7 @@ public class SectFile
       String str2;
       if (this.bUseUnicodeTo8bit)
         for (i = 0; i < this.sectNames.size(); i++) {
-          localPrintWriter.println('[' + UnicodeTo8bit.save((String)(String)this.sectNames.get(i), false) + ']');
+          localPrintWriter.println('[' + UnicodeTo8bit.save((String)this.sectNames.get(i), false) + ']');
           localList1 = (List)this.sectVars.get(i);
           localList2 = (List)this.sectValues.get(i);
           for (j = 0; j < localList1.size(); j++) {
@@ -317,7 +321,7 @@ public class SectFile
         }
       else {
         for (i = 0; i < this.sectNames.size(); i++) {
-          localPrintWriter.println('[' + (String)(String)this.sectNames.get(i) + ']');
+          localPrintWriter.println('[' + (String)this.sectNames.get(i) + ']');
           localList1 = (List)this.sectVars.get(i);
           localList2 = (List)this.sectValues.get(i);
           for (j = 0; j < localList1.size(); j++) {
@@ -377,17 +381,16 @@ public class SectFile
   public long finger(long paramLong) {
     long l = _finger(paramLong, this.sectNames);
     int i = this.sectVars.size();
-    ArrayList localArrayList;
     for (int j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.sectVars.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+      ArrayList localArrayList1 = (ArrayList)this.sectVars.get(j);
+      if (localArrayList1 != null)
+        l = _finger(l, localArrayList1);
     }
     i = this.sectValues.size();
-    for (j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.sectValues.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+    for (int k = 0; k < i; k++) {
+      ArrayList localArrayList2 = (ArrayList)this.sectValues.get(k);
+      if (localArrayList2 != null)
+        l = _finger(l, localArrayList2);
     }
     return l;
   }

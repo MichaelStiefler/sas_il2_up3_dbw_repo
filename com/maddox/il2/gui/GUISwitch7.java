@@ -17,14 +17,14 @@ public class GUISwitch7 extends GUISwitchN
       GTexture localGTexture = GTexture.New("GUI/game/switches1.mat");
       for (int i = 0; i < 4; i++)
         st[i] = new GTexRegion(localGTexture, i * 64, 0.0F, 64.0F, 64.0F);
-      for (i = 0; i < 3; i++)
-        st[(i + 4)] = new GTexRegion(localGTexture, i * 64, 64.0F, 64.0F, 64.0F);
+      for (int j = 0; j < 3; j++)
+        st[(j + 4)] = new GTexRegion(localGTexture, j * 64, 64.0F, 64.0F, 64.0F);
     } }
 
   public void render()
   {
     setCanvasColorWHITE();
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, st[this.pos[this.state]]);
+    draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, st[this.pos[this.state]]);
   }
 
   public void created() {

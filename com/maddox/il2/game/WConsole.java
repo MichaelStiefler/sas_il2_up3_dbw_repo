@@ -99,10 +99,10 @@ public class WConsole
                 } else {
                   k++;
                 }
-                continue;
-              }k++;
+              } else {
+                k++;
+              }
             }
-
             if ((str2 != null) && (str2.length() > 0))
               System.out.print(str2);
           }

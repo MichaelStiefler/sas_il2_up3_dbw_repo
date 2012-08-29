@@ -31,7 +31,7 @@ public class HashMapXY
     int i = 0;
     HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      i += ((HashMapInt)(HashMapInt)localHashMapIntEntry.getValue()).size();
+      i += ((HashMapInt)localHashMapIntEntry.getValue()).size();
       localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
     }
     return i;
@@ -78,7 +78,7 @@ public class HashMapXY
   public boolean containsValue(Object paramObject) {
     HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      if (((HashMapInt)(HashMapInt)localHashMapIntEntry.getValue()).containsValue(paramObject))
+      if (((HashMapInt)localHashMapIntEntry.getValue()).containsValue(paramObject))
         return true;
       localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
     }
@@ -104,7 +104,7 @@ public class HashMapXY
   public void clear() {
     HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
     while (localHashMapIntEntry != null) {
-      ((HashMapInt)(HashMapInt)localHashMapIntEntry.getValue()).clear();
+      ((HashMapInt)localHashMapIntEntry.getValue()).clear();
       localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
     }
     this.mapY.clear();

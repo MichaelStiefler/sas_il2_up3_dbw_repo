@@ -58,9 +58,9 @@ public class NSolvef
 
   public static final float[] nsolve(int paramInt, float[] paramArrayOfFloat)
   {
-    float[][] arrayOfFloat = new float[paramInt][paramInt];
-    float[] arrayOfFloat1 = new float[paramInt];
+    float[][] arrayOfFloat = new float[paramInt][paramInt]; float[] arrayOfFloat1 = new float[paramInt];
     float[] arrayOfFloat2 = new float[paramInt];
+
     int[] arrayOfInt = new int[paramInt];
     int k;
     for (int j = k = 0; j < paramInt; j++) {
@@ -81,12 +81,12 @@ public class NSolvef
       throw new JGPException("Invalid matrix size");
     }
     int i = paramArrayOfFloat.length;
-
     float[] arrayOfFloat2 = new float[i];
+
     int[] arrayOfInt = new int[i];
 
-    float[][] arrayOfFloat = (float[][])(float[][])paramArrayOfFloat.clone();
-    float[] arrayOfFloat1 = (float[])(float[])paramArrayOfFloat1.clone();
+    float[][] arrayOfFloat = (float[][])paramArrayOfFloat.clone();
+    float[] arrayOfFloat1 = (float[])paramArrayOfFloat1.clone();
     int k;
     for (int j = k = 0; j < i; j++) arrayOfFloat2[j] = 0.0F;
 

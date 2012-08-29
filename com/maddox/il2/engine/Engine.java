@@ -168,9 +168,8 @@ public class Engine
 
   private void dectroyMsgActors(Message[] paramArrayOfMessage) {
     if (paramArrayOfMessage == null) return;
-    for (int i = 0; (i < paramArrayOfMessage.length) && 
-      (paramArrayOfMessage[i] != null); i++)
-    {
+    for (int i = 0; i < paramArrayOfMessage.length; i++) {
+      if (paramArrayOfMessage[i] == null) break;
       Object localObject = paramArrayOfMessage[i].listener();
       if ((localObject instanceof Actor)) {
         Actor localActor = (Actor)localObject;

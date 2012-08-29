@@ -77,15 +77,15 @@ public class Pylon extends ActorMesh
     setOwner(paramActor);
     if (paramString != null) {
       Hook localHook = paramActor.findHook(paramString);
-      this.pos.setBase(paramActor, localHook, false);
-      this.pos.changeHookToRel();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, localHook, false);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.changeHookToRel();
       this.chunkIndx = localHook.chunkNum();
     } else {
-      this.pos.setBase(paramActor, null, false);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, null, false);
       this.chunkIndx = -1;
     }
     visibilityAsBase(true);
-    this.pos.setUpdateEnable(false);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setUpdateEnable(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 }

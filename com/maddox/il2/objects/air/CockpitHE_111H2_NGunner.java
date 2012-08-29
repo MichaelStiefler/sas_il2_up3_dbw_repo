@@ -16,7 +16,7 @@ public class CockpitHE_111H2_NGunner extends CockpitGunner
   protected boolean doFocusEnter()
   {
     if (super.doFocusEnter()) {
-      ((HE_111)(HE_111)this.fm.actor).bPitUnfocused = false;
+      ((HE_111)this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor).bPitUnfocused = false;
       aircraft().hierMesh().chunkVisible("Cockpit_D0", false);
       aircraft().hierMesh().chunkVisible("Turret1C_D0", false);
       aircraft().hierMesh().chunkVisible("Pilot1_FAK", false);
@@ -30,7 +30,7 @@ public class CockpitHE_111H2_NGunner extends CockpitGunner
   }
 
   protected void doFocusLeave() {
-    ((HE_111)(HE_111)this.fm.actor).bPitUnfocused = true;
+    ((HE_111)this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_actor_of_type_ComMaddoxIl2EngineActor).bPitUnfocused = true;
     aircraft().hierMesh().chunkVisible("Cockpit_D0", (aircraft().hierMesh().isChunkVisible("Nose_D0")) || (aircraft().hierMesh().isChunkVisible("Nose_D1")) || (aircraft().hierMesh().isChunkVisible("Nose_D2")));
     aircraft().hierMesh().chunkVisible("Turret1C_D0", aircraft().hierMesh().isChunkVisible("Turret1B_D0"));
     aircraft().hierMesh().chunkVisible("Pilot1_FAK", aircraft().hierMesh().isChunkVisible("Pilot1_D0"));
@@ -46,12 +46,12 @@ public class CockpitHE_111H2_NGunner extends CockpitGunner
     super.moveGun(paramOrient);
     float f1 = -paramOrient.getYaw();
     float f2 = paramOrient.getTangage();
-    this.mesh.chunkSetAngles("TurretA", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("TurretB", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("TurretA", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("TurretB", 0.0F, f2, 0.0F);
     if (f1 > 15.0F) f1 = 15.0F;
     if (f2 < -21.0F) f2 = -21.0F;
-    this.mesh.chunkSetAngles("CameraRodA", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("CameraRodB", 0.0F, f2, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("CameraRodA", 0.0F, f1, 0.0F);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("CameraRodB", 0.0F, f2, 0.0F);
   }
 
   public void clipAnglesGun(Orient paramOrient) {
@@ -71,32 +71,32 @@ public class CockpitHE_111H2_NGunner extends CockpitGunner
 
   protected void interpTick() {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+      this.jdField_bGunFire_of_type_Boolean = false;
+    }this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
 
-    if (this.bGunFire) {
+    if (this.jdField_bGunFire_of_type_Boolean) {
       if (this.iCocking > 0) this.iCocking = 0; else
         this.iCocking = 1;
     }
     else this.iCocking = 0;
 
     resetYPRmodifier();
-    xyz[0] = (-0.07F * this.iCocking);
-    ypr[1] = 0.0F;
-    this.mesh.chunkSetLocate("Lever", xyz, ypr);
+    Cockpit.xyz[0] = (-0.07F * this.iCocking);
+    Cockpit.ypr[1] = 0.0F;
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetLocate("Lever", Cockpit.xyz, Cockpit.ypr);
   }
 
   public void doGunFire(boolean paramBoolean)
   {
     if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    if ((this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter == null) || (!this.jdField_emitter_of_type_ComMaddoxIl2AiBulletEmitter.haveBullets()) || (!aiTurret().bIsOperable))
     {
-      this.bGunFire = false;
+      this.jdField_bGunFire_of_type_Boolean = false;
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+    else this.jdField_bGunFire_of_type_Boolean = paramBoolean;
+    this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[weaponControlNum()] = this.jdField_bGunFire_of_type_Boolean;
   }
 
   public CockpitHE_111H2_NGunner() {
@@ -105,30 +105,30 @@ public class CockpitHE_111H2_NGunner extends CockpitGunner
 
   public void reflectWorldToInstruments(float paramFloat)
   {
-    this.mesh.chunkSetAngles("zColumn1", 0.0F, 0.0F, -10.0F * this.fm.CT.ElevatorControl);
-    this.mesh.chunkSetAngles("zColumn2", 0.0F, 0.0F, -40.0F * this.fm.CT.AileronControl);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zColumn1", 0.0F, 0.0F, -10.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl);
+    this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zColumn2", 0.0F, 0.0F, -40.0F * this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl);
   }
 
   public void reflectCockpitState()
   {
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
-      this.mesh.chunkVisible("ZHolesL_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x4) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("ZHolesL_D1", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0) {
-      this.mesh.chunkVisible("ZHolesL_D2", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x8) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("ZHolesL_D2", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0) {
-      this.mesh.chunkVisible("ZHolesR_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x10) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("ZHolesR_D1", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x20) != 0) {
-      this.mesh.chunkVisible("ZHolesR_D2", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x20) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("ZHolesR_D2", true);
     }
-    if ((this.fm.AS.astateCockpitState & 0x1) != 0) {
-      this.mesh.chunkVisible("ZHolesF_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x1) != 0) {
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("ZHolesF_D1", true);
     }
 
-    if ((this.fm.AS.astateCockpitState & 0x80) != 0)
-      this.mesh.chunkVisible("zOil_D1", true);
+    if ((this.jdField_fm_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateCockpitState & 0x80) != 0)
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zOil_D1", true);
   }
 
   static

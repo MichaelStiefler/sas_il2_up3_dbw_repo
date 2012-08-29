@@ -29,13 +29,13 @@ public class Preset extends BaseObject
 
   protected int createObject()
   {
-    if (!enabled) return 0;
+    if (!BaseObject.enabled) return 0;
     return jniCreateObject(this.handle, this.flags);
   }
 
   protected int getObject()
   {
-    if (!enabled) return 0;
+    if (!BaseObject.enabled) return 0;
     int i = jniGetFreeObject(this.handle, this.flags);
     if (i == 0) i = createObject();
     return i;

@@ -15,9 +15,9 @@ public class GUIInfoName extends GUIInfoTop
     setCanvasFont(0);
     UserCfg localUserCfg = World.cur().userCfg;
     if (nickName != null)
-      draw(0.0F, 0.0F, this.win.dx - M(2.0F), this.win.dy, 2, nickName);
+      draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - M(2.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, 2, nickName);
     else
-      draw(0.0F, 0.0F, this.win.dx - M(2.0F), this.win.dy, 2, localUserCfg.name + " '" + localUserCfg.callsign + "' " + localUserCfg.surname);
+      draw(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - M(2.0F), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, 2, localUserCfg.name + " '" + localUserCfg.callsign + "' " + localUserCfg.surname);
   }
 
   public void setPosSize() {

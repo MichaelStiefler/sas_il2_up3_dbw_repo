@@ -4,8 +4,6 @@ import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.Airport;
-import com.maddox.il2.ai.AirportCarrier;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.EventLog;
@@ -46,8 +44,6 @@ import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiNetSendMethods;
-import com.maddox.il2.game.ZutiSupportMethods;
 import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetMissionTrack;
 import com.maddox.il2.net.NetServerParams;
@@ -55,15 +51,11 @@ import com.maddox.il2.net.NetSquadron;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetWing;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Message;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.MsgNet;
-import com.maddox.rts.NetAddress;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetChannelOutStream;
@@ -89,13 +81,11 @@ public abstract class NetAircraft extends SndAircraft
   public static final int FM_AI = 0;
   public static final int FM_REAL = 1;
   public static final int FM_NET_CLIENT = 2;
-  static long timeOfPrevSpawn = -1L;
   public static String loadingCountry;
   public static boolean loadingCoopPlane;
   protected String thisWeaponsName = null;
   protected boolean bPaintShemeNumberOn = true;
   private boolean bCoopPlane;
-  public static boolean ZUTI_REFLY_OWERRIDE = false;
   private FlightModelTrack fmTrack;
   public static final int NETG_ID_TOMASTER = 128;
   public static final int NETG_ID_CODE_ASTATE = 0;
@@ -113,7 +103,6 @@ public abstract class NetAircraft extends SndAircraft
   public static final int NETG_ID_CODE_COCKPIT_ENTER = 12;
   public static final int NETG_ID_CODE_COCKPIT_AUTO = 13;
   public static final int NETG_ID_CODE_COCKPIT_DRIVER = 14;
-  public static final int NETG_ID_CODE_DROP_EXTERNAL_STORES = 15;
   protected boolean bGunPodsExist = false;
   protected boolean bGunPodsOn = true;
 
@@ -143,9 +132,7 @@ public abstract class NetAircraft extends SndAircraft
   {
     return this.bCoopPlane;
   }
-
-  protected static String[] partNames()
-  {
+  protected static String[] partNames() {
     return Aircraft.partNames();
   }
   protected int curDMGLevel(int paramInt) { return 0; } 
@@ -180,15 +167,15 @@ public abstract class NetAircraft extends SndAircraft
 
   public NetUser netUser() {
     if (!isNet()) return null;
-    return ((AircraftNet)this.net).netUser;
+    return ((AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser;
   }
   public String netName() {
     if (!isNet()) return null;
-    return ((AircraftNet)this.net).netName;
+    return ((AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netName;
   }
   public boolean isNetPlayer() {
     if (!isNet()) return false;
-    return ((AircraftNet)this.net).netUser != null;
+    return ((AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser != null;
   }
 
   public void moveSteering(float paramFloat)
@@ -211,18 +198,18 @@ public abstract class NetAircraft extends SndAircraft
   public boolean netNewAState_isEnable(boolean paramBoolean)
   {
     if (!isNet()) return false;
-    if ((paramBoolean) && (this.net.isMaster())) return false;
-    if ((!paramBoolean) && (!this.net.isMirrored())) return false;
-    return (!paramBoolean) || (!(this.net.masterChannel() instanceof NetChannelInStream));
+    if ((paramBoolean) && (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster())) return false;
+    if ((!paramBoolean) && (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) return false;
+    return (!paramBoolean) || (!(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream));
   }
 
   public NetMsgGuaranted netNewAStateMsg(boolean paramBoolean)
     throws IOException
   {
     if (!isNet()) return null;
-    if ((paramBoolean) && (this.net.isMaster())) return null;
-    if ((!paramBoolean) && (!this.net.isMirrored())) return null;
-    if ((paramBoolean) && ((this.net.masterChannel() instanceof NetChannelInStream))) return null;
+    if ((paramBoolean) && (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster())) return null;
+    if ((!paramBoolean) && (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored())) return null;
+    if ((paramBoolean) && ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))) return null;
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     if (paramBoolean) localNetMsgGuaranted.writeByte(128); else
       localNetMsgGuaranted.writeByte(0);
@@ -230,18 +217,18 @@ public abstract class NetAircraft extends SndAircraft
   }
 
   public void netSendAStateMsg(boolean paramBoolean, NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    if (paramBoolean) this.net.postTo(this.net.masterChannel(), paramNetMsgGuaranted); else
-      this.net.post(paramNetMsgGuaranted);
+    if (paramBoolean) this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), paramNetMsgGuaranted); else
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(paramNetMsgGuaranted);
   }
 
   public void netUpdateWayPoint()
   {
-    if ((this.net == null) || (Main.cur().netServerParams == null) || (!Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isMaster()) || (!this.net.isMaster()) || (!this.net.isMirrored()))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet == null) || (Main.cur().netServerParams == null) || (!Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) || (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()))
     {
       return;
-    }Master localMaster = (Master)this.net;
-    if (localMaster.curWayPoint != this.FM.AP.way.Cur()) {
-      localMaster.curWayPoint = this.FM.AP.way.Cur();
+    }Master localMaster = (Master)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet;
+    if (localMaster.curWayPoint != this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur()) {
+      localMaster.curWayPoint = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur();
       try {
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(1);
@@ -257,15 +244,15 @@ public abstract class NetAircraft extends SndAircraft
       return false;
     int i = paramNetMsgInput.readUnsignedShort();
     if (Main.cur().netServerParams.isMaster()) {
-      this.FM.AP.way.setCur(i);
-      if (i == this.FM.AP.way.size() - 1)
-        this.FM.AP.way.next();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(i);
+      if (i == this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.size() - 1)
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
     } else {
       try {
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(1);
         localNetMsgGuaranted.writeShort(i);
-        this.net.postTo(Main.cur().netServerParams.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Main.cur().netServerParams.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
         printDebug(localException);
       }
     }
@@ -274,11 +261,11 @@ public abstract class NetAircraft extends SndAircraft
 
   private int getWeaponsAmount()
   {
-    int i = this.FM.CT.Weapons.length;
-    if (this.FM.CT.Weapons.length == 0) return 0;
+    int i = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length == 0) return 0;
     int j = 0;
     for (int k = 0; k < i; k++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[k];
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[k];
       if (arrayOfBulletEmitter != null)
         for (int m = 0; m < arrayOfBulletEmitter.length; m++) {
           if (arrayOfBulletEmitter[m] == null) continue; j++;
@@ -287,10 +274,10 @@ public abstract class NetAircraft extends SndAircraft
     return j;
   }
   private boolean isWeaponsAllEmpty() {
-    int i = this.FM.CT.Weapons.length;
-    if (this.FM.CT.Weapons.length == 0) return true;
+    int i = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length == 0) return true;
     for (int j = 0; j < i; j++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[j];
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[j];
       if (arrayOfBulletEmitter != null)
         for (int k = 0; k < arrayOfBulletEmitter.length; k++)
           if ((arrayOfBulletEmitter[k] != null) && (arrayOfBulletEmitter[k].countBullets() != 0))
@@ -311,16 +298,16 @@ public abstract class NetAircraft extends SndAircraft
     paramArrayOfByte = getWeaponsBitStatesBuf(paramArrayOfByte);
     if (paramArrayOfByte == null) return null;
     int i = 0;
-    int j = this.FM.CT.Weapons.length;
+    int j = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length;
     for (int k = 0; k < j; k++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[k];
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[k];
       if (arrayOfBulletEmitter != null)
         for (int m = 0; m < arrayOfBulletEmitter.length; m++)
           if (arrayOfBulletEmitter[m] != null) {
             if (arrayOfBulletEmitter[m].countBullets() != 0)
             {
-              int tmp98_97 = (i / 8);
-              byte[] tmp98_93 = paramArrayOfByte; tmp98_93[tmp98_97] = (byte)(tmp98_93[tmp98_97] | 1 << i % 8);
+              int tmp90_89 = (i / 8);
+              byte[] tmp90_85 = paramArrayOfByte; tmp90_85[tmp90_89] = (byte)(tmp90_85[tmp90_89] | 1 << i % 8);
             }i++;
           }
     }
@@ -328,9 +315,9 @@ public abstract class NetAircraft extends SndAircraft
   }
   private void setWeaponsBitStates(byte[] paramArrayOfByte) {
     int i = 0;
-    int j = this.FM.CT.Weapons.length;
+    int j = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length;
     for (int k = 0; k < j; k++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[k];
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[k];
       if (arrayOfBulletEmitter != null)
         for (int m = 0; m < arrayOfBulletEmitter.length; m++)
           if (arrayOfBulletEmitter[m] != null) {
@@ -345,9 +332,9 @@ public abstract class NetAircraft extends SndAircraft
     if (getWeaponsAmount() == 0) return false;
     if (paramArrayOfByte == null) return true;
     int i = 0;
-    int j = this.FM.CT.Weapons.length;
+    int j = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length;
     for (int k = 0; k < j; k++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[k];
+      BulletEmitter[] arrayOfBulletEmitter = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[k];
       if (arrayOfBulletEmitter != null)
         for (int m = 0; m < arrayOfBulletEmitter.length; m++)
           if (arrayOfBulletEmitter[m] != null) {
@@ -359,12 +346,12 @@ public abstract class NetAircraft extends SndAircraft
     return false;
   }
   private void netPutWeaponsBitStates(byte[] paramArrayOfByte) {
-    if ((!isNet()) || (this.net.countMirrors() == 0)) return; try
+    if ((!isNet()) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() == 0)) return; try
     {
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
       localNetMsgGuaranted.writeByte(2);
       localNetMsgGuaranted.write(paramArrayOfByte);
-      this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
       printDebug(localException);
     }
   }
@@ -387,57 +374,41 @@ public abstract class NetAircraft extends SndAircraft
 
   public void setGunPodsOn(boolean paramBoolean) {
     if (this.bGunPodsOn == paramBoolean) return;
-    for (int i = 0; i < this.FM.CT.Weapons.length; i++) {
-      BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
-      if (arrayOfBulletEmitter != null) {
-        for (int j = 0; j < arrayOfBulletEmitter.length; j++)
-          if (arrayOfBulletEmitter[j] != null)
-            arrayOfBulletEmitter[j].setPause(!paramBoolean);
+    Object localObject;
+    for (int i = 0; i < this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; i++) {
+      localObject = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
+      if (localObject != null) {
+        for (int j = 0; j < localObject.length; j++)
+          if (localObject[j] != null)
+            localObject[j].setPause(!paramBoolean);
       }
     }
     this.bGunPodsOn = paramBoolean;
 
-    if ((!isNet()) || (this.net.countMirrors() == 0)) return; try
+    if ((!isNet()) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() == 0)) return; try
     {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      if (paramBoolean) localNetMsgGuaranted.writeByte(3); else
-        localNetMsgGuaranted.writeByte(4);
-      this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+      localObject = new NetMsgGuaranted();
+      if (paramBoolean) ((NetMsgGuaranted)localObject).writeByte(3); else
+        ((NetMsgGuaranted)localObject).writeByte(4);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post((NetMsgGuaranted)localObject); } catch (Exception localException) {
       printDebug(localException);
     }
   }
 
   public void replicateDropFuelTanks()
   {
-    if ((!isNet()) || (this.net.countMirrors() == 0)) return; try
+    if ((!isNet()) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() == 0)) return; try
     {
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
       localNetMsgGuaranted.writeByte(5);
-      this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
       printDebug(localException);
-    }
-  }
-
-  public void replicateDropExternalStores()
-  {
-    if ((isNet()) && (this.net.countMirrors() != 0))
-    {
-      try
-      {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(15);
-        this.net.post(localNetMsgGuaranted);
-      }
-      catch (Exception localException)
-      {
-        printDebug(localException);
-      }
     }
   }
 
   protected void netPutHits(boolean paramBoolean, NetChannel paramNetChannel, int paramInt1, int paramInt2, int paramInt3, Actor paramActor)
   {
-    if ((!paramBoolean) && (this.net.countMirrors() == 0))
+    if ((!paramBoolean) && (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() == 0))
       return;
     if ((!Actor.isValid(paramActor)) || (!paramActor.isNet()))
       return;
@@ -447,10 +418,10 @@ public abstract class NetAircraft extends SndAircraft
         localNetMsgGuaranted.writeByte(6);
       localNetMsgGuaranted.writeByte(paramInt1 & 0xF | paramInt2 << 4 & 0xF0);
       localNetMsgGuaranted.writeByte(paramInt3);
-      localNetMsgGuaranted.writeNetObj(paramActor.net);
+      localNetMsgGuaranted.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
 
-      if (paramBoolean) this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted); else
-        this.net.postExclude(paramNetChannel, localNetMsgGuaranted); 
+      if (paramBoolean) this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgGuaranted); else
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postExclude(paramNetChannel, localNetMsgGuaranted); 
     } catch (Exception localException) {
       printDebug(localException);
     }
@@ -475,7 +446,7 @@ public abstract class NetAircraft extends SndAircraft
 
     if ((!paramBoolean1) && (paramBoolean2))
       netPutHits(true, null, i, j, k, localActor);
-    if (this.net.countMirrors() > 1) {
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() > 1) {
       netPutHits(false, paramNetMsgInput.channel(), i, j, k, localActor);
     }
     netHits(i, j, k, localActor);
@@ -484,14 +455,14 @@ public abstract class NetAircraft extends SndAircraft
 
   public void hitProp(int paramInt1, int paramInt2, Actor paramActor)
   {
-    if ((isNet()) && (this.net.isMirrored()))
+    if ((isNet()) && (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()))
       try {
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(7);
         localNetMsgGuaranted.writeByte(paramInt1);
         localNetMsgGuaranted.writeByte(paramInt2);
-        localNetMsgGuaranted.writeNetObj(paramActor != null ? paramActor.net : null);
-        this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+        localNetMsgGuaranted.writeNetObj(paramActor != null ? paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet : null);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
         printDebug(localException);
       }
   }
@@ -503,20 +474,20 @@ public abstract class NetAircraft extends SndAircraft
     int i = paramNetMsgInput.readUnsignedByte();
     int j = paramNetMsgInput.readUnsignedByte();
     NetObj localNetObj = paramNetMsgInput.readNetObj();
-    hitProp(i, j, localNetObj != null ? (Actor)(Actor)localNetObj.superObj() : null);
+    hitProp(i, j, localNetObj != null ? (Actor)localNetObj.superObj() : null);
     return true;
   }
 
   protected void netPutCut(int paramInt1, int paramInt2, Actor paramActor)
   {
-    if ((!isNet()) || (this.net.countMirrors() == 0)) return; try
+    if ((!isNet()) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() == 0)) return; try
     {
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
       localNetMsgGuaranted.writeByte(8);
       localNetMsgGuaranted.writeByte(paramInt1);
       localNetMsgGuaranted.writeByte(paramInt2);
-      localNetMsgGuaranted.writeNetObj(paramActor != null ? paramActor.net : null);
-      this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+      localNetMsgGuaranted.writeNetObj(paramActor != null ? paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet : null);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
       printDebug(localException);
     }
   }
@@ -529,17 +500,17 @@ public abstract class NetAircraft extends SndAircraft
       return false;
     int j = paramNetMsgInput.readUnsignedByte();
     NetObj localNetObj = paramNetMsgInput.readNetObj();
-    nextCUTLevel(partNames()[i] + "_D0", j, localNetObj != null ? (Actor)(Actor)localNetObj.superObj() : null);
+    nextCUTLevel(partNames()[i] + "_D0", j, localNetObj != null ? (Actor)localNetObj.superObj() : null);
     return true;
   }
 
   public void netExplode()
   {
-    if ((!isNet()) || (this.net.countMirrors() == 0)) return; try
+    if ((!isNet()) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() == 0)) return; try
     {
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
       localNetMsgGuaranted.writeByte(9);
-      this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
       printDebug(localException);
     }
   }
@@ -554,14 +525,14 @@ public abstract class NetAircraft extends SndAircraft
 
   public void setDiedFlag(boolean paramBoolean)
   {
-    if ((isAlive()) && (paramBoolean) && (isNet()) && (Actor.isValid(getDamager())) && (getDamager().isNet()) && (this.net.countMirrors() > 0))
+    if ((isAlive()) && (paramBoolean) && (isNet()) && (Actor.isValid(getDamager())) && (getDamager().isNet()) && (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() > 0))
     {
       try
       {
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(10);
-        localNetMsgGuaranted.writeNetObj(getDamager().net);
-        this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+        localNetMsgGuaranted.writeNetObj(getDamager().jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
         printDebug(localException);
       }
     }
@@ -574,12 +545,12 @@ public abstract class NetAircraft extends SndAircraft
     if (localNetObj != null) {
       if (isAlive())
         World.onActorDied(this, (Actor)localNetObj.superObj());
-      if (this.net.countMirrors() > 0)
+      if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() > 0)
         try {
           NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
           localNetMsgGuaranted.writeByte(10);
           localNetMsgGuaranted.writeNetObj(localNetObj);
-          this.net.post(localNetMsgGuaranted); } catch (Exception localException) {
+          this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted); } catch (Exception localException) {
           printDebug(localException);
         }
     }
@@ -589,12 +560,13 @@ public abstract class NetAircraft extends SndAircraft
   public void netFirstUpdate(NetChannel paramNetChannel)
     throws IOException
   {
-    if (((!Mission.isCoop()) || (!isNetPlayer())) && (
-      ((paramNetChannel instanceof NetChannelOutStream)) || (Mission.isDogfight()))) {
+    if ((!Mission.isDogfight()) && 
+      ((!Mission.isCoop()) || (!isNetPlayer())) && 
+      ((paramNetChannel instanceof NetChannelOutStream))) {
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
       localNetMsgGuaranted.writeByte(11);
       netReplicateFirstUpdate(paramNetChannel, localNetMsgGuaranted);
-      this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
       if ((Mission.isSingle()) && 
         (World.getPlayerAircraft() == this)) {
         if (fmTrack() == null) {
@@ -614,8 +586,8 @@ public abstract class NetAircraft extends SndAircraft
     ActorSpawnArg localActorSpawnArg = new ActorSpawnArg();
     try {
       netSpawnCommon(paramNetMsgInput, localActorSpawnArg);
-      this.pos.setAbs(localActorSpawnArg.point, localActorSpawnArg.orient);
-      this.pos.reset();
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localActorSpawnArg.point, localActorSpawnArg.orient);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       setSpeed(localActorSpawnArg.speed);
       netSpawnCommon(paramNetMsgInput, localActorSpawnArg, this); } catch (Exception localException) {
       printDebug(localException);
@@ -635,7 +607,7 @@ public abstract class NetAircraft extends SndAircraft
       if (paramInt > 0) return -1;
       return Property.intValue((Class)localObject, "astatePilotIndx", 0);
     }
-    Class[] arrayOfClass = (Class[])(Class[])localObject;
+    Class[] arrayOfClass = (Class[])localObject;
     if (paramInt >= arrayOfClass.length) return -1;
     return Property.intValue(arrayOfClass[paramInt], "astatePilotIndx", 0);
   }
@@ -651,12 +623,12 @@ public abstract class NetAircraft extends SndAircraft
       if (paramInt > 0) return;
       i = Property.intValue((Class)localObject1, "weaponControlNum", 10);
     } else {
-      localObject2 = (Class[])(Class[])localObject1;
+      localObject2 = (Class[])localObject1;
       if (paramInt >= localObject2.length) return;
       i = Property.intValue(localObject2[paramInt], "weaponControlNum", 10);
     }
     if (World.cur().diffCur.Limited_Ammo) {
-      localObject2 = this.FM.CT.Weapons[i];
+      localObject2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (localObject2 != null) {
         arrayOfShort = new short[localObject2.length];
         for (int j = 0; j < localObject2.length; j++) {
@@ -677,7 +649,7 @@ public abstract class NetAircraft extends SndAircraft
       if (paramInt > 0) return;
       localClass = (Class)localObject1;
     } else {
-      Class[] arrayOfClass = (Class[])(Class[])localObject1;
+      Class[] arrayOfClass = (Class[])localObject1;
       if (paramInt >= arrayOfClass.length) return;
       localClass = arrayOfClass[paramInt];
     }
@@ -688,12 +660,12 @@ public abstract class NetAircraft extends SndAircraft
         localObject2 = (CockpitGunner)Main3D.cur3D().cockpits[paramInt];
         ((CockpitGunner)localObject2).setRealMode(!paramBoolean);
       } else {
-        localObject2 = this.FM.turret[j];
+        localObject2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[j];
         ((Turret)localObject2).bIsAIControlled = paramBoolean;
       }
-      Object localObject2 = this.FM.CT.Weapons[i];
+      Object localObject2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[i];
       if (localObject2 != null) {
-        boolean bool = (!paramActor.net.isMaster()) || (World.cur().diffCur.Realistic_Gunnery);
+        boolean bool = (!paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) || (World.cur().diffCur.Realistic_Gunnery);
         if (paramBoolean) bool = true;
         for (int m = 0; m < localObject2.length; m++) {
           if ((localObject2[m] instanceof Actor)) {
@@ -723,8 +695,8 @@ public abstract class NetAircraft extends SndAircraft
       this.netCockpitTuretNum = -1;
     }
 
-    int i = this.net.countMirrors();
-    if (this.net.isMirror()) i++;
+    int i = this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors();
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirror()) i++;
     if (paramNetChannel != null) i--;
     if (i > 0) {
       if ((paramActor instanceof NetGunner)) ((NetGunner)paramActor).netCockpitValid = false; else
@@ -748,13 +720,13 @@ public abstract class NetAircraft extends SndAircraft
         if ((paramActor instanceof NetGunner)) ((NetGunner)paramActor).netCockpitMsg = local2; else
           this.netCockpitMsg = local2;
         local2.writeByte(13);
-        local2.writeNetObj(paramActor.net);
+        local2.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         if (paramBoolean) paramInt |= 128;
         local2.writeByte(paramInt);
         if (paramArrayOfShort != null)
           for (int k = 0; k < paramArrayOfShort.length; k++)
             local2.writeShort(paramArrayOfShort[k]);
-        this.net.postExclude(paramNetChannel, local2); } catch (Exception localException) {
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postExclude(paramNetChannel, local2); } catch (Exception localException) {
         printDebug(localException);
       }
     } else if ((paramActor instanceof NetGunner)) { ((NetGunner)paramActor).netCockpitValid = true; } else {
@@ -794,7 +766,7 @@ public abstract class NetAircraft extends SndAircraft
         if ((paramActor == World.getPlayerAircraft()) && (paramActor.isNetMaster()) && (paramInt == 0) && (!this.bWeaponsEventLog))
         {
           this.bWeaponsEventLog = true;
-          EventLog.onWeaponsLoad(paramActor, this.thisWeaponsName, (int)(this.FM.M.fuel * 100.0F / this.FM.M.maxFuel));
+          EventLog.onWeaponsLoad(paramActor, this.thisWeaponsName, (int)(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel * 100.0F / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel));
         }
       }
     }
@@ -816,7 +788,7 @@ public abstract class NetAircraft extends SndAircraft
       if (paramInt > 0) return;
       localClass1 = localClass2 = (Class)localObject;
     } else {
-      Class[] arrayOfClass = (Class[])(Class[])localObject;
+      Class[] arrayOfClass = (Class[])localObject;
       if (i >= arrayOfClass.length) return;
       if (paramInt >= arrayOfClass.length) return;
       localClass1 = arrayOfClass[i];
@@ -825,13 +797,13 @@ public abstract class NetAircraft extends SndAircraft
     Turret localTurret1;
     if (!CockpitPilot.class.isAssignableFrom(localClass1)) {
       j = Property.intValue(localClass1, "aiTuretNum", 0);
-      localTurret1 = this.FM.turret[j];
+      localTurret1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[j];
       localTurret1.bIsNetMirror = false;
     }
     if (!CockpitPilot.class.isAssignableFrom(localClass2)) {
       j = Property.intValue(localClass2, "aiTuretNum", 0);
-      localTurret1 = this.FM.turret[j];
-      localTurret1.bIsNetMirror = paramActor.net.isMirror();
+      localTurret1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[j];
+      localTurret1.bIsNetMirror = paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirror();
     }
     if ((paramActor instanceof NetGunner))
       ((NetGunner)paramActor).netCockpitIndxPilot = paramInt;
@@ -844,7 +816,7 @@ public abstract class NetAircraft extends SndAircraft
     int k = -1;
     if (!CockpitPilot.class.isAssignableFrom(localClass2)) {
       k = Property.intValue(localClass2, "aiTuretNum", 0);
-      Turret localTurret2 = this.FM.turret[k];
+      Turret localTurret2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[k];
       if (localTurret2.bIsAIControlled)
         k = -1;
       else {
@@ -859,16 +831,16 @@ public abstract class NetAircraft extends SndAircraft
       this.netCockpitWeaponControlNum = j;
     }
 
-    int m = this.net.countMirrors();
-    if (this.net.isMirror()) m++;
+    int m = this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors();
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirror()) m++;
     if (paramNetChannel != null) m--;
     if (m > 0)
       try {
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(12);
-        localNetMsgGuaranted.writeNetObj(paramActor.net);
+        localNetMsgGuaranted.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         localNetMsgGuaranted.writeByte(paramInt);
-        this.net.postExclude(paramNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postExclude(paramNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
         printDebug(localException);
       }
   }
@@ -894,9 +866,9 @@ public abstract class NetAircraft extends SndAircraft
     if (i != 0) {
       localObject1 = new NetMsgGuaranted();
       ((NetMsgGuaranted)localObject1).writeByte(12);
-      ((NetMsgGuaranted)localObject1).writeNetObj(paramActor.net);
+      ((NetMsgGuaranted)localObject1).writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       ((NetMsgGuaranted)localObject1).writeByte(i);
-      this.net.postTo(paramNetChannel, (NetMsgGuaranted)localObject1);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, (NetMsgGuaranted)localObject1);
     }
     if (j >= 0) {
       localObject1 = null;
@@ -907,14 +879,14 @@ public abstract class NetAircraft extends SndAircraft
         if (i > 0) return;
         localClass = (Class)localObject2;
       } else {
-        Class[] arrayOfClass = (Class[])(Class[])localObject2;
+        Class[] arrayOfClass = (Class[])localObject2;
         if (i >= arrayOfClass.length) return;
         localClass = arrayOfClass[i];
       }
       int k = Property.intValue(localClass, "weaponControlNum", 10);
       int m;
       if (World.cur().diffCur.Limited_Ammo) {
-        localObject3 = this.FM.CT.Weapons[k];
+        localObject3 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[k];
         if (localObject3 != null) {
           localObject1 = new short[localObject3.length];
           for (m = 0; m < localObject3.length; m++) {
@@ -943,12 +915,12 @@ public abstract class NetAircraft extends SndAircraft
         this.netCockpitMsg = ((NetMsgGuaranted)localObject3);
       }
       ((NetMsgGuaranted)localObject3).writeByte(13);
-      ((NetMsgGuaranted)localObject3).writeNetObj(paramActor.net);
+      ((NetMsgGuaranted)localObject3).writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       ((NetMsgGuaranted)localObject3).writeByte(i);
       if (localObject1 != null)
         for (m = 0; m < localObject1.length; m++)
           ((NetMsgGuaranted)localObject3).writeShort(localObject1[m]);
-      this.net.postTo(paramNetChannel, (NetMsgGuaranted)localObject3);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, (NetMsgGuaranted)localObject3);
     }
   }
 
@@ -960,7 +932,7 @@ public abstract class NetAircraft extends SndAircraft
     if ((localObject instanceof Class)) {
       this.netCockpitDrivers = new Actor[1];
     } else {
-      Class[] arrayOfClass = (Class[])(Class[])localObject;
+      Class[] arrayOfClass = (Class[])localObject;
       this.netCockpitDrivers = new Actor[arrayOfClass.length];
     }
     return true;
@@ -996,7 +968,7 @@ public abstract class NetAircraft extends SndAircraft
     if (!netCockpitCheckDrivers())
       return;
     if ((paramInt < 0) || (paramInt >= this.netCockpitDrivers.length)) return;
-    if (this.net.isMaster()) {
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) {
       if (this.netCockpitDrivers[paramInt] != null)
         return;
       netCockpitDriverSet(paramActor, paramInt);
@@ -1005,9 +977,9 @@ public abstract class NetAircraft extends SndAircraft
       try {
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(14);
-        localNetMsgGuaranted.writeNetObj(paramActor.net);
+        localNetMsgGuaranted.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         localNetMsgGuaranted.writeByte(paramInt);
-        this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgGuaranted); } catch (Exception localException) {
         printDebug(localException);
       }
     }
@@ -1030,24 +1002,24 @@ public abstract class NetAircraft extends SndAircraft
       try {
         NetMsgGuaranted localNetMsgGuaranted1 = new NetMsgGuaranted();
         localNetMsgGuaranted1.writeByte(14);
-        localNetMsgGuaranted1.writeNetObj(localActor.net);
+        localNetMsgGuaranted1.writeNetObj(localActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         localNetMsgGuaranted1.writeByte(i);
-        this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted1); } catch (Exception localException1) {
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgGuaranted1); } catch (Exception localException1) {
         printDebug(localException1);
       }
     } else {
       netCockpitDriverSet(localActor, i);
-      if (localActor.net.isMaster()) {
+      if (localActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) {
         Main3D.cur3D().aircraftHotKeys.netSwitchToCockpit(i);
       }
     }
-    if (this.net.countMirrors() > 0)
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors() > 0)
       try {
         NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted();
         localNetMsgGuaranted2.writeByte(14);
-        localNetMsgGuaranted2.writeNetObj(localActor.net);
+        localNetMsgGuaranted2.writeNetObj(localActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         localNetMsgGuaranted2.writeByte(i);
-        this.net.post(localNetMsgGuaranted2); } catch (Exception localException2) {
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted2); } catch (Exception localException2) {
         printDebug(localException2);
       }
     return true;
@@ -1061,7 +1033,7 @@ public abstract class NetAircraft extends SndAircraft
     i &= -129;
     switch (i) {
     case 0:
-      this.FM.AS.netUpdate(paramBoolean, bool, paramNetMsgInput);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netUpdate(paramBoolean, bool, paramNetMsgInput);
       return true;
     case 1:
       return netGetUpdateWayPoint(paramNetMsgInput, paramBoolean, bool);
@@ -1074,7 +1046,7 @@ public abstract class NetAircraft extends SndAircraft
       setGunPodsOn(false);
       return true;
     case 5:
-      this.FM.CT.dropFuelTanks();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.dropFuelTanks();
       return true;
     case 6:
       return netGetHits(paramNetMsgInput, paramBoolean, bool);
@@ -1094,9 +1066,6 @@ public abstract class NetAircraft extends SndAircraft
       return netGetCockpitAuto(paramNetMsgInput, paramBoolean, bool);
     case 14:
       return netGetCockpitDriver(paramNetMsgInput, paramBoolean, bool);
-    case 15:
-      this.FM.CT.dropExternalStores(false);
-      return true;
     }
     return false;
   }
@@ -1104,16 +1073,16 @@ public abstract class NetAircraft extends SndAircraft
   protected void sendMsgSndShot(Shot paramShot)
   {
     int i = paramShot.mass > 0.05F ? 1 : 0;
-    _tmpPoint.set(this.pos.getAbsPoint());
-    _tmpPoint.sub(paramShot.p);
-    int j = (int)(_tmpPoint.x / 0.25D) & 0xFE;
-    int k = (int)(_tmpPoint.y / 0.25D) & 0xFE;
+    Actor._tmpPoint.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+    Actor._tmpPoint.sub(paramShot.p);
+    int j = (int)(Actor._tmpPoint.jdField_x_of_type_Double / 0.25D) & 0xFE;
+    int k = (int)(Actor._tmpPoint.jdField_y_of_type_Double / 0.25D) & 0xFE;
     i &= 3;
     try {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(j | i >> 1);
       localNetMsgFiltered.writeByte(k | i & 0x1);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     }
     catch (Exception localException)
     {
@@ -1126,13 +1095,13 @@ public abstract class NetAircraft extends SndAircraft
 
   public void makeMirrorCarrierRelPos()
   {
-    if ((this.net == null) || (this.net.isMaster())) return;
-    ((Mirror)this.net).makeFirstUnderDeck();
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet == null) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster())) return;
+    ((Mirror)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).makeFirstUnderDeck();
   }
 
   public boolean isMirrorUnderDeck() {
-    if ((this.net == null) || (this.net.isMaster())) return false;
-    return ((Mirror)this.net).bUnderDeck;
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet == null) || (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster())) return false;
+    return ((Mirror)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).bUnderDeck;
   }
 
   public void destroy()
@@ -1149,10 +1118,10 @@ public abstract class NetAircraft extends SndAircraft
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void restoreLinksInCoopWing()
@@ -1163,42 +1132,17 @@ public abstract class NetAircraft extends SndAircraft
     Aircraft[] arrayOfAircraft = localWing.airc;
 
     int i = 0;
-    while ((i < arrayOfAircraft.length) && 
-      (!Actor.isValid(arrayOfAircraft[i]))) {
-      i++;
+    for (; i < arrayOfAircraft.length; i++) {
+      if (Actor.isValid(arrayOfAircraft[i]))
+        break;
     }
-
     if (i == arrayOfAircraft.length)
       return;
-    arrayOfAircraft[i].FM.Leader = null;
+    arrayOfAircraft[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = null;
     for (int j = i + 1; j < arrayOfAircraft.length; j++)
       if (Actor.isValid(arrayOfAircraft[j])) {
-        arrayOfAircraft[i].FM.Wingman = arrayOfAircraft[j].FM;
-        arrayOfAircraft[j].FM.Leader = arrayOfAircraft[i].FM;
-        i = j;
-      }
-  }
-
-  public void restoreLinksInDogWing()
-  {
-    if (Main.cur().netServerParams == null) return;
-
-    Wing localWing = getWing();
-    Aircraft[] arrayOfAircraft = localWing.airc;
-
-    int i = 0;
-    while ((i < arrayOfAircraft.length) && 
-      (!Actor.isValid(arrayOfAircraft[i]))) {
-      i++;
-    }
-
-    if (i == arrayOfAircraft.length)
-      return;
-    arrayOfAircraft[i].FM.Leader = null;
-    for (int j = i + 1; j < arrayOfAircraft.length; j++)
-      if (Actor.isValid(arrayOfAircraft[j])) {
-        arrayOfAircraft[i].FM.Wingman = arrayOfAircraft[j].FM;
-        arrayOfAircraft[j].FM.Leader = arrayOfAircraft[i].FM;
+        arrayOfAircraft[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Wingman = arrayOfAircraft[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+        arrayOfAircraft[j].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Leader_of_type_ComMaddoxIl2FmFlightModel = arrayOfAircraft[i].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
         i = j;
       }
   }
@@ -1212,8 +1156,8 @@ public abstract class NetAircraft extends SndAircraft
   }
 
   private static void netSpawnCommon(NetMsgInput paramNetMsgInput, ActorSpawnArg paramActorSpawnArg, NetAircraft paramNetAircraft) throws Exception {
-    Mirror localMirror = (Mirror)paramNetAircraft.net;
-    localMirror.netFirstUpdate((float)paramActorSpawnArg.point.x, (float)paramActorSpawnArg.point.y, (float)paramActorSpawnArg.point.z, paramActorSpawnArg.orient.azimut(), paramActorSpawnArg.orient.tangage(), paramActorSpawnArg.orient.kren(), (float)paramActorSpawnArg.speed.x, (float)paramActorSpawnArg.speed.y, (float)paramActorSpawnArg.speed.z);
+    Mirror localMirror = (Mirror)paramNetAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet;
+    localMirror.netFirstUpdate((float)paramActorSpawnArg.point.jdField_x_of_type_Double, (float)paramActorSpawnArg.point.jdField_y_of_type_Double, (float)paramActorSpawnArg.point.jdField_z_of_type_Double, paramActorSpawnArg.orient.azimut(), paramActorSpawnArg.orient.tangage(), paramActorSpawnArg.orient.kren(), (float)paramActorSpawnArg.speed.jdField_x_of_type_Double, (float)paramActorSpawnArg.speed.jdField_y_of_type_Double, (float)paramActorSpawnArg.speed.jdField_z_of_type_Double);
 
     int i = 0;
     for (int j = 0; j < 44; j++) {
@@ -1229,10 +1173,10 @@ public abstract class NetAircraft extends SndAircraft
       }
     }
     long l1 = paramNetMsgInput.readLong();
-    if (l1 != paramNetAircraft.FM.Operate)
+    if (l1 != paramNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Operate_of_type_Long)
     {
       m = 0; for (long l2 = 1L; m < 44; l2 <<= 1) {
-        if (((l1 & l2) == 0L) && ((paramNetAircraft.FM.Operate & l2) != 0L))
+        if (((l1 & l2) == 0L) && ((paramNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Operate_of_type_Long & l2) != 0L))
           paramNetAircraft.nextCUTLevel(partNames()[m] + "_D0", 0, null);
         m++;
       }
@@ -1252,33 +1196,25 @@ public abstract class NetAircraft extends SndAircraft
         arrayOfByte[i1] = (byte)paramNetMsgInput.readUnsignedByte();
       paramNetAircraft.setWeaponsBitStates(arrayOfByte);
     }
-
-    try
-    {
-      paramNetAircraft.FM.AS.netFirstUpdate(paramNetMsgInput);
-    }
-    catch (Exception localException)
-    {
-      System.out.println("NetAircraft error, ID_03: " + localException.toString());
-    }
+    paramNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netFirstUpdate(paramNetMsgInput);
   }
 
   private void netReplicateCommon(NetChannel paramNetChannel, NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    paramNetMsgGuaranted.writeFloat(this.FM.M.fuel / this.FM.M.maxFuel);
+    paramNetMsgGuaranted.writeFloat(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel / this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel);
     paramNetMsgGuaranted.writeBoolean(this.bPaintShemeNumberOn);
-    paramNetMsgGuaranted.write255(((AircraftNet)this.net).netName);
+    paramNetMsgGuaranted.write255(((AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netName);
     paramNetMsgGuaranted.write255(this.thisWeaponsName);
-    paramNetMsgGuaranted.writeNetObj(((AircraftNet)this.net).netUser);
+    paramNetMsgGuaranted.writeNetObj(((AircraftNet)this.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser);
   }
 
   private void netReplicateFirstUpdate(NetChannel paramNetChannel, NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    paramNetMsgGuaranted.writeFloat((float)localPoint3d.x); paramNetMsgGuaranted.writeFloat((float)localPoint3d.y); paramNetMsgGuaranted.writeFloat((float)localPoint3d.z);
-    Orient localOrient = this.pos.getAbsOrient();
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    paramNetMsgGuaranted.writeFloat((float)localPoint3d.jdField_x_of_type_Double); paramNetMsgGuaranted.writeFloat((float)localPoint3d.jdField_y_of_type_Double); paramNetMsgGuaranted.writeFloat((float)localPoint3d.jdField_z_of_type_Double);
+    Orient localOrient = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
     paramNetMsgGuaranted.writeFloat(localOrient.azimut()); paramNetMsgGuaranted.writeFloat(localOrient.tangage()); paramNetMsgGuaranted.writeFloat(localOrient.kren());
     Vector3d localVector3d = new Vector3d();
     getSpeed(localVector3d);
-    paramNetMsgGuaranted.writeFloat((float)localVector3d.x); paramNetMsgGuaranted.writeFloat((float)localVector3d.y); paramNetMsgGuaranted.writeFloat((float)localVector3d.z);
+    paramNetMsgGuaranted.writeFloat((float)localVector3d.jdField_x_of_type_Double); paramNetMsgGuaranted.writeFloat((float)localVector3d.jdField_y_of_type_Double); paramNetMsgGuaranted.writeFloat((float)localVector3d.jdField_z_of_type_Double);
 
     int i = 0;
     int j = 0;
@@ -1294,7 +1230,7 @@ public abstract class NetAircraft extends SndAircraft
       paramNetMsgGuaranted.writeByte(i);
     }
 
-    paramNetMsgGuaranted.writeLong(this.FM.Operate);
+    paramNetMsgGuaranted.writeLong(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Operate_of_type_Long);
 
     int k = curDMGProp(0) | curDMGProp(1) << 1 | curDMGProp(2) << 2 | curDMGProp(3) << 3;
 
@@ -1304,7 +1240,7 @@ public abstract class NetAircraft extends SndAircraft
     byte[] arrayOfByte = getWeaponsBitStates(null);
     if (arrayOfByte != null)
       paramNetMsgGuaranted.write(arrayOfByte);
-    this.FM.AS.netReplicate(paramNetMsgGuaranted);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.netReplicate(paramNetMsgGuaranted);
   }
 
   private NetMsgSpawn netReplicateCoop(NetChannel paramNetChannel) throws IOException {
@@ -1326,7 +1262,7 @@ public abstract class NetAircraft extends SndAircraft
 
   public NetMsgSpawn netReplicate(NetChannel paramNetChannel) throws IOException {
     if (Main.cur().netServerParams == null) return null;
-    if (paramNetChannel.isMirrored(this.net)) return null;
+    if (paramNetChannel.isMirrored(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet)) return null;
     NetMsgSpawn localNetMsgSpawn = null;
     if (isCoopPlane())
       localNetMsgSpawn = netReplicateCoop(paramNetChannel);
@@ -1370,12 +1306,11 @@ public abstract class NetAircraft extends SndAircraft
       paramInt = 4;
     this.damager_ = null;
     int i = this.damagers.size();
-    DamagerItem localDamagerItem;
     for (int j = 0; j < i; j++) {
-      localDamagerItem = (DamagerItem)this.damagers.get(j);
-      if (localDamagerItem.damager == paramActor) {
-        localDamagerItem.damage += paramInt;
-        localDamagerItem.lastTime = Time.current();
+      DamagerItem localDamagerItem1 = (DamagerItem)this.damagers.get(j);
+      if (localDamagerItem1.damager == paramActor) {
+        localDamagerItem1.damage += paramInt;
+        localDamagerItem1.lastTime = Time.current();
         return;
       }
     }
@@ -1383,10 +1318,10 @@ public abstract class NetAircraft extends SndAircraft
 
     if (World.cur().isDebugFM()) {
       Aircraft.debugprintln(this, "Printing Registered Damagers: *****");
-      for (j = 0; j < i; j++) {
-        localDamagerItem = (DamagerItem)this.damagers.get(j);
-        if (Actor.isValid(localDamagerItem.damager))
-          Aircraft.debugprintln(localDamagerItem.damager, "inflicted " + localDamagerItem.damage + " puntos..");
+      for (int k = 0; k < i; k++) {
+        DamagerItem localDamagerItem2 = (DamagerItem)this.damagers.get(k);
+        if (Actor.isValid(localDamagerItem2.damager))
+          Aircraft.debugprintln(localDamagerItem2.damager, "inflicted " + localDamagerItem2.damage + " puntos..");
       }
     }
   }
@@ -1448,45 +1383,7 @@ public abstract class NetAircraft extends SndAircraft
   }
 
   public int getPilotsCount() {
-    return this.FM.crew;
-  }
-
-  public static boolean isOnCarrierDeck(AirportCarrier paramAirportCarrier, Loc paramLoc)
-  {
-    return isOnCarrierDeck(paramAirportCarrier, paramLoc.getPoint());
-  }
-
-  public static boolean isOnCarrierDeck(AirportCarrier paramAirportCarrier, Point3d paramPoint3d)
-  {
-    Point3d localPoint3d1 = new Point3d();
-    Point3d localPoint3d2 = new Point3d();
-    localPoint3d1.set(paramPoint3d);
-    localPoint3d2.set(paramPoint3d);
-    localPoint3d1.z = Engine.cur.land.HQ(paramPoint3d.x, paramPoint3d.y);
-    localPoint3d1.z += 40.0D;
-    Actor localActor = Engine.collideEnv().getLine(localPoint3d1, localPoint3d2, false, clipFilter, pship);
-
-    return paramAirportCarrier.ship() == localActor;
-  }
-
-  private boolean zutiCheckIfSelectedPlaneIsAvailable(NetUser paramNetUser)
-  {
-    if (paramNetUser == null) {
-      return false;
-    }
-    try
-    {
-      String str = Property.stringValue(((Aircraft)this).getClass(), "keyName");
-
-      BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(paramNetUser.getBornPlace());
-      if (localBornPlace != null)
-      {
-        if ((!localBornPlace.zutiEnablePlaneLimits) || (localBornPlace.zutiIsAcAvailable(str)))
-          return true;
-      }
-    } catch (Exception localException) {
-      System.out.println("NetAircraft error, ID_04: " + localException.toString());
-    }return false;
+    return this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.crew;
   }
 
   static class DamagerItem
@@ -1565,53 +1462,53 @@ public abstract class NetAircraft extends SndAircraft
         localNetAircraft2.setFM(2, paramActorSpawnArg.netChannel == null);
       }
 
-      localNetAircraft2.FM.M.fuel = (paramActorSpawnArg.fuel * localNetAircraft2.FM.M.maxFuel);
+      localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel = (paramActorSpawnArg.fuel * localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel);
       localNetAircraft2.bPaintShemeNumberOn = paramActorSpawnArg.bNumberOn;
-      localNetAircraft2.FM.AS.bIsEnableToBailout = localNetAircraft1.FM.AS.bIsEnableToBailout;
+      localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsEnableToBailout = localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsEnableToBailout;
       localNetAircraft2.createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-      ((NetAircraft.AircraftNet)localNetAircraft2.net).netUser = this._netUser;
-      ((NetAircraft.AircraftNet)localNetAircraft2.net).netName = str;
-      localNetAircraft2.FM.setSkill(localNetAircraft1.FM.Skill);
+      ((NetAircraft.AircraftNet)localNetAircraft2.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser = this._netUser;
+      ((NetAircraft.AircraftNet)localNetAircraft2.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netName = str;
+      localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSkill(localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Skill);
       try
       {
         localNetAircraft2.weaponsLoad(paramActorSpawnArg.weapons);
         localNetAircraft2.thisWeaponsName = paramActorSpawnArg.weapons; } catch (Exception localException2) {
         NetAircraft.printDebug(localException2);
       }
-      if ((this._netUser != null) && ((localNetAircraft2.net.isMaster()) || (this._netUser.isTrackWriter()))) {
+      if ((this._netUser != null) && ((localNetAircraft2.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) || (this._netUser.isTrackWriter()))) {
         localNetAircraft2.createCockpits();
       }
-      localNetAircraft2.FM.AP.way = new Way(localNetAircraft1.FM.AP.way);
+      localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way = new Way(localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way);
 
       localNetAircraft2.onAircraftLoaded();
 
       localWing.airc[j] = ((Aircraft)localNetAircraft2);
       localNetAircraft2.setArmy(localNetAircraft1.getArmy());
       localNetAircraft2.setOwner(localWing);
-      if ((this._netUser != null) && ((localNetAircraft2.net.isMaster()) || (this._netUser.isTrackWriter())))
+      if ((this._netUser != null) && ((localNetAircraft2.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) || (this._netUser.isTrackWriter())))
         World.setPlayerRegiment();
       if (Mission.isServer())
-        ((Maneuver)localNetAircraft1.FM).Group.changeAircraft((Aircraft)localNetAircraft1, (Aircraft)localNetAircraft2);
-      localNetAircraft2.FM.CT.set(localNetAircraft1.FM.CT);
-      localNetAircraft2.FM.CT.forceGear(localNetAircraft2.FM.CT.GearControl);
-      ((Aircraft)localNetAircraft2); Aircraft.forceGear(localNetAircraft2.getClass(), localNetAircraft2.hierMesh(), localNetAircraft2.FM.CT.getGear());
-      localNetAircraft2.pos.setAbs(localNetAircraft1.pos.getAbs());
-      localNetAircraft2.pos.reset();
+        ((Maneuver)localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).Group.changeAircraft((Aircraft)localNetAircraft1, (Aircraft)localNetAircraft2);
+      localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.set(localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls);
+      localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceGear(localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl);
+      ((Aircraft)localNetAircraft2); Aircraft.forceGear(localNetAircraft2.getClass(), localNetAircraft2.hierMesh(), localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear());
+      localNetAircraft2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localNetAircraft1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
+      localNetAircraft2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       Vector3d localVector3d = new Vector3d();
       localNetAircraft1.getSpeed(localVector3d);
       localNetAircraft2.setSpeed(localVector3d);
-      if (localNetAircraft1.FM.brakeShoe) {
-        ((Aircraft)localNetAircraft2).FM.AP.way.takeoffAirport = localNetAircraft1.FM.AP.way.takeoffAirport;
-        ((Aircraft)localNetAircraft2).FM.brakeShoe = true;
-        ((Aircraft)localNetAircraft2).FM.turnOffCollisions = true;
-        ((Aircraft)localNetAircraft2).FM.brakeShoeLoc.set(localNetAircraft1.FM.brakeShoeLoc);
-        ((Aircraft)localNetAircraft2).FM.brakeShoeLastCarrier = localNetAircraft1.FM.brakeShoeLastCarrier;
-        ((Aircraft)localNetAircraft2).FM.Gears.bFlatTopGearCheck = true;
+      if (localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoe) {
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.takeoffAirport = localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.takeoffAirport;
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoe = true;
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turnOffCollisions = true;
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLoc.set(localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLoc);
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLastCarrier = localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLastCarrier;
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.bFlatTopGearCheck = true;
         ((Aircraft)localNetAircraft2).makeMirrorCarrierRelPos();
       }
-      if (localNetAircraft1.FM.CT.bHasWingControl) {
-        ((Aircraft)localNetAircraft2).FM.CT.wingControl = localNetAircraft1.FM.CT.wingControl;
-        ((Aircraft)localNetAircraft2).FM.CT.forceWing(localNetAircraft1.FM.CT.wingControl);
+      if (localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasWingControl) {
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.wingControl = localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.wingControl;
+        ((Aircraft)localNetAircraft2).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceWing(localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.wingControl);
       }
 
       localNetAircraft2.preparePaintScheme();
@@ -1628,13 +1525,13 @@ public abstract class NetAircraft extends SndAircraft
       }
 
       localNetAircraft2.restoreLinksInCoopWing();
-      if ((localNetAircraft2.net.isMaster()) && ((!World.cur().diffCur.Takeoff_N_Landing) || (localNetAircraft1.FM.AP.way.get(0).Action != 1) || (!localNetAircraft1.FM.isStationedOnGround())))
+      if ((localNetAircraft2.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) && ((!World.cur().diffCur.Takeoff_N_Landing) || (localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.get(0).Action != 1) || (!localNetAircraft1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isStationedOnGround())))
       {
-        localNetAircraft2.FM.EI.setCurControlAll(true);
-        localNetAircraft2.FM.EI.setEngineRunning();
-        localNetAircraft2.FM.CT.setPowerControl(0.75F);
-        localNetAircraft2.FM.setStationedOnGround(false);
-        localNetAircraft2.FM.setWasAirborne(true);
+        localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(true);
+        localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
+        localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setPowerControl(0.75F);
+        localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setStationedOnGround(false);
+        localNetAircraft2.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setWasAirborne(true);
       }
 
       return localNetAircraft2;
@@ -1651,8 +1548,8 @@ public abstract class NetAircraft extends SndAircraft
         localActorSpawnArg.netIdRemote = paramInt;
         NetAircraft localNetAircraft = (NetAircraft)actorSpawnCoop(localActorSpawnArg);
         NetAircraft.access$1600(paramNetMsgInput, localActorSpawnArg);
-        localNetAircraft.pos.setAbs(localActorSpawnArg.point, localActorSpawnArg.orient);
-        localNetAircraft.pos.reset();
+        localNetAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localActorSpawnArg.point, localActorSpawnArg.orient);
+        localNetAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         localNetAircraft.setSpeed(localActorSpawnArg.speed);
         NetAircraft.access$1700(paramNetMsgInput, localActorSpawnArg, localNetAircraft); } catch (Exception localException) {
         NetAircraft.printDebug(localException);
@@ -1660,39 +1557,38 @@ public abstract class NetAircraft extends SndAircraft
     }
 
     private Actor _actorSpawn(ActorSpawnArg paramActorSpawnArg) {
-      int i = 0;
-      Object localObject1 = null;
+      Object localObject = null;
       NetSquadron localNetSquadron = null;
       NetWing localNetWing = null;
-      int j = 0;
+      int i = 0;
       NetAircraft localNetAircraft = null;
-      Object localObject4;
       try
       {
-        int k = paramActorSpawnArg.name.length();
+        int j = paramActorSpawnArg.name.length();
+        int m;
         int n;
-        int i1;
+        String str;
         if (this._netUser != null) {
-          j = Integer.parseInt(paramActorSpawnArg.name.substring(k - 2, k));
-          n = paramActorSpawnArg.name.charAt(k - 3) - '0';
-          i1 = paramActorSpawnArg.name.charAt(k - 4) - '0';
-          if (k == 4) {
-            localObject1 = this._netUser.netUserRegiment;
+          i = Integer.parseInt(paramActorSpawnArg.name.substring(j - 2, j));
+          m = paramActorSpawnArg.name.charAt(j - 3) - '0';
+          n = paramActorSpawnArg.name.charAt(j - 4) - '0';
+          if (j == 4) {
+            localObject = this._netUser.netUserRegiment;
           } else {
-            localObject4 = paramActorSpawnArg.name.substring(0, k - 4);
-            localObject1 = (Regiment)Actor.getByName((String)localObject4);
+            str = paramActorSpawnArg.name.substring(0, j - 4);
+            localObject = (Regiment)Actor.getByName(str);
           }
-          localNetSquadron = new NetSquadron((Regiment)localObject1, i1);
-          localNetWing = new NetWing(localNetSquadron, n);
+          localNetSquadron = new NetSquadron((Regiment)localObject, n);
+          localNetWing = new NetWing(localNetSquadron, m);
         } else {
-          j = Integer.parseInt(paramActorSpawnArg.name.substring(k - 1, k)) + 1;
-          n = paramActorSpawnArg.name.charAt(k - 2) - '0';
-          i1 = paramActorSpawnArg.name.charAt(k - 3) - '0';
-          j += i1 * 16 + n * 4;
-          localObject4 = paramActorSpawnArg.name.substring(0, k - 3);
-          localObject1 = (Regiment)Actor.getByName((String)localObject4);
-          localNetSquadron = new NetSquadron((Regiment)localObject1, i1);
-          localNetWing = new NetWing(localNetSquadron, n);
+          i = Integer.parseInt(paramActorSpawnArg.name.substring(j - 1, j)) + 1;
+          m = paramActorSpawnArg.name.charAt(j - 2) - '0';
+          n = paramActorSpawnArg.name.charAt(j - 3) - '0';
+          i += n * 16 + m * 4;
+          str = paramActorSpawnArg.name.substring(0, j - 3);
+          localObject = (Regiment)Actor.getByName(str);
+          localNetSquadron = new NetSquadron((Regiment)localObject, n);
+          localNetWing = new NetWing(localNetSquadron, m);
         }
         NetAircraft.loadingCountry = localNetSquadron.regiment().country();
         localNetAircraft = (NetAircraft)this.cls.newInstance();
@@ -1706,40 +1602,9 @@ public abstract class NetAircraft extends SndAircraft
       NetAircraft.access$1502(localNetAircraft, false);
 
       localNetAircraft.createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-      ((NetAircraft.AircraftNet)localNetAircraft.net).netUser = this._netUser;
-      ((NetAircraft.AircraftNet)localNetAircraft.net).netName = paramActorSpawnArg.name;
-      Object localObject2;
-      if (this._netUser != null)
-      {
-        if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()) && (!localNetAircraft.net.isMaster()))
-        {
-          try
-          {
-            if (this._netUser.masterChannel() != null)
-            {
-              String str = ((NetUser)NetEnv.host()).uniqueName();
-              localObject2 = this._netUser.masterChannel().remoteAddress().getHostAddress().toString();
-
-              if (ZutiSupportMethods.isPlayerBanned(str, (String)localObject2))
-              {
-                ZutiNetSendMethods.playerBanned(this._netUser);
-                i = 1;
-              }
-            }
-          }
-          catch (Exception localException2)
-          {
-            System.out.println("NetAircraft error ID_01: " + localException2.toString());
-          }
-
-          if (!localNetAircraft.zutiCheckIfSelectedPlaneIsAvailable(this._netUser))
-          {
-            ZutiNetSendMethods.aircraftNotAvailable(this._netUser);
-            i = 1;
-          }
-
-        }
-
+      ((NetAircraft.AircraftNet)localNetAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser = this._netUser;
+      ((NetAircraft.AircraftNet)localNetAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netName = paramActorSpawnArg.name;
+      if (this._netUser != null) {
         paramActorSpawnArg.name = null;
         makeName(localNetAircraft);
       }
@@ -1751,94 +1616,54 @@ public abstract class NetAircraft extends SndAircraft
         localNetAircraft.setFM(1, paramActorSpawnArg.netChannel == null);
         World.setPlayerFM();
         paramActorSpawnArg.bPlayer = false;
-      }
-      else if (Mission.isServer()) {
-        localNetAircraft.setFM(1, paramActorSpawnArg.netChannel == null);
-      }
-      else {
+      } else {
         localNetAircraft.setFM(2, paramActorSpawnArg.netChannel == null);
       }
-
-      localNetAircraft.FM.setSkill(3);
-      localNetAircraft.FM.M.fuel = (paramActorSpawnArg.fuel * localNetAircraft.FM.M.maxFuel);
+      localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setSkill(3);
+      localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel = (paramActorSpawnArg.fuel * localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel);
       localNetAircraft.bPaintShemeNumberOn = paramActorSpawnArg.bNumberOn;
       try
       {
         localNetAircraft.weaponsLoad(paramActorSpawnArg.weapons);
-        localNetAircraft.thisWeaponsName = paramActorSpawnArg.weapons; } catch (Exception localException3) {
-        NetAircraft.printDebug(localException3);
+        localNetAircraft.thisWeaponsName = paramActorSpawnArg.weapons; } catch (Exception localException2) {
+        NetAircraft.printDebug(localException2);
       }
-      if ((localNetAircraft.net.isMaster()) || ((this._netUser != null) && (this._netUser.isTrackWriter()))) {
+      if ((localNetAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) || ((this._netUser != null) && (this._netUser.isTrackWriter()))) {
         localNetAircraft.createCockpits();
       }
       localNetAircraft.onAircraftLoaded();
 
+      localNetWing.setPlane(localNetAircraft, i);
       NetAircraft.loadingCountry = null;
 
-      int m = 0;
-      Object localObject3;
+      int k = 0;
       if (paramActorSpawnArg.bornPlaceExist) {
-        localObject2 = (BornPlace)World.cur().bornPlaces.get(paramActorSpawnArg.bornPlace);
-        localObject3 = ((BornPlace)localObject2).getAircraftPlace((Aircraft)localNetAircraft, paramActorSpawnArg.stayPlace);
-        paramActorSpawnArg.point = ((Loc)localObject3).getPoint();
-        paramActorSpawnArg.orient = ((Loc)localObject3).getOrient();
+        BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(paramActorSpawnArg.bornPlace);
+        Loc localLoc = localBornPlace.getAircraftPlace((Aircraft)localNetAircraft, paramActorSpawnArg.stayPlace);
+        paramActorSpawnArg.point = localLoc.getPoint();
+        paramActorSpawnArg.orient = localLoc.getOrient();
         paramActorSpawnArg.armyExist = true;
-        paramActorSpawnArg.army = ((BornPlace)localObject2).army;
+        paramActorSpawnArg.army = localBornPlace.army;
         paramActorSpawnArg.speed = new Vector3d();
-
-        if ((((BornPlace)localObject2).zutiAirspawnOnly) || (!World.cur().diffCur.Takeoff_N_Landing) || ((paramActorSpawnArg.stayPlace >= World.cur().airdrome.stayHold.length) && (!localNetAircraft.FM.brakeShoe)))
+        if ((!World.cur().diffCur.Takeoff_N_Landing) || ((paramActorSpawnArg.stayPlace >= World.cur().airdrome.stayHold.length) && (!localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoe)))
         {
-          paramActorSpawnArg.point.z = ((BornPlace)localObject2).zutiSpawnHeight;
-
-          paramActorSpawnArg.orient = new Orient(((BornPlace)localObject2).zutiSpawnOrient - 86.0F, 0.0F, 0.0F);
-
-          paramActorSpawnArg.speed.x = 1.0D;
+          paramActorSpawnArg.point.z += 1000.0D;
+          paramActorSpawnArg.speed.x = 100.0D;
           paramActorSpawnArg.orient.transform(paramActorSpawnArg.speed);
-          paramActorSpawnArg.speed.normalize();
-          paramActorSpawnArg.speed.scale(((BornPlace)localObject2).zutiSpawnSpeed / 3.4D);
-          m = 1;
+          k = 1;
         } else {
-          localNetAircraft.FM.CT.setLanded();
-          ((Aircraft)localNetAircraft); Aircraft.forceGear(localNetAircraft.getClass(), localNetAircraft.hierMesh(), localNetAircraft.FM.CT.getGear());
-
-          localObject4 = (AirportCarrier)Airport.nearest(((Loc)localObject3).getPoint(), -1, 4);
-          if ((localObject4 != null) && (((AirportCarrier)localObject4).ship() != null) && (((((AirportCarrier)localObject4).ship() instanceof Ship.RwyTransp)) || ((((AirportCarrier)localObject4).ship() instanceof Ship.RwyTranspWide)) || ((((AirportCarrier)localObject4).ship() instanceof Ship.RwyTranspSqr))))
-          {
-            if (Engine.land().isWater(paramActorSpawnArg.point.x, paramActorSpawnArg.point.y)) {
-              localNetAircraft.FM.brakeShoe = false;
-            }
-          }
+          localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setLanded();
+          ((Aircraft)localNetAircraft); Aircraft.forceGear(localNetAircraft.getClass(), localNetAircraft.hierMesh(), localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear());
         }
-
-        localNetAircraft.FM.AS.bIsEnableToBailout = ((BornPlace)localObject2).bParachute;
-      }
-      else if ((Mission.isDogfight()) && (World.cur().diffCur.Takeoff_N_Landing))
-      {
-        if (Main.cur().netServerParams.isMaster())
-        {
-          localObject2 = new Loc(paramActorSpawnArg.point.x, paramActorSpawnArg.point.y, 0.0D, 0.0F, 0.0F, 0.0F);
-          localObject3 = (AirportCarrier)Airport.nearest(((Loc)localObject2).getPoint(), -1, 4);
-          if (localObject3 != null)
-          {
-            if (!NetAircraft.isOnCarrierDeck((AirportCarrier)localObject3, (Loc)localObject2))
-            {
-              localObject3 = null;
-            }
-          }
-          if (localObject3 != null)
-            ((AirportCarrier)localObject3).setCellUsed((Aircraft)localNetAircraft);
-        }
+        localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsEnableToBailout = localBornPlace.bParachute;
       }
       paramActorSpawnArg.set(localNetAircraft);
-
-      localNetWing.setPlane(localNetAircraft, j);
-
-      if (m != 0) {
-        localNetAircraft.FM.EI.setCurControlAll(true);
-        localNetAircraft.FM.EI.setEngineRunning();
-        localNetAircraft.FM.CT.setPowerControl(0.75F);
-        localNetAircraft.FM.setStationedOnGround(false);
-        localNetAircraft.FM.setWasAirborne(true);
+      if (k != 0) {
+        localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setCurControlAll(true);
+        localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
+        localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setPowerControl(0.75F);
+        localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setStationedOnGround(false);
+        localNetAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setWasAirborne(true);
       }
       if (paramActorSpawnArg.speed == null) {
         localNetAircraft.setSpeed(new Vector3d());
@@ -1851,19 +1676,15 @@ public abstract class NetAircraft extends SndAircraft
       } else if (Config.isUSE_RENDER()) {
         Mission.cur().prepareSkinAI((Aircraft)localNetAircraft);
       }
-
-      if ((localNetAircraft.net.isMaster()) || ((this._netUser != null) && (this._netUser.isTrackWriter()))) {
+      if ((localNetAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMaster()) || ((this._netUser != null) && (this._netUser.isTrackWriter()))) {
         World.setPlayerRegiment();
       }
 
-      if (i != 0) {
-        localNetAircraft.destroy();
-      }
-      return (Actor)(Actor)(Actor)(Actor)localNetAircraft;
+      return (Actor)localNetAircraft;
     }
 
     private void makeName(NetAircraft paramNetAircraft) {
-      String str = ((NetAircraft.AircraftNet)paramNetAircraft.net).netUser.uniqueName();
+      String str = ((NetAircraft.AircraftNet)paramNetAircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet).netUser.uniqueName();
       int i = 0;
       while (Actor.getByName(str + "_" + i) != null)
         i++;
@@ -1909,7 +1730,7 @@ public abstract class NetAircraft extends SndAircraft
         if ((NetMissionTrack.isRecording()) && (Main.cur().netServerParams.isDogfight())) {
           try {
             NetMsgSpawn localNetMsgSpawn = localActor.netReplicate(NetMissionTrack.netChannelOut());
-            localActor.net.postTo(NetMissionTrack.netChannelOut(), localNetMsgSpawn);
+            localActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(NetMissionTrack.netChannelOut(), localNetMsgSpawn);
           } catch (Exception localException) {
             NetAircraft.printDebug(localException);
           }
@@ -1963,34 +1784,34 @@ public abstract class NetAircraft extends SndAircraft
     private Loc _lRel = new Loc();
 
     public void makeFirstUnderDeck() {
-      if (NetAircraft.this.FM.brakeShoe) {
-        NetAircraft.corn.set(NetAircraft.this.pos.getAbsPoint());
-        NetAircraft.corn1.set(NetAircraft.this.pos.getAbsPoint());
-        NetAircraft.corn1.z -= 20.0D;
+      if (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoe) {
+        NetAircraft.corn.set(NetAircraft.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+        NetAircraft.corn1.set(NetAircraft.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
+        NetAircraft.corn1.jdField_z_of_type_Double -= 20.0D;
         Actor localActor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false, NetAircraft.clipFilter, NetAircraft.pship);
-        if ((!(localActor instanceof BigshipGeneric)) && (((Mission.isCoop()) && (Time.current() < 60000L)) || (Mission.isDogfight())))
-          localActor = NetAircraft.this.FM.brakeShoeLastCarrier;
+        if ((!(localActor instanceof BigshipGeneric)) && (Mission.isCoop()) && (Time.current() < 60000L))
+          localActor = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLastCarrier;
         if ((localActor instanceof BigshipGeneric)) {
           this.bUnderDeck = true;
-          this._lRel.set(NetAircraft.this.pos.getAbs());
-          this._lRel.sub(localActor.pos.getAbs());
+          this._lRel.set(NetAircraft.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
+          this._lRel.sub(localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
         }
       }
     }
 
     public void netFirstUpdate(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7, float paramFloat8, float paramFloat9)
     {
-      NetAircraft.this.FM.Vwld.set(paramFloat7, paramFloat8, paramFloat9);
-      NetAircraft.this.FM.getAccel().set(0.0D, 0.0D, 0.0D);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(paramFloat7, paramFloat8, paramFloat9);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().set(0.0D, 0.0D, 0.0D);
       this._t = (this.tcur = this.tupdate = Time.current());
       this._p.set(paramFloat1, paramFloat2, paramFloat3);
-      this._v.set(NetAircraft.this.FM.Vwld);
+      this._v.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
 
       this._o.set(paramFloat4, paramFloat5, paramFloat6);
       this._w.set(0.0F, 0.0F, 0.0F);
 
-      NetAircraft.this.FM.Loc.set(paramFloat1, paramFloat2, paramFloat3);
-      NetAircraft.this.FM.Or.set(paramFloat4, paramFloat5, paramFloat6);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.set(paramFloat1, paramFloat2, paramFloat3);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.set(paramFloat4, paramFloat5, paramFloat6);
       this.tint = this.tcur;
       this.tlag = 0L;
     }
@@ -2022,8 +1843,8 @@ public abstract class NetAircraft extends SndAircraft
         netWeaponControl(paramNetMsgInput.readUnsignedByte());
         if (this.bFirstUpdate) {
           Aircraft localAircraft = (Aircraft)superObj();
-          localAircraft.FM.CT.forceGear(localAircraft.FM.CT.GearControl);
-          Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), localAircraft.FM.CT.getGear());
+          localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceGear(localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl);
+          Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear());
         }
       }
 
@@ -2100,16 +1921,16 @@ public abstract class NetAircraft extends SndAircraft
       }
       this.tupdate = this._t;
 
-      NetAircraft.this.FM.Vwld.set(f10, f11, f12);
-      NetAircraft.this.FM.getAccel().set(f13, f14, f15);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.set(f10, f11, f12);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().set(f13, f14, f15);
 
       this._p.set(f1, f2, f3);
-      this._v.set(NetAircraft.this.FM.Vwld);
+      this._v.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
 
       this._o.set(f4, f5, f6);
-      this._o.transformInv(NetAircraft.this.FM.Vwld, NetAircraft.this.FM.getVflow());
+      this._o.transformInv(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d, NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getVflow());
       this._w.set(f7, f8, f9);
-      NetAircraft.this.FM.getW().set(f7, f8, f9);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().set(f7, f8, f9);
 
       int i10 = i & 0xF;
       float f17;
@@ -2118,11 +1939,11 @@ public abstract class NetAircraft extends SndAircraft
       if (i10 == 1) {
         float f16 = paramNetMsgInput.readUnsignedByte() / 255.0F * 640.0F;
         f17 = paramNetMsgInput.readUnsignedByte() / 255.0F * 1.6F;
-        i10 = NetAircraft.this.FM.EI.getNum();
+        i10 = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum();
         for (int i13 = 0; i13 < i10; i13++)
           if (!NetAircraft.this.isFMTrackMirror()) {
-            NetAircraft.this.FM.EI.engines[i13].setw(f16);
-            NetAircraft.this.FM.EI.engines[i13].setPropPhi(f17);
+            NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i13].setw(f16);
+            NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i13].setPropPhi(f17);
           }
       }
       else {
@@ -2130,8 +1951,8 @@ public abstract class NetAircraft extends SndAircraft
           f17 = paramNetMsgInput.readUnsignedByte() / 255.0F * 640.0F;
           f18 = paramNetMsgInput.readUnsignedByte() / 255.0F * 1.6F;
           if (!NetAircraft.this.isFMTrackMirror()) {
-            NetAircraft.this.FM.EI.engines[i11].setw(f17);
-            NetAircraft.this.FM.EI.engines[i11].setPropPhi(f18);
+            NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i11].setw(f17);
+            NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i11].setPropPhi(f18);
           }
         }
       }
@@ -2141,12 +1962,12 @@ public abstract class NetAircraft extends SndAircraft
         int i12 = paramNetMsgInput.readUnsignedShort();
         f18 = unpackSY(i11);
         float f19 = unpackSP(i12 & 0x7FFF);
-        NetAircraft.this.FM.CT.WeaponControl[NetAircraft.this.netCockpitWeaponControlNum] = ((i12 & 0x8000) != 0 ? 1 : false);
+        NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[NetAircraft.this.netCockpitWeaponControlNum] = ((i12 & 0x8000) != 0 ? 1 : false);
         if (superObj() == World.getPlayerAircraft()) {
           Actor._tmpOrient.set(f18, f19, 0.0F);
           ((CockpitGunner)Main3D.cur3D().cockpits[NetAircraft.this.netCockpitIndxPilot]).moveGun(Actor._tmpOrient);
         } else {
-          Turret localTurret = NetAircraft.this.FM.turret[NetAircraft.this.netCockpitTuretNum];
+          Turret localTurret = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[NetAircraft.this.netCockpitTuretNum];
           localTurret.tu[0] = f18;
           localTurret.tu[1] = f19;
         }
@@ -2164,132 +1985,132 @@ public abstract class NetAircraft extends SndAircraft
 
     public void fmUpdate(float paramFloat) {
       if (this.tupdate < 0L) {
-        netFirstUpdate((float)NetAircraft.this.FM.Loc.x, (float)NetAircraft.this.FM.Loc.y, (float)NetAircraft.this.FM.Loc.z, NetAircraft.this.FM.Or.getAzimut(), NetAircraft.this.FM.Or.getTangage(), NetAircraft.this.FM.Or.getKren(), (float)NetAircraft.this.FM.Vwld.x, (float)NetAircraft.this.FM.Vwld.y, (float)NetAircraft.this.FM.Vwld.z);
+        netFirstUpdate((float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double, (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double, NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getAzimut(), NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage(), NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren(), (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double, (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_y_of_type_Double, (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double);
       }
 
       paramFloat = (float)(Time.tickNext() - this.tcur) * 0.001F;
       if (paramFloat < 0.001F) return;
       this.tcur = Time.tickNext();
 
-      NetAircraft.this.FM.CT.update(paramFloat, 50.0F, NetAircraft.this.FM.EI, false, NetAircraft.this.isFMTrackMirror());
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.update(paramFloat, 50.0F, NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface, false, NetAircraft.this.isFMTrackMirror());
 
-      NetAircraft.this.FM.Gears.ground(NetAircraft.this.FM, false, this.bGround);
-      NetAircraft.this.FM.Gears.bFlatTopGearCheck = false;
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.ground(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel, false, this.bGround);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.bFlatTopGearCheck = false;
 
       for (int i = 0; i < 3; i++) {
-        NetAircraft.this.FM.Gears.gWheelAngles[i] = ((NetAircraft.this.FM.Gears.gWheelAngles[i] + (float)Math.toDegrees(Math.atan(NetAircraft.this.FM.Gears.gVelocity[i] * paramFloat / 0.375D))) % 360.0F);
+        NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelAngles[i] = ((NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelAngles[i] + (float)Math.toDegrees(Math.atan(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gVelocity[i] * paramFloat / 0.375D))) % 360.0F);
 
-        NetAircraft.this.FM.Gears.gVelocity[i] *= 0.949999988079071D;
+        NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gVelocity[i] *= 0.949999988079071D;
       }
 
-      NetAircraft.this.hierMesh().chunkSetAngles("GearL1_D0", 0.0F, -NetAircraft.this.FM.Gears.gWheelAngles[0], 0.0F);
-      NetAircraft.this.hierMesh().chunkSetAngles("GearR1_D0", 0.0F, -NetAircraft.this.FM.Gears.gWheelAngles[1], 0.0F);
-      NetAircraft.this.hierMesh().chunkSetAngles("GearC1_D0", 0.0F, -NetAircraft.this.FM.Gears.gWheelAngles[2], 0.0F);
+      NetAircraft.this.hierMesh().chunkSetAngles("GearL1_D0", 0.0F, -NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelAngles[0], 0.0F);
+      NetAircraft.this.hierMesh().chunkSetAngles("GearR1_D0", 0.0F, -NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelAngles[1], 0.0F);
+      NetAircraft.this.hierMesh().chunkSetAngles("GearC1_D0", 0.0F, -NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.gWheelAngles[2], 0.0F);
 
-      float f1 = NetAircraft.this.FM.Gears.getSteeringAngle();
+      float f2 = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.getSteeringAngle();
 
-      NetAircraft.this.moveSteering(f1);
-      if (NetAircraft.this.FM.Gears.nearGround()) {
+      NetAircraft.this.moveSteering(f2);
+      if (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.nearGround()) {
         NetAircraft.this.moveWheelSink();
       }
 
-      NetAircraft.this.FM.EI.netupdate(paramFloat, NetAircraft.this.isFMTrackMirror());
-      NetAircraft.this.FM.FMupdate(paramFloat);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.netupdate(paramFloat, NetAircraft.this.isFMTrackMirror());
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.FMupdate(paramFloat);
       this.tint = (this.tcur - this.tlag);
 
       while (this.tint > this._t) {
         long l = this.tint - this._t;
         if (l > Time.tickConstLen())
           l = Time.tickConstLen();
-        f4 = (float)l * 0.001F;
-        this._p.x += this._v.x * f4;
-        this._p.y += this._v.y * f4;
-        this._p.z += this._v.z * f4;
-        Vector3f tmp627_624 = this._v; tmp627_624.x = (float)(tmp627_624.x + NetAircraft.this.FM.getAccel().x * f4);
-        Vector3f tmp658_655 = this._v; tmp658_655.y = (float)(tmp658_655.y + NetAircraft.this.FM.getAccel().y * f4);
-        Vector3f tmp689_686 = this._v; tmp689_686.z = (float)(tmp689_686.z + NetAircraft.this.FM.getAccel().z * f4);
-        this.TmpV.scale(f4, this._w);
-        this._o.increment((float)(-Math.toDegrees(this.TmpV.z)), (float)(-Math.toDegrees(this.TmpV.y)), (float)Math.toDegrees(this.TmpV.x));
+        f3 = (float)l * 0.001F;
+        this._p.jdField_x_of_type_Float += this._v.jdField_x_of_type_Float * f3;
+        this._p.jdField_y_of_type_Float += this._v.jdField_y_of_type_Float * f3;
+        this._p.jdField_z_of_type_Float += this._v.jdField_z_of_type_Float * f3;
+        Vector3f tmp618_615 = this._v; tmp618_615.jdField_x_of_type_Float = (float)(tmp618_615.jdField_x_of_type_Float + NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().jdField_x_of_type_Double * f3);
+        Vector3f tmp649_646 = this._v; tmp649_646.jdField_y_of_type_Float = (float)(tmp649_646.jdField_y_of_type_Float + NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().jdField_y_of_type_Double * f3);
+        Vector3f tmp680_677 = this._v; tmp680_677.jdField_z_of_type_Float = (float)(tmp680_677.jdField_z_of_type_Float + NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel().jdField_z_of_type_Double * f3);
+        this.TmpV.scale(f3, this._w);
+        this._o.increment((float)(-Math.toDegrees(this.TmpV.jdField_z_of_type_Float)), (float)(-Math.toDegrees(this.TmpV.jdField_y_of_type_Float)), (float)Math.toDegrees(this.TmpV.jdField_x_of_type_Float));
 
         this._t += l;
       }
-      World.land(); float f2 = Landscape.HQ(this._p.x, this._p.y);
-      if (World.land().isWater(this._p.x, this._p.y)) {
-        if (this._p.z < f2 - 20.0F) this._p.z = (f2 - 20.0F);
+      World.land(); float f1 = Landscape.HQ(this._p.jdField_x_of_type_Float, this._p.jdField_y_of_type_Float);
+      if (World.land().isWater(this._p.jdField_x_of_type_Float, this._p.jdField_y_of_type_Float)) {
+        if (this._p.jdField_z_of_type_Float < f1 - 20.0F) this._p.jdField_z_of_type_Float = (f1 - 20.0F);
       }
-      else if (this._p.z < f2 + 1.0F) this._p.z = (f2 + 1.0F);
+      else if (this._p.jdField_z_of_type_Float < f1 + 1.0F) this._p.jdField_z_of_type_Float = (f1 + 1.0F);
 
       this.TmpVd.set(this._p);
       this.save_dt = (0.98F * this.save_dt + 0.02F * ((float)(this.tint - this.tupdate) * 0.001F));
 
-      float f3 = 0.03F;
+      f2 = 0.03F;
       if (this._v.length() > 0.0F) {
-        f3 = 1.08F - this.save_dt * 2.0F;
-        if (f3 > 1.0F) f3 = 1.0F;
-        if (f3 < 0.03F) f3 = 0.03F;
+        f2 = 1.08F - this.save_dt * 2.0F;
+        if (f2 > 1.0F) f2 = 1.0F;
+        if (f2 < 0.03F) f2 = 0.03F;
       }
-      this.saveCoeff = (0.98F * this.saveCoeff + 0.02F * f3);
+      this.saveCoeff = (0.98F * this.saveCoeff + 0.02F * f2);
 
-      NetAircraft.this.FM.Loc.interpolate(this.TmpVd, this.saveCoeff);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.interpolate(this.TmpVd, this.saveCoeff);
 
-      float f4 = this.saveCoeff * 2.0F;
+      float f3 = this.saveCoeff * 2.0F;
       if (NetMissionTrack.isPlaying())
-        f4 = this.saveCoeff / 4.0F;
-      if (f4 > 1.0F) f4 = 1.0F;
-      NetAircraft.this.FM.Or.interpolate(this._o, f4);
+        f3 = this.saveCoeff / 4.0F;
+      if (f3 > 1.0F) f3 = 1.0F;
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.interpolate(this._o, f3);
 
       if (this.bUnderDeck) {
-        NetAircraft.corn.set(NetAircraft.this.FM.Loc);
-        NetAircraft.corn1.set(NetAircraft.this.FM.Loc);
-        NetAircraft.corn1.z -= 20.0D;
+        NetAircraft.corn.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+        NetAircraft.corn1.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+        NetAircraft.corn1.jdField_z_of_type_Double -= 20.0D;
         Actor localActor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false, NetAircraft.clipFilter, NetAircraft.pship);
         if ((!(localActor instanceof BigshipGeneric)) && (Mission.isCoop()) && (Time.current() < 60000L))
-          localActor = NetAircraft.this.FM.brakeShoeLastCarrier;
+          localActor = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLastCarrier;
         if ((localActor instanceof BigshipGeneric)) {
           NetAircraft.lCorn.set(this._lRel);
-          NetAircraft.lCorn.add(localActor.pos.getAbs());
-          NetAircraft.this.FM.Loc.set(NetAircraft.lCorn.getPoint());
-          NetAircraft.this.FM.Or.set(NetAircraft.lCorn.getOrient());
+          NetAircraft.lCorn.add(localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
+          NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.set(NetAircraft.lCorn.getPoint());
+          NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.set(NetAircraft.lCorn.getOrient());
           this.saveCoeff = 1.0F;
-          this._p.set(NetAircraft.this.FM.Loc);
-          this._o.set(NetAircraft.this.FM.Or);
-          localActor.getSpeed(NetAircraft.this.FM.Vwld);
-          this._v.x = (float)NetAircraft.this.FM.Vwld.x;
-          this._v.y = (float)NetAircraft.this.FM.Vwld.y;
-          this._v.z = (float)NetAircraft.this.FM.Vwld.z;
+          this._p.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+          this._o.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation);
+          localActor.getSpeed(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d);
+          this._v.jdField_x_of_type_Float = (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double;
+          this._v.jdField_y_of_type_Float = (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_y_of_type_Double;
+          this._v.jdField_z_of_type_Float = (float)NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.jdField_z_of_type_Double;
         }
 
       }
 
       if (NetAircraft.this.isFMTrackMirror()) {
-        NetAircraft.this.fmTrack.FMupdate(NetAircraft.this.FM);
+        NetAircraft.this.fmTrack.FMupdate(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel);
       }
 
-      if (NetAircraft.this.FM.isTick(44, 0)) {
-        NetAircraft.this.FM.AS.update(paramFloat * 44.0F);
+      if (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTick(44, 0)) {
+        NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AS.update(paramFloat * 44.0F);
         ((Aircraft)superObj()).rareAction(paramFloat * 44.0F, false);
-        if (NetAircraft.this.FM.Loc.z - Engine.land().HQ_Air(NetAircraft.this.FM.Loc.x, NetAircraft.this.FM.Loc.y) > 40.0D) {
-          NetAircraft.this.FM.setWasAirborne(true);
-          NetAircraft.this.FM.setStationedOnGround(false);
-        } else if (NetAircraft.this.FM.Vwld.length() < 1.0D) {
-          NetAircraft.this.FM.setStationedOnGround(true);
+        if (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double - Engine.land().HQ_Air(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double, NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double) > 40.0D) {
+          NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setWasAirborne(true);
+          NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setStationedOnGround(false);
+        } else if (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Vwld_of_type_ComMaddoxJGPVector3d.length() < 1.0D) {
+          NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.setStationedOnGround(true);
         }
       }
     }
 
     public void netControls(int paramInt)
     {
-      NetAircraft.this.FM.CT.GearControl = ((paramInt & 0x1) != 0 ? 1.0F : 0.0F);
-      NetAircraft.this.FM.CT.FlapsControl = ((paramInt & 0x2) != 0 ? 1.0F : 0.0F);
-      NetAircraft.this.FM.CT.BrakeControl = ((paramInt & 0x4) != 0 ? 1.0F : 0.0F);
-      NetAircraft.this.FM.CT.setRadiatorControl((paramInt & 0x8) != 0 ? 1.0F : 0.0F);
-      NetAircraft.this.FM.CT.BayDoorControl = ((paramInt & 0x10) != 0 ? 1.0F : 0.0F);
-      NetAircraft.this.FM.CT.AirBrakeControl = ((paramInt & 0x20) != 0 ? 1.0F : 0.0F);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = ((paramInt & 0x1) != 0 ? 1.0F : 0.0F);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = ((paramInt & 0x2) != 0 ? 1.0F : 0.0F);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl = ((paramInt & 0x4) != 0 ? 1.0F : 0.0F);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl((paramInt & 0x8) != 0 ? 1.0F : 0.0F);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.BayDoorControl = ((paramInt & 0x10) != 0 ? 1.0F : 0.0F);
+      NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl = ((paramInt & 0x20) != 0 ? 1.0F : 0.0F);
     }
     public void netWeaponControl(int paramInt) {
-      int k = NetAircraft.this.FM.CT.WeaponControl.length;
+      int k = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl.length;
       int i = 0; for (int j = 1; (i < k) && (j < 256); j <<= 1) {
-        NetAircraft.this.FM.CT.WeaponControl[i] = ((paramInt & j) != 0 ? 1 : false);
+        NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[i] = ((paramInt & j) != 0 ? 1 : false);
 
         i++;
       }
@@ -2350,16 +2171,16 @@ public abstract class NetAircraft extends SndAircraft
 
     public void netUpdate() {
       if (Time.tickCounter() <= 2) return;
-      if ((this.netUser == null) && (NetAircraft.this.FM.brakeShoe)) {
-        i = NetAircraft.this.FM.actor.hashCode() & 0xF;
+      if ((this.netUser == null) && (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoe)) {
+        i = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.actor.hashCode() & 0xF;
         if ((this.countUpdates++ & 0xF) != i)
           return;
       } else {
         this.countUpdates = 0;
       }
 
-      if (this.weaponsIsEmpty) NetAircraft.this.FM.CT.WCT = 0;
-      int i = (NetAircraft.this.FM.CT.WCT & 0xF) != 0 ? 1 : 0;
+      if (this.weaponsIsEmpty) NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WCT = 0;
+      int i = (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WCT & 0xF) != 0 ? 1 : 0;
       try {
         this.out.unLockAndClear();
 
@@ -2368,34 +2189,34 @@ public abstract class NetAircraft extends SndAircraft
         int k = 0;
         int n = 0;
         int i1 = 0;
-        for (int i2 = 0; i2 < NetAircraft.this.FM.EI.getNum(); i2++) {
-          i3 = (int)(NetAircraft.this.FM.EI.engines[i2].getw() / 640.0F * 255.0F);
+        for (int i2 = 0; i2 < NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); i2++) {
+          i3 = (int)(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i2].getw() / 640.0F * 255.0F);
           if (i2 == 0) i1 = i3;
           else if (i1 != i3) n = 1;
-          if (i3 != NetAircraft.this.FM.EI.engines[i2].wNetPrev) {
+          if (i3 != NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i2].wNetPrev) {
             k = 1;
-            NetAircraft.this.FM.EI.engines[i2].wNetPrev = i3;
+            NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i2].wNetPrev = i3;
           }
         }
         if (k != 0) {
           if (n != 0) { j = 1; } else {
-            j = NetAircraft.this.FM.EI.getNum(); if (j > 15) j = 15;
+            j = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); if (j > 15) j = 15;
           }
         }
         if ((NetAircraft.this.netCockpitValid) && (NetAircraft.this.netCockpitTuretNum >= 0))
           j |= 16;
-        if (NetAircraft.this.FM.Gears.onGround())
+        if (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround())
           j |= 32;
-        if ((NetAircraft.this.FM.Gears.isUnderDeck()) && (NetAircraft.this.FM.Vrel.lengthSquared() < 2.0D)) {
-          NetAircraft.corn.set(NetAircraft.this.FM.Loc);
-          NetAircraft.corn1.set(NetAircraft.this.FM.Loc);
-          NetAircraft.corn1.z -= 20.0D;
+        if ((NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.isUnderDeck()) && (NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Vrel.lengthSquared() < 2.0D)) {
+          NetAircraft.corn.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+          NetAircraft.corn1.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d);
+          NetAircraft.corn1.jdField_z_of_type_Double -= 20.0D;
           Actor localActor = Engine.collideEnv().getLine(NetAircraft.corn, NetAircraft.corn1, false, NetAircraft.clipFilter, NetAircraft.pship);
           if ((!(localActor instanceof BigshipGeneric)) && (Mission.isCoop()) && (Time.current() < 60000L))
-            localActor = NetAircraft.this.FM.brakeShoeLastCarrier;
+            localActor = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.brakeShoeLastCarrier;
           if ((localActor instanceof BigshipGeneric)) {
-            NetAircraft.lCorn.set(NetAircraft.this.pos.getAbs());
-            NetAircraft.lCorn.sub(localActor.pos.getAbs());
+            NetAircraft.lCorn.set(NetAircraft.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
+            NetAircraft.lCorn.sub(localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
             if ((Math.abs(NetAircraft.lCorn.getX()) < 200.0D) && (Math.abs(NetAircraft.lCorn.getY()) < 200.0D) && (Math.abs(NetAircraft.lCorn.getZ()) < 200.0D))
             {
               j |= 64;
@@ -2407,12 +2228,12 @@ public abstract class NetAircraft extends SndAircraft
         int m = (int)(Time.tickNext() - Time.current());
         if (m > 255) m = 255;
         this.out.writeByte(m);
-        this.out.writeByte(NetAircraft.this.FM.CT.CTL);
-        this.out.writeByte(NetAircraft.this.FM.CT.WCT);
-        Controls tmp653_650 = NetAircraft.this.FM.CT; tmp653_650.WCT = (byte)(tmp653_650.WCT & 0x3);
+        this.out.writeByte(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.CTL);
+        this.out.writeByte(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WCT);
+        Controls tmp650_647 = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls; tmp650_647.WCT = (byte)(tmp650_647.WCT & 0x3);
 
-        NetAircraft.this.pos.getAbs(this.p, this.o);
-        this.out.writeFloat((float)this.p.x); this.out.writeFloat((float)this.p.y); this.out.writeFloat((float)this.p.z);
+        NetAircraft.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.p, this.o);
+        this.out.writeFloat((float)this.p.x); this.out.writeFloat((float)this.p.y); this.out.writeFloat((float)this.p.jdField_z_of_type_Double);
 
         this.o.wrap();
         n = (int)(this.o.getYaw() * 32000.0F / 180.0F);
@@ -2421,10 +2242,10 @@ public abstract class NetAircraft extends SndAircraft
         this.out.writeShort(n); this.out.writeShort(i1); this.out.writeShort(i2);
 
         if ((j & 0x40) == 0) {
-          this.vec3f.set(NetAircraft.this.FM.getW());
-          i3 = (int)(this.vec3f.x * 32000.0F / 50.0F);
-          i4 = (int)(this.vec3f.y * 32000.0F / 50.0F);
-          i5 = (int)(this.vec3f.z * 32000.0F / 50.0F);
+          this.vec3f.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW());
+          i3 = (int)(this.vec3f.jdField_x_of_type_Float * 32000.0F / 50.0F);
+          i4 = (int)(this.vec3f.jdField_y_of_type_Float * 32000.0F / 50.0F);
+          i5 = (int)(this.vec3f.jdField_z_of_type_Float * 32000.0F / 50.0F);
           this.out.writeShort(i3); this.out.writeShort(i4); this.out.writeShort(i5);
         } else {
           NetAircraft.lCorn.get(this.o);
@@ -2435,18 +2256,18 @@ public abstract class NetAircraft extends SndAircraft
           this.out.writeShort(n); this.out.writeShort(i1); this.out.writeShort(i2);
         }
 
-        this.vec3f.set(NetAircraft.this.FM.Vwld);
-        int i3 = (int)(this.vec3f.x * 32000.0F / 400.0F);
-        int i4 = (int)(this.vec3f.y * 32000.0F / 400.0F);
-        int i5 = (int)(this.vec3f.z * 32000.0F / 400.0F);
+        this.vec3f.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Vwld);
+        int i3 = (int)(this.vec3f.jdField_x_of_type_Float * 32000.0F / 400.0F);
+        int i4 = (int)(this.vec3f.jdField_y_of_type_Float * 32000.0F / 400.0F);
+        int i5 = (int)(this.vec3f.jdField_z_of_type_Float * 32000.0F / 400.0F);
         this.out.writeShort(i3); this.out.writeShort(i4); this.out.writeShort(i5);
         int i7;
         int i8;
         if ((j & 0x40) == 0) {
-          this.vec3f.set(NetAircraft.this.FM.getAccel());
-          i6 = (int)(this.vec3f.x * 32000.0F / 2000.0F);
-          i7 = (int)(this.vec3f.y * 32000.0F / 2000.0F);
-          i8 = (int)(this.vec3f.z * 32000.0F / 2000.0F);
+          this.vec3f.set(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel());
+          i6 = (int)(this.vec3f.jdField_x_of_type_Float * 32000.0F / 2000.0F);
+          i7 = (int)(this.vec3f.jdField_y_of_type_Float * 32000.0F / 2000.0F);
+          i8 = (int)(this.vec3f.jdField_z_of_type_Float * 32000.0F / 2000.0F);
           this.out.writeShort(i6); this.out.writeShort(i7); this.out.writeShort(i8);
         } else {
           i6 = (int)(NetAircraft.lCorn.getX() * 32000.0D / 200.0D);
@@ -2456,15 +2277,15 @@ public abstract class NetAircraft extends SndAircraft
         }
 
         for (int i6 = 0; i6 < (j & 0xF); i6++) {
-          this.out.writeByte((byte)(int)(NetAircraft.this.FM.EI.engines[i6].getw() / 640.0F * 255.0F));
-          this.out.writeByte((byte)(int)(NetAircraft.this.FM.EI.engines[i6].getPropPhi() / 1.6F * 255.0F));
+          this.out.writeByte((byte)(int)(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i6].getw() / 640.0F * 255.0F));
+          this.out.writeByte((byte)(int)(NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i6].getPropPhi() / 1.6F * 255.0F));
         }
 
         if ((NetAircraft.this.netCockpitValid) && (NetAircraft.this.netCockpitTuretNum >= 0)) {
-          Turret localTurret = NetAircraft.this.FM.turret[NetAircraft.this.netCockpitTuretNum];
-          i7 = NetAircraft.this.FM.CT.WeaponControl[NetAircraft.this.netCockpitWeaponControlNum];
+          Turret localTurret = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[NetAircraft.this.netCockpitTuretNum];
+          i8 = NetAircraft.this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[NetAircraft.this.netCockpitWeaponControlNum];
           this.out.writeShort(packSY(localTurret.tu[0]));
-          this.out.writeShort(packSP(localTurret.tu[1]) | (i7 != 0 ? 32768 : 0));
+          this.out.writeShort(packSP(localTurret.tu[1]) | (i8 != 0 ? 32768 : 0));
         }
 
         post(Time.current(), this.out); } catch (Exception localException) {

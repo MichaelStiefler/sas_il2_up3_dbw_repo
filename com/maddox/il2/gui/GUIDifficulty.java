@@ -40,12 +40,6 @@ public class GUIDifficulty extends GameState
   public GUISwitchBox3 sNoMinimapPath;
   public GUISwitchBox3 sNoSpeedBar;
   public GUISwitchBox3 sComplexEManagement;
-  public GUISwitchBox3 sReliability;
-  public GUISwitchBox3 sG_Limits;
-  public GUISwitchBox3 sRealisticPilotVulnerability;
-  public GUISwitchBox3 sRealisticNavigationInstruments;
-  public GUISwitchBox3 sNo_Player_Icon;
-  public GUISwitchBox3 sNo_Fog_Of_War_Icons;
   public GUIButton bExit;
   public GUIButton bEasy;
   public GUIButton bNormal;
@@ -53,8 +47,6 @@ public class GUIDifficulty extends GameState
   public GUIButton bNext;
   public boolean bEnable = true;
   public boolean bFirst = true;
-  public boolean bSecond = false;
-  public boolean bThird = false;
 
   public void enterPush(GameState paramGameState) {
     if (paramGameState.id() == 27)
@@ -70,13 +62,6 @@ public class GUIDifficulty extends GameState
 
   public void _enter() {
     reset();
-
-    this.sReliability.setEnable(this.bEnable);
-    this.sG_Limits.setEnable(this.bEnable);
-    this.sRealisticPilotVulnerability.setEnable(this.bEnable);
-    this.sRealisticNavigationInstruments.setEnable(this.bEnable);
-
-    this.sNo_Player_Icon.setEnable(this.bEnable);
 
     this.sWind_N_Turbulence.setEnable(this.bEnable);
     this.sFlutter_Effect.setEnable(this.bEnable);
@@ -131,29 +116,20 @@ public class GUIDifficulty extends GameState
     setShow(this.bFirst, this.sLimited_Ammo);
     setShow(this.bFirst, this.sLimited_Fuel);
 
-    setShow((this.bFirst) || (this.bSecond), this.bNext);
+    setShow(this.bFirst, this.bNext);
 
-    setShow(this.bFirst, this.sReliability);
-    setShow(this.bFirst, this.sG_Limits);
-
-    setShow(this.bSecond, this.sRealisticPilotVulnerability);
-    setShow(this.bSecond, this.sRealisticNavigationInstruments);
-
-    setShow(this.bSecond, this.sCockpit_Always_On);
-    setShow(this.bSecond, this.sNo_Outside_Views);
-    setShow(this.bSecond, this.sHead_Shake);
-    setShow(this.bSecond, this.sNo_Icons);
-    setShow(this.bSecond, this.sNo_Padlock);
-    setShow(this.bSecond, this.sClouds);
-    setShow(this.bSecond, this.sNoInstantSuccess);
-    setShow(this.bSecond, this.sTakeoff_N_Landing);
-    setShow(this.bSecond, this.sRealistic_Landings);
-    setShow(this.bSecond, this.sNoSpeedBar);
-
-    setShow(this.bThird, this.sNo_Map_Icons);
-    setShow(this.bThird, this.sNo_Player_Icon);
-    setShow(this.bThird, this.sNo_Fog_Of_War_Icons);
-    setShow(this.bThird, this.sNoMinimapPath);
+    setShow(!this.bFirst, this.sCockpit_Always_On);
+    setShow(!this.bFirst, this.sNo_Outside_Views);
+    setShow(!this.bFirst, this.sHead_Shake);
+    setShow(!this.bFirst, this.sNo_Icons);
+    setShow(!this.bFirst, this.sNo_Padlock);
+    setShow(!this.bFirst, this.sClouds);
+    setShow(!this.bFirst, this.sNoInstantSuccess);
+    setShow(!this.bFirst, this.sTakeoff_N_Landing);
+    setShow(!this.bFirst, this.sRealistic_Landings);
+    setShow(!this.bFirst, this.sNo_Map_Icons);
+    setShow(!this.bFirst, this.sNoMinimapPath);
+    setShow(!this.bFirst, this.sNoSpeedBar);
 
     this.dialogClient.doResolutionChanged();
     this.dialogClient.setPosSize();
@@ -161,15 +137,6 @@ public class GUIDifficulty extends GameState
 
   private void reset() {
     DifficultySettings localDifficultySettings = settings();
-
-    this.sReliability.setChecked(localDifficultySettings.Reliability, false);
-    this.sG_Limits.setChecked(localDifficultySettings.G_Limits, false);
-    this.sRealisticPilotVulnerability.setChecked(localDifficultySettings.RealisticPilotVulnerability, false);
-    this.sRealisticNavigationInstruments.setChecked(localDifficultySettings.RealisticNavigationInstruments, false);
-
-    this.sNo_Player_Icon.setChecked(localDifficultySettings.No_Player_Icon, false);
-    this.sNo_Fog_Of_War_Icons.setChecked(localDifficultySettings.No_Fog_Of_War_Icons, false);
-
     this.sWind_N_Turbulence.setChecked(localDifficultySettings.Wind_N_Turbulence, false);
     this.sFlutter_Effect.setChecked(localDifficultySettings.Flutter_Effect, false);
     this.sStalls_N_Spins.setChecked(localDifficultySettings.Stalls_N_Spins, false);
@@ -194,21 +161,11 @@ public class GUIDifficulty extends GameState
     this.sNoMinimapPath.setChecked(localDifficultySettings.NoMinimapPath, false);
     this.sNoSpeedBar.setChecked(localDifficultySettings.NoSpeedBar, false);
     this.sComplexEManagement.setChecked(localDifficultySettings.ComplexEManagement, false);
-    this.sNo_Fog_Of_War_Icons.setEnable(this.sNo_Map_Icons.isChecked() & this.bEnable);
   }
 
   public void _leave() {
     if (this.bEnable) {
       DifficultySettings localDifficultySettings = settings();
-
-      localDifficultySettings.Reliability = this.sReliability.isChecked();
-      localDifficultySettings.RealisticNavigationInstruments = this.sRealisticNavigationInstruments.isChecked();
-      localDifficultySettings.G_Limits = this.sG_Limits.isChecked();
-      localDifficultySettings.RealisticPilotVulnerability = this.sRealisticPilotVulnerability.isChecked();
-
-      localDifficultySettings.No_Player_Icon = this.sNo_Player_Icon.isChecked();
-      localDifficultySettings.No_Fog_Of_War_Icons = this.sNo_Fog_Of_War_Icons.isChecked();
-
       localDifficultySettings.Wind_N_Turbulence = this.sWind_N_Turbulence.isChecked();
       localDifficultySettings.Flutter_Effect = this.sFlutter_Effect.isChecked();
       localDifficultySettings.Stalls_N_Spins = this.sStalls_N_Spins.isChecked();
@@ -286,14 +243,6 @@ public class GUIDifficulty extends GameState
     this.sNoSpeedBar = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
     this.sComplexEManagement = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
 
-    this.sReliability = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-    this.sRealisticNavigationInstruments = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-    this.sG_Limits = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-    this.sRealisticPilotVulnerability = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-
-    this.sNo_Player_Icon = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-    this.sNo_Fog_Of_War_Icons = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-
     clientInit(paramGWindowRoot);
 
     this.dialogClient.activateWindow();
@@ -313,36 +262,14 @@ public class GUIDifficulty extends GameState
       if (paramGWindow == GUIDifficulty.this.bExit) {
         if (GUIDifficulty.this.bFirst) {
           Main.stateStack().pop();
-        }
-        else if (GUIDifficulty.this.bSecond)
-        {
+        } else {
           GUIDifficulty.this.bFirst = true;
-          GUIDifficulty.this.bSecond = false;
-          GUIDifficulty.this.bThird = false;
-          GUIDifficulty.this.showHide();
-        }
-        else
-        {
-          GUIDifficulty.this.bSecond = true;
-          GUIDifficulty.this.bFirst = false;
-          GUIDifficulty.this.bThird = false;
           GUIDifficulty.this.showHide();
         }
         return true;
-      }
-      if (paramGWindow == GUIDifficulty.this.bNext) {
-        if (GUIDifficulty.this.bFirst)
-        {
+      }if (paramGWindow == GUIDifficulty.this.bNext) {
+        if (GUIDifficulty.this.bFirst) {
           GUIDifficulty.this.bFirst = false;
-          GUIDifficulty.this.bSecond = true;
-          GUIDifficulty.this.bThird = false;
-          GUIDifficulty.this.showHide();
-        }
-        else if (GUIDifficulty.this.bSecond)
-        {
-          GUIDifficulty.this.bFirst = false;
-          GUIDifficulty.this.bSecond = false;
-          GUIDifficulty.this.bThird = true;
           GUIDifficulty.this.showHide();
         }
         return true;
@@ -358,18 +285,13 @@ public class GUIDifficulty extends GameState
         GUIDifficulty.this.settings().setRealistic();
         GUIDifficulty.this.reset();
         return true;
-      }if (paramGWindow == GUIDifficulty.this.sNo_Map_Icons)
-      {
-        GUIDifficulty.this.sNo_Fog_Of_War_Icons.setEnable(GUIDifficulty.this.sNo_Map_Icons.isChecked());
-        if (!GUIDifficulty.this.sNo_Map_Icons.isChecked())
-          GUIDifficulty.this.sNo_Fog_Of_War_Icons.setChecked(true, false);
       }
       return super.notify(paramGWindow, paramInt1, paramInt2);
     }
 
     public void render() {
       super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(464.0F), x1024(768.0F), 2.0F);
+      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(432.0F), x1024(768.0F), 2.0F);
       GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(544.0F), x1024(768.0F), 2.0F);
       setCanvasColor(GColor.Gray);
       setCanvasFont(0);
@@ -379,7 +301,7 @@ public class GUIDifficulty extends GameState
         draw(x1024(416.0F), y1024(464.0F), x1024(128.0F), y1024(48.0F), 2, GUIDifficulty.this.i18n("diff.Normal"));
         draw(x1024(608.0F), y1024(464.0F), x1024(128.0F), y1024(48.0F), 2, GUIDifficulty.this.i18n("diff.Hard"));
       }
-      if ((GUIDifficulty.this.bFirst) || (GUIDifficulty.this.bSecond))
+      if (GUIDifficulty.this.bFirst)
         draw(x1024(512.0F), y1024(577.0F), x1024(224.0F), y1024(48.0F), 2, GUIDifficulty.this.i18n("diff.Next"));
       if (GUIDifficulty.this.bFirst) {
         draw(x1024(128.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.SeparateEStart"));
@@ -389,18 +311,14 @@ public class GUIDifficulty extends GameState
         draw(x1024(128.0F), y1024(288.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Flutter"));
         draw(x1024(128.0F), y1024(352.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Wind"));
 
-        draw(x1024(128.0F), y1024(416.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Reliability"));
-
         draw(x1024(528.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Stalls"));
         draw(x1024(528.0F), y1024(96.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Vulnerability"));
         draw(x1024(528.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Blackouts"));
         draw(x1024(528.0F), y1024(224.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.RealisticGun"));
         draw(x1024(528.0F), y1024(288.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.LimitedAmmo"));
         draw(x1024(528.0F), y1024(352.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.LimitedFuel"));
-
-        draw(x1024(528.0F), y1024(416.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.G_Limits"));
       }
-      else if (GUIDifficulty.this.bSecond) {
+      else {
         draw(x1024(128.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Cockpit"));
         draw(x1024(128.0F), y1024(96.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoOutside"));
         draw(x1024(128.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Head"));
@@ -411,16 +329,9 @@ public class GUIDifficulty extends GameState
         draw(x1024(528.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoInstantSuccess"));
         draw(x1024(528.0F), y1024(96.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.Takeoff"));
         draw(x1024(528.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.RealisticLand"));
-        draw(x1024(528.0F), y1024(224.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoSpeedBar"));
-        draw(x1024(528.0F), y1024(288.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.RealisticNavInstr"));
-        draw(x1024(528.0F), y1024(352.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.RealisticPilotVulnerability"));
-      }
-      else if (GUIDifficulty.this.bThird)
-      {
-        draw(x1024(128.0F), y1024(32.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoMapIcons"));
-        draw(x1024(128.0F), y1024(96.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoPlayerIcon"));
-        draw(x1024(128.0F), y1024(160.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoFogOfWarIcons"));
-        draw(x1024(128.0F), y1024(224.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoMinimapPath"));
+        draw(x1024(528.0F), y1024(224.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoMapIcons"));
+        draw(x1024(528.0F), y1024(288.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoMinimapPath"));
+        draw(x1024(528.0F), y1024(352.0F), x1024(272.0F), y1024(48.0F), 0, GUIDifficulty.this.i18n("diff.NoSpeedBar"));
       }
     }
 
@@ -433,16 +344,12 @@ public class GUIDifficulty extends GameState
       GUIDifficulty.this.sFlutter_Effect.setPosC(x1024(88.0F), y1024(312.0F));
       GUIDifficulty.this.sWind_N_Turbulence.setPosC(x1024(88.0F), y1024(376.0F));
 
-      GUIDifficulty.this.sReliability.setPosC(x1024(88.0F), y1024(440.0F));
-
       GUIDifficulty.this.sStalls_N_Spins.setPosC(x1024(488.0F), y1024(56.0F));
       GUIDifficulty.this.sVulnerability.setPosC(x1024(488.0F), y1024(120.0F));
       GUIDifficulty.this.sBlackouts_N_Redouts.setPosC(x1024(488.0F), y1024(184.0F));
       GUIDifficulty.this.sRealistic_Gunnery.setPosC(x1024(488.0F), y1024(248.0F));
       GUIDifficulty.this.sLimited_Ammo.setPosC(x1024(488.0F), y1024(312.0F));
       GUIDifficulty.this.sLimited_Fuel.setPosC(x1024(488.0F), y1024(376.0F));
-
-      GUIDifficulty.this.sG_Limits.setPosC(x1024(488.0F), y1024(440.0F));
 
       GUIDifficulty.this.sCockpit_Always_On.setPosC(x1024(88.0F), y1024(56.0F));
       GUIDifficulty.this.sNo_Outside_Views.setPosC(x1024(88.0F), y1024(120.0F));
@@ -454,14 +361,9 @@ public class GUIDifficulty extends GameState
       GUIDifficulty.this.sNoInstantSuccess.setPosC(x1024(488.0F), y1024(56.0F));
       GUIDifficulty.this.sTakeoff_N_Landing.setPosC(x1024(488.0F), y1024(120.0F));
       GUIDifficulty.this.sRealistic_Landings.setPosC(x1024(488.0F), y1024(184.0F));
-      GUIDifficulty.this.sNoSpeedBar.setPosC(x1024(488.0F), y1024(248.0F));
-      GUIDifficulty.this.sRealisticNavigationInstruments.setPosC(x1024(488.0F), y1024(312.0F));
-      GUIDifficulty.this.sRealisticPilotVulnerability.setPosC(x1024(488.0F), y1024(376.0F));
-
-      GUIDifficulty.this.sNo_Map_Icons.setPosC(x1024(88.0F), y1024(56.0F));
-      GUIDifficulty.this.sNo_Player_Icon.setPosC(x1024(88.0F), y1024(120.0F));
-      GUIDifficulty.this.sNo_Fog_Of_War_Icons.setPosC(x1024(88.0F), y1024(184.0F));
-      GUIDifficulty.this.sNoMinimapPath.setPosC(x1024(88.0F), y1024(248.0F));
+      GUIDifficulty.this.sNo_Map_Icons.setPosC(x1024(488.0F), y1024(248.0F));
+      GUIDifficulty.this.sNoMinimapPath.setPosC(x1024(488.0F), y1024(312.0F));
+      GUIDifficulty.this.sNoSpeedBar.setPosC(x1024(488.0F), y1024(376.0F));
 
       GUIDifficulty.this.bExit.setPosC(x1024(56.0F), y1024(602.0F));
       GUIDifficulty.this.bEasy.setPosC(x1024(392.0F), y1024(488.0F));

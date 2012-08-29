@@ -19,10 +19,10 @@ public class CmdSound extends Cmd
 
   public CmdSound()
   {
-    this.param.put("list", null);
-    this.param.put("set", null);
-    this.param.put("save", null);
-    this.param.put("select", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("list", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("set", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("save", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("select", null);
     this._properties.put("NAME", "acc");
     this._levelAccess = 0;
   }
@@ -33,7 +33,7 @@ public class CmdSound extends Cmd
     if (!paramMap.isEmpty())
     {
       if (paramMap.containsKey("_$$")) {
-        System.out.println("Unknown command :" + arg(paramMap, "_$$", 0));
+        System.out.println("Unknown command :" + Cmd.arg(paramMap, "_$$", 0));
       }
       else
       {
@@ -47,14 +47,14 @@ public class CmdSound extends Cmd
           }
         }
         if (paramMap.containsKey("select")) {
-          localObject = arg(paramMap, "select", 0);
+          localObject = Cmd.arg(paramMap, "select", 0);
           this.prs = ((SoundPreset)SoundPreset.map.get(localObject));
         }
         if (paramMap.containsKey("set")) {
           if (this.prs == null)
             System.out.println("sound preset not selected");
           else {
-            this.prs.set(arg(paramMap, "set", 0), arg(paramMap, "set", 1));
+            this.prs.set(Cmd.arg(paramMap, "set", 0), Cmd.arg(paramMap, "set", 1));
           }
         }
       }

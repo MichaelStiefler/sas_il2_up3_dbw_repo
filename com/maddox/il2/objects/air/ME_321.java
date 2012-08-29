@@ -7,7 +7,6 @@ import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.il2.objects.ActorLand;
 import com.maddox.il2.objects.weapons.Bomb;
 import com.maddox.il2.objects.weapons.BombWalterStarthilferakete;
@@ -23,33 +22,38 @@ public class ME_321 extends Scheme0
 
   public void msgCollision(Actor paramActor, String paramString1, String paramString2)
   {
-    if (((paramActor instanceof ActorLand)) && (this.FM.getVertSpeed() > -10.0F)) return;
+    if (((paramActor instanceof ActorLand)) && (this.FM.getVertSpeed() > -10.0F))
+    {
+      return;
+    }
+
     super.msgCollision(paramActor, paramString1, paramString2);
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
-    switch (paramInt) {
-    case 0:
-      break;
-    case 1:
-      break;
+    switch (paramInt)
+    {
     case 2:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.FM.turret[0].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.FM.turret[1].bIsOperable = false;
       break;
     case 4:
-      this.FM.turret[2].setHealth(paramFloat);
+      this.FM.turret[2].bIsOperable = false;
       break;
     case 5:
-      this.FM.turret[3].setHealth(paramFloat);
+      this.FM.turret[3].bIsOperable = false;
     }
   }
 
-  public void doMurderPilot(int paramInt) {
-    switch (paramInt) {
+  public void doMurderPilot(int paramInt)
+  {
+    switch (paramInt)
+    {
+    default:
+      break;
     case 0:
       hierMesh().chunkVisible("Pilot1_D0", false);
       hierMesh().chunkVisible("Pilot1_D1", true);
@@ -66,16 +70,21 @@ public class ME_321 extends Scheme0
 
   protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
   {
-    if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead"))) {
+    if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead")))
+    {
       int i = 0;
       int j;
-      if (paramString.endsWith("a")) {
+      if (paramString.endsWith("a"))
+      {
         i = 1;
         j = paramString.charAt(6) - '1';
-      } else if (paramString.endsWith("b")) {
+      }
+      else if (paramString.endsWith("b"))
+      {
         i = 2;
         j = paramString.charAt(6) - '1';
-      } else {
+      }
+      else {
         j = paramString.charAt(5) - '1';
       }
       hitFlesh(j, paramShot, i);
@@ -102,38 +111,104 @@ public class ME_321 extends Scheme0
   public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
   {
     boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
-    switch (paramInt) {
+    float f1 = -paramArrayOfFloat[0];
+    float f2 = paramArrayOfFloat[1];
+    switch (paramInt)
+    {
+    default:
+      break;
     case 0:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f1 < -45.0F)
+      {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F)
+      {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F)
+      {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F)
+        break;
+      f2 = 60.0F;
+      bool = false; break;
     case 1:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 30.0F) break; f2 = 30.0F; bool = false; break;
+      if (f1 < -45.0F)
+      {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F)
+      {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F)
+      {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 30.0F)
+        break;
+      f2 = 30.0F;
+      bool = false; break;
     case 2:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f1 < -45.0F)
+      {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F)
+      {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F)
+      {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F)
+        break;
+      f2 = 60.0F;
+      bool = false; break;
     case 3:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false;
+      if (f1 < -45.0F)
+      {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F)
+      {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F)
+      {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F)
+        break;
+      f2 = 60.0F;
+      bool = false;
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
+    paramArrayOfFloat[0] = (-f1);
+    paramArrayOfFloat[1] = f2;
     return bool;
   }
 
   protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
   {
-    switch (paramInt1) { case 33:
+    switch (paramInt1)
+    {
+    case 33:
       return super.cutFM(34, paramInt2, paramActor);
     case 36:
       return super.cutFM(37, paramInt2, paramActor);
@@ -170,12 +245,11 @@ public class ME_321 extends Scheme0
   {
     super.onAircraftLoaded();
     for (int i = 0; i < 4; i++)
-      try {
+      try
+      {
         this.booster[i] = new BombWalterStarthilferakete();
         this.booster[i].pos.setBase(this, findHook("_BoosterH" + (i + 1)), false);
-
         this.booster[i].pos.resetAsBase();
-
         this.booster[i].drawing(true);
       }
       catch (Exception localException)
@@ -186,11 +260,12 @@ public class ME_321 extends Scheme0
 
   public void doCutBoosters()
   {
-    for (int i = 0; i < 4; i++)
-      if (this.booster[i] != null) {
-        this.booster[i].start();
-        this.booster[i] = null;
-      }
+    for (int i = 0; i < 4; i++) {
+      if (this.booster[i] == null)
+        continue;
+      this.booster[i].start();
+      this.booster[i] = null;
+    }
   }
 
   public boolean typeBomberToggleAutomation()
@@ -214,53 +289,76 @@ public class ME_321 extends Scheme0
   {
   }
 
-  public void typeBomberAdjSideslipPlus() {
+  public void typeBomberAdjSideslipPlus()
+  {
   }
 
-  public void typeBomberAdjSideslipMinus() {
+  public void typeBomberAdjSideslipMinus()
+  {
   }
 
-  public void typeBomberAdjAltitudeReset() {
+  public void typeBomberAdjAltitudeReset()
+  {
   }
 
-  public void typeBomberAdjAltitudePlus() {
+  public void typeBomberAdjAltitudePlus()
+  {
   }
 
-  public void typeBomberAdjAltitudeMinus() {
+  public void typeBomberAdjAltitudeMinus()
+  {
   }
 
-  public void typeBomberAdjSpeedReset() {
+  public void typeBomberAdjSpeedReset()
+  {
   }
 
-  public void typeBomberAdjSpeedPlus() {
+  public void typeBomberAdjSpeedPlus()
+  {
   }
 
-  public void typeBomberAdjSpeedMinus() {
+  public void typeBomberAdjSpeedMinus()
+  {
   }
 
-  public void typeBomberUpdate(float paramFloat) {
+  public void typeBomberUpdate(float paramFloat)
+  {
   }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
+  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted)
+    throws IOException
+  {
   }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
+  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException
+  {
   }
 
-  static {
+  static Class _mthclass$(String paramString)
+  {
+    Class localClass;
+    try
+    {
+      localClass = Class.forName(paramString);
+    }
+    catch (ClassNotFoundException localClassNotFoundException)
+    {
+      throw new NoClassDefFoundError(localClassNotFoundException.getMessage());
+    }
+    return localClass;
+  }
+
+  static
+  {
     Class localClass = ME_321.class;
     new NetAircraft.SPAWN(localClass);
-
     Property.set(localClass, "iconFar_shortClassName", "Me-321");
     Property.set(localClass, "meshName", "3do/plane/Me-321/hier.him");
     Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
     Property.set(localClass, "originCountry", PaintScheme.countryGermany);
-
     Property.set(localClass, "yearService", 1941.0F);
     Property.set(localClass, "yearExpired", 1945.5F);
-
     Property.set(localClass, "FlightModel", "FlightModels/Me-321.fmd");
-
     Property.set(localClass, "gliderString", "3DO/Arms/TowCable/mono.sim");
     Property.set(localClass, "gliderBoostThrust", 1960.0F);
     Property.set(localClass, "gliderStringLength", 140.0F);
@@ -269,12 +367,14 @@ public class ME_321 extends Scheme0
     Property.set(localClass, "gliderCart", 1);
     Property.set(localClass, "gliderBoosters", 1);
     Property.set(localClass, "gliderFireOut", 30.0F);
+    Property.set(localClass, "cockpitClass", new Class[] { CockpitME_321.class, CockpitME_321_FLGunner.class, CockpitME_321_FRGunner.class, CockpitME_321_LGunner.class, CockpitME_321_RGunner.class });
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 3 });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 1500", "MGunMG15t 1550", null });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 1500", "MGunMG15t 1550", null });
+
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
   }
 }

@@ -295,8 +295,8 @@ public class Mouse
     for (int i = 0; i < 7; i++)
       this.buttons[i] = false;
     this.sensitivity = new float[3];
-    for (i = 0; i < 3; i++)
-      this.sensitivity[i] = 1.0F;
+    for (int j = 0; j < 3; j++)
+      this.sensitivity[j] = 1.0F;
     this.X = (this.Y = this.Z = 0);
     this.bEnabled = true;
     loadConfig(paramIniFile, paramString);

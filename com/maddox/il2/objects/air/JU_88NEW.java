@@ -8,13 +8,10 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
-import com.maddox.il2.fm.Turret;
-import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -22,138 +19,30 @@ import java.io.IOException;
 
 public abstract class JU_88NEW extends Scheme2
 {
-  private boolean blisterRemoved = false;
-  private boolean topBlisterRemoved = false;
-
-  float suspR = 0.0F;
-  float suspL = 0.0F;
-  boolean mainRearGunActive = true;
-  boolean secondaryRearGunActive = false;
-
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    this.FM.AS.wantBeaconsNet(true);
-  }
-
-  public void blisterRemoved(int paramInt)
-  {
-    float f = this.FM.getAltitude() - Landscape.HQ_Air((float)this.FM.Loc.x, (float)this.FM.Loc.y);
-
-    if (f < 0.3F)
-    {
-      if (!this.topBlisterRemoved) {
-        doRemoveTopBlister();
-      }
-
-    }
-    else if ((paramInt == 2) || (paramInt == 3) || (paramInt == 4))
-    {
-      if (!this.blisterRemoved)
-        doRemoveBlister1();
-    }
-    else if (paramInt == 1)
-    {
-      hierMesh().chunkVisible("Turret4B_D0", false);
-      hierMesh().chunkVisible("Pilot4_D0", false);
-    }
-  }
-
-  private void doWreck(String paramString)
-  {
-    if (hierMesh().chunkFindCheck(paramString) != -1)
-    {
-      hierMesh().hideSubTrees(paramString);
-      Wreckage localWreckage = new Wreckage(this, hierMesh().chunkFind(paramString));
-      localWreckage.collide(true);
-      Vector3d localVector3d = new Vector3d();
-      localVector3d.set(this.FM.Vwld);
-      localWreckage.setSpeed(localVector3d);
-    }
-  }
-
-  private final void doRemoveBlister1()
-  {
-    this.blisterRemoved = true;
-    doWreck("Blister1_D0");
-    hierMesh().chunkVisible("Turret4B_D0", false);
-  }
-
-  private final void doRemoveTopBlister() {
-    this.topBlisterRemoved = true;
-    hierMesh().chunkVisible("Turret2B_D0", false);
-    hierMesh().chunkVisible("Turret3B_D0", false);
-    doWreck("BlisterTop_D0");
-  }
-
   public static void moveGear(HierMesh paramHierMesh, float paramFloat)
   {
     float f = Math.max(-paramFloat * 1600.0F, -80.0F);
-    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, -90.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, 0.0F);
-    if (f > -2.5F)
-      f = 0.0F;
     paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, f, 0.0F);
     paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, -f, 0.0F);
+    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, -90.0F * paramFloat, 0.0F);
     f = paramFloat < 0.5F ? Math.abs(Math.min(paramFloat, 0.1F)) : Math.abs(Math.min(1.0F - paramFloat, 0.1F));
-    if (f < 0.002F)
-      f = 0.0F;
     paramHierMesh.chunkSetAngles("GearR7_D0", 0.0F, -450.0F * f, 0.0F);
     paramHierMesh.chunkSetAngles("GearL7_D0", 0.0F, 450.0F * f, 0.0F);
     paramHierMesh.chunkSetAngles("GearR6_D0", 0.0F, 1200.0F * f, 0.0F);
     paramHierMesh.chunkSetAngles("GearL6_D0", 0.0F, -1200.0F * f, 0.0F);
-    f = cvt(paramFloat, 0.0F, 0.5F, 0.0F, 0.1F);
-    if (f < 0.002F)
-      f = 0.0F;
-    paramHierMesh.chunkSetAngles("GearR5_D0", 0.0F, 900.0F * f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL5_D0", 0.0F, -900.0F * f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, -900.0F * f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, 900.0F * f, 0.0F);
-
-    paramHierMesh.chunkSetAngles("GearR8_D0", 0.0F, 0.0F, 93.0F * paramFloat);
-    paramHierMesh.chunkSetAngles("GearL8_D0", 0.0F, 0.0F, 93.0F * paramFloat);
-
-    paramHierMesh.chunkSetAngles("GearR3_D0", 85.0F * paramFloat, 0.0F, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL3_D0", -85.0F * paramFloat, 0.0F, 0.0F);
-
-    paramHierMesh.chunkSetAngles("GearR9_D0", 0.0F, 0.0F, -116.0F * paramFloat);
-    paramHierMesh.chunkSetAngles("GearL9_D0", 0.0F, 0.0F, -116.0F * paramFloat);
-
-    paramHierMesh.chunkSetAngles("GearR10_D0", 0.0F, 0.0F, 126.0F * paramFloat);
-    paramHierMesh.chunkSetAngles("GearL10_D0", 0.0F, 0.0F, 126.0F * paramFloat);
-  }
-
-  public void moveWheelSink()
-  {
-    this.suspL = (0.9F * this.suspL + 0.1F * this.FM.Gears.gWheelSinking[0]);
-    this.suspR = (0.9F * this.suspR + 0.1F * this.FM.Gears.gWheelSinking[1]);
-
-    if (this.suspL > 0.035F)
-      this.suspL = 0.035F;
-    if (this.suspR > 0.035F)
-      this.suspR = 0.035F;
-    if (this.suspL < 0.0F)
-      this.suspL = 0.0F;
-    if (this.suspR < 0.0F) {
-      this.suspR = 0.0F;
+    if (paramFloat < 0.5F)
+    {
+      paramHierMesh.chunkSetAngles("GearR5_D0", 0.0F, 900.0F * f, 0.0F);
+      paramHierMesh.chunkSetAngles("GearL5_D0", 0.0F, -900.0F * f, 0.0F);
+      paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, -900.0F * f, 0.0F);
+      paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, 900.0F * f, 0.0F);
     }
-    Aircraft.xyz[0] = 0.0F;
-    Aircraft.ypr[0] = 0.0F;
-    Aircraft.xyz[1] = 0.0F;
-    Aircraft.ypr[1] = 0.0F;
-    Aircraft.xyz[2] = 0.0F;
-    Aircraft.ypr[2] = 0.0F;
-    float f = 588.0F;
-
-    Aircraft.xyz[2] = (this.suspL * 6.0F);
-    hierMesh().chunkSetLocate("GearL2_D0", Aircraft.xyz, Aircraft.ypr);
-    hierMesh().chunkSetAngles("GearL11_D0", 0.0F, 0.0F, this.suspL * f);
-    hierMesh().chunkSetAngles("GearL12_D0", 0.0F, 0.0F, -this.suspL * f);
-
-    Aircraft.xyz[2] = (this.suspR * 6.0F);
-    hierMesh().chunkSetLocate("GearR2_D0", Aircraft.xyz, Aircraft.ypr);
-    hierMesh().chunkSetAngles("GearR11_D0", 0.0F, 0.0F, this.suspR * f);
-    hierMesh().chunkSetAngles("GearR12_D0", 0.0F, 0.0F, -this.suspR * f);
+    paramHierMesh.chunkSetAngles("GearR8_D0", 0.0F, 0.0F, 95.0F * paramFloat);
+    paramHierMesh.chunkSetAngles("GearL8_D0", 0.0F, 0.0F, 95.0F * paramFloat);
+    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, 90.0F * paramFloat, 0.0F);
+    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, -90.0F * paramFloat, 0.0F);
+    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, -130.0F * paramFloat, 0.0F);
+    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, -130.0F * paramFloat, 0.0F);
   }
 
   protected void moveGear(float paramFloat)
@@ -163,21 +52,9 @@ public abstract class JU_88NEW extends Scheme2
 
   protected void moveFlap(float paramFloat)
   {
-    float f = -60.0F * paramFloat;
+    float f = -70.0F * paramFloat;
     hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f, 0.0F);
     hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f, 0.0F);
-  }
-
-  public void update(float paramFloat)
-  {
-    for (int i = 1; i < 11; i++)
-    {
-      hierMesh().chunkSetAngles("Radl" + i + "_D0", -30.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F, 0.0F);
-
-      hierMesh().chunkSetAngles("Radr" + i + "_D0", -30.0F * this.FM.EI.engines[1].getControlRadiator(), 0.0F, 0.0F);
-    }
-
-    super.update(paramFloat);
   }
 
   public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
@@ -210,105 +87,49 @@ public abstract class JU_88NEW extends Scheme2
       f2 = 35.0F;
       bool = false; break;
     case 1:
-      if ((!this.FM.turret[2].bIsAIControlled) || (this.secondaryRearGunActive))
-      {
-        bool = false;
-        f1 = 0.0F;
-        f2 = 0.0F;
-      }
-      else {
-        this.mainRearGunActive = true;
-
-        if (f1 < -25.0F)
-        {
-          f1 = -25.0F;
-          bool = false;
-          this.mainRearGunActive = false;
-        }
-        if (f1 > 45.0F)
-        {
-          f1 = 45.0F;
-          bool = false;
-        }
-
-        if (f2 < -10.0F)
-        {
-          f2 = -10.0F;
-          bool = false;
-        }
-        if (f2 > 60.0F)
-        {
-          f2 = 60.0F;
-          bool = false;
-        }
-        if (f1 > 2.0F)
-        {
-          if (f2 >= Aircraft.cvt(f1, 2.0F, 6.8F, -2.99F, -10.0F)) break;
-          f2 = Aircraft.cvt(f1, 2.0F, 6.8F, -2.99F, -10.0F);
-        }
-        else if (f1 > -0.5F)
-        {
-          if (f2 >= Aircraft.cvt(f1, -0.5F, 2.0F, -2.3F, -2.99F)) break;
-          f2 = Aircraft.cvt(f1, -0.5F, 2.0F, -2.3F, -2.99F);
-        }
-        else if (f1 > -5.3F)
-        {
-          if (f2 >= Aircraft.cvt(f1, -5.3F, -0.5F, -2.3F, -2.3F)) break;
-          f2 = Aircraft.cvt(f1, -5.3F, -0.5F, -2.3F, -2.3F);
-        }
-        else {
-          if (f2 >= Aircraft.cvt(f1, -25.0F, -5.3F, -7.2F, -2.3F)) break;
-          f2 = Aircraft.cvt(f1, -25.0F, -5.3F, -7.2F, -2.3F); } 
-      }break;
+      f1 = 0.0F;
+      f2 = 0.0F;
+      bool = false;
+      break;
     case 2:
-      if (((this.FM.turret[1].bIsShooting) || (this.mainRearGunActive)) && (this.FM.turret[1].bIsOperable) && (this.FM.CT.Weapons[11][0].haveBullets()))
+      if (f1 < -45.0F)
       {
-        this.secondaryRearGunActive = false;
+        f1 = -45.0F;
         bool = false;
-        f1 = 0.0F;
-        f2 = 0.0F;
+      }
+      if (f1 > 25.0F)
+      {
+        f1 = 25.0F;
+        bool = false;
+      }
+      if (f2 < -10.0F)
+      {
+        f2 = -10.0F;
+        bool = false;
+      }
+      if (f2 > 60.0F)
+      {
+        f2 = 60.0F;
+        bool = false;
+      }
+      if (f1 < -2.0F)
+      {
+        if (f2 >= Aircraft.cvt(f1, -6.8F, -2.0F, -10.0F, -2.99F)) break;
+        f2 = Aircraft.cvt(f1, -6.8F, -2.0F, -10.0F, -2.99F);
+      }
+      else if (f1 < 0.5F)
+      {
+        if (f2 >= Aircraft.cvt(f1, -2.0F, 0.5F, -2.99F, -2.3F)) break;
+        f2 = Aircraft.cvt(f1, -2.0F, 0.5F, -2.99F, -2.3F);
+      }
+      else if (f1 < 5.3F)
+      {
+        if (f2 >= Aircraft.cvt(f1, 0.5F, 5.3F, -2.3F, -2.3F)) break;
+        f2 = Aircraft.cvt(f1, 0.5F, 5.3F, -2.3F, -2.3F);
       }
       else {
-        this.secondaryRearGunActive = true;
-        if (f1 < -45.0F)
-        {
-          f1 = -45.0F;
-          bool = false;
-        }
-        if (f1 > 25.0F)
-        {
-          f1 = 25.0F;
-          bool = false;
-        }
-        if (f2 < -10.0F)
-        {
-          f2 = -10.0F;
-          bool = false;
-        }
-        if (f2 > 60.0F)
-        {
-          f2 = 60.0F;
-          bool = false;
-        }
-        if (f1 < -2.0F)
-        {
-          if (f2 >= Aircraft.cvt(f1, -6.8F, -2.0F, -10.0F, -2.99F)) break;
-          f2 = Aircraft.cvt(f1, -6.8F, -2.0F, -10.0F, -2.99F);
-        }
-        else if (f1 < 0.5F)
-        {
-          if (f2 >= Aircraft.cvt(f1, -2.0F, 0.5F, -2.99F, -2.3F)) break;
-          f2 = Aircraft.cvt(f1, -2.0F, 0.5F, -2.99F, -2.3F);
-        }
-        else if (f1 < 5.3F)
-        {
-          if (f2 >= Aircraft.cvt(f1, 0.5F, 5.3F, -2.3F, -2.3F)) break;
-          f2 = Aircraft.cvt(f1, 0.5F, 5.3F, -2.3F, -2.3F);
-        }
-        else {
-          if (f2 >= Aircraft.cvt(f1, 5.3F, 25.0F, -2.3F, -7.2F)) break;
-          f2 = Aircraft.cvt(f1, 5.3F, 25.0F, -2.3F, -7.2F); } 
-      }break;
+        if (f2 >= Aircraft.cvt(f1, 5.3F, 25.0F, -2.3F, -7.2F)) break;
+        f2 = Aircraft.cvt(f1, 5.3F, 25.0F, -2.3F, -7.2F); } break;
     case 3:
       if (f1 < -35.0F)
       {
@@ -341,6 +162,10 @@ public abstract class JU_88NEW extends Scheme2
     switch (paramInt1)
     {
     case 13:
+      killPilot(this, 0);
+      killPilot(this, 1);
+      killPilot(this, 2);
+      killPilot(this, 3);
       return false;
     case 33:
       return super.cutFM(34, paramInt2, paramActor);
@@ -351,49 +176,9 @@ public abstract class JU_88NEW extends Scheme2
       break;
     case 4:
       this.FM.AS.hitEngine(this, 1, 99);
-      break;
-    case 19:
-      this.FM.Gears.hitCentreGear();
-      hierMesh().chunkVisible("Wire_D0", false);
-      break;
-    case 37:
-      this.FM.Gears.hitRightGear();
-      break;
-    case 34:
-      this.FM.Gears.hitLeftGear();
-      break;
-    case 10:
-      doWreck("GearR8_D0");
-      this.FM.Gears.hitRightGear();
-      break;
-    case 9:
-      doWreck("GearL8_D0");
-      this.FM.Gears.hitLeftGear();
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 11:
-    case 12:
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 32:
-    case 35: } return super.cutFM(paramInt1, paramInt2, paramActor);
+    }
+
+    return super.cutFM(paramInt1, paramInt2, paramActor);
   }
 
   protected void mydebuggunnery(String paramString)
@@ -417,26 +202,30 @@ public abstract class JU_88NEW extends Scheme2
       if ((this.FM.AS.astateTankStates[3] > 4) && (World.Rnd().nextFloat() < 0.1F))
         nextDMGLevel(this.FM.AS.astateEffectChunks[3] + "0", 0, this);
     }
+    for (int i = 1; i < 4; i++)
+      if (this.FM.getAltitude() < 3000.0F)
+        hierMesh().chunkVisible("HMask" + i + "_D0", false);
+      else
+        hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
   }
 
   protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
   {
+    int i;
     if (paramString.startsWith("xx"))
     {
       if (paramString.startsWith("xxarmor"))
         if (paramString.endsWith("p1"))
         {
-          if (Aircraft.v1.z > 0.5D)
+          if (Aircraft.v1.z > 0.5D) {
             getEnergyPastArmor(5.0D / Aircraft.v1.z, paramShot);
-          else if (Aircraft.v1.x > 0.9396926164627075D) {
-            getEnergyPastArmor(10.0D / Aircraft.v1.x * World.Rnd().nextFloat(1.0F, 1.2F), paramShot);
           }
-
+          else if (Aircraft.v1.x > 0.9396926164627075D)
+            getEnergyPastArmor(10.0D / Aircraft.v1.x * World.Rnd().nextFloat(1.0F, 1.2F), paramShot);
         }
-        else if (paramString.endsWith("p2"))
+        else if (paramString.endsWith("p2")) {
           getEnergyPastArmor(5.0D / Math.abs(Aircraft.v1.z), paramShot);
-        else if (paramString.endsWith("p5"))
-          getEnergyPastArmor(5.0D / Math.abs(Aircraft.v1.z), paramShot);
+        }
         else if (paramString.endsWith("p3")) {
           getEnergyPastArmor(8.0D / Math.abs(Aircraft.v1.x) * World.Rnd().nextFloat(1.0F, 1.2F), paramShot);
         }
@@ -449,14 +238,10 @@ public abstract class JU_88NEW extends Scheme2
             getEnergyPastArmor(6.0F, paramShot);
         }
         else if ((paramString.endsWith("o1")) || (paramString.endsWith("o2")))
-          if (Aircraft.v1.x > 0.7071067690849304D) {
+          if (Aircraft.v1.x > 0.7071067690849304D)
             getEnergyPastArmor(8.0D / Aircraft.v1.x * World.Rnd().nextFloat(1.0F, 1.2F), paramShot);
-          }
           else
-          {
             getEnergyPastArmor(5.0F, paramShot);
-          }
-      int i;
       if (paramString.startsWith("xxcontrols"))
       {
         i = paramString.charAt(10) - '0';
@@ -479,9 +264,8 @@ public abstract class JU_88NEW extends Scheme2
           mydebuggunnery("Rudder Controls Out.."); break;
         case 3:
         case 4:
-          if ((getEnergyPastArmor(1.0F, paramShot) <= 0.0F) || (World.Rnd().nextFloat() >= 0.12F)) {
+          if ((getEnergyPastArmor(1.0F, paramShot) <= 0.0F) || (World.Rnd().nextFloat() >= 0.12F))
             break;
-          }
           this.FM.AS.setControlsDamage(paramShot.initiator, 0);
           mydebuggunnery("Ailerons Controls Out.."); break;
         case 5:
@@ -512,12 +296,6 @@ public abstract class JU_88NEW extends Scheme2
 
       }
 
-      if (paramString.startsWith("xxcannon1"))
-      {
-        debuggunnery("MGFF: Disabled..");
-        this.FM.AS.setJamBullets(1, 0);
-        getEnergyPastArmor(World.Rnd().nextFloat(3.3F, 24.6F), paramShot);
-      }
       if (paramString.startsWith("xxspar"))
       {
         getEnergyPastArmor(1.0F, paramShot);
@@ -594,7 +372,6 @@ public abstract class JU_88NEW extends Scheme2
           mydebuggunnery("*** Engine" + (i + 1) + " Governor Failed..");
         }
       }
-
       if (paramString.startsWith("xxengine"))
       {
         i = 0;
@@ -610,14 +387,12 @@ public abstract class JU_88NEW extends Scheme2
               this.FM.AS.setEngineStuck(paramShot.initiator, i);
               mydebuggunnery("*** Engine" + (i + 1) + " Crank Case Hit - Engine Stucks..");
             }
-
             if (World.Rnd().nextFloat() < paramShot.power / 30000.0F)
             {
               this.FM.AS.hitEngine(paramShot.initiator, i, 2);
               mydebuggunnery("*** Engine" + (i + 1) + " Crank Case Hit - Engine Damaged..");
             }
           }
-
         }
         else if (paramString.endsWith("cyl"))
         {
@@ -625,9 +400,7 @@ public abstract class JU_88NEW extends Scheme2
           if ((getEnergyPastArmor(1.2F, paramShot) > 0.0F) && (World.Rnd().nextFloat() < this.FM.EI.engines[i].getCylindersRatio() * 1.8F))
           {
             this.FM.EI.engines[i].setCyliderKnockOut(paramShot.initiator, World.Rnd().nextInt(1, (int)(paramShot.power / 4800.0F)));
-
             mydebuggunnery("*** Engine" + (i + 1) + " Cylinders Hit, " + this.FM.EI.engines[i].getCylindersOperable() + "/" + this.FM.EI.engines[i].getCylinders() + " Left..");
-
             if (this.FM.AS.astateEngineStates[i] < 1)
             {
               this.FM.AS.hitEngine(paramShot.initiator, i, 1);
@@ -638,7 +411,6 @@ public abstract class JU_88NEW extends Scheme2
               this.FM.AS.hitEngine(paramShot.initiator, i, 3);
               mydebuggunnery("*** Engine" + (i + 1) + " Cylinders Hit - Engine Fires..");
             }
-
             mydebuggunnery("*** Engine" + (i + 1) + " state " + this.FM.AS.astateEngineStates[i]);
           }
 
@@ -648,7 +420,6 @@ public abstract class JU_88NEW extends Scheme2
           this.FM.AS.setEngineSpecificDamage(paramShot.initiator, i, 0);
           mydebuggunnery("*** Engine" + (i + 1) + " Supercharger Out..");
         }
-
         if (World.Rnd().nextFloat(0.0F, 18000.0F) < paramShot.power)
           this.FM.AS.hitEngine(paramShot.initiator, i, 1);
         this.FM.AS.hitOil(paramShot.initiator, i);
@@ -676,19 +447,15 @@ public abstract class JU_88NEW extends Scheme2
             if (this.FM.AS.astateTankStates[i] < 1)
               this.FM.AS.hitTank(paramShot.initiator, i, 1);
             if ((this.FM.AS.astateTankStates[i] < 4) && (World.Rnd().nextFloat() < 0.1F))
-            {
               this.FM.AS.hitTank(paramShot.initiator, i, 1);
-            }if ((paramShot.powerType == 3) && (this.FM.AS.astateTankStates[i] > 2) && (World.Rnd().nextFloat() < 0.12F))
-            {
+            if ((paramShot.powerType == 3) && (this.FM.AS.astateTankStates[i] > 2) && (World.Rnd().nextFloat() < 0.12F))
               this.FM.AS.hitTank(paramShot.initiator, i, 10);
-            }
           } else {
             this.FM.AS.hitTank(paramShot.initiator, i, World.Rnd().nextInt(0, (int)(paramShot.power / 20000.0F)));
           }
         }
         mydebuggunnery("*** Tank " + (i + 1) + " state = " + this.FM.AS.astateTankStates[i]);
       }
-
     }
 
     if (paramString.startsWith("xoil"))
@@ -711,31 +478,28 @@ public abstract class JU_88NEW extends Scheme2
     }
     else if (paramString.startsWith("xnose"))
     {
-      if (chunkDamageVisible("Nose") < 2) {
+      if (chunkDamageVisible("Nose") < 2)
         hitChunk("Nose", paramShot);
+      if (paramShot.power > 200000.0F)
+      {
+        this.FM.AS.hitPilot(paramShot.initiator, 0, World.Rnd().nextInt(3, 192));
+        this.FM.AS.hitPilot(paramShot.initiator, 1, World.Rnd().nextInt(3, 192));
       }
-
-      if (World.Rnd().nextFloat() < 0.1F) {
+      if (World.Rnd().nextFloat() < 0.1F)
         this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x40);
-      }
       if (paramPoint3d.x > 4.505000114440918D) {
         this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x1);
       }
       else if (paramPoint3d.y > 0.0D)
       {
         this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x4);
-
-        if (World.Rnd().nextFloat() < 0.1F) {
+        if (World.Rnd().nextFloat() < 0.1F)
           this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x8);
-        }
       }
-      else
-      {
+      else {
         this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x10);
-
-        if (World.Rnd().nextFloat() < 0.1F) {
+        if (World.Rnd().nextFloat() < 0.1F)
           this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x20);
-        }
       }
     }
     else if (paramString.startsWith("xtail"))
@@ -750,15 +514,20 @@ public abstract class JU_88NEW extends Scheme2
     }
     else if (paramString.startsWith("xrudder")) {
       hitChunk("Rudder1", paramShot);
-    } else if (paramString.startsWith("xstabl")) {
+    }
+    else if (paramString.startsWith("xstabl")) {
       hitChunk("StabL", paramShot);
-    } else if (paramString.startsWith("xstabr")) {
+    }
+    else if (paramString.startsWith("xstabr")) {
       hitChunk("StabR", paramShot);
-    } else if (paramString.startsWith("xvatorl")) {
+    }
+    else if (paramString.startsWith("xvatorl")) {
       hitChunk("VatorL", paramShot);
-    } else if (paramString.startsWith("xvatorr")) {
+    }
+    else if (paramString.startsWith("xvatorr")) {
       hitChunk("VatorR", paramShot);
-    } else if (paramString.startsWith("xwinglin"))
+    }
+    else if (paramString.startsWith("xwinglin"))
     {
       if (chunkDamageVisible("WingLIn") < 3)
         hitChunk("WingLIn", paramShot);
@@ -790,34 +559,53 @@ public abstract class JU_88NEW extends Scheme2
     }
     else if (paramString.startsWith("xaronel")) {
       hitChunk("AroneL", paramShot);
-    } else if (paramString.startsWith("xaroner")) {
+    }
+    else if (paramString.startsWith("xaroner")) {
       hitChunk("AroneR", paramShot);
-    } else if (paramString.startsWith("xengine1"))
+    }
+    else if (paramString.startsWith("xengine1"))
     {
       if (chunkDamageVisible("Engine1") < 2)
         hitChunk("Engine1", paramShot);
+      if (getEnergyPastArmor(0.2F, paramShot) > 800.0F)
+      {
+        this.FM.EI.engines[0].setReadyness(paramShot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, paramShot.power / 96000.0F));
+
+        this.FM.AS.hitOil(paramShot.initiator, 0);
+        mydebuggunnery("*** Engine1 Hit - Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + ".. State = " + this.FM.AS.astateEngineStates[0]);
+
+        if ((this.FM.EI.engines[0].getReadyness() < 0.85F) && (this.FM.AS.astateEngineStates[0] == 0))
+        {
+          this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
+          this.FM.AS.doSetEngineState(paramShot.initiator, 0, 1);
+        }
+      }
     }
     else if (paramString.startsWith("xengine2"))
     {
       if (chunkDamageVisible("Engine2") < 2)
         hitChunk("Engine2", paramShot);
+      if (getEnergyPastArmor(0.2F, paramShot) > 800.0F)
+      {
+        this.FM.EI.engines[1].setReadyness(paramShot.initiator, this.FM.EI.engines[1].getReadyness() - World.Rnd().nextFloat(0.0F, paramShot.power / 96000.0F));
+
+        this.FM.AS.hitOil(paramShot.initiator, 1);
+        mydebuggunnery("*** Engine2 Hit - Readyness Reduced to " + this.FM.EI.engines[1].getReadyness() + ".. State = " + this.FM.AS.astateEngineStates[1]);
+
+        if ((this.FM.EI.engines[1].getReadyness() < 0.85F) && (this.FM.AS.astateEngineStates[1] == 0))
+        {
+          this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
+          this.FM.AS.doSetEngineState(paramShot.initiator, 1, 1);
+        }
+      }
+
     }
     else if (paramString.startsWith("xgear"))
     {
-      if ((paramString.endsWith("1")) && (World.Rnd().nextFloat() < 0.05F))
+      if (World.Rnd().nextFloat() < 0.1F)
       {
-        debuggunnery("Hydro System: Disabled..");
-        this.FM.AS.setInternalDamage(paramShot.initiator, 0);
-      }
-      if (paramString.endsWith("2"))
-      {
-        if ((World.Rnd().nextFloat() < 0.1F) && (getEnergyPastArmor(World.Rnd().nextFloat(6.8F, 29.35F), paramShot) > 0.0F))
-        {
-          debuggunnery("Undercarriage: Stuck..");
-          this.FM.AS.setInternalDamage(paramShot.initiator, 3);
-        }
-        String str = "" + paramString.charAt(5);
-        hitChunk("Gear" + str.toUpperCase() + "2", paramShot);
+        mydebuggunnery("*** Gear Hydro Failed..");
+        this.FM.Gears.setHydroOperable(false);
       }
     }
     else if (paramString.startsWith("xturret"))
@@ -835,28 +623,23 @@ public abstract class JU_88NEW extends Scheme2
     }
     else if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead")))
     {
-      int j = 0;
-      int k;
+      i = 0;
+      int j;
       if (paramString.endsWith("a"))
       {
-        j = 1;
-        k = paramString.charAt(6) - '1';
+        i = 1;
+        j = paramString.charAt(6) - '1';
       }
       else if (paramString.endsWith("b"))
       {
-        j = 2;
-        k = paramString.charAt(6) - '1';
+        i = 2;
+        j = paramString.charAt(6) - '1';
       }
-      else
-      {
-        k = paramString.charAt(5) - '1';
+      else {
+        j = paramString.charAt(5) - '1';
       }
-      hitFlesh(k, paramShot, j);
+      hitFlesh(j, paramShot, i);
     }
-
-    hierMesh().chunkVisible("fakeNose_D1", hierMesh().isChunkVisible("Nose_D1"));
-    hierMesh().chunkVisible("fakeNose_D2", hierMesh().isChunkVisible("Nose_D2"));
-    hierMesh().chunkVisible("fakeNose_D3", hierMesh().isChunkVisible("Nose_D3"));
   }
 
   public boolean typeDiveBomberToggleAutomation()
@@ -905,13 +688,22 @@ public abstract class JU_88NEW extends Scheme2
   {
   }
 
-  public void typeDiveBomberReplicateFromNet(NetMsgInput paramNetMsgInput)
-    throws IOException
+  public void typeDiveBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException
   {
   }
 
-  protected void mydebug(String paramString)
+  static Class _mthclass$(String paramString)
   {
+    Class localClass;
+    try
+    {
+      localClass = Class.forName(paramString);
+    }
+    catch (ClassNotFoundException localClassNotFoundException)
+    {
+      throw new NoClassDefFoundError(localClassNotFoundException.getMessage());
+    }
+    return localClass;
   }
 
   static

@@ -17,7 +17,7 @@ public class CmdTOD extends Cmd
     if (paramMap.containsKey("_$$")) {
       if ((paramCmdEnv.levelAccess() == 0) || ((Mission.isDogfight()) && (Mission.isServer())))
       {
-        f = arg(paramMap, "_$$", 0, 12.0F, 0.0F, 24.0F);
+        f = Cmd.arg(paramMap, "_$$", 0, 12.0F, 0.0F, 24.0F);
         World.setTimeofDay(f);
         if (Config.isUSE_RENDER())
           World.land().cubeFullUpdate();

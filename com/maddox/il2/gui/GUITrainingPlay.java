@@ -107,7 +107,7 @@ public class GUITrainingPlay extends GameState
 
   public void _enter() {
     Main3D.cur3D().hud.bDrawVoiceMessages = false;
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("training.StandBy"), i18n("training.LoadingTrack"), 5, 0.0F)
+    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("training.StandBy"), i18n("training.LoadingTrack"), 5, 0.0F)
     {
       public void result(int paramInt)
       {
@@ -167,7 +167,7 @@ public class GUITrainingPlay extends GameState
 
   private void recordBad(String paramString) {
     this.loadMessageBox.close(false);
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("training.Error"), paramString, 3, 0.0F)
+    new GWindowMessageBox(Main3D.cur3D().guiManager.jdField_root_of_type_ComMaddoxGwindowGWindowRoot, 20.0F, true, i18n("training.Error"), paramString, 3, 0.0F)
     {
       public void result(int paramInt) {
         GUITrainingPlay.this.doExit();

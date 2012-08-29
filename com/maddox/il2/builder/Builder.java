@@ -7,7 +7,6 @@ import com.maddox.gwindow.GPoint;
 import com.maddox.gwindow.GRegion;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowCheckBox;
-import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowHScrollBar;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowManager;
@@ -81,10 +80,6 @@ import java.util.Map.Entry;
 
 public class Builder
 {
-  private ArrayList mis_cBoxes;
-  private ArrayList mis_properties;
-  private ArrayList mis_clipLoc;
-  private Point3d mis_clipP0;
   public static String PLUGINS_SECTION = "builder_plugins";
   public static String envName;
   public static float defaultAzimut = 0.0F;
@@ -192,7 +187,6 @@ public class Builder
   public WSnap wSnap;
   public GWindowMenuBarItem mFile;
   public GWindowMenuBarItem mEdit;
-  public GWindowMenuBarItem mConfigure;
   public GWindowMenuBarItem mView;
   public GWindowMenuItem mSelectItem;
   public GWindowMenuItem mViewLand;
@@ -221,16 +215,6 @@ public class Builder
     int i = (int)(255.0D * d);
     return 0xFF000000 | i << 16 | i << 8 | i;
   }
-  public static int colorMultiSelected(int paramInt) {
-    if (paramInt == -1) paramInt = -16777216;
-    long l1 = Time.currentReal();
-    long l2 = 1000L;
-    double d = 2.0D * (l1 % l2) / l2;
-    if (d >= 1.0D)
-      d = 2.0D - d;
-    int i = (int)(255.0D * d);
-    return 0xFF000000 | i << 16 | i << 8 | i | paramInt;
-  }
 
   public boolean isLoadedLandscape()
   {
@@ -246,8 +230,8 @@ public class Builder
   public void computeViewMap2D(double paramDouble1, double paramDouble2, double paramDouble3)
   {
     if (!isLoadedLandscape()) return;
-    int i = (int)this.viewWindow.win.dx;
-    int j = (int)this.viewWindow.win.dy;
+    int i = (int)this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    int j = (int)this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     double d1 = this.camera.FOV() * 3.141592653589793D / 180.0D / 2.0D;
     double d2 = i / j;
     if (paramDouble1 < 0.0D)
@@ -329,10 +313,10 @@ public class Builder
   }
 
   private void setPosCamera3D() {
-    this._camPoint.z = this.viewH;
-    this._camPoint.x = (this.camera2D.worldXOffset + (this.camera2D.right - this.camera2D.left) / this.camera2D.worldScale / 2.0D);
-    this._camPoint.y = (this.camera2D.worldYOffset + (this.camera2D.top - this.camera2D.bottom) / this.camera2D.worldScale / 2.0D);
-    this.camera.pos.setAbs(this._camPoint, this._camOrient); this.camera.pos.reset();
+    this._camPoint.jdField_z_of_type_Double = this.viewH;
+    this._camPoint.jdField_x_of_type_Double = (this.camera2D.worldXOffset + (this.camera2D.right - this.camera2D.left) / this.camera2D.worldScale / 2.0D);
+    this._camPoint.jdField_y_of_type_Double = (this.camera2D.worldYOffset + (this.camera2D.top - this.camera2D.bottom) / this.camera2D.worldScale / 2.0D);
+    this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this._camPoint, this._camOrient); this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
   }
 
   public double posX2DtoWorld(int paramInt)
@@ -347,31 +331,35 @@ public class Builder
     if (this.bView3D) {
       double d1 = this.camera2D.worldXOffset + (this.camera2D.right - this.camera2D.left) / this.camera2D.worldScale / 2.0D;
       double d2 = this.camera2D.worldYOffset + (this.camera2D.top - this.camera2D.bottom) / this.camera2D.worldScale / 2.0D;
-      localPoint3d.x = posX2DtoWorld(paramInt1);
-      localPoint3d.y = posY2DtoWorld(paramInt2);
-      localPoint3d.z = (Engine.land().HQ(localPoint3d.x, localPoint3d.y) + paramDouble1); if (localPoint3d.z > this.viewH) localPoint3d.z = this.viewH;
-      double d3 = (localPoint3d.x - d1) / this.viewH;
-      double d4 = (localPoint3d.y - d2) / this.viewH;
+      localPoint3d.jdField_x_of_type_Double = posX2DtoWorld(paramInt1);
+      localPoint3d.jdField_y_of_type_Double = posY2DtoWorld(paramInt2);
+      localPoint3d.jdField_z_of_type_Double = (Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) + paramDouble1); if (localPoint3d.jdField_z_of_type_Double > this.viewH) localPoint3d.jdField_z_of_type_Double = this.viewH;
+      double d3 = (localPoint3d.jdField_x_of_type_Double - d1) / this.viewH;
+      double d4 = (localPoint3d.jdField_y_of_type_Double - d2) / this.viewH;
       double d5 = 0.0D;
-      double d6 = (localPoint3d.z - d5) * (localPoint3d.z - d5);
+      double d6 = (localPoint3d.jdField_z_of_type_Double - d5) * (localPoint3d.jdField_z_of_type_Double - d5);
       for (int i = 0; (i < 8) && (d6 > paramDouble2); i++) {
-        d5 = localPoint3d.z;
-        localPoint3d.x = ((this.viewH - d5) * d3 + d1);
-        localPoint3d.y = ((this.viewH - d5) * d4 + d2);
-        localPoint3d.z = (Engine.land().HQ(localPoint3d.x, localPoint3d.y) + paramDouble1); if (localPoint3d.z > this.viewH) localPoint3d.z = this.viewH;
-        d6 = (localPoint3d.z - d5) * (localPoint3d.z - d5);
+        d5 = localPoint3d.jdField_z_of_type_Double;
+        localPoint3d.jdField_x_of_type_Double = ((this.viewH - d5) * d3 + d1);
+        localPoint3d.jdField_y_of_type_Double = ((this.viewH - d5) * d4 + d2);
+        localPoint3d.jdField_z_of_type_Double = (Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) + paramDouble1); if (localPoint3d.jdField_z_of_type_Double > this.viewH) localPoint3d.jdField_z_of_type_Double = this.viewH;
+        d6 = (localPoint3d.jdField_z_of_type_Double - d5) * (localPoint3d.jdField_z_of_type_Double - d5);
       }
-      for (i = 0; (i < 8) && (d6 > paramDouble2); i++) {
-        d5 = localPoint3d.z;
-        localPoint3d.x = (((this.viewH - d5) * d3 + d1 + localPoint3d.x) / 2.0D);
-        localPoint3d.y = (((this.viewH - d5) * d4 + d2 + localPoint3d.y) / 2.0D);
-        localPoint3d.z = (Engine.land().HQ(localPoint3d.x, localPoint3d.y) + paramDouble1); if (localPoint3d.z > this.viewH) localPoint3d.z = this.viewH;
-        d6 = (localPoint3d.z - d5) * (localPoint3d.z - d5);
-      }
-    } else {
-      localPoint3d.x = posX2DtoWorld(paramInt1);
-      localPoint3d.y = posY2DtoWorld(paramInt2);
-      localPoint3d.z = Engine.land().HQ(localPoint3d.x, localPoint3d.y);
+      int j = 0;
+      do { d5 = localPoint3d.jdField_z_of_type_Double;
+        localPoint3d.jdField_x_of_type_Double = (((this.viewH - d5) * d3 + d1 + localPoint3d.jdField_x_of_type_Double) / 2.0D);
+        localPoint3d.jdField_y_of_type_Double = (((this.viewH - d5) * d4 + d2 + localPoint3d.jdField_y_of_type_Double) / 2.0D);
+        localPoint3d.jdField_z_of_type_Double = (Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) + paramDouble1); if (localPoint3d.jdField_z_of_type_Double > this.viewH) localPoint3d.jdField_z_of_type_Double = this.viewH;
+        d6 = (localPoint3d.jdField_z_of_type_Double - d5) * (localPoint3d.jdField_z_of_type_Double - d5);
+
+        j++; if (j >= 8) break;  }
+      while (d6 > paramDouble2);
+    }
+    else
+    {
+      localPoint3d.jdField_x_of_type_Double = posX2DtoWorld(paramInt1);
+      localPoint3d.jdField_y_of_type_Double = posY2DtoWorld(paramInt2);
+      localPoint3d.jdField_z_of_type_Double = Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double);
     }
     return localPoint3d;
   }
@@ -397,7 +385,7 @@ public class Builder
   public Actor selectNear(int paramInt1, int paramInt2) {
     if ((paramInt1 < 0) || (paramInt2 < 0)) return null;
     Point3d localPoint3d = posScreenToLand(paramInt1, paramInt2, 0.0D, 0.1D);
-    double d1 = this.viewH - localPoint3d.z;
+    double d1 = this.viewH - localPoint3d.jdField_z_of_type_Double;
     if (d1 < 0.001D) d1 = 0.001D;
     double d2 = this.conf.iconSize * d1 / this.viewH / this.camera2D.worldScale / 2.0D;
     return selectNear(localPoint3d, d2);
@@ -405,7 +393,7 @@ public class Builder
 
   public Actor selectNear(Point3d paramPoint3d, double paramDouble) {
     this._selectFilter.reset(paramDouble * paramDouble);
-    Engine.drawEnv().getFiltered((AbstractCollection)null, paramPoint3d.x - paramDouble, paramPoint3d.y - paramDouble, paramPoint3d.x + paramDouble, paramPoint3d.y + paramDouble, 15, this._selectFilter);
+    Engine.drawEnv().getFiltered((AbstractCollection)null, paramPoint3d.jdField_x_of_type_Double - paramDouble, paramPoint3d.jdField_y_of_type_Double - paramDouble, paramPoint3d.jdField_x_of_type_Double + paramDouble, paramPoint3d.jdField_y_of_type_Double + paramDouble, 15, this._selectFilter);
 
     return this._selectFilter.get();
   }
@@ -424,12 +412,12 @@ public class Builder
   public void align(Actor paramActor)
   {
     if ((paramActor instanceof ActorAlign)) {
-      ((ActorAlign)(ActorAlign)paramActor).align();
+      ((ActorAlign)paramActor).align();
     } else {
-      paramActor.pos.getAbs(this.__pi);
-      double d = Engine.land().HQ(this.__pi.x, this.__pi.y) + 0.2D;
-      this.__pi.z = d;
-      paramActor.pos.setAbs(this.__pi);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.__pi);
+      double d = Engine.land().HQ(this.__pi.jdField_x_of_type_Double, this.__pi.jdField_y_of_type_Double) + 0.2D;
+      this.__pi.jdField_z_of_type_Double = d;
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.__pi);
     }
   }
 
@@ -443,53 +431,67 @@ public class Builder
 
   public int countSelectedActors()
   {
-    if ((this.bMultiSelect) || 
-      (Actor.isValid(this.selectedActor))) {
-      if (this.selectedActors.containsKey(this.selectedActor)) return this.selectedActors.size();
-      return this.selectedActors.size() + 1;
+    if (this.bMultiSelect) {
+      if (Actor.isValid(this.selectedActor)) {
+        if (this.selectedActors.containsKey(this.selectedActor)) return this.selectedActors.size();
+        return this.selectedActors.size() + 1;
+      }
+      return this.selectedActors.size();
     }
-    return this.selectedActors.size();
+
+    return Actor.isValid(this.selectedActor) ? 1 : 0;
   }
 
   public void selectActorsClear()
   {
-    if (!this.bMultiSelect);
-    this.selectedActors.clear();
+    if (this.bMultiSelect)
+      this.selectedActors.clear(); 
   }
+
   public void selectActorsAdd(Actor paramActor) {
-    if (!this.bMultiSelect);
-    this.selectedActors.put(paramActor, null);
+    if (this.bMultiSelect)
+      this.selectedActors.put(paramActor, null);
   }
 
   public Actor[] selectedActors()
   {
-    if (!this.bMultiSelect);
-    int i = countSelectedActors();
-    Actor[] arrayOfActor = _selectedActors(i > 0 ? i : 1);
-    int j = 0;
-    if (Actor.isValid(this.selectedActor)) {
-      arrayOfActor[(j++)] = this.selectedActor;
-    }
-    if (this.selectedActors.size() > 0) {
-      Map.Entry localEntry = this.selectedActors.nextEntry(null);
-      while (localEntry != null) {
-        Actor localActor = (Actor)localEntry.getKey();
-        if ((Actor.isValid(localActor)) && (localActor != this.selectedActor))
-          arrayOfActor[(j++)] = localActor;
-        localEntry = this.selectedActors.nextEntry(localEntry);
+    if (this.bMultiSelect) {
+      int i = countSelectedActors();
+      Actor[] arrayOfActor2 = _selectedActors(i > 0 ? i : 1);
+      int j = 0;
+      if (Actor.isValid(this.selectedActor)) {
+        arrayOfActor2[(j++)] = this.selectedActor;
       }
+      if (this.selectedActors.size() > 0) {
+        Map.Entry localEntry = this.selectedActors.nextEntry(null);
+        while (localEntry != null) {
+          Actor localActor = (Actor)localEntry.getKey();
+          if ((Actor.isValid(localActor)) && (localActor != this.selectedActor))
+            arrayOfActor2[(j++)] = localActor;
+          localEntry = this.selectedActors.nextEntry(localEntry);
+        }
+      }
+      if (j == 0) {
+        arrayOfActor2[0] = null;
+      }
+      else if (arrayOfActor2.length > j) {
+        arrayOfActor2[j] = null;
+      }
+      return arrayOfActor2;
     }
-    if (j == 0) {
-      arrayOfActor[0] = null;
+
+    Actor[] arrayOfActor1 = _selectedActors(1);
+    if (Actor.isValid(this.selectedActor)) {
+      arrayOfActor1[0] = this.selectedActor;
+      if (arrayOfActor1.length > 1)
+        arrayOfActor1[1] = null;
+    } else {
+      arrayOfActor1[0] = null;
     }
-    else if (arrayOfActor.length > j) {
-      arrayOfActor[j] = null;
-    }
-    return arrayOfActor;
+    return arrayOfActor1;
   }
 
-  private Actor[] _selectedActors(int paramInt)
-  {
+  private Actor[] _selectedActors(int paramInt) {
     if ((this._selectedActors == null) || (this._selectedActors.length < paramInt)) {
       this._selectedActors = new Actor[paramInt];
     }
@@ -518,15 +520,17 @@ public class Builder
 
   public boolean isMiltiSelected(Actor paramActor)
   {
-    if (!this.bMultiSelect);
-    return this.selectedActors.containsKey(paramActor);
+    if (this.bMultiSelect)
+      return this.selectedActors.containsKey(paramActor);
+    return false;
   }
 
-  public boolean isSelected(Actor paramActor)
-  {
-    if ((this.bMultiSelect) || 
-      (paramActor == this.selectedActor)) return true;
-    return this.selectedActors.containsKey(paramActor);
+  public boolean isSelected(Actor paramActor) {
+    if (this.bMultiSelect) {
+      if (paramActor == this.selectedActor) return true;
+      return this.selectedActors.containsKey(paramActor);
+    }
+    return paramActor == this.selectedActor;
   }
 
   public Actor selectedActor()
@@ -549,7 +553,7 @@ public class Builder
     if (Actor.isValid(this.selectedActor)) {
       Plugin localPlugin1 = (Plugin)Property.value(this.selectedActor, "builderPlugin");
       if ((localPlugin1 instanceof PlMisStatic)) {
-        defaultAzimut = this.selectedActor.pos.getAbsOrient().azimut();
+        defaultAzimut = this.selectedActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().azimut();
       }
     }
     int i = this.wSelect.tabsClient.getCurrent();
@@ -577,7 +581,7 @@ public class Builder
         if (localPlugin2 != null) {
           localPlugin2.syncSelector();
           if ((localPlugin2 instanceof PlMisStatic))
-            defaultAzimut = paramActor.pos.getAbsOrient().azimut();
+            defaultAzimut = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().azimut();
         } else if (this.bMultiSelect) {
           localPlugin2 = Plugin.getPlugin("MapActors");
           localPlugin2.syncSelector();
@@ -611,18 +615,18 @@ public class Builder
     if (!Actor.isValid(paramActor))
       return;
     if (actorView() != paramActor) {
-      if ((paramActor.pos instanceof ActorPosStatic)) {
+      if ((paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos instanceof ActorPosStatic)) {
         boolean bool = paramActor.isCollide();
         paramActor.collide(false);
         paramActor.drawing(false);
-        paramActor.pos = new ActorPosMove(paramActor.pos);
+        paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos);
         paramActor.drawing(true);
         if (bool)
           paramActor.collide(true);
       }
       this.mouseXYZATK.setTarget(paramActor);
-      this.camera.pos.setBase(paramActor, Main3D.cur3D().hookView, false);
-      this.camera.pos.reset();
+      this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(paramActor, Main3D.cur3D().hookView, false);
+      this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
       this.cursor.drawing(paramActor == this.cursor);
     }
   }
@@ -634,7 +638,7 @@ public class Builder
     this.saveMouseMode = RTSConf.cur.getUseMouse();
     if (this.saveMouseMode != 2)
       RTSConf.cur.setUseMouse(2);
-    this.camera.pos.getAbs(this._savCameraNoFreeLoc);
+    this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this._savCameraNoFreeLoc);
     Object localObject;
     if (Actor.isValid(selectedActor())) {
       localObject = selectedActor();
@@ -642,16 +646,16 @@ public class Builder
       localObject = this.cursor;
       this.selectedActor = ((Actor)localObject);
       Point3d localPoint3d = new Point3d();
-      this.camera.pos.getAbs(localPoint3d);
-      localPoint3d.z = (Engine.land().HQ(localPoint3d.x, localPoint3d.y) + 0.2D);
-      ((Actor)localObject).pos.setAbs(localPoint3d);
+      this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d);
+      localPoint3d.jdField_z_of_type_Double = (Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) + 0.2D);
+      ((Actor)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d);
     }
     setActorView((Actor)localObject);
-    this.clientWindow.root.manager.activateMouse(false);
-    this.clientWindow.root.manager.activateKeyboard(false);
+    this.clientWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.manager.activateMouse(false);
+    this.clientWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.manager.activateKeyboard(false);
     HotKeyCmdEnv.enable("HookView", true);
     HotKeyCmdEnv.enable("MouseXYZ", true);
-    this.viewWindow.mouseCursor = 0;
+    this.viewWindow.jdField_mouseCursor_of_type_Int = 0;
     if (!this.bMultiSelect) {
       Main3D.cur3D().spritesFog.setShow(true);
 
@@ -662,18 +666,18 @@ public class Builder
       Main3D.cur3D().bEnableFog = true;
     }
     if (this.conf.bAnimateCamera) {
-      this.camera.pos.getAbs(this._savCameraFreeLoc);
+      this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this._savCameraFreeLoc);
       new AnimateView((Actor)localObject, this._savCameraNoFreeLoc, this._savCameraFreeLoc);
     }
   }
 
   private void clearActorView() {
-    this.camera.pos.getAbs(this._savCameraFreeLoc);
+    this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this._savCameraFreeLoc);
     this.mouseXYZATK.setTarget(null);
-    this.camera.pos.setBase(null, null, false);
+    this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, false);
 
     computeViewMap2D(this._savCameraNoFreeLoc.getZ(), this._savCameraFreeLoc.getX(), this._savCameraFreeLoc.getY());
-    this.camera.pos.getAbs(this._savCameraNoFreeLoc);
+    this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this._savCameraNoFreeLoc);
 
     if (this.conf.bAnimateCamera)
       new AnimateView(null, this._savCameraFreeLoc, this._savCameraNoFreeLoc);
@@ -692,11 +696,11 @@ public class Builder
     if (selectedActor() == this.cursor)
       setSelected(null);
     selectedActorsValidate();
-    this.clientWindow.root.manager.activateMouse(true);
-    this.clientWindow.root.manager.activateKeyboard(true);
+    this.clientWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.manager.activateMouse(true);
+    this.clientWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.manager.activateKeyboard(true);
     HotKeyCmdEnv.enable("HookView", false);
     HotKeyCmdEnv.enable("MouseXYZ", false);
-    this.viewWindow.mouseCursor = 1;
+    this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
     PlMission.setChanged();
     if (!this.bMultiSelect) {
       Main3D.cur3D().spritesFog.setShow(false);
@@ -710,7 +714,7 @@ public class Builder
 
   private Actor actorView()
   {
-    return this.camera.pos.base();
+    return this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.base();
   }
 
   public void doMouseAbsMove(int paramInt1, int paramInt2)
@@ -730,7 +734,7 @@ public class Builder
       double d1 = this.camera2D.worldScale;
       double d2;
       if (this.bView3D) {
-        d2 = this.viewH - localPoint3d.z;
+        d2 = this.viewH - localPoint3d.jdField_z_of_type_Double;
         if (d2 < 0.001D) d2 = 0.001D;
         d1 *= this.viewH / d2;
       }
@@ -740,17 +744,17 @@ public class Builder
         d2 = (paramInt1 - this.mousePosX) / d1;
         double d3 = (paramInt2 - this.mousePosY) / d1;
         if (this.bSnap) {
-          this.movedActorPosSnap.x += d2;
-          this.movedActorPosSnap.y += d3;
-          this.movedActor.pos.getAbs(this.movedActorPosStepSave);
+          this.movedActorPosSnap.jdField_x_of_type_Double += d2;
+          this.movedActorPosSnap.jdField_y_of_type_Double += d3;
+          this.movedActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.movedActorPosStepSave);
           this._objectMoveP.set(this.movedActorPosSnap);
-          this._objectMoveP.x = (Math.round(this.movedActorPosSnap.x / this.snapStep) * this.snapStep);
-          this._objectMoveP.y = (Math.round(this.movedActorPosSnap.y / this.snapStep) * this.snapStep);
-          this._objectMoveP.z = this.movedActorPosSnap.z;
+          this._objectMoveP.jdField_x_of_type_Double = (Math.round(this.movedActorPosSnap.jdField_x_of_type_Double / this.snapStep) * this.snapStep);
+          this._objectMoveP.jdField_y_of_type_Double = (Math.round(this.movedActorPosSnap.jdField_y_of_type_Double / this.snapStep) * this.snapStep);
+          this._objectMoveP.jdField_z_of_type_Double = this.movedActorPosSnap.jdField_z_of_type_Double;
         } else {
-          this.movedActor.pos.getAbs(this._objectMoveP);
-          this._objectMoveP.x += d2;
-          this._objectMoveP.y += d3;
+          this.movedActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this._objectMoveP);
+          this._objectMoveP.jdField_x_of_type_Double += d2;
+          this._objectMoveP.jdField_y_of_type_Double += d3;
         }
         try
         {
@@ -758,7 +762,7 @@ public class Builder
           if ((this.movedActor instanceof PPoint)) {
             localObject = (PPoint)this.movedActor;
             ((PPoint)localObject).moveTo(this._objectMoveP);
-            ((Path)(Path)((PPoint)localObject).getOwner()).pointMoved((PPoint)localObject);
+            ((Path)((PPoint)localObject).getOwner()).pointMoved((PPoint)localObject);
             PlMission.setChanged();
           } else if (!(this.movedActor instanceof Bridge))
           {
@@ -766,42 +770,42 @@ public class Builder
             {
               if (!(this.movedActor instanceof ActorBorn))
               {
-                this.movedActor.pos.setAbs(this._objectMoveP); this.movedActor.pos.reset();
+                this.movedActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this._objectMoveP); this.movedActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
                 align(this.movedActor);
                 PlMission.setChanged();
               }
             }
           }
-          if ((this.bMultiSelect) || (this.selectedActors.containsKey(this.movedActor))) {
+          if ((this.bMultiSelect) && (this.selectedActors.containsKey(this.movedActor))) {
             localObject = selectedActors();
             for (int i = 0; i < localObject.length; i++) {
               Actor localActor2 = localObject[i];
               if (localActor2 == null) break;
               if ((Actor.isValid(localActor2)) && (localActor2 != this.movedActor)) {
                 if ((localActor2 instanceof ActorAlign)) {
-                  localActor2.pos.getAbs(this.__pi);
+                  localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.__pi);
                   if (this.bSnap) {
-                    this.__pi.x += this._objectMoveP.x - this.movedActorPosStepSave.x;
-                    this.__pi.y += this._objectMoveP.y - this.movedActorPosStepSave.y;
+                    this.__pi.jdField_x_of_type_Double += this._objectMoveP.jdField_x_of_type_Double - this.movedActorPosStepSave.jdField_x_of_type_Double;
+                    this.__pi.jdField_y_of_type_Double += this._objectMoveP.jdField_y_of_type_Double - this.movedActorPosStepSave.jdField_y_of_type_Double;
                   } else {
-                    this.__pi.x += d2; this.__pi.y += d3;
+                    this.__pi.jdField_x_of_type_Double += d2; this.__pi.jdField_y_of_type_Double += d3;
                   }
-                  localActor2.pos.setAbs(this.__pi);
-                  ((ActorAlign)(ActorAlign)localActor2).align();
+                  localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.__pi);
+                  ((ActorAlign)localActor2).align();
                 } else {
-                  localActor2.pos.getAbs(this.__pi);
-                  this.__pi.x += d2; this.__pi.y += d3;
-                  double d4 = Engine.land().HQ(this.__pi.x, this.__pi.y) + 0.2D;
-                  this.__pi.z = d4;
-                  localActor2.pos.setAbs(this.__pi);
+                  localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.__pi);
+                  this.__pi.jdField_x_of_type_Double += d2; this.__pi.jdField_y_of_type_Double += d3;
+                  double d4 = Engine.land().HQ(this.__pi.jdField_x_of_type_Double, this.__pi.jdField_y_of_type_Double) + 0.2D;
+                  this.__pi.jdField_z_of_type_Double = d4;
+                  localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.__pi);
                 }
-                localActor2.pos.reset();
+                localActor2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
               }
             }
           }
         } catch (Exception localException) {
           this.mouseState = 0;
-          this.viewWindow.mouseCursor = 1;
+          this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
         }
         repaint();
       }
@@ -811,19 +815,19 @@ public class Builder
       Actor localActor1 = selectNear(paramInt1, paramInt2);
       if ((!this.bMultiSelect) && (localActor1 != null) && ((localActor1 instanceof Bridge))) {
         if (this.movedActor != null)
-          this.viewWindow.mouseCursor = 1;
+          this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
         this.movedActor = null;
         setOverActor(localActor1);
       }
       else {
         if (localActor1 != null) {
           if (this.movedActor == null)
-            this.viewWindow.mouseCursor = 7;
+            this.viewWindow.jdField_mouseCursor_of_type_Int = 7;
           this.movedActor = localActor1;
-          this.movedActor.pos.getAbs(this.movedActorPosSnap);
+          this.movedActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.movedActorPosSnap);
         } else {
           if (this.movedActor != null)
-            this.viewWindow.mouseCursor = 1;
+            this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
           this.movedActor = null;
         }
         setOverActor(this.movedActor);
@@ -858,21 +862,21 @@ public class Builder
   }
 
   public boolean project2d(Point3d paramPoint3d, Point2d paramPoint2d) {
-    return project2d(paramPoint3d.x, paramPoint3d.y, paramPoint3d.z, paramPoint2d);
+    return project2d(paramPoint3d.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double, paramPoint3d.jdField_z_of_type_Double, paramPoint2d);
   }
   public boolean project2d(double paramDouble1, double paramDouble2, double paramDouble3, Point2d paramPoint2d) {
     if (this.bView3D) {
       Main3D.cur3D().project2d(paramDouble1, paramDouble2, paramDouble3, this.projectPos3d);
-      paramPoint2d.x = (this.projectPos3d.x - _viewPort[0]);
-      paramPoint2d.y = (this.projectPos3d.y - _viewPort[1]);
+      paramPoint2d.jdField_x_of_type_Double = (this.projectPos3d.jdField_x_of_type_Double - _viewPort[0]);
+      paramPoint2d.jdField_y_of_type_Double = (this.projectPos3d.jdField_y_of_type_Double - _viewPort[1]);
     } else {
-      paramPoint2d.x = ((paramDouble1 - this.camera2D.worldXOffset) * this.camera2D.worldScale);
-      paramPoint2d.y = ((paramDouble2 - this.camera2D.worldYOffset) * this.camera2D.worldScale);
+      paramPoint2d.jdField_x_of_type_Double = ((paramDouble1 - this.camera2D.worldXOffset) * this.camera2D.worldScale);
+      paramPoint2d.jdField_y_of_type_Double = ((paramDouble2 - this.camera2D.worldYOffset) * this.camera2D.worldScale);
     }
-    if (paramPoint2d.x + this.conf.iconSize < 0.0D) return false;
-    if (paramPoint2d.y + this.conf.iconSize < 0.0D) return false;
-    if (paramPoint2d.x - this.conf.iconSize > this.camera2D.right - this.camera2D.left) return false;
-    return paramPoint2d.y - this.conf.iconSize <= this.camera2D.top - this.camera2D.bottom;
+    if (paramPoint2d.jdField_x_of_type_Double + this.conf.iconSize < 0.0D) return false;
+    if (paramPoint2d.jdField_y_of_type_Double + this.conf.iconSize < 0.0D) return false;
+    if (paramPoint2d.jdField_x_of_type_Double - this.conf.iconSize > this.camera2D.right - this.camera2D.left) return false;
+    return paramPoint2d.jdField_y_of_type_Double - this.conf.iconSize <= this.camera2D.top - this.camera2D.bottom;
   }
 
   public void preRenderMap2D()
@@ -885,7 +889,7 @@ public class Builder
     if (!isLoadedLandscape()) return;
     if ((!isFreeView()) && (this.conf.iLightLand != 255)) {
       int i = 255 - this.conf.iLightLand << 24 | 0x3F3F3F;
-      Render.drawTile(0.0F, 0.0F, this.viewWindow.win.dx, this.viewWindow.win.dy, 0.0F, this.emptyMat, i, 0.0F, 0.0F, 1.0F, 1.0F);
+      Render.drawTile(0.0F, 0.0F, this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, 0.0F, this.emptyMat, i, 0.0F, 0.0F, 1.0F, 1.0F);
       Render.drawEnd();
     }
     Plugin.doRenderMap2DBefore();
@@ -926,9 +930,9 @@ public class Builder
     if (this.viewY < this.viewX) d = this.viewY;
     d *= this.viewHLand / this.viewH;
     int i = 100000;
-    for (int j = 0; (j < 5) && 
-      (i * 3 > d); j++)
-    {
+    for (int j = 0; j < 5; j++) {
+      if (i * 3 <= d)
+        break;
       i /= 10;
     }
     return i;
@@ -946,27 +950,25 @@ public class Builder
     float f5 = (float)(i * this.camera2D.worldScale);
     this._gridCount = 0;
     Render.drawBeginLines(-1);
-    float f6;
-    int i2;
     for (int i1 = 0; i1 <= n; i1++) {
-      f6 = f2 + i1 * f5;
-      i2 = (i1 + k) % 10 == 0 ? 192 : 127;
+      float f6 = f2 + i1 * f5;
+      int i3 = (i1 + k) % 10 == 0 ? 192 : 127;
       this.line2XYZ[0] = f1; this.line2XYZ[1] = f6; this.line2XYZ[2] = 0.0F;
       this.line2XYZ[3] = (f1 + f3); this.line2XYZ[4] = f6; this.line2XYZ[5] = 0.0F;
-      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
+      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i3 << 16 | i3 << 8 | i3, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
 
-      if (i2 == 192)
+      if (i3 == 192)
         drawGridText(0, (int)f6, (k + i1) * i);
     }
-    for (i1 = 0; i1 <= m; i1++) {
-      f6 = f1 + i1 * f5;
-      i2 = (i1 + j) % 10 == 0 ? 192 : 127;
-      this.line2XYZ[0] = f6; this.line2XYZ[1] = f2; this.line2XYZ[2] = 0.0F;
-      this.line2XYZ[3] = f6; this.line2XYZ[4] = (f2 + f4); this.line2XYZ[5] = 0.0F;
-      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
+    for (int i2 = 0; i2 <= m; i2++) {
+      float f7 = f1 + i2 * f5;
+      int i4 = (i2 + j) % 10 == 0 ? 192 : 127;
+      this.line2XYZ[0] = f7; this.line2XYZ[1] = f2; this.line2XYZ[2] = 0.0F;
+      this.line2XYZ[3] = f7; this.line2XYZ[4] = (f2 + f4); this.line2XYZ[5] = 0.0F;
+      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i4 << 16 | i4 << 8 | i4, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
 
-      if (i2 == 192)
-        drawGridText((int)f6, 0, (j + i1) * i);
+      if (i4 == 192)
+        drawGridText((int)f7, 0, (j + i2) * i);
     }
     Render.drawEnd();
   }
@@ -992,84 +994,78 @@ public class Builder
     int m = (int)(this.viewX / i) + 2;
     int n = (int)(this.viewY / i) + 2;
     Render.drawBeginLines(0);
-    float f1;
-    int i2;
-    int i3;
-    double d1;
-    double d2;
     int i4;
-    float f2;
-    float f3;
+    float f4;
     for (int i1 = 0; i1 <= n; i1++) {
-      f1 = (i1 + k) * i;
-      i2 = 64;
-      i3 = 1;
+      float f1 = (i1 + k) * i;
+      int i3 = 64;
+      i4 = 1;
       if ((i1 + k) % 2 == 0) {
-        i2 = 150;
+        i3 = 150;
         if ((i1 + k) % 10 == 0) {
-          i3 = 0;
-          i2 = 240;
+          i4 = 0;
+          i3 = 240;
         }
       }
-      d1 = -1.0D;
-      d2 = -1.0D;
+      double d1 = -1.0D;
+      double d3 = -1.0D;
       if (this.lineNXYZ.length / 3 <= m) this.lineNXYZ = new float[(m + 1) * 3];
       this.lineNCounter = 0;
-      for (i4 = 0; i4 <= m; i4++) {
-        f2 = (i4 + j) * i;
-        Engine.land(); f3 = Landscape.HQ(f2 - (float)Main3D.cur3D().land2D.worldOfsX(), f1 - (float)Main3D.cur3D().land2D.worldOfsY());
-        this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (f2 - (float)Main3D.cur3D().land2D.worldOfsX());
+      for (int i6 = 0; i6 <= m; i6++) {
+        float f3 = (i6 + j) * i;
+        Engine.land(); f4 = Landscape.HQ(f3 - (float)Main3D.cur3D().land2D.worldOfsX(), f1 - (float)Main3D.cur3D().land2D.worldOfsY());
+        this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (f3 - (float)Main3D.cur3D().land2D.worldOfsX());
         this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (f1 - (float)Main3D.cur3D().land2D.worldOfsY());
-        this.lineNXYZ[(this.lineNCounter * 3 + 2)] = f3;
+        this.lineNXYZ[(this.lineNCounter * 3 + 2)] = f4;
         this.lineNCounter += 1;
-        if (i3 == 0) {
-          project2d(f2 - (float)Main3D.cur3D().land2D.worldOfsX(), f1 - (float)Main3D.cur3D().land2D.worldOfsY(), f3, this.projectPos2d);
-          if (this.projectPos2d.x > 0.0D) {
-            if (i4 > 0) drawGridText(0, (int)(d2 - d1 / (this.projectPos2d.x - d1) * (this.projectPos2d.y - d2)), (int)f1); else
-              drawGridText(0, (int)this.projectPos2d.y, (int)f1);
-            i3 = 1;
+        if (i4 == 0) {
+          project2d(f3 - (float)Main3D.cur3D().land2D.worldOfsX(), f1 - (float)Main3D.cur3D().land2D.worldOfsY(), f4, this.projectPos2d);
+          if (this.projectPos2d.jdField_x_of_type_Double > 0.0D) {
+            if (i6 > 0) drawGridText(0, (int)(d3 - d1 / (this.projectPos2d.jdField_x_of_type_Double - d1) * (this.projectPos2d.jdField_y_of_type_Double - d3)), (int)f1); else
+              drawGridText(0, (int)this.projectPos2d.jdField_y_of_type_Double, (int)f1);
+            i4 = 1;
           }
-          d1 = this.projectPos2d.x;
-          d2 = this.projectPos2d.y;
+          d1 = this.projectPos2d.jdField_x_of_type_Double;
+          d3 = this.projectPos2d.jdField_y_of_type_Double;
         }
       }
-      Render.drawLines(this.lineNXYZ, this.lineNCounter, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 2);
+      Render.drawLines(this.lineNXYZ, this.lineNCounter, 1.0F, 0xFF000000 | i3 << 16 | i3 << 8 | i3, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 2);
     }
 
-    for (i1 = 0; i1 <= m; i1++) {
-      f1 = (i1 + j) * i;
-      i2 = 64;
-      i3 = 1;
-      if ((i1 + j) % 2 == 0) {
-        i2 = 150;
-        if ((i1 + j) % 10 == 0) {
-          i3 = 0;
-          i2 = 240;
+    for (int i2 = 0; i2 <= m; i2++) {
+      float f2 = (i2 + j) * i;
+      i4 = 64;
+      int i5 = 1;
+      if ((i2 + j) % 2 == 0) {
+        i4 = 150;
+        if ((i2 + j) % 10 == 0) {
+          i5 = 0;
+          i4 = 240;
         }
       }
-      d1 = -1.0D;
-      d2 = -1.0D;
+      double d2 = -1.0D;
+      double d4 = -1.0D;
       if (this.lineNXYZ.length / 3 <= n) this.lineNXYZ = new float[(n + 1) * 3];
       this.lineNCounter = 0;
-      for (i4 = 0; i4 <= n; i4++) {
-        f2 = (i4 + k) * i;
-        Engine.land(); f3 = Landscape.HQ(f1 - (float)Main3D.cur3D().land2D.worldOfsX(), f2 - (float)Main3D.cur3D().land2D.worldOfsY());
-        this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (f1 - (float)Main3D.cur3D().land2D.worldOfsX());
-        this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (f2 - (float)Main3D.cur3D().land2D.worldOfsY());
-        this.lineNXYZ[(this.lineNCounter * 3 + 2)] = f3;
+      for (int i7 = 0; i7 <= n; i7++) {
+        f4 = (i7 + k) * i;
+        Engine.land(); float f5 = Landscape.HQ(f2 - (float)Main3D.cur3D().land2D.worldOfsX(), f4 - (float)Main3D.cur3D().land2D.worldOfsY());
+        this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (f2 - (float)Main3D.cur3D().land2D.worldOfsX());
+        this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (f4 - (float)Main3D.cur3D().land2D.worldOfsY());
+        this.lineNXYZ[(this.lineNCounter * 3 + 2)] = f5;
         this.lineNCounter += 1;
-        if (i3 == 0) {
-          project2d(f1 - (float)Main3D.cur3D().land2D.worldOfsX(), f2 - (float)Main3D.cur3D().land2D.worldOfsY(), f3, this.projectPos2d);
-          if (this.projectPos2d.y > 0.0D) {
-            if (i4 > 0) drawGridText((int)(d1 - d2 / (this.projectPos2d.y - d2) * (this.projectPos2d.x - d1)), 0, (int)f1); else
-              drawGridText((int)this.projectPos2d.x, 0, (int)f1);
-            i3 = 1;
+        if (i5 == 0) {
+          project2d(f2 - (float)Main3D.cur3D().land2D.worldOfsX(), f4 - (float)Main3D.cur3D().land2D.worldOfsY(), f5, this.projectPos2d);
+          if (this.projectPos2d.jdField_y_of_type_Double > 0.0D) {
+            if (i7 > 0) drawGridText((int)(d2 - d4 / (this.projectPos2d.jdField_y_of_type_Double - d4) * (this.projectPos2d.jdField_x_of_type_Double - d2)), 0, (int)f2); else
+              drawGridText((int)this.projectPos2d.jdField_x_of_type_Double, 0, (int)f2);
+            i5 = 1;
           }
-          d1 = this.projectPos2d.x;
-          d2 = this.projectPos2d.y;
+          d2 = this.projectPos2d.jdField_x_of_type_Double;
+          d4 = this.projectPos2d.jdField_y_of_type_Double;
         }
       }
-      Render.drawLines(this.lineNXYZ, this.lineNCounter, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 2);
+      Render.drawLines(this.lineNXYZ, this.lineNCounter, 1.0F, 0xFF000000 | i4 << 16 | i4 << 8 | i4, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 2);
     }
 
     Render.drawEnd();
@@ -1085,15 +1081,15 @@ public class Builder
     if (localPlugin == null) return;
     String[] arrayOfString = localPlugin.actorInfo(this.overActor);
     if (arrayOfString == null) return;
-    Point3d localPoint3d = this.overActor.pos.getAbsPoint();
+    Point3d localPoint3d = this.overActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     if (!project2d(localPoint3d, this.projectPos2d)) return;
     float f1 = 0.0F;
     int i = 0;
     for (int j = 0; j < arrayOfString.length; j++) {
       String str1 = arrayOfString[j];
       if (str1 == null) break;
-      f4 = this.smallFont.width(str1);
-      if (f4 > f1) f1 = f4;
+      f3 = this.smallFont.width(str1);
+      if (f3 > f1) f1 = f3;
       i++;
     }
     if (f1 == 0.0F) return;
@@ -1101,13 +1097,13 @@ public class Builder
     float f3 = this.smallFont.height();
     float f4 = i * (f3 + f2) + f2;
     int k = Army.color((this.overActor instanceof PPoint) ? this.overActor.getOwner().getArmy() : this.overActor.getArmy());
-    Render.drawTile((float)this.projectPos2d.x, (float)(this.projectPos2d.y + this.conf.iconSize / 2 + f2), f1 + 2.0F * f2, f4, 0.0F, this.emptyMat, k & 0x7FFFFFFF, 0.0F, 0.0F, 1.0F, 1.0F);
+    Render.drawTile((float)this.projectPos2d.jdField_x_of_type_Double, (float)(this.projectPos2d.jdField_y_of_type_Double + this.conf.iconSize / 2 + f2), f1 + 2.0F * f2, f4, 0.0F, this.emptyMat, k & 0x7FFFFFFF, 0.0F, 0.0F, 1.0F, 1.0F);
 
     Render.drawEnd();
     for (int m = 0; m < arrayOfString.length; m++) {
       String str2 = arrayOfString[m];
       if (str2 == null) break;
-      this.smallFont.output(0xFF000000 | k ^ 0xFFFFFFFF, (float)(this.projectPos2d.x + f2), (float)(this.projectPos2d.y + this.conf.iconSize / 2 + f2 + (i - m - 1) * (f2 + f3) + f2), 0.0F, str2);
+      this.smallFont.output(0xFF000000 | k ^ 0xFFFFFFFF, (float)(this.projectPos2d.jdField_x_of_type_Double + f2), (float)(this.projectPos2d.jdField_y_of_type_Double + this.conf.iconSize / 2 + f2 + (i - m - 1) * (f2 + f3) + f2), 0.0F, str2);
     }
   }
 
@@ -1118,16 +1114,16 @@ public class Builder
     PAir localPAir = (PAir)selectedPoint();
     Point3d localPoint3d;
     if (Actor.isValid(localPAir)) {
-      localPoint3d = localPAir.pos.getAbsPoint();
+      localPoint3d = localPAir.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     } else {
       Actor localActor = selectedActor();
       if (!(localActor instanceof PlMisRocket.Rocket))
         return;
-      localPoint3d = localActor.pos.getAbsPoint();
+      localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     }
     project2d(localPoint3d, this.projectPos2d);
-    this.lineNXYZ[0] = (float)this.projectPos2d.x;
-    this.lineNXYZ[1] = (float)this.projectPos2d.y;
+    this.lineNXYZ[0] = (float)this.projectPos2d.jdField_x_of_type_Double;
+    this.lineNXYZ[1] = (float)this.projectPos2d.jdField_y_of_type_Double;
     this.lineNXYZ[2] = 0.0F;
     this.lineNXYZ[3] = this.mousePosX;
     this.lineNXYZ[4] = this.mousePosY;
@@ -1149,19 +1145,19 @@ public class Builder
     }
 
     this.mouseState = 4;
-    this.viewWindow.mouseCursor = 0;
+    this.viewWindow.jdField_mouseCursor_of_type_Int = 0;
   }
   public void endSelectTarget() {
     if (this.mouseState != 4) return;
     this.mouseState = 0;
-    this.viewWindow.mouseCursor = 1;
+    this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
     Path localPath = selectedPath();
     Object localObject1;
     Object localObject2;
     if ((localPath == null) || (!(localPath instanceof PathAir))) {
       localObject1 = (PlMisRocket.Rocket)selectedActor();
       localObject2 = mouseWorldPos();
-      ((PlMisRocket.Rocket)localObject1).target = new Point2d(((Point3d)localObject2).x, ((Point3d)localObject2).y);
+      ((PlMisRocket.Rocket)localObject1).target = new Point2d(((Point3d)localObject2).jdField_x_of_type_Double, ((Point3d)localObject2).jdField_y_of_type_Double);
     } else {
       localObject1 = getOverActor();
       if (!Actor.isValid((Actor)localObject1)) return;
@@ -1178,7 +1174,7 @@ public class Builder
   public void breakSelectTarget() {
     if (this.mouseState != 4) return;
     this.mouseState = 0;
-    this.viewWindow.mouseCursor = 1;
+    this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
   }
 
   private void initHotKeys()
@@ -1315,15 +1311,15 @@ public class Builder
         if (!Builder.this.isFreeView()) return;
         Object localObject;
         if (Builder.this.actorView() == Builder.this.cursor) {
-          localObject = Builder.this.selectNear(Builder.this.actorView().pos.getAbsPoint());
+          localObject = Builder.this.selectNear(Builder.this.actorView().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
           if (localObject != null) {
             Builder.this.cursor.drawing(false);
             Builder.this.setSelected((Actor)localObject);
           }
         } else if (Actor.isValid(Builder.this.actorView())) {
-          localObject = Builder.this.actorView().pos.getAbs();
-          Builder.this.cursor.pos.setAbs((Loc)localObject);
-          Builder.this.cursor.pos.reset();
+          localObject = Builder.this.actorView().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
+          Builder.this.cursor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs((Loc)localObject);
+          Builder.this.cursor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
           Builder.this.cursor.drawing(true);
           Builder.this.setSelected(Builder.this.cursor);
         }
@@ -1339,7 +1335,7 @@ public class Builder
         }
         if (Builder.this.mouseState != 0) return;
         Builder.this.mouseState = 1;
-        Builder.this.viewWindow.mouseCursor = 7;
+        Builder.this.viewWindow.jdField_mouseCursor_of_type_Int = 7;
         Actor localActor = Builder.this.selectNear(Builder.this.mousePosX, Builder.this.mousePosY);
         if (localActor != null) {
           Builder.this.setSelected(localActor);
@@ -1352,7 +1348,7 @@ public class Builder
         if (Builder.this.isFreeView()) return;
         if (Builder.this.mouseState != 1) return;
         Builder.this.mouseState = 0;
-        Builder.this.viewWindow.mouseCursor = 1;
+        Builder.this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "worldZoom") {
@@ -1364,7 +1360,7 @@ public class Builder
         Builder.this.mouseFirstPosX = Builder.this.mousePosX;
         Builder.this.mouseFirstPosY = Builder.this.mousePosY;
         Builder.this.bMouseRenderRect = true;
-        Builder.this.viewWindow.mouseCursor = 2;
+        Builder.this.viewWindow.jdField_mouseCursor_of_type_Int = 2;
         Builder.this.setOverActor(null);
       }
       public void end() {
@@ -1378,14 +1374,14 @@ public class Builder
           return;
         }
         Point3d localPoint3d = Builder.this.posScreenToLand(Builder.this.mouseFirstPosX, Builder.this.mouseFirstPosY, 0.0D, 0.1D);
-        double d1 = localPoint3d.x;
-        double d2 = localPoint3d.y;
+        double d1 = localPoint3d.jdField_x_of_type_Double;
+        double d2 = localPoint3d.jdField_y_of_type_Double;
         localPoint3d = Builder.this.posScreenToLand(Builder.this.mousePosX, Builder.this.mousePosY, 0.0D, 0.1D);
         double d3 = Builder.this.camera.FOV() * 3.141592653589793D / 180.0D / 2.0D;
-        double d4 = localPoint3d.x - d1; if (d4 < 0.0D) d4 = -d4;
+        double d4 = localPoint3d.jdField_x_of_type_Double - d1; if (d4 < 0.0D) d4 = -d4;
         double d5 = d4 / 2.0D / Math.tan(d3);
-        Builder.this.computeViewMap2D(d5, (d1 + localPoint3d.x) / 2.0D, (d2 + localPoint3d.y) / 2.0D);
-        Builder.this.viewWindow.mouseCursor = 1;
+        Builder.this.computeViewMap2D(d5, (d1 + localPoint3d.jdField_x_of_type_Double) / 2.0D, (d2 + localPoint3d.jdField_y_of_type_Double) / 2.0D);
+        Builder.this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
       }
     });
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "unselect") {
@@ -1397,61 +1393,68 @@ public class Builder
         Builder.this.repaint();
       }
     });
-    if (!this.bMultiSelect);
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "select+") {
-      public void begin() {
-        if (!Builder.this.isLoadedLandscape()) return;
-        if (Builder.this.isFreeView()) return;
-        if (Builder.this.mouseState != 0) return;
-        Builder.this.mouseState = 3;
-        Builder.this.mouseFirstPosX = Builder.this.mousePosX;
-        Builder.this.mouseFirstPosY = Builder.this.mousePosY;
-        Builder.this.bMouseRenderRect = true;
-      }
-      public void end() {
-        if (!Builder.this.isLoadedLandscape()) return;
-        if (Builder.this.isFreeView()) return;
-        if (Builder.this.mouseState != 3) return;
-        Builder.this.mouseState = 0;
-        Builder.this.bMouseRenderRect = false;
-        if (Builder.this.mouseFirstPosX != Builder.this.mousePosX) {
-          Point3d localPoint3d = Builder.this.posScreenToLand(Builder.this.mouseFirstPosX, Builder.this.mouseFirstPosY, 0.0D, 0.1D);
-          double d1 = localPoint3d.x;
-          double d2 = localPoint3d.y;
-          localPoint3d = Builder.this.posScreenToLand(Builder.this.mousePosX, Builder.this.mousePosY, 0.0D, 0.1D);
-          Builder.this.select(d1, d2, localPoint3d.x, localPoint3d.y, true);
-          Builder.this.setSelected(null);
+    if (this.bMultiSelect) {
+      HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "select+") {
+        public void begin() {
+          if (!Builder.this.isLoadedLandscape()) return;
+          if (Builder.this.isFreeView()) return;
+          if (Builder.this.mouseState != 0) return;
+          Builder.this.mouseState = 3;
+          Builder.this.mouseFirstPosX = Builder.this.mousePosX;
+          Builder.this.mouseFirstPosY = Builder.this.mousePosY;
+          Builder.this.bMouseRenderRect = true;
         }
-        Builder.this.repaint();
-      }
-    });
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "select-") {
-      public void begin() {
-        if (!Builder.this.isLoadedLandscape()) return;
-        if (Builder.this.isFreeView()) return;
-        if (Builder.this.mouseState != 0) return;
-        Builder.this.mouseState = 3;
-        Builder.this.mouseFirstPosX = Builder.this.mousePosX;
-        Builder.this.mouseFirstPosY = Builder.this.mousePosY;
-        Builder.this.bMouseRenderRect = true;
-      }
-      public void end() {
-        if (!Builder.this.isLoadedLandscape()) return;
-        if (Builder.this.isFreeView()) return;
-        if (Builder.this.mouseState != 3) return;
-        Builder.this.mouseState = 0;
-        Builder.this.bMouseRenderRect = false;
-        if (Builder.this.mouseFirstPosX != Builder.this.mousePosX) {
-          Point3d localPoint3d = Builder.this.posScreenToLand(Builder.this.mouseFirstPosX, Builder.this.mouseFirstPosY, 0.0D, 0.1D);
-          double d1 = localPoint3d.x;
-          double d2 = localPoint3d.y;
-          localPoint3d = Builder.this.posScreenToLand(Builder.this.mousePosX, Builder.this.mousePosY, 0.0D, 0.1D);
-          Builder.this.select(d1, d2, localPoint3d.x, localPoint3d.y, false);
-          Builder.this.setSelected(null);
+        public void end() {
+          if (!Builder.this.isLoadedLandscape()) return;
+          if (Builder.this.isFreeView()) return;
+          if (Builder.this.mouseState != 3) return;
+          Builder.this.mouseState = 0;
+          Builder.this.bMouseRenderRect = false;
+          if (Builder.this.mouseFirstPosX != Builder.this.mousePosX) {
+            Point3d localPoint3d = Builder.this.posScreenToLand(Builder.this.mouseFirstPosX, Builder.this.mouseFirstPosY, 0.0D, 0.1D);
+            double d1 = localPoint3d.jdField_x_of_type_Double;
+            double d2 = localPoint3d.jdField_y_of_type_Double;
+            localPoint3d = Builder.this.posScreenToLand(Builder.this.mousePosX, Builder.this.mousePosY, 0.0D, 0.1D);
+            Builder.this.select(d1, d2, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, true);
+          }
+          Builder.this.repaint();
         }
-        Builder.this.repaint();
-      }
-    });
+      });
+      HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "select-") {
+        public void begin() {
+          if (!Builder.this.isLoadedLandscape()) return;
+          if (Builder.this.isFreeView()) return;
+          if (Builder.this.mouseState != 0) return;
+          Builder.this.mouseState = 3;
+          Builder.this.mouseFirstPosX = Builder.this.mousePosX;
+          Builder.this.mouseFirstPosY = Builder.this.mousePosY;
+          Builder.this.bMouseRenderRect = true;
+        }
+        public void end() {
+          if (!Builder.this.isLoadedLandscape()) return;
+          if (Builder.this.isFreeView()) return;
+          if (Builder.this.mouseState != 3) return;
+          Builder.this.mouseState = 0;
+          Builder.this.bMouseRenderRect = false;
+          if (Builder.this.mouseFirstPosX != Builder.this.mousePosX) {
+            Point3d localPoint3d = Builder.this.posScreenToLand(Builder.this.mouseFirstPosX, Builder.this.mouseFirstPosY, 0.0D, 0.1D);
+            double d1 = localPoint3d.jdField_x_of_type_Double;
+            double d2 = localPoint3d.jdField_y_of_type_Double;
+            localPoint3d = Builder.this.posScreenToLand(Builder.this.mousePosX, Builder.this.mousePosY, 0.0D, 0.1D);
+            Builder.this.select(d1, d2, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, false);
+          }
+          Builder.this.repaint();
+        } } );
+    } else {
+      HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "beginSelectTarget") {
+        public void end() {
+          if (!Builder.this.isLoadedLandscape()) return;
+          if (Builder.this.mouseState != 0) return;
+          if (Builder.this.isFreeView()) return;
+          Builder.this.beginSelectTarget();
+        }
+      });
+    }
     HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "freeView") {
       public void end() {
         if (!Builder.this.isLoadedLandscape()) return;
@@ -1476,116 +1479,8 @@ public class Builder
       public void begin() { if (!Builder.this.isLoadedLandscape()) return;
         if (Builder.this.mouseState != 0) return;
         if (Builder.this.isFreeView()) return;
-        Builder.this.doPopUpMenu();
-      }
+        Builder.this.doPopUpMenu(); }
     });
-    if (!this.bMultiSelect) {
-      HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "mis_cut") {
-        public void begin() {
-          Builder.this.mis_cut();
-        }
-      });
-      HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "mis_copy") {
-        public void begin() {
-          Builder.this.mis_copy(true);
-        }
-      });
-      HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "mis_paste") {
-        public void begin() {
-          Builder.this.mis_paste();
-        }
-      });
-    }
-  }
-
-  private void mis_cut()
-  {
-    if (Plugin.builder.isFreeView())
-      return;
-    mis_copy(false);
-    Actor[] arrayOfActor = selectedActors();
-    for (int i = 0; i < arrayOfActor.length; i++) {
-      Actor localActor = arrayOfActor[i];
-      if (localActor == null)
-        break;
-      if ((Actor.isValid(localActor)) && (isMiltiSelected(localActor))) {
-        if ((localActor instanceof PAirdrome)) {
-          PathAirdrome localPathAirdrome = (PathAirdrome)localActor.getOwner();
-          if (localPathAirdrome.pointIndx((PAirdrome)localActor) == 0)
-            localPathAirdrome.destroy();
-        }
-        else {
-          localActor.destroy();
-        }
-      }
-    }
-    selectedActorsValidate();
-    PlMission.setChanged();
-    repaint();
-  }
-
-  private void mis_copy(boolean paramBoolean) {
-    if (Plugin.builder.isFreeView())
-      return;
-    this.mis_properties.clear();
-    this.mis_cBoxes.clear();
-    this.mis_clipLoc.clear();
-    int i = 0;
-    this.mis_clipP0.x = (this.mis_clipP0.y = this.mis_clipP0.z = 0.0D);
-    Actor[] arrayOfActor = selectedActors();
-    for (int j = 0; j < arrayOfActor.length; j++) {
-      Actor localActor = arrayOfActor[j];
-      if (localActor == null)
-        break;
-      if ((!Actor.isValid(localActor)) || (!isMiltiSelected(localActor)))
-        continue;
-      Loc localLoc = new Loc();
-      localActor.pos.getAbs((Loc)localLoc);
-      this.mis_clipLoc.add(localLoc);
-      this.mis_clipP0.add(((Loc)localLoc).getPoint());
-      setSelected(localActor);
-      this.mis_cBoxes.add("" + this.wSelect.comboBox1.getSelected());
-      this.mis_cBoxes.add("" + this.wSelect.comboBox2.getSelected());
-      this.mis_properties.add(Plugin.mis_doGetProperties(localActor));
-      setSelected(null);
-      i++;
-    }
-
-    if (i > 1) { this.mis_clipP0.x /= i; this.mis_clipP0.y /= i; this.mis_clipP0.z /= i; }
-    if (paramBoolean) {
-      selectActorsClear();
-    }
-    repaint();
-  }
-
-  private void mis_paste()
-  {
-    if (isFreeView())
-      return;
-    selectActorsClear();
-    int i = this.mis_properties.size();
-    if (i == 0)
-      return;
-    Point3d localPoint3d1 = mouseWorldPos();
-    Loc localLoc1 = new Loc();
-    Point3d localPoint3d2 = new Point3d();
-    for (int j = 0; j < i; j++) {
-      Loc localLoc2 = (Loc)this.mis_clipLoc.get(j);
-      localPoint3d2.sub(localLoc2.getPoint(), this.mis_clipP0);
-      localPoint3d2.add(localPoint3d1);
-      localLoc1.set(localPoint3d2, localLoc2.getOrient());
-      this.wSelect.comboBox1.setSelected(Integer.parseInt((String)this.mis_cBoxes.get(j * 2)), false, true);
-      this.wSelect.comboBox2.setSelected(Integer.parseInt((String)this.mis_cBoxes.get(j * 2 + 1)), false, true);
-      Actor localActor = Plugin.mis_doInsert(localLoc1, (String)this.mis_properties.get(j));
-      selectActorsAdd(localActor);
-      setSelected(null);
-    }
-    PlMission.setChanged();
-    repaint();
-  }
-
-  private static final String getFullClassName(Actor paramActor) {
-    return (paramActor instanceof SoftClass) ? ((SoftClass)paramActor).fullClassName() : paramActor.getClass().getName();
   }
 
   public void doPopUpMenu()
@@ -1599,7 +1494,7 @@ public class Builder
       this.popUpMenu.clearItems();
     }
     Point3d localPoint3d = posScreenToLand(this.mousePosX, this.mousePosY, 0.0D, 0.1D);
-    float f = this.viewWindow.win.dy - this.mousePosY - 1.0F;
+    float f = this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.mousePosY - 1.0F;
 
     if ((Actor.isValid(selectedPoint())) || (Actor.isValid(selectedActor()))) {
       this.popUpMenu.addItem(new GWindowMenuItem(this.popUpMenu, Plugin.i18n("&Unselect"), Plugin.i18n("TIPUnselect")) {
@@ -1613,37 +1508,11 @@ public class Builder
         }
       });
     }
-    if (this.selectedActors.size() > 0) {
-      this.popUpMenu.addItem(new GWindowMenuItem(this.popUpMenu, Plugin.i18n("Unselect&All"), Plugin.i18n("TIPUnselectAll")) {
-        public void execute() {
-          Builder.this.setSelected(null);
-          Builder.this.selectedActors.clear();
-        }
-      });
-      this.popUpMenu.addItem(new GWindowMenuItem(this.popUpMenu, Plugin.i18n("Cut"), Plugin.i18n("TIPCut")) {
-        public void execute() {
-          Builder.this.mis_cut();
-        }
-      });
-      this.popUpMenu.addItem(new GWindowMenuItem(this.popUpMenu, Plugin.i18n("Copy"), Plugin.i18n("TIPCopy")) {
-        public void execute() {
-          Builder.this.mis_copy(true);
-        } } );
-    }
-    if (this.mis_properties.size() > 0) {
-      this.popUpMenu.addItem(new GWindowMenuItem(this.popUpMenu, Plugin.i18n("Paste"), Plugin.i18n("TIPPaste")) {
-        public void execute() {
-          Builder.this.mis_paste();
-        }
-
-      });
-    }
-
     Plugin.doFillPopUpMenu(this.popUpMenu, localPoint3d);
     if (this.popUpMenu.size() > 0) {
       this.popUpMenu.setPos(this.mousePosX, f);
       this.popUpMenu.showModal();
-
+      this.mousePosX = (this.mousePosY = -1);
       this.movedActor = null;
     } else {
       this.popUpMenu.hideWindow();
@@ -1683,7 +1552,7 @@ public class Builder
     if (isFreeView()) {
       if (!Actor.isValid(actorView()))
         return;
-      actorView().pos.getAbs(localLoc);
+      actorView().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localLoc);
       if (actorView() != this.cursor)
         localLoc.add(new Point3d(1.0D, 1.0D, 0.0D));
     } else {
@@ -1704,7 +1573,7 @@ public class Builder
       if ((!Actor.isValid(selectedActor())) || (selectedActor() == this.cursor) || ((selectedActor() instanceof Bridge)))
       {
         return;
-      }localObject1 = selectedActor().pos.getAbs();
+      }localObject1 = selectedActor().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs();
       selectedActor().destroy();
       Plugin.doAfterDelete();
       PlMission.setChanged();
@@ -1714,7 +1583,7 @@ public class Builder
       }
       if (localObject2 == null) {
         localObject2 = this.cursor;
-        this.cursor.pos.setAbs((Loc)localObject1); this.cursor.pos.reset();
+        this.cursor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs((Loc)localObject1); this.cursor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
         this.cursor.drawing(true);
       }
       setSelected((Actor)localObject2);
@@ -1751,8 +1620,8 @@ public class Builder
                     if (Builder.this.deletingActor == Builder.this.selectedActor())
                       Builder.this.delete(Builder.this.bDeletingChangeSelection);
                   } else {
-                    Builder.access$2202(Builder.this, null);
-                    Builder.access$2002(Builder.this, null);
+                    Builder.access$1902(Builder.this, null);
+                    Builder.access$1702(Builder.this, null);
                     Builder.this.setSelected(null);
                   }
                 }
@@ -1807,16 +1676,16 @@ public class Builder
     if (Actor.isValid(selectedActor())) {
       if ((selectedActor() instanceof Bridge)) return;
       localObject = new Orient();
-      selectedActor().pos.getAbs((Orient)localObject);
+      selectedActor().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs((Orient)localObject);
       ((Orient)localObject).wrap();
       ((Orient)localObject).set(((Orient)localObject).azimut() + paramInt, ((Orient)localObject).tangage(), ((Orient)localObject).kren());
-      selectedActor().pos.setAbs((Orient)localObject);
+      selectedActor().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs((Orient)localObject);
       defaultAzimut = ((Orient)localObject).azimut();
       align(selectedActor());
       PlMission.setChanged();
       if (!isFreeView())
         repaint();
-    } else if ((this.bMultiSelect) || ((!isFreeView()) && (countSelectedActors() > 0))) {
+    } else if ((this.bMultiSelect) && (!isFreeView()) && (countSelectedActors() > 0)) {
       localObject = posScreenToLand(this.mousePosX, this.mousePosY, 0.0D, 0.1D);
       Point3d localPoint3d1 = new Point3d();
       Orient localOrient = new Orient();
@@ -1827,23 +1696,23 @@ public class Builder
         Actor localActor = arrayOfActor[i];
         if (localActor == null) break;
         if (Actor.isValid(localActor)) {
-          Point3d localPoint3d2 = localActor.pos.getAbsPoint();
-          localPoint3d2.x -= ((Point3d)localObject).x;
-          localPoint3d2.y -= ((Point3d)localObject).y;
-          if (localPoint3d1.x * localPoint3d1.x + localPoint3d1.y * localPoint3d1.y > 1.0E-006D) {
-            double d3 = localPoint3d1.x * d2 + localPoint3d1.y * d1;
-            double d4 = localPoint3d1.y * d2 - localPoint3d1.x * d1;
-            localPoint3d1.x = (d3 + ((Point3d)localObject).x);
-            localPoint3d1.y = (d4 + ((Point3d)localObject).y);
+          Point3d localPoint3d2 = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+          localPoint3d1.jdField_x_of_type_Double = (localPoint3d2.jdField_x_of_type_Double - ((Point3d)localObject).jdField_x_of_type_Double);
+          localPoint3d1.jdField_y_of_type_Double = (localPoint3d2.jdField_y_of_type_Double - ((Point3d)localObject).jdField_y_of_type_Double);
+          if (localPoint3d1.jdField_x_of_type_Double * localPoint3d1.jdField_x_of_type_Double + localPoint3d1.jdField_y_of_type_Double * localPoint3d1.jdField_y_of_type_Double > 1.0E-006D) {
+            double d3 = localPoint3d1.jdField_x_of_type_Double * d2 + localPoint3d1.jdField_y_of_type_Double * d1;
+            double d4 = localPoint3d1.jdField_y_of_type_Double * d2 - localPoint3d1.jdField_x_of_type_Double * d1;
+            localPoint3d1.jdField_x_of_type_Double = (d3 + ((Point3d)localObject).jdField_x_of_type_Double);
+            localPoint3d1.jdField_y_of_type_Double = (d4 + ((Point3d)localObject).jdField_y_of_type_Double);
           }
-          localPoint3d1.z = localPoint3d2.z;
+          localPoint3d1.jdField_z_of_type_Double = localPoint3d2.jdField_z_of_type_Double;
           if (this.bRotateObjects) {
-            localActor.pos.getAbs(localOrient);
+            localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localOrient);
             localOrient.wrap();
             localOrient.set(localOrient.azimut() + paramInt, localOrient.tangage(), localOrient.kren());
-            localActor.pos.setAbs(localPoint3d1, localOrient);
+            localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d1, localOrient);
           } else {
-            localActor.pos.setAbs(localPoint3d1);
+            localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d1);
           }
           align(localActor);
         }
@@ -1877,11 +1746,11 @@ public class Builder
     Main3D.cur3D().render3D0.setShow(false);
     Main3D.cur3D().render3D1.setShow(false);
     Main3D.cur3D().render2D.setShow(false);
-    _viewPort[2] = (int)this.viewWindow.win.dx;
-    _viewPort[3] = (int)this.viewWindow.win.dy;
+    _viewPort[2] = (int)this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    _viewPort[3] = (int)this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     GPoint localGPoint = this.viewWindow.windowToGlobal(0.0F, 0.0F);
-    _viewPort[0] = ((int)localGPoint.x + ((GUIWindowManager)this.viewWindow.root.manager).render.getViewPortX0());
-    _viewPort[1] = ((int)(this.viewWindow.root.win.dy - localGPoint.y - this.viewWindow.win.dy) + ((GUIWindowManager)this.viewWindow.root.manager).render.getViewPortY0());
+    _viewPort[0] = ((int)localGPoint.x + ((GUIWindowManager)this.viewWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.manager).render.getViewPortX0());
+    _viewPort[1] = ((int)(this.viewWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGPoint.y - this.viewWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) + ((GUIWindowManager)this.viewWindow.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.manager).render.getViewPortY0());
 
     Main3D.cur3D().renderMap2D.setViewPort(_viewPort);
     Main3D.cur3D().render3D0.setViewPort(_viewPort);
@@ -1957,7 +1826,7 @@ public class Builder
     com.maddox.il2.objects.air.Runaway.bDrawing = this.bMultiSelect;
     this.camera.interpPut(new InterpolateOnLand(), "onLand", Time.currentReal(), null);
 
-    this.viewWindow.mouseCursor = 1;
+    this.viewWindow.jdField_mouseCursor_of_type_Int = 1;
     this.pathes = new Pathes();
     PlMission.doMissionReload();
     this.cursor = new CursorMesh("3do/primitive/coord/mono.sim");
@@ -1972,7 +1841,7 @@ public class Builder
 
     if (this.wSelect.isVisible()) this.wSelect.hideWindow();
     if (this.wViewLand.isVisible()) this.wViewLand.hideWindow();
-    if ((this.bMultiSelect) || 
+    if ((this.bMultiSelect) && 
       (this.wSnap.isVisible())) this.wSnap.hideWindow();
     Plugin.doFreeResources();
 
@@ -1993,12 +1862,7 @@ public class Builder
 
   public Builder(GWindowRootMenu paramGWindowRootMenu, String paramString) {
     envName = paramString;
-    ((GUIWindowManager)(GUIWindowManager)paramGWindowRootMenu.manager).setUseGMeshs(true);
-
-    this.mis_properties = new ArrayList();
-    this.mis_cBoxes = new ArrayList();
-    this.mis_clipLoc = new ArrayList();
-    this.mis_clipP0 = new Point3d();
+    ((GUIWindowManager)paramGWindowRootMenu.manager).setUseGMeshs(true);
 
     this.camera = ((Camera3D)Actor.getByName("camera"));
     this.camera2D = ((CameraOrtho2D)Actor.getByName("cameraMap2D"));
@@ -2023,7 +1887,7 @@ public class Builder
 
     paramGWindowRootMenu.statusBar.defaultHelp = null;
     this.mFile = paramGWindowRootMenu.menuBar.addItem(Plugin.i18n("&File"), Plugin.i18n("Load/SaveMissionFiles"));
-    this.mFile.subMenu = ((GWindowMenu)(GWindowMenu)this.mFile.create(new GWindowMenu()));
+    this.mFile.subMenu = ((GWindowMenu)this.mFile.create(new GWindowMenu()));
     this.mFile.subMenu.close(false);
 
     this.mFile.subMenu.addItem("-", null);
@@ -2032,52 +1896,48 @@ public class Builder
       }
     });
     this.mEdit = paramGWindowRootMenu.menuBar.addItem(Plugin.i18n("&Edit"), Plugin.i18n("TIPEdit"));
-    this.mEdit.subMenu = ((GWindowMenu)(GWindowMenu)this.mEdit.create(new GWindowMenu()));
+    this.mEdit.subMenu = ((GWindowMenu)this.mEdit.create(new GWindowMenu()));
     this.mEdit.subMenu.close(false);
-    if (this.bMultiSelect)
-      this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, Plugin.i18n("&Select_All"), null) {
+    if (this.bMultiSelect) {
+      this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, "&Select All", null) {
         public void execute() {
           Plugin.doSelectAll();
         }
       });
-    if (!this.bMultiSelect);
-    this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, Plugin.i18n("&Unselect_All"), null) {
-      public void execute() {
-        Builder.this.setSelected(null);
-        Builder.this.selectedActors.clear();
-      }
-    });
-    GWindowMenuItem localGWindowMenuItem = this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, Plugin.i18n("&Enable_Select"), null) {
-      public void execute() {
-        Builder.this.setSelected(null);
-        Builder.this.selectedActors.clear();
-        Builder.this.conf.bEnableSelect = (!Builder.this.conf.bEnableSelect);
-        this.bChecked = Builder.this.conf.bEnableSelect;
-      }
-    });
-    localGWindowMenuItem.bChecked = this.conf.bEnableSelect;
-    this.mEdit.subMenu.addItem("-", null);
-
+      this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, "&Unselect All", null) {
+        public void execute() {
+          Builder.this.setSelected(null);
+          Builder.this.selectedActors.clear();
+        }
+      });
+      localGWindowMenuItem = this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, "&Enable Select", null) {
+        public void execute() {
+          Builder.this.setSelected(null);
+          Builder.this.selectedActors.clear();
+          Builder.this.conf.bEnableSelect = (!Builder.this.conf.bEnableSelect);
+          this.bChecked = Builder.this.conf.bEnableSelect;
+        }
+      });
+      localGWindowMenuItem.bChecked = this.conf.bEnableSelect;
+      this.mEdit.subMenu.addItem("-", null);
+    }
     this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, Plugin.i18n("&DeleteAll"), Plugin.i18n("TIPDeleteAll")) {
       public void execute() { Builder.this.deleteAll();
       }
     });
-    if (!this.bMultiSelect);
-    this.mEdit.subMenu.addItem("-", null);
-    localGWindowMenuItem = this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, Plugin.i18n("&Rotate_Objects"), null) {
-      public void execute() {
-        Builder.access$2702(Builder.this, !Builder.this.bRotateObjects);
-        this.bChecked = Builder.this.bRotateObjects;
-      }
-    });
-    localGWindowMenuItem.bChecked = this.bRotateObjects;
-
-    this.mConfigure = paramGWindowRootMenu.menuBar.addItem(Plugin.i18n("&Configure"), Plugin.i18n("TIPConfigure"));
-    this.mConfigure.subMenu = ((GWindowMenu)(GWindowMenu)this.mConfigure.create(new GWindowMenu()));
-    this.mConfigure.subMenu.close(false);
+    if (this.bMultiSelect) {
+      this.mEdit.subMenu.addItem("-", null);
+      localGWindowMenuItem = this.mEdit.subMenu.addItem(new GWindowMenuItem(this.mEdit.subMenu, "&Rotate Objects", null) {
+        public void execute() {
+          Builder.access$2402(Builder.this, !Builder.this.bRotateObjects);
+          this.bChecked = Builder.this.bRotateObjects;
+        }
+      });
+      localGWindowMenuItem.bChecked = this.bRotateObjects;
+    }
 
     this.mView = paramGWindowRootMenu.menuBar.addItem(Plugin.i18n("&View"), Plugin.i18n("TIPView"));
-    this.mView.subMenu = ((GWindowMenu)(GWindowMenu)this.mView.create(new GWindowMenu()));
+    this.mView.subMenu = ((GWindowMenu)this.mView.create(new GWindowMenu()));
     this.mView.subMenu.close(false);
     this.mSelectItem = this.mView.subMenu.addItem(new GWindowMenuItem(this.mView.subMenu, Plugin.i18n("&Object"), Plugin.i18n("TIPObject")) {
       public void execute() {
@@ -2091,20 +1951,19 @@ public class Builder
           Builder.this.wViewLand.showWindow();
       }
     });
-    if (!this.bMultiSelect);
-    this.mSnap = this.mView.subMenu.addItem(new GWindowMenuItem(this.mView.subMenu, Plugin.i18n("&Snap"), null) {
-      public void execute() {
-        if (Builder.this.wSnap.isVisible()) Builder.this.wSnap.hideWindow(); else
-          Builder.this.wSnap.showWindow();
-      }
-    });
+    if (this.bMultiSelect)
+      this.mSnap = this.mView.subMenu.addItem(new GWindowMenuItem(this.mView.subMenu, "&Snap", null) {
+        public void execute() {
+          if (Builder.this.wSnap.isVisible()) Builder.this.wSnap.hideWindow(); else
+            Builder.this.wSnap.showWindow();
+        } } );
     this.mView.subMenu.addItem("-", null);
     this.mDisplayFilter = this.mView.subMenu.addItem(new GWindowMenuItem(this.mView.subMenu, Plugin.i18n("&DisplayFilter"), Plugin.i18n("TIPDisplayFilter")));
-    this.mDisplayFilter.subMenu = ((GWindowMenu)(GWindowMenu)this.mDisplayFilter.create(new GWindowMenu()));
+    this.mDisplayFilter.subMenu = ((GWindowMenu)this.mDisplayFilter.create(new GWindowMenu()));
     this.mDisplayFilter.subMenu.close(false);
     this.mView.subMenu.addItem("-", null);
-    localGWindowMenuItem = this.mView.subMenu.addItem(new GWindowMenuItem(this.mView.subMenu, Plugin.i18n("&IconSize"), Plugin.i18n("TIPIconSize")));
-    localGWindowMenuItem.subMenu = ((GWindowMenu)(GWindowMenu)localGWindowMenuItem.create(new GWindowMenu()));
+    GWindowMenuItem localGWindowMenuItem = this.mView.subMenu.addItem(new GWindowMenuItem(this.mView.subMenu, Plugin.i18n("&IconSize"), Plugin.i18n("TIPIconSize")));
+    localGWindowMenuItem.subMenu = ((GWindowMenu)localGWindowMenuItem.create(new GWindowMenu()));
     localGWindowMenuItem.subMenu.close(false);
     this.mIcon8 = localGWindowMenuItem.subMenu.addItem(new GWindowMenuItem(localGWindowMenuItem.subMenu, "&8", null) {
       public void execute() {
@@ -2174,9 +2033,9 @@ public class Builder
 
     this.wSelect = new WSelect(this, this.clientWindow);
     this.wViewLand = new WViewLand(this, this.clientWindow);
-    if (!this.bMultiSelect);
-    this.wSnap = new WSnap(this, this.clientWindow);
-
+    if (this.bMultiSelect) {
+      this.wSnap = new WSnap(this, this.clientWindow);
+    }
     Plugin.doCreateGUI();
 
     this._gridFont = TTFont.font[1];
@@ -2200,15 +2059,15 @@ public class Builder
     public void resized()
     {
       GRegion localGRegion = this.parentWindow.getClientRegion();
-      this.win.set(localGRegion);
-      Builder.this.mapXscrollBar.setSize(this.win.dx, lookAndFeel().getHScrollBarH());
-      Builder.this.mapXscrollBar.setPos(0.0F, this.win.dy - lookAndFeel().getHScrollBarH());
-      Builder.this.mapYscrollBar.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - lookAndFeel().getHScrollBarH());
-      Builder.this.mapYscrollBar.setPos(this.win.dx - lookAndFeel().getVScrollBarW(), 0.0F);
-      Builder.this.mapZSlider.setSize(lookAndFeel().getVSliderIntW(), this.win.dy - lookAndFeel().getHScrollBarH());
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.set(localGRegion);
+      Builder.this.mapXscrollBar.setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, lookAndFeel().getHScrollBarH());
+      Builder.this.mapXscrollBar.setPos(0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - lookAndFeel().getHScrollBarH());
+      Builder.this.mapYscrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - lookAndFeel().getHScrollBarH());
+      Builder.this.mapYscrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW(), 0.0F);
+      Builder.this.mapZSlider.setSize(lookAndFeel().getVSliderIntW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - lookAndFeel().getHScrollBarH());
       Builder.this.mapZSlider.setPos(0.0F, 0.0F);
       Builder.this.viewWindow.setPos(lookAndFeel().getVSliderIntW(), 0.0F);
-      Builder.this.viewWindow.setSize(this.win.dx - 2.0F * lookAndFeel().getVScrollBarW(), this.win.dy - lookAndFeel().getHScrollBarH());
+      Builder.this.viewWindow.setSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - 2.0F * lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - lookAndFeel().getHScrollBarH());
 
       if (Builder.this.isLoadedLandscape())
         Builder.this.computeViewMap2D(Builder.this.viewH, Builder.this.camera2D.worldXOffset + Builder.this.viewX / 2.0D, Builder.this.camera2D.worldYOffset + Builder.this.viewY / 2.0D);
@@ -2305,9 +2164,9 @@ public class Builder
 
     public void msgTimer(MsgTimerParam paramMsgTimerParam, int paramInt, boolean paramBoolean1, boolean paramBoolean2) { float f = (paramInt + 1) / 100.0F;
       this.cur.interpolate(this.from, this.to, f);
-      Builder.this.camera.pos.setAbs(this.cur);
+      Builder.this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.cur);
       if (paramBoolean2) {
-        if (this.aView != null) Builder.this.camera.pos.setBase(this.aView, Main3D.cur3D().hookView, false); else
+        if (this.aView != null) Builder.this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.aView, Main3D.cur3D().hookView, false); else
           Builder.this.endClearActorView();
         HotKeyCmdEnv.enable(Builder.envName, true);
       } }
@@ -2318,7 +2177,7 @@ public class Builder
       Object localObject;
       this.to = localObject;
       if (paramLoc1 != null)
-        Builder.this.camera.pos.setBase(null, null, false);
+        Builder.this.camera.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(null, null, false);
       HotKeyCmdEnv.enable(Builder.envName, false);
       RTSConf.cur.realTimer.msgAddListener(this, new MsgTimerParam(0, 0, Time.currentReal(), 100, 10, true, true));
     }
@@ -2339,8 +2198,8 @@ public class Builder
       if ((paramActor instanceof BridgeSegment)) return false;
       if ((paramActor instanceof Bridge)) return false;
       Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      if ((localPoint3d.x < Builder.this._selectX0) || (localPoint3d.x > Builder.this._selectX1)) return false;
-      if ((localPoint3d.y < Builder.this._selectY0) || (localPoint3d.y > Builder.this._selectY1)) return false;
+      if ((localPoint3d.jdField_x_of_type_Double < Builder.this._selectX0) || (localPoint3d.jdField_x_of_type_Double > Builder.this._selectX1)) return false;
+      if ((localPoint3d.jdField_y_of_type_Double < Builder.this._selectY0) || (localPoint3d.jdField_y_of_type_Double > Builder.this._selectY1)) return false;
       if (Builder.this._bSelect) Builder.this.selectedActors.put(paramActor, null); else
         Builder.this.selectedActors.remove(paramActor);
       return true;
@@ -2360,14 +2219,14 @@ public class Builder
         return true;
       if ((Builder.this.isFreeView()) && (Builder.this.bMultiSelect)) {
         localActor.pos.getAbs(Builder.this.__pi, Builder.this.__oi);
-        double d1 = Engine.land().HQ(Builder.this.__pi.x, Builder.this.__pi.y);
+        double d1 = Engine.land().HQ(Builder.this.__pi.jdField_x_of_type_Double, Builder.this.__pi.jdField_y_of_type_Double);
         double d2 = Builder.this.__pi.z - d1;
-        boolean bool = Engine.land().isWater(Builder.this.__pi.x, Builder.this.__pi.y);
+        boolean bool = Engine.land().isWater(Builder.this.__pi.jdField_x_of_type_Double, Builder.this.__pi.jdField_y_of_type_Double);
         int i = (int)d2;
         if (d2 < 0.0D) d2 = -d2;
         int j = (int)(d2 * 100.0D) % 100;
         int k = TextScr.font().height() - TextScr.font().descender();
-        Engine.land(); TextScr.output(5, 5, "curPos: " + (int)Builder.this.__pi.x + " " + (int)Builder.this.__pi.y + " H= " + i + "." + j + (bool ? " water HLand:" : " land HLand:") + (float)d1 + " type=" + Landscape.getPixelMapT(Engine.land().WORLD2PIXX(Builder.this.__pi.x), Engine.land().WORLD2PIXY(Builder.this.__pi.y)));
+        Engine.land(); TextScr.output(5, 5, "curPos: " + (int)Builder.this.__pi.jdField_x_of_type_Double + " " + (int)Builder.this.__pi.jdField_y_of_type_Double + " H= " + i + "." + j + (bool ? " water HLand:" : " land HLand:") + (float)d1 + " type=" + Landscape.getPixelMapT(Engine.land().WORLD2PIXX(Builder.this.__pi.jdField_x_of_type_Double), Engine.land().WORLD2PIXY(Builder.this.__pi.jdField_y_of_type_Double)));
 
         TextScr.output(5, 5 + k, "Orient: " + (int)Builder.this.__oi.azimut() + " " + (int)Builder.this.__oi.tangage() + " " + (int)Builder.this.__oi.kren());
         Point3d localPoint3d = this.actor.pos.getAbsPoint();

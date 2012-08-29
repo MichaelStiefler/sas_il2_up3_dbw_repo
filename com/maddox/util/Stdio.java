@@ -31,7 +31,7 @@ public class Stdio
       c = paramString2.charAt(i);
       if (c == '%') {
         String str = paramString1.substring(begs[j], ends[j]);
-        while (true) { i++; if (i >= paramString2.length()) break;
+        do {
           c = paramString2.charAt(i);
           switch (Character.toUpperCase(c)) { case 'C':
           case 'E':
@@ -75,8 +75,9 @@ public class Stdio
           case 'S':
             S[j] = str;
             j++;
+            break;
           }
-        }
+          i++; } while (i < paramString2.length());
       }
     }
   }

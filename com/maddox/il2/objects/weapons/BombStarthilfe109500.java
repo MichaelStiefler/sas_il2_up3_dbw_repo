@@ -34,13 +34,13 @@ public class BombStarthilfe109500 extends Bomb
     super.interpolateTick();
 
     if (this.bOnChute) {
-      this.pos.getAbs(or);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(or);
       or.interpolate(or_, 0.4F);
-      this.pos.setAbs(or);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(or);
       getSpeed(v3d);
       v3d.scale(0.997D);
-      if (v3d.z < -5.0D) {
-        v3d.z += 1.1F * Time.tickConstLenFs();
+      if (v3d.jdField_z_of_type_Double < -5.0D) {
+        v3d.jdField_z_of_type_Double += 1.1F * Time.tickConstLenFs();
       }
       setSpeed(v3d);
     } else if (this.curTm > this.ttcurTM) {

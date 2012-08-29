@@ -1,6 +1,5 @@
 package com.maddox.il2.gui;
 
-import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
 import com.maddox.JGP.Vector3f;
@@ -20,8 +19,6 @@ import com.maddox.il2.ai.Front;
 import com.maddox.il2.ai.Way;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.ZutiTargetsSupportMethods;
-import com.maddox.il2.ai.ground.TgtShip;
 import com.maddox.il2.engine.Accumulator;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
@@ -45,30 +42,16 @@ import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.TTFont;
 import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.game.HUD;
-import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiPadObject;
-import com.maddox.il2.game.ZutiRadarRefresh;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.vehicles.artillery.AAA;
-import com.maddox.il2.objects.vehicles.radios.Beacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasLorenzBlindLanding;
-import com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation;
 import com.maddox.rts.IniFile;
 import com.maddox.util.HashMapExt;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public class GUIPad
 {
@@ -90,12 +73,8 @@ public class GUIPad
   protected ArrayList targets = new ArrayList();
   public GMesh mesh;
   public TTFont gridFont;
-  public TTFont waypointFont;
   public Mat emptyMat;
   public Mat _iconAir;
-  public Mat _iconILS;
-  private float bigFontMultip = 1.0F;
-  private int lastScale;
   private float[] scale = { 0.064F, 0.032F, 0.016F, 0.008F, 0.004F, 0.002F, 0.001F, 0.0005F, 0.00025F };
   private int scales = this.scale.length;
   private int curScale = 0;
@@ -117,15 +96,8 @@ public class GUIPad
   private ArrayList airs = new ArrayList();
 
   private Point3f _wayP = new Point3f();
-  private Point3f _wayP2 = new Point3f();
   private float[] lineNXYZ = new float[6];
   private int lineNCounter;
-  public boolean zutiColorAirfields = true;
-
-  public Map zutiPadObjects = new HashMap();
-  private boolean zutiPlayeAcDrawn = false;
-  private ArrayList zutiNeutralHomeBases = null;
-  protected Mat iconBornPlace = null;
 
   public boolean isActive()
   {
@@ -137,11 +109,11 @@ public class GUIPad
     this.bActive = true;
     GUI.activate(true, false);
     this.client.showWindow();
-    float f1 = this.client.root.win.dx;
-    float f2 = this.client.root.win.dy;
-    this.frameRegion.x = Config.cur.ini.get("game", "mapPadX", this.frameRegion.x);
-    this.frameRegion.y = Config.cur.ini.get("game", "mapPadY", this.frameRegion.y);
-    this.frame.setPosSize(this.frameRegion.x * f1, this.frameRegion.y * f2, this.frameRegion.dx * f1, this.frameRegion.dy * f2);
+    float f1 = this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    float f2 = this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+    this.frameRegion.jdField_x_of_type_Float = Config.cur.ini.get("game", "mapPadX", this.frameRegion.jdField_x_of_type_Float);
+    this.frameRegion.jdField_y_of_type_Float = Config.cur.ini.get("game", "mapPadY", this.frameRegion.jdField_y_of_type_Float);
+    this.frame.setPosSize(this.frameRegion.jdField_x_of_type_Float * f1, this.frameRegion.jdField_y_of_type_Float * f2, this.frameRegion.dx * f1, this.frameRegion.dy * f2);
 
     this.cameraMap2D.set(0.0F, this.renderMap2D.getViewPortWidth(), 0.0F, this.renderMap2D.getViewPortHeight());
     this.cameraMap2D1.set(0.0F, this.renderMap2D1.getViewPortWidth(), 0.0F, this.renderMap2D1.getViewPortHeight());
@@ -151,28 +123,20 @@ public class GUIPad
 
     if (bStartMission) {
       this.targets.clear();
-
-      ZutiRadarRefresh.update(this.lastScale < this.curScale);
-      this.lastScale = this.curScale;
-
-      ZutiSupportMethods.fillNeutralHomeBases(this.zutiNeutralHomeBases);
-
-      ZutiSupportMethods.fillTargets(Mission.cur().sectFile());
-
-      ZutiTargetsSupportMethods.checkForDeactivatedTargets();
-
-      ZutiSupportMethods.fillGroundChiefsArray(this);
+      if ((Mission.isSingle()) || (Mission.isCoop())) {
+        GUIBriefing.fillTargets(Mission.cur().sectFile(), this.targets);
+      }
     }
 
-    if ((!World.cur().diffCur.No_Player_Icon) || (bStartMission))
+    if ((!World.cur().diffCur.No_Map_Icons) || (bStartMission))
     {
       Actor localActor = Actor.getByName("camera");
       float f3;
       float f4;
-      if ((Actor.isValid(localActor)) && (!World.cur().diffCur.No_Player_Icon)) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
-        f3 = (float)localPoint3d.x;
-        f4 = (float)localPoint3d.y;
+      if (Actor.isValid(localActor)) {
+        Point3d localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+        f3 = (float)localPoint3d.jdField_x_of_type_Double;
+        f4 = (float)localPoint3d.jdField_y_of_type_Double;
       } else {
         f3 = World.land().getSizeX() / 2.0F;
         f4 = World.land().getSizeY() / 2.0F;
@@ -190,14 +154,14 @@ public class GUIPad
   public void leave(boolean paramBoolean) {
     if (!this.bActive) return;
     this.bActive = false;
-    float f1 = this.client.root.win.dx;
-    float f2 = this.client.root.win.dy;
-    this.frameRegion.x = (this.frame.win.x / f1);
-    this.frameRegion.y = (this.frame.win.y / f2);
-    this.frameRegion.dx = (this.frame.win.dx / f1);
-    this.frameRegion.dy = (this.frame.win.dy / f2);
-    Config.cur.ini.set("game", "mapPadX", this.frameRegion.x);
-    Config.cur.ini.set("game", "mapPadY", this.frameRegion.y);
+    float f1 = this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    float f2 = this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
+    this.frameRegion.jdField_x_of_type_Float = (this.frame.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float / f1);
+    this.frameRegion.jdField_y_of_type_Float = (this.frame.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float / f2);
+    this.frameRegion.dx = (this.frame.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / f1);
+    this.frameRegion.dy = (this.frame.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / f2);
+    Config.cur.ini.set("game", "mapPadX", this.frameRegion.jdField_x_of_type_Float);
+    Config.cur.ini.set("game", "mapPadY", this.frameRegion.jdField_y_of_type_Float);
     this.client.hideWindow();
     Main3D.cur3D().guiManager.setUseGMeshs(this.savedUseMesh);
     IconDraw.setScrSize(this.saveIconDx, this.saveIconDy);
@@ -214,7 +178,7 @@ public class GUIPad
   }
 
   private void scaleCamera() {
-    this.cameraMap2D.worldScale = (this.scale[this.curScale] * this.client.root.win.dx / 1024.0F);
+    this.cameraMap2D.worldScale = (this.scale[this.curScale] * this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 1024.0F);
   }
 
   private void clipCamera() {
@@ -232,8 +196,8 @@ public class GUIPad
   }
 
   private void computeScales() {
-    float f1 = this.renders.win.dx * 1024.0F / this.client.root.win.dx;
-    float f2 = this.renders.win.dy * 768.0F / this.client.root.win.dy;
+    float f1 = this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dx * 1024.0F / this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    float f2 = this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy * 768.0F / this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     int i = 0;
     float f3 = 0.064F;
     float f4;
@@ -277,27 +241,25 @@ public class GUIPad
     float f5 = (float)(i * this.cameraMap2D.worldScale);
     this._gridCount = 0;
     Render.drawBeginLines(-1);
-    float f6;
-    int i2;
     for (int i1 = 0; i1 <= n; i1++) {
-      f6 = f2 + i1 * f5;
-      i2 = (i1 + k) % 10 == 0 ? 192 : 127;
+      float f6 = f2 + i1 * f5;
+      int i3 = (i1 + k) % 10 == 0 ? 192 : 127;
       this.line2XYZ[0] = f1; this.line2XYZ[1] = f6; this.line2XYZ[2] = 0.0F;
       this.line2XYZ[3] = (f1 + f3); this.line2XYZ[4] = f6; this.line2XYZ[5] = 0.0F;
-      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
+      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i3 << 16 | i3 << 8 | i3, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
 
-      if (i2 == 192)
+      if (i3 == 192)
         drawGridText(0, (int)f6, (k + i1) * i);
     }
-    for (i1 = 0; i1 <= m; i1++) {
-      f6 = f1 + i1 * f5;
-      i2 = (i1 + j) % 10 == 0 ? 192 : 127;
-      this.line2XYZ[0] = f6; this.line2XYZ[1] = f2; this.line2XYZ[2] = 0.0F;
-      this.line2XYZ[3] = f6; this.line2XYZ[4] = (f2 + f4); this.line2XYZ[5] = 0.0F;
-      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
+    for (int i2 = 0; i2 <= m; i2++) {
+      float f7 = f1 + i2 * f5;
+      int i4 = (i2 + j) % 10 == 0 ? 192 : 127;
+      this.line2XYZ[0] = f7; this.line2XYZ[1] = f2; this.line2XYZ[2] = 0.0F;
+      this.line2XYZ[3] = f7; this.line2XYZ[4] = (f2 + f4); this.line2XYZ[5] = 0.0F;
+      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i4 << 16 | i4 << 8 | i4, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
 
-      if (i2 == 192)
-        drawGridText((int)f6, 0, (j + i1) * i);
+      if (i4 == 192)
+        drawGridText((int)f7, 0, (j + i2) * i);
     }
     Render.drawEnd();
     drawGridText();
@@ -309,9 +271,9 @@ public class GUIPad
     if (f2 < f1) d = f2;
     d /= this.cameraMap2D.worldScale;
     int i = 100000;
-    for (int j = 0; (j < 5) && 
-      (i * 3 > d); j++)
-    {
+    for (int j = 0; j < 5; j++) {
+      if (i * 3 <= d)
+        break;
       i /= 10;
     }
     return i;
@@ -333,94 +295,43 @@ public class GUIPad
 
   private void drawAirports()
   {
-    Mission localMission = Main.cur().mission;
-
-    if (localMission == null) {
-      return;
-    }
-    int i = World.getPlayerArmy();
-
     Mat localMat = IconDraw.get("icons/runaway.mat");
-    AirDrome localAirDrome = null;
-    Point3d localPoint3d = null;
-
-    for (int j = 0; j < this.airdrome.size(); j++)
-    {
-      localAirDrome = (AirDrome)this.airdrome.get(j);
-
-      if ((World.cur().diffCur.RealisticNavigationInstruments) && ((localAirDrome.airport instanceof AirportCarrier)))
-      {
-        continue;
-      }
-      if (this.zutiColorAirfields) {
-        zutiChangeAirportArmyAndColor(localAirDrome);
-      }
-
-      if ((localAirDrome.army != i) && (localMission.zutiRadar_HideUnpopulatedAirstripsFromMinimap))
-      {
-        continue;
-      }
-      if ((!Actor.isValid(localAirDrome.airport)) || (!Actor.isAlive(localAirDrome.airport)))
-        continue;
-      localPoint3d = localAirDrome.airport.pos.getAbsPoint();
-      float f1 = (float)((localPoint3d.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      float f2 = (float)((localPoint3d.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-
-      if (localAirDrome.army != i)
-      {
-        if (localAirDrome.zutiIsOnShip) {
-          continue;
-        }
-        IconDraw.setColor(-1);
-      }
-      else {
-        IconDraw.setColor(localAirDrome.color);
-      }
+    for (int i = 0; i < this.airdrome.size(); i++) {
+      AirDrome localAirDrome = (AirDrome)this.airdrome.get(i);
+      if ((!Actor.isValid(localAirDrome.airport)) || 
+        (!Actor.isAlive(localAirDrome.airport)) || (
+        (localAirDrome.army != 0) && (localAirDrome.army != World.getPlayerArmy()))) continue;
+      Point3d localPoint3d = localAirDrome.airport.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+      float f1 = (float)((localPoint3d.jdField_x_of_type_Double - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+      float f2 = (float)((localPoint3d.jdField_y_of_type_Double - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+      IconDraw.setColor(localAirDrome.color);
       IconDraw.render(localMat, f1, f2);
     }
-
-    this.zutiColorAirfields = false;
-  }
-
-  public int getAirportArmy(Airport paramAirport)
-  {
-    for (int i = 0; i < this.airdrome.size(); i++)
-    {
-      AirDrome localAirDrome = (AirDrome)this.airdrome.get(i);
-      if (localAirDrome.airport == paramAirport)
-        return localAirDrome.army;
-    }
-    return 0;
   }
 
   public void fillAirports() {
     this.airdrome.clear();
     ArrayList localArrayList = new ArrayList();
     World.cur(); World.getAirports(localArrayList);
-    AirDrome localAirDrome;
     for (int i = 0; i < localArrayList.size(); i++) {
-      Airport localAirport = (Airport)localArrayList.get(i);
-      localAirDrome = new AirDrome();
-      localAirDrome.airport = localAirport;
-      if ((localAirport instanceof AirportCarrier)) {
-        if (World.cur().diffCur.RealisticNavigationInstruments)
-          continue;
-        if (Actor.isValid(((AirportCarrier)localAirport).ship())) {
-          localAirDrome.army = ((AirportCarrier)localAirport).ship().getArmy();
-        }
-        localAirDrome.zutiIsOnShip = true;
+      localObject = (Airport)localArrayList.get(i);
+      AirDrome localAirDrome1 = new AirDrome();
+      localAirDrome1.airport = ((Airport)localObject);
+      if (((localObject instanceof AirportCarrier)) && 
+        (Actor.isValid(((AirportCarrier)localObject).ship()))) {
+        localAirDrome1.army = ((AirportCarrier)localObject).ship().getArmy();
       }
-      this.airdrome.add(localAirDrome);
+      this.airdrome.add(localAirDrome1);
     }
 
-    Point3d localPoint3d1 = new Point3d();
+    Object localObject = new Point3d();
     for (int j = 0; j < this.airdrome.size(); j++) {
-      localAirDrome = (AirDrome)this.airdrome.get(j);
-      Point3d localPoint3d2 = localAirDrome.airport.pos.getAbsPoint();
-      World.land(); localPoint3d1.set(localPoint3d2.x, localPoint3d2.y, Landscape.HQ((float)localPoint3d2.x, (float)localPoint3d2.y));
+      AirDrome localAirDrome2 = (AirDrome)this.airdrome.get(j);
+      Point3d localPoint3d = localAirDrome2.airport.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+      World.land(); ((Point3d)localObject).set(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, Landscape.HQ((float)localPoint3d.jdField_x_of_type_Double, (float)localPoint3d.jdField_y_of_type_Double));
       int k = 0;
-      if (localAirDrome.army == 0) {
-        Engine.collideEnv().getNearestEnemies(localPoint3d1, 2000.0D, 0, this.armyAccum);
+      if (localAirDrome2.army == 0) {
+        Engine.collideEnv().getNearestEnemies((Point3d)localObject, 2000.0D, 0, this.armyAccum);
         int m = 0;
         for (int n = 1; n < this._army.length; n++) {
           if (m < this._army[n]) {
@@ -429,9 +340,9 @@ public class GUIPad
           }
           this._army[n] = 0;
         }
-        localAirDrome.army = k;
+        localAirDrome2.army = k;
       }
-      localAirDrome.color = Army.color(localAirDrome.army);
+      localAirDrome2.color = Army.color(localAirDrome2.army);
     }
   }
 
@@ -444,9 +355,9 @@ public class GUIPad
       if ((localActor instanceof Chief)) {
         Mat localMat = localActor.icon;
         if (localMat != null) {
-          Point3d localPoint3d = localActor.pos.getAbsPoint();
-          float f1 = (float)((localPoint3d.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-          float f2 = (float)((localPoint3d.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+          Point3d localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+          float f1 = (float)((localPoint3d.jdField_x_of_type_Double - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+          float f2 = (float)((localPoint3d.jdField_y_of_type_Double - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
           IconDraw.setColor(Army.color(localActor.getArmy()));
           IconDraw.render(localMat, f1, f2);
         }
@@ -467,84 +378,20 @@ public class GUIPad
       Point3d localPoint3d;
       if ((localActor instanceof Aircraft)) {
         if (localActor != World.getPlayerAircraft()) {
-          localPoint3d = localActor.pos.getAbsPoint();
-          if ((localPoint3d.x >= d1) && (localPoint3d.x <= d3) && (localPoint3d.y >= d2) && (localPoint3d.y <= d4))
+          localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+          if ((localPoint3d.jdField_x_of_type_Double >= d1) && (localPoint3d.jdField_x_of_type_Double <= d3) && (localPoint3d.jdField_y_of_type_Double >= d2) && (localPoint3d.jdField_y_of_type_Double <= d4))
             this.airs.add(localActor); 
         }
       } else if ((localActor instanceof AAA)) {
-        localPoint3d = localActor.pos.getAbsPoint();
-        if ((localPoint3d.x >= d1) && (localPoint3d.x <= d3) && (localPoint3d.y >= d2) && (localPoint3d.y <= d4)) {
+        localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+        if ((localPoint3d.jdField_x_of_type_Double >= d1) && (localPoint3d.jdField_x_of_type_Double <= d3) && (localPoint3d.jdField_y_of_type_Double >= d2) && (localPoint3d.jdField_y_of_type_Double <= d4)) {
           Mat localMat = IconDraw.create(localActor);
           if (localMat != null) {
-            float f1 = (float)((localPoint3d.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-            float f2 = (float)((localPoint3d.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+            float f1 = (float)((localPoint3d.jdField_x_of_type_Double - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+            float f2 = (float)((localPoint3d.jdField_y_of_type_Double - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
             IconDraw.setColor(Army.color(localActor.getArmy()));
             IconDraw.render(localMat, f1, f2);
           }
-        }
-      }
-    }
-  }
-
-  private void drawRadioBeacons()
-  {
-    double d1 = this.cameraMap2D.worldXOffset;
-    double d2 = this.cameraMap2D.worldYOffset;
-    double d3 = this.cameraMap2D.worldXOffset + (this.cameraMap2D.right - this.cameraMap2D.left) / this.cameraMap2D.worldScale;
-    double d4 = this.cameraMap2D.worldYOffset + (this.cameraMap2D.top - this.cameraMap2D.bottom) / this.cameraMap2D.worldScale;
-    Aircraft localAircraft = World.getPlayerAircraft();
-    if (!Actor.isValid(localAircraft))
-      return;
-    ArrayList localArrayList = Main.cur().mission.getBeacons(localAircraft.getArmy());
-    if (localArrayList == null)
-      return;
-    int i = localArrayList.size();
-    for (int j = 0; j < i; j++)
-    {
-      Actor localActor = (Actor)localArrayList.get(j);
-
-      if ((!(localActor instanceof TypeHasBeacon)) || ((localActor instanceof TgtShip)) || ((localActor instanceof TypeHasRadioStation)))
-        continue;
-      if (localActor.getArmy() == World.getPlayerAircraft().getArmy()) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
-        if ((localPoint3d.x < d1) || (localPoint3d.x > d3) || (localPoint3d.y < d2) || (localPoint3d.y > d4))
-          continue;
-        float f1 = (float)((localPoint3d.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        float f2 = (float)((localPoint3d.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-        int k = Army.color(localActor.getArmy());
-        float f4;
-        if ((localActor instanceof TypeHasLorenzBlindLanding))
-        {
-          float f3 = localActor.pos.getAbsOrient().azimut() + 90.0F;
-          for (f3 = (f3 + 180.0F) % 360.0F; f3 < 0.0F; f3 += 360.0F);
-          while (f3 >= 360.0F) f3 -= 360.0F;
-
-          IconDraw.setColor(-1);
-          IconDraw.render(this._iconILS, f1, f2, f3 - 90.0F);
-          f4 = 20.0F;
-          String str1 = Beacon.getBeaconID(j);
-          this.gridFont.output(k, f1 + f4, f2 - f4, 0.0F, str1);
-          if (this.curScale < 2)
-          {
-            int m = (int)localActor.pos.getAbsPoint().z;
-            str1 = (int)f3 + "°";
-            this.gridFont.output(k, f1 + f4, f2 - f4 - 20.0F, 0.0F, str1);
-            str1 = m + "m";
-            this.gridFont.output(k, f1 + f4, f2 - f4 - 40.0F, 0.0F, str1);
-          }
-        }
-        else
-        {
-          Mat localMat = IconDraw.create(localActor);
-          if (localMat == null)
-            continue;
-          IconDraw.setColor(k);
-          IconDraw.render(localMat, f1, f2);
-
-          f4 = 20.0F;
-          float f5 = 15.0F;
-          String str2 = Beacon.getBeaconID(j);
-          this.gridFont.output(k, f1 + f4, f2 - f5, 0.0F, str2);
         }
       }
     }
@@ -555,11 +402,11 @@ public class GUIPad
     int i = this.airs.size();
     for (int j = 0; j < i; j++) {
       Actor localActor = (Actor)this.airs.get(j);
-      Point3d localPoint3d = localActor.pos.getAbsPoint();
-      float f1 = (float)((localPoint3d.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      float f2 = (float)((localPoint3d.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+      Point3d localPoint3d = localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+      float f1 = (float)((localPoint3d.jdField_x_of_type_Double - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+      float f2 = (float)((localPoint3d.jdField_y_of_type_Double - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
       IconDraw.setColor(Army.color(localActor.getArmy()));
-      IconDraw.render(this._iconAir, f1, f2, localActor.pos.getAbsOrient().azimut());
+      IconDraw.render(this._iconAir, f1, f2, localActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().azimut());
     }
     this.airs.clear();
   }
@@ -597,113 +444,34 @@ public class GUIPad
     while (k < j) {
       localObject = localWay.get(k++);
       ((WayPoint)localObject).getP(this._wayP);
-      this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)((this._wayP.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)((this._wayP.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+      this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)((this._wayP.jdField_x_of_type_Float - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+      this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)((this._wayP.jdField_y_of_type_Float - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
       this.lineNXYZ[(this.lineNCounter * 3 + 2)] = 0.0F;
       this.lineNCounter += 1;
     }
     Render.drawLines(this.lineNXYZ, this.lineNCounter, 2.0F, -16777216, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
-    WayPoint localWayPoint1;
-    if ((!World.cur().diffCur.No_Player_Icon) && (!World.cur().diffCur.RealisticNavigationInstruments))
-    {
-      localObject = World.getPlayerAircraft().pos.getAbsPoint();
-      this.lineNXYZ[0] = (float)((((Point3d)localObject).x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      this.lineNXYZ[1] = (float)((((Point3d)localObject).y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+
+    if (!World.cur().diffCur.No_Map_Icons) {
+      localObject = World.getPlayerAircraft().jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+      this.lineNXYZ[0] = (float)((((Point3d)localObject).jdField_x_of_type_Double - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+      this.lineNXYZ[1] = (float)((((Point3d)localObject).jdField_y_of_type_Double - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
       this.lineNXYZ[2] = 0.0F;
-      localWayPoint1 = localWay.get(i);
-      localWayPoint1.getP(this._wayP);
-      this.lineNXYZ[3] = (float)((this._wayP.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      this.lineNXYZ[4] = (float)((this._wayP.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+      WayPoint localWayPoint = localWay.get(i);
+      localWayPoint.getP(this._wayP);
+      this.lineNXYZ[3] = (float)((this._wayP.jdField_x_of_type_Float - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+      this.lineNXYZ[4] = (float)((this._wayP.jdField_y_of_type_Float - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
       this.lineNXYZ[5] = 0.0F;
       Render.drawLines(this.lineNXYZ, 2, 2.0F, -16777216, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
     }
 
-    float f1 = 0.0F;
     Render.drawEnd();
     k = 0;
     while (k < j) {
-      localWayPoint1 = localWay.get(k++);
-      localWayPoint1.getP(this._wayP);
-      float f2 = (float)((this._wayP.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      float f3 = (float)((this._wayP.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-      IconDraw.render(getIconAir(localWayPoint1.Action), f2, f3);
-
-      if ((this.curScale < (int)(4.0F - this.bigFontMultip)) && (k < j))
-      {
-        WayPoint localWayPoint2 = localWay.get(k);
-        localWayPoint2.getP(this._wayP2);
-        this._wayP.sub(this._wayP2);
-        float f4 = 57.324841F * (float)Math.atan2(this._wayP.x, this._wayP.y);
-
-        for (f4 = (f4 + 180.0F) % 360.0F; f4 < 0.0F; f4 += 360.0F);
-        while (f4 >= 360.0F) f4 -= 360.0F;
-
-        f4 = Math.round(f4);
-
-        double d = Math.sqrt(this._wayP.y * this._wayP.y + this._wayP.x * this._wayP.x) / 1000.0D;
-
-        if (d < 1.0D)
-          continue;
-        String str = "km";
-
-        if ((HUD.drawSpeed() == 2) || (HUD.drawSpeed() == 3))
-        {
-          d *= 0.5399569869041443D;
-
-          str = "nm";
-        }
-
-        d = Math.round(d);
-
-        float f5 = 0.0F;
-        float f6 = 0.0F;
-
-        if ((f4 >= 0.0F) && (f4 < 90.0F))
-        {
-          f5 = 15.0F;
-          f6 = -20.0F;
-          if ((f1 >= 270.0F) && (f1 <= 360.0F))
-          {
-            f5 = -35.0F * this.bigFontMultip;
-            f6 = 30.0F * this.bigFontMultip;
-          }
-        }
-        else if ((f4 >= 90.0F) && (f4 < 180.0F))
-        {
-          f5 = 15.0F;
-          f6 = 30.0F * this.bigFontMultip;
-          if ((f1 >= 180.0F) && (f1 < 270.0F))
-          {
-            f5 = -35.0F * this.bigFontMultip;
-            f6 = -20.0F;
-          }
-        }
-        else if ((f4 >= 180.0F) && (f4 < 270.0F))
-        {
-          f5 = -35.0F * this.bigFontMultip;
-          f6 = 30.0F * this.bigFontMultip;
-          if ((f1 >= 90.0F) && (f1 < 180.0F))
-          {
-            f5 = 15.0F;
-            f6 = 30.0F * this.bigFontMultip;
-          }
-        }
-        else if ((f4 >= 270.0F) && (f4 <= 360.0F))
-        {
-          f5 = -35.0F * this.bigFontMultip;
-          f6 = -20.0F;
-          if ((f1 >= 0.0F) && (f1 < 90.0F))
-          {
-            f5 = 15.0F;
-            f6 = -20.0F;
-          }
-        }
-        f1 = f4;
-
-        this.waypointFont.output(-16777216, f2 + f5, f3 + f6 - 0.0F, 0.0F, "" + k);
-        this.waypointFont.output(-16777216, f2 + f5, f3 + f6 - 12.0F * this.bigFontMultip, 0.0F, (int)f4 + "°");
-        this.waypointFont.output(-16777216, f2 + f5, f3 + f6 - 24.0F * this.bigFontMultip, 0.0F, (int)d + str);
-      }
+      localObject = localWay.get(k++);
+      ((WayPoint)localObject).getP(this._wayP);
+      float f1 = (float)((this._wayP.jdField_x_of_type_Float - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
+      float f2 = (float)((this._wayP.jdField_y_of_type_Float - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
+      IconDraw.render(getIconAir(((WayPoint)localObject).Action), f1, f2);
     }
   }
 
@@ -712,26 +480,23 @@ public class GUIPad
     return this;
   }
 
-  public GUIPad(GWindowRoot paramGWindowRoot)
-  {
-    this.iconBornPlace = IconDraw.get("icons/born.mat");
-
+  public GUIPad(GWindowRoot paramGWindowRoot) {
     this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient() {
       public void render() {
-        int i = GUIPad.this.client.root.C.alpha;
-        GUIPad.this.client.root.C.alpha = 255;
+        int i = GUIPad.this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha;
+        GUIPad.this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = 255;
         super.render();
-        GUIPad.this.client.root.C.alpha = i;
+        GUIPad.this.client.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.alpha = i;
       }
     }));
     this.frame = ((GWindowFramed)this.client.create(0.0F, 0.0F, 1.0F, 1.0F, false, new GWindowFramed() {
       public void resized() {
         super.resized();
         if (GUIPad.this.renders != null) {
-          GUIPad.this.renders.setPosSize(this.win.dx * GUIPad.this.mapView[0], this.win.dy * GUIPad.this.mapView[1], this.win.dx * GUIPad.this.mapView[2], this.win.dy * GUIPad.this.mapView[3]);
+          GUIPad.this.renders.setPosSize(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx * GUIPad.this.mapView[0], this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy * GUIPad.this.mapView[1], this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx * GUIPad.this.mapView[2], this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy * GUIPad.this.mapView[3]);
         }
         if (GUIPad.this.renders1 != null)
-          GUIPad.this.renders1.setPosSize(0.0F, 0.0F, this.win.dx, this.win.dy);
+          GUIPad.this.renders1.setPosSize(0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy);
       }
 
       public void render()
@@ -750,36 +515,36 @@ public class GUIPad
         } else if ((paramInt == 1) && (GUIPad.this.scales > 1)) {
           this.bRPressed = paramBoolean;
           if ((this.bRPressed) && (!this.bLPressed)) {
-            paramFloat1 -= GUIPad.this.THIS().renders.win.x;
-            paramFloat2 -= GUIPad.this.THIS().renders.win.y;
+            paramFloat1 -= GUIPad.this.THIS().renders.jdField_win_of_type_ComMaddoxGwindowGRegion.x;
+            paramFloat2 -= GUIPad.this.THIS().renders.jdField_win_of_type_ComMaddoxGwindowGRegion.y;
             float f1 = (float)(GUIPad.this.cameraMap2D.worldXOffset + paramFloat1 / GUIPad.this.cameraMap2D.worldScale);
-            float f2 = (float)(GUIPad.this.cameraMap2D.worldYOffset + (GUIPad.this.THIS().renders.win.dy - paramFloat2 - 1.0F) / GUIPad.this.cameraMap2D.worldScale);
+            float f2 = (float)(GUIPad.this.cameraMap2D.worldYOffset + (GUIPad.this.THIS().renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramFloat2 - 1.0F) / GUIPad.this.cameraMap2D.worldScale);
 
-            GUIPad.access$112(GUIPad.this, GUIPad.this.curScaleDirect);
+            GUIPad.access$812(GUIPad.this, GUIPad.this.curScaleDirect);
             if (GUIPad.this.curScaleDirect < 0) {
               if (GUIPad.this.curScale < 0) {
-                GUIPad.access$102(GUIPad.this, 1);
-                GUIPad.access$1402(GUIPad.this, 1);
+                GUIPad.access$802(GUIPad.this, 1);
+                GUIPad.access$902(GUIPad.this, 1);
               }
             }
             else if (GUIPad.this.curScale >= GUIPad.this.scales) {
-              GUIPad.access$102(GUIPad.this, GUIPad.this.scales - 2);
-              GUIPad.access$1402(GUIPad.this, -1);
+              GUIPad.access$802(GUIPad.this, GUIPad.this.scales - 2);
+              GUIPad.access$902(GUIPad.this, -1);
             }
 
             GUIPad.this.scaleCamera();
-            f1 = (float)(f1 - (paramFloat1 - GUIPad.this.THIS().renders.win.dx / 2.0F) / GUIPad.this.cameraMap2D.worldScale);
-            f2 = (float)(f2 + (paramFloat2 - GUIPad.this.THIS().renders.win.dy / 2.0F) / GUIPad.this.cameraMap2D.worldScale);
+            f1 = (float)(f1 - (paramFloat1 - GUIPad.this.THIS().renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F) / GUIPad.this.cameraMap2D.worldScale);
+            f2 = (float)(f2 + (paramFloat2 - GUIPad.this.THIS().renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F) / GUIPad.this.cameraMap2D.worldScale);
             GUIPad.this.setPosCamera(f1, f2);
           }
         } }
 
       public void mouseMove(float paramFloat1, float paramFloat2) {
         if ((this.bLPressed) && (this.bRPressed)) {
-          GUIPad.this.frame.setPos(GUIPad.this.frame.win.x + this.root.mouseStep.dx, GUIPad.this.frame.win.y + this.root.mouseStep.dy);
+          GUIPad.this.frame.setPos(GUIPad.this.frame.jdField_win_of_type_ComMaddoxGwindowGRegion.x + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx, GUIPad.this.frame.jdField_win_of_type_ComMaddoxGwindowGRegion.y + this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy);
         } else if (this.bLPressed) {
-          GUIPad.this.cameraMap2D.worldXOffset -= this.root.mouseStep.dx / GUIPad.this.cameraMap2D.worldScale;
-          GUIPad.this.cameraMap2D.worldYOffset += this.root.mouseStep.dy / GUIPad.this.cameraMap2D.worldScale;
+          GUIPad.this.cameraMap2D.worldXOffset -= this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx / GUIPad.this.cameraMap2D.worldScale;
+          GUIPad.this.cameraMap2D.worldYOffset += this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy / GUIPad.this.cameraMap2D.worldScale;
           GUIPad.this.clipCamera();
         }
       }
@@ -803,163 +568,12 @@ public class GUIPad
     localLightEnvXY.sun().set(localVector3f);
 
     this.gridFont = TTFont.font[1];
-    if (World.cur().smallMapWPLabels)
-    {
-      this.waypointFont = TTFont.font[0];
-      this.bigFontMultip = 1.0F;
-    }
-    else
-    {
-      this.waypointFont = TTFont.font[1];
-      this.bigFontMultip = 2.0F;
-    }
     this.mesh = GMesh.New("gui/game/pad/mono.sim");
     this._iconAir = Mat.New("icons/plane.mat");
     this.emptyMat = Mat.New("icons/empty.mat");
-    this._iconILS = Mat.New("icons/ILS.mat");
     this.main = Main3D.cur3D();
 
     this.client.hideWindow();
-  }
-
-  public void zutiChangeAirportArmyAndColor(BornPlace paramBornPlace)
-  {
-    if (paramBornPlace == null) {
-      return;
-    }
-    double d1 = paramBornPlace.r * paramBornPlace.r;
-    int i = this.airdrome.size();
-
-    for (int j = 0; j < i; j++)
-    {
-      AirDrome localAirDrome = (AirDrome)this.airdrome.get(j);
-      if (localAirDrome.airport == null)
-        continue;
-      Point3d localPoint3d = localAirDrome.airport.pos.getAbsPoint();
-      double d2 = (localPoint3d.x - paramBornPlace.place.x) * (localPoint3d.x - paramBornPlace.place.x) + (localPoint3d.y - paramBornPlace.place.y) * (localPoint3d.y - paramBornPlace.place.y);
-      if (d2 > d1) {
-        continue;
-      }
-      localAirDrome.army = paramBornPlace.army;
-      localAirDrome.color = Army.color(localAirDrome.army);
-    }
-  }
-
-  private void zutiDrawAirInterval()
-  {
-    boolean bool = World.cur().diffCur.NoMinimapPath;
-    Main.cur().mission.getClass(); int i = 0;
-    try
-    {
-      Iterator localIterator = this.zutiPadObjects.keySet().iterator();
-      ZutiPadObject localZutiPadObject = null;
-      Point3d localPoint3d = null;
-
-      while (localIterator.hasNext())
-      {
-        localZutiPadObject = (ZutiPadObject)this.zutiPadObjects.get(localIterator.next());
-
-        if ((localZutiPadObject == null) || (localZutiPadObject.getOwner() == null) || (!localZutiPadObject.isAlive())) {
-          continue;
-        }
-        if ((!bool) && (localZutiPadObject.isPlayerPlane()))
-        {
-          localZutiPadObject.setVisibleForPlayerArmy(true);
-        }
-
-        if (!localZutiPadObject.isVisibleForPlayerArmy())
-          continue;
-        localPoint3d = localZutiPadObject.getPosition();
-        float f1 = (float)((localPoint3d.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        float f2 = (float)((localPoint3d.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-
-        if (i != 0)
-          IconDraw.setColor(-1);
-        else {
-          IconDraw.setColor(Army.color(localZutiPadObject.getArmy()));
-        }
-        if (localZutiPadObject.isPlayerPlane())
-        {
-          this.zutiPlayeAcDrawn = true;
-          IconDraw.setColor(-1);
-        }
-
-        switch (localZutiPadObject.type)
-        {
-        case 0:
-        case 3:
-          IconDraw.render(this._iconAir, f1, f2, localZutiPadObject.getAzimut());
-          break;
-        case 1:
-        case 2:
-        case 4:
-        case 5:
-          Mat localMat = localZutiPadObject.getIcon();
-          if (localMat == null) break;
-          IconDraw.render(localMat, f1, f2);
-        }
-
-      }
-
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
-
-  private void zutiChangeAirportArmyAndColor(AirDrome paramAirDrome) {
-    if ((paramAirDrome == null) || (World.cur().bornPlaces == null)) {
-      return;
-    }
-    ArrayList localArrayList = World.cur().bornPlaces;
-    int i = localArrayList.size();
-    for (int j = 0; j < i; j++)
-    {
-      BornPlace localBornPlace = (BornPlace)localArrayList.get(j);
-      if (localBornPlace == null)
-        continue;
-      double d1 = localBornPlace.r * localBornPlace.r;
-
-      Point3d localPoint3d = paramAirDrome.airport.pos.getAbsPoint();
-      double d2 = (localPoint3d.x - localBornPlace.place.x) * (localPoint3d.x - localBornPlace.place.x) + (localPoint3d.y - localBornPlace.place.y) * (localPoint3d.y - localBornPlace.place.y);
-      if (d2 > d1)
-        continue;
-      paramAirDrome.army = localBornPlace.army;
-      paramAirDrome.color = Army.color(paramAirDrome.army);
-    }
-  }
-
-  private void zutiDrawBornPlaces()
-  {
-    Mission localMission = Main.cur().mission;
-
-    if (localMission != null) { localMission.getClass(); if (this.iconBornPlace != null); } else { return;
-    }
-    if ((this.zutiNeutralHomeBases != null) && (this.zutiNeutralHomeBases.size() != 0))
-    {
-      int i = this.zutiNeutralHomeBases.size();
-      BornPlace localBornPlace = null;
-
-      for (int j = 0; j < i; j++)
-      {
-        localBornPlace = (BornPlace)this.zutiNeutralHomeBases.get(j);
-
-        if ((localBornPlace.army == 1) || (localBornPlace.army == 2))
-        {
-          this.zutiNeutralHomeBases.remove(localBornPlace);
-
-          break;
-        }
-
-        IconDraw.setColor(Army.color(localBornPlace.army));
-
-        float f1 = (float)((localBornPlace.place.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        float f2 = (float)((localBornPlace.place.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-
-        IconDraw.render(this.iconBornPlace, f1, f2);
-      }
-    }
   }
 
   public class RenderMap2D extends Render
@@ -969,75 +583,46 @@ public class GUIPad
       Front.preRender(false);
     }
 
-    public void render()
-    {
-      ZutiRadarRefresh.update(GUIPad.this.lastScale < GUIPad.this.curScale);
-      GUIPad.access$002(GUIPad.this, GUIPad.this.curScale);
-      GUIPad.access$202(GUIPad.this, false);
-      try
-      {
-        if (GUIPad.this.main.land2D != null)
-          GUIPad.this.main.land2D.render(0.9F, 0.9F, 0.9F, 1.0F);
-        if (GUIPad.this.main.land2DText != null)
-          GUIPad.this.main.land2DText.render();
-        GUIPad.this.drawGrid2D();
-        Front.render(false);
-        int i = (int)Math.round(Mission.ZUTI_ICON_SIZE * GUIPad.this.client.root.win.dx / 1024.0D);
+    public void render() {
+      if (GUIPad.this.main.land2D != null)
+        GUIPad.this.main.land2D.render(0.9F, 0.9F, 0.9F, 1.0F);
+      if (GUIPad.this.main.land2DText != null)
+        GUIPad.this.main.land2DText.render();
+      GUIPad.this.drawGrid2D();
+      Front.render(false);
+      int i = (int)Math.round(32.0D * GUIPad.this.client.root.win.dx / 1024.0D);
+      IconDraw.setScrSize(i, i);
 
-        IconDraw.setScrSize(i, i);
+      GUIPad.this.drawAirports();
 
-        Mission localMission = Main.cur().mission;
-
-        ZutiSupportMethods.drawTargets(GUIPad.this.renders, GUIPad.this.gridFont, GUIPad.this.emptyMat, GUIPad.this.cameraMap2D);
-
-        GUIPad.this.drawAirports();
-
-        GUIPad.this.zutiDrawBornPlaces();
-
-        if (!World.cur().diffCur.No_Map_Icons)
-        {
-          GUIPad.this.drawChiefs();
-          GUIPad.this.drawAAAandFillAir();
-          GUIPad.this.drawAir();
-        }
-
-        GUIPad.this.drawRadioBeacons();
-        Aircraft localAircraft;
-        if (!World.cur().diffCur.NoMinimapPath)
-        {
-          localAircraft = World.getPlayerAircraft();
-          if (Actor.isValid(localAircraft))
-          {
-            IconDraw.setColor(-16711681);
-            GUIPad.this.drawPlayerPath();
-          }
-
-        }
-
-        if ((World.cur().diffCur.No_Map_Icons) && (localMission != null) && (localMission.zutiRadar_PlayerSideHasRadars))
-        {
-          GUIPad.this.zutiDrawAirInterval();
-        }
-
-        if (!World.cur().diffCur.No_Player_Icon)
-        {
-          localAircraft = World.getPlayerAircraft();
-          if (Actor.isValid(localAircraft))
-          {
-            Point3d localPoint3d = localAircraft.pos.getAbsPoint();
-            float f1 = (float)((localPoint3d.x - GUIPad.this.cameraMap2D.worldXOffset) * GUIPad.this.cameraMap2D.worldScale);
-            float f2 = (float)((localPoint3d.y - GUIPad.this.cameraMap2D.worldYOffset) * GUIPad.this.cameraMap2D.worldScale);
-            IconDraw.setColor(-1);
-            IconDraw.render(GUIPad.this._iconAir, f1, f2, localAircraft.pos.getAbsOrient().azimut());
-          }
-        }
-
-        SquareLabels.draw(GUIPad.this.cameraMap2D, Main3D.cur3D().land2D.worldOfsX(), Main3D.cur3D().land2D.worldOfsX(), Main3D.cur3D().land2D.mapSizeX());
+      if (!World.cur().diffCur.No_Map_Icons) {
+        GUIPad.this.drawChiefs();
+        GUIPad.this.drawAAAandFillAir();
+        GUIPad.this.drawAir();
       }
-      catch (Exception localException)
-      {
-        localException.printStackTrace();
+
+      GUIBriefing.drawTargets(GUIPad.this.renders, GUIPad.this.gridFont, GUIPad.this.emptyMat, GUIPad.this.cameraMap2D, GUIPad.this.targets);
+      Aircraft localAircraft;
+      if (!World.cur().diffCur.NoMinimapPath) {
+        localAircraft = World.getPlayerAircraft();
+        if (Actor.isValid(localAircraft)) {
+          IconDraw.setColor(-16711681);
+          GUIPad.this.drawPlayerPath();
+        }
       }
+
+      if ((!World.cur().diffCur.NoMinimapPath) || (!World.cur().diffCur.No_Map_Icons))
+      {
+        localAircraft = World.getPlayerAircraft();
+        if (Actor.isValid(localAircraft)) {
+          Point3d localPoint3d = localAircraft.pos.getAbsPoint();
+          float f1 = (float)((localPoint3d.x - GUIPad.this.cameraMap2D.worldXOffset) * GUIPad.this.cameraMap2D.worldScale);
+          float f2 = (float)((localPoint3d.y - GUIPad.this.cameraMap2D.worldYOffset) * GUIPad.this.cameraMap2D.worldScale);
+          IconDraw.setColor(-1);
+          IconDraw.render(GUIPad.this._iconAir, f1, f2, localAircraft.pos.getAbsOrient().azimut());
+        }
+      }
+      SquareLabels.draw(GUIPad.this.cameraMap2D, Main3D.cur3D().land2D.worldOfsX(), Main3D.cur3D().land2D.worldOfsX(), Main3D.cur3D().land2D.mapSizeX());
     }
 
     public RenderMap2D(Renders paramFloat, float arg3) {
@@ -1055,7 +640,7 @@ public class GUIPad
 
     public void render()
     {
-      GUIPad.this.renders1.draw(0.0F, 0.0F, GUIPad.this.renders1.win.dx, GUIPad.this.renders1.win.dy, GUIPad.this.mesh);
+      GUIPad.this.renders1.draw(0.0F, 0.0F, GUIPad.this.renders1.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, GUIPad.this.renders1.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, GUIPad.this.mesh);
     }
 
     public RenderMap2D1(Renders paramFloat, float arg3) {
@@ -1088,7 +673,6 @@ public class GUIPad
     Airport airport;
     int color;
     int army;
-    boolean zutiIsOnShip = false;
 
     AirDrome()
     {

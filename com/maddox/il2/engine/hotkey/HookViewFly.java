@@ -46,15 +46,15 @@ public class HookViewFly extends Hook
     this.p0.set(this.vect);
 
     float f = this.oAbs.getTangage();
-    if (f > 0.0F) this.p0.z -= this.deltaZ; else
-      this.p0.z += this.deltaZ;
-    if (Math.abs(this.p0.x - this.pAbs.x) > Math.abs(this.p0.y - this.pAbs.y)) {
-      this.p0.y += this.deltaZ; this.p0.x += this.deltaZ / 4.0F;
+    if (f > 0.0F) this.p0.jdField_z_of_type_Double -= this.deltaZ; else
+      this.p0.jdField_z_of_type_Double += this.deltaZ;
+    if (Math.abs(this.p0.jdField_x_of_type_Double - this.pAbs.jdField_x_of_type_Double) > Math.abs(this.p0.jdField_y_of_type_Double - this.pAbs.jdField_y_of_type_Double)) {
+      this.p0.jdField_y_of_type_Double += this.deltaZ; this.p0.jdField_x_of_type_Double += this.deltaZ / 4.0F;
     } else {
-      this.p0.x += this.deltaZ; this.p0.y += this.deltaZ / 4.0F;
+      this.p0.jdField_x_of_type_Double += this.deltaZ; this.p0.jdField_y_of_type_Double += this.deltaZ / 4.0F;
     }
-    double d2 = Engine.land().HQ_Air(this.p0.x, this.p0.y) + 25.0D;
-    if (this.p0.z < d2) this.p0.z = d2;
+    double d2 = Engine.land().HQ_Air(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double) + 25.0D;
+    if (this.p0.jdField_z_of_type_Double < d2) this.p0.jdField_z_of_type_Double = d2;
     double d3 = this.pAbs.distance(this.p0);
     this.maxLen = (2.0D * d3);
     if (d3 < 10.0D)

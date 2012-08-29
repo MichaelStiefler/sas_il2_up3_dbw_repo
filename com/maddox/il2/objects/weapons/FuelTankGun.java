@@ -11,8 +11,8 @@ public class FuelTankGun extends BombGun
 
   public FuelTank getFuelTank()
   {
-    if (!(this.bomb instanceof FuelTank)) return null;
-    return (FuelTank)this.bomb;
+    if (!(this.jdField_bomb_of_type_ComMaddoxIl2ObjectsWeaponsBomb instanceof FuelTank)) return null;
+    return (FuelTank)this.jdField_bomb_of_type_ComMaddoxIl2ObjectsWeaponsBomb;
   }
 
   static {

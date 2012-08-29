@@ -19,10 +19,10 @@ public class RocketPhBall extends Rocket
 {
   private static Point3d p = new Point3d();
 
-  public void start(float paramFloat, int paramInt)
+  public void start(float paramFloat)
   {
     float f = 6.0F + World.Rnd().nextFloat(0.0F, 6.0F);
-    super.start(f, paramInt);
+    super.start(f);
     drawing(false);
     if (World.Rnd().nextFloat() < 0.1F) {
       Eff3DActor.New(this, null, new Loc(), 1.0F, "3DO/Effects/Fireworks/PhosfourousBall.eff", f);
@@ -45,13 +45,13 @@ public class RocketPhBall extends Rocket
     float f1 = Property.floatValue(localClass, "power", 1000.0F);
     int i = Property.intValue(localClass, "powerType", 0);
     float f2 = Property.floatValue(localClass, "radius", 0.0F);
-    getSpeed(this.speed);
-    Vector3f localVector3f = new Vector3f(this.speed);
+    getSpeed(this.jdField_speed_of_type_ComMaddoxJGPVector3d);
+    Vector3f localVector3f = new Vector3f(this.jdField_speed_of_type_ComMaddoxJGPVector3d);
     localVector3f.normalize();
     localVector3f.scale(850.0F);
 
-    MsgShot.send(paramActor, paramString, p, localVector3f, this.M, getOwner(), (float)(0.5F * this.M * this.speed.lengthSquared()), 3, 0.0D);
-    MsgExplosion.send(paramActor, paramString, p, getOwner(), this.M, f1, i, f2);
+    MsgShot.send(paramActor, paramString, p, localVector3f, this.jdField_M_of_type_Float, getOwner(), (float)(0.5F * this.jdField_M_of_type_Float * this.jdField_speed_of_type_ComMaddoxJGPVector3d.lengthSquared()), 3, 0.0D);
+    MsgExplosion.send(paramActor, paramString, p, getOwner(), this.jdField_M_of_type_Float, f1, i, f2);
 
     destroy();
   }

@@ -27,7 +27,7 @@ public class CmdPreload extends Cmd
       Pre.clear();
     }
     if (paramMap.containsKey("SAVE")) {
-      Pre.save(arg(paramMap, "SAVE", 0));
+      Pre.save(Cmd.arg(paramMap, "SAVE", 0));
     }
     if (paramMap.containsKey("_$$")) {
       List localList = (List)paramMap.get("_$$");
@@ -38,10 +38,10 @@ public class CmdPreload extends Cmd
   }
 
   public CmdPreload() {
-    this.param.put("SAVE", null);
-    this.param.put("REGISTER", null);
-    this.param.put("NOREGISTER", null);
-    this.param.put("CLEAR", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SAVE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("REGISTER", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NOREGISTER", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("CLEAR", null);
     this._properties.put("NAME", "preload");
     this._levelAccess = 0;
   }

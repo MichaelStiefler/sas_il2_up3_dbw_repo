@@ -31,25 +31,25 @@ public class Vector2f extends Tuple2f
 
   public final float dot(Tuple2f paramTuple2f)
   {
-    return this.x * paramTuple2f.x + this.y * paramTuple2f.y;
+    return this.jdField_x_of_type_Float * paramTuple2f.jdField_x_of_type_Float + this.jdField_y_of_type_Float * paramTuple2f.jdField_y_of_type_Float;
   }
 
   public final float length()
   {
-    return (float)Math.sqrt(this.x * this.x + this.y * this.y);
+    return (float)Math.sqrt(this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float);
   }
 
   public final float lengthSquared()
   {
-    return this.x * this.x + this.y * this.y;
+    return this.jdField_x_of_type_Float * this.jdField_x_of_type_Float + this.jdField_y_of_type_Float * this.jdField_y_of_type_Float;
   }
 
   public final void normalize()
   {
     double d = length();
 
-    this.x = (float)(this.x / d);
-    this.y = (float)(this.y / d);
+    this.jdField_x_of_type_Float = (float)(this.jdField_x_of_type_Float / d);
+    this.jdField_y_of_type_Float = (float)(this.jdField_y_of_type_Float / d);
   }
 
   public final void normalize(Tuple2f paramTuple2f)
@@ -60,12 +60,12 @@ public class Vector2f extends Tuple2f
 
   public final float angle(Tuple2f paramTuple2f)
   {
-    return (float)Math.abs(Math.atan2(this.x * paramTuple2f.y - this.y * paramTuple2f.x, dot(paramTuple2f)));
+    return (float)Math.abs(Math.atan2(this.jdField_x_of_type_Float * paramTuple2f.jdField_y_of_type_Float - this.jdField_y_of_type_Float * paramTuple2f.jdField_x_of_type_Float, dot(paramTuple2f)));
   }
 
   public final float direction()
   {
-    float f = (float)Math.atan2(this.y, this.x);
+    float f = (float)Math.atan2(this.jdField_y_of_type_Float, this.jdField_x_of_type_Float);
     if (f < 0.0F) f += 6.283186F;
     return f;
   }

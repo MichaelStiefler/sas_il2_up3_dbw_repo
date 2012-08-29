@@ -76,26 +76,26 @@ public abstract class AirportStatic extends Airport
       if (i != 0)
       {
         ((AirportStatic)localObject).runway.add(new Runway(localLoc));
-        j = ((AirportStatic)localObject).runway.size();
+        int k = ((AirportStatic)localObject).runway.size();
 
         p3d.set(0.0D, 0.0D, 0.0D);
-        for (int k = 0; k < j; k++) {
-          localLoc = ((Runway)((AirportStatic)localObject).runway.get(k)).loc;
-          p3d.x += localLoc.getPoint().x;
-          p3d.y += localLoc.getPoint().y;
-          p3d.z += localLoc.getPoint().z;
+        for (int m = 0; m < k; m++) {
+          localLoc = ((Runway)((AirportStatic)localObject).runway.get(m)).loc;
+          p3d.jdField_x_of_type_Double += localLoc.getPoint().jdField_x_of_type_Double;
+          p3d.jdField_y_of_type_Double += localLoc.getPoint().jdField_y_of_type_Double;
+          p3d.jdField_z_of_type_Double += localLoc.getPoint().jdField_z_of_type_Double;
         }
-        p3d.x /= j;
-        p3d.y /= j;
-        p3d.z /= j;
-        ((AirportStatic)localObject).pos.setAbs(p3d);
+        p3d.jdField_x_of_type_Double /= k;
+        p3d.jdField_y_of_type_Double /= k;
+        p3d.jdField_z_of_type_Double /= k;
+        ((AirportStatic)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p3d);
       }
       else {
-        if (Engine.cur.land.isWater(localLoc.getPoint().x, localLoc.getPoint().y))
+        if (Engine.cur.land.isWater(localLoc.getPoint().jdField_x_of_type_Double, localLoc.getPoint().jdField_y_of_type_Double))
           localObject = new AirportMaritime();
         else
           localObject = new AirportGround();
-        ((AirportStatic)localObject).pos = new ActorPosStatic((Actor)localObject, localLoc);
+        ((AirportStatic)localObject).jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic((Actor)localObject, localLoc);
         ((AirportStatic)localObject).runway.add(new Runway(localLoc));
         localArrayList.add(localObject);
       }
@@ -104,7 +104,7 @@ public abstract class AirportStatic extends Airport
 
   public boolean landWay(FlightModel paramFlightModel)
   {
-    paramFlightModel.AP.way.curr().getP(pWay);
+    paramFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getP(pWay);
     Runway localRunway = nearestRunway(pWay);
     if (localRunway == null) return false;
 
@@ -113,8 +113,8 @@ public abstract class AirportStatic extends Airport
     float f1 = (float)Engine.land().HQ_Air(localRunway.loc.getX(), localRunway.loc.getY());
     float f2 = paramFlightModel.M.massEmpty / 3000.0F;
     if (f2 > 1.0F) f2 = 1.0F;
-    if (paramFlightModel.EI.engines[0].getType() > 1) f2 = 1.0F;
-    if (paramFlightModel.EI.engines[0].getType() == 3) f2 = 1.5F;
+    if (paramFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getType() > 1) f2 = 1.0F;
+    if (paramFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getType() == 3) f2 = 1.5F;
     float f3 = f2;
     if (f3 > 1.0F) f3 = 1.0F;
 
@@ -124,14 +124,14 @@ public abstract class AirportStatic extends Airport
       localWayPoint.set(Math.min(v[i] * 0.278F, paramFlightModel.Vmax * 0.7F));
       localWayPoint.Action = 2;
       localRunway.loc.transform(pd);
-      float f4 = (float)Engine.land().HQ_Air(pd.x, pd.y);
-      pd.z -= f4 - f1;
+      float f4 = (float)Engine.land().HQ_Air(pd.jdField_x_of_type_Double, pd.jdField_y_of_type_Double);
+      pd.jdField_z_of_type_Double -= f4 - f1;
       pf.set(pd);
       localWayPoint.set(pf);
       localWay.add(localWayPoint);
     }
     localWay.setLanding(true);
-    paramFlightModel.AP.way = localWay;
+    paramFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way = localWay;
 
     return true;
   }
@@ -160,29 +160,29 @@ public abstract class AirportStatic extends Airport
         localRunway1.planes[0] = paramArrayOfAircraft[i];
         localRunway1.curPlaneShift += 1;
         if (localRunway1.curPlaneShift > 31) throw new RuntimeException("Too many planes on airdrome");
-        for (j = 0; j < localRunway1.curPlaneShift; j++) {
-          if (!Actor.isValid(localRunway1.planes[j]))
+        for (int k = 0; k < localRunway1.curPlaneShift; k++) {
+          if (!Actor.isValid(localRunway1.planes[k]))
             continue;
-          tmpLoc.set(localRunway1.planeShift[j] - d, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+          tmpLoc.set(localRunway1.planeShift[k] - d, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
           tmpLoc.add(localRunway1.loc);
           Point3d localPoint3d = tmpLoc.getPoint();
           Orient localOrient = tmpLoc.getOrient();
 
-          localPoint3d.z = (World.land().HQ(localPoint3d.x, localPoint3d.y) + localRunway1.planes[j].FM.Gears.H);
-          Engine.land().N(localPoint3d.x, localPoint3d.y, v1);
+          localPoint3d.jdField_z_of_type_Double = (World.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double) + localRunway1.planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.H);
+          Engine.land().N(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, v1);
           localOrient.orient(v1);
-          localOrient.increment(0.0F, localRunway1.planes[j].FM.Gears.Pitch, 0.0F);
+          localOrient.increment(0.0F, localRunway1.planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.Pitch, 0.0F);
 
-          localRunway1.planes[j].setOnGround(localPoint3d, localOrient, zeroSpeed);
-          if ((localRunway1.planes[j].FM instanceof Maneuver)) {
-            ((Maneuver)localRunway1.planes[j].FM).direction = localRunway1.planes[j].pos.getAbsOrient().getAzimut();
-            ((Maneuver)localRunway1.planes[j].FM).rwLoc = localRunway1.loc;
+          localRunway1.planes[k].setOnGround(localPoint3d, localOrient, zeroSpeed);
+          if ((localRunway1.planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) {
+            ((Maneuver)localRunway1.planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).direction = localRunway1.planes[k].jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getAzimut();
+            ((Maneuver)localRunway1.planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel).rwLoc = localRunway1.loc;
           }
-          localRunway1.planes[j].FM.AP.way.takeoffAirport = this;
+          localRunway1.planes[k].jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.takeoffAirport = this;
         }
       }
-    if ((Actor.isValid(paramArrayOfAircraft[0])) && ((paramArrayOfAircraft[0].FM instanceof Maneuver))) {
-      Maneuver localManeuver = (Maneuver)paramArrayOfAircraft[0].FM;
+    if ((Actor.isValid(paramArrayOfAircraft[0])) && ((paramArrayOfAircraft[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver))) {
+      Maneuver localManeuver = (Maneuver)paramArrayOfAircraft[0].jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if ((localManeuver.Group != null) && (localManeuver.Group.w != null)) localManeuver.Group.w.takeoffAirport = this;
     }
   }
@@ -218,7 +218,7 @@ public abstract class AirportStatic extends Airport
     int i = this.runway.size();
     for (int j = 0; j < i; j++) {
       Runway localRunway = (Runway)this.runway.get(j);
-      np.z = localRunway.loc.getPoint().z;
+      np.jdField_z_of_type_Double = localRunway.loc.getPoint().jdField_z_of_type_Double;
       double d2 = localRunway.loc.getPoint().distanceSquared(np);
       if ((localObject == null) || (d2 < d1)) {
         localObject = localRunway;
@@ -236,7 +236,7 @@ public abstract class AirportStatic extends Airport
       Runway localRunway = (Runway)this.runway.get(j);
       pcur.set(localRunway.loc.getPoint());
       paramLoc.transformInv(pcur);
-      if ((Math.abs(pcur.y) < 15.0D) && (pcur.x < -800.0D) && (pcur.x > -2500.0D)) {
+      if ((Math.abs(pcur.jdField_y_of_type_Double) < 15.0D) && (pcur.jdField_x_of_type_Double < -800.0D) && (pcur.jdField_x_of_type_Double > -2500.0D)) {
         p1.set(1.0D, 0.0D, 0.0D);
         p2.set(1.0D, 0.0D, 0.0D);
         localRunway.loc.getOrient().transform(p1);

@@ -23,7 +23,7 @@ public class PPoint extends Actor
     return null;
   }
   public void moveTo(Point3d paramPoint3d) {
-    this.pos.setAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
     align();
   }
 
@@ -36,7 +36,7 @@ public class PPoint extends Actor
   }
   public PPoint(Path paramPath, PPoint paramPPoint, Mat paramMat, Point3d paramPoint3d) {
     this.flags |= 8192;
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
     if (paramMat != null)
       this.icon = paramMat;
     else {
@@ -44,7 +44,7 @@ public class PPoint extends Actor
     }
     setOwnerAfter(paramPath, paramPPoint, true, true, true);
     if (paramPoint3d != null) {
-      this.pos.setAbs(paramPoint3d);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
       align();
     }
     drawing(true);

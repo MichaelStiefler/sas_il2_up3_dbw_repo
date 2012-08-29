@@ -306,7 +306,7 @@ public class Renders
             i = 1;
           }
           if (n < k) k = n;
-          if ((currentRender.isClearColor()) && (currentRender.getClearDepth() == 0.999999F) && (currentRender.getClearColor().w == 1.0F))
+          if ((currentRender.isClearColor()) && (currentRender.getClearDepth() == 0.999999F) && (currentRender.getClearColor().jdField_w_of_type_Float == 1.0F))
           {
             currentRender.bSolidArea = true;
             m = 1;
@@ -349,7 +349,7 @@ public class Renders
         int i4 = 0;
         if (localColor4f != null) {
           i4 = 16384;
-          gl.ClearColor(localColor4f.x, localColor4f.y, localColor4f.z, localColor4f.w);
+          gl.ClearColor(localColor4f.jdField_x_of_type_Float, localColor4f.jdField_y_of_type_Float, localColor4f.jdField_z_of_type_Float, localColor4f.jdField_w_of_type_Float);
         }
         if (i != 0) {
           i4 |= 256;
@@ -364,7 +364,7 @@ public class Renders
         }
         gl.Clear(i4);
       } else if (this.bCommonClearColor) {
-        gl.ClearColor(this.commonClearColor.x, this.commonClearColor.y, this.commonClearColor.z, this.commonClearColor.w);
+        gl.ClearColor(this.commonClearColor.jdField_x_of_type_Float, this.commonClearColor.jdField_y_of_type_Float, this.commonClearColor.jdField_z_of_type_Float, this.commonClearColor.jdField_w_of_type_Float);
         gl.Clear(16384);
       }
 
@@ -455,7 +455,7 @@ public class Renders
 
     PostPreRenders();
 
-    gl.ClearColor(localColor4f.x, localColor4f.y, localColor4f.z, localColor4f.w);
+    gl.ClearColor(localColor4f.jdField_x_of_type_Float, localColor4f.jdField_y_of_type_Float, localColor4f.jdField_z_of_type_Float, localColor4f.jdField_w_of_type_Float);
     gl.ClearDepth(f);
     gl.Clear(16640);
 
@@ -497,11 +497,11 @@ public class Renders
 
       if (currentRender.isClearColor()) {
         Color4f localColor4f = currentRender.getClearColor();
-        gl.Color4f(localColor4f.x, localColor4f.y, localColor4f.z, localColor4f.w);
-        if (localColor4f.w == 0.0F) {
+        gl.Color4f(localColor4f.jdField_x_of_type_Float, localColor4f.jdField_y_of_type_Float, localColor4f.jdField_z_of_type_Float, localColor4f.jdField_w_of_type_Float);
+        if (localColor4f.jdField_w_of_type_Float == 0.0F) {
           gl.Enable(3042);
           gl.BlendFunc(0, 1);
-        } else if (localColor4f.w != 1.0F) {
+        } else if (localColor4f.jdField_w_of_type_Float != 1.0F) {
           gl.Enable(3042);
           gl.BlendFunc(770, 771);
         }
@@ -562,7 +562,7 @@ public class Renders
     gl.LoadIdentity();
 
     Color4f localColor4f = currentRender.getClearColor();
-    gl.Color4f(localColor4f.x, localColor4f.y, localColor4f.z, localColor4f.w);
+    gl.Color4f(localColor4f.jdField_x_of_type_Float, localColor4f.jdField_y_of_type_Float, localColor4f.jdField_z_of_type_Float, localColor4f.jdField_w_of_type_Float);
 
     gl.DepthMask(true);
 

@@ -25,8 +25,8 @@ public class YAK_7B extends YAK
 
   public void update(float paramFloat)
   {
-    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
-    hierMesh().chunkSetAngles("Oil_luk", 0.0F, 24.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
+    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator(), 0.0F);
+    hierMesh().chunkSetAngles("Oil_luk", 0.0F, 24.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator(), 0.0F);
     super.update(paramFloat);
   }
 
@@ -48,13 +48,13 @@ public class YAK_7B extends YAK
     Property.set(localClass, "cockpitClass", CockpitYAK_7.class);
     Property.set(localClass, "LOSElevation", 0.6116F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 2, 2 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 260", "MGunUBsi 140", "MGunShVAKki 120", null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunUBsi 260", "MGunUBsi 140", "MGunShVAKki 120", null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "6xRS82", new String[] { "MGunUBsi 260", "MGunUBsi 140", "MGunShVAKki 120", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82" });
+    Aircraft.weaponsRegister(localClass, "6xRS82", new String[] { "MGunUBsi 260", "MGunUBsi 140", "MGunShVAKki 120", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "PylonRO_82_1", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82", "RocketGunRS82" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

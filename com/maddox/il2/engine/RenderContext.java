@@ -161,8 +161,8 @@ public class RenderContext
 
     for (int i = 0; i < nCfgList; i++)
       CfgList[i].apply();
-    for (i = 0; i < nCfgList; i++)
-      CfgList[i].reset();
+    for (int j = 0; j < nCfgList; j++)
+      CfgList[j].reset();
   }
 
   private static void CfgList_Save() {

@@ -9,7 +9,6 @@ import com.maddox.util.HashMapXY16List;
 import java.io.PrintStream;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -112,38 +111,37 @@ public class CollideEnvXY extends CollideEnv
 
   private void collidePoint()
   {
-    makeBoundBox(this._p.x, this._p.y, this._p.z);
+    makeBoundBox(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double);
     int i = makeIndexLine(this._p);
-    Object localObject;
     for (int j = 0; j < i; j++) {
       HashMapExt localHashMapExt = this.mapXY.get(this.indexLineY[j], this.indexLineX[j]);
       if (localHashMapExt != null) {
         Map.Entry localEntry = localHashMapExt.nextEntry(null);
         while (localEntry != null) {
-          localObject = (Actor)localEntry.getKey();
-          if ((this._current.getOwner() != localObject) && (Actor.isValid((Actor)localObject)) && (!this.current.containsKey(localObject)))
-            _collidePoint((Actor)localObject);
+          Actor localActor1 = (Actor)localEntry.getKey();
+          if ((this._current.getOwner() != localActor1) && (Actor.isValid(localActor1)) && (!this.current.containsKey(localActor1)))
+            _collidePoint(localActor1);
           localEntry = localHashMapExt.nextEntry(localEntry);
         }
       }
     }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
+    double d1 = Engine.cur.land.Hmax(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
     if (this.boundZmin < d1 + STATIC_HMAX) {
       for (int k = 0; k < i; k++) {
-        localObject = this.lstXY.get(this.indexLineY[k], this.indexLineX[k]);
-        if (localObject != null) {
-          int m = ((List)localObject).size();
+        List localList = this.lstXY.get(this.indexLineY[k], this.indexLineX[k]);
+        if (localList != null) {
+          int m = localList.size();
           for (int n = 0; n < m; n++) {
-            Actor localActor = (Actor)((List)localObject).get(n);
-            if ((this._current.getOwner() != localActor) && (Actor.isValid(localActor)) && (!this.current.containsKey(localActor))) {
-              _collidePoint(localActor);
+            Actor localActor2 = (Actor)localList.get(n);
+            if ((this._current.getOwner() != localActor2) && (Actor.isValid(localActor2)) && (!this.current.containsKey(localActor2))) {
+              _collidePoint(localActor2);
             }
           }
         }
       }
     }
-    if ((this._current.isCollideOnLand()) && (this._p.z - d1 <= 0.0D)) {
-      double d2 = this._p.z - Engine.cur.land.HQ(this._p.x, this._p.y);
+    if ((this._current.isCollideOnLand()) && (this._p.jdField_z_of_type_Double - d1 <= 0.0D)) {
+      double d2 = this._p.jdField_z_of_type_Double - Engine.cur.land.HQ(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
       if (d2 <= 0.0D) {
         long l = Time.tick();
         MsgCollision.post(l, this._current, Engine.actorLand(), "<edge>", "Body");
@@ -161,22 +159,22 @@ public class CollideEnvXY extends CollideEnv
       Object localObject;
       if (paramActor.pos.isChanged()) {
         localObject = paramActor.pos.getCurrentPoint();
-        if (collideBoundBox(((Point3d)localObject).x, ((Point3d)localObject).y, ((Point3d)localObject).z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1))
-          this.p0.x += localPoint3d.x - ((Point3d)localObject).x;
-        this.p0.y += localPoint3d.y - ((Point3d)localObject).y;
-        this.p0.z += localPoint3d.z - ((Point3d)localObject).z;
-        i = (this.p0.x - this._p.x) * (this.p0.x - this._p.x) + (this.p0.y - this._p.y) * (this.p0.y - this._p.y) + (this.p0.z - this._p.z) * (this.p0.z - this._p.z) < 1.0E-006D ? 1 : 0;
+        if (collideBoundBox(((Point3d)localObject).jdField_x_of_type_Double, ((Point3d)localObject).jdField_y_of_type_Double, ((Point3d)localObject).jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1))
+          this.p0.jdField_x_of_type_Double += localPoint3d.jdField_x_of_type_Double - ((Point3d)localObject).jdField_x_of_type_Double;
+        this.p0.jdField_y_of_type_Double += localPoint3d.jdField_y_of_type_Double - ((Point3d)localObject).jdField_y_of_type_Double;
+        this.p0.jdField_z_of_type_Double += localPoint3d.jdField_z_of_type_Double - ((Point3d)localObject).jdField_z_of_type_Double;
+        i = (this.p0.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) * (this.p0.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) + (this.p0.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) * (this.p0.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) + (this.p0.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) * (this.p0.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) < 1.0E-006D ? 1 : 0;
 
         if (i != 0) {
-          d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+          d2 = intersectPointSphere(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
         }
         else {
-          d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+          d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
         }
 
       }
-      else if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+      else if (collideBoundBox(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1)) {
+        d2 = intersectPointSphere(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
       }
 
       if ((d2 >= 0.0D) && (MsgCollisionRequest.on(this._current, paramActor))) {
@@ -201,49 +199,49 @@ public class CollideEnvXY extends CollideEnv
   private void collideLine() {
     this._currentP = this._current.pos.getCurrentPoint();
     this._p = this._current.pos.getAbsPoint();
-    if ((this._currentP.x - this._p.x) * (this._currentP.x - this._p.x) + (this._currentP.y - this._p.y) * (this._currentP.y - this._p.y) + (this._currentP.z - this._p.z) * (this._currentP.z - this._p.z) < 1.0E-006D)
+    if ((this._currentP.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) * (this._currentP.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) + (this._currentP.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) * (this._currentP.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) + (this._currentP.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) * (this._currentP.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) < 1.0E-006D)
     {
       collidePoint();
       return;
     }
 
-    makeBoundBox(this._currentP.x, this._currentP.y, this._currentP.z, this._p.x, this._p.y, this._p.z);
+    makeBoundBox(this._currentP.jdField_x_of_type_Double, this._currentP.jdField_y_of_type_Double, this._currentP.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double);
     int i = makeIndexLine(this._currentP, this._p);
-    if (i == 0)
+    if (i == 0) {
       System.out.println("CollideEnvXY.collideLine: " + this._current + " very big step moved actor - IGNORED !!!");
-    Object localObject;
+    }
     for (int j = 0; j < i; j++) {
       HashMapExt localHashMapExt = this.mapXY.get(this.indexLineY[j], this.indexLineX[j]);
       if (localHashMapExt != null) {
         Map.Entry localEntry = localHashMapExt.nextEntry(null);
         while (localEntry != null) {
-          localObject = (Actor)localEntry.getKey();
-          if ((this._current.getOwner() != localObject) && (Actor.isValid((Actor)localObject)) && (!this.current.containsKey(localObject)))
-            _collideLine((Actor)localObject);
+          Actor localActor1 = (Actor)localEntry.getKey();
+          if ((this._current.getOwner() != localActor1) && (Actor.isValid(localActor1)) && (!this.current.containsKey(localActor1)))
+            _collideLine(localActor1);
           localEntry = localHashMapExt.nextEntry(localEntry);
         }
       }
     }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
+    double d1 = Engine.cur.land.Hmax(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
     if (this.boundZmin < d1 + STATIC_HMAX) {
       for (int k = 0; k < i; k++) {
-        localObject = this.lstXY.get(this.indexLineY[k], this.indexLineX[k]);
-        if (localObject != null) {
-          int m = ((List)localObject).size();
+        List localList = this.lstXY.get(this.indexLineY[k], this.indexLineX[k]);
+        if (localList != null) {
+          int m = localList.size();
           for (int n = 0; n < m; n++) {
-            Actor localActor = (Actor)((List)localObject).get(n);
-            if ((this._current.getOwner() != localActor) && (Actor.isValid(localActor)) && (!this.current.containsKey(localActor))) {
-              _collideLine(localActor);
+            Actor localActor2 = (Actor)localList.get(n);
+            if ((this._current.getOwner() != localActor2) && (Actor.isValid(localActor2)) && (!this.current.containsKey(localActor2))) {
+              _collideLine(localActor2);
             }
           }
         }
       }
     }
-    if ((this._current.isCollideOnLand()) && (this._p.z - d1 <= 0.0D)) {
-      double d2 = this._p.z - Engine.cur.land.HQ(this._p.x, this._p.y);
+    if ((this._current.isCollideOnLand()) && (this._p.jdField_z_of_type_Double - d1 <= 0.0D)) {
+      double d2 = this._p.jdField_z_of_type_Double - Engine.cur.land.HQ(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
       if (d2 <= 0.0D) {
         long l = Time.tick();
-        double d3 = this._currentP.z - Engine.cur.land.HQ(this._currentP.x, this._currentP.y);
+        double d3 = this._currentP.jdField_z_of_type_Double - Engine.cur.land.HQ(this._currentP.jdField_x_of_type_Double, this._currentP.jdField_y_of_type_Double);
         if (d3 > 0.0D) {
           double d4 = 1.0D + d2 / (d3 - d2);
           l += ()(d4 * Time.tickLenFms());
@@ -265,23 +263,23 @@ public class CollideEnvXY extends CollideEnv
       Object localObject;
       if (paramActor.pos.isChanged()) {
         localObject = paramActor.pos.getCurrentPoint();
-        if (collideBoundBox(((Point3d)localObject).x, ((Point3d)localObject).y, ((Point3d)localObject).z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-          this.p0.x += localPoint3d.x - ((Point3d)localObject).x;
-          this.p0.y += localPoint3d.y - ((Point3d)localObject).y;
-          this.p0.z += localPoint3d.z - ((Point3d)localObject).z;
-          i = (this.p0.x - this._p.x) * (this.p0.x - this._p.x) + (this.p0.y - this._p.y) * (this.p0.y - this._p.y) + (this.p0.z - this._p.z) * (this.p0.z - this._p.z) < 1.0E-006D ? 1 : 0;
+        if (collideBoundBox(((Point3d)localObject).jdField_x_of_type_Double, ((Point3d)localObject).jdField_y_of_type_Double, ((Point3d)localObject).jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1)) {
+          this.p0.jdField_x_of_type_Double += localPoint3d.jdField_x_of_type_Double - ((Point3d)localObject).jdField_x_of_type_Double;
+          this.p0.jdField_y_of_type_Double += localPoint3d.jdField_y_of_type_Double - ((Point3d)localObject).jdField_y_of_type_Double;
+          this.p0.jdField_z_of_type_Double += localPoint3d.jdField_z_of_type_Double - ((Point3d)localObject).jdField_z_of_type_Double;
+          i = (this.p0.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) * (this.p0.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) + (this.p0.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) * (this.p0.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) + (this.p0.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) * (this.p0.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) < 1.0E-006D ? 1 : 0;
 
           if (i != 0) {
-            d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+            d2 = intersectPointSphere(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
           }
           else {
-            d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+            d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
           }
         }
 
       }
-      else if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+      else if (collideBoundBox(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1)) {
+        d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
       }
 
       if (d2 >= 0.0D) {
@@ -309,8 +307,8 @@ public class CollideEnvXY extends CollideEnv
 
   private int makeIndexLine(Point3d paramPoint3d)
   {
-    int i = (int)paramPoint3d.x / 96;
-    int j = (int)paramPoint3d.y / 96;
+    int i = (int)paramPoint3d.jdField_x_of_type_Double / 96;
+    int j = (int)paramPoint3d.jdField_y_of_type_Double / 96;
     int k = 1;
     if ((this.indexLineX == null) || (k > this.indexLineX.length)) {
       this.indexLineX = new int[2 * k];
@@ -321,9 +319,9 @@ public class CollideEnvXY extends CollideEnv
     return k;
   }
   private int makeIndexLine(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    int i = (int)paramPoint3d1.x / 96;
-    int j = (int)paramPoint3d1.y / 96;
-    int k = Math.abs((int)paramPoint3d2.x / 96 - i) + Math.abs((int)paramPoint3d2.y / 96 - j) + 1;
+    int i = (int)paramPoint3d1.jdField_x_of_type_Double / 96;
+    int j = (int)paramPoint3d1.jdField_y_of_type_Double / 96;
+    int k = Math.abs((int)paramPoint3d2.jdField_x_of_type_Double / 96 - i) + Math.abs((int)paramPoint3d2.jdField_y_of_type_Double / 96 - j) + 1;
 
     if (k > 100) {
       return 0;
@@ -331,14 +329,14 @@ public class CollideEnvXY extends CollideEnv
     this.indexLineX[0] = i;
     this.indexLineY[0] = j;
     if (k > 1) {
-      int m = 1; if (paramPoint3d2.x < paramPoint3d1.x) m = -1;
-      int n = 1; if (paramPoint3d2.y < paramPoint3d1.y) n = -1;
+      int m = 1; if (paramPoint3d2.jdField_x_of_type_Double < paramPoint3d1.jdField_x_of_type_Double) m = -1;
+      int n = 1; if (paramPoint3d2.jdField_y_of_type_Double < paramPoint3d1.jdField_y_of_type_Double) n = -1;
       double d1;
       double d2;
       int i1;
-      if (Math.abs(paramPoint3d2.x - paramPoint3d1.x) >= Math.abs(paramPoint3d2.y - paramPoint3d1.y)) {
-        d1 = Math.abs(paramPoint3d1.y % 96.0D);
-        d2 = 96.0D * (paramPoint3d2.y - paramPoint3d1.y) / Math.abs(paramPoint3d2.x - paramPoint3d1.x);
+      if (Math.abs(paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) >= Math.abs(paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double)) {
+        d1 = Math.abs(paramPoint3d1.jdField_y_of_type_Double % 96.0D);
+        d2 = 96.0D * (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double) / Math.abs(paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
         if (d2 >= 0.0D)
           for (i1 = 1; i1 < k; i1++) {
             if (d1 < 96.0D) { i += m; d1 += d2; } else {
@@ -354,8 +352,8 @@ public class CollideEnvXY extends CollideEnv
       }
       else
       {
-        d1 = Math.abs(paramPoint3d1.x % 96.0D);
-        d2 = 96.0D * (paramPoint3d2.x - paramPoint3d1.x) / Math.abs(paramPoint3d2.y - paramPoint3d1.y);
+        d1 = Math.abs(paramPoint3d1.jdField_x_of_type_Double % 96.0D);
+        d2 = 96.0D * (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double) / Math.abs(paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
         if (d2 >= 0.0D)
           for (i1 = 1; i1 < k; i1++) {
             if (d1 < 96.0D) { j += n; d1 += d2; } else {
@@ -380,10 +378,10 @@ public class CollideEnvXY extends CollideEnv
     if (!localCollisionInterface.collision_isEnabled()) return;
     this._currentP = this._current.pos.getCurrentPoint();
     this._p = this._current.pos.getAbsPoint();
-    int i = (int)this._p.x / 96;
-    int j = (int)this._p.y / 96;
+    int i = (int)this._p.jdField_x_of_type_Double / 96;
+    int j = (int)this._p.jdField_y_of_type_Double / 96;
     this._currentCollisionR = localCollisionInterface.collision_getCylinderR();
-    makeBoundBox2D(this._currentP.x, this._currentP.y, this._p.x, this._p.y, this._currentCollisionR);
+    makeBoundBox2D(this._currentP.jdField_x_of_type_Double, this._currentP.jdField_y_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._currentCollisionR);
     HashMapExt localHashMapExt = this.mapXY.get(j, i);
     if (localHashMapExt != null) {
       Map.Entry localEntry = localHashMapExt.nextEntry(null);
@@ -396,12 +394,12 @@ public class CollideEnvXY extends CollideEnv
             double d2 = -1.0D;
             if (localActor.pos.isChanged()) {
               Point3d localPoint3d2 = localActor.pos.getCurrentPoint();
-              if ((collideBoundBox2D(localPoint3d2.x, localPoint3d2.y, localPoint3d1.x, localPoint3d1.y, d1)) && 
+              if ((collideBoundBox2D(localPoint3d2.jdField_x_of_type_Double, localPoint3d2.jdField_y_of_type_Double, localPoint3d1.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double, d1)) && 
                 (MsgCollisionRequest.on(this._current, localActor))) {
                 localCollisionInterface.collision_processing(localActor);
               }
             }
-            else if ((collideBoundBox2D(localPoint3d1.x, localPoint3d1.y, d1)) && 
+            else if ((collideBoundBox2D(localPoint3d1.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double, d1)) && 
               (MsgCollisionRequest.on(this._current, localActor))) {
               localCollisionInterface.collision_processing(localActor);
             }
@@ -418,11 +416,11 @@ public class CollideEnvXY extends CollideEnv
   private void collideSphere() {
     this._currentP = this._current.pos.getCurrentPoint();
     this._p = this._current.pos.getAbsPoint();
-    int i = (int)this._p.x / 96;
-    int j = (int)this._p.y / 96;
+    int i = (int)this._p.jdField_x_of_type_Double / 96;
+    int j = (int)this._p.jdField_y_of_type_Double / 96;
     this._currentCollisionR = this._current.collisionR();
     if (this._currentCollisionR <= 0.0D) return;
-    makeBoundBox(this._p.x, this._p.y, this._p.z, this._currentCollisionR);
+    makeBoundBox(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, this._currentCollisionR);
     Object localObject1;
     Object localObject2;
     if (this._currentCollisionR <= 32.0D) {
@@ -453,7 +451,7 @@ public class CollideEnvXY extends CollideEnv
         }
       }
     }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
+    double d1 = Engine.cur.land.Hmax(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
     if (this.boundZmin < d1 + STATIC_HMAX) {
       localObject2 = this.lstXY.get(j, i);
       if (localObject2 != null) {
@@ -466,19 +464,19 @@ public class CollideEnvXY extends CollideEnv
         }
       }
     }
-    if ((this._current.isCollideOnLand()) && (this._p.z - this._currentCollisionR - d1 <= 0.0D)) {
-      double d2 = this._p.z - this._currentCollisionR - Engine.cur.land.HQ(this._p.x, this._p.y);
+    if ((this._current.isCollideOnLand()) && (this._p.jdField_z_of_type_Double - this._currentCollisionR - d1 <= 0.0D)) {
+      double d2 = this._p.jdField_z_of_type_Double - this._currentCollisionR - Engine.cur.land.HQ(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
       if (d2 <= 0.0D) {
         long l = Time.tick();
         double d4;
         if ((this._current instanceof ActorMesh)) {
           Mesh localMesh = ((ActorMesh)this._current).mesh();
           Loc localLoc = this._current.pos.getAbs();
-          d4 = Engine.cur.land.EQN(this._p.x, this._p.y, this.normal);
+          d4 = Engine.cur.land.EQN(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this.normal);
           if (localMesh.detectCollisionPlane(localLoc, this.normal, d4) >= 0.0F)
             MsgCollision.post(l, this._current, Engine.actorLand(), Mesh.collisionChunk(0), "Body");
         } else {
-          double d3 = this._currentP.z - this._currentCollisionR - Engine.cur.land.HQ(this._currentP.x, this._currentP.y);
+          double d3 = this._currentP.jdField_z_of_type_Double - this._currentCollisionR - Engine.cur.land.HQ(this._currentP.jdField_x_of_type_Double, this._currentP.jdField_y_of_type_Double);
           if (d3 > 0.0D) {
             d4 = 1.0D + d2 / (d3 - d2);
             l += ()(d4 * Time.tickLenFms());
@@ -495,9 +493,9 @@ public class CollideEnvXY extends CollideEnv
     double d1 = paramActor.collisionR();
     if (d1 > 0.0D) {
       Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
+      if (collideBoundBox(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1)) {
         double d2 = (this._currentCollisionR + d1) * (this._currentCollisionR + d1);
-        double d3 = (this._p.x - localPoint3d.x) * (this._p.x - localPoint3d.x) + (this._p.y - localPoint3d.y) * (this._p.y - localPoint3d.y) + (this._p.z - localPoint3d.z) * (this._p.z - localPoint3d.z);
+        double d3 = (this._p.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (this._p.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (this._p.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (this._p.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (this._p.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (this._p.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
         if (d3 <= d2) {
           Engine.cur.profile.collideSphereSphere += 1;
@@ -535,7 +533,7 @@ public class CollideEnvXY extends CollideEnv
               if (paramActor.pos.isChanged()) {
                 localPoint3d = paramActor.pos.getCurrentPoint();
               }
-              double d4 = (this._currentP.x - localPoint3d.x) * (this._currentP.x - localPoint3d.x) + (this._currentP.y - localPoint3d.y) * (this._currentP.y - localPoint3d.y) + (this._currentP.z - localPoint3d.z) * (this._currentP.z - localPoint3d.z);
+              double d4 = (this._currentP.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (this._currentP.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (this._currentP.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (this._currentP.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (this._currentP.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (this._currentP.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
               if (d4 > d2) {
                 d2 = Math.sqrt(d2);
@@ -689,23 +687,23 @@ public class CollideEnvXY extends CollideEnv
       Object localObject;
       if (paramActor1.pos.isChanged()) {
         localObject = paramActor1.pos.getCurrentPoint();
-        if (collideBoundBox(((Point3d)localObject).x, ((Point3d)localObject).y, ((Point3d)localObject).z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-          this.p0.x += localPoint3d.x - ((Point3d)localObject).x;
-          this.p0.y += localPoint3d.y - ((Point3d)localObject).y;
-          this.p0.z += localPoint3d.z - ((Point3d)localObject).z;
-          i = (this.p0.x - this._p.x) * (this.p0.x - this._p.x) + (this.p0.y - this._p.y) * (this.p0.y - this._p.y) + (this.p0.z - this._p.z) * (this.p0.z - this._p.z) < 1.0E-006D ? 1 : 0;
+        if (collideBoundBox(((Point3d)localObject).jdField_x_of_type_Double, ((Point3d)localObject).jdField_y_of_type_Double, ((Point3d)localObject).jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1)) {
+          this.p0.jdField_x_of_type_Double += localPoint3d.jdField_x_of_type_Double - ((Point3d)localObject).jdField_x_of_type_Double;
+          this.p0.jdField_y_of_type_Double += localPoint3d.jdField_y_of_type_Double - ((Point3d)localObject).jdField_y_of_type_Double;
+          this.p0.jdField_z_of_type_Double += localPoint3d.jdField_z_of_type_Double - ((Point3d)localObject).jdField_z_of_type_Double;
+          i = (this.p0.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) * (this.p0.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) + (this.p0.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) * (this.p0.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) + (this.p0.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) * (this.p0.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) < 1.0E-006D ? 1 : 0;
 
           if (i != 0) {
-            d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+            d2 = intersectPointSphere(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
           }
           else {
-            d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+            d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
           }
         }
 
       }
-      else if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
+      else if (collideBoundBox(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1)) {
+        d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1);
       }
 
       if (d2 >= 0.0D) {
@@ -730,14 +728,14 @@ public class CollideEnvXY extends CollideEnv
         else if ((this._bulletArcade) && (paramActor1.getArmy() != paramActor2.getArmy())) {
           if (paramActor1.pos.isChanged()) {
             if (i != 0) {
-              d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1 / 2.0D);
+              d2 = intersectPointSphere(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1 / 2.0D);
             }
             else {
-              d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1 / 2.0D);
+              d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1 / 2.0D);
             }
           }
           else {
-            d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1 / 2.0D);
+            d2 = intersectLineSphere(this.p0.jdField_x_of_type_Double, this.p0.jdField_y_of_type_Double, this.p0.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double, localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double, localPoint3d.jdField_z_of_type_Double, d1 / 2.0D);
           }
 
           if ((d2 >= 0.0D) && (d2 <= 1.0D)) {
@@ -758,18 +756,18 @@ public class CollideEnvXY extends CollideEnv
     this._bulletArcade = ((paramBulletGeneric.flags & 0x40000000) != 0);
     this._currentP = paramBulletGeneric.p0;
     this._p = paramBulletGeneric.p1;
-    if ((this._currentP.x - this._p.x) * (this._currentP.x - this._p.x) + (this._currentP.y - this._p.y) * (this._currentP.y - this._p.y) + (this._currentP.z - this._p.z) * (this._currentP.z - this._p.z) < 1.0E-006D)
+    if ((this._currentP.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) * (this._currentP.jdField_x_of_type_Double - this._p.jdField_x_of_type_Double) + (this._currentP.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) * (this._currentP.jdField_y_of_type_Double - this._p.jdField_y_of_type_Double) + (this._currentP.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) * (this._currentP.jdField_z_of_type_Double - this._p.jdField_z_of_type_Double) < 1.0E-006D)
     {
       return false;
     }
     Actor localActor1 = paramBulletGeneric.gunOwnerBody();
 
-    makeBoundBox(this._currentP.x, this._currentP.y, this._currentP.z, this._p.x, this._p.y, this._p.z);
+    makeBoundBox(this._currentP.jdField_x_of_type_Double, this._currentP.jdField_y_of_type_Double, this._currentP.jdField_z_of_type_Double, this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double, this._p.jdField_z_of_type_Double);
     int i = makeIndexLine(this._currentP, this._p);
     if (i == 0) {
       System.out.println("CollideEnvXY.doBulletMoveAndCollision: " + paramBulletGeneric + " very big step moved bullet - IGNORED !!!");
     }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
+    double d1 = Engine.cur.land.Hmax(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
     this._bulletActor = null;
     for (int j = 0; j < i; j++) {
       HashMapExt localHashMapExt = this.mapXY.get(this.indexLineY[j], this.indexLineX[j]);
@@ -798,11 +796,11 @@ public class CollideEnvXY extends CollideEnv
         break;
       }
     }
-    if (this._p.z - d1 <= 0.0D) {
-      double d2 = this._p.z - Engine.cur.land.HQ(this._p.x, this._p.y);
+    if (this._p.jdField_z_of_type_Double - d1 <= 0.0D) {
+      double d2 = this._p.jdField_z_of_type_Double - Engine.cur.land.HQ(this._p.jdField_x_of_type_Double, this._p.jdField_y_of_type_Double);
       if (d2 <= 0.0D) {
         double d3 = 0.0D;
-        double d4 = this._currentP.z - Engine.cur.land.HQ(this._currentP.x, this._currentP.y);
+        double d4 = this._currentP.jdField_z_of_type_Double - Engine.cur.land.HQ(this._currentP.jdField_x_of_type_Double, this._currentP.jdField_y_of_type_Double);
         if (d4 > 0.0D) {
           d3 = 1.0D + d2 / (d4 - d2);
           if (d3 < 0.0D) d3 = 0.0D;
@@ -855,20 +853,20 @@ public class CollideEnvXY extends CollideEnv
           localObject.nextBullet = localBulletGeneric1;
         }
         localBulletGeneric2.nextBullet = null;
-        continue;
-      }localObject = localBulletGeneric1;
-      localBulletGeneric1 = localBulletGeneric1.nextBullet;
+      } else {
+        localObject = localBulletGeneric1;
+        localBulletGeneric1 = localBulletGeneric1.nextBullet;
+      }
     }
-
     this._bulletActor = null;
   }
 
   public void getSphere(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble)
   {
-    int i = (int)(paramPoint3d.x - paramDouble) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble) / 96;
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double - paramDouble) / 96;
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double - paramDouble) / 96;
+    int k = (int)(paramPoint3d.jdField_x_of_type_Double + paramDouble) / 96;
+    int m = (int)(paramPoint3d.jdField_y_of_type_Double + paramDouble) / 96;
     this._getSphereLst = paramAbstractCollection;
     this._getSphereCenter = paramPoint3d;
     this._getSphereR = paramDouble;
@@ -904,7 +902,7 @@ public class CollideEnvXY extends CollideEnv
     double d1 = paramActor.collisionR();
     Point3d localPoint3d = paramActor.pos.getAbsPoint();
     double d2 = (this._getSphereR + d1) * (this._getSphereR + d1);
-    double d3 = (this._getSphereCenter.x - localPoint3d.x) * (this._getSphereCenter.x - localPoint3d.x) + (this._getSphereCenter.y - localPoint3d.y) * (this._getSphereCenter.y - localPoint3d.y) + (this._getSphereCenter.z - localPoint3d.z) * (this._getSphereCenter.z - localPoint3d.z);
+    double d3 = (this._getSphereCenter.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (this._getSphereCenter.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (this._getSphereCenter.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (this._getSphereCenter.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (this._getSphereCenter.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (this._getSphereCenter.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
     if (d3 <= d2)
       this._getSphereLst.add(paramActor);
@@ -912,7 +910,7 @@ public class CollideEnvXY extends CollideEnv
 
   public Actor getLine(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean, Actor paramActor, Point3d paramPoint3d3)
   {
-    if ((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y) + (paramPoint3d1.z - paramPoint3d2.z) * (paramPoint3d1.z - paramPoint3d2.z) < 1.0E-006D)
+    if ((paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) + (paramPoint3d1.jdField_z_of_type_Double - paramPoint3d2.jdField_z_of_type_Double) * (paramPoint3d1.jdField_z_of_type_Double - paramPoint3d2.jdField_z_of_type_Double) < 1.0E-006D)
     {
       return null;
     }
@@ -924,15 +922,15 @@ public class CollideEnvXY extends CollideEnv
       if (i > 0) break;
       paramPoint3d2.interpolate(paramPoint3d1, paramPoint3d2, 0.5D);
     }
-    if (Engine.cur.land.HQ(paramPoint3d1.x, paramPoint3d1.y) > paramPoint3d1.z) {
+    if (Engine.cur.land.HQ(paramPoint3d1.jdField_x_of_type_Double, paramPoint3d1.jdField_y_of_type_Double) > paramPoint3d1.jdField_z_of_type_Double) {
       return null;
     }
-    double d1 = paramPoint3d1.z;
-    double d2 = paramPoint3d2.z;
-    if (d1 > paramPoint3d2.z) { d1 = paramPoint3d2.z; d2 = paramPoint3d1.z; }
-    this._getLineDx = (paramPoint3d2.x - paramPoint3d1.x);
-    this._getLineDy = (paramPoint3d2.y - paramPoint3d1.y);
-    this._getLineDz = (paramPoint3d2.z - paramPoint3d1.z);
+    double d1 = paramPoint3d1.jdField_z_of_type_Double;
+    double d2 = paramPoint3d2.jdField_z_of_type_Double;
+    if (d1 > paramPoint3d2.jdField_z_of_type_Double) { d1 = paramPoint3d2.jdField_z_of_type_Double; d2 = paramPoint3d1.jdField_z_of_type_Double; }
+    this._getLineDx = (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    this._getLineDy = (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
+    this._getLineDz = (paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double);
     this._getLineLen2 = (this._getLineDx * this._getLineDx + this._getLineDy * this._getLineDy + this._getLineDz * this._getLineDz);
 
     this._getLineBOnlySphere = paramBoolean;
@@ -983,7 +981,7 @@ public class CollideEnvXY extends CollideEnv
     return (Actor)null;
   }
   public Actor getLine(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean, ActorFilter paramActorFilter, Point3d paramPoint3d3) {
-    if ((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y) + (paramPoint3d1.z - paramPoint3d2.z) * (paramPoint3d1.z - paramPoint3d2.z) < 1.0E-006D)
+    if ((paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) * (paramPoint3d1.jdField_x_of_type_Double - paramPoint3d2.jdField_x_of_type_Double) + (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) * (paramPoint3d1.jdField_y_of_type_Double - paramPoint3d2.jdField_y_of_type_Double) + (paramPoint3d1.jdField_z_of_type_Double - paramPoint3d2.jdField_z_of_type_Double) * (paramPoint3d1.jdField_z_of_type_Double - paramPoint3d2.jdField_z_of_type_Double) < 1.0E-006D)
     {
       return null;
     }
@@ -995,15 +993,15 @@ public class CollideEnvXY extends CollideEnv
       if (i > 0) break;
       paramPoint3d2.interpolate(paramPoint3d1, paramPoint3d2, 0.5D);
     }
-    if (Engine.cur.land.HQ(paramPoint3d1.x, paramPoint3d1.y) > paramPoint3d1.z) {
+    if (Engine.cur.land.HQ(paramPoint3d1.jdField_x_of_type_Double, paramPoint3d1.jdField_y_of_type_Double) > paramPoint3d1.jdField_z_of_type_Double) {
       return null;
     }
-    double d1 = paramPoint3d1.z;
-    double d2 = paramPoint3d2.z;
-    if (d1 > paramPoint3d2.z) { d1 = paramPoint3d2.z; d2 = paramPoint3d1.z; }
-    this._getLineDx = (paramPoint3d2.x - paramPoint3d1.x);
-    this._getLineDy = (paramPoint3d2.y - paramPoint3d1.y);
-    this._getLineDz = (paramPoint3d2.z - paramPoint3d1.z);
+    double d1 = paramPoint3d1.jdField_z_of_type_Double;
+    double d2 = paramPoint3d2.jdField_z_of_type_Double;
+    if (d1 > paramPoint3d2.jdField_z_of_type_Double) { d1 = paramPoint3d2.jdField_z_of_type_Double; d2 = paramPoint3d1.jdField_z_of_type_Double; }
+    this._getLineDx = (paramPoint3d2.jdField_x_of_type_Double - paramPoint3d1.jdField_x_of_type_Double);
+    this._getLineDy = (paramPoint3d2.jdField_y_of_type_Double - paramPoint3d1.jdField_y_of_type_Double);
+    this._getLineDz = (paramPoint3d2.jdField_z_of_type_Double - paramPoint3d1.jdField_z_of_type_Double);
     this._getLineLen2 = (this._getLineDx * this._getLineDx + this._getLineDy * this._getLineDy + this._getLineDz * this._getLineDz);
 
     this._getLineBOnlySphere = paramBoolean;
@@ -1059,14 +1057,14 @@ public class CollideEnvXY extends CollideEnv
     Point3d localPoint3d = paramActor.pos.getAbsPoint();
     double d1 = paramActor.collisionR();
     double d2 = d1 * d1;
-    double d3 = ((localPoint3d.x - this._getLineP0.x) * this._getLineDx + (localPoint3d.y - this._getLineP0.y) * this._getLineDy + (localPoint3d.z - this._getLineP0.z) * this._getLineDz) / this._getLineLen2;
+    double d3 = ((localPoint3d.jdField_x_of_type_Double - this._getLineP0.jdField_x_of_type_Double) * this._getLineDx + (localPoint3d.jdField_y_of_type_Double - this._getLineP0.jdField_y_of_type_Double) * this._getLineDy + (localPoint3d.jdField_z_of_type_Double - this._getLineP0.jdField_z_of_type_Double) * this._getLineDz) / this._getLineLen2;
     double d4;
     double d5;
     if ((d3 >= 0.0D) && (d3 <= 1.0D)) {
-      d4 = this._getLineP0.x + d3 * this._getLineDx;
-      d5 = this._getLineP0.y + d3 * this._getLineDy;
-      double d6 = this._getLineP0.z + d3 * this._getLineDz;
-      double d7 = (d4 - localPoint3d.x) * (d4 - localPoint3d.x) + (d5 - localPoint3d.y) * (d5 - localPoint3d.y) + (d6 - localPoint3d.z) * (d6 - localPoint3d.z);
+      d4 = this._getLineP0.jdField_x_of_type_Double + d3 * this._getLineDx;
+      d5 = this._getLineP0.jdField_y_of_type_Double + d3 * this._getLineDy;
+      double d6 = this._getLineP0.jdField_z_of_type_Double + d3 * this._getLineDz;
+      double d7 = (d4 - localPoint3d.jdField_x_of_type_Double) * (d4 - localPoint3d.jdField_x_of_type_Double) + (d5 - localPoint3d.jdField_y_of_type_Double) * (d5 - localPoint3d.jdField_y_of_type_Double) + (d6 - localPoint3d.jdField_z_of_type_Double) * (d6 - localPoint3d.jdField_z_of_type_Double);
 
       double d8 = d2 - d7;
       if (d8 < 0.0D) {
@@ -1077,9 +1075,9 @@ public class CollideEnvXY extends CollideEnv
       }
     }
     else {
-      d4 = (this._getLineP1.x - localPoint3d.x) * (this._getLineP1.x - localPoint3d.x) + (this._getLineP1.y - localPoint3d.y) * (this._getLineP1.y - localPoint3d.y) + (this._getLineP1.z - localPoint3d.z) * (this._getLineP1.z - localPoint3d.z);
+      d4 = (this._getLineP1.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (this._getLineP1.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (this._getLineP1.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (this._getLineP1.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (this._getLineP1.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (this._getLineP1.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
-      d5 = (this._getLineP0.x - localPoint3d.x) * (this._getLineP0.x - localPoint3d.x) + (this._getLineP0.y - localPoint3d.y) * (this._getLineP0.y - localPoint3d.y) + (this._getLineP0.z - localPoint3d.z) * (this._getLineP0.z - localPoint3d.z);
+      d5 = (this._getLineP0.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (this._getLineP0.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (this._getLineP0.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (this._getLineP0.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (this._getLineP0.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (this._getLineP0.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
       if ((d4 <= d2) || (d5 <= d2)) {
         if (d4 < d5) d3 = 1.0D; else
@@ -1104,10 +1102,10 @@ public class CollideEnvXY extends CollideEnv
 
   public void getFiltered(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble, ActorFilter paramActorFilter)
   {
-    int i = (int)(paramPoint3d.x - paramDouble) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble) / 96;
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double - paramDouble) / 96;
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double - paramDouble) / 96;
+    int k = (int)(paramPoint3d.jdField_x_of_type_Double + paramDouble) / 96;
+    int m = (int)(paramPoint3d.jdField_y_of_type_Double + paramDouble) / 96;
     this._getFilteredCenter = paramPoint3d;
     this._getFilteredFilter = paramActorFilter;
     this._getFilteredR = paramDouble;
@@ -1150,7 +1148,7 @@ public class CollideEnvXY extends CollideEnv
     double d1 = paramActor.collisionR();
     Point3d localPoint3d = paramActor.pos.getAbsPoint();
     double d2 = (this._getFilteredR + d1) * (this._getFilteredR + d1);
-    double d3 = (this._getFilteredCenter.x - localPoint3d.x) * (this._getFilteredCenter.x - localPoint3d.x) + (this._getFilteredCenter.y - localPoint3d.y) * (this._getFilteredCenter.y - localPoint3d.y) + (this._getFilteredCenter.z - localPoint3d.z) * (this._getFilteredCenter.z - localPoint3d.z);
+    double d3 = (this._getFilteredCenter.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) * (this._getFilteredCenter.jdField_x_of_type_Double - localPoint3d.jdField_x_of_type_Double) + (this._getFilteredCenter.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) * (this._getFilteredCenter.jdField_y_of_type_Double - localPoint3d.jdField_y_of_type_Double) + (this._getFilteredCenter.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double) * (this._getFilteredCenter.jdField_z_of_type_Double - localPoint3d.jdField_z_of_type_Double);
 
     if ((d3 <= d2) && (this._getFilteredFilter.isUse(paramActor, d3)))
       this.current.put(paramActor, null);
@@ -1164,10 +1162,10 @@ public class CollideEnvXY extends CollideEnv
       paramDouble = 6000.0D;
     }
 
-    int i = (int)(paramPoint3d.x - paramDouble) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble) / 96;
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double - paramDouble) / 96;
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double - paramDouble) / 96;
+    int k = (int)(paramPoint3d.jdField_x_of_type_Double + paramDouble) / 96;
+    int m = (int)(paramPoint3d.jdField_y_of_type_Double + paramDouble) / 96;
     for (int n = j; n <= m; n++) {
       for (int i1 = i; i1 <= k; i1++) {
         HashMapExt localHashMapExt = this.mapXY.get(n, i1);
@@ -1184,7 +1182,7 @@ public class CollideEnvXY extends CollideEnv
               double d1 = localActor1.collisionR();
               Point3d localPoint3d1 = localActor1.pos.getAbsPoint();
               double d3 = (paramDouble + d1) * (paramDouble + d1);
-              d4 = (paramPoint3d.x - localPoint3d1.x) * (paramPoint3d.x - localPoint3d1.x) + (paramPoint3d.y - localPoint3d1.y) * (paramPoint3d.y - localPoint3d1.y) + (paramPoint3d.z - localPoint3d1.z) * (paramPoint3d.z - localPoint3d1.z);
+              d4 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d1.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d1.jdField_z_of_type_Double);
 
               if ((d4 <= d3) && 
                 (!paramAccumulator.add(localActor1, d4))) {
@@ -1211,7 +1209,7 @@ public class CollideEnvXY extends CollideEnv
             double d2 = localActor2.collisionR();
             Point3d localPoint3d2 = localActor2.pos.getAbsPoint();
             d4 = (paramDouble + d2) * (paramDouble + d2);
-            double d5 = (paramPoint3d.x - localPoint3d2.x) * (paramPoint3d.x - localPoint3d2.x) + (paramPoint3d.y - localPoint3d2.y) * (paramPoint3d.y - localPoint3d2.y) + (paramPoint3d.z - localPoint3d2.z) * (paramPoint3d.z - localPoint3d2.z);
+            double d5 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double) + (paramPoint3d.jdField_z_of_type_Double - localPoint3d2.jdField_z_of_type_Double) * (paramPoint3d.jdField_z_of_type_Double - localPoint3d2.jdField_z_of_type_Double);
 
             if ((d5 > d4) || 
               (paramAccumulator.add(localActor2, d5))) continue;
@@ -1233,10 +1231,10 @@ public class CollideEnvXY extends CollideEnv
       paramDouble1 = 6000.0D;
     }
 
-    int i = (int)(paramPoint3d.x - paramDouble1) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble1) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble1) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble1) / 96;
+    int i = (int)(paramPoint3d.jdField_x_of_type_Double - paramDouble1) / 96;
+    int j = (int)(paramPoint3d.jdField_y_of_type_Double - paramDouble1) / 96;
+    int k = (int)(paramPoint3d.jdField_x_of_type_Double + paramDouble1) / 96;
+    int m = (int)(paramPoint3d.jdField_y_of_type_Double + paramDouble1) / 96;
     for (int n = j; n <= m; n++) {
       for (int i1 = i; i1 <= k; i1++) {
         HashMapExt localHashMapExt = this.mapXY.get(n, i1);
@@ -1254,10 +1252,10 @@ public class CollideEnvXY extends CollideEnv
               double d1 = localActor1.collisionR();
               Point3d localPoint3d1 = localActor1.pos.getAbsPoint();
               double d3 = (paramDouble1 + d1) * (paramDouble1 + d1);
-              d4 = (paramPoint3d.x - localPoint3d1.x) * (paramPoint3d.x - localPoint3d1.x) + (paramPoint3d.y - localPoint3d1.y) * (paramPoint3d.y - localPoint3d1.y);
+              d4 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d1.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d1.jdField_y_of_type_Double);
 
               if (d4 <= d3) {
-                d5 = localPoint3d1.z - paramPoint3d.z;
+                d5 = localPoint3d1.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double;
                 if ((d5 - d1 <= paramDouble3) && (d5 + d1 >= paramDouble2))
                 {
                   if (!paramAccumulator.add(localActor1, d4 + d5 * d5)) {
@@ -1285,10 +1283,10 @@ public class CollideEnvXY extends CollideEnv
             double d2 = localActor2.collisionR();
             Point3d localPoint3d2 = localActor2.pos.getAbsPoint();
             d4 = (paramDouble1 + d2) * (paramDouble1 + d2);
-            d5 = (paramPoint3d.x - localPoint3d2.x) * (paramPoint3d.x - localPoint3d2.x) + (paramPoint3d.y - localPoint3d2.y) * (paramPoint3d.y - localPoint3d2.y);
+            d5 = (paramPoint3d.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double) * (paramPoint3d.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double) + (paramPoint3d.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double) * (paramPoint3d.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double);
 
             if (d5 <= d4) {
-              double d6 = localPoint3d2.z - paramPoint3d.z;
+              double d6 = localPoint3d2.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double;
               if ((d6 - d2 > paramDouble3) || (d6 + d2 < paramDouble2))
                 continue;
               if (!paramAccumulator.add(localActor2, d5 + d6 * d6)) {
@@ -1312,26 +1310,26 @@ public class CollideEnvXY extends CollideEnv
     int k;
     int m;
     if (paramActor.collisionR() <= 32.0F) {
-      i = (int)paramPoint3d1.x / 32;
-      j = (int)paramPoint3d1.y / 32;
-      k = (int)paramPoint3d2.x / 32;
-      m = (int)paramPoint3d2.y / 32;
+      i = (int)paramPoint3d1.jdField_x_of_type_Double / 32;
+      j = (int)paramPoint3d1.jdField_y_of_type_Double / 32;
+      k = (int)paramPoint3d2.jdField_x_of_type_Double / 32;
+      m = (int)paramPoint3d2.jdField_y_of_type_Double / 32;
       if ((i != k) || (j != m)) {
         remove(paramActor, i, j);
         add(paramActor, k, m);
       }
     } else {
-      i = (int)(paramPoint3d1.x / 96.0D);
-      j = (int)(paramPoint3d1.y / 96.0D);
-      k = (int)(paramPoint3d2.x / 96.0D);
-      m = (int)(paramPoint3d2.y / 96.0D);
+      i = (int)(paramPoint3d1.jdField_x_of_type_Double / 96.0D);
+      j = (int)(paramPoint3d1.jdField_y_of_type_Double / 96.0D);
+      k = (int)(paramPoint3d2.jdField_x_of_type_Double / 96.0D);
+      m = (int)(paramPoint3d2.jdField_y_of_type_Double / 96.0D);
       if ((i != k) || (j != m)) {
         this.index.make(paramPoint3d1, paramActor.collisionR());
         for (int n = 0; n < this.index.count; n++)
           this.mapXY.remove(this.index.y[n], this.index.x[n], paramActor);
         this.index.make(paramPoint3d2, paramActor.collisionR());
-        for (n = 0; n < this.index.count; n++)
-          this.mapXY.put(this.index.y[n], this.index.x[n], paramActor, null);
+        for (int i1 = 0; i1 < this.index.count; i1++)
+          this.mapXY.put(this.index.y[i1], this.index.x[i1], paramActor, null);
       }
     }
   }
@@ -1341,7 +1339,7 @@ public class CollideEnvXY extends CollideEnv
     if (paramActor.pos != null) {
       Point3d localPoint3d = paramActor.pos.getCurrentPoint();
       if (paramActor.collisionR() <= 32.0F) {
-        add(paramActor, (int)localPoint3d.x / 32, (int)localPoint3d.y / 32);
+        add(paramActor, (int)localPoint3d.jdField_x_of_type_Double / 32, (int)localPoint3d.jdField_y_of_type_Double / 32);
       } else {
         this.index.make(localPoint3d, paramActor.collisionR());
         for (int i = 0; i < this.index.count; i++)
@@ -1361,7 +1359,7 @@ public class CollideEnvXY extends CollideEnv
     if (paramActor.pos != null) {
       Point3d localPoint3d = paramActor.pos.getCurrentPoint();
       if (paramActor.collisionR() <= 32.0F) {
-        remove(paramActor, (int)localPoint3d.x / 32, (int)localPoint3d.y / 32);
+        remove(paramActor, (int)localPoint3d.jdField_x_of_type_Double / 32, (int)localPoint3d.jdField_y_of_type_Double / 32);
       } else {
         this.index.make(localPoint3d, paramActor.collisionR());
         for (int i = 0; i < this.index.count; i++)
@@ -1404,17 +1402,16 @@ public class CollideEnvXY extends CollideEnv
     ArrayList localArrayList1 = new ArrayList();
     ArrayList localArrayList2 = new ArrayList();
     this.mapXY.allValues(localArrayList1);
-    Object localObject;
     for (int i = 0; i < localArrayList1.size(); i++) {
-      localObject = (HashMapExt)localArrayList1.get(i);
-      localArrayList2.addAll(((HashMapExt)localObject).keySet());
+      HashMapExt localHashMapExt = (HashMapExt)localArrayList1.get(i);
+      localArrayList2.addAll(localHashMapExt.keySet());
       Engine.destroyListGameActors(localArrayList2);
     }
     localArrayList1.clear();
     this.lstXY.allValues(localArrayList1);
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localObject = (ArrayList)localArrayList1.get(i);
-      localArrayList2.addAll((Collection)localObject);
+    for (int j = 0; j < localArrayList1.size(); j++) {
+      ArrayList localArrayList3 = (ArrayList)localArrayList1.get(j);
+      localArrayList2.addAll(localArrayList3);
       Engine.destroyListGameActors(localArrayList2);
     }
     localArrayList1.clear();
@@ -1473,10 +1470,10 @@ public class CollideEnvXY extends CollideEnv
 
     public void make(Point3d paramPoint3d, float paramFloat)
     {
-      int i = (int)((paramPoint3d.x - paramFloat - 96.0D) / 96.0D);
-      int j = (int)((paramPoint3d.x + paramFloat + 96.0D) / 96.0D);
-      int k = (int)((paramPoint3d.y - paramFloat - 96.0D) / 96.0D);
-      int m = (int)((paramPoint3d.y + paramFloat + 96.0D) / 96.0D);
+      int i = (int)((paramPoint3d.jdField_x_of_type_Double - paramFloat - 96.0D) / 96.0D);
+      int j = (int)((paramPoint3d.jdField_x_of_type_Double + paramFloat + 96.0D) / 96.0D);
+      int k = (int)((paramPoint3d.jdField_y_of_type_Double - paramFloat - 96.0D) / 96.0D);
+      int m = (int)((paramPoint3d.jdField_y_of_type_Double + paramFloat + 96.0D) / 96.0D);
       int n = j - i + 1;
       int i1 = m - k + 1;
       this.count = (n * i1);

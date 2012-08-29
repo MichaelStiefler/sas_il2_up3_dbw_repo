@@ -2,7 +2,7 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
 
-public abstract class Scheme5 extends AircraftLH
+public abstract class Scheme5 extends Aircraft
 {
   protected void moveAileron(float paramFloat)
   {

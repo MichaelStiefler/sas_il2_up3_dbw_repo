@@ -1,8 +1,6 @@
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3d;
-import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.Way;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
@@ -28,47 +26,47 @@ public class Autopilot extends AutopilotAI
     super(paramFlightModel);
   }
   public boolean getWayPoint() {
-    return this.bWayPoint; } 
-  public boolean getStabAltitude() { return this.bStabAltitude; } 
-  public boolean getStabSpeed() { return this.bStabSpeed; } 
-  public boolean getStabDirection() { return this.bStabDirection;
+    return this.jdField_bWayPoint_of_type_Boolean; } 
+  public boolean getStabAltitude() { return this.jdField_bStabAltitude_of_type_Boolean; } 
+  public boolean getStabSpeed() { return this.jdField_bStabSpeed_of_type_Boolean; } 
+  public boolean getStabDirection() { return this.jdField_bStabDirection_of_type_Boolean;
   }
 
   public void setWayPoint(boolean paramBoolean)
   {
     super.setWayPoint(paramBoolean);
-    this.bWayPoint = paramBoolean;
+    this.jdField_bWayPoint_of_type_Boolean = paramBoolean;
     if (!paramBoolean) return;
-    this.bStabSpeed = false;
-    this.bStabAltitude = false;
-    this.bStabDirection = false;
+    this.jdField_bStabSpeed_of_type_Boolean = false;
+    this.jdField_bStabAltitude_of_type_Boolean = false;
+    this.jdField_bStabDirection_of_type_Boolean = false;
 
-    if (this.WWPoint != null) {
-      this.WWPoint.getP(this.WPoint);
-      this.StabSpeed = this.WWPoint.Speed;
-      this.StabAltitude = this.WPoint.z;
+    if (this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint != null) {
+      this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint.getP(this.jdField_WPoint_of_type_ComMaddoxJGPPoint3d);
+      this.jdField_StabSpeed_of_type_Double = this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint.Speed;
+      this.jdField_StabAltitude_of_type_Double = this.jdField_WPoint_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double;
     } else {
-      this.StabAltitude = 1000.0D;
-      this.StabSpeed = 80.0D;
+      this.jdField_StabAltitude_of_type_Double = 1000.0D;
+      this.jdField_StabSpeed_of_type_Double = 80.0D;
     }
-    this.StabDirection = O.getAzimut();
-    this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
-    this.Hvstab.set((float)this.StabAltitude, this.FM.CT.PowerControl);
+    this.jdField_StabDirection_of_type_Double = O.getAzimut();
+    this.Vstab.set((float)this.jdField_StabSpeed_of_type_Double, -this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl);
+    this.Hvstab.set((float)this.jdField_StabAltitude_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl);
   }
 
   public void setStabAltitude(boolean paramBoolean) {
     super.setStabAltitude(paramBoolean);
-    this.bStabAltitude = paramBoolean;
+    this.jdField_bStabAltitude_of_type_Boolean = paramBoolean;
     if (!paramBoolean) return;
-    this.bWayPoint = false;
-    this.FM.getLoc(P);
-    this.StabAltitude = P.z;
+    this.jdField_bWayPoint_of_type_Boolean = false;
+    this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getLoc(P);
+    this.jdField_StabAltitude_of_type_Double = P.jdField_z_of_type_Double;
 
-    if (!this.bStabSpeed) this.StabSpeed = this.FM.getSpeed();
+    if (!this.jdField_bStabSpeed_of_type_Boolean) this.jdField_StabSpeed_of_type_Double = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getSpeed();
 
-    this.Pw = this.FM.CT.PowerControl;
-    this.Hstab.set((float)this.StabAltitude, this.FM.CT.ElevatorControl);
-    this.Hvstab.set((float)this.StabAltitude, this.FM.CT.PowerControl);
+    this.Pw = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl;
+    this.Hstab.set((float)this.jdField_StabAltitude_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl);
+    this.Hvstab.set((float)this.jdField_StabAltitude_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl);
   }
   public void setStabAltitudeSimple(float paramFloat) {
     super.setStabAltitude(paramFloat);
@@ -77,37 +75,37 @@ public class Autopilot extends AutopilotAI
   public void setStabSpeed(boolean paramBoolean)
   {
     super.setStabSpeed(paramBoolean);
-    this.bStabSpeed = paramBoolean;
+    this.jdField_bStabSpeed_of_type_Boolean = paramBoolean;
     if (!paramBoolean) return;
-    this.bWayPoint = false;
-    this.StabSpeed = this.FM.getSpeed();
-    this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
+    this.jdField_bWayPoint_of_type_Boolean = false;
+    this.jdField_StabSpeed_of_type_Double = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getSpeed();
+    this.Vstab.set((float)this.jdField_StabSpeed_of_type_Double, -this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl);
   }
 
   public void setStabSpeed(float paramFloat)
   {
     super.setStabSpeed(paramFloat);
-    this.bStabSpeed = true;
-    this.bWayPoint = false;
-    this.StabSpeed = (paramFloat / 3.6F);
-    this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
+    this.jdField_bStabSpeed_of_type_Boolean = true;
+    this.jdField_bWayPoint_of_type_Boolean = false;
+    this.jdField_StabSpeed_of_type_Double = (paramFloat / 3.6F);
+    this.Vstab.set((float)this.jdField_StabSpeed_of_type_Double, -this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl);
   }
 
   public void setStabDirection(boolean paramBoolean)
   {
     super.setStabDirection(paramBoolean);
-    this.bStabDirection = paramBoolean;
+    this.jdField_bStabDirection_of_type_Boolean = paramBoolean;
     if (!paramBoolean) return;
-    this.bWayPoint = false;
-    O.set(this.FM.Or);
-    this.StabDirection = O.getAzimut();
-    this.Ail = this.FM.CT.AileronControl;
+    this.jdField_bWayPoint_of_type_Boolean = false;
+    O.set(this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation);
+    this.jdField_StabDirection_of_type_Double = O.getAzimut();
+    this.Ail = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl;
     this.Sstab.set(0.0F, 0.0F);
   }
 
   public void setStabAll(boolean paramBoolean) {
     super.setStabAll(paramBoolean);
-    this.bWayPoint = false;
+    this.jdField_bWayPoint_of_type_Boolean = false;
     setStabDirection(paramBoolean);
     setStabAltitude(paramBoolean);
     setStabSpeed(paramBoolean);
@@ -120,81 +118,66 @@ public class Autopilot extends AutopilotAI
   }
 
   public void update(float paramFloat) {
-    if (!((RealFlightModel)this.FM).isRealMode()) {
+    if (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot).isRealMode()) {
       super.update(paramFloat);
       return;
     }
-    this.FM.getLoc(P);
-    if (this.bWayPoint) {
-      if ((this.WWPoint != this.way.auto(P)) || (this.way.isReached(P))) {
-        this.WWPoint = this.way.auto(P);
-        this.WWPoint.getP(this.WPoint);
-        this.StabSpeed = this.WWPoint.Speed;
-        this.StabAltitude = this.WPoint.z;
-        this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
-        this.Hvstab.set((float)this.StabAltitude, this.FM.CT.PowerControl);
+    this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getLoc(P);
+    if (this.jdField_bWayPoint_of_type_Boolean) {
+      if ((this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint != this.jdField_way_of_type_ComMaddoxIl2AiWay.auto(P)) || (this.jdField_way_of_type_ComMaddoxIl2AiWay.isReached(P))) {
+        this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint = this.jdField_way_of_type_ComMaddoxIl2AiWay.auto(P);
+        this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint.getP(this.jdField_WPoint_of_type_ComMaddoxJGPPoint3d);
+        this.jdField_StabSpeed_of_type_Double = this.jdField_WWPoint_of_type_ComMaddoxIl2AiWayPoint.Speed;
+        this.jdField_StabAltitude_of_type_Double = this.jdField_WPoint_of_type_ComMaddoxJGPPoint3d.jdField_z_of_type_Double;
+        this.Vstab.set((float)this.jdField_StabSpeed_of_type_Double, -this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl);
+        this.Hvstab.set((float)this.jdField_StabAltitude_of_type_Double, this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl);
       }
-
-      if (World.cur().diffCur.Wind_N_Turbulence) { World.cur(); if ((!World.wind().noWind) && (this.FM.Skill > 0))
-        {
-          World.cur(); World.wind().getVectorAI(this.WPoint, this.windV);
-          this.windV.scale(-1.0D);
-
-          if (this.FM.Skill == 1) {
-            this.windV.scale(0.75D);
-          }
-          this.courseV.set(this.WPoint.x - P.x, this.WPoint.y - P.y, 0.0D);
-          this.courseV.normalize();
-          this.courseV.scale(this.FM.getSpeed());
-          this.courseV.add(this.windV);
-          this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.courseV.y, this.courseV.x))); break label398;
-        }
-      }
-      this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.WPoint.y - P.y, this.WPoint.x - P.x)));
-    } else {
-      this.way.auto(P);
+      this.jdField_StabDirection_of_type_Double = (-FMMath.RAD2DEG((float)Math.atan2(this.jdField_WPoint_of_type_ComMaddoxJGPPoint3d.jdField_y_of_type_Double - P.jdField_y_of_type_Double, this.jdField_WPoint_of_type_ComMaddoxJGPPoint3d.jdField_x_of_type_Double - P.jdField_x_of_type_Double)));
     }
-    label398: if ((this.FM.isTick(256, 0)) && (!this.FM.actor.isTaskComplete()) && (((this.way.isLast()) && (getWayPointDistance() < 1500.0F)) || (this.way.isLanding())))
+    else {
+      this.jdField_way_of_type_ComMaddoxIl2AiWay.auto(P);
+    }
+    if ((this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.isTick(256, 0)) && (!this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor.isTaskComplete()) && (((this.jdField_way_of_type_ComMaddoxIl2AiWay.isLast()) && (getWayPointDistance() < 1500.0F)) || (this.jdField_way_of_type_ComMaddoxIl2AiWay.isLanding())))
     {
-      World.onTaskComplete(this.FM.actor);
+      World.onTaskComplete(this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_actor_of_type_ComMaddoxIl2EngineActor);
     }
-    if ((this.bStabSpeed) || (this.bWayPoint)) {
-      this.FM.CT.ElevatorControl = (-this.Vstab.getOutput(this.FM.getSpeed()));
-      if ((this.FM.Or.getTangage() > 10.0F) && (this.FM.CT.ElevatorControl > 0.0F)) this.FM.CT.ElevatorControl = 0.0F;
-      if ((this.FM.Or.getTangage() < -10.0F) && (this.FM.CT.ElevatorControl < -0.0F)) this.FM.CT.ElevatorControl = 0.0F;
+    if ((this.jdField_bStabSpeed_of_type_Boolean) || (this.jdField_bWayPoint_of_type_Boolean)) {
+      this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = (-this.Vstab.getOutput(this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getSpeed()));
+      if ((this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage() > 10.0F) && (this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl > 0.0F)) this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = 0.0F;
+      if ((this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getTangage() < -10.0F) && (this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl < -0.0F)) this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = 0.0F;
 
-      if ((this.bStabAltitude) || (this.bWayPoint)) {
-        this.Pw = this.Hvstab.getOutput(this.FM.getAltitude());
+      if ((this.jdField_bStabAltitude_of_type_Boolean) || (this.jdField_bWayPoint_of_type_Boolean)) {
+        this.Pw = this.Hvstab.getOutput(this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getAltitude());
         if (this.Pw < 0.0F) this.Pw = 0.0F;
-        this.FM.CT.setPowerControl(this.Pw);
+        this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.PowerControl = this.Pw;
       }
-    } else if (this.bStabAltitude) {
-      this.FM.CT.ElevatorControl = this.Hstab.getOutput(this.FM.getAltitude());
+    } else if (this.jdField_bStabAltitude_of_type_Boolean) {
+      this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = this.Hstab.getOutput(this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getAltitude());
     }
 
-    if ((this.bStabDirection) || (this.bWayPoint))
+    if ((this.jdField_bStabDirection_of_type_Boolean) || (this.jdField_bWayPoint_of_type_Boolean))
     {
-      float f2 = this.FM.Or.getAzimut();
-      float f1 = this.FM.Or.getKren();
-      f2 = (float)(f2 - this.StabDirection);
+      float f2 = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getAzimut();
+      float f1 = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.getKren();
+      f2 = (float)(f2 - this.jdField_StabDirection_of_type_Double);
 
       f2 = (f2 + 3600.0F) % 360.0F;
       f1 = (f1 + 3600.0F) % 360.0F;
       if (f2 > 180.0F) f2 -= 360.0F;
       if (f1 > 180.0F) f1 -= 360.0F;
 
-      float f3 = this.FM.getSpeedKMH() * 0.15F + this.FM.getVertSpeed();
+      float f3 = this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getSpeedKMH() * 0.15F + this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getVertSpeed();
       if (f3 > 70.0F) f3 = 70.0F;
       if (f2 < -f3) f2 = -f3;
       else if (f2 > f3) f2 = f3;
 
       this.Ail = (-0.05F * (f2 + f1));
       if (this.Ail > 1.0F) this.Ail = 1.0F; else if (this.Ail < -1.0F) this.Ail = -1.0F;
-      this.FM.CT.AileronControl = this.Ail;
+      this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = this.Ail;
 
-      this.Ru = (-this.FM.getAOS() * 0.2F);
+      this.Ru = (-this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.getAOS() * 0.2F);
       if (this.Ru > 1.0F) this.Ru = 1.0F; else if (this.Ru < -1.0F) this.Ru = -1.0F;
-      this.FM.CT.RudderControl += this.Ru * 0.0003F;
+      this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = (this.jdField_FM_of_type_ComMaddoxIl2AiAirPilot.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl + this.Ru * 0.0003F);
     }
   }
 }

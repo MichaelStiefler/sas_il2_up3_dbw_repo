@@ -47,8 +47,8 @@ public class CockpitG4M1_11_Bombardier extends CockpitPilot
     if (!isFocused()) return;
 
     aircraft().hierMesh().chunkVisible("NoseAXX_D0", aircraft().isChunkAnyDamageVisible("CF_D"));
-    aircraft().hierMesh().chunkVisible("Pilot3_D0", aircraft().FM.AS.astatePilotStates[2] < 95);
-    aircraft().hierMesh().chunkVisible("Pilot3_D1", (aircraft().FM.AS.astatePilotStates[2] > 95) && (aircraft().FM.AS.astateBailoutStep < 12));
+    aircraft().hierMesh().chunkVisible("Pilot3_D0", aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[2] < 95);
+    aircraft().hierMesh().chunkVisible("Pilot3_D1", (aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astatePilotStates[2] > 95) && (aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.astateBailoutStep < 12));
 
     leave();
     super.doFocusLeave();
@@ -101,7 +101,7 @@ public class CockpitG4M1_11_Bombardier extends CockpitPilot
     super("3DO/Cockpit/G4M1-11-Bombardier/hier.him", "he111");
     try {
       Loc localLoc = new Loc();
-      HookNamed localHookNamed = new HookNamed(this.mesh, "CAMERAAIM");
+      HookNamed localHookNamed = new HookNamed(this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh, "CAMERAAIM");
       localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
       this.aAim = localLoc.getOrient().getAzimut();
       this.tAim = localLoc.getOrient().getTangage();
@@ -117,16 +117,16 @@ public class CockpitG4M1_11_Bombardier extends CockpitPilot
   public void reflectWorldToInstruments(float paramFloat)
   {
     if (this.bEntered) {
-      this.mesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((G4M)aircraft()).fSightCurForwardAngle, 7.0F, 140.0F, 0.7F, 14.0F), angleScale), 0.0F, 0.0F);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("zAngleMark", -floatindex(cvt(((G4M)aircraft()).fSightCurForwardAngle, 7.0F, 140.0F, 0.7F, 14.0F), angleScale), 0.0F, 0.0F);
 
       boolean bool = ((G4M)aircraft()).fSightCurReadyness > 0.93F;
-      this.mesh.chunkVisible("BlackBox", true);
-      this.mesh.chunkVisible("zReticle", bool);
-      this.mesh.chunkVisible("zAngleMark", bool);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("BlackBox", true);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zReticle", bool);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zAngleMark", bool);
     } else {
-      this.mesh.chunkVisible("BlackBox", false);
-      this.mesh.chunkVisible("zReticle", false);
-      this.mesh.chunkVisible("zAngleMark", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("BlackBox", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zReticle", false);
+      this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkVisible("zAngleMark", false);
     }
   }
 
@@ -145,16 +145,14 @@ public class CockpitG4M1_11_Bombardier extends CockpitPilot
     {
       float f1 = ((G4M)CockpitG4M1_11_Bombardier.this.aircraft()).fSightCurForwardAngle;
       float f2 = ((G4M)CockpitG4M1_11_Bombardier.this.aircraft()).fSightCurSideslip;
-
-      CockpitG4M1_11_Bombardier.this.mesh.chunkSetAngles("BlackBox", -10.0F * f2, 0.0F, f1);
+      CockpitG4M1_11_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("BlackBox", 0.0F, -f2, f1);
       if (CockpitG4M1_11_Bombardier.this.bEntered) {
         HookPilot localHookPilot = HookPilot.current;
-
-        localHookPilot.setSimpleAimOrient(CockpitG4M1_11_Bombardier.this.aAim + 10.0F * f2, CockpitG4M1_11_Bombardier.this.tAim + f1, 0.0F);
+        localHookPilot.setSimpleAimOrient(CockpitG4M1_11_Bombardier.this.aAim + f2, CockpitG4M1_11_Bombardier.this.tAim + f1, 0.0F);
       }
 
-      CockpitG4M1_11_Bombardier.this.mesh.chunkSetAngles("Turret1A", 0.0F, -CockpitG4M1_11_Bombardier.this.aircraft().FM.turret[0].tu[0], 0.0F);
-      CockpitG4M1_11_Bombardier.this.mesh.chunkSetAngles("Turret1B", 0.0F, CockpitG4M1_11_Bombardier.this.aircraft().FM.turret[0].tu[1], 0.0F);
+      CockpitG4M1_11_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1A", 0.0F, -CockpitG4M1_11_Bombardier.this.aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].tu[0], 0.0F);
+      CockpitG4M1_11_Bombardier.this.jdField_mesh_of_type_ComMaddoxIl2EngineHierMesh.chunkSetAngles("Turret1B", 0.0F, CockpitG4M1_11_Bombardier.this.aircraft().jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].tu[1], 0.0F);
 
       return true;
     }

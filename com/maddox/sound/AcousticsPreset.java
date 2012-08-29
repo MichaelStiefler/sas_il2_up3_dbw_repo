@@ -14,7 +14,7 @@ public class AcousticsPreset extends BaseObject
   public AcousticsPreset(String paramString)
   {
     this.name = paramString;
-    if (enabled) this.ini = new SectFile("presets/acoustics/" + paramString + ".prs", 1);
+    if (BaseObject.enabled) this.ini = new SectFile("presets/acoustics/" + paramString + ".prs", 1);
     map.put(paramString, this);
   }
 

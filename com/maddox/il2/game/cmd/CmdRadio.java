@@ -35,20 +35,20 @@ public class CmdRadio extends Cmd
     if (Main.cur().netServerParams == null)
       return null;
     String str;
-    if (exist(paramMap, "_$$")) {
-      str = args(paramMap, "_$$");
+    if (Cmd.exist(paramMap, "_$$")) {
+      str = Cmd.args(paramMap, "_$$");
       ((NetUser)NetEnv.host()).setRadio(str, RadioChannel.getCurrentCodec());
     }
-    else if (exist(paramMap, "NONE")) {
+    else if (Cmd.exist(paramMap, "NONE")) {
       ((NetUser)NetEnv.host()).setRadio(null, 0);
     }
-    else if (exist(paramMap, "COMMON")) {
+    else if (Cmd.exist(paramMap, "COMMON")) {
       ((NetUser)NetEnv.host()).setRadio(" 0", 1);
     }
-    else if (exist(paramMap, "ARMY")) {
+    else if (Cmd.exist(paramMap, "ARMY")) {
       ((NetUser)NetEnv.host()).setRadio(" " + ((NetUser)NetEnv.host()).getArmy(), 1);
     }
-    else if (exist(paramMap, "LIST")) {
+    else if (Cmd.exist(paramMap, "LIST")) {
       str = ((NetUser)NetEnv.host()).radio();
       if (str != null) {
         List localList = NetEnv.hosts();
@@ -60,134 +60,134 @@ public class CmdRadio extends Cmd
         }
       }
     }
-    else if (exist(paramMap, "TEST")) {
-      if (arg(paramMap, "TEST", 0) == null) {
+    else if (Cmd.exist(paramMap, "TEST")) {
+      if (Cmd.arg(paramMap, "TEST", 0) == null) {
         System.out.println("  Test mode now " + (RadioChannel.tstLoop ? "ON" : "OFF"));
       }
-      else if (arg(paramMap, "TEST", 0).compareToIgnoreCase("on") == 0) {
+      else if (Cmd.arg(paramMap, "TEST", 0).compareToIgnoreCase("on") == 0) {
         RadioChannel.tstLoop = true;
         System.out.println("  Warning : radio chatter now in test mode!");
       }
-      else if (arg(paramMap, "TEST", 0).compareToIgnoreCase("off") == 0) {
+      else if (Cmd.arg(paramMap, "TEST", 0).compareToIgnoreCase("off") == 0) {
         RadioChannel.tstLoop = false;
         System.out.println("  Radio chatter test mode now OFF");
       }
       else {
-        System.out.println("  Invalid argument : " + arg(paramMap, "LEVEL", 0));
+        System.out.println("  Invalid argument : " + Cmd.arg(paramMap, "LEVEL", 0));
       }
 
     }
-    else if (exist(paramMap, "LEVEL")) {
-      if (arg(paramMap, "LEVEL", 0) == null) {
+    else if (Cmd.exist(paramMap, "LEVEL")) {
+      if (Cmd.arg(paramMap, "LEVEL", 0) == null) {
         System.out.println("  Voice activation level is " + AudioDevice.getControl(505));
         System.out.println("  valid values are 10..100");
       } else {
         try {
-          int i = Integer.parseInt(arg(paramMap, "LEVEL", 0));
+          int i = Integer.parseInt(Cmd.arg(paramMap, "LEVEL", 0));
           if ((i < 10) && (i > 100)) throw new Error();
           AudioDevice.setControl(505, i);
         }
         catch (Error localError1) {
-          System.out.println("  ERROR: invalid argument (" + arg(paramMap, "LEVEL", 0) + ") : number 10..100 expected");
+          System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "LEVEL", 0) + ") : number 10..100 expected");
         }
       }
 
     }
-    else if (exist(paramMap, "LATENCY")) {
-      if (arg(paramMap, "LATENCY", 0) == null) {
+    else if (Cmd.exist(paramMap, "LATENCY")) {
+      if (Cmd.arg(paramMap, "LATENCY", 0) == null) {
         System.out.println("  Voice playback latency " + AudioDevice.getControl(507));
         System.out.println("  valid values are 1..20");
       } else {
         try {
-          int j = Integer.parseInt(arg(paramMap, "LATENCY", 0));
+          int j = Integer.parseInt(Cmd.arg(paramMap, "LATENCY", 0));
           if ((j < 1) && (j > 20)) throw new Error();
           AudioDevice.setControl(507, j);
         }
         catch (Error localError2) {
-          System.out.println("  ERROR: invalid argument (" + arg(paramMap, "LATENCY", 0) + ") : number 1..20 expected");
+          System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "LATENCY", 0) + ") : number 1..20 expected");
         }
       }
 
     }
-    else if (exist(paramMap, "CODEC")) {
-      if (arg(paramMap, "CODEC", 0) == null)
+    else if (Cmd.exist(paramMap, "CODEC")) {
+      if (Cmd.arg(paramMap, "CODEC", 0) == null)
         System.out.println("  Current codec is " + RadioChannel.getCurrentCodecName());
       else {
         try {
           int k = 0;
-          if (arg(paramMap, "CODEC", 0).compareToIgnoreCase("lpc") == 0) k = 1;
-          else if (arg(paramMap, "CODEC", 0).compareToIgnoreCase("hq") == 0) k = 2;
+          if (Cmd.arg(paramMap, "CODEC", 0).compareToIgnoreCase("lpc") == 0) k = 1;
+          else if (Cmd.arg(paramMap, "CODEC", 0).compareToIgnoreCase("hq") == 0) k = 2;
           else
             throw new Error();
           RadioChannel.setCurrentCodec(k);
         }
         catch (Error localError3) {
-          System.out.println("  ERROR: invalid argument (" + arg(paramMap, "CODEC", 0) + ") : 'lpc' or 'hq' expected");
+          System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "CODEC", 0) + ") : 'lpc' or 'hq' expected");
         }
       }
 
     }
-    else if (exist(paramMap, "MODE")) {
-      if (arg(paramMap, "MODE", 0) == null)
+    else if (Cmd.exist(paramMap, "MODE")) {
+      if (Cmd.arg(paramMap, "MODE", 0) == null)
         System.out.println("  Radio PTT mode is " + (AudioDevice.getPTTMode() ? "auto" : "manual"));
       else {
         try {
-          if (arg(paramMap, "MODE", 0).compareToIgnoreCase("auto") == 0) AudioDevice.setPTTMode(true);
-          else if (arg(paramMap, "MODE", 0).compareToIgnoreCase("manual") == 0) AudioDevice.setPTTMode(false);
+          if (Cmd.arg(paramMap, "MODE", 0).compareToIgnoreCase("auto") == 0) AudioDevice.setPTTMode(true);
+          else if (Cmd.arg(paramMap, "MODE", 0).compareToIgnoreCase("manual") == 0) AudioDevice.setPTTMode(false);
           else
             throw new Error();
         }
         catch (Error localError4) {
-          System.out.println("  ERROR: invalid argument (" + arg(paramMap, "MODE", 0) + ") : 'auto' or 'manual' expected");
+          System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "MODE", 0) + ") : 'auto' or 'manual' expected");
         }
       }
 
     }
-    else if (exist(paramMap, "PTT")) {
+    else if (Cmd.exist(paramMap, "PTT")) {
       try {
-        if (arg(paramMap, "PTT", 0) != null)
+        if (Cmd.arg(paramMap, "PTT", 0) != null)
         {
-          if (arg(paramMap, "PTT", 0).compareToIgnoreCase("on") == 0) AudioDevice.setPTT(true);
-          else if (arg(paramMap, "PTT", 0).compareToIgnoreCase("off") == 0) AudioDevice.setPTT(false);
+          if (Cmd.arg(paramMap, "PTT", 0).compareToIgnoreCase("on") == 0) AudioDevice.setPTT(true);
+          else if (Cmd.arg(paramMap, "PTT", 0).compareToIgnoreCase("off") == 0) AudioDevice.setPTT(false);
           else
             throw new Error();
         }
       } catch (Error localError5) {
-        System.out.println("  ERROR: invalid argument (" + arg(paramMap, "PTT", 0) + ") : 'on' or 'off' expected");
+        System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "PTT", 0) + ") : 'on' or 'off' expected");
       }
 
     }
-    else if (exist(paramMap, "AGC")) {
+    else if (Cmd.exist(paramMap, "AGC")) {
       try {
-        if (arg(paramMap, "AGC", 0) == null) {
+        if (Cmd.arg(paramMap, "AGC", 0) == null) {
           System.out.println("  Microphone AGC is " + (AudioDevice.getAGC() ? "on" : "off"));
         }
-        else if (arg(paramMap, "AGC", 0).compareToIgnoreCase("on") == 0) AudioDevice.setAGC(true);
-        else if (arg(paramMap, "AGC", 0).compareToIgnoreCase("off") == 0) AudioDevice.setAGC(false);
+        else if (Cmd.arg(paramMap, "AGC", 0).compareToIgnoreCase("on") == 0) AudioDevice.setAGC(true);
+        else if (Cmd.arg(paramMap, "AGC", 0).compareToIgnoreCase("off") == 0) AudioDevice.setAGC(false);
         else
           throw new Error();
       }
       catch (Error localError6) {
-        System.out.println("  ERROR: invalid argument (" + arg(paramMap, "AGC", 0) + ") : 'on' or 'off' expected");
+        System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "AGC", 0) + ") : 'on' or 'off' expected");
       }
 
     }
-    else if (exist(paramMap, "HRCH")) {
+    else if (Cmd.exist(paramMap, "HRCH")) {
       try {
-        if (arg(paramMap, "HRCH", 0) == null) {
+        if (Cmd.arg(paramMap, "HRCH", 0) == null) {
           System.out.println("High baudrate channels : " + (RadioChannelSpawn.getUseHRChannels() ? "enabled" : "disabled"));
         }
-        else if (arg(paramMap, "HRCH", 0).compareToIgnoreCase("on") == 0) RadioChannelSpawn.useHRChannels(true);
-        else if (arg(paramMap, "HRCH", 0).compareToIgnoreCase("off") == 0) RadioChannelSpawn.useHRChannels(false);
+        else if (Cmd.arg(paramMap, "HRCH", 0).compareToIgnoreCase("on") == 0) RadioChannelSpawn.useHRChannels(true);
+        else if (Cmd.arg(paramMap, "HRCH", 0).compareToIgnoreCase("off") == 0) RadioChannelSpawn.useHRChannels(false);
         else
           throw new Error();
       }
       catch (Error localError7) {
-        System.out.println("  ERROR: invalid argument (" + arg(paramMap, "HRCH", 0) + ") : 'on' or 'off' expected");
+        System.out.println("  ERROR: invalid argument (" + Cmd.arg(paramMap, "HRCH", 0) + ") : 'on' or 'off' expected");
       }
 
     }
-    else if (exist(paramMap, "HELP")) {
+    else if (Cmd.exist(paramMap, "HELP")) {
       System.out.println("--- Radio chatter commands ---");
       System.out.println("--- Command : values - description ---");
       System.out.println("TEST    : on - test (hear) microphone input (network transmission disabled), off - end test");
@@ -218,19 +218,19 @@ public class CmdRadio extends Cmd
 
   public CmdRadio()
   {
-    this.param.put("NONE", null);
-    this.param.put("COMMON", null);
-    this.param.put("ARMY", null);
-    this.param.put("LIST", null);
-    this.param.put("TEST", null);
-    this.param.put("LEVEL", null);
-    this.param.put("LATENCY", null);
-    this.param.put("CODEC", null);
-    this.param.put("MODE", null);
-    this.param.put("PTT", null);
-    this.param.put("AGC", null);
-    this.param.put("HRCH", null);
-    this.param.put("HELP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NONE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("COMMON", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ARMY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LIST", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TEST", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LEVEL", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LATENCY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("CODEC", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("MODE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PTT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("AGC", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HRCH", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HELP", null);
     this._properties.put("NAME", "radio");
     this._levelAccess = 1;
   }

@@ -18,6 +18,7 @@ import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetMsgSpawn;
+import com.maddox.rts.NetObj;
 import com.maddox.rts.NetSpawn;
 import com.maddox.rts.NetUpdate;
 import com.maddox.rts.Spawn;
@@ -63,11 +64,11 @@ public class NetGunner extends Actor
   }
 
   private boolean isMirroredAsAir() {
-    if (this.aircraft.net == null) return false;
-    int i = this.aircraft.net.countMirrors();
-    if (this.aircraft.net.isMirror()) i++;
-    int j = this.net.countMirrors();
-    if (this.net.isMirror()) j++;
+    if (this.aircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet == null) return false;
+    int i = this.aircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors();
+    if (this.aircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirror()) i++;
+    int j = this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.countMirrors();
+    if (this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirror()) j++;
     return i == j;
   }
 
@@ -81,8 +82,8 @@ public class NetGunner extends Actor
       this.aircraft = null;
       return false;
     }
-    this.pos.setBase(this.aircraft, null, false);
-    this.pos.resetAsBase();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.aircraft, null, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.resetAsBase();
     setArmy(this.aircraft.getArmy());
     this.user.setArmy(getArmy());
     setOwner(this.aircraft);
@@ -120,8 +121,8 @@ public class NetGunner extends Actor
     if (isDestroyed()) return;
     NetChannel localNetChannel = (NetChannel)paramObject;
     if (localNetChannel.isDestroyed()) return;
-    if ((!checkAircraft()) || (!localNetChannel.isMirrored(this.aircraft.net))) {
-      if ((Actor.isValid(this.aircraft)) && (this.aircraft.net.masterChannel() == localNetChannel))
+    if ((!checkAircraft()) || (!localNetChannel.isMirrored(this.aircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet))) {
+      if ((Actor.isValid(this.aircraft)) && (this.aircraft.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() == localNetChannel))
         return;
       new MsgInvokeMethod_Object("doNetFirstUpdate", localNetChannel).post(72, this, 0.0D);
       return;
@@ -157,11 +158,11 @@ public class NetGunner extends Actor
     String str = " " + paramString + "(" + paramInt2 + ")";
     Actor.destroy(Actor.getByName(str));
     setName(str);
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
     if (paramNetUser.isMaster())
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     else {
-      this.net = new Mirror(this, paramNetUser.masterChannel(), paramInt1);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetUser.masterChannel(), paramInt1);
     }
 
     if ((paramNetUser.isMaster()) || (paramNetUser.isTrackWriter()))
@@ -208,7 +209,7 @@ public class NetGunner extends Actor
 
     public void netUpdate() {
       if ((Actor.isValid(NetGunner.this.aircraft)) && (NetGunner.this.netCockpitTuretNum >= 0) && (Time.current() - this.lastUpdateTime > 2000L))
-        NetGunner.this.aircraft.FM.CT.WeaponControl[NetGunner.this.netCockpitWeaponControlNum] = false;
+        NetGunner.this.aircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[NetGunner.this.netCockpitWeaponControlNum] = false;
     }
 
     public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
@@ -224,12 +225,12 @@ public class NetGunner extends Actor
         int j = paramNetMsgInput.readUnsignedShort();
         float f1 = NetGunner.this.unpackSY(i);
         float f2 = NetGunner.this.unpackSP(j & 0x7FFF);
-        NetGunner.this.aircraft.FM.CT.WeaponControl[NetGunner.this.netCockpitWeaponControlNum] = ((j & 0x8000) != 0 ? 1 : false);
+        NetGunner.this.aircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[NetGunner.this.netCockpitWeaponControlNum] = ((j & 0x8000) != 0 ? 1 : false);
         if ((NetMissionTrack.isPlaying()) && (NetGunner.this.aircraft == World.getPlayerAircraft())) {
           Actor._tmpOrient.set(f1, f2, 0.0F);
           ((CockpitGunner)Main3D.cur3D().cockpits[NetGunner.this.getCockpitNum()]).moveGun(Actor._tmpOrient);
         } else {
-          Turret localTurret = NetGunner.this.aircraft.FM.turret[NetGunner.this.netCockpitTuretNum];
+          Turret localTurret = NetGunner.this.aircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[NetGunner.this.netCockpitTuretNum];
           localTurret.tu[0] = f1;
           localTurret.tu[1] = f2;
         }
@@ -263,13 +264,13 @@ public class NetGunner extends Actor
       }
       if ((NetGunner.this.netCockpitValid) && (NetGunner.this.netCockpitTuretNum >= 0))
         try {
-          Turret localTurret = NetGunner.this.aircraft.FM.turret[NetGunner.this.netCockpitTuretNum];
-          int i = NetGunner.this.aircraft.FM.CT.WeaponControl[NetGunner.this.netCockpitWeaponControlNum];
+          Turret localTurret = NetGunner.this.aircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[NetGunner.this.netCockpitTuretNum];
+          int i = NetGunner.this.aircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.WeaponControl[NetGunner.this.netCockpitWeaponControlNum];
           this.out.unLockAndClear();
           this.out.writeShort(NetGunner.this.packSY(localTurret.tu[0]));
           this.out.writeShort(NetGunner.this.packSP(localTurret.tu[1]) | (i != 0 ? 32768 : 0));
           post(Time.current(), this.out); } catch (Exception localException) {
-          printDebug(localException);
+          NetObj.printDebug(localException);
         }
     }
 

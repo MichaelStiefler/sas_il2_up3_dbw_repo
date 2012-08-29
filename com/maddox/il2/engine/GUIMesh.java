@@ -28,7 +28,7 @@ public class GUIMesh extends GMesh
     public GMesh load(String paramString)
     {
       GUIMesh localGUIMesh = new GUIMesh(null);
-      localGUIMesh.size = new GSize(1.0F, 1.0F);
+      localGUIMesh.jdField_size_of_type_ComMaddoxGwindowGSize = new GSize(1.0F, 1.0F);
       try {
         localGUIMesh.mesh = new Mesh(paramString);
         int i = localGUIMesh.mesh.frames();
@@ -49,7 +49,7 @@ public class GUIMesh extends GMesh
         } else {
           localGUIMesh.mesh.getBoundBox(localGUIMesh.boundBox);
         }
-        localGUIMesh.size.set(localGUIMesh.boundBox[3] - localGUIMesh.boundBox[0], localGUIMesh.boundBox[4] - localGUIMesh.boundBox[1]);
+        localGUIMesh.jdField_size_of_type_ComMaddoxGwindowGSize.set(localGUIMesh.boundBox[3] - localGUIMesh.boundBox[0], localGUIMesh.boundBox[4] - localGUIMesh.boundBox[1]);
       } catch (Exception localException) {
         System.out.println(localException.getMessage());
         localException.printStackTrace();

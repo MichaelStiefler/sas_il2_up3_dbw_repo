@@ -88,7 +88,7 @@ public class CmdFPS extends Cmd
       i = 1;
     }
     if (paramMap.containsKey("LOG")) {
-      int j = arg(paramMap, "LOG", 0, 5);
+      int j = Cmd.arg(paramMap, "LOG", 0, 5);
       if (j < 0) j = 0;
       this.logPeriod = (j * 1000L);
       i = 1;
@@ -150,12 +150,12 @@ public class CmdFPS extends Cmd
 
   public CmdFPS()
   {
-    this.param.put("LOG", null);
-    this.param.put("START", null);
-    this.param.put("STOP", null);
-    this.param.put("SHOW", null);
-    this.param.put("HIDE", null);
-    this.param.put("PERF", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("LOG", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("START", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("STOP", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SHOW", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("HIDE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("PERF", null);
     this._properties.put("NAME", "fps");
     this._levelAccess = 1;
   }

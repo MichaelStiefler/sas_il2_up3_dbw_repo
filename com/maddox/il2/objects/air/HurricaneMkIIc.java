@@ -20,9 +20,9 @@ public class HurricaneMkIIc extends Hurricane
     Property.set(localClass, "cockpitClass", CockpitHURRII.class);
     Property.set(localClass, "LOSElevation", 0.965F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });
-    weaponsRegister(localClass, "default", new String[] { "MGunHispanoMkIk 91", "MGunHispanoMkIk 91", "MGunHispanoMkIk 91", "MGunHispanoMkIk 91" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunHispanoMkIk 91", "MGunHispanoMkIk 91", "MGunHispanoMkIk 91", "MGunHispanoMkIk 91" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

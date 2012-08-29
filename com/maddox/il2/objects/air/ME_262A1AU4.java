@@ -12,8 +12,8 @@ public class ME_262A1AU4 extends ME_262
   {
     paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 103.0F * paramFloat, 0.0F);
     paramHierMesh.chunkSetAngles("GearC21_D0", 0.0F, -90.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(paramFloat, 0.01F, 0.11F, 0.0F, -90.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC6_D0", 0.0F, cvt(paramFloat, 0.01F, 0.11F, 0.0F, -90.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(paramFloat, 0.01F, 0.11F, 0.0F, -90.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearC6_D0", 0.0F, Aircraft.cvt(paramFloat, 0.01F, 0.11F, 0.0F, -90.0F), 0.0F);
 
     paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, 73.0F * paramFloat, 0.0F);
     paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, 73.0F * paramFloat, 0.0F);
@@ -28,15 +28,15 @@ public class ME_262A1AU4 extends ME_262
     moveGear(hierMesh(), paramFloat);
   }
   public void moveWheelSink() { resetYPRmodifier();
-    float f = this.FM.Gears.gWheelSinking[2];
-    xyz[1] = cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
-    hierMesh().chunkSetLocate("GearC22_D0", xyz, ypr);
+    float f = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.gWheelSinking[2];
+    Aircraft.xyz[1] = Aircraft.cvt(f, 0.0F, 0.19F, 0.0F, 0.19F);
+    hierMesh().chunkSetLocate("GearC22_D0", Aircraft.xyz, Aircraft.ypr);
   }
 
   protected void moveRudder(float paramFloat)
   {
     hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -30.0F * paramFloat, 0.0F);
-    if (this.FM.CT.getGear() > 0.75F)
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.getGear() > 0.75F)
       hierMesh().chunkSetAngles("GearC21_D0", 0.0F, -90.0F + 40.0F * paramFloat, 0.0F);
   }
 
@@ -56,11 +56,11 @@ public class ME_262A1AU4 extends ME_262
     Property.set(localClass, "cockpitClass", CockpitME_262.class);
     Property.set(localClass, "LOSElevation", 0.74615F);
 
-    weaponTriggersRegister(localClass, new int[] { 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMK214A 28" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMK214A 28" });
 
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

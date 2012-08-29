@@ -22,11 +22,11 @@ public class YAK_9T extends YAK_9TX
     Property.set(localClass, "cockpitClass", CockpitYAK_9T.class);
     Property.set(localClass, "LOSElevation", 0.661F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 220", "MGunNS37ki 30" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunUBsi 220", "MGunNS37ki 30" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

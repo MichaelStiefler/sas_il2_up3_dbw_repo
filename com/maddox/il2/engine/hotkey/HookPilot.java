@@ -97,7 +97,7 @@ public class HookPilot extends HookRender
     this.bUp = false;
   }
 
-  public Point3d pCamera()
+  private Point3d pCamera()
   {
     if (this.bAim) return this.pAim;
     if (this.bUp) return this.pUp;
@@ -212,15 +212,12 @@ public class HookPilot extends HookRender
 
   private void headRoll(Aircraft paramAircraft)
   {
-    if (!(paramAircraft.FM instanceof RealFlightModel)) {
-      return;
-    }
     long l1 = this.roolTime - this.stamp;
     if ((l1 >= 0L) && (l1 < 50L))
       return;
     this.roolTime = this.stamp;
 
-    shakeLVL = ((RealFlightModel)(RealFlightModel)paramAircraft.FM).shakeLevel;
+    shakeLVL = ((RealFlightModel)paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).shakeLevel;
     float f2;
     float f1;
     float f3;
@@ -228,39 +225,39 @@ public class HookPilot extends HookRender
       long l2 = Time.current();
       if (oldHeadTime == -1L) {
         oldHeadTime = Time.current();
-        oldWx = paramAircraft.FM.getW().x;
-        oldWy = paramAircraft.FM.getW().y;
+        oldWx = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_x_of_type_Double;
+        oldWy = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_y_of_type_Double;
       }
       long l3 = l2 - oldHeadTime;
       oldHeadTime = l2;
       if (l3 > 200L) l3 = 200L;
       double d2 = 0.003D * l3;
-      double d3 = paramAircraft.FM.getW().x - oldWx;
-      double d4 = paramAircraft.FM.getW().y - oldWy;
-      oldWx = paramAircraft.FM.getW().x;
+      double d3 = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_x_of_type_Double - oldWx;
+      double d4 = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_y_of_type_Double - oldWy;
+      oldWx = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_x_of_type_Double;
       if (d2 < 0.001D) d3 = 0.0D; else
         d3 /= d2;
-      oldWy = paramAircraft.FM.getW().y;
+      oldWy = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getW().jdField_y_of_type_Double;
       if (d2 < 0.001D) d4 = 0.0D; else {
         d4 /= d2;
       }
-      if (paramAircraft.FM.Gears.onGround()) {
+      if (paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.onGround()) {
         tmpA.set(0.0D, 0.0D, 0.0D);
 
         headShift.scale(1.0D - d2);
         tmpA.scale(d2);
         headShift.add(tmpA);
 
-        f2 = (float)headShift.y;
-        f1 = (float)(headShift.x + 0.03F * shakeLVL * (0.5F - rnd.nextFloat()));
-        f3 = (float)(headShift.z + 1.2F * shakeLVL * (0.5F - rnd.nextFloat()));
+        f2 = (float)headShift.jdField_y_of_type_Double;
+        f1 = (float)(headShift.jdField_x_of_type_Double + 0.03F * shakeLVL * (0.5F - rnd.nextFloat()));
+        f3 = (float)(headShift.jdField_z_of_type_Double + 1.2F * shakeLVL * (0.5F - rnd.nextFloat()));
       }
       else {
         tmpB.set(0.0D, 0.0D, 0.0D);
-        tmpA.set(paramAircraft.FM.getAccel());
-        paramAircraft.FM.Or.transformInv(tmpA);
+        tmpA.set(paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAccel());
+        paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.transformInv(tmpA);
         tmpA.scale(-0.6D);
-        if (tmpA.z > 0.0D) tmpA.z *= 0.8D;
+        if (tmpA.jdField_z_of_type_Double > 0.0D) tmpA.jdField_z_of_type_Double *= 0.8D;
         tmpB.add(tmpA);
 
         counterForce.scale(1.0D - 0.2D * d2);
@@ -269,7 +266,7 @@ public class HookPilot extends HookRender
 
         tmpB.sub(counterForce);
         counterForce.scale(1.0D - 0.05D * d2);
-        if (counterForce.z > 0.0D) counterForce.z *= (1.0D - 0.08D * d2);
+        if (counterForce.jdField_z_of_type_Double > 0.0D) counterForce.jdField_z_of_type_Double *= (1.0D - 0.08D * d2);
 
         tmpB.scale(0.08D);
 
@@ -280,9 +277,9 @@ public class HookPilot extends HookRender
         tmpA.scale(d2);
         headShift.add(tmpA);
 
-        f2 = (float)headShift.y;
-        f1 = (float)(headShift.x + 0.3F * shakeLVL * (0.5F - rnd.nextFloat()));
-        f3 = (float)(headShift.z + 0.4F * shakeLVL * (0.5F - rnd.nextFloat()));
+        f2 = (float)headShift.jdField_y_of_type_Double;
+        f1 = (float)(headShift.jdField_x_of_type_Double + 0.3F * shakeLVL * (0.5F - rnd.nextFloat()));
+        f3 = (float)(headShift.jdField_z_of_type_Double + 0.4F * shakeLVL * (0.5F - rnd.nextFloat()));
       }
     } else {
       f2 = 0.0F;
@@ -291,9 +288,9 @@ public class HookPilot extends HookRender
     }
     if (World.cur().diffCur.Wind_N_Turbulence) {
       float f4 = SpritesFog.dynamicFogAlpha;
-      double d1 = paramAircraft.pos.getAbsPoint().z;
+      double d1 = paramAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_z_of_type_Double;
       if ((f4 > 0.01F) && (d1 > 300.0D) && (d1 < 2500.0D)) {
-        float f5 = paramAircraft.FM.getSpeed();
+        float f5 = paramAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeed();
         if (f5 > 138.88889F) f5 = 138.88889F;
         f5 -= 55.555557F;
         if (f5 < 0.0F) f5 = 0.0F;
@@ -319,7 +316,7 @@ public class HookPilot extends HookRender
     }
     P.set(this.Px += (f1 * (this.bAim ? 0.01F : 0.03F) - this.Px) * 0.4F, this.Py += (f2 * (this.bAim ? 0.01F : 0.03F) - this.Py) * 0.4F, this.Pz += (f3 * (this.bAim ? 0.01F : 0.03F) - this.Pz) * 0.4F);
 
-    oTmp.set((float)(6.0D * P.y), (float)(6.0D * P.z), (float)(60.0D * P.y));
+    oTmp.set((float)(6.0D * P.jdField_y_of_type_Double), (float)(6.0D * P.jdField_z_of_type_Double), (float)(60.0D * P.jdField_y_of_type_Double));
     oTmp.increment(0.31F * rnd.nextFloat(-shakeLVL, shakeLVL), 0.31F * rnd.nextFloat(-shakeLVL, shakeLVL), 0.54F * rnd.nextFloat(-shakeLVL, shakeLVL));
   }
 
@@ -355,9 +352,9 @@ public class HookPilot extends HookRender
     this.bPadlockEnd = false;
     this.bVisibleEnemy = true;
 
-    localAircraft.pos.getAbs(this.pAbs, this.oAbs);
+    localAircraft.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.pAbs, this.oAbs);
     Camera3D localCamera3D = (Camera3D)this.target2;
-    localCamera3D.pos.getAbs(this.o);
+    localCamera3D.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(this.o);
     this.o.sub(this.oAbs);
     this.azimPadlock = this.o.getAzimut();
     this.tangPadlock = this.o.getTangage();
@@ -409,12 +406,12 @@ public class HookPilot extends HookRender
           return true;
         }
         long l2 = Time.current();
-        if ((l2 != this.stamp) && (this.enemy.pos != null) && (localAircraft1.pos != null)) {
+        if ((l2 != this.stamp) && (this.enemy.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null) && (localAircraft1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos != null)) {
           this.stamp = l2;
           setTimeKoof();
-          this.enemy.pos.getRender(this.pe);
+          this.enemy.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(this.pe);
           this.pEnemyAbs.set(this.pe);
-          localAircraft1.pos.getRender(this.pAbs, this.oAbs);
+          localAircraft1.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRender(this.pAbs, this.oAbs);
           this.Ve.sub(this.pe, this.pAbs);
           this.o.setAT0(this.Ve);
           if ((World.cur().diffCur.Head_Shake) || (World.cur().diffCur.Wind_N_Turbulence)) {
@@ -580,9 +577,9 @@ public class HookPilot extends HookRender
     boolean bool = this.bUse;
     this.bUse = paramBoolean;
     if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
+      this.target.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
     if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
+      this.target2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
     return bool;
   }
   public boolean useMouse(boolean paramBoolean) {
@@ -618,9 +615,9 @@ public class HookPilot extends HookRender
       this.o.set(f1, f2, 0.0F);
 
       if (Actor.isValid(this.target))
-        this.target.pos.inValidate(true);
+        this.target.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
       if (Actor.isValid(this.target2))
-        this.target2.pos.inValidate(true);
+        this.target2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
       this.Azimut = this._Azimut;
       this.Tangage = this._Tangage;
     }
@@ -648,9 +645,9 @@ public class HookPilot extends HookRender
       this.o.set(paramFloat1, paramFloat2, 0.0F);
 
       if (Actor.isValid(this.target))
-        this.target.pos.inValidate(true);
+        this.target.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
       if (Actor.isValid(this.target2))
-        this.target2.pos.inValidate(true);
+        this.target2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
     }
   }
 
@@ -668,9 +665,9 @@ public class HookPilot extends HookRender
     else if (this.Tangage < -180.0F) this.Tangage += 360.0F;
 
     if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
+      this.target.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
     if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
+      this.target2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
   }
 
   public void panSet(int paramInt1, int paramInt2) {
@@ -705,9 +702,9 @@ public class HookPilot extends HookRender
     else if (this.Tangage < -180.0F) this.Tangage += 360.0F;
 
     if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
+      this.target.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
     if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
+      this.target2.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(true);
   }
 
   public static HookPilot New()

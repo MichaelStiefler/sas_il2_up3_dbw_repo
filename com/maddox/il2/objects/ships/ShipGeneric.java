@@ -49,7 +49,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.VisibilityLong;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
@@ -64,6 +63,7 @@ import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.NetObj;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -282,8 +282,8 @@ public class ShipGeneric extends ActorHMesh
       for (float f2 = 0.0F; f2 < 360.0F; f2 += 30.0F) {
         float f3 = f1 * Geom.cosDeg(f2);
         float f4 = f1 * Geom.sinDeg(f2);
-        f3 += (float)paramPoint3d.x;
-        f4 += (float)paramPoint3d.y;
+        f3 += (float)paramPoint3d.jdField_x_of_type_Double;
+        f4 += (float)paramPoint3d.jdField_y_of_type_Double;
         if (!World.land().isWater(f3, f4)) {
           return 50.0F * (f1 / 355.0F);
         }
@@ -303,7 +303,7 @@ public class ShipGeneric extends ActorHMesh
 
     this.sinkingDepthSpeed = (0.55F + localRangeRandom.nextFloat() * 0.0F);
 
-    this.seaDepth = computeSeaDepth(this.pos.getAbsPoint());
+    this.seaDepth = computeSeaDepth(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     this.seaDepth *= (1.0F + localRangeRandom.nextFloat() * 0.2F);
   }
 
@@ -311,7 +311,7 @@ public class ShipGeneric extends ActorHMesh
   {
     if ((mesh() instanceof HierMesh))
     {
-      Explosions.Antiaircraft_Explode(this.pos.getAbsPoint());
+      Explosions.Antiaircraft_Explode(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
     }
   }
 
@@ -327,7 +327,7 @@ public class ShipGeneric extends ActorHMesh
         return;
       }
 
-      paramLong = NetServerParams.getServerTime();
+      paramLong = Time.current();
     }
 
     this.life = 0.0F;
@@ -346,7 +346,7 @@ public class ShipGeneric extends ActorHMesh
       this.bodyPitch = (this.bodyRoll = 0.0F);
       setPosition();
     }
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     computeSinkingParams(paramLong);
 
@@ -380,7 +380,7 @@ public class ShipGeneric extends ActorHMesh
   private boolean isAnyEnemyNear()
   {
     NearestEnemies.set(WeaponsMask());
-    Actor localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), 2000.0D, getArmy());
+    Actor localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), 2000.0D, getArmy());
 
     return localActor != null;
   }
@@ -423,7 +423,7 @@ public class ShipGeneric extends ActorHMesh
             FiringDevice.access$102(this.arms[i], null);
           }
           if (this.arms[i].gun != null) {
-            destroy(this.arms[i].gun);
+            ObjState.destroy(this.arms[i].gun);
             FiringDevice.access$402(this.arms[i], null);
           }
           this.arms[i] = null;
@@ -520,7 +520,7 @@ public class ShipGeneric extends ActorHMesh
     this.bodyPitch = (this.bodyRoll = 0.0F);
     this.bodyYaw = paramActorSpawnArg.orient.getYaw();
     setPosition();
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
 
@@ -579,9 +579,8 @@ public class ShipGeneric extends ActorHMesh
       this.bodyDepth = 0.0F;
       this.bodyPitch = (this.bodyRoll = 0.0F);
 
-      setMovablePosition(NetServerParams.getServerTime());
-
-      this.pos.reset();
+      setMovablePosition(Time.current());
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
       collide(true);
       drawing(true);
@@ -592,7 +591,7 @@ public class ShipGeneric extends ActorHMesh
         localObject1 = new HookNamed(this, "Vapor");
         this.pipe = Eff3DActor.New(this, (Hook)localObject1, null, 1.0F, "Effects/Smokes/SmokePipeShip.eff", -1.0F);
       }
-       tmp345_344 = (this.wake[0] =  = null); this.wake[1] = tmp345_344; this.wake[2] = tmp345_344;
+       tmp348_347 = (this.wake[0] =  = null); this.wake[1] = tmp348_347; this.wake[2] = tmp348_347;
       this.tail = null;
       this.nose = null;
       int j = this.prop.SLIDER_DIST / 2.5F < 90.0F ? 1 : 0;
@@ -644,9 +643,9 @@ public class ShipGeneric extends ActorHMesh
       int k = Mission.cur().getUnitNetIdRemote(this);
       Object localObject3 = Mission.cur().getNetMasterChannel();
       if (localObject3 == null)
-        this.net = new Master(this);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
       else if (k != 0) {
-        this.net = new Mirror(this, (NetChannel)localObject3, k);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, (NetChannel)localObject3, k);
       }
 
       this.SKILL_IDX = Chief.new_SKILL_IDX;
@@ -731,28 +730,27 @@ public class ShipGeneric extends ActorHMesh
     }
 
     this.path = new ArrayList();
-    Object localObject;
-    float f5;
+    float f7;
     for (int k = 0; k < j; k++) {
-      localObject = new StringTokenizer(paramSectFile.line(i, k));
-      float f2 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      float f3 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      f5 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
+      StringTokenizer localStringTokenizer = new StringTokenizer(paramSectFile.line(i, k));
+      float f1 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
+      float f2 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
+      float f4 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
       double d = 0.0D;
-      float f7 = 0.0F;
-      if (((StringTokenizer)localObject).hasMoreTokens()) {
-        d = Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-        if (((StringTokenizer)localObject).hasMoreTokens()) {
-          Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-          if (((StringTokenizer)localObject).hasMoreTokens()) {
-            f7 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
+      f7 = 0.0F;
+      if (localStringTokenizer.hasMoreTokens()) {
+        d = Double.valueOf(localStringTokenizer.nextToken()).doubleValue();
+        if (localStringTokenizer.hasMoreTokens()) {
+          Double.valueOf(localStringTokenizer.nextToken()).doubleValue();
+          if (localStringTokenizer.hasMoreTokens()) {
+            f7 = Float.valueOf(localStringTokenizer.nextToken()).floatValue();
           }
         }
       }
       if (k >= j - 1) d = 1.0D;
 
       Segment localSegment6 = new Segment(null);
-      localSegment6.posIn = new Point3d(f2, f3, 0.0D);
+      localSegment6.posIn = new Point3d(f1, f2, 0.0D);
 
       if (Math.abs(d) < 0.1D)
         localSegment6.timeIn = 0L;
@@ -766,107 +764,107 @@ public class ShipGeneric extends ActorHMesh
 
       this.path.add(localSegment6);
     }
-    Segment localSegment2;
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localObject = (Segment)this.path.get(k);
-      Segment localSegment1 = (Segment)this.path.get(k + 1);
 
-      if ((((Segment)localObject).timeIn > 0L) && (localSegment1.timeIn > 0L)) {
-        localSegment2 = new Segment(null);
-        localSegment2.posIn = new Point3d(((Segment)localObject).posIn);
-        localSegment2.posIn.add(localSegment1.posIn);
-        localSegment2.posIn.scale(0.5D);
-        localSegment2.timeIn = 0L;
-        localSegment2.speedIn = ((((Segment)localObject).speedIn + localSegment1.speedIn) * 0.5F);
-        this.path.add(k + 1, localSegment2);
+    for (int m = 0; m < this.path.size() - 1; m++) {
+      Segment localSegment1 = (Segment)this.path.get(m);
+      Segment localSegment2 = (Segment)this.path.get(m + 1);
+
+      if ((localSegment1.timeIn > 0L) && (localSegment2.timeIn > 0L)) {
+        Segment localSegment3 = new Segment(null);
+        localSegment3.posIn = new Point3d(localSegment1.posIn);
+        localSegment3.posIn.add(localSegment2.posIn);
+        localSegment3.posIn.scale(0.5D);
+        localSegment3.timeIn = 0L;
+        localSegment3.speedIn = ((localSegment1.speedIn + localSegment2.speedIn) * 0.5F);
+        this.path.add(m + 1, localSegment3);
       }
 
     }
 
-    k = 0;
-    float f1 = ((Segment)this.path.get(k)).length;
+    int i1 = 0;
+    float f3 = ((Segment)this.path.get(i1)).length;
     float f9;
-    while (k < this.path.size() - 1) {
-      int m = k + 1;
+    while (i1 < this.path.size() - 1) {
+      int i2 = i1 + 1;
       while (true) {
-        localSegment2 = (Segment)this.path.get(m);
-        if (localSegment2.speedIn > 0.0D) {
+        Segment localSegment4 = (Segment)this.path.get(i2);
+        if (localSegment4.speedIn > 0.0D) {
           break;
         }
-        f1 += localSegment2.length;
-        m++;
+        f3 += localSegment4.length;
+        i2++;
       }
 
-      if (m - k > 1) {
-        float f4 = ((Segment)this.path.get(k)).length;
-        f5 = ((Segment)this.path.get(k)).speedIn;
-        float f6 = ((Segment)this.path.get(m)).speedIn;
-        for (int i2 = k + 1; i2 < m; i2++) {
-          Segment localSegment5 = (Segment)this.path.get(i2);
-          f9 = f4 / f1;
-          localSegment5.speedIn = (f5 * (1.0F - f9) + f6 * f9);
-          f1 += localSegment5.length;
+      if (i2 - i1 > 1) {
+        float f5 = ((Segment)this.path.get(i1)).length;
+        float f6 = ((Segment)this.path.get(i1)).speedIn;
+        f7 = ((Segment)this.path.get(i2)).speedIn;
+        for (int i4 = i1 + 1; i4 < i2; i4++) {
+          Segment localSegment8 = (Segment)this.path.get(i4);
+          f9 = f5 / f3;
+          localSegment8.speedIn = (f6 * (1.0F - f9) + f7 * f9);
+          f3 += localSegment8.length;
         }
       }
 
-      k = m;
+      i1 = i2;
     }
 
     long l = 0L;
-    for (int i1 = 0; i1 < this.path.size() - 1; i1++) {
-      Segment localSegment3 = (Segment)this.path.get(i1);
-      Segment localSegment4 = (Segment)this.path.get(i1 + 1);
+    for (int i3 = 0; i3 < this.path.size() - 1; i3++) {
+      Segment localSegment5 = (Segment)this.path.get(i3);
+      Segment localSegment7 = (Segment)this.path.get(i3 + 1);
 
-      if (i1 == 0) {
-        l = localSegment3.timeIn;
+      if (i3 == 0) {
+        l = localSegment5.timeIn;
       }
 
-      localSegment3.posOut = new Point3d(localSegment4.posIn);
-      localSegment4.posIn = localSegment3.posOut;
-      localSegment3.length = (float)localSegment3.posIn.distance(localSegment4.posIn);
+      localSegment5.posOut = new Point3d(localSegment7.posIn);
+      localSegment7.posIn = localSegment5.posOut;
+      localSegment5.length = (float)localSegment5.posIn.distance(localSegment7.posIn);
 
-      float f8 = localSegment3.speedIn;
-      f9 = localSegment4.speedIn;
+      float f8 = localSegment5.speedIn;
+      f9 = localSegment7.speedIn;
       float f10 = (f8 + f9) * 0.5F;
 
-      if (localSegment3.timeIn > 0L) {
-        if (localSegment3.timeIn > l)
-          localSegment3.timeIn -= l;
+      if (localSegment5.timeIn > 0L) {
+        if (localSegment5.timeIn > l)
+          localSegment5.timeIn -= l;
         else {
-          localSegment3.timeIn = 0L;
+          localSegment5.timeIn = 0L;
         }
       }
 
-      if ((localSegment3.timeIn == 0L) && (localSegment4.timeIn > 0L)) {
-        int i3 = (int)(2.0F * localSegment3.length / f8 * 1000.0F + 0.5F);
-        i3 = (int)(i3 + l);
-        if (localSegment4.timeIn > i3)
-          localSegment4.timeIn -= i3;
+      if ((localSegment5.timeIn == 0L) && (localSegment7.timeIn > 0L)) {
+        int i5 = (int)(2.0F * localSegment5.length / f8 * 1000.0F + 0.5F);
+        i5 = (int)(i5 + l);
+        if (localSegment7.timeIn > i5)
+          localSegment7.timeIn -= i5;
         else
-          localSegment4.timeIn = 0L;
+          localSegment7.timeIn = 0L;
       }
       float f11;
-      if (localSegment3.timeIn > 0L) {
-        localSegment3.speedIn = 0.0F;
-        localSegment3.speedOut = f9;
-        f11 = 2.0F * localSegment3.length / f9 * 1000.0F + 0.5F;
-        localSegment3.timeIn = (l + localSegment3.timeIn);
-        localSegment3.timeOut = (localSegment3.timeIn + (int)f11);
-        l = localSegment3.timeOut;
-      } else if (localSegment4.timeIn > 0L) {
-        localSegment3.speedIn = f8;
-        localSegment3.speedOut = 0.0F;
-        f11 = 2.0F * localSegment3.length / f8 * 1000.0F + 0.5F;
-        localSegment3.timeIn = (l + localSegment3.timeIn);
-        localSegment3.timeOut = (localSegment3.timeIn + (int)f11);
-        l = localSegment3.timeOut + localSegment4.timeIn;
+      if (localSegment5.timeIn > 0L) {
+        localSegment5.speedIn = 0.0F;
+        localSegment5.speedOut = f9;
+        f11 = 2.0F * localSegment5.length / f9 * 1000.0F + 0.5F;
+        localSegment5.timeIn = (l + localSegment5.timeIn);
+        localSegment5.timeOut = (localSegment5.timeIn + (int)f11);
+        l = localSegment5.timeOut;
+      } else if (localSegment7.timeIn > 0L) {
+        localSegment5.speedIn = f8;
+        localSegment5.speedOut = 0.0F;
+        f11 = 2.0F * localSegment5.length / f8 * 1000.0F + 0.5F;
+        localSegment5.timeIn = (l + localSegment5.timeIn);
+        localSegment5.timeOut = (localSegment5.timeIn + (int)f11);
+        l = localSegment5.timeOut + localSegment7.timeIn;
       } else {
-        localSegment3.speedIn = f8;
-        localSegment3.speedOut = f9;
-        f11 = localSegment3.length / f10 * 1000.0F + 0.5F;
-        localSegment3.timeIn = l;
-        localSegment3.timeOut = (localSegment3.timeIn + (int)f11);
-        l = localSegment3.timeOut;
+        localSegment5.speedIn = f8;
+        localSegment5.speedOut = f9;
+        f11 = localSegment5.length / f10 * 1000.0F + 0.5F;
+        localSegment5.timeIn = l;
+        localSegment5.timeOut = (localSegment5.timeIn + (int)f11);
+        l = localSegment5.timeOut;
       }
 
     }
@@ -876,9 +874,9 @@ public class ShipGeneric extends ActorHMesh
 
   public void align()
   {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) - this.bodyDepth);
-    this.pos.setAbs(p);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.jdField_z_of_type_Double = (Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double) - this.bodyDepth);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p);
   }
 
   private void setMovablePosition(long paramLong)
@@ -917,7 +915,8 @@ public class ShipGeneric extends ActorHMesh
       return;
     }
 
-    while (this.cachedSeg > 0) {
+    do
+    {
       localSegment = (Segment)this.path.get(--this.cachedSeg);
       if (paramLong >= localSegment.timeOut) {
         SetEffectsIntens(0.0F);
@@ -930,6 +929,7 @@ public class ShipGeneric extends ActorHMesh
         return;
       }
     }
+    while (this.cachedSeg > 0);
 
     SetEffectsIntens(0.0F);
     setMovablePosition(0.0F);
@@ -995,7 +995,7 @@ public class ShipGeneric extends ActorHMesh
       localSegment = (Segment)this.path.get(this.cachedSeg);
       tmpv.sub(localSegment.posOut, localSegment.posIn);
     }
-    float f7 = (float)(Math.atan2(tmpv.y, tmpv.x) * 57.295779513082323D);
+    float f7 = (float)(Math.atan2(tmpv.jdField_y_of_type_Double, tmpv.jdField_x_of_type_Double) * 57.295779513082323D);
 
     setPosition(p, f7);
   }
@@ -1006,14 +1006,14 @@ public class ShipGeneric extends ActorHMesh
 
     o.setYPR(this.bodyYaw, this.bodyPitch, this.bodyRoll);
 
-    paramPoint3d.z = (-this.bodyDepth);
-    this.pos.setAbs(paramPoint3d, o);
+    paramPoint3d.jdField_z_of_type_Double = (-this.bodyDepth);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d, o);
   }
 
   private void setPosition()
   {
     o.setYPR(this.bodyYaw, this.bodyPitch, this.bodyRoll);
-    this.pos.setAbs(o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(o);
 
     align();
   }
@@ -1120,8 +1120,8 @@ public class ShipGeneric extends ActorHMesh
     try {
       localNetMsgGuaranted.writeByte(68);
       localNetMsgGuaranted.writeLong(this.timeOfDeath);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
+      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1136,7 +1136,7 @@ public class ShipGeneric extends ActorHMesh
     NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
     try {
       localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(localNetMsgGuaranted);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1148,7 +1148,7 @@ public class ShipGeneric extends ActorHMesh
     if (!isNetMaster()) {
       return;
     }
-    if (!this.net.isMirrored()) {
+    if (!this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.isMirrored()) {
       return;
     }
     if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
@@ -1162,10 +1162,10 @@ public class ShipGeneric extends ActorHMesh
         this.outCommand.unLockAndClear();
         this.outCommand.writeByte(84);
         this.outCommand.writeByte(paramInt1);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt2);
         this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException1) {
         System.out.println(localException1.getMessage());
         localException1.printStackTrace();
@@ -1176,10 +1176,10 @@ public class ShipGeneric extends ActorHMesh
         this.outCommand.writeByte(70);
         this.outCommand.writeByte(paramInt1);
         this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
+        this.outCommand.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         this.outCommand.writeByte(paramInt2);
         this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.post(Time.current(), this.outCommand);
       } catch (Exception localException2) {
         System.out.println(localException2.getMessage());
         localException2.printStackTrace();
@@ -1192,15 +1192,15 @@ public class ShipGeneric extends ActorHMesh
       return;
     }
 
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
+    if ((this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel() instanceof NetChannelInStream))
       return;
     try
     {
       NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
       localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
+      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
       localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(Time.current(), this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.masterChannel(), localNetMsgFiltered);
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
@@ -1211,10 +1211,10 @@ public class ShipGeneric extends ActorHMesh
   {
     if (paramNetChannel == null)
     {
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     }
     else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetChannel, paramInt);
   }
 
   public void netFirstUpdate(NetChannel paramNetChannel)
@@ -1227,7 +1227,7 @@ public class ShipGeneric extends ActorHMesh
     else {
       localNetMsgGuaranted.writeLong(this.timeOfDeath);
     }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
+    this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postTo(paramNetChannel, localNetMsgGuaranted);
   }
 
   public float getReloadingTime(Aim paramAim)
@@ -1268,7 +1268,7 @@ public class ShipGeneric extends ActorHMesh
 
     setGunAngles(localFiringDevice, f2, f3);
 
-    this.pos.inValidate(false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.inValidate(false);
   }
 
   public Actor findEnemy(Aim paramAim)
@@ -1292,7 +1292,7 @@ public class ShipGeneric extends ActorHMesh
       NearestEnemies.set(localShipGunProperties.WEAPONS_MASK, KmHourToMSec(100.0F), 9999.9004F);
     }
 
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), localShipGunProperties.ATTACK_MAX_RADIUS, getArmy());
+    localActor = NearestEnemies.getAFoundEnemy(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), localShipGunProperties.ATTACK_MAX_RADIUS, getArmy());
 
     if (localActor == null) {
       return null;
@@ -1307,15 +1307,15 @@ public class ShipGeneric extends ActorHMesh
 
     BulletProperties localBulletProperties = null;
 
-    if (localFiringDevice.gun.prop != null) {
-      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+    if (localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties != null) {
+      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
 
       if (i < 0)
       {
         return null;
       }
 
-      localBulletProperties = localFiringDevice.gun.prop.bullet[i];
+      localBulletProperties = localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[i];
     }
 
     int i = ((Prey)localActor).chooseShotpoint(localBulletProperties);
@@ -1384,7 +1384,7 @@ public class ShipGeneric extends ActorHMesh
     FiringDevice localFiringDevice = GetFiringDevice(paramAim);
 
     if ((localFiringDevice.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
+      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet);
       if (i < 0) {
         return 0;
       }
@@ -1412,7 +1412,7 @@ public class ShipGeneric extends ActorHMesh
     float f2 = 0.05F;
 
     double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
+    double d2 = localPoint3d1.jdField_z_of_type_Double;
 
     localPoint3d1.sub(localPoint3d2);
     localPoint3d1.scale(Rnd(0.995D, 1.005D));
@@ -1420,7 +1420,7 @@ public class ShipGeneric extends ActorHMesh
 
     if (f1 > 0.001F) {
       Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
+      paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(localPoint3d3);
 
       tmpv.sub(localPoint3d1, localPoint3d3);
       double d3 = tmpv.length();
@@ -1433,7 +1433,7 @@ public class ShipGeneric extends ActorHMesh
         float f8 = f7 * 0.01F;
 
         localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
+        double d4 = localPoint3d3.jdField_x_of_type_Double * localPoint3d3.jdField_x_of_type_Double + localPoint3d3.jdField_y_of_type_Double * localPoint3d3.jdField_y_of_type_Double + localPoint3d3.jdField_z_of_type_Double * localPoint3d3.jdField_z_of_type_Double;
 
         if (d4 > 0.01D) {
           float f9 = (float)tmpv.dot(localPoint3d3);
@@ -1468,8 +1468,8 @@ public class ShipGeneric extends ActorHMesh
 
     }
 
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
+    if (World.Sun().ToSun.jdField_z_of_type_Float < -0.15F) {
+      f5 = (-World.Sun().ToSun.jdField_z_of_type_Float - 0.15F) / 0.13F;
       if (f5 >= 1.0F) {
         f5 = 1.0F;
       }
@@ -1503,7 +1503,7 @@ public class ShipGeneric extends ActorHMesh
       f4 = localShipGunProperties.GUN_MAX_PITCH_SPEED;
     }
 
-    o.add(localShipGunProperties.fireOrient, this.pos.getAbs().getOrient());
+    o.add(localShipGunProperties.fireOrient, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs().getOrient());
     int j = paramAim.setRotationForTargeting(this, o, localPoint3d2, localFiringDevice.headYaw, localFiringDevice.gunPitch, localVector3d, f2, f1, localShipGunProperties.HEAD_YAW_RANGE, localShipGunProperties.GUN_MIN_PITCH, localShipGunProperties.GUN_MAX_PITCH, f3, f4, 0.0F);
 
     return j;
@@ -1536,16 +1536,6 @@ public class ShipGeneric extends ActorHMesh
 
   public boolean isVisibilityLong() {
     return true;
-  }
-
-  public int zutiGetDying()
-  {
-    return this.dying;
-  }
-
-  public boolean zutiIsStatic()
-  {
-    return (this.path == null) || (this.path.size() <= 0);
   }
 
   public static class SPAWN
@@ -1905,7 +1895,7 @@ public class ShipGeneric extends ActorHMesh
           ShipGeneric.access$802(ShipGeneric.this, 0.0F);
           ShipGeneric.access$902(ShipGeneric.this, ShipGeneric.access$1002(ShipGeneric.this, 0.0F));
 
-          ShipGeneric.this.setMovablePosition(NetServerParams.getServerTime());
+          ShipGeneric.this.setMovablePosition(Time.tickNext());
         }
 
         if (ShipGeneric.this.wakeupTmr == 0L)
@@ -1968,8 +1958,7 @@ public class ShipGeneric extends ActorHMesh
         return true;
       }
 
-      long l = NetServerParams.getServerTime() - ShipGeneric.this.timeOfDeath;
-
+      long l = Time.tickNext() - ShipGeneric.this.timeOfDeath;
       if (l <= 0L) l = 0L;
 
       if (l >= ShipGeneric.this.timeForRotation) {
@@ -1980,7 +1969,7 @@ public class ShipGeneric extends ActorHMesh
         ShipGeneric.access$1002(ShipGeneric.this, ShipGeneric.this.drownBodyRoll * ((float)l / (float)ShipGeneric.this.timeForRotation));
       }
 
-      ShipGeneric.access$802(ShipGeneric.this, ShipGeneric.this.sinkingDepthSpeed * (float)l * 0.001F * 5.0F);
+      ShipGeneric.access$802(ShipGeneric.this, ShipGeneric.this.sinkingDepthSpeed * (float)l * 0.001F);
 
       if (ShipGeneric.this.bodyDepth >= 5.0F) {
         float f = Math.abs(Geom.sinDeg(ShipGeneric.this.bodyPitch) * ShipGeneric.this.collisionR());

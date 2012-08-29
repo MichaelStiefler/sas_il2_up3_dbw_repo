@@ -66,17 +66,16 @@ public class IniFile
   public long finger() {
     long l = _finger(0L, this.subjects);
     int i = this.variables.size();
-    ArrayList localArrayList;
     for (int j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.variables.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+      ArrayList localArrayList1 = (ArrayList)this.variables.get(j);
+      if (localArrayList1 != null)
+        l = _finger(l, localArrayList1);
     }
     i = this.values.size();
-    for (j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.values.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+    for (int k = 0; k < i; k++) {
+      ArrayList localArrayList2 = (ArrayList)this.values.get(k);
+      if (localArrayList2 != null)
+        l = _finger(l, localArrayList2);
     }
     return l;
   }
@@ -130,7 +129,8 @@ public class IniFile
     if (paramString == null) return null;
     int i = paramString.length() - 1;
     int j = 0;
-    while ((j < i) && (paramString.charAt(j) <= ' ')) j++;
+    do { j++; if (j >= i) break;  }
+    while (paramString.charAt(j) <= ' ');
     while ((j < i) && (paramString.charAt(i) <= ' ')) i--;
     if ((j == 0) && (i == paramString.length() - 1))
       return paramString;
@@ -231,8 +231,8 @@ public class IniFile
     }
 
     int i = this.subjects.indexOf(paramString1);
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.variables.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.values.get(i);
+    ArrayList localArrayList1 = (ArrayList)this.variables.get(i);
+    ArrayList localArrayList2 = (ArrayList)this.values.get(i);
     int j = 1;
     String str2 = null;
     for (int k = 0; k < localArrayList1.size(); k++) {
@@ -242,18 +242,18 @@ public class IniFile
         break;
       }
     }
-
+    int m;
     if (j != 0) {
       localArrayList1.add(paramString2);
       localArrayList2.add(paramString3);
-      k = localArrayList1.indexOf(paramString2);
-      localArrayList2.set(k, paramString3);
+      m = localArrayList1.indexOf(paramString2);
+      localArrayList2.set(m, paramString3);
 
       if (paramBoolean)
         setLine(paramString1, paramString2, paramString3);
     } else {
-      k = localArrayList1.indexOf(str2);
-      localArrayList2.set(k, paramString3);
+      m = localArrayList1.indexOf(str2);
+      localArrayList2.set(m, paramString3);
 
       if (paramBoolean) {
         setLine(paramString1, str2, paramString3);
@@ -301,16 +301,16 @@ public class IniFile
         int k = str.indexOf(paramString);
         if ((k != -1) && (k < j)) {
           int m = 0;
-          while ((m < k) && 
-            (str.charAt(m) <= ' '))
-          {
+          while (m < k) {
+            if (str.charAt(m) > ' ')
+              break;
             m++;
           }
           if (m == k) {
             k += paramString.length();
-            while ((k < j) && 
-              (str.charAt(k) <= ' '))
-            {
+            while (k < j) {
+              if (str.charAt(k) > ' ')
+                break;
               k++;
             }
             if (k == j)
@@ -364,7 +364,7 @@ public class IniFile
   {
     int i = this.subjects.indexOf(paramString);
     if (i != -1) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)this.variables.get(i);
+      ArrayList localArrayList = (ArrayList)this.variables.get(i);
       arrayOfString = new String[localArrayList.size()];
       for (int j = 0; j < localArrayList.size(); j++)
         arrayOfString[j] = ((String)localArrayList.get(j));
@@ -386,16 +386,16 @@ public class IniFile
     int i = paramString1.indexOf(paramString2);
     if (i != -1) {
       int j = 0;
-      while ((j < i) && 
-        (paramString1.charAt(j) <= ' '))
-      {
+      while (j < i) {
+        if (paramString1.charAt(j) > ' ')
+          break;
         j++;
       }
       if (j == i) {
         i += paramString2.length();
-        while ((i < paramString1.length()) && 
-          (paramString1.charAt(i) <= ' '))
-        {
+        while (i < paramString1.length()) {
+          if (paramString1.charAt(i) > ' ')
+            break;
           i++;
         }
         if (i == paramString1.length())
@@ -423,14 +423,14 @@ public class IniFile
     paramString2 = clamp(paramString2);
     if (paramString2 == null)
       return "";
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.values.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.variables.get(i);
+    ArrayList localArrayList1 = (ArrayList)this.values.get(i);
+    ArrayList localArrayList2 = (ArrayList)this.variables.get(i);
     int j = vectorIndexOf(localArrayList2, paramString2);
     if (j != -1) {
-      String str = (String)(String)localArrayList1.get(j);
+      String str = (String)localArrayList1.get(j);
       int k = 0;
-      while ((k < str.length()) && (str.charAt(k) <= ' ')) k++;
-      if (k > 0) {
+      for (; k < str.length(); k++) if (str.charAt(k) > ' ')
+          break; if (k > 0) {
         if (k == str.length()) return "";
         return str.substring(k);
       }
@@ -459,8 +459,8 @@ public class IniFile
     int i = this.subjects.indexOf(paramString);
     if (i == -1)
       return null;
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.variables.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.values.get(i);
+    ArrayList localArrayList1 = (ArrayList)this.variables.get(i);
+    ArrayList localArrayList2 = (ArrayList)this.values.get(i);
     int j = localArrayList1.size();
     for (int k = 0; k < j; k++)
       _getsetMap.put((String)localArrayList1.get(k), (String)localArrayList2.get(k));
@@ -512,8 +512,8 @@ public class IniFile
     paramString2 = clamp(paramString2);
     if (paramString2 == null)
       return;
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.values.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.variables.get(i);
+    ArrayList localArrayList1 = (ArrayList)this.values.get(i);
+    ArrayList localArrayList2 = (ArrayList)this.variables.get(i);
 
     int j = vectorIndexOf(localArrayList2, paramString2);
     if (j != -1)
@@ -560,7 +560,7 @@ public class IniFile
       PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(this.fileName, 0))));
 
       for (int i = 0; i < this.lines.size(); i++) {
-        localPrintWriter.println((String)(String)this.lines.get(i));
+        localPrintWriter.println((String)this.lines.get(i));
       }
       localPrintWriter.close();
       this.bChanged = false;
@@ -577,7 +577,7 @@ public class IniFile
       PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(paramString, 0))));
 
       for (int i = 0; i < this.lines.size(); i++) {
-        localPrintWriter.println((String)(String)this.lines.get(i));
+        localPrintWriter.println((String)this.lines.get(i));
       }
       localPrintWriter.close();
     } catch (IOException localIOException) {

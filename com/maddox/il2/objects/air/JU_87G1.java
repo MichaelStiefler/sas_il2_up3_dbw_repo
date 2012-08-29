@@ -37,11 +37,11 @@ public class JU_87G1 extends JU_87
     Property.set(localClass, "yearService", 1943.0F);
     Property.set(localClass, "yearExpired", 1945.5F);
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 10, 10 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1, 1, 10, 10 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBK37JU87 12", "MGunBK37JU87 12", "MGunMG81t 750", "MGunMG81t 750" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBK37JU87 12", "MGunBK37JU87 12", "MGunMG81t 750", "MGunMG81t 750" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

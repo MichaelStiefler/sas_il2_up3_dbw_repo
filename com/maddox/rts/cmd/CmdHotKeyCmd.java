@@ -23,11 +23,11 @@ public class CmdHotKeyCmd extends Cmd
 
   public Object exec(CmdEnv paramCmdEnv, Map paramMap)
   {
-    String str = exist(paramMap, "ENV") ? args(paramMap, "ENV") : null;
+    String str = Cmd.exist(paramMap, "ENV") ? Cmd.args(paramMap, "ENV") : null;
     Object localObject;
-    if (exist(paramMap, "EXEC")) {
-      localObject = args(paramMap, "EXEC");
-      double d = exist(paramMap, "TIME") ? arg(paramMap, "TIME", 0, 0.0D, 0.0D, 60.0D) : 0.0D;
+    if (Cmd.exist(paramMap, "EXEC")) {
+      localObject = Cmd.args(paramMap, "EXEC");
+      double d = Cmd.exist(paramMap, "TIME") ? Cmd.arg(paramMap, "TIME", 0, 0.0D, 0.0D, 60.0D) : 0.0D;
       int j = HotKeyCmd.exec(d, str, (String)localObject);
       if (j > 0) {
         INFO_SOFT("  " + j + " " + (String)localObject + " executed");
@@ -39,8 +39,8 @@ public class CmdHotKeyCmd extends Cmd
     else
     {
       int i;
-      if (exist(paramMap, "START")) {
-        localObject = args(paramMap, "START");
+      if (Cmd.exist(paramMap, "START")) {
+        localObject = Cmd.args(paramMap, "START");
         i = HotKeyCmd.exec(true, str, (String)localObject);
         if (i > 0) {
           INFO_SOFT("  " + i + " " + (String)localObject + " started");
@@ -49,8 +49,8 @@ public class CmdHotKeyCmd extends Cmd
           return null;
         }
       }
-      else if (exist(paramMap, "STOP")) {
-        localObject = args(paramMap, "STOP");
+      else if (Cmd.exist(paramMap, "STOP")) {
+        localObject = Cmd.args(paramMap, "STOP");
         i = HotKeyCmd.exec(false, str, (String)localObject);
         if (i > 0) {
           INFO_SOFT("  " + i + " " + (String)localObject + " stoped");
@@ -62,7 +62,7 @@ public class CmdHotKeyCmd extends Cmd
       else
       {
         HotKeyCmdEnv localHotKeyCmdEnv;
-        if (((exist(paramMap, "ENV")) && (0 == nargs(paramMap, "ENV"))) || (!exist(paramMap, "ENV"))) {
+        if (((Cmd.exist(paramMap, "ENV")) && (0 == Cmd.nargs(paramMap, "ENV"))) || (!Cmd.exist(paramMap, "ENV"))) {
           localObject = HotKeyCmdEnv.allEnv().iterator();
           INFO_HARD("HotKeyCmd environments:");
           while (((Iterator)localObject).hasNext()) {
@@ -70,7 +70,7 @@ public class CmdHotKeyCmd extends Cmd
             INFO_HARD(localHotKeyCmdEnv.name() + (localHotKeyCmdEnv.isEnabled() ? " ENABLED" : " DISABLED"));
           }
         } else {
-          localObject = args(paramMap, "ENV");
+          localObject = Cmd.args(paramMap, "ENV");
           if (localObject == null) localObject = "default";
           localHotKeyCmdEnv = HotKeyCmdEnv.env((String)localObject);
           if (localHotKeyCmdEnv == null) {
@@ -90,10 +90,10 @@ public class CmdHotKeyCmd extends Cmd
   }
 
   public CmdHotKeyCmd() {
-    this.param.put("ENV", null);
-    this.param.put("EXEC", null);
-    this.param.put("TIME", null);
-    this.param.put("TIME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ENV", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("EXEC", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TIME", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TIME", null);
     this._properties.put("NAME", "hotkeycmd");
     this._levelAccess = 1;
   }

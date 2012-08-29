@@ -43,9 +43,9 @@ public class SunFlare extends Actor
   public SunFlare(Render paramRender)
   {
     this.draw = new Draw();
-    this.pos = new ActorPosMove(this, new Loc());
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this, new Loc());
     this.render = ((SunFlareRender)paramRender);
-    this.pos.setBase(this.render.getCamera(), null, false);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setBase(this.render.getCamera(), null, false);
     drawing(false);
     this.render.setActor(this);
 
@@ -120,9 +120,9 @@ public class SunFlare extends Actor
       SunFlare.this.o.transform(this.center);
       this.center.add(SunFlare.this.p, this.center);
 
-      this.sun.x = (World.Sun().ToSun.x * 500.0F);
-      this.sun.y = (World.Sun().ToSun.y * 500.0F);
-      this.sun.z = (World.Sun().ToSun.z * 500.0F);
+      this.sun.jdField_x_of_type_Double = (World.Sun().ToSun.x * 500.0F);
+      this.sun.jdField_y_of_type_Double = (World.Sun().ToSun.y * 500.0F);
+      this.sun.jdField_z_of_type_Double = (World.Sun().ToSun.z * 500.0F);
       this.sun.add(SunFlare.this.p, this.sun);
 
       if (!Render.currentCamera().isSphereVisible(this.sun, 1.0F))
@@ -152,11 +152,11 @@ public class SunFlare extends Actor
 
         Render.drawBeginSprites(0);
 
-        SunFlare.p1.x = (this.center.x + (this.sun.x - this.center.x) * this.frac[i]);
-        SunFlare.p1.y = (this.center.y + (this.sun.y - this.center.y) * this.frac[i]);
-        SunFlare.p1.z = (this.center.z + (this.sun.z - this.center.z) * this.frac[i]);
+        SunFlare.p1.jdField_x_of_type_Double = (this.center.jdField_x_of_type_Double + (this.sun.jdField_x_of_type_Double - this.center.jdField_x_of_type_Double) * this.frac[i]);
+        SunFlare.p1.jdField_y_of_type_Double = (this.center.jdField_y_of_type_Double + (this.sun.jdField_y_of_type_Double - this.center.jdField_y_of_type_Double) * this.frac[i]);
+        SunFlare.p1.jdField_z_of_type_Double = (this.center.jdField_z_of_type_Double + (this.sun.jdField_z_of_type_Double - this.center.jdField_z_of_type_Double) * this.frac[i]);
 
-        Render.drawPushSprite((float)SunFlare.p1.x, (float)SunFlare.p1.y, (float)SunFlare.p1.z, this.radius[i] * 40.0F, this.rgb_r[i], this.rgb_g[i], this.rgb_b[i], this.alpha[i] * f, 0.0F);
+        Render.drawPushSprite((float)SunFlare.p1.jdField_x_of_type_Double, (float)SunFlare.p1.jdField_y_of_type_Double, (float)SunFlare.p1.jdField_z_of_type_Double, this.radius[i] * 40.0F, this.rgb_r[i], this.rgb_g[i], this.rgb_b[i], this.alpha[i] * f, 0.0F);
 
         Render.drawEnd();
       }

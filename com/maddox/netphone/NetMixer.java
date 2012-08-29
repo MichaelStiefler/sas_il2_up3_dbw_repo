@@ -54,41 +54,43 @@ public class NetMixer extends MixBase
     while (localIterator1.hasNext()) {
       MixChannel localMixChannel = (MixChannel)localIterator1.next();
       int i = 0;
+      Iterator localIterator2;
       if (localMixChannel.wasReset()) {
         localIterator2 = localMixChannel.outList.iterator();
         while (localIterator2.hasNext()) {
           HBitStr localHBitStr1 = (HBitStr)localIterator2.next();
           localHBitStr1.bs.clear();
-        }continue;
+        }
       }
-      if (localMixChannel.act) {
-        while (true)
-        {
-          localIterator2 = localMixChannel.outList.iterator();
-          int j = 1;
-          int k = 1;
-          HBitStr localHBitStr3;
-          int m;
-          while (localIterator2.hasNext()) {
-            localHBitStr3 = (HBitStr)localIterator2.next();
-            if ((localHBitStr3.mc.act) && (!localHBitStr3.mc.isVirtual)) {
-              m = localHBitStr3.bs.bitlen();
-              if (m >= 1) {
-                if (localHBitStr3.bs.probe(1, 0) > 0) j = (j != 0) && (m >= this.inStr.getMaxBlockSize()) ? 1 : 0; 
+      else {
+        if (localMixChannel.act) {
+          while (true)
+          {
+            localIterator2 = localMixChannel.outList.iterator();
+            int j = 1;
+            int k = 1;
+            HBitStr localHBitStr3;
+            int m;
+            while (localIterator2.hasNext()) {
+              localHBitStr3 = (HBitStr)localIterator2.next();
+              if ((localHBitStr3.mc.act) && (!localHBitStr3.mc.isVirtual)) {
+                m = localHBitStr3.bs.bitlen();
+                if (m >= 1) {
+                  if (localHBitStr3.bs.probe(1, 0) > 0) j = (j != 0) && (m >= this.inStr.getMaxBlockSize()) ? 1 : 0; 
+                }
+                else {
+                  j = 0;
+                }
+                k = 0;
               }
-              else {
-                j = 0;
-              }
-              k = 0;
             }
-          }
-          if ((j == 0) || (k != 0)) break;
-          localIterator2 = localMixChannel.outList.iterator();
-          this.outStr.reset();
-          while (localIterator2.hasNext()) {
-            localHBitStr3 = (HBitStr)localIterator2.next();
-            if ((localHBitStr3.mc.act) && (!localHBitStr3.mc.isVirtual) && 
-              (localHBitStr3.bs.get(1) != 0)) {
+            if ((j == 0) || (k != 0)) break;
+            localIterator2 = localMixChannel.outList.iterator();
+            this.outStr.reset();
+            while (localIterator2.hasNext()) {
+              localHBitStr3 = (HBitStr)localIterator2.next();
+              if ((!localHBitStr3.mc.act) || (localHBitStr3.mc.isVirtual) || 
+                (localHBitStr3.bs.get(1) == 0)) continue;
               if (this.inStr.read(localHBitStr3.bs) != 0) {
                 i = 1000 + localHBitStr3.bs.bitlen();
                 break;
@@ -100,32 +102,31 @@ public class NetMixer extends MixBase
               if (m > this.outStr.getRms()) {
                 this.outStr.copy(this.inStr);
               }
+
             }
 
-          }
+            if (this.outStr.isEmpty())
+            {
+              localMixChannel.slCnt += 1; continue;
+            }
 
-          if (this.outStr.isEmpty())
-          {
-            localMixChannel.slCnt += 1;
-          }
-          else {
             localMixChannel.out.put(1, 1);
             this.outStr.write(localMixChannel.out);
             localMixChannel.slCnt = 0;
           }
         }
-      }
-      Iterator localIterator2 = localMixChannel.inList.iterator();
-      while (localIterator2.hasNext()) {
-        HBitStr localHBitStr2 = (HBitStr)localIterator2.next();
 
-        if (!localHBitStr2.pOut.act) localHBitStr2.bs.reset();
+        localIterator2 = localMixChannel.inList.iterator();
+        while (localIterator2.hasNext()) {
+          HBitStr localHBitStr2 = (HBitStr)localIterator2.next();
+
+          if (localHBitStr2.pOut.act) continue; localHBitStr2.bs.reset();
+        }
       }
     }
   }
 
-  public void printState(int paramInt)
-  {
+  public void printState(int paramInt) {
     Iterator localIterator = this.channels.iterator();
 
     while (localIterator.hasNext()) {

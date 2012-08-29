@@ -37,9 +37,9 @@ public final class House extends ActorMesh
   private static final int MAT_BRICK = 1;
   private static final int MAT_STEEL = 2;
   private static final int N_MAT_TYPES = 3;
-  private static float[][][] PenetrateEnergyToKill = (float[][][])null;
+  private static float[][][] PenetrateEnergyToKill = null;
 
-  private static float[][] PenetrateThickness = (float[][])null;
+  private static float[][] PenetrateThickness = null;
   private static final float KinEnergy_4 = 511.22504F;
   private static final float KinEnergy_7_62 = 2453.8801F;
   private static final float KinEnergy_12_7 = 10140.0F;
@@ -232,10 +232,10 @@ public final class House extends ActorMesh
       float[] arrayOfFloat1 = new float[6];
       mesh().getBoundBox(arrayOfFloat1);
 
-      this.pos.getAbs(p);
-      p.x = (p.x - arrayOfFloat1[0] + (arrayOfFloat1[3] - arrayOfFloat1[0]));
-      p.y = (p.y - arrayOfFloat1[1] + (arrayOfFloat1[4] - arrayOfFloat1[1]));
-      p.z = (p.z - arrayOfFloat1[2] + (arrayOfFloat1[5] - arrayOfFloat1[2]));
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+      p.jdField_x_of_type_Double = (p.jdField_x_of_type_Double - arrayOfFloat1[0] + (arrayOfFloat1[3] - arrayOfFloat1[0]));
+      p.jdField_y_of_type_Double = (p.jdField_y_of_type_Double - arrayOfFloat1[1] + (arrayOfFloat1[4] - arrayOfFloat1[1]));
+      p.jdField_z_of_type_Double = (p.jdField_z_of_type_Double - arrayOfFloat1[2] + (arrayOfFloat1[5] - arrayOfFloat1[2]));
 
       float[] arrayOfFloat2 = new float[2];
       paramExplosion.computeSplintersHit(p, mesh().collisionR(), 0.7F, arrayOfFloat2);
@@ -269,7 +269,7 @@ public final class House extends ActorMesh
     float[] arrayOfFloat = new float[6];
     mesh().getBoundBox(arrayOfFloat);
 
-    Explosions.HouseExplode(this.prop.EXPL_TYPE, this.pos.getAbs(), arrayOfFloat);
+    Explosions.HouseExplode(this.prop.EXPL_TYPE, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(), arrayOfFloat);
   }
 
   private void die(Actor paramActor, boolean paramBoolean)
@@ -345,16 +345,16 @@ public final class House extends ActorMesh
 
   public void align()
   {
-    this.pos.getAbs(p);
-    p.z = Engine.land().HQ(p.x, p.y);
-    if (!getDiedFlag()) p.z += this.prop.ADD_HEIGHT_0 + this.prop.heightAboveLandSurface0; else
-      p.z += this.prop.ADD_HEIGHT_1 + this.prop.heightAboveLandSurface1;
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.jdField_z_of_type_Double = Engine.land().HQ(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double);
+    if (!getDiedFlag()) p.jdField_z_of_type_Double += this.prop.ADD_HEIGHT_0 + this.prop.heightAboveLandSurface0; else
+      p.jdField_z_of_type_Double += this.prop.ADD_HEIGHT_1 + this.prop.heightAboveLandSurface1;
+    o.setYPR(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient().getYaw(), 0.0F, 0.0F);
     if (this.prop.ALIGN_TO_LAND_NORMAL) {
-      Engine.land().N(p.x, p.y, n);
+      Engine.land().N(p.jdField_x_of_type_Double, p.jdField_y_of_type_Double, n);
       o.orient(n);
     }
-    this.pos.setAbs(p, o);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(p, o);
   }
 
   public Object getSwitchListener(Message paramMessage) {
@@ -363,7 +363,7 @@ public final class House extends ActorMesh
 
   public float futurePosition(float paramFloat, Point3d paramPoint3d)
   {
-    this.pos.getAbs(paramPoint3d);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(paramPoint3d);
     if (paramFloat <= 0.0F) return 0.0F;
     return paramFloat;
   }

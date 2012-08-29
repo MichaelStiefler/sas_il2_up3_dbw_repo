@@ -15,7 +15,6 @@ import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
-import com.maddox.il2.fm.Turret;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
@@ -155,13 +154,13 @@ public abstract class Swordfish extends Scheme1
   {
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
+  public void doKillPilot(int paramInt)
   {
     switch (paramInt)
     {
     case 2:
       mydebuggunnery("pilot[2] killed - turret[0] inoperable ");
-      this.FM.turret[0].setHealth(paramFloat);
+      this.FM.turret[0].bIsOperable = false;
     }
   }
 
@@ -358,11 +357,11 @@ public abstract class Swordfish extends Scheme1
     this.wheel1 = (0.8F * this.wheel1 + 0.2F * this.FM.Gears.gWheelSinking[0]);
     this.wheel2 = (0.8F * this.wheel2 + 0.2F * this.FM.Gears.gWheelSinking[1]);
 
-    hierMesh().chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(this.wheel1, 0.0F, 0.04F, 0.0F, 9.0F), 0.0F);
+    hierMesh().chunkSetAngles("GearL2_D0", 0.0F, Aircraft.cvt(this.wheel1, 0.0F, 0.04F, 0.0F, 10.0F), 0.0F);
 
     hierMesh().chunkSetAngles("GearL5_D0", 0.0F, Aircraft.cvt(this.wheel1, 0.0F, 0.04F, 0.0F, 5.0F), 0.0F);
 
-    hierMesh().chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(this.wheel2, 0.0F, 0.04F, 0.0F, -9.0F), 0.0F);
+    hierMesh().chunkSetAngles("GearR2_D0", 0.0F, Aircraft.cvt(this.wheel2, 0.0F, 0.04F, 0.0F, -10.0F), 0.0F);
 
     hierMesh().chunkSetAngles("GearR5_D0", 0.0F, Aircraft.cvt(this.wheel2, 0.0F, 0.04F, 0.0F, -5.0F), 0.0F);
   }
@@ -903,6 +902,6 @@ public abstract class Swordfish extends Scheme1
   {
     Class localClass = CLASS.THIS();
     new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "originCountry", PaintScheme.countryBritain);
+    Property.set(localClass, "originCountry", PaintScheme.countryItaly);
   }
 }

@@ -21,7 +21,7 @@ public class GWindowMenuBar extends GWindow
     if (i > 0) {
       for (int j = 0; j < i; j++) {
         GWindowMenuBarItem localGWindowMenuBarItem = (GWindowMenuBarItem)this.items.get(j);
-        f += localGWindowMenuBarItem.win.dx;
+        f += localGWindowMenuBarItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
       }
     }
     this.items.add(paramGWindowMenuBarItem);
@@ -42,7 +42,7 @@ public class GWindowMenuBar extends GWindow
       for (int j = 0; j < i; j++) {
         GWindowMenuBarItem localGWindowMenuBarItem = (GWindowMenuBarItem)this.items.get(j);
         localGWindowMenuBarItem.setPos(f, localGRegion.y);
-        f += localGWindowMenuBarItem.win.dx;
+        f += localGWindowMenuBarItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
       }
   }
 
@@ -70,7 +70,7 @@ public class GWindowMenuBar extends GWindow
   public void msgMouseButton(boolean paramBoolean1, int paramInt, boolean paramBoolean2, float paramFloat1, float paramFloat2) {
     if (paramBoolean1) return;
 
-    GWindow localGWindow1 = this.root.findWindowUnder(this.root.mousePos.x, this.root.mousePos.y);
+    GWindow localGWindow1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.findWindowUnder(this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.x, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mousePos.y);
     GWindow localGWindow2 = localGWindow1.getParent(GWindowMenuBar.class, false);
     if ((localGWindow2 != this) || ((!(localGWindow1 instanceof GWindowMenuBarItem)) && (!(localGWindow1 instanceof GWindowMenuBar)) && (!(localGWindow1 instanceof GWindowMenuItem)) && (!(localGWindow1 instanceof GWindowMenu))))
     {
@@ -89,11 +89,11 @@ public class GWindowMenuBar extends GWindow
       this.bAltDown = false;
       return false;
     }
-    if ((this.parentWindow instanceof GWindowFramed)) {
-      if (!this.parentWindow.isActivated())
+    if ((this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowFramed)) {
+      if (!this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.isActivated())
         this.bAltDown = false;
     } else {
-      GWindow localGWindow = this.root.checkKeyFocusWindow();
+      GWindow localGWindow = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.checkKeyFocusWindow();
       if (localGWindow.getParent(GWindowFramed.class, false) != null)
         this.bAltDown = false;
     }
@@ -131,18 +131,14 @@ public class GWindowMenuBar extends GWindow
       j = this.items.indexOf(this.over);
       if (j == 0) j = i;
       j--; setOver((GWindowMenuBarItem)this.items.get(j));
-      if (this.selected != null) {
-        setSelected(this.over);
-      }
-      break;
+      if (this.selected == null) break;
+      setSelected(this.over); break;
     case 39:
       j = this.items.indexOf(this.over);
       if (j == i - 1) j = -1;
       j++; setOver((GWindowMenuBarItem)this.items.get(j));
-      if (this.selected != null) {
-        setSelected(this.over);
-      }
-      break;
+      if (this.selected == null) break;
+      setSelected(this.over); break;
     }
   }
 

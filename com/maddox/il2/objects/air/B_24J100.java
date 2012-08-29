@@ -5,7 +5,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -14,97 +13,20 @@ import com.maddox.rts.Property;
 import java.io.IOException;
 
 public class B_24J100 extends B_24
-  implements TypeBomber, TypeX4Carrier, TypeGuidedBombCarrier
+  implements TypeBomber
 {
-  public boolean bToFire;
-  private long tX4Prev;
-  private float deltaAzimuth;
-  private float deltaTangage;
-  private boolean isGuidingBomb;
-  private boolean isMasterAlive;
   public static boolean bChangedPit = false;
   private boolean bSightAutomation;
   private boolean bSightBombDump;
-  public float fSightCurDistance;
+  private float fSightCurDistance;
   public float fSightCurForwardAngle;
   public float fSightCurSideslip;
   public float fSightCurAltitude;
   public float fSightCurSpeed;
   public float fSightCurReadyness;
 
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    if (this.thisWeaponsName.endsWith("Bat"))
-    {
-      hierMesh().chunkVisible("BatWingRackR_D0", true);
-      hierMesh().chunkVisible("BatWingRackL_D0", true);
-      return;
-    }
-  }
-
-  public boolean typeGuidedBombCisMasterAlive()
-  {
-    return this.isMasterAlive;
-  }
-
-  public void typeGuidedBombCsetMasterAlive(boolean paramBoolean)
-  {
-    this.isMasterAlive = paramBoolean;
-  }
-
-  public boolean typeGuidedBombCgetIsGuiding()
-  {
-    return this.isGuidingBomb;
-  }
-
-  public void typeGuidedBombCsetIsGuiding(boolean paramBoolean)
-  {
-    this.isGuidingBomb = paramBoolean;
-  }
-
-  public void typeX4CAdjSidePlus()
-  {
-    this.deltaAzimuth = 0.002F;
-  }
-
-  public void typeX4CAdjSideMinus()
-  {
-    this.deltaAzimuth = -0.002F;
-  }
-
-  public void typeX4CAdjAttitudePlus()
-  {
-    this.deltaTangage = 0.002F;
-  }
-
-  public void typeX4CAdjAttitudeMinus()
-  {
-    this.deltaTangage = -0.002F;
-  }
-
-  public void typeX4CResetControls()
-  {
-    this.deltaAzimuth = (this.deltaTangage = 0.0F);
-  }
-
-  public float typeX4CgetdeltaAzimuth()
-  {
-    return this.deltaAzimuth;
-  }
-
-  public float typeX4CgetdeltaTangage()
-  {
-    return this.deltaTangage;
-  }
-
   public B_24J100()
   {
-    this.bToFire = false;
-    this.tX4Prev = 0L;
-    this.deltaAzimuth = 0.0F;
-    this.deltaTangage = 0.0F;
-    this.isGuidingBomb = false;
     this.bSightAutomation = false;
     this.bSightBombDump = false;
     this.fSightCurDistance = 0.0F;
@@ -425,14 +347,14 @@ public class B_24J100 extends B_24
       if (this.bSightBombDump)
         if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTick(3, 0))
         {
-          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3].length - 1)] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3].length - 1)].haveBullets()))
+          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3].length - 1)].haveBullets()))
           {
-            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.WeaponControl[3] = true;
+            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = true;
             HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
           }
         }
         else
-          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.WeaponControl[3] = false;
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[3] = false;
     }
   }
 
@@ -462,6 +384,19 @@ public class B_24J100 extends B_24
     this.fSightCurReadyness = (paramNetMsgInput.readUnsignedByte() / 200.0F);
   }
 
+  static Class _mthclass$(String paramString)
+  {
+    Class localClass;
+    try {
+      localClass = Class.forName(paramString);
+    }
+    catch (ClassNotFoundException localClassNotFoundException)
+    {
+      throw new NoClassDefFoundError(localClassNotFoundException.getMessage());
+    }
+    return localClass;
+  }
+
   static
   {
     Class localClass = B_24J100.class;
@@ -477,20 +412,14 @@ public class B_24J100 extends B_24
     Property.set(localClass, "FlightModel", "FlightModels/B-24J.fmd");
     Property.set(localClass, "cockpitClass", new Class[] { CockpitB_24J100.class, CockpitB_24J100_Bombardier.class, CockpitB_24J100_FGunner.class, CockpitB_24J100_TGunner.class, CockpitB_24J100_AGunner.class, CockpitB_24J100_BGunner.class, CockpitB_24J100_RGunner.class, CockpitB_24J100_LGunner.class });
 
-    weaponTriggersRegister(localClass, new int[] { 10, 10, 11, 11, 12, 12, 13, 14, 15, 15, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 10, 11, 11, 12, 12, 13, 14, 15, 15, 3, 3, 3, 3, 3, 3, 3, 3 });
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "16x500", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "16x500", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2" });
 
-    weaponsRegister(localClass, "16xRazon", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", null, null, null, null });
-
-    weaponsRegister(localClass, "8xRazon", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2xBat", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", null, null, null, null, null, null, null, null, "RocketGunBat 1", "BombGunNull 1", "BombGunNull 1", "RocketGunBat 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

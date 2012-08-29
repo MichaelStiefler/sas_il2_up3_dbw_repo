@@ -58,7 +58,7 @@ public class RoadSegment
 
   public void setZ(double paramDouble)
   {
-    this.start.z = paramDouble;
+    this.start.jdField_z_of_type_Double = paramDouble;
   }
 
   public void set(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, int paramInt1, int paramInt2)
@@ -76,7 +76,7 @@ public class RoadSegment
   }
 
   public boolean IsLandAligned() {
-    return this.start.z < 0.0D;
+    return this.start.jdField_z_of_type_Double < 0.0D;
   }
 
   public boolean IsPassableBy(Actor paramActor) {
@@ -107,16 +107,16 @@ public class RoadSegment
       P.sub(paramRoadSegment2.start, this.start);
 
       if (paramRoadSegment2.IsLandAligned())
-        this.dHeight = (Engine.land().HQ(paramRoadSegment2.start.x, paramRoadSegment2.start.y) - this.start.z);
+        this.dHeight = (Engine.land().HQ(paramRoadSegment2.start.jdField_x_of_type_Double, paramRoadSegment2.start.jdField_y_of_type_Double) - this.start.jdField_z_of_type_Double);
       else {
-        this.dHeight = (paramRoadSegment2.start.z - this.start.z);
+        this.dHeight = (paramRoadSegment2.start.jdField_z_of_type_Double - this.start.jdField_z_of_type_Double);
       }
-      this.length2D = Math.sqrt(P.x * P.x + P.y * P.y);
+      this.length2D = Math.sqrt(P.jdField_x_of_type_Double * P.jdField_x_of_type_Double + P.jdField_y_of_type_Double * P.jdField_y_of_type_Double);
       if (this.length2D <= 0.0D) throw new Exception("RS: too close points");
-      this.normal.set((float)(-P.x * P.z), (float)(-P.y * P.z), (float)(this.length2D * this.length2D));
+      this.normal.set((float)(-P.jdField_x_of_type_Double * P.jdField_z_of_type_Double), (float)(-P.jdField_y_of_type_Double * P.jdField_z_of_type_Double), (float)(this.length2D * this.length2D));
       this.normal.normalize();
-      this.yaw = (float)(Math.atan2(P.y, P.x) * 57.295779513082323D);
-      this.dir2D.set(P.x, P.y);
+      this.yaw = (float)(Math.atan2(P.jdField_y_of_type_Double, P.jdField_x_of_type_Double) * 57.295779513082323D);
+      this.dir2D.set(P.jdField_x_of_type_Double, P.jdField_y_of_type_Double);
       this.dir2D.normalize();
 
       if (this.br != null) {
@@ -135,14 +135,14 @@ public class RoadSegment
 
   public Point3d getEndP()
   {
-    return new Point3d(this.start.x + this.dir2D.x * this.length2D, this.start.y + this.dir2D.y * this.length2D, this.start.z + this.dHeight);
+    return new Point3d(this.start.jdField_x_of_type_Double + this.dir2D.jdField_x_of_type_Double * this.length2D, this.start.jdField_y_of_type_Double + this.dir2D.jdField_y_of_type_Double * this.length2D, this.start.jdField_z_of_type_Double + this.dHeight);
   }
 
   double computePosAlong(Point3d paramPoint3d)
   {
     if (this.length2D == 0.0D)
       return 0.0D;
-    double d = (paramPoint3d.x - this.start.x) * this.dir2D.x + (paramPoint3d.y - this.start.y) * this.dir2D.y;
+    double d = (paramPoint3d.jdField_x_of_type_Double - this.start.jdField_x_of_type_Double) * this.dir2D.jdField_x_of_type_Double + (paramPoint3d.jdField_y_of_type_Double - this.start.jdField_y_of_type_Double) * this.dir2D.jdField_y_of_type_Double;
 
     return d;
   }
@@ -150,7 +150,7 @@ public class RoadSegment
   public double computePosAlong_Fit(Point3d paramPoint3d)
   {
     if (this.length2D == 0.0D) return 0.0D;
-    double d = (paramPoint3d.x - this.start.x) * this.dir2D.x + (paramPoint3d.y - this.start.y) * this.dir2D.y;
+    double d = (paramPoint3d.jdField_x_of_type_Double - this.start.jdField_x_of_type_Double) * this.dir2D.jdField_x_of_type_Double + (paramPoint3d.jdField_y_of_type_Double - this.start.jdField_y_of_type_Double) * this.dir2D.jdField_y_of_type_Double;
 
     return d >= this.length2D ? this.length2D : d <= 0.0D ? 0.0D : d;
   }
@@ -159,7 +159,7 @@ public class RoadSegment
   {
     if (this.length2D == 0.0D) return 0.0D;
 
-    Vector2d localVector2d = new Vector2d(paramPoint3d.x - this.start.x, paramPoint3d.y - this.start.y);
+    Vector2d localVector2d = new Vector2d(paramPoint3d.jdField_x_of_type_Double - this.start.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double - this.start.jdField_y_of_type_Double);
     double d1 = localVector2d.dot(this.dir2D);
     if (d1 <= 0.0D) d1 = 0.0D;
     else if (d1 >= this.length2D) d1 = this.length2D;
@@ -168,14 +168,14 @@ public class RoadSegment
     if (d2 <= 0.0D) return 0.0D;
     d2 = Math.sqrt(d2);
 
-    return this.dir2D.x * localVector2d.y - this.dir2D.y * localVector2d.x > 0.0D ? -d2 : d2;
+    return this.dir2D.jdField_x_of_type_Double * localVector2d.jdField_y_of_type_Double - this.dir2D.jdField_y_of_type_Double * localVector2d.jdField_x_of_type_Double > 0.0D ? -d2 : d2;
   }
 
   public double computePosSide_Fit(Point3d paramPoint3d, float paramFloat)
   {
     if (this.length2D == 0.0D) return 0.0D;
 
-    Vector2d localVector2d = new Vector2d(paramPoint3d.x - this.start.x, paramPoint3d.y - this.start.y);
+    Vector2d localVector2d = new Vector2d(paramPoint3d.jdField_x_of_type_Double - this.start.jdField_x_of_type_Double, paramPoint3d.jdField_y_of_type_Double - this.start.jdField_y_of_type_Double);
     double d1 = localVector2d.dot(this.dir2D);
     if (d1 <= 0.0D) d1 = 0.0D;
     else if (d1 >= this.length2D) d1 = this.length2D;
@@ -184,7 +184,7 @@ public class RoadSegment
     if (d2 <= 0.0D) return 0.0D;
     d2 = Math.sqrt(d2);
 
-    if (this.dir2D.x * localVector2d.y - this.dir2D.y * localVector2d.x > 0.0D) d2 = -d2;
+    if (this.dir2D.jdField_x_of_type_Double * localVector2d.jdField_y_of_type_Double - this.dir2D.jdField_y_of_type_Double * localVector2d.jdField_x_of_type_Double > 0.0D) d2 = -d2;
 
     double d3 = d1 / this.length2D;
     double d4 = this.begR * (1.0D - d3) + this.endR * d3;
@@ -213,13 +213,13 @@ public class RoadSegment
     else if (paramDouble2 >= d2) paramDouble2 = d2;
     Point3d localPoint3d = new Point3d(this.start);
 
-    localPoint3d.x += this.dir2D.x * paramDouble1 + this.dir2D.y * paramDouble2;
-    localPoint3d.y += this.dir2D.y * paramDouble1 - this.dir2D.x * paramDouble2;
+    localPoint3d.jdField_x_of_type_Double += this.dir2D.jdField_x_of_type_Double * paramDouble1 + this.dir2D.jdField_y_of_type_Double * paramDouble2;
+    localPoint3d.jdField_y_of_type_Double += this.dir2D.jdField_y_of_type_Double * paramDouble1 - this.dir2D.jdField_x_of_type_Double * paramDouble2;
 
-    if (localPoint3d.z < 0.0D)
-      localPoint3d.z = Engine.land().HQ(localPoint3d.x, localPoint3d.y);
+    if (localPoint3d.jdField_z_of_type_Double < 0.0D)
+      localPoint3d.jdField_z_of_type_Double = Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double);
     else
-      localPoint3d.z += d1 * this.dHeight;
+      localPoint3d.jdField_z_of_type_Double += d1 * this.dHeight;
     return localPoint3d;
   }
 
@@ -257,13 +257,13 @@ public class RoadSegment
     }
     Point3d localPoint3d = new Point3d(this.start);
 
-    localPoint3d.x += this.dir2D.x * paramDouble1 + this.dir2D.y * paramDouble2;
-    localPoint3d.y += this.dir2D.y * paramDouble1 - this.dir2D.x * paramDouble2;
+    localPoint3d.jdField_x_of_type_Double += this.dir2D.jdField_x_of_type_Double * paramDouble1 + this.dir2D.jdField_y_of_type_Double * paramDouble2;
+    localPoint3d.jdField_y_of_type_Double += this.dir2D.jdField_y_of_type_Double * paramDouble1 - this.dir2D.jdField_x_of_type_Double * paramDouble2;
 
-    if (localPoint3d.z < 0.0D)
-      localPoint3d.z = Engine.land().HQ(localPoint3d.x, localPoint3d.y);
+    if (localPoint3d.jdField_z_of_type_Double < 0.0D)
+      localPoint3d.jdField_z_of_type_Double = Engine.land().HQ(localPoint3d.jdField_x_of_type_Double, localPoint3d.jdField_y_of_type_Double);
     else
-      localPoint3d.z += d1 * this.dHeight;
+      localPoint3d.jdField_z_of_type_Double += d1 * this.dHeight;
     return localPoint3d;
   }
 }

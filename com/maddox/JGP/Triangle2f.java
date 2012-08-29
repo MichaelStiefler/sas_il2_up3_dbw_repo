@@ -13,9 +13,9 @@ public class Triangle2f
     {
       this.P[0].set(paramTriangle2f.P[0]); this.P[1].set(paramTriangle2f.P[1]); this.P[2].set(paramTriangle2f.P[2]);
     } catch (Exception localException) {
-      this.P[0] = new Point2f(paramTriangle2f.P[0].x, paramTriangle2f.P[0].y);
-      this.P[1] = new Point2f(paramTriangle2f.P[1].x, paramTriangle2f.P[1].y);
-      this.P[2] = new Point2f(paramTriangle2f.P[2].x, paramTriangle2f.P[2].y);
+      this.P[0] = new Point2f(paramTriangle2f.P[0].jdField_x_of_type_Float, paramTriangle2f.P[0].jdField_y_of_type_Float);
+      this.P[1] = new Point2f(paramTriangle2f.P[1].jdField_x_of_type_Float, paramTriangle2f.P[1].jdField_y_of_type_Float);
+      this.P[2] = new Point2f(paramTriangle2f.P[2].jdField_x_of_type_Float, paramTriangle2f.P[2].jdField_y_of_type_Float);
     }
   }
 
@@ -24,9 +24,9 @@ public class Triangle2f
     try {
       this.P[0].set(paramTriangle3f.P[0]); this.P[1].set(paramTriangle3f.P[1]); this.P[2].set(paramTriangle3f.P[2]);
     } catch (Exception localException) {
-      this.P[0] = new Point2f(paramTriangle3f.P[0].x, paramTriangle3f.P[0].y);
-      this.P[1] = new Point2f(paramTriangle3f.P[1].x, paramTriangle3f.P[1].y);
-      this.P[2] = new Point2f(paramTriangle3f.P[2].x, paramTriangle3f.P[2].y);
+      this.P[0] = new Point2f(paramTriangle3f.P[0].jdField_x_of_type_Float, paramTriangle3f.P[0].jdField_y_of_type_Float);
+      this.P[1] = new Point2f(paramTriangle3f.P[1].jdField_x_of_type_Float, paramTriangle3f.P[1].jdField_y_of_type_Float);
+      this.P[2] = new Point2f(paramTriangle3f.P[2].jdField_x_of_type_Float, paramTriangle3f.P[2].jdField_y_of_type_Float);
     }
   }
 
@@ -53,7 +53,7 @@ public class Triangle2f
 
   public final boolean normalesIN()
   {
-    Point2f localPoint2f = new Point2f((this.P[0].x + this.P[1].x + this.P[2].x) * 0.3333333F, (this.P[0].y + this.P[1].y + this.P[2].y) * 0.3333333F);
+    Point2f localPoint2f = new Point2f((this.P[0].jdField_x_of_type_Float + this.P[1].jdField_x_of_type_Float + this.P[2].jdField_x_of_type_Float) * 0.3333333F, (this.P[0].jdField_y_of_type_Float + this.P[1].jdField_y_of_type_Float + this.P[2].jdField_y_of_type_Float) * 0.3333333F);
 
     if (new Line2f(this.P[0], this.P[1]).deviation(localPoint2f) > 0.0F) return true;
     if (new Line2f(this.P[1], this.P[2]).deviation(localPoint2f) > 0.0F) return true;

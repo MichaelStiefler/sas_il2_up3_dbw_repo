@@ -38,57 +38,57 @@ public class MGunAircraftGeneric extends Gun
 
   public void createdProperties()
   {
-    if ((this.prop.fireMesh != null) && (this.prop.fireMeshDay == null)) {
-      this.prop.fireMeshDay = getDayProperties(this.prop.fireMesh);
+    if ((this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireMesh != null) && (this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireMeshDay == null)) {
+      this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireMeshDay = getDayProperties(this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireMesh);
     }
-    if ((this.prop.fire != null) && (this.prop.fireDay == null)) {
-      this.prop.fireDay = getDayProperties(this.prop.fire);
+    if ((this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fire != null) && (this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireDay == null)) {
+      this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireDay = getDayProperties(this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fire);
     }
-    if ((this.prop.sprite != null) && (this.prop.spriteDay == null)) {
-      this.prop.spriteDay = getDayProperties(this.prop.sprite);
+    if ((this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.sprite != null) && (this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.spriteDay == null)) {
+      this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.spriteDay = getDayProperties(this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.sprite);
     }
     super.createdProperties();
   }
 
   public String prop_fireMesh()
   {
-    if (World.Sun().ToSun.z >= -0.22F) {
-      return this.prop.fireMeshDay;
+    if (World.Sun().ToSun.jdField_z_of_type_Float >= -0.22F) {
+      return this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireMeshDay;
     }
-    return this.prop.fireMesh;
+    return this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireMesh;
   }
   public String prop_fire() {
-    if (World.Sun().ToSun.z >= -0.22F) {
-      return this.prop.fireDay;
+    if (World.Sun().ToSun.jdField_z_of_type_Float >= -0.22F) {
+      return this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fireDay;
     }
-    return this.prop.fire;
+    return this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.fire;
   }
   public String prop_sprite() {
-    if (World.Sun().ToSun.z >= -0.22F) {
-      return this.prop.spriteDay;
+    if (World.Sun().ToSun.jdField_z_of_type_Float >= -0.22F) {
+      return this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.spriteDay;
     }
-    return this.prop.sprite;
+    return this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.sprite;
   }
 
   public void setConvDistance(float paramFloat1, float paramFloat2)
   {
-    Point3d localPoint3d = this.pos.getRelPoint();
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRelPoint();
     Orient localOrient = new Orient();
-    localOrient.set(this.pos.getRelOrient());
+    localOrient.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getRelOrient());
 
-    float f1 = (float)Math.sqrt(localPoint3d.y * localPoint3d.y + paramFloat1 * paramFloat1);
-    float f2 = (float)Math.toDegrees(Math.atan(-localPoint3d.y / paramFloat1));
-    if (!this.prop.bUseHookAsRel) {
+    float f1 = (float)Math.sqrt(localPoint3d.jdField_y_of_type_Double * localPoint3d.jdField_y_of_type_Double + paramFloat1 * paramFloat1);
+    float f2 = (float)Math.toDegrees(Math.atan(-localPoint3d.jdField_y_of_type_Double / paramFloat1));
+    if (!this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bUseHookAsRel) {
       f2 = 0.0F;
       f1 = paramFloat1;
     }
 
     float f3 = 0.0F; float f4 = 0.0F;
-    float f5 = this.prop.bullet[0].speed; float f6 = 0.0F;
+    float f5 = this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[0].speed; float f6 = 0.0F;
 
     while (f3 < f1) {
-      f5 += this.bulletKV[0] * Time.tickConstLenFs() * 1.0F * BulletAircraftGeneric.fv(f5) / f5;
-      f6 -= this.bulletAG[0] * Time.tickConstLenFs();
+      f5 += this.jdField_bulletKV_of_type_ArrayOfFloat[0] * Time.tickConstLenFs() * 1.0F * BulletAircraftGeneric.fv(f5) / f5;
+      f6 -= this.jdField_bulletAG_of_type_ArrayOfFloat[0] * Time.tickConstLenFs();
       f3 += f5 * Time.tickConstLenFs();
       f4 += f6 * Time.tickConstLenFs();
     }
@@ -97,31 +97,31 @@ public class MGunAircraftGeneric extends Gun
     float f7 = (float)Math.toDegrees(Math.atan(f4 / f1));
 
     localOrient.setYPR(localOrient.azimut() + f2, localOrient.tangage() + f7, localOrient.kren());
-    this.pos.setRel(localOrient);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setRel(localOrient);
   }
 
   public void init() {
-    int i = this.prop.bullet.length;
-    this.bulletAG = new float[i];
-    this.bulletKV = new float[i];
+    int i = this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet.length;
+    this.jdField_bulletAG_of_type_ArrayOfFloat = new float[i];
+    this.jdField_bulletKV_of_type_ArrayOfFloat = new float[i];
     initRealisticGunnery();
   }
 
   public void initRealisticGunnery(boolean paramBoolean) {
-    int i = this.prop.bullet.length;
+    int i = this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet.length;
     for (int j = 0; j < i; j++)
       if (paramBoolean) {
-        this.bulletAG[j] = -10.0F;
-        this.bulletKV[j] = (-(1000.0F * this.prop.bullet[j].kalibr / this.prop.bullet[j].massa));
+        this.jdField_bulletAG_of_type_ArrayOfFloat[j] = -10.0F;
+        this.jdField_bulletKV_of_type_ArrayOfFloat[j] = (-(1000.0F * this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[j].kalibr / this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet[j].massa));
       } else {
-        this.bulletAG[j] = 0.0F;
-        this.bulletKV[j] = 0.0F;
+        this.jdField_bulletAG_of_type_ArrayOfFloat[j] = 0.0F;
+        this.jdField_bulletKV_of_type_ArrayOfFloat[j] = 0.0F;
       }
   }
 
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
+  public Bullet createNextBullet(int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d, long paramLong)
   {
-    bullet = new BulletAircraftGeneric(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
+    bullet = new BulletAircraftGeneric(paramInt, paramGunGeneric, paramLoc, paramVector3d, paramLong);
     if ((!World.cur().diffCur.Realistic_Gunnery) && (isContainOwner(World.getPlayerAircraft())));
     return bullet;
   }
@@ -148,7 +148,7 @@ public class MGunAircraftGeneric extends Gun
   public int nextIndexBulletType()
   {
     this._index += 1;
-    if (this._index == this.prop.bullet.length) this._index = 0;
+    if (this._index == this.jdField_prop_of_type_ComMaddoxIl2EngineGunProperties.bullet.length) this._index = 0;
     return this._index;
   }
 }

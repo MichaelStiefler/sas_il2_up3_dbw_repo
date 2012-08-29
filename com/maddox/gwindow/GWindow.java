@@ -164,10 +164,10 @@ public class GWindow
 
   public void doResolutionChanged() {
     if (this.metricWin != null) {
-      this.win.x = lookAndFeel().metric(this.metricWin.x);
-      this.win.y = lookAndFeel().metric(this.metricWin.y);
-      this.win.dx = lookAndFeel().metric(this.metricWin.dx);
-      this.win.dy = lookAndFeel().metric(this.metricWin.dy);
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float = lookAndFeel().metric(this.metricWin.jdField_x_of_type_Float);
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float = lookAndFeel().metric(this.metricWin.jdField_y_of_type_Float);
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float = lookAndFeel().metric(this.metricWin.jdField_dx_of_type_Float);
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float = lookAndFeel().metric(this.metricWin.jdField_dy_of_type_Float);
     }
     if (this.childWindow != null) {
       for (int i = 0; i < this.childWindow.size(); i++) {
@@ -176,7 +176,7 @@ public class GWindow
       }
     }
     resolutionChanged();
-    this.resolutionChangeCounter = this.root.resolutionChangeCounter;
+    this.jdField_resolutionChangeCounter_of_type_Int = this.root.jdField_resolutionChangeCounter_of_type_Int;
   }
 
   public void setPosSize(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
@@ -189,12 +189,12 @@ public class GWindow
   {
     paramFloat1 = Math.round(paramFloat1);
     paramFloat2 = Math.round(paramFloat2);
-    if ((this.win.x != paramFloat1) || (this.win.y != paramFloat2)) {
-      this.win.x = paramFloat1;
-      this.win.y = paramFloat2;
+    if ((this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float != paramFloat1) || (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float != paramFloat2)) {
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float = paramFloat1;
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float = paramFloat2;
       if (this.metricWin != null) {
-        this.metricWin.x = (this.win.x / lookAndFeel().metric());
-        this.metricWin.y = (this.win.y / lookAndFeel().metric());
+        this.metricWin.jdField_x_of_type_Float = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float / lookAndFeel().metric());
+        this.metricWin.jdField_y_of_type_Float = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float / lookAndFeel().metric());
       }
       moved();
     }
@@ -204,12 +204,12 @@ public class GWindow
   {
     paramFloat1 = Math.round(paramFloat1);
     paramFloat2 = Math.round(paramFloat2);
-    if ((this.win.dx != paramFloat1) || (this.win.dy != paramFloat2)) {
-      this.win.dx = paramFloat1;
-      this.win.dy = paramFloat2;
+    if ((this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float != paramFloat1) || (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float != paramFloat2)) {
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float = paramFloat1;
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float = paramFloat2;
       if (this.metricWin != null) {
-        this.metricWin.dx = (this.win.dx / lookAndFeel().metric());
-        this.metricWin.dy = (this.win.dy / lookAndFeel().metric());
+        this.metricWin.jdField_dx_of_type_Float = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float / lookAndFeel().metric());
+        this.metricWin.jdField_dy_of_type_Float = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float / lookAndFeel().metric());
       }
       resized();
     }
@@ -218,10 +218,10 @@ public class GWindow
   public void setMetric(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
     if (this.metricWin == null)
       createMetricWin();
-    this.metricWin.x = paramFloat1;
-    this.metricWin.y = paramFloat2;
-    this.metricWin.dx = paramFloat3;
-    this.metricWin.dy = paramFloat4;
+    this.metricWin.jdField_x_of_type_Float = paramFloat1;
+    this.metricWin.jdField_y_of_type_Float = paramFloat2;
+    this.metricWin.jdField_dx_of_type_Float = paramFloat3;
+    this.metricWin.jdField_dy_of_type_Float = paramFloat4;
     setSize(lookAndFeel().metric(paramFloat3), lookAndFeel().metric(paramFloat4));
     setPos(lookAndFeel().metric(paramFloat1), lookAndFeel().metric(paramFloat2));
   }
@@ -229,16 +229,16 @@ public class GWindow
   public void setMetricPos(float paramFloat1, float paramFloat2) {
     if (this.metricWin == null)
       createMetricWin();
-    this.metricWin.x = paramFloat1;
-    this.metricWin.y = paramFloat2;
+    this.metricWin.jdField_x_of_type_Float = paramFloat1;
+    this.metricWin.jdField_y_of_type_Float = paramFloat2;
     setPos(lookAndFeel().metric(paramFloat1), lookAndFeel().metric(paramFloat2));
   }
 
   public void setMetricSize(float paramFloat1, float paramFloat2) {
     if (this.metricWin == null)
       createMetricWin();
-    this.metricWin.dx = paramFloat1;
-    this.metricWin.dy = paramFloat2;
+    this.metricWin.jdField_dx_of_type_Float = paramFloat1;
+    this.metricWin.jdField_dy_of_type_Float = paramFloat2;
     setSize(lookAndFeel().metric(paramFloat1), lookAndFeel().metric(paramFloat2));
   }
 
@@ -248,17 +248,17 @@ public class GWindow
   }
 
   public void set1024Pos(float paramFloat1, float paramFloat2) {
-    setPos(paramFloat1 * this.root.win.dx / 1024.0F, paramFloat2 * this.root.win.dy / 768.0F);
+    setPos(paramFloat1 * this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float / 1024.0F, paramFloat2 * this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float / 768.0F);
   }
   public void set1024Size(float paramFloat1, float paramFloat2) {
-    setSize(paramFloat1 * this.root.win.dx / 1024.0F, paramFloat2 * this.root.win.dy / 768.0F);
+    setSize(paramFloat1 * this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float / 1024.0F, paramFloat2 * this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float / 768.0F);
   }
   public float x1024(float paramFloat) {
-    return paramFloat * this.root.win.dx / 1024.0F; } 
-  public float y1024(float paramFloat) { return paramFloat * this.root.win.dy / 768.0F; }
+    return paramFloat * this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float / 1024.0F; } 
+  public float y1024(float paramFloat) { return paramFloat * this.root.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float / 768.0F; }
 
   public void createMetricWin() {
-    this.metricWin = new GRegion(this.win.x / lookAndFeel().metric(), this.win.y / lookAndFeel().metric(), this.win.dx / lookAndFeel().metric(), this.win.dy / lookAndFeel().metric());
+    this.metricWin = new GRegion(this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float / lookAndFeel().metric(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float / lookAndFeel().metric(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float / lookAndFeel().metric(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float / lookAndFeel().metric());
   }
 
   public void moved()
@@ -283,8 +283,8 @@ public class GWindow
       for (int i = 0; i < this.childWindow.size(); i++) {
         GWindow localGWindow = (GWindow)this.childWindow.get(i);
         localGWindow.getMinSize(paramGSize);
-        if (paramGSize.dx > f1) f1 = paramGSize.dx;
-        if (paramGSize.dy <= f2) continue; f2 = paramGSize.dy;
+        if (paramGSize.jdField_dx_of_type_Float > f1) f1 = paramGSize.jdField_dx_of_type_Float;
+        if (paramGSize.jdField_dy_of_type_Float <= f2) continue; f2 = paramGSize.jdField_dy_of_type_Float;
       }
     }
     paramGSize.set(f1, f2);
@@ -301,9 +301,9 @@ public class GWindow
   }
 
   public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    paramGRegion.x = (paramGRegion.y = paramFloat);
-    paramGRegion.dx = (this.win.dx - 2.0F * paramFloat);
-    paramGRegion.dy = (this.win.dy - 2.0F * paramFloat);
+    paramGRegion.jdField_x_of_type_Float = (paramGRegion.jdField_y_of_type_Float = paramFloat);
+    paramGRegion.jdField_dx_of_type_Float = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float - 2.0F * paramFloat);
+    paramGRegion.jdField_dy_of_type_Float = (this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float - 2.0F * paramFloat);
     return paramGRegion;
   }
 
@@ -390,10 +390,10 @@ public class GWindow
         return;
       this.root.bMouseCapture = true;
       this.root.mouseWindow = this;
-      this.root.doMouseAbsMove(this.root.mousePos.x, this.root.mousePos.y, this.root.mousePosZ);
+      this.root.doMouseAbsMove(this.root.mousePos.jdField_x_of_type_Float, this.root.mousePos.jdField_y_of_type_Float, this.root.mousePosZ);
     } else if ((this.root.mouseWindow == this) && (this.root.bMouseCapture)) {
       this.root.bMouseCapture = false;
-      this.root.doMouseAbsMove(this.root.mousePos.x, this.root.mousePos.y, this.root.mousePosZ);
+      this.root.doMouseAbsMove(this.root.mousePos.jdField_x_of_type_Float, this.root.mousePos.jdField_y_of_type_Float, this.root.mousePosZ);
     } }
 
   public boolean isMouseOver()
@@ -462,12 +462,12 @@ public class GWindow
       if (this.root.mouseWindowDown[paramInt] != null) {
         localGWindow = this.root.mouseWindowDown[paramInt];
         localGPoint = localGWindow.getMouseXY();
-        localGWindow.mouseButton(paramInt, false, localGPoint.x, localGPoint.y);
+        localGWindow.mouseButton(paramInt, false, localGPoint.jdField_x_of_type_Float, localGPoint.jdField_y_of_type_Float);
       }
       this.root.mouseWindowDown[paramInt] = this;
     } else {
       if (this.root.mouseWindowDown[paramInt] == this) {
-        if ((paramFloat1 >= 0.0F) && (paramFloat1 < this.win.dx) && (paramFloat2 >= 0.0F) && (paramFloat2 < this.win.dy)) {
+        if ((paramFloat1 >= 0.0F) && (paramFloat1 < this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float) && (paramFloat2 >= 0.0F) && (paramFloat2 < this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float)) {
           if ((this.bEnableDoubleClick[paramInt] != 0) && (this.root.mouseWindowUp[paramInt] == this) && (Time.currentReal() < this.root.mouseTimeUp[paramInt] + GWindowRoot.TIME_DOUBLE_CLICK))
           {
             this.root.mouseTimeUp[paramInt] = 0L;
@@ -483,7 +483,7 @@ public class GWindow
       else if (this.root.mouseWindowDown[paramInt] != null) {
         localGWindow = this.root.mouseWindowDown[paramInt];
         localGPoint = localGWindow.getMouseXY();
-        localGWindow.mouseButton(paramInt, false, localGPoint.x, localGPoint.y);
+        localGWindow.mouseButton(paramInt, false, localGPoint.jdField_x_of_type_Float, localGPoint.jdField_y_of_type_Float);
       }
       this.root.mouseWindowDown[paramInt] = null;
     }
@@ -517,7 +517,7 @@ public class GWindow
     GWindow localGWindow = this;
     _mousePos.set(this.root.mousePos);
     while (localGWindow != this.root) {
-      _mousePos.sub(localGWindow.win.x, localGWindow.win.y);
+      _mousePos.sub(localGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float, localGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float);
       localGWindow = localGWindow.parentWindow;
     }
     return _mousePos;
@@ -528,7 +528,7 @@ public class GWindow
     GWindow localGWindow = this;
     _winPos.set(paramFloat1, paramFloat2);
     while (localGWindow != this.root) {
-      _winPos.sub(localGWindow.win.x, localGWindow.win.y);
+      _winPos.sub(localGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float, localGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float);
       localGWindow = localGWindow.parentWindow;
     }
     return _winPos;
@@ -539,7 +539,7 @@ public class GWindow
     GWindow localGWindow = this;
     _globalPos.set(paramFloat1, paramFloat2);
     while (localGWindow != this.root) {
-      _globalPos.add(localGWindow.win.x, localGWindow.win.y);
+      _globalPos.add(localGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float, localGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float);
       localGWindow = localGWindow.parentWindow;
     }
     return _globalPos;
@@ -553,8 +553,8 @@ public class GWindow
   public final GWindow getParent(GWindow paramGWindow, Class paramClass, boolean paramBoolean1, boolean paramBoolean2)
   {
     paramGWindow = paramGWindow.parentWindow;
-    if (paramGWindow == null) return null;
-    while (paramGWindow != this.root) {
+    if (paramGWindow == null) return null; do
+    {
       if (paramBoolean1 ? paramClass == paramGWindow.getClass() : paramClass.isInstance(paramGWindow)) {
         if (paramBoolean2) {
           if (isFindTestOk(paramGWindow, true))
@@ -565,6 +565,8 @@ public class GWindow
 
       paramGWindow = paramGWindow.parentWindow;
     }
+    while (paramGWindow != this.root);
+
     return null;
   }
 
@@ -606,42 +608,43 @@ public class GWindow
   }
 
   public void doRender(boolean paramBoolean) {
-    if (this.resolutionChangeCounter != this.root.resolutionChangeCounter) {
+    if (this.jdField_resolutionChangeCounter_of_type_Int != this.root.jdField_resolutionChangeCounter_of_type_Int) {
       doResolutionChanged();
-      this.resolutionChangeCounter = this.root.resolutionChangeCounter;
+      this.jdField_resolutionChangeCounter_of_type_Int = this.root.jdField_resolutionChangeCounter_of_type_Int;
     }
 
     GPoint localGPoint = this.root.C.org;
     GRegion localGRegion = this.root.C.clip;
-    float f1 = localGPoint.x;
-    float f2 = localGPoint.y;
-    localGPoint.add(this.win.x, this.win.y);
-    float f3 = localGRegion.x;
-    float f4 = localGRegion.y;
-    float f5 = localGRegion.dx;
-    float f6 = localGRegion.dy;
+    float f1 = localGPoint.jdField_x_of_type_Float;
+    float f2 = localGPoint.jdField_y_of_type_Float;
+    localGPoint.add(this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_x_of_type_Float, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_y_of_type_Float);
+    float f3 = localGRegion.jdField_x_of_type_Float;
+    float f4 = localGRegion.jdField_y_of_type_Float;
+    float f5 = localGRegion.jdField_dx_of_type_Float;
+    float f6 = localGRegion.jdField_dy_of_type_Float;
 
     if (this.bClip) {
-      float f7 = localGRegion.x - localGPoint.x;
+      float f7 = localGRegion.jdField_x_of_type_Float - localGPoint.jdField_x_of_type_Float;
       if (f7 < 0.0F) {
-        localGRegion.dx += f7; if (localGRegion.dx <= 0.0F) break label351; localGRegion.x = localGPoint.x;
+        localGRegion.jdField_dx_of_type_Float += f7; if (localGRegion.jdField_dx_of_type_Float <= 0.0F) break label354; localGRegion.jdField_x_of_type_Float = localGPoint.jdField_x_of_type_Float;
         f7 = 0.0F;
       }
-      f7 = localGRegion.dx + f7 - this.win.dx;
+      f7 = localGRegion.jdField_dx_of_type_Float + f7 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float;
       if (f7 > 0.0F) {
-        localGRegion.dx -= f7; if (localGRegion.dx <= 0.0F) break label351; 
+        localGRegion.jdField_dx_of_type_Float -= f7; if (localGRegion.jdField_dx_of_type_Float <= 0.0F) break label354; 
       }
-      f7 = localGRegion.y - localGPoint.y;
+      f7 = localGRegion.jdField_y_of_type_Float - localGPoint.jdField_y_of_type_Float;
       if (f7 < 0.0F) {
-        localGRegion.dy += f7; if (localGRegion.dy <= 0.0F) break label351; localGRegion.y = localGPoint.y;
+        localGRegion.jdField_dy_of_type_Float += f7; if (localGRegion.jdField_dy_of_type_Float <= 0.0F) break label354; localGRegion.jdField_y_of_type_Float = localGPoint.jdField_y_of_type_Float;
         f7 = 0.0F;
       }
-      f7 = localGRegion.dy + f7 - this.win.dy;
+      f7 = localGRegion.jdField_dy_of_type_Float + f7 - this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float;
       if (f7 > 0.0F) {
-        localGRegion.dy -= f7; if (localGRegion.dy <= 0.0F) break label351; 
+        localGRegion.jdField_dy_of_type_Float -= f7; if (localGRegion.jdField_dy_of_type_Float <= 0.0F) break label354; 
       }
-    } else {
-      localGRegion.set(this.root.win);
+    }
+    else {
+      localGRegion.set(this.root.jdField_win_of_type_ComMaddoxGwindowGRegion);
     }
 
     if (paramBoolean) render(); else
@@ -650,7 +653,7 @@ public class GWindow
       doChildrensRender(paramBoolean);
     }
 
-    label351: localGRegion.set(f3, f4, f5, f6);
+    label354: localGRegion.set(f3, f4, f5, f6);
     localGPoint.set(f1, f2);
   }
 
@@ -681,41 +684,42 @@ public class GWindow
     ClipStackItem localClipStackItem = (ClipStackItem)clipStack.get(clipStackPtr++);
     GPoint localGPoint = this.root.C.org;
     GRegion localGRegion = this.root.C.clip;
-    localClipStackItem.orgx = localGPoint.x;
-    localClipStackItem.orgy = localGPoint.y;
-    localClipStackItem.clipx = localGRegion.x;
-    localClipStackItem.clipy = localGRegion.y;
-    localClipStackItem.clipdx = localGRegion.dx;
-    localClipStackItem.clipdy = localGRegion.dy;
+    localClipStackItem.orgx = localGPoint.jdField_x_of_type_Float;
+    localClipStackItem.orgy = localGPoint.jdField_y_of_type_Float;
+    localClipStackItem.clipx = localGRegion.jdField_x_of_type_Float;
+    localClipStackItem.clipy = localGRegion.jdField_y_of_type_Float;
+    localClipStackItem.clipdx = localGRegion.jdField_dx_of_type_Float;
+    localClipStackItem.clipdy = localGRegion.jdField_dy_of_type_Float;
   }
 
   public boolean pushClipRegion(GRegion paramGRegion, boolean paramBoolean, float paramFloat) {
     pushClip();
     GPoint localGPoint = this.root.C.org;
     GRegion localGRegion = this.root.C.clip;
-    localGPoint.add(paramGRegion.x + paramFloat, paramGRegion.y + paramFloat);
+    localGPoint.add(paramGRegion.jdField_x_of_type_Float + paramFloat, paramGRegion.jdField_y_of_type_Float + paramFloat);
 
     if (paramBoolean) {
-      float f = localGRegion.x - localGPoint.x;
+      float f = localGRegion.jdField_x_of_type_Float - localGPoint.jdField_x_of_type_Float;
       if (f < 0.0F) {
-        localGRegion.dx += f; if (localGRegion.dx <= 0.0F) break label284; localGRegion.x = localGPoint.x;
+        localGRegion.jdField_dx_of_type_Float += f; if (localGRegion.jdField_dx_of_type_Float <= 0.0F) break label284; localGRegion.jdField_x_of_type_Float = localGPoint.jdField_x_of_type_Float;
         f = 0.0F;
       }
-      f = localGRegion.dx + f - (paramGRegion.dx - 2.0F * paramFloat);
+      f = localGRegion.jdField_dx_of_type_Float + f - (paramGRegion.jdField_dx_of_type_Float - 2.0F * paramFloat);
       if (f > 0.0F) {
-        localGRegion.dx -= f; if (localGRegion.dx <= 0.0F) break label284; 
+        localGRegion.jdField_dx_of_type_Float -= f; if (localGRegion.jdField_dx_of_type_Float <= 0.0F) break label284; 
       }
-      f = localGRegion.y - localGPoint.y;
+      f = localGRegion.jdField_y_of_type_Float - localGPoint.jdField_y_of_type_Float;
       if (f < 0.0F) {
-        localGRegion.dy += f; if (localGRegion.dy <= 0.0F) break label284; localGRegion.y = localGPoint.y;
+        localGRegion.jdField_dy_of_type_Float += f; if (localGRegion.jdField_dy_of_type_Float <= 0.0F) break label284; localGRegion.jdField_y_of_type_Float = localGPoint.jdField_y_of_type_Float;
         f = 0.0F;
       }
-      f = localGRegion.dy + f - (paramGRegion.dy - 2.0F * paramFloat);
+      f = localGRegion.jdField_dy_of_type_Float + f - (paramGRegion.jdField_dy_of_type_Float - 2.0F * paramFloat);
       if (f > 0.0F) {
-        localGRegion.dy -= f; if (localGRegion.dy <= 0.0F) break label284; 
+        localGRegion.jdField_dy_of_type_Float -= f; if (localGRegion.jdField_dy_of_type_Float <= 0.0F) break label284; 
       }
-    } else {
-      localGRegion.set(this.root.win);
+    }
+    else {
+      localGRegion.set(this.root.jdField_win_of_type_ComMaddoxGwindowGRegion);
     }
     return true;
 
@@ -755,54 +759,54 @@ public class GWindow
 
   public void draw(float paramFloat1, float paramFloat2, GTexture paramGTexture)
   {
-    draw(paramFloat1, paramFloat2, paramGTexture.size.dx, paramGTexture.size.dy, paramGTexture, 0.0F, 0.0F, paramGTexture.size.dx, paramGTexture.size.dy);
+    draw(paramFloat1, paramFloat2, paramGTexture.size.jdField_dx_of_type_Float, paramGTexture.size.jdField_dy_of_type_Float, paramGTexture, 0.0F, 0.0F, paramGTexture.size.jdField_dx_of_type_Float, paramGTexture.size.jdField_dy_of_type_Float);
   }
 
   public void draw(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, GTexture paramGTexture)
   {
-    draw(paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramGTexture, 0.0F, 0.0F, paramGTexture.size.dx, paramGTexture.size.dy);
+    draw(paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramGTexture, 0.0F, 0.0F, paramGTexture.size.jdField_dx_of_type_Float, paramGTexture.size.jdField_dy_of_type_Float);
   }
 
   public void draw(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, GTexture paramGTexture, float paramFloat5, float paramFloat6, float paramFloat7, float paramFloat8)
   {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
     localGCanvas.draw(paramGTexture, paramFloat3, paramFloat4, paramFloat5, paramFloat6, paramFloat7, paramFloat8);
   }
 
   public void draw(float paramFloat1, float paramFloat2, GMesh paramGMesh)
   {
-    draw(paramFloat1, paramFloat2, paramGMesh.size.dx, paramGMesh.size.dy, paramGMesh);
+    draw(paramFloat1, paramFloat2, paramGMesh.size.jdField_dx_of_type_Float, paramGMesh.size.jdField_dy_of_type_Float, paramGMesh);
   }
 
   public void draw(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, GMesh paramGMesh)
   {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
     localGCanvas.draw(paramGMesh, paramFloat3, paramFloat4);
   }
 
   public void draw(float paramFloat1, float paramFloat2, GTexture paramGTexture, GRegion paramGRegion)
   {
-    draw(paramFloat1, paramFloat2, paramGRegion.dx, paramGRegion.dy, paramGTexture, paramGRegion.x, paramGRegion.y, paramGRegion.dx, paramGRegion.dy);
+    draw(paramFloat1, paramFloat2, paramGRegion.jdField_dx_of_type_Float, paramGRegion.jdField_dy_of_type_Float, paramGTexture, paramGRegion.jdField_x_of_type_Float, paramGRegion.jdField_y_of_type_Float, paramGRegion.jdField_dx_of_type_Float, paramGRegion.jdField_dy_of_type_Float);
   }
 
   public void draw(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, GTexture paramGTexture, GRegion paramGRegion) {
-    draw(paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramGTexture, paramGRegion.x, paramGRegion.y, paramGRegion.dx, paramGRegion.dy);
+    draw(paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramGTexture, paramGRegion.jdField_x_of_type_Float, paramGRegion.jdField_y_of_type_Float, paramGRegion.jdField_dx_of_type_Float, paramGRegion.jdField_dy_of_type_Float);
   }
 
   public void draw(float paramFloat1, float paramFloat2, GTexRegion paramGTexRegion)
   {
-    draw(paramFloat1, paramFloat2, paramGTexRegion.dx, paramGTexRegion.dy, paramGTexRegion.texture, paramGTexRegion.x, paramGTexRegion.y, paramGTexRegion.dx, paramGTexRegion.dy);
+    draw(paramFloat1, paramFloat2, paramGTexRegion.jdField_dx_of_type_Float, paramGTexRegion.jdField_dy_of_type_Float, paramGTexRegion.texture, paramGTexRegion.jdField_x_of_type_Float, paramGTexRegion.jdField_y_of_type_Float, paramGTexRegion.jdField_dx_of_type_Float, paramGTexRegion.jdField_dy_of_type_Float);
   }
 
   public void draw(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, GTexRegion paramGTexRegion) {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
-    localGCanvas.draw(paramGTexRegion.texture, paramFloat3, paramFloat4, paramGTexRegion.x, paramGTexRegion.y, paramGTexRegion.dx, paramGTexRegion.dy);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
+    localGCanvas.draw(paramGTexRegion.texture, paramFloat3, paramFloat4, paramGTexRegion.jdField_x_of_type_Float, paramGTexRegion.jdField_y_of_type_Float, paramGTexRegion.jdField_dx_of_type_Float, paramGTexRegion.jdField_dy_of_type_Float);
   }
 
   public void setCanvasFont(int paramInt) {
@@ -812,22 +816,22 @@ public class GWindow
   public void draw(float paramFloat1, float paramFloat2, String paramString)
   {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
     localGCanvas.draw(paramString);
   }
 
   public void draw(float paramFloat1, float paramFloat2, String paramString, int paramInt1, int paramInt2) {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
     localGCanvas.draw(paramString, paramInt1, paramInt2);
   }
 
   public void draw(float paramFloat1, float paramFloat2, char[] paramArrayOfChar, int paramInt1, int paramInt2) {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
     localGCanvas.draw(paramArrayOfChar, paramInt1, paramInt2);
   }
 
@@ -854,11 +858,11 @@ public class GWindow
     if (paramInt3 == 0) return;
     GFont localGFont = this.root.C.font;
     GSize localGSize = localGFont.size(paramString, paramInt2, paramInt3);
-    paramFloat2 += (paramFloat4 - localGSize.dy) / 2.0F;
+    paramFloat2 += (paramFloat4 - localGSize.jdField_dy_of_type_Float) / 2.0F;
     if (paramInt1 == 2)
-      paramFloat1 += paramFloat3 - localGSize.dx;
+      paramFloat1 += paramFloat3 - localGSize.jdField_dx_of_type_Float;
     else if (paramInt1 == 1) {
-      paramFloat1 += (paramFloat3 - localGSize.dx) / 2.0F;
+      paramFloat1 += (paramFloat3 - localGSize.jdField_dx_of_type_Float) / 2.0F;
     }
     draw(paramFloat1, paramFloat2, paramString, paramInt2, paramInt3);
   }
@@ -867,11 +871,11 @@ public class GWindow
     if (paramInt3 == 0) return;
     GFont localGFont = this.root.C.font;
     GSize localGSize = localGFont.size(paramArrayOfChar, paramInt2, paramInt3);
-    paramFloat2 += (paramFloat4 - localGSize.dy) / 2.0F;
+    paramFloat2 += (paramFloat4 - localGSize.jdField_dy_of_type_Float) / 2.0F;
     if (paramInt1 == 2)
-      paramFloat1 += paramFloat3 - localGSize.dx;
+      paramFloat1 += paramFloat3 - localGSize.jdField_dx_of_type_Float;
     else if (paramInt1 == 1) {
-      paramFloat1 += (paramFloat3 - localGSize.dx) / 2.0F;
+      paramFloat1 += (paramFloat3 - localGSize.jdField_dx_of_type_Float) / 2.0F;
     }
     draw(paramFloat1, paramFloat2, paramArrayOfChar, paramInt2, paramInt3);
   }
@@ -903,8 +907,8 @@ public class GWindow
             return i;
           }
           i++; paramInt2 -= m; paramInt1 += m; j -= m;
-          while ((j > 0) && 
-            (paramString.charAt(paramInt1) == ' ')) {
+          while (j > 0) {
+            if (paramString.charAt(paramInt1) != ' ') break;
             paramInt1++; paramInt2--; j--;
           }
         }
@@ -942,8 +946,8 @@ public class GWindow
 
   public int drawLines(float paramFloat1, float paramFloat2, String paramString, int paramInt1, int paramInt2, float paramFloat3, float paramFloat4, int paramInt3) {
     GCanvas localGCanvas = this.root.C;
-    localGCanvas.cur.x = (paramFloat1 + localGCanvas.org.x);
-    localGCanvas.cur.y = (paramFloat2 + localGCanvas.org.y);
+    localGCanvas.cur.jdField_x_of_type_Float = (paramFloat1 + localGCanvas.org.jdField_x_of_type_Float);
+    localGCanvas.cur.jdField_y_of_type_Float = (paramFloat2 + localGCanvas.org.jdField_y_of_type_Float);
     GFont localGFont = localGCanvas.font;
     int i = 0;
     while ((paramInt2 > 0) && (paramInt3 != 0)) {
@@ -959,11 +963,11 @@ public class GWindow
             return i;
           }
           localGCanvas.draw(paramString, paramInt1, m);
-          localGCanvas.cur.y += paramFloat4;
+          localGCanvas.cur.jdField_y_of_type_Float += paramFloat4;
           i++; paramInt2 -= m; paramInt1 += m; j -= m;
           paramInt3--;
-          while ((j > 0) && 
-            (paramString.charAt(paramInt1) == ' ')) {
+          while (j > 0) {
+            if (paramString.charAt(paramInt1) != ' ') break;
             paramInt1++; paramInt2--; j--;
           }
         }
@@ -971,7 +975,7 @@ public class GWindow
           paramInt1++; paramInt2--;
         }
       } else {
-        localGCanvas.cur.y += paramFloat4;
+        localGCanvas.cur.jdField_y_of_type_Float += paramFloat4;
         i++; paramInt2--; paramInt1++;
         paramInt3--;
       }
@@ -1079,7 +1083,7 @@ public class GWindow
       this.root.modalWindow = null;
     if ((this.root.bMouseCapture) && (this.root.mouseWindow == this)) {
       this.root.bMouseCapture = false;
-      this.root.doMouseAbsMove(this.root.mousePos.x, this.root.mousePos.y, this.root.mousePosZ);
+      this.root.doMouseAbsMove(this.root.mousePos.jdField_x_of_type_Float, this.root.mousePos.jdField_y_of_type_Float, this.root.mousePosZ);
     }
   }
 
@@ -1174,11 +1178,11 @@ public class GWindow
   protected GWindow doNew(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, boolean paramBoolean) {
     if (paramBoolean) {
       this.metricWin = new GRegion(paramFloat1, paramFloat2, paramFloat3, paramFloat4);
-      this.win = new GRegion(paramGWindow.lookAndFeel().metric(this.metricWin.x), paramGWindow.lookAndFeel().metric(this.metricWin.y), paramGWindow.lookAndFeel().metric(this.metricWin.dx), paramGWindow.lookAndFeel().metric(this.metricWin.dy));
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion = new GRegion(paramGWindow.lookAndFeel().metric(this.metricWin.jdField_x_of_type_Float), paramGWindow.lookAndFeel().metric(this.metricWin.jdField_y_of_type_Float), paramGWindow.lookAndFeel().metric(this.metricWin.jdField_dx_of_type_Float), paramGWindow.lookAndFeel().metric(this.metricWin.jdField_dy_of_type_Float));
     }
     else
     {
-      this.win = new GRegion((int)(paramFloat1 + 0.5F), (int)(paramFloat2 + 0.5F), (int)(paramFloat3 + 0.5F), (int)(paramFloat4 + 0.5F));
+      this.jdField_win_of_type_ComMaddoxGwindowGRegion = new GRegion((int)(paramFloat1 + 0.5F), (int)(paramFloat2 + 0.5F), (int)(paramFloat3 + 0.5F), (int)(paramFloat4 + 0.5F));
     }
     this.root = paramGWindow.root;
     this.parentWindow = paramGWindow;
@@ -1198,20 +1202,20 @@ public class GWindow
   }
 
   protected GWindow doNew(GWindow paramGWindow) {
-    doNew(paramGWindow, 0.0F, 0.0F, paramGWindow.win.dx, paramGWindow.win.dy, false);
+    doNew(paramGWindow, 0.0F, 0.0F, paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float, paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float, false);
     return this;
   }
   public GWindow create(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, boolean paramBoolean, GWindow paramGWindow) {
     return paramGWindow.doNew(this, paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramBoolean);
   }
   public GWindow create(GWindow paramGWindow) {
-    return paramGWindow.doNew(this, 0.0F, 0.0F, this.win.dx, this.win.dy, false);
+    return paramGWindow.doNew(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float, this.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float, false);
   }
   public GWindow(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, boolean paramBoolean) {
     doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramBoolean);
   }
   public GWindow(GWindow paramGWindow) {
-    doNew(paramGWindow, 0.0F, 0.0F, paramGWindow.win.dx, paramGWindow.win.dy, false);
+    doNew(paramGWindow, 0.0F, 0.0F, paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dx_of_type_Float, paramGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.jdField_dy_of_type_Float, false);
   }
 
   public GWindow() {

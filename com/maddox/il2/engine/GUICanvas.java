@@ -25,7 +25,7 @@ public class GUICanvas extends GCanvas
     GUITexture localGUITexture = (GUITexture)paramGTexture;
     if (localGUITexture.mat == null) return false;
     if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if (this.alpha == 0) return false;
+    if (this.jdField_alpha_of_type_Int == 0) return false;
     localGUITexture.mat.preRender();
     return true;
   }
@@ -37,51 +37,51 @@ public class GUICanvas extends GCanvas
     if (localGUITexture.mat == null) return false;
     if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
     if ((paramFloat5 == 0.0F) || (paramFloat6 == 0.0F)) return false;
-    if (this.alpha == 0) return false;
+    if (this.jdField_alpha_of_type_Int == 0) return false;
     float f1 = paramFloat5 / paramFloat1;
     float f2 = paramFloat6 / paramFloat2;
-    float f3 = this.cur.x;
-    float f4 = this.cur.y;
-    float f5 = f3 - this.clip.x;
+    float f3 = this.jdField_cur_of_type_ComMaddoxGwindowGPoint.x;
+    float f4 = this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y;
+    float f5 = f3 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.x;
     float f6;
     if (f5 < 0.0F) {
       paramFloat1 += f5; if (paramFloat1 <= 0.0F) return false;
-      f3 = this.clip.x;
+      f3 = this.jdField_clip_of_type_ComMaddoxGwindowGRegion.x;
       f6 = f5 * f1;
       paramFloat5 += f6;
       paramFloat3 -= f6;
       f5 = 0.0F;
     }
-    f5 = paramFloat1 + f5 - this.clip.dx;
+    f5 = paramFloat1 + f5 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dx;
     if (f5 > 0.0F) {
       paramFloat1 -= f5; if (paramFloat1 <= 0.0F) return false;
       paramFloat5 -= f5 * f1;
     }
 
-    f5 = f4 - this.clip.y;
+    f5 = f4 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
     if (f5 < 0.0F) {
       paramFloat2 += f5; if (paramFloat2 <= 0.0F) return false;
-      f4 = this.clip.y;
+      f4 = this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
       f6 = f5 * f2;
       paramFloat6 += f6;
       paramFloat4 -= f6;
       f5 = 0.0F;
     }
-    f5 = paramFloat2 + f5 - this.clip.dy;
+    f5 = paramFloat2 + f5 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy;
     if (f5 > 0.0F) {
       paramFloat2 -= f5; if (paramFloat2 <= 0.0F) return false;
       f6 = f5 * f2;
       paramFloat6 -= f6;
     }
 
-    f4 = this.size.dy - f4;
+    f4 = this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - f4;
 
     f3 = Math.round(f3);
     f4 = Math.round(f4);
     paramFloat1 = Math.round(paramFloat1);
     paramFloat2 = Math.round(paramFloat2);
 
-    Render.DrawTile(f3, f4, paramFloat1, -paramFloat2, 0.0F, localGUITexture.mat.cppObject(), this.color.color | (this.alpha & 0xFF) << 24, paramFloat3 * localGUITexture.scalex, paramFloat4 * localGUITexture.scaley, paramFloat5 * localGUITexture.scalex, paramFloat6 * localGUITexture.scaley);
+    Render.DrawTile(f3, f4, paramFloat1, -paramFloat2, 0.0F, localGUITexture.mat.cppObject(), this.jdField_color_of_type_ComMaddoxGwindowGColor.color | (this.jdField_alpha_of_type_Int & 0xFF) << 24, paramFloat3 * localGUITexture.scalex, paramFloat4 * localGUITexture.scaley, paramFloat5 * localGUITexture.scalex, paramFloat6 * localGUITexture.scaley);
 
     return true;
   }
@@ -91,29 +91,29 @@ public class GUICanvas extends GCanvas
     GUIMesh localGUIMesh = (GUIMesh)paramGMesh;
     if (localGUIMesh.mesh == null) return false;
     if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if (this.alpha == 0) return false;
-    setMeshPos(localGUIMesh, this.cur.x, this.cur.y, paramFloat1, paramFloat2);
+    if (this.jdField_alpha_of_type_Int == 0) return false;
+    setMeshPos(localGUIMesh, this.jdField_cur_of_type_ComMaddoxGwindowGPoint.x, this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y, paramFloat1, paramFloat2);
     localGUIMesh.mesh.preRender();
     return true;
   }
 
   private void setMeshPos(GUIMesh paramGUIMesh, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    float f1 = paramFloat3 / paramGUIMesh.size.dx;
-    float f2 = paramFloat4 / paramGUIMesh.size.dy;
+    float f1 = paramFloat3 / paramGUIMesh.jdField_size_of_type_ComMaddoxGwindowGSize.dx;
+    float f2 = paramFloat4 / paramGUIMesh.jdField_size_of_type_ComMaddoxGwindowGSize.dy;
     float f3 = 1.0F;
 
     CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)this.render.getCamera();
 
-    if ((paramGUIMesh.boundBox[2] < localCameraOrtho2D.ZNear) || (paramGUIMesh.boundBox[5] > localCameraOrtho2D.ZFar)) {
-      float f4 = localCameraOrtho2D.ZNear - paramGUIMesh.boundBox[2];
-      if (f4 < paramGUIMesh.boundBox[5] - localCameraOrtho2D.ZFar)
-        f4 = paramGUIMesh.boundBox[5] - localCameraOrtho2D.ZFar;
-      f3 = localCameraOrtho2D.ZFar / (f4 + localCameraOrtho2D.ZFar);
+    if ((paramGUIMesh.boundBox[2] < localCameraOrtho2D.jdField_ZNear_of_type_Float) || (paramGUIMesh.boundBox[5] > localCameraOrtho2D.jdField_ZFar_of_type_Float)) {
+      float f4 = localCameraOrtho2D.jdField_ZNear_of_type_Float - paramGUIMesh.boundBox[2];
+      if (f4 < paramGUIMesh.boundBox[5] - localCameraOrtho2D.jdField_ZFar_of_type_Float)
+        f4 = paramGUIMesh.boundBox[5] - localCameraOrtho2D.jdField_ZFar_of_type_Float;
+      f3 = localCameraOrtho2D.jdField_ZFar_of_type_Float / (f4 + localCameraOrtho2D.jdField_ZFar_of_type_Float);
     }
     paramGUIMesh.mesh.setScaleXYZ(f1, f2, f3);
     Point3d localPoint3d = _meshLoc.getPoint();
     localPoint3d.x = (paramFloat1 - paramGUIMesh.boundBox[0] * f1);
-    localPoint3d.y = (this.size.dy - (paramFloat2 + paramGUIMesh.boundBox[4] * f2));
+    localPoint3d.y = (this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - (paramFloat2 + paramGUIMesh.boundBox[4] * f2));
     paramGUIMesh.mesh.setPos(_meshLoc);
   }
 
@@ -123,29 +123,29 @@ public class GUICanvas extends GCanvas
     GUIMesh localGUIMesh = (GUIMesh)paramGMesh;
     if (localGUIMesh.mesh == null) return false;
     if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if (this.alpha == 0) return false;
-    float f1 = this.cur.x;
-    float f2 = this.cur.y;
+    if (this.jdField_alpha_of_type_Int == 0) return false;
+    float f1 = this.jdField_cur_of_type_ComMaddoxGwindowGPoint.x;
+    float f2 = this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y;
     float f3 = paramFloat1;
     float f4 = paramFloat2;
-    float f5 = f1 - this.clip.x;
+    float f5 = f1 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.x;
     if (f5 < 0.0F) {
       f3 += f5; if (f3 <= 0.0F) return false;
-      f1 = this.clip.x;
+      f1 = this.jdField_clip_of_type_ComMaddoxGwindowGRegion.x;
       f5 = 0.0F;
     }
-    f5 = f3 + f5 - this.clip.dx;
+    f5 = f3 + f5 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dx;
     if (f5 > 0.0F) {
       f3 -= f5; if (f3 <= 0.0F) return false;
     }
 
-    f5 = f2 - this.clip.y;
+    f5 = f2 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
     if (f5 < 0.0F) {
       f4 += f5; if (f4 <= 0.0F) return false;
-      f2 = this.clip.y;
+      f2 = this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
       f5 = 0.0F;
     }
-    f5 = f4 + f5 - this.clip.dy;
+    f5 = f4 + f5 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy;
     if (f5 > 0.0F) {
       f4 -= f5; if (f4 <= 0.0F) return false;
     }
@@ -155,7 +155,7 @@ public class GUICanvas extends GCanvas
     this.render.getViewPort(_viewPort);
     localCameraOrtho2D.activate(1.0F, this.render.renders().width(), this.render.renders().height(), _viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3], _viewPort[0] + Math.round(f1), _viewPort[1] + _viewPort[3] - Math.round(f2) - Math.round(f4), Math.round(f3), Math.round(f4));
 
-    setMeshPos(localGUIMesh, this.cur.x, this.cur.y, paramFloat1, paramFloat2);
+    setMeshPos(localGUIMesh, this.jdField_cur_of_type_ComMaddoxGwindowGPoint.x, this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y, paramFloat1, paramFloat2);
     localGUIMesh.mesh.render();
 
     localCameraOrtho2D.activate(1.0F, this.render.renders().width(), this.render.renders().height(), _viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3]);
@@ -167,8 +167,8 @@ public class GUICanvas extends GCanvas
   {
     if (!this.bClearZ) return;
     CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)this.render.getCamera();
-    float f = -(paramBoolean ? localCameraOrtho2D.ZFar - 0.01F : localCameraOrtho2D.ZNear + 0.01F);
-    Render.DrawTile(paramFloat1, this.size.dy - paramFloat2, paramFloat3, -paramFloat4, f, this.clear_set_z.mat.cppObject(), -1, 0.0F, 0.0F, 1.0F, 1.0F);
+    float f = -(paramBoolean ? localCameraOrtho2D.jdField_ZFar_of_type_Float - 0.01F : localCameraOrtho2D.jdField_ZNear_of_type_Float + 0.01F);
+    Render.DrawTile(paramFloat1, this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - paramFloat2, paramFloat3, -paramFloat4, f, this.clear_set_z.mat.cppObject(), -1, 0.0F, 0.0F, 1.0F, 1.0F);
   }
 
   public boolean draw(String paramString)
@@ -179,46 +179,46 @@ public class GUICanvas extends GCanvas
   public boolean draw(String paramString, int paramInt1, int paramInt2) {
     if ((paramString == null) || (paramString.length() == 0)) return false;
     if (paramInt2 <= 0) return false;
-    if (this.alpha == 0) return false;
-    GUIFont localGUIFont = (GUIFont)this.font;
+    if (this.jdField_alpha_of_type_Int == 0) return false;
+    GUIFont localGUIFont = (GUIFont)this.jdField_font_of_type_ComMaddoxGwindowGFont;
     if ((localGUIFont == null) || (localGUIFont.fnt == null)) return false;
-    float f1 = localGUIFont.height;
-    float f2 = this.cur.y;
-    float f3 = f2 - this.clip.y;
+    float f1 = localGUIFont.jdField_height_of_type_Float;
+    float f2 = this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y;
+    float f3 = f2 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
     if (f3 < 0.0F) {
       f1 += f3; if (f1 <= 0.0F) return false;
-      f2 = this.clip.y;
+      f2 = this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
       f3 = 0.0F;
     }
-    f3 = f1 + f3 - this.clip.dy;
+    f3 = f1 + f3 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy;
     if (f3 > 0.0F) {
       f1 -= f3; if (f1 <= 0.0F) return false;
     }
 
-    localGUIFont.fnt.outputClip(this.color.color | (this.alpha & 0xFF) << 24, Math.round(this.cur.x), Math.round(this.size.dy - this.cur.y - localGUIFont.height - localGUIFont.descender), 0.0F, paramString, paramInt1, paramInt2, Math.round(this.clip.x), Math.round(this.size.dy - this.clip.y - this.clip.dy), Math.round(this.clip.dx), Math.round(this.clip.dy));
+    localGUIFont.fnt.outputClip(this.jdField_color_of_type_ComMaddoxGwindowGColor.color | (this.jdField_alpha_of_type_Int & 0xFF) << 24, Math.round(this.jdField_cur_of_type_ComMaddoxGwindowGPoint.x), Math.round(this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y - localGUIFont.jdField_height_of_type_Float - localGUIFont.jdField_descender_of_type_Float), 0.0F, paramString, paramInt1, paramInt2, Math.round(this.jdField_clip_of_type_ComMaddoxGwindowGRegion.x), Math.round(this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy), Math.round(this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dx), Math.round(this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy));
 
     return true;
   }
   public boolean draw(char[] paramArrayOfChar, int paramInt1, int paramInt2) {
     if (paramArrayOfChar == null) return false;
     if (paramInt2 <= 0) return false;
-    if (this.alpha == 0) return false;
-    GUIFont localGUIFont = (GUIFont)this.font;
+    if (this.jdField_alpha_of_type_Int == 0) return false;
+    GUIFont localGUIFont = (GUIFont)this.jdField_font_of_type_ComMaddoxGwindowGFont;
     if ((localGUIFont == null) || (localGUIFont.fnt == null)) return false;
-    float f1 = localGUIFont.height;
-    float f2 = this.cur.y;
-    float f3 = f2 - this.clip.y;
+    float f1 = localGUIFont.jdField_height_of_type_Float;
+    float f2 = this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y;
+    float f3 = f2 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
     if (f3 < 0.0F) {
       f1 += f3; if (f1 <= 0.0F) return false;
-      f2 = this.clip.y;
+      f2 = this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y;
       f3 = 0.0F;
     }
-    f3 = f1 + f3 - this.clip.dy;
+    f3 = f1 + f3 - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy;
     if (f3 > 0.0F) {
       f1 -= f3; if (f1 <= 0.0F) return false;
     }
 
-    localGUIFont.fnt.outputClip(this.color.color | (this.alpha & 0xFF) << 24, Math.round(this.cur.x), Math.round(this.size.dy - this.cur.y - localGUIFont.height - localGUIFont.descender), 0.0F, paramArrayOfChar, paramInt1, paramInt2, Math.round(this.clip.x), Math.round(this.size.dy - this.clip.y - this.clip.dy), Math.round(this.clip.dx), Math.round(this.clip.dy));
+    localGUIFont.fnt.outputClip(this.jdField_color_of_type_ComMaddoxGwindowGColor.color | (this.jdField_alpha_of_type_Int & 0xFF) << 24, Math.round(this.jdField_cur_of_type_ComMaddoxGwindowGPoint.x), Math.round(this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - this.jdField_cur_of_type_ComMaddoxGwindowGPoint.y - localGUIFont.jdField_height_of_type_Float - localGUIFont.jdField_descender_of_type_Float), 0.0F, paramArrayOfChar, paramInt1, paramInt2, Math.round(this.jdField_clip_of_type_ComMaddoxGwindowGRegion.x), Math.round(this.jdField_size_of_type_ComMaddoxGwindowGSize.dy - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.y - this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy), Math.round(this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dx), Math.round(this.jdField_clip_of_type_ComMaddoxGwindowGRegion.dy));
 
     return true;
   }

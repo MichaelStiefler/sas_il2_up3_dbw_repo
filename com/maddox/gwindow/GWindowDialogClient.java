@@ -9,8 +9,8 @@ public class GWindowDialogClient extends GWindowClient
   public ArrayList tabs = new ArrayList();
 
   public GWindowDialogControl addLabel(GWindowDialogControl paramGWindowDialogControl) {
-    paramGWindowDialogControl.bAcceptsKeyFocus = false;
-    paramGWindowDialogControl.bTransient = true;
+    paramGWindowDialogControl.jdField_bAcceptsKeyFocus_of_type_Boolean = false;
+    paramGWindowDialogControl.jdField_bTransient_of_type_Boolean = true;
     return paramGWindowDialogControl;
   }
 
@@ -85,7 +85,7 @@ public class GWindowDialogClient extends GWindowClient
       int j = this.tabs.size();
       for (k = 0; k < j; k++) {
         GWindowDialogControl localGWindowDialogControl1 = (GWindowDialogControl)this.tabs.get(k);
-        if ((!localGWindowDialogControl1.bEnable) || (!localGWindowDialogControl1.bVisible) || (localGWindowDialogControl1.cap == null) || (!localGWindowDialogControl1.bAcceptsKeyFocus) || (localGWindowDialogControl1.bTransient) || (Character.toLowerCase(localGWindowDialogControl1.cap.hotKey) != Character.toLowerCase(c))) {
+        if ((!localGWindowDialogControl1.bEnable) || (!localGWindowDialogControl1.jdField_bVisible_of_type_Boolean) || (localGWindowDialogControl1.cap == null) || (!localGWindowDialogControl1.jdField_bAcceptsKeyFocus_of_type_Boolean) || (localGWindowDialogControl1.jdField_bTransient_of_type_Boolean) || (Character.toLowerCase(localGWindowDialogControl1.cap.hotKey) != Character.toLowerCase(c))) {
           continue;
         }
         localGWindowDialogControl1.activateWindow();
@@ -100,7 +100,7 @@ public class GWindowDialogClient extends GWindowClient
     int i = paramInt2;
 
     if (i == 10) {
-      if ((this.defaultControl != null) && (this.defaultControl.bEnable) && (this.defaultControl.bVisible))
+      if ((this.defaultControl != null) && (this.defaultControl.bEnable) && (this.defaultControl.jdField_bVisible_of_type_Boolean))
       {
         this.defaultControl.activateWindow();
         this.defaultControl.notify(2, 0);
@@ -108,7 +108,7 @@ public class GWindowDialogClient extends GWindowClient
       return false;
     }
     if (i == 27) {
-      if ((this.escapeControl != null) && (this.escapeControl.bEnable) && (this.escapeControl.bVisible))
+      if ((this.escapeControl != null) && (this.escapeControl.bEnable) && (this.escapeControl.jdField_bVisible_of_type_Boolean))
       {
         this.escapeControl.activateWindow();
         this.escapeControl.notify(2, 0);
@@ -126,7 +126,7 @@ public class GWindowDialogClient extends GWindowClient
       localGWindowDialogControl2 = this.tabs.size();
       for (int m = 0; m < localGWindowDialogControl2; m++) {
         k++; localGWindowDialogControl4 = (GWindowDialogControl)this.tabs.get(k % localGWindowDialogControl2);
-        if ((!localGWindowDialogControl4.bEnable) || (!localGWindowDialogControl4.bVisible) || (!localGWindowDialogControl4.bTabStop) || (!localGWindowDialogControl4.bAcceptsKeyFocus) || (localGWindowDialogControl4.bTransient))
+        if ((!localGWindowDialogControl4.bEnable) || (!localGWindowDialogControl4.jdField_bVisible_of_type_Boolean) || (!localGWindowDialogControl4.bTabStop) || (!localGWindowDialogControl4.jdField_bAcceptsKeyFocus_of_type_Boolean) || (localGWindowDialogControl4.jdField_bTransient_of_type_Boolean))
           continue;
         localGWindowDialogControl4.activateWindow();
         return true;
@@ -149,12 +149,10 @@ public class GWindowDialogClient extends GWindowClient
         localGWindowDialogControl5 = (GWindowDialogControl)this.tabs.get(n);
         if ((!localGWindowDialogControl3.bTabStop) && ((localGWindowDialogControl3.bTabStop) || (localGWindowDialogControl5.bTabStop)))
           break;
-        if ((localGWindowDialogControl5.bEnable) && (localGWindowDialogControl5.bVisible) && (localGWindowDialogControl5.bAcceptsKeyFocus) && (!localGWindowDialogControl5.bTransient))
-        {
-          localGWindowDialogControl5.activateWindow();
-          break;
-        }
-
+        if ((!localGWindowDialogControl5.bEnable) || (!localGWindowDialogControl5.jdField_bVisible_of_type_Boolean) || (!localGWindowDialogControl5.jdField_bAcceptsKeyFocus_of_type_Boolean) || (localGWindowDialogControl5.jdField_bTransient_of_type_Boolean))
+          continue;
+        localGWindowDialogControl5.activateWindow();
+        break;
       }
 
       return true;
@@ -171,12 +169,10 @@ public class GWindowDialogClient extends GWindowClient
         localGWindowDialogControl5 = (GWindowDialogControl)this.tabs.get(n);
         if (((!localGWindowDialogControl3.bTabStop) || (!localGWindowDialogControl5.bTabStop)) && (localGWindowDialogControl3.bTabStop))
           break;
-        if ((localGWindowDialogControl5.bEnable) && (localGWindowDialogControl5.bVisible) && (localGWindowDialogControl5.bAcceptsKeyFocus) && (!localGWindowDialogControl5.bTransient))
-        {
-          localGWindowDialogControl5.activateWindow();
-          break;
-        }
-
+        if ((!localGWindowDialogControl5.bEnable) || (!localGWindowDialogControl5.jdField_bVisible_of_type_Boolean) || (!localGWindowDialogControl5.jdField_bAcceptsKeyFocus_of_type_Boolean) || (localGWindowDialogControl5.jdField_bTransient_of_type_Boolean))
+          continue;
+        localGWindowDialogControl5.activateWindow();
+        break;
       }
 
       return true;

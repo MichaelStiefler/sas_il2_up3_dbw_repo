@@ -104,17 +104,17 @@ public class PlMisChief extends Plugin
 
   public static int moveType(int paramInt)
   {
-    PlMisChief localPlMisChief = (PlMisChief)getPlugin("MisChief");
+    PlMisChief localPlMisChief = (PlMisChief)Plugin.getPlugin("MisChief");
     return localPlMisChief.type[paramInt].moveType;
   }
 
   public static double speed(int paramInt1, int paramInt2) {
-    PlMisChief localPlMisChief = (PlMisChief)getPlugin("MisChief");
+    PlMisChief localPlMisChief = (PlMisChief)Plugin.getPlugin("MisChief");
     return localPlMisChief.type[paramInt1].item[paramInt2].speed;
   }
 
   public static boolean isAirport(int paramInt1, int paramInt2) {
-    PlMisChief localPlMisChief = (PlMisChief)getPlugin("MisChief");
+    PlMisChief localPlMisChief = (PlMisChief)Plugin.getPlugin("MisChief");
     return localPlMisChief.type[paramInt1].item[paramInt2].bAirport;
   }
 
@@ -139,7 +139,7 @@ public class PlMisChief extends Plugin
       String str2 = localNumberTokenizer.next("");
       int m = localNumberTokenizer.next(0);
       if ((m < 1) && (m >= Builder.armyAmount())) {
-        builder.tipErr("MissionLoad: Wrong chief's army '" + m + "'");
+        Plugin.builder.tipErr("MissionLoad: Wrong chief's army '" + m + "'");
       }
       else {
         float f1 = localNumberTokenizer.next(0.0F);
@@ -147,13 +147,13 @@ public class PlMisChief extends Plugin
         float f2 = localNumberTokenizer.next(1.0F, 0.5F, 100.0F);
 
         if (this.fSectsUnits.sectionIndex(str2) < 0) {
-          builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
+          Plugin.builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
         }
         else
         {
           int i1 = str2.indexOf('.');
           if (i1 <= 0) {
-            builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
+            Plugin.builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
           }
           else {
             String str3 = str2.substring(0, i1);
@@ -161,42 +161,38 @@ public class PlMisChief extends Plugin
 
             String str5 = this.fSectsUnits.get(str3, str4);
             if (str5 == null) {
-              builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
+              Plugin.builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
             }
             else if (Actor.getByName(str1) != null) {
-              builder.tipErr("MissionLoad: actor '" + str1 + "' alredy exist");
+              Plugin.builder.tipErr("MissionLoad: actor '" + str1 + "' alredy exist");
             }
             else
             {
               int i2 = 0;
-              while ((i2 < this.type.length) && 
-                (!this.type[i2].name.equals(str3))) {
-                i2++;
-              }
-
+              for (; i2 < this.type.length; i2++)
+                if (this.type[i2].name.equals(str3))
+                  break;
               if (i2 == this.type.length) {
-                builder.tipErr("MissionLoad: Wrong chief's category '" + str2 + "'");
+                Plugin.builder.tipErr("MissionLoad: Wrong chief's category '" + str2 + "'");
               }
               else
               {
                 int i3 = 0;
-                while ((i3 < this.type[i2].item.length) && 
-                  (!this.type[i2].item[i3].name.equals(str4))) {
-                  i3++;
-                }
-
+                for (; i3 < this.type[i2].item.length; i3++)
+                  if (this.type[i2].item[i3].name.equals(str4))
+                    break;
                 if (i3 == this.type[i2].item.length) {
-                  builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
+                  Plugin.builder.tipErr("MissionLoad: Wrong chief's type '" + str2 + "'");
                 }
                 else
                 {
                   int i4 = paramSectFile.sectionIndex(str1 + "_Road");
                   if (i4 < 0) {
-                    builder.tipErr("MissionLoad: Wrong chief's road '" + str1 + "'");
+                    Plugin.builder.tipErr("MissionLoad: Wrong chief's road '" + str1 + "'");
                   }
                   else
                   {
-                    PathChief localPathChief = new PathChief(builder.pathes, this.type[i2].moveType, i2, i3, this.fSectsUnits, this.type[i2].item[i3].iSectUnits, this.p);
+                    PathChief localPathChief = new PathChief(Plugin.builder.pathes, this.type[i2].moveType, i2, i3, this.fSectsUnits, this.type[i2].item[i3].iSectUnits, this.p);
 
                     localPathChief.setName(str1);
                     localPathChief.setArmy(m);
@@ -221,27 +217,27 @@ public class PlMisChief extends Plugin
                         localPNodes = new PNodes(localPathChief, localPNodes, null);
                       }
                     } catch (Exception localException) {
-                      builder.tipErr("MissionLoad: Wrong chief's road '" + str1 + "'");
+                      Plugin.builder.tipErr("MissionLoad: Wrong chief's road '" + str1 + "'");
                       localPathChief.destroy();
                       continue;
                     }
                     int i5 = localPathChief.points();
                     if (i5 < 2) {
-                      builder.tipErr("MissionLoad: Wrong chief's road '" + str1 + "'");
+                      Plugin.builder.tipErr("MissionLoad: Wrong chief's road '" + str1 + "'");
                     }
                     else {
                       for (int i6 = 0; i6 < i5 - 1; i6++) {
                         localPNodes = (PNodes)localPathChief.point(i6);
                         this.p.set(localPNodes.posXYZ[0], localPNodes.posXYZ[1], localPNodes.posXYZ[2]);
 
-                        localPNodes.pos.setAbs(this.p);
+                        localPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.p);
                       }
                       localPNodes = (PNodes)localPathChief.point(i5 - 2);
-                      i6 = localPNodes.posXYZ.length / 4 - 1;
-                      this.p.set(localPNodes.posXYZ[(i6 * 4 + 0)], localPNodes.posXYZ[(i6 * 4 + 1)], localPNodes.posXYZ[(i6 * 4 + 2)]);
+                      int i7 = localPNodes.posXYZ.length / 4 - 1;
+                      this.p.set(localPNodes.posXYZ[(i7 * 4 + 0)], localPNodes.posXYZ[(i7 * 4 + 1)], localPNodes.posXYZ[(i7 * 4 + 2)]);
 
                       localPNodes = (PNodes)localPathChief.point(i5 - 1);
-                      localPNodes.pos.setAbs(this.p);
+                      localPNodes.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.p);
                       localPathChief.updateUnitsPos();
                       localPathChief.computeTimesLoaded();
                     }
@@ -290,7 +286,7 @@ public class PlMisChief extends Plugin
     float f4 = arrayOfFloat[(paramInt1 * 4 + 3)];
     if (paramInt1 == 0) {
       if (paramPNodes.timeoutMin > 0.0D) {
-        paramSectFile.lineAdd(paramInt2, formatPosFloat(f1), formatPosFloat(f2) + " " + formatPosFloat(f4) + " " + Math.round((paramPNodes.time + paramPNodes.timeoutMin * 60.0D) / 60.0D) + " " + arrayOfFloat.length / 4 + " " + paramDouble);
+        paramSectFile.lineAdd(paramInt2, formatPosFloat(f1), formatPosFloat(f2) + " " + formatPosFloat(f4) + " " + Math.round((paramPNodes.jdField_time_of_type_Double + paramPNodes.timeoutMin * 60.0D) / 60.0D) + " " + arrayOfFloat.length / 4 + " " + paramDouble);
       }
       else
       {
@@ -305,10 +301,10 @@ public class PlMisChief extends Plugin
 
   public boolean save(SectFile paramSectFile)
   {
-    if (builder.pathes == null)
+    if (Plugin.builder.pathes == null)
       return true;
     int i = paramSectFile.sectionIndex("Chiefs");
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
+    Object[] arrayOfObject = Plugin.builder.pathes.getOwnerAttached();
     for (int j = 0; j < arrayOfObject.length; j++) {
       Actor localActor = (Actor)arrayOfObject[j];
       if (localActor == null) break;
@@ -316,7 +312,7 @@ public class PlMisChief extends Plugin
         PathChief localPathChief = (PathChief)localActor;
         int k = localPathChief.points();
         if (k < 2) {
-          new GWindowMessageBox(builder.viewWindow.root, 20.0F, true, "Save error", "Chief '" + localPathChief.name() + "' contains only one waypoint", 3, 0.0F);
+          new GWindowMessageBox(Plugin.builder.viewWindow.root, 20.0F, true, "Save error", "Chief '" + localPathChief.name() + "' contains only one waypoint", 3, 0.0F);
 
           return false;
         }
@@ -334,13 +330,13 @@ public class PlMisChief extends Plugin
         }
         int n = paramSectFile.sectionAdd(str3);
         for (int i1 = 0; i1 < k - 1; i1++) {
-          PNodes localPNodes2 = (PNodes)localPathChief.point(i1);
-          int i2 = localPNodes2.posXYZ.length / 4;
+          localPNodes = (PNodes)localPathChief.point(i1);
+          int i2 = localPNodes.posXYZ.length / 4;
           for (int i3 = 0; i3 < i2 - 1; i3++)
-            saveRoadSegment(localPNodes2, i3, paramSectFile, n, localPNodes2.speed);
+            saveRoadSegment(localPNodes, i3, paramSectFile, n, localPNodes.speed);
         }
-        PNodes localPNodes1 = (PNodes)localPathChief.point(k - 2);
-        saveRoadSegment(localPNodes1, localPNodes1.posXYZ.length / 4 - 1, paramSectFile, n, localPNodes1.speed);
+        PNodes localPNodes = (PNodes)localPathChief.point(k - 2);
+        saveRoadSegment(localPNodes, localPNodes.posXYZ.length / 4 - 1, paramSectFile, n, localPNodes.speed);
       }
     }
     return true;
@@ -359,23 +355,23 @@ public class PlMisChief extends Plugin
     try
     {
       Point3d localPoint3d = paramLoc.getPoint();
-      int i = builder.wSelect.comboBox1.getSelected();
-      int j = builder.wSelect.comboBox2.getSelected();
-      if (builder.selectedPath() != null) {
-        localObject = builder.selectedPath();
+      int i = Plugin.builder.wSelect.comboBox1.getSelected();
+      int j = Plugin.builder.wSelect.comboBox2.getSelected();
+      if (Plugin.builder.selectedPath() != null) {
+        localObject = Plugin.builder.selectedPath();
         if (!(localObject instanceof PathChief))
           return;
         PathChief localPathChief = (PathChief)localObject;
         if ((i - this.startComboBox1 != localPathChief._iType) || (j != localPathChief._iItem))
         {
-          builder.setSelected(null);
+          Plugin.builder.setSelected(null);
         }
       }
       PNodes localPNodes;
-      if (builder.selectedPoint() != null) {
+      if (Plugin.builder.selectedPoint() != null) {
         if ((this.type[(i - this.startComboBox1)].moveType == 3) && (((Path)localObject).points() >= 2))
           return;
-        localPNodes = new PNodes(builder.selectedPath(), builder.selectedPoint(), localPoint3d);
+        localPNodes = new PNodes(Plugin.builder.selectedPath(), Plugin.builder.selectedPoint(), localPoint3d);
         localPNodes.speed = (this.type[(i - this.startComboBox1)].item[j].speed / 2.0D);
       } else {
         if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length))
@@ -384,7 +380,7 @@ public class PlMisChief extends Plugin
         if ((j < 0) || (j >= this.type[i].item.length)) {
           return;
         }
-        localObject = new PathChief(builder.pathes, this.type[i].moveType, i, j, this.fSectsUnits, this.type[i].item[j].iSectUnits, localPoint3d);
+        localObject = new PathChief(Plugin.builder.pathes, this.type[i].moveType, i, j, this.fSectsUnits, this.type[i].item[j].iSectUnits, localPoint3d);
 
         ((Path)localObject).setName(makeName());
         ((Path)localObject).setArmy(this.type[i].item[j].army);
@@ -395,7 +391,7 @@ public class PlMisChief extends Plugin
         localPNodes = new PNodes((Path)localObject, null, this.type[i].item[j].iconName, localPoint3d);
         localPNodes.speed = (this.type[i].item[j].speed / 2.0D);
       }
-      builder.setSelected(localPNodes);
+      Plugin.builder.setSelected(localPNodes);
       PlMission.setChanged();
     } catch (Exception localException) {
       if ((localObject != null) && (((Path)localObject).points() == 0))
@@ -419,11 +415,11 @@ public class PlMisChief extends Plugin
   }
 
   public void changeType() {
-    int i = builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
-    int j = builder.wSelect.comboBox2.getSelected();
-    PathChief localPathChief = (PathChief)builder.selectedPath();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
+    PathChief localPathChief = (PathChief)Plugin.builder.selectedPath();
     if (i != localPathChief._iType) return;
-    localPathChief.setUnits(i, j, this.fSectsUnits, this.type[i].item[j].iSectUnits, localPathChief.point(0).pos.getAbsPoint());
+    localPathChief.setUnits(i, j, this.fSectsUnits, this.type[i].item[j].iSectUnits, localPathChief.point(0).jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint());
 
     Property.set(localPathChief, "i18nName", I18N.technic(this.type[i].item[j].name));
     if (moveType(i) == 2) {
@@ -434,15 +430,15 @@ public class PlMisChief extends Plugin
   }
 
   public void configure() {
-    if (getPlugin("Mission") == null)
+    if (Plugin.getPlugin("Mission") == null)
       throw new RuntimeException("PlMisChief: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-    if (this.sectFile == null)
+    this.pluginMission = ((PlMission)Plugin.getPlugin("Mission"));
+    if (this.jdField_sectFile_of_type_JavaLangString == null)
       throw new RuntimeException("PlMisChief: field 'sectFile' not defined");
-    SectFile localSectFile = new SectFile(this.sectFile, 0);
+    SectFile localSectFile = new SectFile(this.jdField_sectFile_of_type_JavaLangString, 0);
     int i = localSectFile.sections();
     if (i <= 0)
-      throw new RuntimeException("PlMisChief: file '" + this.sectFile + "' is empty");
+      throw new RuntimeException("PlMisChief: file '" + this.jdField_sectFile_of_type_JavaLangString + "' is empty");
     int j = 0;
     for (int k = 0; k < i; k++) {
       String str1 = localSectFile.sectionName(k);
@@ -451,41 +447,41 @@ public class PlMisChief extends Plugin
       j++;
     }
     if (j == 0)
-      throw new RuntimeException("PlMisChief: file '" + this.sectFile + "' is empty");
+      throw new RuntimeException("PlMisChief: file '" + this.jdField_sectFile_of_type_JavaLangString + "' is empty");
     this.fSectsUnits = localSectFile;
     this.type = new Type[j];
-    k = 0;
-    for (int m = 0; m < i; m++) {
-      String str2 = localSectFile.sectionName(m);
+    int m = 0;
+    for (int n = 0; n < i; n++) {
+      String str2 = localSectFile.sectionName(n);
       if (str2.indexOf('.') >= 0)
         continue;
-      int n = localSectFile.vars(m);
-      if (n < 2) {
-        throw new RuntimeException("PlMisChief: file '" + this.sectFile + "', section '" + str2 + "' missing moveType and/or class");
+      int i1 = localSectFile.vars(n);
+      if (i1 < 2) {
+        throw new RuntimeException("PlMisChief: file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '" + str2 + "' missing moveType and/or class");
       }
-      if (localSectFile.varIndex(m, "moveType") != 0) {
-        throw new RuntimeException("PlMisChief: file '" + this.sectFile + "', section '" + str2 + "' moveType must be first row");
+      if (localSectFile.varIndex(n, "moveType") != 0) {
+        throw new RuntimeException("PlMisChief: file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '" + str2 + "' moveType must be first row");
       }
-      String str3 = localSectFile.value(m, 0);
-      int i1 = 0;
-      if ("VEHICLE".equals(str3)) i1 = 0;
-      else if ("TROOPER".equals(str3)) i1 = 1;
-      else if ("SHIP".equals(str3)) i1 = 2;
-      else if ("TRAIN".equals(str3)) i1 = 3;
+      String str3 = localSectFile.value(n, 0);
+      int i2 = 0;
+      if ("VEHICLE".equals(str3)) i2 = 0;
+      else if ("TROOPER".equals(str3)) i2 = 1;
+      else if ("SHIP".equals(str3)) i2 = 2;
+      else if ("TRAIN".equals(str3)) i2 = 3;
       else {
-        throw new RuntimeException("PlMisChief: file '" + this.sectFile + "', section '" + str2 + "' unknown moveType '" + str3 + "'");
+        throw new RuntimeException("PlMisChief: file '" + this.jdField_sectFile_of_type_JavaLangString + "', section '" + str2 + "' unknown moveType '" + str3 + "'");
       }
 
-      Item[] arrayOfItem = new Item[n - 1];
-      for (int i2 = 1; i2 < n; i2++) {
-        String str4 = localSectFile.var(m, i2);
-        NumberTokenizer localNumberTokenizer = new NumberTokenizer(localSectFile.value(m, i2));
+      Item[] arrayOfItem = new Item[i1 - 1];
+      for (int i3 = 1; i3 < i1; i3++) {
+        String str4 = localSectFile.var(n, i3);
+        NumberTokenizer localNumberTokenizer = new NumberTokenizer(localSectFile.value(n, i3));
         String str5 = localNumberTokenizer.next((String)null);
-        int i3 = localNumberTokenizer.next(1, 1, Builder.armyAmount() - 1);
+        int i4 = localNumberTokenizer.next(1, 1, Builder.armyAmount() - 1);
         String str6 = localNumberTokenizer.next("icons/tank.mat");
-        arrayOfItem[(i2 - 1)] = new Item(i1, str2, str4, str5, localSectFile, i3, str6);
+        arrayOfItem[(i3 - 1)] = new Item(i2, str2, str4, str5, localSectFile, i4, str6);
       }
-      this.type[(k++)] = new Type(str2, i1, arrayOfItem);
+      this.type[(m++)] = new Type(str2, i2, arrayOfItem);
     }
 
     this.fSectsEmpty = new SectFile();
@@ -493,29 +489,30 @@ public class PlMisChief extends Plugin
 
   void viewUpdate()
   {
-    if (builder.pathes == null)
+    if (Plugin.builder.pathes == null)
       return;
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
+    Object[] arrayOfObject = Plugin.builder.pathes.getOwnerAttached();
     Object localObject;
+    PathChief localPathChief;
     for (int i = 0; i < arrayOfObject.length; i++) {
       localObject = (Actor)arrayOfObject[i];
       if (localObject == null) break;
       if ((localObject instanceof PathChief)) {
-        PathChief localPathChief = (PathChief)localObject;
+        localPathChief = (PathChief)localObject;
         localPathChief.drawing(this.viewMap.containsKey(localPathChief._iType));
       }
     }
-    if (builder.selectedPath() != null) {
-      Path localPath = builder.selectedPath();
-      if ((localPath instanceof PathChief)) {
-        localObject = (PathChief)localPath;
-        if (!this.viewMap.containsKey(((PathChief)localObject)._iType)) {
-          builder.setSelected(null);
+    if (Plugin.builder.selectedPath() != null) {
+      localObject = Plugin.builder.selectedPath();
+      if ((localObject instanceof PathChief)) {
+        localPathChief = (PathChief)localObject;
+        if (!this.viewMap.containsKey(localPathChief._iType)) {
+          Plugin.builder.setSelected(null);
         }
       }
     }
-    if (!builder.isFreeView())
-      builder.repaint(); 
+    if (!Plugin.builder.isFreeView())
+      Plugin.builder.repaint(); 
   }
 
   void viewType(int paramInt, boolean paramBoolean) {
@@ -524,48 +521,48 @@ public class PlMisChief extends Plugin
     viewUpdate();
   }
   void viewType(int paramInt) {
-    viewType(paramInt, this.viewType[paramInt].bChecked);
+    viewType(paramInt, this.viewType[paramInt].jdField_bChecked_of_type_Boolean);
   }
   public void viewTypeAll(boolean paramBoolean) {
     for (int i = 0; i < this.type.length; i++)
-      if (this.viewType[i].bChecked != paramBoolean) {
-        this.viewType[i].bChecked = paramBoolean;
+      if (this.viewType[i].jdField_bChecked_of_type_Boolean != paramBoolean) {
+        this.viewType[i].jdField_bChecked_of_type_Boolean = paramBoolean;
         viewType(i, paramBoolean);
       }
   }
 
   private void fillComboBox1()
   {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
+    this.startComboBox1 = Plugin.builder.wSelect.comboBox1.size();
     for (int i = 0; i < this.type.length; i++) {
-      builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
+      Plugin.builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
     }
     if (this.startComboBox1 == 0)
-      builder.wSelect.comboBox1.setSelected(0, true, false); 
+      Plugin.builder.wSelect.comboBox1.setSelected(0, true, false); 
   }
 
   private void fillComboBox2(int paramInt1, int paramInt2) {
     if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
       return;
     }
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
+    if (Plugin.builder.wSelect.curFilledType != paramInt1) {
+      Plugin.builder.wSelect.curFilledType = paramInt1;
+      Plugin.builder.wSelect.comboBox2.clear(false);
       for (int i = 0; i < this.type[(paramInt1 - this.startComboBox1)].item.length; i++) {
-        builder.wSelect.comboBox2.add(I18N.technic(this.type[(paramInt1 - this.startComboBox1)].item[i].name));
+        Plugin.builder.wSelect.comboBox2.add(I18N.technic(this.type[(paramInt1 - this.startComboBox1)].item[i].name));
       }
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
+      Plugin.builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
     }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
+    Plugin.builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
 
     setSelectorMesh();
   }
 
   public void setSelectorMesh() {
-    int i = builder.wSelect.comboBox1.getSelected();
+    int i = Plugin.builder.wSelect.comboBox1.getSelected();
     if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length))
       return;
-    int j = builder.wSelect.comboBox2.getSelected();
+    int j = Plugin.builder.wSelect.comboBox2.getSelected();
     try {
       String str1 = this.fSectsUnits.var(this.type[(i - this.startComboBox1)].item[j].iSectUnits, 0);
       Class localClass = ForceClassLoading(str1);
@@ -574,12 +571,12 @@ public class PlMisChief extends Plugin
         Method localMethod = localClass.getMethod("getMeshNameForEditor", null);
         str2 = (String)localMethod.invoke(localClass, null);
       }
-      builder.wSelect.setMesh(str2, true);
+      Plugin.builder.wSelect.setMesh(str2, true);
     }
     catch (Exception localException) {
       System.out.println(localException.getMessage());
       localException.printStackTrace();
-      builder.wSelect.setMesh(null, true);
+      Plugin.builder.wSelect.setMesh(null, true);
     }
   }
 
@@ -590,19 +587,19 @@ public class PlMisChief extends Plugin
     PNodes localPNodes = (PNodes)paramActor;
     int i = localPathChief.pointIndx(localPNodes);
     if (localPNodes.timeoutMin > 0.0D) {
-      this._actorInfo[1] = ("(" + i + ") in:" + timeSecToString(localPNodes.time + (int)(World.getTimeofDay() * 60.0F * 60.0F)) + " out:" + timeSecToString(localPNodes.time + (int)(World.getTimeofDay() * 60.0F * 60.0F) + localPNodes.timeoutMin * 60.0D));
+      this._actorInfo[1] = ("(" + i + ") in:" + Plugin.timeSecToString(localPNodes.jdField_time_of_type_Double + (int)(World.getTimeofDay() * 60.0F * 60.0F)) + " out:" + Plugin.timeSecToString(localPNodes.jdField_time_of_type_Double + (int)(World.getTimeofDay() * 60.0F * 60.0F) + localPNodes.timeoutMin * 60.0D));
     }
     else
-      this._actorInfo[1] = ("(" + i + ") " + timeSecToString(localPNodes.time + (int)(World.getTimeofDay() * 60.0F * 60.0F)));
+      this._actorInfo[1] = ("(" + i + ") " + Plugin.timeSecToString(localPNodes.jdField_time_of_type_Double + (int)(World.getTimeofDay() * 60.0F * 60.0F)));
     return this._actorInfo;
   }
 
   public void syncSelector()
   {
-    PathChief localPathChief = (PathChief)builder.selectedPath();
+    PathChief localPathChief = (PathChief)Plugin.builder.selectedPath();
     fillComboBox2(localPathChief._iType + this.startComboBox1, localPathChief._iItem);
-    builder.wSelect.tabsClient.addTab(1, this.tabActor);
-    this.wName.cap.set(Property.stringValue(localPathChief, "i18nName", ""));
+    Plugin.builder.wSelect.tabsClient.addTab(1, this.tabActor);
+    this.wName.jdField_cap_of_type_ComMaddoxGwindowGCaption.set(Property.stringValue(localPathChief, "i18nName", ""));
     this.wArmy.setSelected(localPathChief.getArmy() - 1, true, false);
     if (moveType(localPathChief._iType) == 2) {
       this.wLSleepM.showWindow();
@@ -629,7 +626,7 @@ public class PlMisChief extends Plugin
     }
 
     if (moveType(localPathChief._iType) != 3) {
-      builder.wSelect.tabsClient.addTab(2, this.tabWay);
+      Plugin.builder.wSelect.tabsClient.addTab(2, this.tabWay);
       fillDialogWay();
     }
   }
@@ -650,7 +647,7 @@ public class PlMisChief extends Plugin
   public void createGUI() {
     fillComboBox1();
     fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         int i = Plugin.builder.wSelect.comboBox1.getSelected();
         if ((i >= 0) && (paramInt1 == 2))
@@ -658,7 +655,7 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
+    Plugin.builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
       public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
         if (paramInt1 != 2)
           return false;
@@ -666,10 +663,10 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
+    int i = Plugin.builder.mDisplayFilter.subMenu.size() - 1;
+    while (i >= 0) {
+      if (this.pluginMission.viewBridge == Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+        break;
       i--;
     }
     i--;
@@ -680,27 +677,27 @@ public class PlMisChief extends Plugin
       while (i >= 0) {
         ViewItem localViewItem = null;
         if ("de".equals(RTSConf.cur.locale.getLanguage())) {
-          localViewItem = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + i18n("show"), null));
+          localViewItem = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + Plugin.i18n("show"), null));
         }
         else {
-          localViewItem = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, i18n("show") + " " + I18N.technic(this.type[i].name), null));
+          localViewItem = (ViewItem)Plugin.builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, Plugin.builder.mDisplayFilter.subMenu, Plugin.i18n("show") + " " + I18N.technic(this.type[i].name), null));
         }
-        localViewItem.bChecked = true;
+        localViewItem.jdField_bChecked_of_type_Boolean = true;
         this.viewType[i] = localViewItem;
         viewType(i, true);
         i--;
       }
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient() {
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient() {
       public void resized() { super.resized(); PlMisChief.this.editResized(this);
       }
     });
-    this.tabActor = builder.wSelect.tabsClient.createTab(i18n("ChiefActor"), localGWindowDialogClient);
+    this.tabActor = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("ChiefActor"), localGWindowDialogClient);
 
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, i18n("Name"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, Plugin.i18n("Name"), null));
     localGWindowDialogClient.addLabel(this.wName = new GWindowLabel(localGWindowDialogClient, 9.0F, 1.0F, 7.0F, 1.3F, "", null));
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, i18n("Army"), null));
+    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Army"), null));
     localGWindowDialogClient.addControl(this.wArmy = new GWindowComboControl(localGWindowDialogClient, 9.0F, 3.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -717,7 +714,7 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSleepM = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("Sleep"), null));
+    localGWindowDialogClient.addLabel(this.wLSleepM = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("Sleep"), null));
     localGWindowDialogClient.addControl(this.wSleepM = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 2.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -741,7 +738,7 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSkill = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Skill"), null));
+    localGWindowDialogClient.addLabel(this.wLSkill = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("Skill"), null));
     localGWindowDialogClient.addControl(this.wSkill = new GWindowComboControl(localGWindowDialogClient, 9.0F, 7.0F, 7.0F) {
       public void afterCreated() { super.afterCreated();
         setEditable(false);
@@ -758,7 +755,7 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSlowfire = new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, i18n("Slowfire"), null));
+    localGWindowDialogClient.addLabel(this.wLSlowfire = new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, Plugin.i18n("Slowfire"), null));
     localGWindowDialogClient.addControl(this.wSlowfire = new GWindowEditControl(localGWindowDialogClient, 9.0F, 9.0F, 3.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = (this.bNumericFloat = 1);
@@ -783,7 +780,7 @@ public class PlMisChief extends Plugin
     initEditWay();
   }
   private void getSleep() {
-    PathChief localPathChief = (PathChief)builder.selectedPath();
+    PathChief localPathChief = (PathChief)Plugin.builder.selectedPath();
     String str = this.wSleepM.getValue();
     double d1 = 0.0D;
     try { d1 = Double.parseDouble(str); } catch (Exception localException1) {
@@ -802,11 +799,11 @@ public class PlMisChief extends Plugin
 
   private void fillDialogWay()
   {
-    PNodes localPNodes = (PNodes)builder.selectedPoint();
-    PathChief localPathChief = (PathChief)builder.selectedPath();
+    PNodes localPNodes = (PNodes)Plugin.builder.selectedPoint();
+    PathChief localPathChief = (PathChief)Plugin.builder.selectedPath();
     int i = localPathChief.pointIndx(localPNodes);
-    this.wCur.cap = new GCaption("" + i + "(" + localPathChief.points() + ")");
-    this.wTime.cap = new GCaption(timeSecToString(localPNodes.time + World.getTimeofDay() * 60.0F * 60.0F));
+    this.wCur.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption("" + i + "(" + localPathChief.points() + ")");
+    this.wTime.jdField_cap_of_type_ComMaddoxGwindowGCaption = new GCaption(Plugin.timeSecToString(localPNodes.jdField_time_of_type_Double + World.getTimeofDay() * 60.0F * 60.0F));
     this.wPrev.setEnable(i > 0);
     if (i < localPathChief.points() - 1) {
       this.wNext.setEnable(true);
@@ -836,10 +833,10 @@ public class PlMisChief extends Plugin
   }
 
   public void initEditWay() {
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
-    this.tabWay = builder.wSelect.tabsClient.createTab(i18n("Waypoint"), localGWindowDialogClient);
+    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)Plugin.builder.wSelect.tabsClient.create(new GWindowDialogClient());
+    this.tabWay = Plugin.builder.wSelect.tabsClient.createTab(Plugin.i18n("Waypoint"), localGWindowDialogClient);
 
-    localGWindowDialogClient.addControl(this.wPrev = new GWindowButton(localGWindowDialogClient, 1.0F, 1.0F, 5.0F, 1.6F, i18n("&Prev"), null) {
+    localGWindowDialogClient.addControl(this.wPrev = new GWindowButton(localGWindowDialogClient, 1.0F, 1.0F, 5.0F, 1.6F, Plugin.i18n("&Prev"), null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
           PNodes localPNodes = (PNodes)Plugin.builder.selectedPoint();
@@ -855,7 +852,7 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addControl(this.wNext = new GWindowButton(localGWindowDialogClient, 9.0F, 1.0F, 5.0F, 1.6F, i18n("&Next"), null) {
+    localGWindowDialogClient.addControl(this.wNext = new GWindowButton(localGWindowDialogClient, 9.0F, 1.0F, 5.0F, 1.6F, Plugin.i18n("&Next"), null) {
       public boolean notify(int paramInt1, int paramInt2) {
         if (paramInt1 == 2) {
           PNodes localPNodes = (PNodes)Plugin.builder.selectedPoint();
@@ -873,10 +870,10 @@ public class PlMisChief extends Plugin
     });
     localGWindowDialogClient.addLabel(this.wCur = new GWindowLabel(localGWindowDialogClient, 15.0F, 1.0F, 4.0F, 1.6F, "1(1)", null));
 
-    localGWindowDialogClient.addLabel(this.wLTime = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, i18n("Time"), null));
+    localGWindowDialogClient.addLabel(this.wLTime = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Time"), null));
     localGWindowDialogClient.addLabel(this.wTime = new GWindowLabel(localGWindowDialogClient, 9.0F, 3.0F, 6.0F, 1.3F, "0:00", null));
 
-    localGWindowDialogClient.addLabel(this.wLTimeOutH = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("TimeOut"), null));
+    localGWindowDialogClient.addLabel(this.wLTimeOutH = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, Plugin.i18n("TimeOut"), null));
     localGWindowDialogClient.addControl(this.wTimeOutH = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 2.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -900,8 +897,8 @@ public class PlMisChief extends Plugin
         return false;
       }
     });
-    localGWindowDialogClient.addLabel(this.wLSpeed0 = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Speed"), null));
-    localGWindowDialogClient.addLabel(this.wLSpeed1 = new GWindowLabel(localGWindowDialogClient, 15.0F, 7.0F, 4.0F, 1.3F, i18n("[kM/H]"), null));
+    localGWindowDialogClient.addLabel(this.wLSpeed0 = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, Plugin.i18n("Speed"), null));
+    localGWindowDialogClient.addLabel(this.wLSpeed1 = new GWindowLabel(localGWindowDialogClient, 15.0F, 7.0F, 4.0F, 1.3F, Plugin.i18n("[kM/H]"), null));
     localGWindowDialogClient.addControl(this.wSpeed = new GWindowEditControl(localGWindowDialogClient, 9.0F, 7.0F, 5.0F, 1.3F, "") {
       public void afterCreated() { super.afterCreated();
         this.bNumericOnly = true;
@@ -928,8 +925,8 @@ public class PlMisChief extends Plugin
   }
 
   private void getTimeOut() {
-    PNodes localPNodes = (PNodes)builder.selectedPoint();
-    PathChief localPathChief = (PathChief)builder.selectedPath();
+    PNodes localPNodes = (PNodes)Plugin.builder.selectedPoint();
+    PathChief localPathChief = (PathChief)Plugin.builder.selectedPath();
     String str = this.wTimeOutH.getValue();
     double d1 = 0.0D;
     try { d1 = Double.parseDouble(str); } catch (Exception localException1) {
@@ -956,7 +953,7 @@ public class PlMisChief extends Plugin
 
     public void execute()
     {
-      this.bChecked = (!this.bChecked);
+      this.jdField_bChecked_of_type_Boolean = (!this.jdField_bChecked_of_type_Boolean);
       PlMisChief.this.viewType(this.indx);
     }
     public ViewItem(int paramGWindowMenu, GWindowMenu paramString1, String paramString2, String arg5) {

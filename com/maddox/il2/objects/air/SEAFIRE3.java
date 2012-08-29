@@ -10,7 +10,7 @@ import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Property;
 
-public class SEAFIRE3 extends SPITFIRE5
+public class SEAFIRE3 extends SPITFIRE
 {
   private float arrestor = 0.0F;
   public static boolean bChangedPit = false;
@@ -18,12 +18,12 @@ public class SEAFIRE3 extends SPITFIRE5
   protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
   {
     super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true; 
   }
 
   protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
     super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers()) bChangedPit = true;
   }
 
   public void msgCollision(Actor paramActor, String paramString1, String paramString2)
@@ -54,17 +54,17 @@ public class SEAFIRE3 extends SPITFIRE5
     hierMesh().chunkSetAngles("Hook1_D0", 0.0F, -57.0F * paramFloat, 0.0F);
     hierMesh().chunkSetAngles("Hook2_D0", 0.0F, -12.0F * paramFloat, 0.0F);
     resetYPRmodifier();
-    xyz[2] = (0.1385F * paramFloat);
-    hierMesh().chunkSetLocate("Hook3_D0", xyz, ypr);
+    Aircraft.xyz[2] = (0.1385F * paramFloat);
+    hierMesh().chunkSetLocate("Hook3_D0", Aircraft.xyz, Aircraft.ypr);
     this.arrestor = paramFloat;
   }
 
   public void moveCockpitDoor(float paramFloat)
   {
     resetYPRmodifier();
-    xyz[1] = cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.55F);
-    hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
-    float f = (float)Math.sin(cvt(paramFloat, 0.01F, 0.99F, 0.0F, 3.141593F));
+    Aircraft.xyz[1] = Aircraft.cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.55F);
+    hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+    float f = (float)Math.sin(Aircraft.cvt(paramFloat, 0.01F, 0.99F, 0.0F, 3.141593F));
     hierMesh().chunkSetAngles("Pilot1_D0", 0.0F, 0.0F, 9.0F * f);
     hierMesh().chunkSetAngles("Head1_D0", 12.0F * f, 0.0F, 0.0F);
     if (Config.isUSE_RENDER()) {
@@ -77,20 +77,20 @@ public class SEAFIRE3 extends SPITFIRE5
   {
     super.update(paramFloat);
 
-    if (this.FM.CT.getArrestor() > 0.2F)
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getArrestor() > 0.2F)
     {
       float f;
-      if (this.FM.Gears.arrestorVAngle != 0.0F) {
-        f = cvt(this.FM.Gears.arrestorVAngle, -50.0F, 7.0F, 1.0F, 0.0F);
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.arrestorVAngle != 0.0F) {
+        f = Aircraft.cvt(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.arrestorVAngle, -50.0F, 7.0F, 1.0F, 0.0F);
         this.arrestor = (0.8F * this.arrestor + 0.2F * f);
         moveArrestorHook(this.arrestor);
       }
       else {
-        f = -33.0F * this.FM.Gears.arrestorVSink / 57.0F;
-        if ((f < 0.0F) && (this.FM.getSpeedKMH() > 60.0F)) {
-          Eff3DActor.New(this, this.FM.Gears.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
+        f = -33.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.arrestorVSink / 57.0F;
+        if ((f < 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getSpeedKMH() > 60.0F)) {
+          Eff3DActor.New(this, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.arrestorHook, null, 1.0F, "3DO/Effects/Fireworks/04_Sparks.eff", 0.1F);
         }
-        if ((f > 0.0F) && (this.FM.CT.getArrestor() < 0.95F)) {
+        if ((f > 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getArrestor() < 0.95F)) {
           f = 0.0F;
         }
         if (f > 0.2F) {
@@ -125,7 +125,7 @@ public class SEAFIRE3 extends SPITFIRE5
       hideWingWeapons(false);
     } else {
       setGunPodsOn(false);
-      this.FM.CT.WeaponControl[0] = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[0] = false;
       hideWingWeapons(true);
     }
   }
@@ -134,7 +134,7 @@ public class SEAFIRE3 extends SPITFIRE5
   {
     switch (paramInt1) {
     case 19:
-      this.FM.CT.bHasArrestorControl = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasArrestorControl = false;
     }
 
     return super.cutFM(paramInt1, paramInt2, paramActor);
@@ -152,27 +152,27 @@ public class SEAFIRE3 extends SPITFIRE5
     Property.set(localClass, "yearService", 1944.0F);
     Property.set(localClass, "yearExpired", 1946.5F);
 
-    Property.set(localClass, "FlightModel", "FlightModels/Seafire-LF-MkIII.fmd");
+    Property.set(localClass, "FlightModel", "FlightModels/SeafireIII.fmd");
     Property.set(localClass, "cockpitClass", CockpitSea3.class);
     Property.set(localClass, "LOSElevation", 1.06985F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 9, 3, 9, 9, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalDev08" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 9, 3, 9, 9, 3, 3, 9, 9, 9, 9, 2, 2, 2, 2, 9 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev01", "_ExternalBomb01", "_ExternalDev02", "_ExternalDev03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalDev08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1x30dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit30" });
+    Aircraft.weaponsRegister(localClass, "1x30dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit30" });
 
-    weaponsRegister(localClass, "1x45dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit45" });
+    Aircraft.weaponsRegister(localClass, "1x45dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit45" });
 
-    weaponsRegister(localClass, "1x90dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit90" });
+    Aircraft.weaponsRegister(localClass, "1x90dt", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "FuelTankGun_TankSpit90" });
 
-    weaponsRegister(localClass, "1x500", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", "PylonSpitC", "BombGun500lbsE 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "1x500", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", "PylonSpitC", "BombGun500lbsE 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, "PylonSpitL", "PylonSpitR", "BombGun250lbsE 1", "BombGun250lbsE 1", null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, "PylonSpitL", "PylonSpitR", "BombGun250lbsE 1", "BombGun250lbsE 1", null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4x60hvar", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", null });
+    Aircraft.weaponsRegister(localClass, "4x60hvar", new String[] { "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunBrowning303kWF 350", "MGunHispanoMkIkWF 120", "MGunHispanoMkIkWF 120", null, null, null, null, null, null, "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "PylonSpitROCK", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", "RocketGunHVAR5BEAU 1", null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

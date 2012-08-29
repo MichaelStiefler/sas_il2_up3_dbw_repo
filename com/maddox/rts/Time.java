@@ -197,11 +197,11 @@ public final class Time
         if (!this.bPause) {
           this.endTime = ()((this.endRealTime - this.real_time) * this.speed * this.speedCur + 0.5D + this.beginTime);
           this.base_time = this.beginTime;
-          this.base_real_time = this.real_time;
+          this.base_real_time = this.real_time; continue;
         }
+      }
 
-        continue;
-      }Message localMessage1 = null;
+      Message localMessage1 = null;
       synchronized (RTSConf.cur.queueRealTime) { synchronized (RTSConf.cur.queue)
         {
           localMessage1 = RTSConf.cur.queue.peek(this.endTime);

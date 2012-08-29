@@ -208,7 +208,7 @@ public class WeakHashMapExt extends AbstractMap
     this.table = arrayOfEntry2;
 
     for (int k = i; k-- > 0; )
-      for (localEntry1 = arrayOfEntry1[k]; localEntry1 != null; ) {
+      for (Entry localEntry1 = arrayOfEntry1[k]; localEntry1 != null; ) {
         Entry localEntry2 = localEntry1;
         localEntry1 = localEntry1.nextEntry;
 
@@ -216,7 +216,6 @@ public class WeakHashMapExt extends AbstractMap
         localEntry2.nextEntry = arrayOfEntry2[m];
         arrayOfEntry2[m] = localEntry2;
       }
-    Entry localEntry1;
   }
 
   public Object put(Object paramObject1, Object paramObject2)
@@ -266,17 +265,12 @@ public class WeakHashMapExt extends AbstractMap
   {
     processQueue();
     Entry[] arrayOfEntry = this.table;
-    int i;
-    int j;
     Object localObject1;
-    Object localObject2;
-    Entry localEntry1;
-    Entry localEntry2;
     if (paramObject != null) {
-      i = paramObject.hashCode();
-      j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
+      int i = paramObject.hashCode();
+      int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
 
-      localObject1 = arrayOfEntry[j]; for (localObject2 = null; localObject1 != null; )
+      localObject1 = arrayOfEntry[j]; for (Object localObject2 = null; localObject1 != null; )
       {
         if ((((Entry)localObject1).hash == i) && (paramObject.equals(((Entry)localObject1).getKey()))) {
           this.modCount += 1;
@@ -296,7 +290,7 @@ public class WeakHashMapExt extends AbstractMap
     }
     else
     {
-      localEntry1 = arrayOfEntry[0]; for (localEntry2 = null; localEntry1 != null; )
+      Entry localEntry1 = arrayOfEntry[0]; for (Entry localEntry2 = null; localEntry1 != null; )
       {
         if (localEntry1.getKey() == null) {
           this.modCount += 1;
@@ -352,15 +346,16 @@ public class WeakHashMapExt extends AbstractMap
     Entry[] arrayOfEntry = this.table;
     this.modCount += 1;
     int i = arrayOfEntry.length;
-    while (true) { i--; if (i < 0) break;
-      Object localObject = arrayOfEntry[i];
+    do { Object localObject = arrayOfEntry[i];
       while (localObject != null) {
         Entry localEntry = ((Entry)localObject).nextEntry;
         ((Entry)localObject).clear();
         localObject = localEntry;
       }
       arrayOfEntry[i] = null;
-    }
+
+      i--; } while (i >= 0);
+
     this.count = 0;
   }
 
@@ -580,9 +575,10 @@ public class WeakHashMapExt extends AbstractMap
       if (WeakHashMapExt.this.modCount != this.expectedModCount) {
         throw new ConcurrentModificationException();
       }
-      while ((this.entry == null) && (this.index > 0)) {
+      do
         this.entry = this.table[(--this.index)];
-      }
+      while ((this.entry == null) && (this.index > 0));
+
       if (this.entry != null) {
         WeakHashMapExt.Entry localEntry = this.lastReturned = this.entry;
         this.entry = localEntry.nextEntry;

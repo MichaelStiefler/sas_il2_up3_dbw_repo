@@ -8,6 +8,8 @@ public class MGunBrowning50ki extends MGunBrowning50k
   {
     GunProperties localGunProperties = super.createProperties();
     localGunProperties.shells = null;
+    localGunProperties.emitI = 2.5F;
+    localGunProperties.emitR = 1.5F;
     return localGunProperties;
   }
 }

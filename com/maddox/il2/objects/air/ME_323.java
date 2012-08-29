@@ -8,7 +8,6 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -24,46 +23,111 @@ public class ME_323 extends Scheme7
     hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f, 0.0F);
   }
 
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
+  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat) {
     boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
+    float f1 = -paramArrayOfFloat[0];
+    float f2 = paramArrayOfFloat[1];
     switch (paramInt) {
     case 0:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f1 < -45.0F) {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F) {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F) {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F) break;
+      f2 = 60.0F;
+      bool = false; break;
     case 1:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 30.0F) break; f2 = 30.0F; bool = false; break;
+      if (f1 < -45.0F) {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F) {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F) {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 30.0F) break;
+      f2 = 30.0F;
+      bool = false; break;
     case 2:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f1 < -45.0F) {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F) {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F) {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F) break;
+      f2 = 60.0F;
+      bool = false; break;
     case 3:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -30.0F) { f2 = -30.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f1 < -45.0F) {
+        f1 = -45.0F;
+        bool = false;
+      }
+      if (f1 > 45.0F) {
+        f1 = 45.0F;
+        bool = false;
+      }
+      if (f2 < -30.0F) {
+        f2 = -30.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F) break;
+      f2 = 60.0F;
+      bool = false; break;
     case 4:
-      if (f2 < -3.0F) { f2 = -3.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f2 < -3.0F) {
+        f2 = -3.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F) break;
+      f2 = 60.0F;
+      bool = false; break;
     case 5:
-      if (f2 < -3.0F) { f2 = -3.0F; bool = false; }
-      if (f2 <= 60.0F) break; f2 = 60.0F; bool = false; break;
+      if (f2 < -3.0F) {
+        f2 = -3.0F;
+        bool = false;
+      }
+      if (f2 <= 60.0F) break;
+      f2 = 60.0F;
+      bool = false; break;
     case 6:
-      if (f1 < -30.0F) { f1 = -30.0F; bool = false; }
-      if (f1 > 30.0F) { f1 = 30.0F; bool = false; }
-      if (f2 < 0.0F) { f2 = 0.0F; bool = false; }
-      if (f2 <= 30.0F) break; f2 = 30.0F; bool = false;
+      if (f1 < -30.0F) {
+        f1 = -30.0F;
+        bool = false;
+      }
+      if (f1 > 30.0F) {
+        f1 = 30.0F;
+        bool = false;
+      }
+      if (f2 < 0.0F) {
+        f2 = 0.0F;
+        bool = false;
+      }
+      if (f2 <= 30.0F) break;
+      f2 = 30.0F;
+      bool = false;
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
+    paramArrayOfFloat[0] = (-f1);
+    paramArrayOfFloat[1] = f2;
     return bool;
   }
 
@@ -74,8 +138,7 @@ public class ME_323 extends Scheme7
       i = paramString.charAt(7) - '1';
       if (World.Rnd().nextFloat() < 0.1F)
         this.FM.AS.hitEngine(paramShot.initiator, i, 1);
-    }
-    else if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead"))) {
+    } else if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead"))) {
       i = 0;
       int j;
       if (paramString.endsWith("a")) {
@@ -86,13 +149,11 @@ public class ME_323 extends Scheme7
         j = paramString.charAt(6) - '1';
       } else {
         j = paramString.charAt(5) - '1';
-      }
-      hitFlesh(j, paramShot, i);
+      }hitFlesh(j, paramShot, i);
     }
   }
 
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
+  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor) {
     switch (paramInt1) {
     case 33:
       return super.cutFM(34, paramInt2, paramActor);
@@ -117,33 +178,33 @@ public class ME_323 extends Scheme7
     super.update(paramFloat);
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
+  public void doKillPilot(int paramInt) {
     switch (paramInt) {
     case 2:
-      this.FM.turret[6].setHealth(paramFloat);
+      this.FM.turret[6].bIsOperable = false;
       break;
     case 3:
-      this.FM.turret[4].setHealth(paramFloat);
+      this.FM.turret[4].bIsOperable = false;
       break;
     case 4:
-      this.FM.turret[5].setHealth(paramFloat);
+      this.FM.turret[5].bIsOperable = false;
       break;
     case 5:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.FM.turret[0].bIsOperable = false;
       break;
     case 6:
-      this.FM.turret[1].setHealth(paramFloat);
+      this.FM.turret[1].bIsOperable = false;
       break;
     case 7:
-      this.FM.turret[2].setHealth(paramFloat);
+      this.FM.turret[2].bIsOperable = false;
       break;
     case 8:
-      this.FM.turret[3].setHealth(paramFloat);
+      this.FM.turret[3].bIsOperable = false;
     }
   }
 
-  public void doMurderPilot(int paramInt) {
+  public void doMurderPilot(int paramInt)
+  {
     switch (paramInt) {
     case 0:
       hierMesh().chunkVisible("Pilot1_D0", false);
@@ -173,14 +234,11 @@ public class ME_323 extends Scheme7
   public void msgShot(Shot paramShot)
   {
     setShot(paramShot);
-
-    if ("CF_D3".equals(paramShot.chunkName)) return;
-
-    super.msgShot(paramShot);
+    if (!"CF_D3".equals(paramShot.chunkName))
+      super.msgShot(paramShot);
   }
 
-  public boolean typeBomberToggleAutomation()
-  {
+  public boolean typeBomberToggleAutomation() {
     return false;
   }
 
@@ -200,60 +258,74 @@ public class ME_323 extends Scheme7
   {
   }
 
-  public void typeBomberAdjSideslipPlus() {
+  public void typeBomberAdjSideslipPlus()
+  {
   }
 
-  public void typeBomberAdjSideslipMinus() {
+  public void typeBomberAdjSideslipMinus()
+  {
   }
 
-  public void typeBomberAdjAltitudeReset() {
+  public void typeBomberAdjAltitudeReset()
+  {
   }
 
-  public void typeBomberAdjAltitudePlus() {
+  public void typeBomberAdjAltitudePlus()
+  {
   }
 
-  public void typeBomberAdjAltitudeMinus() {
+  public void typeBomberAdjAltitudeMinus()
+  {
   }
 
-  public void typeBomberAdjSpeedReset() {
+  public void typeBomberAdjSpeedReset()
+  {
   }
 
-  public void typeBomberAdjSpeedPlus() {
+  public void typeBomberAdjSpeedPlus()
+  {
   }
 
-  public void typeBomberAdjSpeedMinus() {
+  public void typeBomberAdjSpeedMinus()
+  {
   }
 
-  public void typeBomberUpdate(float paramFloat) {
+  public void typeBomberUpdate(float paramFloat)
+  {
   }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
+  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted)
+    throws IOException
+  {
   }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
+  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput)
+    throws IOException
+  {
   }
 
-  static {
+  static
+  {
     Class localClass = ME_323.class;
-    new NetAircraft.SPAWN(localClass);
 
+    new NetAircraft.SPAWN(localClass);
     Property.set(localClass, "iconFar_shortClassName", "Me-323");
     Property.set(localClass, "meshName", "3Do/Plane/Me-323/hier.him");
     Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
     Property.set(localClass, "originCountry", PaintScheme.countryGermany);
-
     Property.set(localClass, "yearService", 1942.0F);
     Property.set(localClass, "yearExpired", 1945.5F);
-
     Property.set(localClass, "FlightModel", "FlightModels/Me-323.fmd");
+    Property.set(localClass, "cockpitClass", new Class[] { CockpitME_323.class, CockpitME_323_FRGunner.class, CockpitME_323_FLGunner.class, CockpitME_323_TGunner.class, CockpitME_323_TLGunner.class, CockpitME_323_TRGunner.class, CockpitME_323_RGunner.class, CockpitME_323_LGunner.class });
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15, 16, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15, 16, 3 });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", null });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01" });
 
-    weaponsRegister(localClass, "32xPara", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", "BombGunPara 32" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "32xPara", new String[] { "MGunMG131t 650", "MGunMG131t 650", "MGunMG131t 525", "MGunMG131t 525", "MGunMG15120t 350", "MGunMG15120t 350", "MGunMG15t 350", "BombGunPara 32" });
+
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
   }
 }

@@ -79,12 +79,14 @@ public class GWindowEditText extends GWindowDialogControl
     int i = this.undoList.size() - this.maxUnDoSize;
     if (i <= 0)
       return;
-    while (i < this.undoList.size()) {
+    do {
       UnDo localUnDo = (UnDo)this.undoList.get(i);
       if (!localUnDo.bSubOperation)
         break;
       i++;
     }
+    while (i < this.undoList.size());
+
     this.undoPos -= i;
     while (i-- > 0)
       this.undoList.remove(0);
@@ -140,7 +142,7 @@ public class GWindowEditText extends GWindowDialogControl
 
   public void setEnable(boolean paramBoolean) {
     super.setEnable(paramBoolean);
-    if (!this.bEnable) {
+    if (!this.jdField_bEnable_of_type_Boolean) {
       this.bShiftDown = false;
       this.bControlDown = false;
       this.bMouseDown = false;
@@ -211,7 +213,7 @@ public class GWindowEditText extends GWindowDialogControl
   public void delete(boolean paramBoolean) {
     if (!this.bCanEdit) return;
     if (!isSelected()) return;
-    if (this.posCaret.item == this.posSelect.item)
+    if (this.posCaret.jdField_item_of_type_Int == this.posSelect.jdField_item_of_type_Int)
       newUnDo(new UnDoDelLine()).redo(paramBoolean);
     else
       newUnDo(new UnDoDelLines()).redo(paramBoolean);
@@ -228,9 +230,9 @@ public class GWindowEditText extends GWindowDialogControl
       delete(paramBoolean);
       return;
     }
-    if (this.posCaret.ofs > 0)
+    if (this.posCaret.jdField_ofs_of_type_Int > 0)
       newUnDo(new UnDoDelChar(true)).redo(paramBoolean);
-    else if (this.posCaret.item > 0)
+    else if (this.posCaret.jdField_item_of_type_Int > 0)
       newUnDo(new UnDoDelLf(true)).redo(paramBoolean);
   }
 
@@ -245,10 +247,10 @@ public class GWindowEditText extends GWindowDialogControl
       delete(paramBoolean);
       return;
     }
-    StringBuffer localStringBuffer = item(this.posCaret.item);
-    if (this.posCaret.ofs < localStringBuffer.length())
+    StringBuffer localStringBuffer = item(this.posCaret.jdField_item_of_type_Int);
+    if (this.posCaret.jdField_ofs_of_type_Int < localStringBuffer.length())
       newUnDo(new UnDoDelChar(false)).redo(paramBoolean);
-    else if (this.posCaret.item < this.text.size() - 1)
+    else if (this.posCaret.jdField_item_of_type_Int < this.text.size() - 1)
       newUnDo(new UnDoDelLf(false)).redo(paramBoolean);
   }
 
@@ -269,10 +271,10 @@ public class GWindowEditText extends GWindowDialogControl
       this.text.add(new StringBuffer());
       _doNotifyChange(paramBoolean);
     } else {
-      localObject = item(this.posCaret.item);
-      if (this.posCaret.ofs == 0)
+      localObject = item(this.posCaret.jdField_item_of_type_Int);
+      if (this.posCaret.jdField_ofs_of_type_Int == 0)
         newUnDo(new UnDoInsL()).redo(paramBoolean);
-      else if (this.posCaret.ofs == ((StringBuffer)localObject).length())
+      else if (this.posCaret.jdField_ofs_of_type_Int == ((StringBuffer)localObject).length())
         newUnDo(new UnDoInsR()).redo(paramBoolean);
       else
         newUnDo(new UnDoIns()).redo(paramBoolean);
@@ -293,7 +295,7 @@ public class GWindowEditText extends GWindowDialogControl
     if (isEmpty()) {
       clearUnDo();
       this.text.add(new StringBuffer());
-      item(this.posCaret.item).insert(this.posCaret.ofs++, paramChar);
+      item(this.posCaret.jdField_item_of_type_Int).insert(this.posCaret.jdField_ofs_of_type_Int++, paramChar);
       unselect();
       _doNotifyChange(paramBoolean);
     } else {
@@ -314,8 +316,8 @@ public class GWindowEditText extends GWindowDialogControl
     if (isEmpty()) {
       clearUnDo();
       this.text.add(new StringBuffer());
-      item(this.posCaret.item).insert(this.posCaret.ofs, paramString);
-      this.posCaret.ofs += paramString.length();
+      item(this.posCaret.jdField_item_of_type_Int).insert(this.posCaret.jdField_ofs_of_type_Int, paramString);
+      this.posCaret.jdField_ofs_of_type_Int += paramString.length();
       unselect();
       _doNotifyChange(paramBoolean);
     } else {
@@ -331,20 +333,20 @@ public class GWindowEditText extends GWindowDialogControl
     this.bEnableClampUnDoList = false;
     this.bEnableNotifyChange = false;
     boolean bool = isEmpty();
-    int i = this.undoPos;
-    int j = paramList.size();
-    Object localObject;
-    for (int k = 0; k < j; k++) {
-      localObject = (String)paramList.get(k);
-      if (k != 0) insert(false);
-      if (localObject == null) continue; insert((String)localObject, false);
+    String str1 = this.undoPos;
+    int i = paramList.size();
+    String str2;
+    for (int j = 0; j < i; j++) {
+      str2 = (String)paramList.get(j);
+      if (j != 0) insert(false);
+      if (str2 == null) continue; insert(str2, false);
     }
     if (bool)
       clearUnDo();
     else {
-      for (k = i; k < this.undoPos - 1; k++) {
-        localObject = (UnDo)this.undoList.get(k);
-        ((UnDo)localObject).bSubOperation = true;
+      for (str2 = str1; str2 < this.undoPos - 1; str2++) {
+        UnDo localUnDo = (UnDo)this.undoList.get(str2);
+        localUnDo.bSubOperation = true;
       }
     }
     this.bEnableClampUnDoList = true;
@@ -356,11 +358,11 @@ public class GWindowEditText extends GWindowDialogControl
   public void moveLeft() {
     if (isEmpty()) return;
     if (!this.bShiftDown) unselect();
-    if (--this.posCaret.ofs < 0) {
-      if (this.posCaret.item > 0)
-        this.posCaret.ofs = item(--this.posCaret.item).length();
+    if (--this.posCaret.jdField_ofs_of_type_Int < 0) {
+      if (this.posCaret.jdField_item_of_type_Int > 0)
+        this.posCaret.jdField_ofs_of_type_Int = item(--this.posCaret.jdField_item_of_type_Int).length();
       else
-        this.posCaret.ofs = 0;
+        this.posCaret.jdField_ofs_of_type_Int = 0;
     }
     startShowCaret();
   }
@@ -368,13 +370,13 @@ public class GWindowEditText extends GWindowDialogControl
   public void moveRight() {
     if (isEmpty()) return;
     if (!this.bShiftDown) unselect();
-    if (this.posCaret.ofs + 1 > item(this.posCaret.item).length()) {
-      if (this.posCaret.item + 1 < this.text.size()) {
-        this.posCaret.item += 1;
-        this.posCaret.ofs = 0;
+    if (this.posCaret.jdField_ofs_of_type_Int + 1 > item(this.posCaret.jdField_item_of_type_Int).length()) {
+      if (this.posCaret.jdField_item_of_type_Int + 1 < this.text.size()) {
+        this.posCaret.jdField_item_of_type_Int += 1;
+        this.posCaret.jdField_ofs_of_type_Int = 0;
       }
     }
-    else this.posCaret.ofs += 1;
+    else this.posCaret.jdField_ofs_of_type_Int += 1;
 
     startShowCaret();
   }
@@ -382,14 +384,14 @@ public class GWindowEditText extends GWindowDialogControl
   public void moveHome() {
     if (isEmpty()) return;
     if (!this.bShiftDown) unselect();
-    this.posCaret.ofs = 0;
+    this.posCaret.jdField_ofs_of_type_Int = 0;
     startShowCaret();
   }
 
   public void moveEnd() {
     if (isEmpty()) return;
     if (!this.bShiftDown) unselect();
-    this.posCaret.ofs = item(this.posCaret.item).length();
+    this.posCaret.jdField_ofs_of_type_Int = item(this.posCaret.jdField_item_of_type_Int).length();
     startShowCaret();
   }
 
@@ -400,37 +402,42 @@ public class GWindowEditText extends GWindowDialogControl
     Pos localPos = _tmpPos;
     localPos.set(this.posCaret);
     int i = 0;
-    while (i == 0) {
-      while (true) {
-        if (localPos.ofs > 0) {
-          j = item(localPos.item).charAt(localPos.ofs - 1);
+    do { int j;
+      while (true) { if (localPos.jdField_ofs_of_type_Int > 0) {
+          j = item(localPos.jdField_item_of_type_Int).charAt(localPos.jdField_ofs_of_type_Int - 1);
           if (j > 32)
             break;
-          localPos.ofs -= 1;
-          continue;
-        }if (localPos.item == 0)
+          localPos.jdField_ofs_of_type_Int -= 1; continue;
+        }
+        if (localPos.jdField_item_of_type_Int == 0)
           return;
-        localPos.ofs = item(--localPos.item).length();
+        localPos.jdField_ofs_of_type_Int = item(--localPos.jdField_item_of_type_Int).length();
       }
       while (true)
       {
-        if (localPos.ofs <= 0) break label166; j = item(localPos.item).charAt(localPos.ofs - 1);
-        if (j <= 32) {
-          i = 1;
-          break;
+        if (localPos.jdField_ofs_of_type_Int > 0) {
+          j = item(localPos.jdField_item_of_type_Int).charAt(localPos.jdField_ofs_of_type_Int - 1);
+          if (j <= 32) {
+            i = 1;
+          }
+          else {
+            localPos.jdField_ofs_of_type_Int -= 1; continue;
+          }
+        } else {
+          j = item(localPos.jdField_item_of_type_Int).charAt(localPos.jdField_ofs_of_type_Int);
+          if (j > 32) {
+            i = 1;
+          }
+          else {
+            if (localPos.jdField_item_of_type_Int == 0) {
+              return;
+            }
+            localPos.jdField_ofs_of_type_Int = item(--localPos.jdField_item_of_type_Int).length();
+          }
         }
-        localPos.ofs -= 1;
       }
-      label166: int j = item(localPos.item).charAt(localPos.ofs);
-      if (j > 32) {
-        i = 1;
-        continue;
-      }
-      if (localPos.item == 0) {
-        return;
-      }
-      localPos.ofs = item(--localPos.item).length();
     }
+    while (i == 0);
 
     this.posCaret.set(localPos);
     startShowCaret();
@@ -442,34 +449,35 @@ public class GWindowEditText extends GWindowDialogControl
     Pos localPos = _tmpPos;
     localPos.set(this.posCaret);
     int i = 0;
-    if (i == 0) { int j;
-      while (true) if (localPos.ofs < item(localPos.item).length()) {
-          j = item(localPos.item).charAt(localPos.ofs);
+    do { int j;
+      while (true) if (localPos.jdField_ofs_of_type_Int < item(localPos.jdField_item_of_type_Int).length()) {
+          j = item(localPos.jdField_item_of_type_Int).charAt(localPos.jdField_ofs_of_type_Int);
           if (j <= 32)
             break;
-          localPos.ofs += 1;
-          continue; } else {
-          if (localPos.item + 1 == this.text.size())
+          localPos.jdField_ofs_of_type_Int += 1; continue;
+        } else {
+          if (localPos.jdField_item_of_type_Int + 1 == this.text.size())
             return;
-          localPos.set(localPos.item + 1, 0);
+          localPos.set(localPos.jdField_item_of_type_Int + 1, 0);
         }
 
       while (true)
       {
-        if (localPos.ofs < item(localPos.item).length()) {
-          j = item(localPos.item).charAt(localPos.ofs);
+        if (localPos.jdField_ofs_of_type_Int < item(localPos.jdField_item_of_type_Int).length()) {
+          j = item(localPos.jdField_item_of_type_Int).charAt(localPos.jdField_ofs_of_type_Int);
           if (j > 32) {
             i = 1;
             break;
           }
-          localPos.ofs += 1;
-          continue;
-        }if (localPos.item + 1 == this.text.size()) {
+          localPos.jdField_ofs_of_type_Int += 1; continue;
+        }
+        if (localPos.jdField_item_of_type_Int + 1 == this.text.size()) {
           return;
         }
-        localPos.set(localPos.item + 1, 0);
+        localPos.set(localPos.jdField_item_of_type_Int + 1, 0);
       }
     }
+    while (i == 0);
 
     this.posCaret.set(localPos);
     startShowCaret();
@@ -479,7 +487,7 @@ public class GWindowEditText extends GWindowDialogControl
     int i = this.textPos.size();
     for (int j = 0; j < i; j++) {
       PosLen localPosLen = itemPos(j);
-      if ((localPosLen.item == paramPos.item) && (paramPos.ofs >= localPosLen.ofs) && (paramPos.ofs <= localPosLen.ofs + localPosLen.len))
+      if ((localPosLen.jdField_item_of_type_Int == paramPos.jdField_item_of_type_Int) && (paramPos.jdField_ofs_of_type_Int >= localPosLen.jdField_ofs_of_type_Int) && (paramPos.jdField_ofs_of_type_Int <= localPosLen.jdField_ofs_of_type_Int + localPosLen.len))
         return j;
     }
     return 0;
@@ -495,28 +503,28 @@ public class GWindowEditText extends GWindowDialogControl
     else if (i == this.textPos.size() - 1) return;
 
     PosLen localPosLen = itemPos(i);
-    if (localPosLen.ofs == this.posCaret.ofs) {
+    if (localPosLen.jdField_ofs_of_type_Int == this.posCaret.jdField_ofs_of_type_Int) {
       i += paramInt;
       localPosLen = itemPos(i);
       this.posCaret.set(localPosLen);
       startShowCaret();
       return;
     }
-    setCanvasFont(this.font);
-    GFont localGFont = this.root.C.font;
-    char[] arrayOfChar = _getArrayRenderBuffer(this.posCaret.ofs - localPosLen.ofs);
-    StringBuffer localStringBuffer = item(localPosLen.item);
-    localStringBuffer.getChars(localPosLen.ofs, this.posCaret.ofs, arrayOfChar, 0);
-    GSize localGSize = localGFont.size(arrayOfChar, 0, this.posCaret.ofs - localPosLen.ofs);
+    setCanvasFont(this.jdField_font_of_type_Int);
+    GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
+    char[] arrayOfChar = _getArrayRenderBuffer(this.posCaret.jdField_ofs_of_type_Int - localPosLen.jdField_ofs_of_type_Int);
+    StringBuffer localStringBuffer = item(localPosLen.jdField_item_of_type_Int);
+    localStringBuffer.getChars(localPosLen.jdField_ofs_of_type_Int, this.posCaret.jdField_ofs_of_type_Int, arrayOfChar, 0);
+    GSize localGSize = localGFont.size(arrayOfChar, 0, this.posCaret.jdField_ofs_of_type_Int - localPosLen.jdField_ofs_of_type_Int);
     float f1 = localGSize.dx;
     i += paramInt;
     localPosLen = itemPos(i);
     if (localPosLen.len == 0) {
-      this.posCaret.set(localPosLen.item, localPosLen.ofs);
+      this.posCaret.set(localPosLen.jdField_item_of_type_Int, localPosLen.jdField_ofs_of_type_Int);
     } else {
       arrayOfChar = _getArrayRenderBuffer(localPosLen.len);
-      localStringBuffer = item(localPosLen.item);
-      localStringBuffer.getChars(localPosLen.ofs, localPosLen.ofs + localPosLen.len, arrayOfChar, 0);
+      localStringBuffer = item(localPosLen.jdField_item_of_type_Int);
+      localStringBuffer.getChars(localPosLen.jdField_ofs_of_type_Int, localPosLen.jdField_ofs_of_type_Int + localPosLen.len, arrayOfChar, 0);
       float f2 = 0.0F;
 
       for (int j = 1; j < localPosLen.len; j++) {
@@ -528,7 +536,7 @@ public class GWindowEditText extends GWindowDialogControl
 
         f2 = localGSize.dx;
       }
-      this.posCaret.set(localPosLen.item, localPosLen.ofs + j);
+      this.posCaret.set(localPosLen.jdField_item_of_type_Int, localPosLen.jdField_ofs_of_type_Int + j);
     }
     startShowCaret();
   }
@@ -550,21 +558,21 @@ public class GWindowEditText extends GWindowDialogControl
     Pos localPos = _tmpPos;
     localPos.set((Pos)localObject1);
     while (localPos.isLess((Pos)localObject2)) {
-      StringBuffer localStringBuffer = item(localPos.item);
-      if (localPos.ofs == localStringBuffer.length()) {
+      StringBuffer localStringBuffer = item(localPos.jdField_item_of_type_Int);
+      if (localPos.jdField_ofs_of_type_Int == localStringBuffer.length()) {
         ((StringBuffer)localObject3).append("\r\n");
-        localPos.ofs = 0;
-        localPos.item += 1;
+        localPos.jdField_ofs_of_type_Int = 0;
+        localPos.jdField_item_of_type_Int += 1;
       } else {
-        ((StringBuffer)localObject3).append(localStringBuffer.charAt(localPos.ofs++));
+        ((StringBuffer)localObject3).append(localStringBuffer.charAt(localPos.jdField_ofs_of_type_Int++));
       }
     }
-    this.root.C.copyToClipboard(((StringBuffer)localObject3).toString());
+    this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.copyToClipboard(((StringBuffer)localObject3).toString());
   }
 
   public void editPaste() {
     if (!this.bCanEdit) return;
-    String str = this.root.C.pasteFromClipboard();
+    String str = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.pasteFromClipboard();
     if ((str == null) || (str.length() == 0)) return;
     ArrayList localArrayList = new ArrayList();
     StringBuffer localStringBuffer = new StringBuffer();
@@ -596,8 +604,8 @@ public class GWindowEditText extends GWindowDialogControl
       this.textPos.clear();
       return;
     }
-    setCanvasFont(this.font);
-    GFont localGFont = this.root.C.font;
+    setCanvasFont(this.jdField_font_of_type_Int);
+    GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font;
     GSize localGSize = localGFont.size("|");
     float f = localGSize.dx;
     int i;
@@ -612,30 +620,29 @@ public class GWindowEditText extends GWindowDialogControl
         if (n == 0) {
           localObject = itemPos(i);
           ((PosLen)localObject).set(k, 0, 0, 0.0F);
-          i++;
-        } else {
-          localObject = _getArrayRenderBuffer(n);
+          i++; } else { localObject = _getArrayRenderBuffer(n);
           localStringBuffer2.getChars(0, n, localObject, 0);
           int i1 = 0;
           int i2 = 0;
           int i3 = 0;
+          break label370;
           PosLen localPosLen;
-          while (i2 < n) {
-            while ((i2 < n) && 
-              (localObject[i2] > ' '))
+          label370: 
+          do { while (i2 < n) {
+              if (localObject[i2] <= ' ') break;
               i2++;
-            while ((i2 < n) && 
-              (localObject[i2] <= ' '))
+            }while (i2 < n) {
+              if (localObject[i2] > ' ') break;
               i2++;
-            localGSize = localGFont.size(localObject, i1, i2 - i1);
-            if (localGSize.dx + f >= this.win.dx) {
+            }localGSize = localGFont.size(localObject, i1, i2 - i1);
+            if (localGSize.dx + f >= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) {
               if (i3 != i1) {
                 i2 = i3;
               } else {
                 int i4 = i2;
                 for (i2 = i1 + 1; i2 < i4; i2++) {
                   localGSize = localGFont.size(localObject, i1, i2 - i1);
-                  if (localGSize.dx + f >= this.win.dx)
+                  if (localGSize.dx + f >= this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx)
                     break;
                 }
                 if (i2 > i1 + 1)
@@ -646,9 +653,11 @@ public class GWindowEditText extends GWindowDialogControl
               localPosLen.set(k, i1, i2 - i1, localGSize.dx + f);
               i++;
               i1 = i3 = i2;
-              continue;
-            }i3 = i2;
+            } else {
+              i3 = i2;
+            }
           }
+          while (i2 < n);
 
           if (i1 != i2) {
             localGSize = localGFont.size(localObject, i1, i2 - i1);
@@ -685,7 +694,7 @@ public class GWindowEditText extends GWindowDialogControl
   }
 
   public void keyboardChar(char paramChar) {
-    if ((this.bEnable) && (this.bCanEdit) && (!this.bControlDown))
+    if ((this.jdField_bEnable_of_type_Boolean) && (this.bCanEdit) && (!this.bControlDown))
     {
       if ((Character.isLetterOrDigit(paramChar)) || (paramChar == '、') || (paramChar == '。') || ((paramChar >= ' ') && (paramChar < '')) || ((paramChar >= ' ') && (paramChar <= 'ÿ')) || (paramChar == '\t'))
       {
@@ -707,7 +716,7 @@ public class GWindowEditText extends GWindowDialogControl
   public void doRepeat() {
     if (!this.bCanRepeat) return;
     if (this.curRepeatOp == 0) return;
-    this.repeatTimeout -= this.root.deltaTimeSec;
+    this.repeatTimeout -= this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec;
     if (this.repeatTimeout > 0.0F) return;
     this.repeatTimeout = this.repeatGoTimeout;
     switch (this.curRepeatOp) { case 1:
@@ -736,7 +745,7 @@ public class GWindowEditText extends GWindowDialogControl
 
   public void keyboardKey(int paramInt, boolean paramBoolean)
   {
-    if (!this.bEnable) {
+    if (!this.jdField_bEnable_of_type_Boolean) {
       super.keyboardKey(paramInt, paramBoolean);
       return;
     }
@@ -809,7 +818,7 @@ public class GWindowEditText extends GWindowDialogControl
 
   public void setCaretPos(float paramFloat1, float paramFloat2) {
     if (isEmpty()) return;
-    GFont localGFont = this.root.textFonts[this.font];
+    GFont localGFont = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.textFonts[this.jdField_font_of_type_Int];
     int i = (int)(paramFloat2 / localGFont.height);
     if (i >= this.textPos.size())
       i = this.textPos.size() - 1;
@@ -817,9 +826,9 @@ public class GWindowEditText extends GWindowDialogControl
     if (localPosLen.len == 0) {
       this.posCaret.set(localPosLen);
     } else {
-      StringBuffer localStringBuffer = item(localPosLen.item);
+      StringBuffer localStringBuffer = item(localPosLen.jdField_item_of_type_Int);
       char[] arrayOfChar = _getArrayRenderBuffer(localPosLen.len);
-      localStringBuffer.getChars(localPosLen.ofs, localPosLen.ofs + localPosLen.len, arrayOfChar, 0);
+      localStringBuffer.getChars(localPosLen.jdField_ofs_of_type_Int, localPosLen.jdField_ofs_of_type_Int + localPosLen.len, arrayOfChar, 0);
 
       float f = 0.0F;
 
@@ -832,12 +841,12 @@ public class GWindowEditText extends GWindowDialogControl
 
         f = localGSize.dx;
       }
-      this.posCaret.set(localPosLen.item, localPosLen.ofs + j);
+      this.posCaret.set(localPosLen.jdField_item_of_type_Int, localPosLen.jdField_ofs_of_type_Int + j);
     }
   }
 
   public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    if ((this.bEnable) && (paramInt == 0)) {
+    if ((this.jdField_bEnable_of_type_Boolean) && (paramInt == 0)) {
       if (paramBoolean) {
         this.bMouseDown = true;
         if (isSelected()) unselect();
@@ -859,7 +868,7 @@ public class GWindowEditText extends GWindowDialogControl
 
   public void close(boolean paramBoolean)
   {
-    if ((this.bEnable) && (this.bChangePending)) {
+    if ((this.jdField_bEnable_of_type_Boolean) && (this.bChangePending)) {
       this.bChangePending = false;
       notify(2, 0);
     }
@@ -868,7 +877,7 @@ public class GWindowEditText extends GWindowDialogControl
 
   public void keyFocusExit() {
     stopRepeat();
-    if ((this.bEnable) && (this.bChangePending)) {
+    if ((this.jdField_bEnable_of_type_Boolean) && (this.bChangePending)) {
       this.bChangePending = false;
       notify(2, 0);
     }
@@ -891,7 +900,7 @@ public class GWindowEditText extends GWindowDialogControl
       this.bShowCaret = false;
       return;
     }
-    float f = this.root.deltaTimeSec;
+    float f = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.deltaTimeSec;
     this.caretTimeout -= f;
     if (this.caretTimeout <= 0.0F) {
       this.bShowCaret = (!this.bShowCaret);
@@ -920,12 +929,12 @@ public class GWindowEditText extends GWindowDialogControl
 
     public void undo()
     {
-      GWindowEditText.this.item(this.caret.item).delete(this.caret.ofs, this.caret.ofs + this.str.length());
+      GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).delete(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs + this.str.length());
       super.undo();
     }
     public void redo(boolean paramBoolean) {
-      GWindowEditText.this.item(this.caret.item).insert(this.caret.ofs, this.str);
-      GWindowEditText.this.posCaret.set(this.caret.item, this.caret.ofs + this.str.length());
+      GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).insert(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs, this.str);
+      GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs + this.str.length());
       super.redo(paramBoolean);
     }
     public UnDoInsStr(String arg2) {
@@ -941,12 +950,12 @@ public class GWindowEditText extends GWindowDialogControl
 
     public void undo()
     {
-      GWindowEditText.this.item(this.caret.item).deleteCharAt(this.caret.ofs);
+      GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).deleteCharAt(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs);
       super.undo();
     }
     public void redo(boolean paramBoolean) {
-      GWindowEditText.this.item(this.caret.item).insert(this.caret.ofs, this.ch);
-      GWindowEditText.this.posCaret.set(this.caret.item, this.caret.ofs + 1);
+      GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).insert(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs, this.ch);
+      GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs + 1);
       super.redo(paramBoolean);
     }
     public UnDoInsChar(char arg2) {
@@ -962,19 +971,19 @@ public class GWindowEditText extends GWindowDialogControl
     {
       super();
     }
-    public void undo() { GWindowEditText.this.item(this.caret.item).append(GWindowEditText.this.item(this.caret.item + 1).toString());
-      GWindowEditText.this.text.remove(this.caret.item + 1);
+    public void undo() { GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).append(GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1));
+      GWindowEditText.this.text.remove(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1);
       super.undo(); }
 
     public void redo(boolean paramBoolean) {
-      StringBuffer localStringBuffer = GWindowEditText.this.item(this.caret.item);
-      char[] arrayOfChar = new char[localStringBuffer.length() - this.caret.ofs];
-      localStringBuffer.getChars(this.caret.ofs, localStringBuffer.length(), arrayOfChar, 0);
-      localStringBuffer.delete(this.caret.ofs, localStringBuffer.length());
+      StringBuffer localStringBuffer = GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item);
+      char[] arrayOfChar = new char[localStringBuffer.length() - this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs];
+      localStringBuffer.getChars(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs, localStringBuffer.length(), arrayOfChar, 0);
+      localStringBuffer.delete(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs, localStringBuffer.length());
       localStringBuffer = new StringBuffer(arrayOfChar.length);
       localStringBuffer.append(arrayOfChar);
-      GWindowEditText.this.text.add(this.caret.item + 1, localStringBuffer);
-      GWindowEditText.this.posCaret.set(this.caret.item + 1, 0);
+      GWindowEditText.this.text.add(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1, localStringBuffer);
+      GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1, 0);
       super.redo(paramBoolean);
     }
   }
@@ -985,12 +994,12 @@ public class GWindowEditText extends GWindowDialogControl
     {
       super();
     }
-    public void undo() { GWindowEditText.this.text.remove(this.caret.item + 1);
+    public void undo() { GWindowEditText.this.text.remove(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1);
       super.undo(); }
 
     public void redo(boolean paramBoolean) {
-      GWindowEditText.this.text.add(this.caret.item + 1, new StringBuffer());
-      GWindowEditText.this.posCaret.set(this.caret.item + 1, 0);
+      GWindowEditText.this.text.add(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1, new StringBuffer());
+      GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1, 0);
       super.redo(paramBoolean);
     }
   }
@@ -1001,12 +1010,12 @@ public class GWindowEditText extends GWindowDialogControl
     {
       super();
     }
-    public void undo() { GWindowEditText.this.text.remove(this.caret.item);
+    public void undo() { GWindowEditText.this.text.remove(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item);
       super.undo(); }
 
     public void redo(boolean paramBoolean) {
-      GWindowEditText.this.text.add(this.caret.item, new StringBuffer());
-      GWindowEditText.this.posCaret.set(this.caret.item + 1, 0);
+      GWindowEditText.this.text.add(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item, new StringBuffer());
+      GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1, 0);
       super.redo(paramBoolean);
     }
   }
@@ -1021,21 +1030,21 @@ public class GWindowEditText extends GWindowDialogControl
       StringBuffer localStringBuffer;
       char[] arrayOfChar;
       if (this.bLeft) {
-        localStringBuffer = GWindowEditText.this.item(this.caret.item - 1);
+        localStringBuffer = GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item - 1);
         arrayOfChar = new char[localStringBuffer.length() - this.ofs];
         localStringBuffer.getChars(this.ofs, localStringBuffer.length(), arrayOfChar, 0);
         localStringBuffer.delete(this.ofs, localStringBuffer.length());
         localStringBuffer = new StringBuffer(arrayOfChar.length);
         localStringBuffer.append(arrayOfChar);
-        GWindowEditText.this.text.add(this.caret.item, localStringBuffer);
+        GWindowEditText.this.text.add(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item, localStringBuffer);
       } else {
-        localStringBuffer = GWindowEditText.this.item(this.caret.item);
+        localStringBuffer = GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item);
         arrayOfChar = new char[localStringBuffer.length() - this.ofs];
         localStringBuffer.getChars(this.ofs, localStringBuffer.length(), arrayOfChar, 0);
         localStringBuffer.delete(this.ofs, localStringBuffer.length());
         localStringBuffer = new StringBuffer(arrayOfChar.length);
         localStringBuffer.append(arrayOfChar);
-        GWindowEditText.this.text.add(this.caret.item + 1, localStringBuffer);
+        GWindowEditText.this.text.add(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1, localStringBuffer);
       }
       super.undo();
     }
@@ -1044,14 +1053,14 @@ public class GWindowEditText extends GWindowDialogControl
     {
       StringBuffer localStringBuffer;
       if (this.bLeft) {
-        localStringBuffer = GWindowEditText.this.item(this.caret.item - 1);
-        localStringBuffer.append(GWindowEditText.this.item(this.caret.item).toString());
-        GWindowEditText.this.text.remove(this.caret.item);
-        GWindowEditText.this.posCaret.set(this.caret.item - 1, this.ofs);
+        localStringBuffer = GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item - 1);
+        localStringBuffer.append(GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item));
+        GWindowEditText.this.text.remove(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item);
+        GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item - 1, this.ofs);
       } else {
-        localStringBuffer = GWindowEditText.this.item(this.caret.item);
-        localStringBuffer.append(GWindowEditText.this.item(this.caret.item + 1).toString());
-        GWindowEditText.this.text.remove(this.caret.item + 1);
+        localStringBuffer = GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item);
+        localStringBuffer.append(GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1));
+        GWindowEditText.this.text.remove(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item + 1);
       }
       super.redo(paramBoolean);
     }
@@ -1059,7 +1068,7 @@ public class GWindowEditText extends GWindowDialogControl
       super();
       boolean bool;
       this.bLeft = bool;
-      StringBuffer localStringBuffer = GWindowEditText.this.item(bool ? this.caret.item - 1 : this.caret.item);
+      StringBuffer localStringBuffer = GWindowEditText.this.item(bool ? this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item - 1 : this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item);
       this.ofs = localStringBuffer.length();
     }
   }
@@ -1071,19 +1080,19 @@ public class GWindowEditText extends GWindowDialogControl
 
     public void undo()
     {
-      GWindowEditText.this.item(this.caret.item).insert(this.bLeft ? this.caret.ofs - 1 : this.caret.ofs, this.ch);
+      GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).insert(this.bLeft ? this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs - 1 : this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs, this.ch);
       super.undo();
     }
     public void redo(boolean paramBoolean) {
-      GWindowEditText.this.item(this.caret.item).deleteCharAt(this.bLeft ? this.caret.ofs - 1 : this.caret.ofs);
-      GWindowEditText.this.posCaret.set(this.caret.item, this.bLeft ? this.caret.ofs - 1 : this.caret.ofs);
+      GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).deleteCharAt(this.bLeft ? this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs - 1 : this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs);
+      GWindowEditText.this.posCaret.set(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item, this.bLeft ? this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs - 1 : this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs);
       super.redo(paramBoolean);
     }
     public UnDoDelChar(boolean arg2) {
       super();
       boolean bool;
       this.bLeft = bool;
-      this.ch = GWindowEditText.this.item(this.caret.item).charAt(bool ? this.caret.ofs - 1 : this.caret.ofs);
+      this.ch = GWindowEditText.this.item(this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.item).charAt(bool ? this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs - 1 : this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos.ofs);
     }
   }
 
@@ -1091,11 +1100,11 @@ public class GWindowEditText extends GWindowDialogControl
   {
     public ArrayList lines = new ArrayList();
 
-    public void undo() { GWindowEditText.access$000(this.select, this.caret);
+    public void undo() { GWindowEditText.access$000(this.jdField_select_of_type_ComMaddoxGwindowGWindowEditText$Pos, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos);
       GWindowEditText.this.text.remove(GWindowEditText._p0.item);
       int i = this.lines.size();
       for (int j = 0; j < i; j++) {
-        char[] arrayOfChar = (char[])(char[])this.lines.get(j);
+        char[] arrayOfChar = (char[])this.lines.get(j);
         StringBuffer localStringBuffer = new StringBuffer(arrayOfChar.length);
         localStringBuffer.append(arrayOfChar);
         GWindowEditText.this.text.add(GWindowEditText._p0.item++, localStringBuffer);
@@ -1103,7 +1112,7 @@ public class GWindowEditText extends GWindowDialogControl
       super.undo(); }
 
     public void redo(boolean paramBoolean) {
-      GWindowEditText.access$000(this.select, this.caret);
+      GWindowEditText.access$000(this.jdField_select_of_type_ComMaddoxGwindowGWindowEditText$Pos, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos);
       while (GWindowEditText._p0.item + 1 < GWindowEditText._p1.item)
         GWindowEditText.this.text.remove(--GWindowEditText._p1.item);
       StringBuffer localStringBuffer = GWindowEditText.this.item(GWindowEditText._p0.item);
@@ -1114,7 +1123,7 @@ public class GWindowEditText extends GWindowDialogControl
       super.redo(paramBoolean);
     }
     public UnDoDelLines() { super();
-      GWindowEditText.access$000(this.select, this.caret);
+      GWindowEditText.access$000(this.jdField_select_of_type_ComMaddoxGwindowGWindowEditText$Pos, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos);
       while (GWindowEditText._p0.item <= GWindowEditText._p1.item) {
         StringBuffer localStringBuffer = GWindowEditText.this.item(GWindowEditText._p0.item);
         char[] arrayOfChar = new char[localStringBuffer.length()];
@@ -1131,18 +1140,18 @@ public class GWindowEditText extends GWindowDialogControl
 
     public void undo()
     {
-      GWindowEditText.access$000(this.select, this.caret);
+      GWindowEditText.access$000(this.jdField_select_of_type_ComMaddoxGwindowGWindowEditText$Pos, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos);
       GWindowEditText.this.item(GWindowEditText._p0.item).insert(GWindowEditText._p0.ofs, this.line);
       super.undo();
     }
     public void redo(boolean paramBoolean) {
-      GWindowEditText.access$000(this.select, this.caret);
+      GWindowEditText.access$000(this.jdField_select_of_type_ComMaddoxGwindowGWindowEditText$Pos, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos);
       GWindowEditText.this.item(GWindowEditText._p0.item).delete(GWindowEditText._p0.ofs, GWindowEditText._p1.ofs);
       GWindowEditText.this.posCaret.set(GWindowEditText._p0);
       super.redo(paramBoolean);
     }
     public UnDoDelLine() { super();
-      GWindowEditText.access$000(this.select, this.caret);
+      GWindowEditText.access$000(this.jdField_select_of_type_ComMaddoxGwindowGWindowEditText$Pos, this.jdField_caret_of_type_ComMaddoxGwindowGWindowEditText$Pos);
       this.line = new char[GWindowEditText._p1.ofs - GWindowEditText._p0.ofs];
       GWindowEditText.this.item(GWindowEditText._p0.item).getChars(GWindowEditText._p0.ofs, GWindowEditText._p1.ofs, this.line, 0);
     }

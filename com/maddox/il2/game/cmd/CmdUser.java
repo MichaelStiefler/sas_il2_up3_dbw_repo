@@ -52,13 +52,13 @@ public class CmdUser extends Cmd
     ArrayList localArrayList = new ArrayList();
     fillUsers(paramMap, localArrayList, false);
 
-    if ((localArrayList.size() == 0) && (!exist(paramMap, "STAT"))) return null;
+    if ((localArrayList.size() == 0) && (!Cmd.exist(paramMap, "STAT"))) return null;
 
-    this.bEventLog = exist(paramMap, "EVENTLOG");
+    this.bEventLog = Cmd.exist(paramMap, "EVENTLOG");
     int i;
     Object localObject1;
     Object localObject2;
-    if (exist(paramMap, "STAT")) {
+    if (Cmd.exist(paramMap, "STAT")) {
       fillUsers(paramMap, localArrayList, true);
       for (i = 0; i < localArrayList.size(); i++) {
         localObject1 = localArrayList.get(i);
@@ -90,7 +90,6 @@ public class CmdUser extends Cmd
 
         INFO_HARD("Enemy Wagon Kill: \t" + localObject2.enemyKill[6]);
         INFO_HARD("Enemy Ship Kill: \t" + localObject2.enemyKill[7]);
-        INFO_HARD("Enemy Radio Kill: \t" + localObject2.enemyKill[9]);
 
         INFO_HARD("Friend Aircraft Kill: \t" + localObject2.friendKill[0]);
         INFO_HARD("Friend Static Aircraft Kill: \t" + localObject2.friendKill[8]);
@@ -101,7 +100,6 @@ public class CmdUser extends Cmd
 
         INFO_HARD("Friend Wagon Kill: \t" + localObject2.friendKill[6]);
         INFO_HARD("Friend Ship Kill: \t" + localObject2.friendKill[7]);
-        INFO_HARD("Friend Radio Kill: \t" + localObject2.friendKill[9]);
 
         INFO_HARD("Fire Bullets: \t\t" + ((NetUserStat)localObject2).bulletsFire);
         INFO_HARD("Hit Bullets: \t\t" + ((NetUserStat)localObject2).bulletsHit);
@@ -175,7 +173,7 @@ public class CmdUser extends Cmd
     int i = 0;
     if ((!paramMap.containsKey("_$$")) && (!paramMap.containsKey("#")) && (!paramMap.containsKey("ARMY")))
       i = 1;
-    if ((paramMap.containsKey("_$$")) && (nargs(paramMap, "_$$") == 1) && ("*".equals(arg(paramMap, "_$$", 0))))
+    if ((paramMap.containsKey("_$$")) && (Cmd.nargs(paramMap, "_$$") == 1) && ("*".equals(Cmd.arg(paramMap, "_$$", 0))))
       i = 1;
     if (i != 0) {
       if (paramBoolean) {
@@ -196,9 +194,9 @@ public class CmdUser extends Cmd
     int i3;
     Object localObject;
     if (paramMap.containsKey("_$$")) {
-      k = nargs(paramMap, "_$$");
+      k = Cmd.nargs(paramMap, "_$$");
       for (m = 0; m < k; m++) {
-        str1 = arg(paramMap, "_$$", m);
+        str1 = Cmd.arg(paramMap, "_$$", m);
         if (paramBoolean) {
           for (int i1 = 0; i1 < NetUserLeft.all.size(); i1++) {
             NetUserLeft localNetUserLeft = (NetUserLeft)NetUserLeft.all.get(i1);
@@ -234,11 +232,11 @@ public class CmdUser extends Cmd
     }
 
     if (paramMap.containsKey("#")) {
-      k = nargs(paramMap, "#");
+      k = Cmd.nargs(paramMap, "#");
       for (m = 0; m < k; m++) {
-        str1 = arg(paramMap, "#", m);
+        str1 = Cmd.arg(paramMap, "#", m);
         if ((str1.charAt(0) >= '0') && (str1.charAt(0) <= '9')) {
-          int i2 = arg(paramMap, "#", m, 1000, 0, 1000);
+          int i2 = Cmd.arg(paramMap, "#", m, 1000, 0, 1000);
           if (paramBoolean) {
             i3 = i2 - 1 - NetEnv.hosts().size();
             if ((i3 >= 0) && (i3 < NetUserLeft.all.size())) {
@@ -271,17 +269,19 @@ public class CmdUser extends Cmd
     }
 
     if (paramMap.containsKey("ARMY")) {
-      k = nargs(paramMap, "ARMY");
+      k = Cmd.nargs(paramMap, "ARMY");
       for (m = 0; m < k; m++) {
         int n = -1;
-        String str2 = arg(paramMap, "ARMY", m);
+        String str2 = Cmd.arg(paramMap, "ARMY", m);
         if ((str2.charAt(0) >= '0') && (str2.charAt(0) <= '9')) {
-          n = arg(paramMap, "ARMY", m, 1000, 0, 1000);
+          n = Cmd.arg(paramMap, "ARMY", m, 1000, 0, 1000);
           if (n >= Army.amountNet())
             continue;
         } else {
-          for (n = 0; (n < Army.amountNet()) && 
-            (!Army.name(n).equals(str2)); n++);
+          for (n = 0; n < Army.amountNet(); n++) {
+            if (Army.name(n).equals(str2))
+              break;
+          }
           if (n == Army.amountNet())
             continue;
         }
@@ -323,11 +323,11 @@ public class CmdUser extends Cmd
 
   public CmdUser()
   {
-    this.param.put("#", null);
-    this.param.put("ARMY", null);
-    this.param.put("STAT", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("#", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ARMY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("STAT", null);
 
-    this.param.put("EVENTLOG", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("EVENTLOG", null);
 
     this._properties.put("NAME", "user");
     this._levelAccess = 1;

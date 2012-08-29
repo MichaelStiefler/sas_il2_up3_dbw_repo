@@ -113,7 +113,7 @@ public class CmdHelp extends Cmd
     j -= paramString.length() + 1;
     while (j-- > 0)
       buf.append(' ');
-    if (INFO_HARD) {
+    if (Cmd.INFO_HARD) {
       System.out.print(buf.toString());
     }
     return i;
@@ -121,9 +121,9 @@ public class CmdHelp extends Cmd
 
   public CmdHelp()
   {
-    this.param.put("SIZE", "10");
-    this.param.put("WIDTH", "0");
-    this.param.put("NAMES", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("SIZE", "10");
+    this.jdField_param_of_type_JavaUtilTreeMap.put("WIDTH", "0");
+    this.jdField_param_of_type_JavaUtilTreeMap.put("NAMES", null);
     this._properties.put("NAME", "help");
     this._levelAccess = 2;
   }

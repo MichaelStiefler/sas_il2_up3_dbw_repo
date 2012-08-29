@@ -146,19 +146,16 @@ public class NetEnv
   public static NetSocket getExclusiveSocket() {
     return RTSConf.cur.netEnv._getExclusiveSocket();
   }
-
-  private NetSocket _getExclusiveSocket()
-  {
-    NetSocket localNetSocket;
+  private NetSocket _getExclusiveSocket() {
     for (int i = 0; i < this.socketsNoBlock.size(); i++) {
-      localNetSocket = (NetSocket)this.socketsNoBlock.get(i);
-      if ((localNetSocket.isExclusive()) && (localNetSocket.isOpen()))
-        return localNetSocket;
+      NetSocket localNetSocket1 = (NetSocket)this.socketsNoBlock.get(i);
+      if ((localNetSocket1.isExclusive()) && (localNetSocket1.isOpen()))
+        return localNetSocket1;
     }
-    for (i = 0; i < this.socketsBlock.size(); i++) {
-      localNetSocket = (NetSocket)this.socketsBlock.get(i);
-      if ((localNetSocket.isExclusive()) && (localNetSocket.isOpen()))
-        return localNetSocket;
+    for (int j = 0; j < this.socketsBlock.size(); j++) {
+      NetSocket localNetSocket2 = (NetSocket)this.socketsBlock.get(j);
+      if ((localNetSocket2.isExclusive()) && (localNetSocket2.isOpen()))
+        return localNetSocket2;
     }
     return null;
   }
@@ -287,22 +284,22 @@ public class NetEnv
 
         if (i != 0)
         {
-          k = this.udatedObjects.size();
+          int n = this.udatedObjects.size();
           Object localObject2;
-          if (k > 0) {
+          if (n > 0) {
             this._updateObjects = this.udatedObjects.toArray(this._updateObjects);
             try {
-              for (int n = 0; n < k; n++) {
-                localObject2 = (NetUpdate)this._updateObjects[n];
-                this._updateObjects[n] = null;
+              for (int i1 = 0; i1 < n; i1++) {
+                localObject2 = (NetUpdate)this._updateObjects[i1];
+                this._updateObjects[i1] = null;
                 if ((localObject2 instanceof NetObj)) {
                   NetObj localNetObj = (NetObj)localObject2;
                   if (localNetObj.isDestroyed())
                     continue;
                   if ((localNetObj.superObj != null) && ((localNetObj.superObj instanceof Destroy)) && (((Destroy)localNetObj.superObj).isDestroyed()))
+                  {
                     continue;
-                }
-                else {
+                  } } else {
                   if (((localObject2 instanceof Destroy)) && (((Destroy)localObject2).isDestroyed()))
                     continue;
                 }
@@ -315,7 +312,7 @@ public class NetEnv
 
           }
 
-          for (int i1 = 0; i1 < j; i1++) { localObject2 = (NetChannel)this.channels.get(i1);
+          for (int i2 = 0; i2 < j; i2++) { localObject2 = (NetChannel)this.channels.get(i2);
             while (((NetChannel)localObject2).sendPacket(this.msgOutput, this.packet)); }
         }
         sendExtPackets();
@@ -512,9 +509,9 @@ public class NetEnv
         NetSocket localNetSocket = (NetSocket)NetEnv.this.inputSockets.get(0);
         NetEnv.this.inputSockets.remove(0);
         int j = localNetPacket.getLength();
-        if ((j > 1) && (localNetSocket.isOpen()) && 
-          (!NetEnv.this.receivedPacket(localNetSocket, localNetPacket, localNetPacket.time)))
-          NetEnv.this.receivedExtPacket(localNetSocket, localNetPacket);
+        if ((j <= 1) || (!localNetSocket.isOpen()) || 
+          (NetEnv.this.receivedPacket(localNetSocket, localNetPacket, localNetPacket.time))) continue;
+        NetEnv.this.receivedExtPacket(localNetSocket, localNetPacket);
       }
     }
 

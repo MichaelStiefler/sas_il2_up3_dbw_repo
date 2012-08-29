@@ -14,7 +14,7 @@ public class SoundReceiver extends BaseObject
 
   protected static native void jniReset(int paramInt);
 
-  public SoundReceiver(int paramInt) { if (enabled) this.handle = jniInit(paramInt);
+  public SoundReceiver(int paramInt) { if (BaseObject.enabled) this.handle = jniInit(paramInt);
   }
 
   public void destroy()

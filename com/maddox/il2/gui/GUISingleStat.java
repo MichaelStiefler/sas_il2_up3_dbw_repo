@@ -4,7 +4,6 @@ import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.ai.DifficultySettings;
-import com.maddox.il2.ai.ScoreCounter;
 import com.maddox.il2.ai.Scores;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.game.GameStateStack;
@@ -37,10 +36,6 @@ public class GUISingleStat extends GUIStat
 
   protected void doNext() {
     Main3D.cur3D().keyRecord.clearRecorded();
-    ScoreCounter localScoreCounter = World.cur().scoreCounter;
-    if (GUIQuick.isQMB()) {
-      GUIQuickStats.qmbMissionComplete(localScoreCounter.bulletsFire, localScoreCounter.bulletsHitAir, localScoreCounter.bulletsHit, Scores.score, Scores.enemyAirKill, Scores.enemyGroundKill, Scores.arrayEnemyGroundKill, localScoreCounter.bPlayerDead, localScoreCounter.bPlayerParatrooper, localScoreCounter.bombFire, localScoreCounter.rocketsFire, localScoreCounter.rocketsHit, localScoreCounter.bombHit);
-    }
     if ((Mission.cur() != null) && (!Mission.cur().isDestroyed()))
       Mission.cur().destroy();
     Main.stateStack().pop();
@@ -50,7 +45,7 @@ public class GUISingleStat extends GUIStat
   }
 
   protected void clientRender() {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    GUIStat.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient;
     GUISeparate.draw(localDialogClient, GColor.Gray, localDialogClient.x1024(32.0F), localDialogClient.y1024(512.0F), localDialogClient.x1024(672.0F), 2.0F);
     GUISeparate.draw(localDialogClient, GColor.Gray, localDialogClient.x1024(416.0F), localDialogClient.y1024(529.0F), 2.0F, localDialogClient.y1024(176.0F));
     localDialogClient.setCanvasFont(0);
@@ -71,7 +66,7 @@ public class GUISingleStat extends GUIStat
   }
 
   protected void clientSetPosSize() {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    GUIStat.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient;
     localDialogClient.set1024PosSize(144.0F, 32.0F, 736.0F, 736.0F);
     this.bSave.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(554.0F));
     this.bNext.setPosC(localDialogClient.x1024(456.0F), localDialogClient.y1024(617.0F));

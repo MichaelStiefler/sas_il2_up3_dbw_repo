@@ -23,24 +23,24 @@ public class GUICampaignStatView extends GUICampaignStat
     if (Scores.arrayEnemyGroundKill != null)
       Scores.enemyGroundKill = Scores.arrayEnemyGroundKill.length;
     Scores.score = Main.cur().campaign.score();
-    this.awards = Main.cur().campaign.awards(Scores.score);
+    this.jdField_awards_of_type_Int = Main.cur().campaign.awards(Scores.score);
 
-    if (this.awards == 0) this.bViewAward.hideWindow(); else {
-      this.bViewAward.showWindow();
+    if (this.jdField_awards_of_type_Int == 0) this.jdField_bViewAward_of_type_ComMaddoxIl2GuiGUICampaignStat$WAwardButton.hideWindow(); else {
+      this.jdField_bViewAward_of_type_ComMaddoxIl2GuiGUICampaignStat$WAwardButton.showWindow();
     }
     int i = Main.cur().campaign.rank();
-    this.rank = "";
+    this.jdField_rank_of_type_JavaLangString = "";
     try {
       ResourceBundle localResourceBundle = ResourceBundle.getBundle("missions/campaign/" + Main.cur().campaign.branch() + "/" + "rank", RTSConf.cur.locale);
-      this.rank = localResourceBundle.getString("" + i);
+      this.jdField_rank_of_type_JavaLangString = localResourceBundle.getString("" + i);
     } catch (Exception localException) {
     }
     DifficultySettings localDifficultySettings = new DifficultySettings();
     localDifficultySettings.set(Main.cur().campaign.difficulty());
-    if (localDifficultySettings.isRealistic()) this.diff = i18n("campstat.realistic");
-    else if (localDifficultySettings.isNormal()) this.diff = i18n("campstat.normal");
-    else if (localDifficultySettings.isEasy()) this.diff = i18n("campstat.easy"); else
-      this.diff = i18n("campstat.custom");
+    if (localDifficultySettings.isRealistic()) this.jdField_diff_of_type_JavaLangString = i18n("campstat.realistic");
+    else if (localDifficultySettings.isNormal()) this.jdField_diff_of_type_JavaLangString = i18n("campstat.normal");
+    else if (localDifficultySettings.isEasy()) this.jdField_diff_of_type_JavaLangString = i18n("campstat.easy"); else
+      this.jdField_diff_of_type_JavaLangString = i18n("campstat.custom");
     this.iArmy = (Main.cur().campaign.army() - 1);
     updateScrollSizes();
     this.client.activateWindow();
@@ -59,7 +59,7 @@ public class GUICampaignStatView extends GUICampaignStat
 
   protected void clientRender2()
   {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    GUIStat.DialogClient localDialogClient = this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient;
 
     localDialogClient.draw(localDialogClient.x1024(496.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 0, i18n("campstat.Back"));
   }
@@ -68,7 +68,7 @@ public class GUICampaignStatView extends GUICampaignStat
     super(31);
     init(paramGWindowRoot);
     this.infoMenu.info = i18n("campstat.info");
-    this.bViewAward = ((GUICampaignStat.WAwardButton)this.dialogClient.addControl(new GUICampaignStat.WAwardButton(this, this.dialogClient)));
+    this.jdField_bViewAward_of_type_ComMaddoxIl2GuiGUICampaignStat$WAwardButton = ((GUICampaignStat.WAwardButton)this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient.addControl(new GUICampaignStat.WAwardButton(this, this.jdField_dialogClient_of_type_ComMaddoxIl2GuiGUIStat$DialogClient)));
     this.bSave.hideWindow();
     this.bNext.hideWindow();
     this.bRefly.hideWindow();

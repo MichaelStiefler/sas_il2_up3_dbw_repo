@@ -23,7 +23,6 @@ import com.maddox.il2.objects.air.Scheme7;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.rts.Finger;
 import com.maddox.rts.HomePath;
@@ -42,7 +41,6 @@ import java.io.PrintWriter;
 
 public class FlightModelMain extends FMMath
 {
-  public static final int __DEBUG__IL2C_DUMP_LEVEL__ = 0;
   public static final int ROOKIE = 0;
   public static final int NORMAL = 1;
   public static final int VETERAN = 2;
@@ -167,19 +165,6 @@ public class FlightModelMain extends FMMath
   public float Range = 800.0F;
   public float CruiseSpeed = 370.0F;
 
-  public int[] damagedParts = new int[7];
-  public int maxDamage = 0;
-  public int cutPart = -1;
-  private boolean bReal;
-  public float UltimateLoad = 12.0F;
-  public float Negative_G_Limit = -4.0F;
-  public float Negative_G_Ultimate = -6.0F;
-  public float LimitLoad = 8.0F;
-  public float G_ClassCoeff;
-  public float refM;
-  public float SafetyFactor = 1.5F;
-  public float ReferenceForce;
-  private String aircrName;
   String turnFile = new String();
   String speedFile = new String();
 
@@ -195,11 +180,11 @@ public class FlightModelMain extends FMMath
 
   public float getSpeedKMH()
   {
-    return (float)(this.Vflow.x * 3.6D); } 
-  public float getSpeed() { return (float)this.Vflow.x; } 
+    return (float)(this.Vflow.jdField_x_of_type_Double * 3.6D); } 
+  public float getSpeed() { return (float)this.Vflow.jdField_x_of_type_Double; } 
   public void getSpeed(Vector3d paramVector3d) { paramVector3d.set(this.Vair); } 
-  public float getVertSpeed() { return (float)this.Vair.z; } 
-  public float getAltitude() { return (float)this.Loc.z; } 
+  public float getVertSpeed() { return (float)this.Vair.jdField_z_of_type_Double; } 
+  public float getAltitude() { return (float)this.Loc.jdField_z_of_type_Double; } 
   public float getAOA() { return this.AOA; } 
   public float getAOS() { return this.AOS; } 
   public void getLoc(Point3f paramPoint3f) { paramPoint3f.set(this.Loc); } 
@@ -306,9 +291,6 @@ public class FlightModelMain extends FMMath
       this.CT.FlapsControl = 0.0F;
     }
 
-    i = localSectFile.get(str2, "cElectricProp", 0);
-    this.CT.bUseElectricProp = (i == 1);
-
     float f1 = localSectFile.get(str2, "GearPeriod", -999.0F);
     if (f1 != -999.0F) {
       this.CT.dvGear = (1.0F / f1);
@@ -336,9 +318,9 @@ public class FlightModelMain extends FMMath
       f3 *= f3;
       f5 = this.Length * 0.07F;
       f5 *= f5;
-      this.J0.z = (f2 * 0.2F + f4 * 0.4F + f3 * 0.4F);
-      this.J0.y = (f2 * 0.2F + f4 * 0.4F + f5 * 0.4F);
-      this.J0.x = (f5 * 0.6F + f3 * 0.4F);
+      this.J0.jdField_z_of_type_Double = (f2 * 0.2F + f4 * 0.4F + f3 * 0.4F);
+      this.J0.jdField_y_of_type_Double = (f2 * 0.2F + f4 * 0.4F + f5 * 0.4F);
+      this.J0.jdField_x_of_type_Double = (f5 * 0.6F + f3 * 0.4F);
 
       break;
     case 2:
@@ -350,9 +332,9 @@ public class FlightModelMain extends FMMath
       f3 *= f3;
       f5 = this.Length * 0.07F;
       f5 *= f5;
-      this.J0.z = (f2 * 0.2F + f4 * 0.1F + f3 * 0.7F);
-      this.J0.y = (f2 * 0.2F + f4 * 0.1F + f5 * 0.7F);
-      this.J0.x = (f5 * 0.3F + f3 * 0.7F);
+      this.J0.jdField_z_of_type_Double = (f2 * 0.2F + f4 * 0.1F + f3 * 0.7F);
+      this.J0.jdField_y_of_type_Double = (f2 * 0.2F + f4 * 0.1F + f5 * 0.7F);
+      this.J0.jdField_x_of_type_Double = (f5 * 0.3F + f3 * 0.7F);
 
       break;
     case 3:
@@ -364,9 +346,9 @@ public class FlightModelMain extends FMMath
       f3 *= f3;
       f5 = this.Length * 0.07F;
       f5 *= f5;
-      this.J0.z = (f2 * 0.2F + f4 * 0.2F + f3 * 0.6F);
-      this.J0.y = (f2 * 0.2F + f4 * 0.2F + f5 * 0.6F);
-      this.J0.x = (f5 * 0.2F + f3 * 0.8F);
+      this.J0.jdField_z_of_type_Double = (f2 * 0.2F + f4 * 0.2F + f3 * 0.6F);
+      this.J0.jdField_y_of_type_Double = (f2 * 0.2F + f4 * 0.2F + f5 * 0.6F);
+      this.J0.jdField_x_of_type_Double = (f5 * 0.2F + f3 * 0.8F);
 
       break;
     case 4:
@@ -380,9 +362,9 @@ public class FlightModelMain extends FMMath
       f3 *= f3;
       f5 = this.Length * 0.07F;
       f5 *= f5;
-      this.J0.z = (f2 * 0.25F + f4 * 0.15F + f3 * 0.6F);
-      this.J0.y = (f2 * 0.25F + f4 * 0.15F + f5 * 0.6F);
-      this.J0.x = (f5 * 0.4F + f3 * 0.6F);
+      this.J0.jdField_z_of_type_Double = (f2 * 0.25F + f4 * 0.15F + f3 * 0.6F);
+      this.J0.jdField_y_of_type_Double = (f2 * 0.25F + f4 * 0.15F + f5 * 0.6F);
+      this.J0.jdField_x_of_type_Double = (f5 * 0.4F + f3 * 0.6F);
 
       break;
     case 6:
@@ -394,16 +376,9 @@ public class FlightModelMain extends FMMath
       f3 *= f3;
       f5 = this.Length * 0.07F;
       f5 *= f5;
-      this.J0.z = (f2 * 0.25F + f4 * 0.15F + f3 * 0.6F);
-      this.J0.y = (f2 * 0.25F + f4 * 0.15F + f5 * 0.6F);
-      this.J0.x = (f5 * 0.4F + f3 * 0.6F);
-    }
-
-    str2 = "Params";
-    if (localSectFile.exist(str2, "ReferenceWeight"))
-      this.refM = localSectFile.get(str2, "ReferenceWeight", 0.0F, -2000.0F, 2000.0F);
-    else {
-      this.refM = 0.0F;
+      this.J0.jdField_z_of_type_Double = (f2 * 0.25F + f4 * 0.15F + f3 * 0.6F);
+      this.J0.jdField_y_of_type_Double = (f2 * 0.25F + f4 * 0.15F + f5 * 0.6F);
+      this.J0.jdField_x_of_type_Double = (f5 * 0.4F + f3 * 0.6F);
     }
 
     this.M.load(localSectFile, this);
@@ -412,26 +387,14 @@ public class FlightModelMain extends FMMath
 
     this.Arms.load(localSectFile);
 
-    Aircraft.debugprintln(this.actor, "Calling engines interface to resolve file '" + localSectFile.toString() + "'....");
+    Aircraft.debugprintln(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Calling engines interface to resolve file '" + localSectFile.toString() + "'....");
     this.EI.load((FlightModel)this, localSectFile);
 
     this.Gears.load(localSectFile);
 
-    if (localSectFile.exist(str2, "G_CLASS")) {
-      this.LimitLoad = localSectFile.get(str2, "G_CLASS", 12.0F, 0.0F, 15.0F);
-      this.LimitLoad /= 1.5F;
-    } else {
-      this.LimitLoad = 12.0F;
-    }
-    if (localSectFile.exist(str2, "G_CLASS_COEFF"))
-      this.G_ClassCoeff = localSectFile.get(str2, "G_CLASS_COEFF", 20.0F, -30.0F, 50.0F);
-    else {
-      this.G_ClassCoeff = 20.0F;
-    }
+    str2 = "Params";
 
-    float f6 = this.M.maxWeight * Atmosphere.g();
-
-    float f7 = this.Sq.squareWing;
+    float f6 = this.M.maxWeight * Atmosphere.g(); float f7 = this.Sq.squareWing;
 
     this.Vmax = localSectFile.get(str2, "Vmax", 1.0F);
     this.VmaxH = localSectFile.get(str2, "VmaxH", 1.0F);
@@ -544,6 +507,9 @@ public class FlightModelMain extends FMMath
     } else {
       throw new RuntimeException(str1);
     }
+
+    this.turnFile = (paramString.substring(0, paramString.length() - 4) + "_turn.txt");
+    this.speedFile = (paramString.substring(0, paramString.length() - 4) + "_speed.txt");
   }
 
   public void drawData()
@@ -569,10 +535,9 @@ public class FlightModelMain extends FMMath
         localPrintWriter.print(i + "\t");
         float f1 = -1000.0F;
         float f2 = -1000.0F;
-        float f3;
         float f4;
         for (int j = 50; j < 1500; j++) {
-          f3 = this.EI.forcePropAOA(j * 0.27778F, i, 1.1F, true);
+          float f3 = this.EI.forcePropAOA(j * 0.27778F, i, 1.1F, true);
           f4 = this.Wing.getClimb(j * 0.27778F, i, f3);
           if (f4 > f1) f1 = f4;
           if ((f4 < 0.0F) && (f4 < f1)) {
@@ -585,12 +550,12 @@ public class FlightModelMain extends FMMath
         localPrintWriter.print(f1 * this.Wing.Vyfac + "\t");
         f1 = -1000.0F;
         f2 = -1000.0F;
-        for (j = 50; j < 1500; j++) {
-          f3 = this.EI.forcePropAOA(j * 0.27778F, i, 1.0F, false);
-          f4 = this.Wing.getClimb(j * 0.27778F, i, f3);
-          if (f4 > f1) f1 = f4;
-          if ((f4 < 0.0F) && (f4 < f1)) {
-            f2 = j;
+        for (int k = 50; k < 1500; k++) {
+          f4 = this.EI.forcePropAOA(k * 0.27778F, i, 1.0F, false);
+          float f5 = this.Wing.getClimb(k * 0.27778F, i, f4);
+          if (f5 > f1) f1 = f5;
+          if ((f5 < 0.0F) && (f5 < f1)) {
+            f2 = k;
             break;
           }
         }
@@ -611,74 +576,73 @@ public class FlightModelMain extends FMMath
   public FlightModelMain(String paramString)
   {
     load(paramString);
-    init_G_Limits();
   }
 
   public void set(Loc paramLoc, Vector3f paramVector3f)
   {
-    this.actor.pos.setAbs(paramLoc); this.Vwld.set(paramVector3f);
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.setAbs(paramLoc); this.Vwld.set(paramVector3f);
     paramLoc.get(this.Loc, this.Or);
   }
 
   public void set(Point3d paramPoint3d, Orient paramOrient, Vector3f paramVector3f)
   {
-    this.actor.pos.setAbs(paramPoint3d, paramOrient); this.Vwld.set(paramVector3f);
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.setAbs(paramPoint3d, paramOrient); this.Vwld.set(paramVector3f);
     this.Loc.set(paramPoint3d);
     this.Or.set(paramOrient);
   }
 
   public void update(float paramFloat)
   {
-    ((Aircraft)this.actor).update(paramFloat);
+    ((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).update(paramFloat);
   }
 
   public boolean tick()
   {
     float f1 = Time.tickLenFs();
 
-    float f2 = (float)(this.Loc.z - Engine.land().HQ_Air(this.Loc.x, this.Loc.y));
+    float f2 = (float)(this.Loc.jdField_z_of_type_Double - Engine.land().HQ_Air(this.Loc.jdField_x_of_type_Double, this.Loc.jdField_y_of_type_Double));
 
-    this.actor.pos.getAbs(this.Loc, this.Or);
+    this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.getAbs(this.Loc, this.Or);
 
     int i = (int)(f1 / 0.05F) + 1;
     float f3 = f1 / i;
     for (int j = 0; j < i; j++) update(f3);
     this.Gears.bFlatTopGearCheck = false;
 
-    if (this.actor.pos.base() == null)
+    if (this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.base() == null)
     {
-      this.actor.pos.setAbs(this.Loc, this.Or);
+      this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.setAbs(this.Loc, this.Or);
     }
     else
     {
-      if ((this.actor.pos.base() instanceof Aircraft)) {
-        this.Vwld.set(((Aircraft)this.actor.pos.base()).FM.Vwld);
+      if ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.base() instanceof Aircraft)) {
+        this.Vwld.set(((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.base()).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Vwld);
       } else {
-        this.actor.pos.speed(actVwld);
-        this.Vwld.x = (float)actVwld.x;
-        this.Vwld.y = (float)actVwld.y;
-        this.Vwld.z = (float)actVwld.z;
+        this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.speed(actVwld);
+        this.Vwld.jdField_x_of_type_Double = (float)actVwld.jdField_x_of_type_Double;
+        this.Vwld.jdField_y_of_type_Double = (float)actVwld.jdField_y_of_type_Double;
+        this.Vwld.jdField_z_of_type_Double = (float)actVwld.jdField_z_of_type_Double;
       }
-      this.actor.pos.getAbs(this.Or);
-      this.producedAF.z += 9.81F * this.M.mass;
+      this.jdField_actor_of_type_ComMaddoxIl2EngineActor.pos.getAbs(this.Or);
+      this.producedAF.jdField_z_of_type_Double += 9.81F * this.M.mass;
     }
 
-    this.Energy = (Atmosphere.g() * (float)this.Loc.z + this.V2 * 0.5F);
+    this.Energy = (Atmosphere.g() * (float)this.Loc.jdField_z_of_type_Double + this.V2 * 0.5F);
 
     return true;
   }
 
   public float getOverload()
   {
-    return (float)this.ACmeter.z;
+    return (float)this.ACmeter.jdField_z_of_type_Double;
   }
 
   public float getForwAccel() {
-    return (float)this.ACmeter.x;
+    return (float)this.ACmeter.jdField_x_of_type_Double;
   }
 
   public float getRollAcceleration() {
-    return (float)this.AM.x / this.Gravity;
+    return (float)this.AM.jdField_x_of_type_Double / this.Gravity;
   }
 
   public void gunPulse(Vector3d paramVector3d)
@@ -699,7 +663,7 @@ public class FlightModelMain extends FMMath
 
   public final boolean isPlayers()
   {
-    return (this.actor != null) && (this.actor == World.getPlayerAircraft());
+    return (this.jdField_actor_of_type_ComMaddoxIl2EngineActor != null) && (this.jdField_actor_of_type_ComMaddoxIl2EngineActor == World.getPlayerAircraft());
   }
   public final boolean isCapableOfACM() {
     return (this.flags0 & 0x20) != 0L;
@@ -754,8 +718,8 @@ public class FlightModelMain extends FMMath
       (Actor.isValid(this.damagedInitiator)) && (
       (!isCapableOfBMP()) || (isTakenMortalDamage()))) {
       this.bDamaged = true;
-      if (this.actor != this.damagedInitiator)
-        EventLog.onDamaged(this.actor, this.damagedInitiator);
+      if (this.jdField_actor_of_type_ComMaddoxIl2EngineActor != this.damagedInitiator)
+        EventLog.onDamaged(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, this.damagedInitiator);
       this.damagedInitiator = null;
     }
 
@@ -764,7 +728,7 @@ public class FlightModelMain extends FMMath
       (!isCapableOfBMP()) || (!isCapableOfTaxiing()) || (isReadyToDie()) || (isTakenMortalDamage()) || (isSentControlsOutNote())))
     {
       this.bDamagedGround = true;
-      EventLog.onDamagedGround(this.actor);
+      EventLog.onDamagedGround(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
     }
   }
 
@@ -781,7 +745,7 @@ public class FlightModelMain extends FMMath
   {
     if (isCapableOfBMP() == paramBoolean) return;
     if ((isCapableOfBMP()) && (World.Rnd().nextInt(0, 99) < 25)) {
-      Voice.speakMayday((Aircraft)this.actor);
+      Voice.speakMayday((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
     }
     if (paramBoolean) {
       this.flags0 |= 16L;
@@ -807,8 +771,8 @@ public class FlightModelMain extends FMMath
   {
     if (isReadyToDie() == paramBoolean) return;
     if (!isReadyToDie()) {
-      if (World.Rnd().nextInt(0, 99) < 75) Voice.speakMayday((Aircraft)this.actor);
-      Explosions.generateComicBulb(this.actor, "OnFire", 9.0F);
+      if (World.Rnd().nextInt(0, 99) < 75) Voice.speakMayday((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
+      Explosions.generateComicBulb(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, "OnFire", 9.0F);
     }
     if (paramBoolean) {
       this.flags0 |= 4L;
@@ -833,14 +797,14 @@ public class FlightModelMain extends FMMath
   {
     if (isReadyToReturn() == paramBoolean) return;
     if (!isReadyToReturn()) {
-      Explosions.generateComicBulb(this.actor, "RTB", 9.0F);
+      Explosions.generateComicBulb(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, "RTB", 9.0F);
     }
     if (paramBoolean)
       this.flags0 |= 2L;
     else {
       this.flags0 &= -3L;
     }
-    Voice.speakToReturn((Aircraft)this.actor);
+    Voice.speakToReturn((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
   }
 
   public final void setReadyToReturnSoftly(boolean paramBoolean) {
@@ -863,9 +827,9 @@ public class FlightModelMain extends FMMath
       this.flags0 &= -9L;
     }
     if ((paramBoolean) && 
-      (this.actor != World.getPlayerAircraft()) && (((Aircraft)this.actor).FM.turret.length > 0))
-      for (int i = 0; i < ((Aircraft)this.actor).FM.turret.length; i++)
-        ((Aircraft)this.actor).FM.turret[i].bIsOperable = false;
+      (this.jdField_actor_of_type_ComMaddoxIl2EngineActor != World.getPlayerAircraft()) && (((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length > 0))
+      for (int i = 0; i < ((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret.length; i++)
+        ((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[i].bIsOperable = false;
   }
 
   public final void setStationedOnGround(boolean paramBoolean)
@@ -873,7 +837,7 @@ public class FlightModelMain extends FMMath
     if (isStationedOnGround() == paramBoolean) return;
     if (paramBoolean) {
       this.flags0 |= 128L;
-      EventLog.onAirLanded((Aircraft)this.actor);
+      EventLog.onAirLanded((Aircraft)this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       checkDamaged();
     } else {
       this.flags0 &= -129L;
@@ -947,14 +911,8 @@ public class FlightModelMain extends FMMath
 
   public void hit(int paramInt)
   {
-    Aircraft.debugprintln(this.actor, "Detected NDL in " + Aircraft.partNames()[paramInt] + "..");
+    Aircraft.debugprintln(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, "Detected NDL in " + Aircraft.partNames()[paramInt] + "..");
     if ((paramInt < 0) || (paramInt >= 44)) return;
-
-    if ((this instanceof RealFlightModel))
-      this.bReal = true;
-    else {
-      this.bReal = false;
-    }
 
     switch (paramInt) {
     case 13:
@@ -1009,48 +967,36 @@ public class FlightModelMain extends FMMath
       this.SensYaw *= 0.68F;
       break;
     case 33:
-      if (this.bReal)
-        setDmgLoadLimit(0.6F, 2);
       this.Sq.getClass(); this.Sq.liftWingLIn -= 0.8F;
 
       this.Sq.getClass(); this.Sq.dragProducedCx += 0.12F;
       if (World.Rnd().nextFloat() < 0.09F) setReadyToReturn(true);
       if (World.Rnd().nextFloat() >= 0.09F) break; setCapableOfACM(false); break;
     case 36:
-      if (this.bReal)
-        setDmgLoadLimit(0.6F, 3);
       this.Sq.getClass(); this.Sq.liftWingRIn -= 0.8F;
 
       this.Sq.getClass(); this.Sq.dragProducedCx += 0.12F;
       if (World.Rnd().nextFloat() < 0.09F) setReadyToReturn(true);
       if (World.Rnd().nextFloat() >= 0.09F) break; setCapableOfACM(false); break;
     case 34:
-      if (this.bReal)
-        setDmgLoadLimit(0.7F, 1);
       this.Sq.getClass(); this.Sq.liftWingLMid -= 0.8F;
 
       this.Sq.getClass(); this.Sq.dragProducedCx += 0.12F;
       if (World.Rnd().nextFloat() < 0.09F) setReadyToReturn(true);
       if (World.Rnd().nextFloat() >= 0.09F) break; setCapableOfACM(false); break;
     case 37:
-      if (this.bReal)
-        setDmgLoadLimit(0.7F, 4);
       this.Sq.getClass(); this.Sq.liftWingRMid -= 0.8F;
 
       this.Sq.getClass(); this.Sq.dragProducedCx += 0.12F;
       if (World.Rnd().nextFloat() < 0.09F) setReadyToReturn(true);
       if (World.Rnd().nextFloat() >= 0.09F) break; setCapableOfACM(false); break;
     case 35:
-      if (this.bReal)
-        setDmgLoadLimit(0.8F, 0);
       this.Sq.getClass(); this.Sq.liftWingLOut -= 0.8F;
 
       this.Sq.getClass(); this.Sq.dragProducedCx += 0.12F;
       if (World.Rnd().nextFloat() < 0.12F) setReadyToReturn(true);
       if (World.Rnd().nextFloat() >= 0.12F) break; setCapableOfACM(false); break;
     case 38:
-      if (this.bReal)
-        setDmgLoadLimit(0.8F, 5);
       this.Sq.getClass(); this.Sq.liftWingROut -= 0.8F;
 
       this.Sq.getClass(); this.Sq.dragProducedCx += 0.12F;
@@ -1059,8 +1005,8 @@ public class FlightModelMain extends FMMath
     case 3:
       if (this.Sq.dragEngineCx[0] < 0.15F)
       {
-        int tmp1240_1239 = 0;
-        float[] tmp1240_1236 = this.Sq.dragEngineCx; tmp1240_1236[tmp1240_1239] = (float)(tmp1240_1236[tmp1240_1239] + 0.05D);
+        int tmp1136_1135 = 0;
+        float[] tmp1136_1132 = this.Sq.dragEngineCx; tmp1136_1132[tmp1136_1135] = (float)(tmp1136_1132[tmp1136_1135] + 0.05D);
       }if (World.Rnd().nextFloat() >= 0.12F) break; setReadyToReturn(true); break;
     case 4:
       if (this.Sq.dragEngineCx[1] < 0.15F) this.Sq.dragEngineCx[1] += 0.05F;
@@ -1070,15 +1016,13 @@ public class FlightModelMain extends FMMath
       if (World.Rnd().nextFloat() >= 0.12F) break; setReadyToReturn(true); break;
     case 6:
       if (this.Sq.dragEngineCx[3] < 0.15F) this.Sq.dragEngineCx[3] += 0.05F;
-      if (World.Rnd().nextFloat() >= 0.12F) break; setReadyToReturn(true); break;
-    case 19:
-    case 20:
-      if (!this.bReal) break;
-      setDmgLoadLimit(0.5F, 6);
+      if (World.Rnd().nextFloat() >= 0.12F) break; setReadyToReturn(true);
     case 2:
     case 7:
     case 8:
     case 14:
+    case 19:
+    case 20:
     case 21:
     case 22:
     case 23:
@@ -1090,9 +1034,9 @@ public class FlightModelMain extends FMMath
     case 29:
     case 30: }  } 
   public void cut(int paramInt1, int paramInt2, Actor paramActor) { if ((paramInt1 < 0) || (paramInt1 >= 44)) return;
-    Aircraft.debugprintln(this.actor, "cutting part #" + paramInt1 + " (" + Aircraft.partNames()[paramInt1] + ")");
+    Aircraft.debugprintln(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, "cutting part #" + paramInt1 + " (" + Aircraft.partNames()[paramInt1] + ")");
     if (!getOp(paramInt1)) {
-      Aircraft.debugprintln(this.actor, "part #" + paramInt1 + " (" + Aircraft.partNames()[paramInt1] + ") already cut off");
+      Aircraft.debugprintln(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, "part #" + paramInt1 + " (" + Aircraft.partNames()[paramInt1] + ") already cut off");
       return;
     }cutOp(paramInt1);
 
@@ -1122,7 +1066,7 @@ public class FlightModelMain extends FMMath
       setTakenMortalDamage(true, paramActor);
 
       for (int i = 0; i < this.EI.getNum(); i++) {
-        this.EI.engines[i].setReadyness(this.actor, 0.0F);
+        this.EI.engines[i].setReadyness(this.jdField_actor_of_type_ComMaddoxIl2EngineActor, 0.0F);
       }
 
       cutOp(19);
@@ -1134,9 +1078,9 @@ public class FlightModelMain extends FMMath
       setReadyToDie(true);
       setTakenMortalDamage(true, paramActor);
       this.Arms.GCENTER = 0.0F;
-      this.W.y += World.Rnd().nextFloat(-0.1F, 0.1F);
-      this.W.z += World.Rnd().nextFloat(-0.1F, 0.1F);
-      this.J0.y *= 0.5D;
+      this.W.jdField_y_of_type_Double += World.Rnd().nextFloat(-0.1F, 0.1F);
+      this.W.jdField_z_of_type_Double += World.Rnd().nextFloat(-0.1F, 0.1F);
+      this.J0.jdField_y_of_type_Double *= 0.5D;
 
       cut(17, paramInt2, paramActor);
       cut(18, paramInt2, paramActor);
@@ -1225,7 +1169,7 @@ public class FlightModelMain extends FMMath
     case 11:
       if (World.Rnd().nextInt(-1, 8) < this.Skill) setReadyToReturn(true);
       if (World.Rnd().nextInt(-1, 16) < this.Skill) setReadyToDie(true);
-      if (((this.actor instanceof Scheme2a)) || ((this.actor instanceof Scheme5)) || ((this.actor instanceof Scheme7))) {
+      if (((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme2a)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme5)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme7))) {
         this.Sq.liftKeel *= 0.25F * Op(12);
       }
       else {
@@ -1236,7 +1180,7 @@ public class FlightModelMain extends FMMath
     case 15:
       setCapableOfACM(false);
       if (World.Rnd().nextInt(-1, 8) < this.Skill) setReadyToReturn(true);
-      if (((this.actor instanceof Scheme2a)) || ((this.actor instanceof Scheme5)) || ((this.actor instanceof Scheme7))) {
+      if (((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme2a)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme5)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme7))) {
         this.Sq.squareRudders *= 0.5F;
         this.SensYaw *= 0.25F;
       } else {
@@ -1247,7 +1191,7 @@ public class FlightModelMain extends FMMath
     case 12:
       if (World.Rnd().nextInt(-1, 8) < this.Skill) setReadyToReturn(true);
       if (World.Rnd().nextInt(-1, 16) < this.Skill) setReadyToDie(true);
-      if (((this.actor instanceof Scheme2a)) || ((this.actor instanceof Scheme5)) || ((this.actor instanceof Scheme7))) {
+      if (((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme2a)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme5)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme7))) {
         this.Sq.liftKeel *= 0.25F * Op(12);
       }
       else {
@@ -1258,7 +1202,7 @@ public class FlightModelMain extends FMMath
     case 16:
       setCapableOfACM(false);
       if (World.Rnd().nextInt(-1, 8) < this.Skill) setReadyToReturn(true);
-      if (((this.actor instanceof Scheme2a)) || ((this.actor instanceof Scheme5)) || ((this.actor instanceof Scheme7))) {
+      if (((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme2a)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme5)) || ((this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme7))) {
         this.Sq.squareRudders *= 0.5F;
         this.SensYaw *= 0.25F;
       } else {
@@ -1269,8 +1213,7 @@ public class FlightModelMain extends FMMath
     case 33:
       this.Sq.liftWingLIn *= 0.25F;
 
-      ((ActorHMesh)this.actor).destroyChildFiltered(BombGun.class);
-      ((ActorHMesh)this.actor).destroyChildFiltered(RocketBombGun.class);
+      ((ActorHMesh)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).destroyChildFiltered(BombGun.class);
       cut(9, paramInt2, paramActor);
       cutOp(34);
     case 34:
@@ -1279,7 +1222,7 @@ public class FlightModelMain extends FMMath
       this.Sq.liftWingLMid *= 0.0F;
 
       this.Sq.liftWingLIn *= 0.9F;
-      ((ActorHMesh)this.actor).destroyChildFiltered(RocketGun.class);
+      ((ActorHMesh)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).destroyChildFiltered(RocketGun.class);
       cutOp(35);
     case 35:
       setCapableOfBMP(false, paramActor);
@@ -1305,8 +1248,7 @@ public class FlightModelMain extends FMMath
     case 36:
       this.Sq.liftWingRIn *= 0.25F;
 
-      ((ActorHMesh)this.actor).destroyChildFiltered(BombGun.class);
-      ((ActorHMesh)this.actor).destroyChildFiltered(RocketBombGun.class);
+      ((ActorHMesh)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).destroyChildFiltered(BombGun.class);
       cut(10, paramInt2, paramActor);
       cutOp(37);
     case 37:
@@ -1315,7 +1257,7 @@ public class FlightModelMain extends FMMath
       this.Sq.liftWingRMid *= 0.0F;
 
       this.Sq.liftWingRIn *= 0.9F;
-      ((ActorHMesh)this.actor).destroyChildFiltered(RocketGun.class);
+      ((ActorHMesh)this.jdField_actor_of_type_ComMaddoxIl2EngineActor).destroyChildFiltered(RocketGun.class);
       cutOp(38);
     case 38:
       setCapableOfBMP(false, paramActor);
@@ -1341,26 +1283,26 @@ public class FlightModelMain extends FMMath
     case 3:
       if (this.EI.engines.length <= 0) break;
       setCapableOfTaxiing(false);
-      if (!(this.actor instanceof Scheme1)) setReadyToDie(true);
-      this.EI.engines[0].setEngineDies(this.actor);
+      if (!(this.jdField_actor_of_type_ComMaddoxIl2EngineActor instanceof Scheme1)) setReadyToDie(true);
+      this.EI.engines[0].setEngineDies(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       this.Sq.dragEngineCx[0] = 0.15F; break;
     case 4:
       if (this.EI.engines.length <= 1) break;
       setCapableOfTaxiing(false);
       setReadyToDie(true);
-      this.EI.engines[1].setEngineDies(this.actor);
+      this.EI.engines[1].setEngineDies(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       this.Sq.dragEngineCx[1] = 0.15F; break;
     case 5:
       if (this.EI.engines.length <= 2) break;
       setCapableOfTaxiing(false);
       setReadyToDie(true);
-      this.EI.engines[2].setEngineDies(this.actor);
+      this.EI.engines[2].setEngineDies(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       this.Sq.dragEngineCx[2] = 0.15F; break;
     case 6:
       if (this.EI.engines.length <= 3) break;
       setCapableOfTaxiing(false);
       setReadyToDie(true);
-      this.EI.engines[3].setEngineDies(this.actor);
+      this.EI.engines[3].setEngineDies(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
       this.Sq.dragEngineCx[3] = 0.15F;
     case 8:
     case 14:
@@ -1374,57 +1316,7 @@ public class FlightModelMain extends FMMath
     case 28:
     case 29:
     case 30: }  } 
-  private void init_G_Limits() { this.UltimateLoad = (this.LimitLoad * 1.5F);
-    this.ReferenceForce = (this.LimitLoad * (this.M.referenceWeight + this.refM));
-    this.Negative_G_Limit = (-0.5F * this.LimitLoad);
-    this.Negative_G_Ultimate = (this.Negative_G_Limit * 1.5F);
-  }
-
-  public void setDmgLoadLimit(float paramFloat, int paramInt)
-  {
-    setLimitLoad(this.LimitLoad -= paramFloat);
-    this.damagedParts[paramInt] += 1;
-
-    for (paramInt = 0; paramInt < this.damagedParts.length; paramInt++)
-      if (this.damagedParts[paramInt] > this.maxDamage)
-        this.cutPart = paramInt;
-  }
-
-  public void setUltimateLoad(float paramFloat)
-  {
-    this.UltimateLoad = (paramFloat * this.SafetyFactor);
-    this.Negative_G_Ultimate = (this.UltimateLoad * -0.5F);
-  }
-
-  public float getUltimateLoad() {
-    return this.UltimateLoad;
-  }
-
-  public void setLimitLoad(float paramFloat) {
-    this.LimitLoad = paramFloat;
-    this.Negative_G_Limit = (-paramFloat * 0.5F);
-    setUltimateLoad(paramFloat);
-  }
-
-  public float getLimitLoad() {
-    return this.LimitLoad;
-  }
-
-  public void setSafetyFactor(float paramFloat) {
-    this.SafetyFactor -= paramFloat;
-  }
-
-  public float getSafetyFactor() {
-    return this.SafetyFactor;
-  }
-
-  public float getLoadDiff() {
-    return getLimitLoad() - getOverload();
-  }
-
-  public void doRequestFMSFX(int paramInt1, int paramInt2)
-  {
-    if ((this.fmsfxCurrentType == 1) && 
+  public void doRequestFMSFX(int paramInt1, int paramInt2) { if ((this.fmsfxCurrentType == 1) && 
       (paramInt1 != 1)) {
       return;
     }
@@ -1488,7 +1380,7 @@ public class FlightModelMain extends FMMath
           fmDir = new InOutStreams();
           fmDir.open(Finger.LongFN(0L, "gui/game/buttons"));
         }
-        localInputStream = fmDir.openStream("" + Finger.Int(new StringBuffer().append(str).append("d2wO").toString()));
+        localInputStream = fmDir.openStream("" + Finger.Int(new StringBuffer().append(str).append("d2w0").toString()));
       }
       localInputStream.mark(0);
       localSectFile = new SectFile(new InputStreamReader(new KryptoInputFilter(localInputStream, getSwTbl(Finger.Int(str + "ogh9"), localInputStream.available())), "Cp1252"));

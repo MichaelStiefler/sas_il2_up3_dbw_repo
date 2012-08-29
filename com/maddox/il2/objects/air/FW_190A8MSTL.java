@@ -46,21 +46,21 @@ public class FW_190A8MSTL extends FW_190
     int i = 0;
 
     for (int j = 0; j < 1; j++) {
-      if (this.oldProp[j] < 2)
+      if (this.jdField_oldProp_of_type_ArrayOfInt[j] < 2)
       {
-        i = Math.abs((int)(this.FM.EI.engines[j].getw() * 0.12F * 1.5F));
+        i = Math.abs((int)(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw() * 0.12F * 1.5F));
         if (i >= 1) i = 1;
-        if (i != this.oldProp[j]) {
-          hierMesh().chunkVisible(Props[j][this.oldProp[j]], false);
-          this.oldProp[j] = i;
-          hierMesh().chunkVisible(Props[j][i], true);
+        if (i != this.jdField_oldProp_of_type_ArrayOfInt[j]) {
+          hierMesh().chunkVisible(Aircraft.Props[j][this.jdField_oldProp_of_type_ArrayOfInt[j]], false);
+          this.jdField_oldProp_of_type_ArrayOfInt[j] = i;
+          hierMesh().chunkVisible(Aircraft.Props[j][i], true);
         }
       }
 
       if (i == 0) {
-        this.propPos[j] = ((this.propPos[j] + 57.299999F * this.FM.EI.engines[j].getw() * paramFloat) % 360.0F);
+        this.jdField_propPos_of_type_ArrayOfFloat[j] = ((this.jdField_propPos_of_type_ArrayOfFloat[j] + 57.299999F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw() * paramFloat) % 360.0F);
       } else {
-        float f = 57.299999F * this.FM.EI.engines[j].getw();
+        float f = 57.299999F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[j].getw();
         f %= 2880.0F;
         f /= 2880.0F;
         if (f <= 0.5F)
@@ -69,9 +69,9 @@ public class FW_190A8MSTL extends FW_190
           f = f * 2.0F - 2.0F;
         }
         f *= 1200.0F;
-        this.propPos[j] = ((this.propPos[j] + f * paramFloat) % 360.0F);
+        this.jdField_propPos_of_type_ArrayOfFloat[j] = ((this.jdField_propPos_of_type_ArrayOfFloat[j] + f * paramFloat) % 360.0F);
       }
-      hierMesh().chunkSetAngles(Props[j][0], 0.0F, -this.propPos[j], 0.0F);
+      hierMesh().chunkSetAngles(Aircraft.Props[j][0], 0.0F, -this.jdField_propPos_of_type_ArrayOfFloat[j], 0.0F);
     }
   }
 
@@ -96,7 +96,7 @@ public class FW_190A8MSTL extends FW_190
   }
 
   public void moveSteering(float paramFloat) {
-    if (this.FM.CT.getGear() < 0.98F) return;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getGear() < 0.98F) return;
     hierMesh().chunkSetAngles("GearC2_D0", 0.0F, -paramFloat, 0.0F);
   }
 
@@ -105,28 +105,28 @@ public class FW_190A8MSTL extends FW_190
     if (this.bNeedSetup) {
       checkAsDrone();
     }
-    if ((this.FM instanceof Maneuver)) {
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) {
       if (typeDockableIsDocked()) {
-        if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
-          ((Maneuver)this.FM).set_maneuver(48);
-          ((Maneuver)this.FM).AP.way.setCur(((Aircraft)this.queen_).FM.AP.way.Cur());
-          ((Pilot)this.FM).setDumbTime(3000L);
+        if ((!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) || (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode())) {
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(48);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.Cur());
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(3000L);
         }
       }
-      else if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
+      else if ((!(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof RealFlightModel)) || (!((RealFlightModel)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).isRealMode())) {
         if (this.dtime > 0L) {
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Pilot)this.FM).setDumbTime(3000L);
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(22);
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(3000L);
           if (Time.current() > this.dtime + 3000L) {
             this.dtime = -1L;
-            ((Maneuver)this.FM).clear_stack();
-            ((Maneuver)this.FM).pop();
-            ((Pilot)this.FM).setDumbTime(0L);
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).clear_stack();
+            ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).pop();
+            ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(0L);
           }
         }
-        else if ((this.FM.AP.way.curr().Action == 3) && (((Maneuver)this.FM).get_maneuver() == 24)) {
-          ((Maneuver)this.FM).set_maneuver(21);
-          ((Pilot)this.FM).setDumbTime(30000L);
+        else if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().Action == 3) && (((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).get_maneuver() == 24)) {
+          ((Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).set_maneuver(21);
+          ((Pilot)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel).setDumbTime(30000L);
         }
       }
 
@@ -134,13 +134,13 @@ public class FW_190A8MSTL extends FW_190
 
     if (typeDockableIsDocked()) {
       Aircraft localAircraft = (Aircraft)typeDockableGetQueen();
-      localAircraft.FM.CT.AileronControl = this.FM.CT.AileronControl;
-      localAircraft.FM.CT.ElevatorControl = this.FM.CT.ElevatorControl;
-      localAircraft.FM.CT.RudderControl = this.FM.CT.RudderControl;
-      localAircraft.FM.CT.GearControl = this.FM.CT.GearControl;
+      localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl;
+      localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl;
+      localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl;
+      localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl;
     }
 
-    if (this.FM.CT.saveWeaponControl[3] != 0) {
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.saveWeaponControl[3] != 0) {
       typeDockableAttemptDetach();
     }
     super.update(paramFloat);
@@ -165,19 +165,19 @@ public class FW_190A8MSTL extends FW_190
   private void onCoopMasterSpawned() {
     Actor localActor = null;
     String str1 = null;
-    if (this.FM.AP.way.curr().getTargetName() == null) this.FM.AP.way.next();
-    str1 = this.FM.AP.way.curr().getTargetName();
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTargetName() == null) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
+    str1 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTargetName();
     if (str1 != null)
       localActor = Actor.getByName(str1);
     if ((Actor.isValid(localActor)) && ((localActor instanceof Wing)) && (localActor.getOwnerAttachedCount() > 0))
       localActor = (Actor)localActor.getOwnerAttached(0);
-    this.FM.AP.way.setCur(0);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.setCur(0);
     if ((Actor.isValid(localActor)) && ((localActor instanceof JU_88MSTL)))
       try {
         Aircraft localAircraft = (Aircraft)localActor;
         float f = 100.0F;
-        if (localAircraft.FM.M.maxFuel > 0.0F)
-          f = localAircraft.FM.M.fuel / localAircraft.FM.M.maxFuel * 100.0F;
+        if (localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel > 0.0F)
+          f = localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel / localAircraft.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.maxFuel * 100.0F;
         String str2 = "spawn " + localActor.getClass().getName() + " NAME net" + localActor.name() + " FUEL " + f + " WEAPONS " + localAircraft.thisWeaponsName + (localAircraft.bPaintShemeNumberOn ? "" : " NUMBEROFF") + " OVR";
 
         CmdEnv.top().exec(str2);
@@ -194,10 +194,10 @@ public class FW_190A8MSTL extends FW_190
 
   private void checkAsDrone() {
     if (this.target_ == null) {
-      if (this.FM.AP.way.curr().getTarget() == null) this.FM.AP.way.next();
-      this.target_ = this.FM.AP.way.curr().getTarget();
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget() == null) this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.next();
+      this.target_ = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTarget();
       if (Actor.isValid(this.target_))
-        this.target_ = this.FM.AP.way.curr().getTargetActorRandom();
+        this.target_ = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AP_of_type_ComMaddoxIl2FmAutopilotage.way.curr().getTargetActorRandom();
     }
     if ((Actor.isValid(this.target_)) && ((this.target_ instanceof JU_88MSTL)) && 
       (isNetMaster()))
@@ -227,7 +227,7 @@ public class FW_190A8MSTL extends FW_190
 
   public void typeDockableAttemptAttach()
   {
-    if (!this.FM.AS.isMaster()) {
+    if (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster()) {
       return;
     }
 
@@ -242,7 +242,7 @@ public class FW_190A8MSTL extends FW_190
   }
 
   public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isMaster())
     {
       if (typeDockableIsDocked())
       {
@@ -274,29 +274,29 @@ public class FW_190A8MSTL extends FW_190
     this.queen_ = paramActor;
     this.dockport_ = paramInt;
     Object localObject2;
-    if (this.FM.EI.getNum() == 1) {
-      this.FM.Scheme = 2;
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() == 1) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Scheme_of_type_Int = 2;
       localObject1 = (Aircraft)paramActor;
-      this.FM.EI.setNum(3);
-      localObject2 = this.FM.EI.engines[0];
-      this.FM.EI.engines = new Motor[3];
-      this.FM.EI.engines[0] = localObject2;
-      this.FM.EI.engines[1] = localObject1.FM.EI.engines[0];
-      this.FM.EI.engines[2] = localObject1.FM.EI.engines[1];
-      this.FM.EI.bCurControl = new boolean[] { true, true, true };
-      localObject1.FM.EI.bCurControl[0] = false;
-      localObject1.FM.EI.bCurControl[1] = false;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setNum(3);
+      localObject2 = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0];
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines = new Motor[3];
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0] = localObject2;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1] = localObject1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0];
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[2] = localObject1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1];
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.bCurControl = new boolean[] { true, true, true };
+      localObject1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.bCurControl[0] = false;
+      localObject1.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.bCurControl[1] = false;
     }
 
-    this.FM.EI.setEngineRunning();
-    this.FM.CT.setGearAirborne();
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setEngineRunning();
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setGearAirborne();
     moveGear(0.0F);
-    this.FM.CT.GearControl = ((Aircraft)paramActor).FM.CT.GearControl;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = ((Aircraft)paramActor).jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl;
 
-    Object localObject1 = ((Aircraft)this.queen_).FM;
-    if (((this.FM instanceof Maneuver)) && ((localObject1 instanceof Maneuver))) {
+    Object localObject1 = ((Aircraft)this.queen_).jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
+    if (((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel instanceof Maneuver)) && ((localObject1 instanceof Maneuver))) {
       localObject2 = (Maneuver)localObject1;
-      Maneuver localManeuver = (Maneuver)this.FM;
+      Maneuver localManeuver = (Maneuver)this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
       if ((((Maneuver)localObject2).Group != null) && (localManeuver.Group != null) && (localManeuver.Group.numInGroup(this) == localManeuver.Group.nOfAirc - 1))
       {
         AirGroup localAirGroup = new AirGroup(localManeuver.Group);
@@ -317,25 +317,25 @@ public class FW_190A8MSTL extends FW_190
     this.queen_ = null;
     this.dockport_ = 0;
 
-    this.FM.CT.setTrimElevatorControl(0.51F);
-    this.FM.CT.trimElevator = 0.51F;
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(0.51F);
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.trimElevator = 0.51F;
 
-    this.FM.CT.setGearAirborne();
-    if (this.FM.EI.getNum() == 3) {
-      this.FM.Scheme = 1;
-      this.FM.EI.setNum(1);
-      Motor localMotor = this.FM.EI.engines[0];
-      this.FM.EI.engines = new Motor[1];
-      this.FM.EI.engines[0] = localMotor;
-      this.FM.EI.bCurControl = new boolean[] { true };
+    this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setGearAirborne();
+    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum() == 3) {
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Scheme_of_type_Int = 1;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.setNum(1);
+      Motor localMotor = this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0];
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines = new Motor[1];
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0] = localMotor;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.bCurControl = new boolean[] { true };
       for (int i = 1; i < 3; i++) {
-        if (this.FM.Gears.clpEngineEff[i][0] != null) {
-          Eff3DActor.finish(this.FM.Gears.clpEngineEff[i][0]);
-          this.FM.Gears.clpEngineEff[i][0] = null;
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpEngineEff[i][0] != null) {
+          Eff3DActor.finish(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpEngineEff[i][0]);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpEngineEff[i][0] = null;
         }
-        if (this.FM.Gears.clpEngineEff[i][1] != null) {
-          Eff3DActor.finish(this.FM.Gears.clpEngineEff[i][1]);
-          this.FM.Gears.clpEngineEff[i][1] = null;
+        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpEngineEff[i][1] != null) {
+          Eff3DActor.finish(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpEngineEff[i][1]);
+          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.clpEngineEff[i][1] = null;
         }
       }
     }
@@ -393,11 +393,11 @@ public class FW_190A8MSTL extends FW_190
     Property.set(localClass, "cockpitClass", CockpitFW_190F8MSTL.class);
     Property.set(localClass, "LOSElevation", 0.764106F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 3, 9, 9, 1, 1, 9, 9, 1, 1, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 2, 2 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalDev02", "_CANNON03", "_CANNON04", "_ExternalDev03", "_ExternalDev04", "_CANNON05", "_CANNON06", "_CANNON07", "_CANNON08", "_ExternalDev05", "_ExternalDev06", "_CANNON09", "_CANNON10", "_ExternalDev07", "_ExternalDev08", "_CANNON11", "_CANNON12", "_ExternalDev09", "_ExternalDev10", "_ExternalRock01", "_ExternalRock02" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 3, 9, 9, 1, 1, 9, 9, 1, 1, 1, 1, 9, 9, 1, 1, 9, 9, 1, 1, 9, 9, 2, 2 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalDev01", "_ExternalDev02", "_CANNON03", "_CANNON04", "_ExternalDev03", "_ExternalDev04", "_CANNON05", "_CANNON06", "_CANNON07", "_CANNON08", "_ExternalDev05", "_ExternalDev06", "_CANNON09", "_CANNON10", "_ExternalDev07", "_ExternalDev08", "_CANNON11", "_CANNON12", "_ExternalDev09", "_ExternalDev10", "_ExternalRock01", "_ExternalRock02" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG131si 400", "MGunMG131si 400", "MGunMG15120MGs 250", "MGunMG15120MGs 250", null, "PylonMG15120Internal", "PylonMG15120Internal", "MGunMG15120kh 125", "MGunMG15120kh 125", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunMG131si 400", "MGunMG131si 400", "MGunMG15120MGs 250", "MGunMG15120MGs 250", null, "PylonMG15120Internal", "PylonMG15120Internal", "MGunMG15120kh 125", "MGunMG15120kh 125", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

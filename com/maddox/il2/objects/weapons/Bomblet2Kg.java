@@ -9,8 +9,10 @@ public class Bomblet2Kg extends Bomb
     return this.index % 16 == 0;
   }
 
-  static {
+  static
+  {
     Class localClass = Bomblet2Kg.class;
+
     Property.set(localClass, "mesh", "3do/arms/2KgBomblet/mono.sim");
     Property.set(localClass, "radius", 4.0F);
     Property.set(localClass, "power", 0.12F);

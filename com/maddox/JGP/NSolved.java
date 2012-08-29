@@ -58,9 +58,9 @@ public class NSolved
 
   public static final double[] nsolve(int paramInt, double[] paramArrayOfDouble)
   {
-    double[][] arrayOfDouble = new double[paramInt][paramInt];
-    double[] arrayOfDouble1 = new double[paramInt];
+    double[][] arrayOfDouble = new double[paramInt][paramInt]; double[] arrayOfDouble1 = new double[paramInt];
     double[] arrayOfDouble2 = new double[paramInt];
+
     int[] arrayOfInt = new int[paramInt];
     int k;
     for (int j = k = 0; j < paramInt; j++) {
@@ -81,12 +81,12 @@ public class NSolved
       throw new JGPException("Invalid matrix size");
     }
     int i = paramArrayOfDouble.length;
-
     double[] arrayOfDouble2 = new double[i];
+
     int[] arrayOfInt = new int[i];
 
-    double[][] arrayOfDouble = (double[][])(double[][])paramArrayOfDouble.clone();
-    double[] arrayOfDouble1 = (double[])(double[])paramArrayOfDouble1.clone();
+    double[][] arrayOfDouble = (double[][])paramArrayOfDouble.clone();
+    double[] arrayOfDouble1 = (double[])paramArrayOfDouble1.clone();
     int k;
     for (int j = k = 0; j < i; j++) arrayOfDouble2[j] = 0.0D;
 

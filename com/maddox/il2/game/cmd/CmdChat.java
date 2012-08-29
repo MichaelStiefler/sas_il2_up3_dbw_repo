@@ -28,12 +28,12 @@ public class CmdChat extends Cmd
       return null;
     if (Main.cur().chat == null)
       return null;
-    if (nargs(paramMap, "_$$") == 0) {
+    if (Cmd.nargs(paramMap, "_$$") == 0) {
       if (paramMap.containsKey("BUFSIZE")) {
-        if (nargs(paramMap, "BUFSIZE") == 0) {
+        if (Cmd.nargs(paramMap, "BUFSIZE") == 0) {
           INFO_HARD("Chat Buffer Size = " + Main.cur().chat.getMaxBuflen());
         } else {
-          int i = arg(paramMap, "BUFSIZE", 0, Main.cur().chat.getMaxBuflen(), 1, 1000);
+          int i = Cmd.arg(paramMap, "BUFSIZE", 0, Main.cur().chat.getMaxBuflen(), 1, 1000);
           Main.cur().chat.setMaxBufLen(i);
         }
         return CmdEnv.RETURN_OK;
@@ -45,7 +45,7 @@ public class CmdChat extends Cmd
     fillUsers(paramMap, localArrayList);
     if (localArrayList.size() == 0) return null;
 
-    String str = args(paramMap, "_$$");
+    String str = Cmd.args(paramMap, "_$$");
     if (localArrayList.size() == NetEnv.hosts().size())
       Main.cur().chat.send(NetEnv.host(), str, null);
     else {
@@ -87,14 +87,14 @@ public class CmdChat extends Cmd
     NetUser localNetUser2;
     Object localObject;
     if (paramMap.containsKey("TO")) {
-      m = nargs(paramMap, "TO");
-      if ((m == 1) && ("*".equals(arg(paramMap, "TO", 0)))) {
+      m = Cmd.nargs(paramMap, "TO");
+      if ((m == 1) && ("*".equals(Cmd.arg(paramMap, "TO", 0)))) {
         for (n = 0; n < NetEnv.hosts().size(); n++)
           paramList.add(NetEnv.hosts().get(n));
         return;
       }
       for (n = 0; n < m; n++) {
-        str1 = arg(paramMap, "TO", n);
+        str1 = Cmd.arg(paramMap, "TO", n);
         for (i2 = 0; i2 < NetEnv.hosts().size(); i2++) {
           localNetUser2 = (NetUser)NetEnv.hosts().get(i2);
           localObject = localNetUser2.uniqueName();
@@ -110,11 +110,11 @@ public class CmdChat extends Cmd
     }
 
     if (paramMap.containsKey("TO#")) {
-      m = nargs(paramMap, "TO#");
+      m = Cmd.nargs(paramMap, "TO#");
       for (n = 0; n < m; n++) {
-        str1 = arg(paramMap, "TO#", n);
+        str1 = Cmd.arg(paramMap, "TO#", n);
         if ((str1.charAt(0) >= '0') && (str1.charAt(0) <= '9')) {
-          i2 = arg(paramMap, "TO#", n, 1000, 0, 1000);
+          i2 = Cmd.arg(paramMap, "TO#", n, 1000, 0, 1000);
           if ((i2 > 0) && (i2 <= NetEnv.hosts().size())) {
             localNetUser2 = (NetUser)NetEnv.hosts().get(i2 - 1);
             if (!localHashMap.containsKey(localNetUser2)) {
@@ -127,17 +127,19 @@ public class CmdChat extends Cmd
     }
 
     if (paramMap.containsKey("ARMY")) {
-      m = nargs(paramMap, "ARMY");
+      m = Cmd.nargs(paramMap, "ARMY");
       for (n = 0; n < m; n++) {
         int i1 = -1;
-        String str2 = arg(paramMap, "ARMY", n);
+        String str2 = Cmd.arg(paramMap, "ARMY", n);
         if ((str2.charAt(0) >= '0') && (str2.charAt(0) <= '9')) {
-          i1 = arg(paramMap, "ARMY", n, 1000, 0, 1000);
+          i1 = Cmd.arg(paramMap, "ARMY", n, 1000, 0, 1000);
           if (i1 >= Army.amountNet())
             continue;
         } else {
-          for (i1 = 0; (i1 < Army.amountNet()) && 
-            (!Army.name(i1).equals(str2)); i1++);
+          for (i1 = 0; i1 < Army.amountNet(); i1++) {
+            if (Army.name(i1).equals(str2))
+              break;
+          }
           if (i1 == Army.amountNet())
             continue;
         }
@@ -156,12 +158,12 @@ public class CmdChat extends Cmd
   }
 
   public CmdChat() {
-    this.param.put("ALL", null);
-    this.param.put("MY_ARMY", null);
-    this.param.put("ARMY", null);
-    this.param.put("TO", null);
-    this.param.put("TO#", null);
-    this.param.put("BUFSIZE", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ALL", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("MY_ARMY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("ARMY", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TO", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("TO#", null);
+    this.jdField_param_of_type_JavaUtilTreeMap.put("BUFSIZE", null);
     this._properties.put("NAME", "chat");
     this._levelAccess = 1;
   }

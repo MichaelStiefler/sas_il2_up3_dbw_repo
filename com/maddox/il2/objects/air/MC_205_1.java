@@ -23,15 +23,15 @@ public class MC_205_1 extends MC_202xyz
     paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, f, 0.0F);
     paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, f, 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(paramFloat, 0.11F, 0.67F, 0.0F, -38.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, Aircraft.cvt(paramFloat, 0.11F, 0.67F, 0.0F, -38.0F), 0.0F);
     paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(paramFloat, 0.01F, 0.09F, 0.0F, -80.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(paramFloat, 0.01F, 0.09F, 0.0F, -80.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, Aircraft.cvt(paramFloat, 0.01F, 0.09F, 0.0F, -80.0F), 0.0F);
+    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, Aircraft.cvt(paramFloat, 0.01F, 0.09F, 0.0F, -80.0F), 0.0F);
   }
   protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
   public void moveSteering(float paramFloat) {
     if (this.FM.CT.getGear() < 0.65F) return;
-    hierMesh().chunkSetAngles("GearC3_D0", 0.0F, cvt(paramFloat, -30.0F, 30.0F, 30.0F, -30.0F), 0.0F);
+    hierMesh().chunkSetAngles("GearC3_D0", 0.0F, Aircraft.cvt(paramFloat, -30.0F, 30.0F, 30.0F, -30.0F), 0.0F);
   }
 
   static
@@ -53,11 +53,11 @@ public class MC_205_1 extends MC_202xyz
     Property.set(localClass, "cockpitClass", CockpitMC_205.class);
     Property.set(localClass, "LOSElevation", 0.7898F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127siMC205 370", "MGunBredaSAFAT127siMC205 370", "MGunBredaSAFAT77k 500", "MGunBredaSAFAT77k 500" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127si 370", "MGunBredaSAFAT127si 370", "MGunBredaSAFAT77k 500", "MGunBredaSAFAT77k 500" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

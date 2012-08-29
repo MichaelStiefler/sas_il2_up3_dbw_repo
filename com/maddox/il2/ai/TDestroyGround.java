@@ -12,15 +12,15 @@ class TDestroyGround extends Target
   double r;
   int countActors = 0;
   int destructLevel;
-  public static Point3d p = new Point3d();
+  private static Point3d p = new Point3d();
 
   protected boolean checkActorDied(Actor paramActor)
   {
-    if (paramActor.pos == null) return false;
-    paramActor.pos.getAbs(p);
-    p.z = this.pos.getAbsPoint().z;
-    if (this.pos.getAbsPoint().distance(p) <= this.r) {
-      if (!isStaticActor(paramActor)) return false;
+    if (paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos == null) return false;
+    paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    p.jdField_z_of_type_Double = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().jdField_z_of_type_Double;
+    if (this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint().distance(p) <= this.r) {
+      if (!Target.isStaticActor(paramActor)) return false;
 
       this.countActors -= 1;
       if (this.countActors <= 0) {
@@ -42,8 +42,8 @@ class TDestroyGround extends Target
     super(paramInt1, paramInt2);
     this.r = paramInt5;
     this.destructLevel = paramInt6;
-    World.land(); this.pos = new ActorPosStatic(this, new Point3d(paramInt3, paramInt4, Landscape.HQ(paramInt3, paramInt4)), new Orient());
-    this.countActors = countStaticActors(this.pos.getAbsPoint(), this.r);
+    World.land(); this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosStatic(this, new Point3d(paramInt3, paramInt4, Landscape.HQ(paramInt3, paramInt4)), new Orient());
+    this.countActors = Target.countStaticActors(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint(), this.r);
     if (this.countActors == 0) {
       setTaskCompleteFlag(true);
       setDiedFlag(true);
@@ -52,12 +52,5 @@ class TDestroyGround extends Target
       if (this.countActors == 0)
         this.countActors = 1;
     }
-  }
-
-  public boolean zutiIsOverTarged(double paramDouble1, double paramDouble2) {
-    double d1 = this.r * this.r;
-    double d2 = (paramDouble1 - p.x) * (paramDouble1 - p.x) + (paramDouble2 - p.y) * (paramDouble2 - p.y);
-
-    return d2 < d1;
   }
 }

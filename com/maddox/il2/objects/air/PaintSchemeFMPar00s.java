@@ -25,7 +25,7 @@ public class PaintSchemeFMPar00s extends PaintSchemeFMPar00
         changeMat(paramHierMesh, "Overlay2", "psBM00SLVKRNUM" + i + paramInt1 + paramInt3, "Slovakian2/0.tga", "Slovakian2/" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
       }
 
-      changeMat(paramClass, paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
 
       return;
     }
@@ -34,18 +34,18 @@ public class PaintSchemeFMPar00s extends PaintSchemeFMPar00
     {
       if ((!"ra".equals(paramRegiment.branch())) && (!"rz".equals(paramRegiment.branch())) && (!"rn".equals(paramRegiment.branch())))
       {
-        changeMat(paramClass, paramHierMesh, "Overlay6", "britishroundel4c", "British/roundel4c.tga", 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay6", "britishroundel4c", "British/roundel4c.tga", 1.0F, 1.0F, 1.0F);
 
-        changeMat(paramClass, paramHierMesh, "Overlay7", "britishroundel3c", "British/roundel3c.tga", 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay7", "britishroundel3c", "British/roundel3c.tga", 1.0F, 1.0F, 1.0F);
       }
 
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
     }
     else if (paramRegiment.country() == PaintScheme.countryNoName)
     {
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
     }
     else
     {
@@ -54,7 +54,7 @@ public class PaintSchemeFMPar00s extends PaintSchemeFMPar00
       if (j == 4) {
         j = 0;
       }
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
 
       if (paramInt3 >= 20) {
         paramInt3 %= 20;
@@ -67,7 +67,7 @@ public class PaintSchemeFMPar00s extends PaintSchemeFMPar00
       }
 
       if (paramRegiment.country() == PaintScheme.countryGermany) {
-        changeMat(paramClass, paramHierMesh, "Overlay8", "haken1", "German/" + (World.cur().isHakenAllowed() ? "haken1.tga" : "hakenfake.tga"), 1.0F, 1.0F, 1.0F);
+        changeMat(paramHierMesh, "Overlay8", "haken1", "German/" + (World.cur().isHakenAllowed() ? "haken1.tga" : "hakenfake.tga"), 1.0F, 1.0F, 1.0F);
       }
       return;
     }

@@ -32,14 +32,14 @@ public class ChiefStaticGround extends Chief
 
     this.unitsPacked = new ArrayList();
 
-    this.pos = new ActorPosMove(this);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos = new ActorPosMove(this);
   }
 
   public ChiefStaticGround(String paramString, Point3d paramPoint3d)
   {
     this();
     if (paramPoint3d != null) {
-      this.pos.setAbs(paramPoint3d);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramPoint3d);
     }
 
     SectFile localSectFile = new SectFile(paramString);

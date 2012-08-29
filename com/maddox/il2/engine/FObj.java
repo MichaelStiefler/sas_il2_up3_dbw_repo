@@ -10,17 +10,17 @@ public class FObj extends GObj
 
   public String Name()
   {
-    return Name(this.cppObj);
+    return Name(this.jdField_cppObj_of_type_Int);
   }
 
   public void Rename(String paramString)
   {
-    Rename(this.cppObj, paramString);
+    Rename(this.jdField_cppObj_of_type_Int, paramString);
   }
 
   public long Hash()
   {
-    return Hash(this.cppObj);
+    return Hash(this.jdField_cppObj_of_type_Int);
   }
 
   public static native String Name(int paramInt);
@@ -76,7 +76,7 @@ public class FObj extends GObj
 
   public boolean ReLoad()
   {
-    return ReLoad(this.cppObj) != 0;
+    return ReLoad(this.jdField_cppObj_of_type_Int) != 0;
   }
 
   public static native int ReLoad(int paramInt);

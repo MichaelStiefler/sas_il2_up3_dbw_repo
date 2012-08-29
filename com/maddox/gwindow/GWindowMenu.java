@@ -55,18 +55,18 @@ public class GWindowMenu extends GWindow
     GRegion localGRegion = getClientRegion();
     float f1 = localGRegion.x;
     float f2 = localGRegion.y;
-    float f3 = (localGRegion.dx - (this.win.dx - localGRegion.dx) * (this.columns - 1)) / this.columns;
-    float f4 = f3 + (this.win.dx - localGRegion.dx);
+    float f3 = (localGRegion.dx - (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGRegion.dx) * (this.columns - 1)) / this.columns;
+    float f4 = f3 + (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGRegion.dx);
     for (int j = 0; j < i; j++) {
       GWindowMenuItem localGWindowMenuItem = (GWindowMenuItem)this.items.get(j);
       localGSize = localGWindowMenuItem.getMinSize();
       localGWindowMenuItem.setSize(f3, localGSize.dy);
       localGWindowMenuItem.setPos(f1, f2);
-      if (f2 + localGWindowMenuItem.win.dy > localGRegion.dy) {
+      if (f2 + localGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > localGRegion.dy) {
         f2 = localGRegion.y;
         f1 += f4;
       } else {
-        f2 += localGWindowMenuItem.win.dy;
+        f2 += localGWindowMenuItem.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       }
     }
   }
@@ -76,15 +76,15 @@ public class GWindowMenu extends GWindow
   }
 
   public void setPos(float paramFloat1, float paramFloat2) {
-    if (this.parentWindow != null) {
-      GPoint localGPoint = this.parentWindow.windowToGlobal(paramFloat1, paramFloat2);
+    if (this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow != null) {
+      GPoint localGPoint = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.windowToGlobal(paramFloat1, paramFloat2);
       float f1 = localGPoint.x;
       float f2 = localGPoint.y;
-      if (f1 + this.win.dx > this.root.win.dx) f1 = this.root.win.dx - this.win.dx;
-      if (f2 + this.win.dy > this.root.win.dy) f2 = this.root.win.dy - this.win.dy;
+      if (f1 + this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx > this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx) f1 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+      if (f2 + this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) f2 = this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       if (f1 < 0.0F) f1 = 0.0F;
       if (f2 < 0.0F) f2 = 0.0F;
-      localGPoint = this.parentWindow.globalToWindow(f1, f2);
+      localGPoint = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.globalToWindow(f1, f2);
       paramFloat1 = localGPoint.x;
       paramFloat2 = localGPoint.y;
     }
@@ -95,11 +95,11 @@ public class GWindowMenu extends GWindow
     if (paramGWindowMenuItem != null)
       lAF().soundPlay("WindowOpen");
     Object localObject;
-    if ((this.parentWindow instanceof GWindowMenuItem)) {
-      localObject = (GWindowMenuItem)this.parentWindow;
+    if ((this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowMenuItem)) {
+      localObject = (GWindowMenuItem)this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow;
       ((GWindowMenuItem)localObject).menu().beforeExecute(null);
-    } else if ((this.parentWindow instanceof GWindowMenuBarItem)) {
-      localObject = (GWindowMenuBarItem)this.parentWindow;
+    } else if ((this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowMenuBarItem)) {
+      localObject = (GWindowMenuBarItem)this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow;
       GWindowMenuBar localGWindowMenuBar = ((GWindowMenuBarItem)localObject).menuBar();
       localGWindowMenuBar.setOver(null);
       localGWindowMenuBar.setSelected(null);
@@ -170,7 +170,7 @@ public class GWindowMenu extends GWindow
           doExecute(this.selected);
         return;
       case 37:
-        if (!(this.parentWindow instanceof GWindowMenuItem)) break;
+        if (!(this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowMenuItem)) break;
         paramInt = 38; break;
       case 38:
         if (this.selected == null) {
@@ -182,7 +182,7 @@ public class GWindowMenu extends GWindow
         }
         return;
       case 39:
-        if ((this.parentWindow instanceof GWindowMenuBarItem))
+        if ((this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow instanceof GWindowMenuBarItem))
           break;
       case 40:
         if (this.selected == null) {
@@ -197,7 +197,7 @@ public class GWindowMenu extends GWindow
 
     }
 
-    this.parentWindow.keyboardKey(paramInt, paramBoolean);
+    this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.keyboardKey(paramInt, paramBoolean);
   }
 
   public void keyboardChar(char paramChar) {

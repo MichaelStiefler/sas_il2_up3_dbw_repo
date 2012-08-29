@@ -78,12 +78,12 @@ public class RocketryRocket extends ActorHMesh
   private static Loc tmpL = new Loc();
   private static RangeRandom rndSeed = new RangeRandom();
 
-  public final boolean Corpse()
+  private final boolean Corpse()
   {
     return (this.dmg & 0x40) != 0;
   }
 
-  public boolean isDamaged() {
+  boolean isDamaged() {
     return this.dmg != 0;
   }
 
@@ -404,10 +404,10 @@ public class RocketryRocket extends ActorHMesh
       this.dmg |= 64;
       hierMesh().chunkVisible("CF_D0", false);
       hierMesh().chunkVisible("CF_D1", true);
-      tmpL.set(this.pos.getAbs());
+      tmpL.set(this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs());
       Explosions.HydrogenBalloonExplosion(tmpL, null);
 
-      new MyMsgAction(0.0D, paramActor, this.pos.getAbsPoint()) {
+      new MyMsgAction(0.0D, paramActor, this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint()) {
         public void doAction(Object paramObject) {
           MsgExplosion.send(null, "Body", this.posi, (Actor)paramObject, 0.0F, RocketryRocket.this.ramp.prop.MASS_TNT, 0, RocketryRocket.this.ramp.prop.EXPLOSION_RADIUS);
         }
@@ -641,27 +641,27 @@ public class RocketryRocket extends ActorHMesh
           Eff3DActor.finish(this.eng_trail);
           this.eng_trail = null;
           breakSounds();
-        }continue;
+        }
       }
-
-      switch (this.sta) {
-      case 0:
-        this.eng_trail = Eff3DActor.New(this, findHook("_Engine1EF_01"), null, 1.0F, "3DO/Effects/Tracers/ImpulseRocket/rocket.eff", -1.0F);
-        newSound(this.ramp.prop.soundName, true);
-        if (this.wagon == null) break;
-        this.wagon.forgetRocket();
-        this.wagon = null; break;
-      case 1:
-        break;
-      case 4:
-        Eff3DActor.finish(this.eng_trail);
-        this.eng_trail = null;
-        breakSounds();
-      case 2:
-      case 3:
+      else {
+        switch (this.sta) {
+        case 0:
+          this.eng_trail = Eff3DActor.New(this, findHook("_Engine1EF_01"), null, 1.0F, "3DO/Effects/Tracers/ImpulseRocket/rocket.eff", -1.0F);
+          newSound(this.ramp.prop.soundName, true);
+          if (this.wagon == null) continue;
+          this.wagon.forgetRocket();
+          this.wagon = null; break;
+        case 1:
+          break;
+        case 4:
+          Eff3DActor.finish(this.eng_trail);
+          this.eng_trail = null;
+          breakSounds();
+        case 2:
+        case 3:
+        }
       }
     }
-
     this.sta = paramInt2;
   }
 
@@ -744,8 +744,8 @@ public class RocketryRocket extends ActorHMesh
     }
 
     computeCurLoc(this.sta, f, tmpL);
-    this.pos.setAbs(tmpL);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(tmpL);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     dreamFire(true);
 
@@ -771,7 +771,7 @@ public class RocketryRocket extends ActorHMesh
     public boolean tick()
     {
       if (RocketryRocket.this.Corpse()) {
-        if (RocketryRocket.access$206(RocketryRocket.this) > 0L) {
+        if (RocketryRocket.access$306(RocketryRocket.this) > 0L) {
           return true;
         }
         disappear();
@@ -826,17 +826,17 @@ public class RocketryRocket extends ActorHMesh
 
       int j = 0;
       if (((RocketryRocket.this.dmg & 0x20) != 0) && 
-        (RocketryRocket.access$206(RocketryRocket.this) <= 0L)) {
+        (RocketryRocket.access$306(RocketryRocket.this) <= 0L)) {
         j = 1;
       }
 
       double d = Engine.land().HQ_Air(RocketryRocket.tmpL.getPoint().x, RocketryRocket.tmpL.getPoint().y);
-      if (RocketryRocket.tmpL.getPoint().z <= d) {
-        RocketryRocket.tmpL.getPoint().z = d;
-        RocketryRocket.this.pos.setAbs(RocketryRocket.tmpL);
+      if (RocketryRocket.tmpL.getPoint().jdField_z_of_type_Double <= d) {
+        RocketryRocket.tmpL.getPoint().jdField_z_of_type_Double = d;
+        RocketryRocket.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(RocketryRocket.tmpL);
         j = 1;
       } else {
-        RocketryRocket.this.pos.setAbs(RocketryRocket.tmpL);
+        RocketryRocket.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(RocketryRocket.tmpL);
       }
 
       if (j != 0) {

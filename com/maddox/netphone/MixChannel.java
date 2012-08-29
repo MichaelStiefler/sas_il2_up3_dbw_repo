@@ -138,8 +138,8 @@ public class MixChannel extends MixBase
   {
     int i = (paramInt - 8) * 8;
     if (this.out.bitlen() == 0) return 0;
-    if (this.out.bitlen() <= i) return this.out.getAligned(paramArrayOfByte, paramInt);
-    while ((this.out.bitlen() > 0) && (this.bitBuf.bitlen() < this.rd.getMinOutSpace())) {
+    if (this.out.bitlen() <= i) return this.out.getAligned(paramArrayOfByte, paramInt); do
+    {
       int k = this.out.get(1);
       if (k == 0) {
         this.bitBuf.put(0, 1);
@@ -149,6 +149,8 @@ public class MixChannel extends MixBase
         this.rd.write(this.bitBuf);
       }
     }
+    while ((this.out.bitlen() > 0) && (this.bitBuf.bitlen() < this.rd.getMinOutSpace()));
+
     int j = this.bitBuf.getAligned(paramArrayOfByte, paramInt);
     if (this.bitBuf.bitlen() > 0) {
       System.out.println("Netmixer internal error at output, len = " + this.bitBuf.bitlen());

@@ -222,28 +222,29 @@ public class NetFileTransport extends NetObj
         paramNetMsgGuaranted.clear();
         ArrayList localArrayList = (ArrayList)this.chRequest.get(paramNetChannel);
         int j = localArrayList.size();
-        Object localObject;
         for (int k = 0; k < j; k++) {
-          localObject = (Request)localArrayList.get(k);
-          if ((bool = ((Request)localObject).netOutput(paramNetMsgGuaranted, i)))
+          Request localRequest = (Request)localArrayList.get(k);
+          if ((bool = localRequest.netOutput(paramNetMsgGuaranted, i)))
             break;
         }
+        int m;
+        Answer localAnswer;
         if (!bool) {
           localArrayList = (ArrayList)this.chAnswer.get(paramNetChannel);
           j = localArrayList.size();
-          for (k = 0; k < j; k++) {
-            localObject = (Answer)localArrayList.get(k);
-            if ((!((Answer)localObject).nreq.server().isStateDataTransfer(((Answer)localObject).nreq)) && 
-              ((bool = ((Answer)localObject).netOutput(paramNetMsgGuaranted, i))))
+          for (m = 0; m < j; m++) {
+            localAnswer = (Answer)localArrayList.get(m);
+            if ((!localAnswer.nreq.server().isStateDataTransfer(localAnswer.nreq)) && 
+              ((bool = localAnswer.netOutput(paramNetMsgGuaranted, i))))
               break;
           }
         }
         if (!bool) {
           localArrayList = (ArrayList)this.chAnswer.get(paramNetChannel);
           j = localArrayList.size();
-          for (k = 0; k < j; k++) {
-            localObject = (Answer)localArrayList.get(k);
-            if ((bool = ((Answer)localObject).netOutput(paramNetMsgGuaranted, i)))
+          for (m = 0; m < j; m++) {
+            localAnswer = (Answer)localArrayList.get(m);
+            if ((bool = localAnswer.netOutput(paramNetMsgGuaranted, i)))
               break;
           }
         }
@@ -251,7 +252,7 @@ public class NetFileTransport extends NetObj
           postTo(paramNetChannel, paramNetMsgGuaranted);
         doCheckDestroyed();
       } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
         requestPostMsg(paramNetChannel);
         bool = false;
       }
@@ -683,11 +684,9 @@ public class NetFileTransport extends NetObj
 
         if (this.nreq.ownerFileName == null) this.nreq.ownerFileName = str; else
           this.nreq.ownerFileName += str;
-        if (this.ownerFileNameLength == this.nreq.ownerFileName.length()) {
-          this.state = 1;
-          this.nreq.doRequest();
-        }
-        break;
+        if (this.ownerFileNameLength != this.nreq.ownerFileName.length()) break;
+        this.state = 1;
+        this.nreq.doRequest(); break;
       case 1:
         if (paramInt != 0) break;
         NetFileTransport.this.DEBUGA(this.remoteId, "input data");

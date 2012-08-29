@@ -55,7 +55,7 @@ public class YAK_3R extends YAK
     if (!Config.isUSE_RENDER()) return;
     super.moveFan(paramFloat);
     if (isNetMirror()) {
-      if (this.FM.EI.engines[1].getStage() == 6) {
+      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6) {
         Eff3DActor.setIntesity(this.flame, 1.0F);
         Eff3DActor.setIntesity(this.dust, 1.0F);
         Eff3DActor.setIntesity(this.trail, 1.0F);
@@ -67,7 +67,7 @@ public class YAK_3R extends YAK
         Eff3DActor.setIntesity(this.sprite, 0.0F);
       }
     }
-    else if ((this.bHasEngine) && (this.FM.EI.engines[1].getControlThrottle() > 0.0F) && (this.FM.EI.engines[1].getStage() == 6)) {
+    else if ((this.bHasEngine) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getControlThrottle() > 0.0F) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6)) {
       Eff3DActor.setIntesity(this.flame, 1.0F);
       Eff3DActor.setIntesity(this.dust, 1.0F);
       Eff3DActor.setIntesity(this.trail, 1.0F);
@@ -85,8 +85,8 @@ public class YAK_3R extends YAK
     switch (paramInt1) {
     case 19:
       this.bHasEngine = false;
-      this.FM.AS.setEngineDies(this, 1);
-      return cut(partNames()[paramInt1]);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.AS.setEngineDies(this, 1);
+      return cut(Aircraft.partNames()[paramInt1]);
     case 3:
     case 4:
       return false;
@@ -120,25 +120,25 @@ public class YAK_3R extends YAK
     if (isNetMirror()) return;
 
     this.bPowR = (this == World.getPlayerAircraft());
-    if ((this.FM.getAltitude() - Engine.land().HQ(this.FM.Loc.x, this.FM.Loc.y) > 5.0D) && (this.FM.M.fuel > 0.0F)) {
-      if ((this.FM.EI.engines[1].getControlThrottle() > (this.bPowR ? 0.4120879F : 0.77F)) && (this.FM.EI.engines[1].getStage() == 0) && (this.FM.M.nitro > 0.0F)) {
-        this.FM.EI.engines[1].setStage(this, 6);
+    if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() - Engine.land().HQ(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.x, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_Loc_of_type_ComMaddoxJGPPoint3d.y) > 5.0D) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel > 0.0F)) {
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getControlThrottle() > (this.bPowR ? 0.4120879F : 0.77F)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 0) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.nitro > 0.0F)) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].setStage(this, 6);
 
         if (this.bPowR) {
-          HUD.log("EngineI" + (this.FM.EI.engines[1].getStage() == 6 ? '1' : '0'));
+          HUD.log("EngineI" + (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6 ? '1' : '0'));
         }
       }
-      if ((this.FM.EI.engines[1].getControlThrottle() < (this.bPowR ? 0.4120879F : 0.77F)) && (this.FM.EI.engines[1].getStage() > 0)) {
-        this.FM.EI.engines[1].setEngineStops(this);
+      if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getControlThrottle() < (this.bPowR ? 0.4120879F : 0.77F)) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() > 0)) {
+        this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].setEngineStops(this);
 
         if (this.bPowR) {
-          HUD.log("EngineI" + (this.FM.EI.engines[1].getStage() == 6 ? '1' : '0'));
+          HUD.log("EngineI" + (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[1].getStage() == 6 ? '1' : '0'));
         }
       }
     }
 
-    hierMesh().chunkSetAngles("OilRad_D0", 0.0F, this.FM.EI.engines[0].getControlRadiator() * 25.0F, 0.0F);
-    hierMesh().chunkSetAngles("Water_luk", 0.0F, this.FM.EI.engines[0].getControlRadiator() * 12.0F, 0.0F);
+    hierMesh().chunkSetAngles("OilRad_D0", 0.0F, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator() * 25.0F, 0.0F);
+    hierMesh().chunkSetAngles("Water_luk", 0.0F, this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator() * 12.0F, 0.0F);
   }
 
   static
@@ -157,11 +157,11 @@ public class YAK_3R extends YAK
     Property.set(localClass, "cockpitClass", CockpitYAK_3R.class);
     Property.set(localClass, "LOSElevation", 0.6576F);
 
-    weaponTriggersRegister(localClass, new int[] { 1 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_CANNON01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunVYaki 60" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunVYaki 60" });
 
-    weaponsRegister(localClass, "none", new String[] { null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null });
   }
 }

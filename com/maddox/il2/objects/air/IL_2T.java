@@ -25,10 +25,10 @@ public class IL_2T extends IL_2
     Property.set(localClass, "LOSElevation", 0.81F);
     Property.set(localClass, "Handicap", 1.2F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb07" });
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASi 250", "MGunShKASi 250", "MGunUBt 150", null });
-    weaponsRegister(localClass, "1x45-12", new String[] { "MGunShKASi 250", "MGunShKASi 250", "MGunUBt 150", "BombGun4512" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb07" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASi 250", "MGunShKASi 250", "MGunUBt 150", null });
+    Aircraft.weaponsRegister(localClass, "1x45-12", new String[] { "MGunShKASi 250", "MGunShKASi 250", "MGunUBt 150", "BombGun4512" });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }
 }

@@ -54,36 +54,27 @@ public class Cargo extends Wagon
     };
     new MsgAction(1.2D, this) {
       public void doAction(Object paramObject) { Wagon localWagon = (Wagon)paramObject;
-
-        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/SmokeCargo.eff", 56.0F); }
+        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Select1"), null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", 6.0F);
+      }
     };
   }
 
-  public Cargo(Train paramTrain) {
+  public Cargo(Train paramTrain)
+  {
     super(paramTrain, getMeshName(0), getMeshName(1));
-
-    this.life = 0.015F;
-    this.ignoreTNT = 0.32F;
-    this.killTNT = 1.2F;
+    this.life = 0.009F;
+    this.ignoreTNT = 0.12F;
+    this.killTNT = 0.7F;
     this.bodyMaterial = 3;
   }
 
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
-    {
+  private static String getMeshName(int paramInt) {
+    switch (World.cur().camouflage) {
     case 0:
-      str = "summer";
-      break;
     case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+    case 2:
     }
-
-    return "3do/Trains/Cargo" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
+    return "3do/Trains/Cargo" + (paramInt == 1 ? "_Dmg" : "") + "/hier.him";
   }
 
   public static String getMeshNameForEditor()

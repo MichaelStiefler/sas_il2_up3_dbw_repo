@@ -9,7 +9,7 @@ public class PaintSchemeFCSPar06 extends PaintSchemeFMPar05
   {
     int i = paramRegiment.gruppeNumber() - 1;
 
-    if (paramRegiment.country() == countryRussia) {
+    if (paramRegiment.country() == PaintScheme.countryRussia) {
       return "" + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString());
     }
 
@@ -21,13 +21,13 @@ public class PaintSchemeFCSPar06 extends PaintSchemeFMPar05
     super.prepareNum(paramClass, paramHierMesh, paramRegiment, paramInt1, paramInt2, paramInt3);
     int i = paramRegiment.gruppeNumber() - 1;
 
-    if (paramRegiment.country() == countryRussia) {
+    if (paramRegiment.country() == PaintScheme.countryRussia) {
       changeMat(paramHierMesh, "Overlay1", "psFCS06RUSCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/3" + paramInt3 / 10 + ".tga", "Russian/3" + paramInt3 % 10 + ".tga", 0.72549F, 0.17647F, 0.10196F, 0.72549F, 0.17647F, 0.10196F);
 
       changeMat(paramHierMesh, "Overlay4", "psFCS06RUSCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/3" + paramInt3 / 10 + ".tga", "Russian/3" + paramInt3 % 10 + ".tga", 0.72549F, 0.17647F, 0.10196F, 0.72549F, 0.17647F, 0.10196F);
 
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar4", "Russian/redstar4.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar4", "Russian/redstar4.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay7", "redstar4", "Russian/redstar4.tga", 1.0F, 1.0F, 1.0F);
+      changeMat(paramHierMesh, "Overlay8", "redstar4", "Russian/redstar4.tga", 1.0F, 1.0F, 1.0F);
       return;
     }
   }

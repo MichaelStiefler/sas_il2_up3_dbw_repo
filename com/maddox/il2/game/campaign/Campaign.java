@@ -303,7 +303,7 @@ public abstract class Campaign
     int j = localSectFile1.vars(i);
     int k = 0;
     for (int m = 0; m < j; m++) {
-      str2 = localSectFile1.var(i, m);
+      String str2 = localSectFile1.var(i, m);
       if (!lineIsIntroName(str2)) {
         if (k == this._completeMissions) {
           str1 = localSectFile1.line(i, m);
@@ -315,12 +315,12 @@ public abstract class Campaign
 
     SharedTokenizer.set(str1);
     j = SharedTokenizer.countTokens();
-    m = (int)Math.round((j - 1) * Math.random());
-    String str2 = SharedTokenizer.nextToken();
-    while (m-- > 0)
-      str2 = SharedTokenizer.nextToken();
-    String str3 = "missions/campaign/" + branch() + "/" + missionsDir() + "/" + str2;
-    SectFile localSectFile2 = new SectFile(str3, 0);
+    int n = (int)Math.round((j - 1) * Math.random());
+    String str3 = SharedTokenizer.nextToken();
+    while (n-- > 0)
+      str3 = SharedTokenizer.nextToken();
+    String str4 = "missions/campaign/" + branch() + "/" + missionsDir() + "/" + str3;
+    SectFile localSectFile2 = new SectFile(str4, 0);
 
     if ((!isDGen()) && 
       (!prepareMission(localSectFile2)))
@@ -358,126 +358,155 @@ public abstract class Campaign
       }
     }
 
-    k = -1;
-    int m = 0;
+    int m = -1;
+    int n = 0;
     switch (this._rank) {
     case 6:
-      for (n = 0; n < 4; n++) {
-        if (arrayOfInt[n] != 0) {
-          k = n;
-          m = 0;
-          break;
-        }
-      }
-      break;
+      i1 = 0; break;
     case 5:
-      n = 0;
-      for (i1 = 0; i1 < 4; i1++) {
-        if (arrayOfInt[i1] != 0) {
-          if (n == 0) {
-            n++;
-          } else {
-            k = i1;
-            m = 0;
+    case 4:
+    case 3:
+    case 2:
+    case 1:
+    case 0:
+      while (true) if (arrayOfInt[i1] != 0) {
+          m = i1;
+          n = 0;
+        }
+        else
+        {
+          i1++; if (i1 < 4)
+          {
+            continue;
+          }
+
+          break;
+
+          int i2 = 0;
+          for (int i3 = 0; i3 < 4; i3++)
+          {
+            int i8;
+            if (arrayOfInt[i3] != 0) {
+              if (i2 == 0) {
+                i2++;
+              } else {
+                m = i3;
+                n = 0;
+                break;
+              }
+            }
+          }
+          if (m >= 0) {
             break;
           }
-        }
-      }
-      if (k >= 0)
-        break;
-    case 4:
-      for (n = 3; n >= 0; n--) {
-        if (arrayOfInt[n] != 0) {
-          k = n;
-          m = 0;
-          break;
-        }
-      }
-      break;
-    case 3:
-      for (n = 0; n < 4; n++) {
-        if (arrayOfInt[n] > 1) {
-          k = n;
-          m = 1;
-          break;
-        }
-      }
-      if (k >= 0) break;
-    case 2:
-      for (n = 3; n >= 0; n--) {
-        if (arrayOfInt[n] > 1) {
-          k = n;
-          m = 1;
-          break;
-        }
-      }
-      if (k >= 0) break;
-      for (n = 3; n >= 0; n--) {
-        if (arrayOfInt[n] != 0) {
-          k = n;
-          m = 0;
-          break;
-        }
-      }
-      break;
-    case 1:
-      for (n = 0; n < 4; n++) {
-        if (arrayOfInt[n] > 2) {
-          k = n;
-          m = arrayOfInt[n] - 1;
-          break;
-        }
-      }
-      if (k >= 0) break;
-    case 0:
-      for (n = 3; n >= 0; n--) {
-        if (arrayOfInt[n] != 0) {
-          k = n;
-          m = arrayOfInt[n] - 1;
-          break;
-        }
-      }
+          i2 = 3;
+          while (true) if (arrayOfInt[i2] != 0) {
+              m = i2;
+              n = 0;
+            }
+            else
+            {
+              i2--; if (i2 >= 0)
+              {
+                continue;
+              }
 
+              break;
+
+              for (i3 = 0; i3 < 4; i3++) {
+                if (arrayOfInt[i3] > 1) {
+                  m = i3;
+                  n = 1;
+                  break;
+                }
+              }
+              if (m >= 0)
+                break;
+              for (int i4 = 3; i4 >= 0; i4--) {
+                if (arrayOfInt[i4] > 1) {
+                  m = i4;
+                  n = 1;
+                  break;
+                }
+              }
+              if (m >= 0) break;
+              int i5 = 3;
+              while (true) if (arrayOfInt[i5] != 0) {
+                  m = i5;
+                  n = 0;
+                }
+                else
+                {
+                  i5--; if (i5 >= 0)
+                  {
+                    continue;
+                  }
+
+                  break;
+
+                  for (int i6 = 0; i6 < 4; i6++) {
+                    if (arrayOfInt[i6] > 2) {
+                      m = i6;
+                      n = arrayOfInt[i6] - 1;
+                      break;
+                    }
+                  }
+                  if (m >= 0)
+                    break;
+                  for (int i7 = 3; i7 >= 0; i7--)
+                    if (arrayOfInt[i7] != 0) {
+                      m = i7;
+                      n = arrayOfInt[i7] - 1;
+                      break;
+                    }
+                }
+            }
+        }
     }
-
-    for (int n = 0; n < 4; n++) {
-      if (arrayOfInt[n] > 0) {
-        String str4 = paramSectFile.get(str2 + n, "Class", (String)null);
+    i8 = 0;
+    while (true) { if (arrayOfInt[i8] > 0) {
+        String str4 = paramSectFile.get(str2 + i8, "Class", (String)null);
         try {
           Class localClass = ObjIO.classForName(str4);
           if (!Property.containsValue(localClass, "cockpitClass"))
-            arrayOfInt[n] = 0;
+            arrayOfInt[i8] = 0;
         } catch (Exception localException) {
-          arrayOfInt[n] = 0;
+          arrayOfInt[i8] = 0;
         }
       }
-
-    }
-
-    if (arrayOfInt[k] <= 0) {
-      k++;
-      m = -1;
-      while (k < 4) {
-        if (arrayOfInt[k] > 0) {
-          m = 0;
+      i8++; if (i8 >= 4)
+      {
+        break;
+      } }
+    if (arrayOfInt[m] <= 0) {
+      m++;
+      n = -1;
+      while (m < 4) {
+        if (arrayOfInt[m] > 0) {
+          n = 0;
           break;
         }
-        k++;
+        m++;
       }
-      if (m < 0) {
-        while (k > 0) {
-          k--;
-          if (arrayOfInt[k] > 0) {
-            m = arrayOfInt[k] - 1;
+      if (n >= 0) break label694; while (true)
+      {
+        m--;
+        if (arrayOfInt[m] > 0)
+          n = arrayOfInt[m] - 1;
+        else {
+          if (m > 0)
+          {
+            continue;
           }
         }
+
       }
 
     }
 
-    if (m >= 0) {
-      paramSectFile.set("Main", "player", str2 + k);
-      paramSectFile.set("Main", "playerNum", m);
+    label694: if (n >= 0) {
+      paramSectFile.set("Main", "player", str2 + m);
+      paramSectFile.set("Main", "playerNum", n);
       return true;
     }
 

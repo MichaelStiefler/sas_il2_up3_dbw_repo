@@ -157,12 +157,12 @@ public class FlightModelTrack extends NetObj
 
   public void FMupdate(FlightModel paramFlightModel)
   {
-    paramFlightModel.Or.wrap();
-    if (World.cur().diffCur.Wind_N_Turbulence) World.wind().getVector(paramFlightModel.Loc, paramFlightModel.Vwind); else
-      paramFlightModel.Vwind.set(0.0D, 0.0D, 0.0D);
-    paramFlightModel.Vair.sub(paramFlightModel.Vwld, paramFlightModel.Vwind);
-    paramFlightModel.Or.transformInv(paramFlightModel.Vair, paramFlightModel.Vflow);
-    paramFlightModel.AOS = FlightModel.RAD2DEG((float)Math.atan2(paramFlightModel.Vflow.y, FlightModel.hypot(paramFlightModel.Vflow.x, paramFlightModel.Vflow.z)));
+    paramFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.wrap();
+    if (World.cur().diffCur.Wind_N_Turbulence) World.wind().getVector(paramFlightModel.Loc, paramFlightModel.jdField_Vwind_of_type_ComMaddoxJGPVector3d); else
+      paramFlightModel.jdField_Vwind_of_type_ComMaddoxJGPVector3d.set(0.0D, 0.0D, 0.0D);
+    paramFlightModel.jdField_Vair_of_type_ComMaddoxJGPVector3d.sub(paramFlightModel.Vwld, paramFlightModel.jdField_Vwind_of_type_ComMaddoxJGPVector3d);
+    paramFlightModel.jdField_Or_of_type_ComMaddoxIl2EngineOrientation.transformInv(paramFlightModel.jdField_Vair_of_type_ComMaddoxJGPVector3d, paramFlightModel.jdField_Vflow_of_type_ComMaddoxJGPVector3d);
+    paramFlightModel.AOS = FlightModel.RAD2DEG((float)Math.atan2(paramFlightModel.jdField_Vflow_of_type_ComMaddoxJGPVector3d.y, FlightModel.hypot(paramFlightModel.jdField_Vflow_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double, paramFlightModel.jdField_Vflow_of_type_ComMaddoxJGPVector3d.z)));
   }
 
   private void codeByteSet(float paramFloat1, float paramFloat2, float paramFloat3)
@@ -322,7 +322,7 @@ public class FlightModelTrack extends NetObj
     }
     if (((isMirror()) || (this.channel == null)) && (!this.bFirstUpdate))
       return;
-    FlightModel localFlightModel = this.air.FM;
+    FlightModel localFlightModel = this.air.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     RealFlightModel localRealFlightModel = null;
     if ((localFlightModel instanceof RealFlightModel)) {
       localRealFlightModel = (RealFlightModel)localFlightModel;
@@ -330,59 +330,59 @@ public class FlightModelTrack extends NetObj
     this.flags = 0;
     this.bits = 0;
     this.weapons = 0;
-    checkByte(1, localFlightModel.CT.GearControl, this.ct_GearControl, this._ct_GearControl);
-    checkByte(2, localFlightModel.CT.FlapsControl, this.ct_FlapsControl, this._ct_FlapsControl);
-    checkByte(4, localFlightModel.CT.BrakeControl, this.ct_BrakeControl, this._ct_BrakeControl);
-    checkByte(8, localFlightModel.CT.AileronControl, this.ct_AileronControl, this._ct_AileronControl);
-    checkByte(16, localFlightModel.CT.ElevatorControl, this.ct_ElevatorControl, this._ct_ElevatorControl);
-    checkByte(32, localFlightModel.CT.RudderControl, this.ct_RudderControl, this._ct_RudderControl);
-    checkByte(64, localFlightModel.CT.getTrimAileronControl(), this.ct_TrimHorControl, this._ct_TrimHorControl);
-    checkByte(128, localFlightModel.CT.getTrimElevatorControl(), this.ct_TrimVerControl, this._ct_TrimVerControl);
-    checkByte(256, localFlightModel.CT.getTrimRudderControl(), this.ct_TrimRudControl, this._ct_TrimRudControl);
-    checkByte(536870912, localFlightModel.CT.Sensitivity, this.ct_Sensitivity, this._ct_Sensitivity);
-    checkShort(512, localFlightModel.M.fuel, this.mass_fuel1, this._mass_fuel1);
+    checkByte(1, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl, this.ct_GearControl, this._ct_GearControl);
+    checkByte(2, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl, this.ct_FlapsControl, this._ct_FlapsControl);
+    checkByte(4, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl, this.ct_BrakeControl, this._ct_BrakeControl);
+    checkByte(8, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl, this.ct_AileronControl, this._ct_AileronControl);
+    checkByte(16, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl, this.ct_ElevatorControl, this._ct_ElevatorControl);
+    checkByte(32, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl, this.ct_RudderControl, this._ct_RudderControl);
+    checkByte(64, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl(), this.ct_TrimHorControl, this._ct_TrimHorControl);
+    checkByte(128, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl(), this.ct_TrimVerControl, this._ct_TrimVerControl);
+    checkByte(256, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl(), this.ct_TrimRudControl, this._ct_TrimRudControl);
+    checkByte(536870912, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Sensitivity, this.ct_Sensitivity, this._ct_Sensitivity);
+    checkShort(512, localFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel, this.mass_fuel1, this._mass_fuel1);
     checkByte(1024, this.cockpitAzimuthSpeed, this.cockpit_AzimuthSpeed, this._cockpit_AzimuthSpeed);
     if (localRealFlightModel != null) {
       checkShort(2048, localRealFlightModel.saveDeep, this.fm_saveDeep, this._fm_saveDeep);
       checkByte(4096, localRealFlightModel.shakeLevel, this.fm_shakeLevel, this._fm_shakeLevel);
     }
-    checkByte(8192, (float)localFlightModel.AM.x, this.fm_AMx, this._fm_AMx);
-    for (int i = 0; i < localFlightModel.EI.getNum(); i++) {
+    checkByte(8192, (float)localFlightModel.jdField_AM_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double, this.fm_AMx, this._fm_AMx);
+    for (int i = 0; i < localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); i++) {
       this.m[i] = 0;
-      checkMByte(i, 1, localFlightModel.EI.engines[i].tOilIn, this.ei_tOilIn[i], this._ei_tOilIn);
-      checkMByte(i, 2, localFlightModel.EI.engines[i].tOilOut, this.ei_tOilOut[i], this._ei_tOilOut);
-      checkMByte(i, 4, localFlightModel.EI.engines[i].tWaterOut, this.ei_tWaterOut[i], this._ei_tWaterOut);
-      checkMShort(i, 8, localFlightModel.EI.engines[i].getPropPhi(), this.ei_propPhi[i], this._ei_propPhi);
-      checkMByte(i, 16, localFlightModel.EI.engines[i].getManifoldPressure(), this.ei_compressorManifoldPressure[i], this._ei_compressorManifoldPressure);
-      checkMShort(i, 32, localFlightModel.EI.engines[i].getw(), this.ei_w1[i], this._ei_w1);
-      checkMByte(i, 64, localFlightModel.EI.engines[i].getControlThrottle(), this.ei_controlThrottle[i], this._ei_controlThrottle);
-      checkMByte(i, 128, localFlightModel.EI.engines[i].getControlProp(), this.ei_controlProp[i], this._ei_controlProp);
-      checkMByte(i, 256, localFlightModel.EI.engines[i].getControlMix(), this.ei_controlMix[i], this._ei_controlMix);
-      if ((this.ei_controlMagneto[i] != (byte)localFlightModel.EI.engines[i].getControlMagnetos()) || (this.bFirstUpdate)) {
+      checkMByte(i, 1, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilIn, this.ei_tOilIn[i], this._ei_tOilIn);
+      checkMByte(i, 2, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilOut, this.ei_tOilOut[i], this._ei_tOilOut);
+      checkMByte(i, 4, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tWaterOut, this.ei_tWaterOut[i], this._ei_tWaterOut);
+      checkMShort(i, 8, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getPropPhi(), this.ei_propPhi[i], this._ei_propPhi);
+      checkMByte(i, 16, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getManifoldPressure(), this.ei_compressorManifoldPressure[i], this._ei_compressorManifoldPressure);
+      checkMShort(i, 32, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getw(), this.ei_w1[i], this._ei_w1);
+      checkMByte(i, 64, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlThrottle(), this.ei_controlThrottle[i], this._ei_controlThrottle);
+      checkMByte(i, 128, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlProp(), this.ei_controlProp[i], this._ei_controlProp);
+      checkMByte(i, 256, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlMix(), this.ei_controlMix[i], this._ei_controlMix);
+      if ((this.ei_controlMagneto[i] != (byte)localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlMagnetos()) || (this.bFirstUpdate)) {
         this.flags |= 1 << 14 + i;
         this.m[i] |= 512;
       }
-      if ((this.ei_controlCompressor[i] != (byte)localFlightModel.EI.engines[i].getControlCompressor()) || (this.bFirstUpdate)) {
+      if ((this.ei_controlCompressor[i] != (byte)localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlCompressor()) || (this.bFirstUpdate)) {
         this.flags |= 1 << 14 + i;
         this.m[i] |= 1024;
       }
     }
 
-    this.bits |= (localFlightModel.CT.getRadiatorControl() > 0.5F ? 1 : 0);
-    this.bits |= (localFlightModel.Gears.lgear ? 2 : 0);
-    this.bits |= (localFlightModel.Gears.rgear ? 4 : 0);
-    this.bits |= (localFlightModel.Gears.bIsHydroOperable ? 8 : 0);
-    this.bits |= (localFlightModel.Gears.onGround ? 16 : 0);
-    this.bits |= (localFlightModel.CT.AirBrakeControl > 0.5F ? 32 : 0);
+    this.bits |= (localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getRadiatorControl() > 0.5F ? 1 : 0);
+    this.bits |= (localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.lgear ? 2 : 0);
+    this.bits |= (localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.rgear ? 4 : 0);
+    this.bits |= (localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.bIsHydroOperable ? 8 : 0);
+    this.bits |= (localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround ? 16 : 0);
+    this.bits |= (localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl > 0.5F ? 32 : 0);
     if (this.bits != this.bitset) {
       this.bitset = this.bits;
       this.flags |= -2147483648;
     }
-    for (i = 0; i < 20; i++)
-      this.weapons |= (localFlightModel.CT.WeaponControl[i] != 0 ? 1 << i : 0);
-    if ((localFlightModel.CT.TWCT & 0x4) != 0) this.weapons |= 4;
-    if ((localFlightModel.CT.TWCT & 0x8) != 0) this.weapons |= 8;
-    localFlightModel.CT.TWCT = 0;
+    for (int j = 0; j < 20; j++)
+      this.weapons |= (localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[j] != 0 ? 1 << j : 0);
+    if ((localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.TWCT & 0x4) != 0) this.weapons |= 4;
+    if ((localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.TWCT & 0x8) != 0) this.weapons |= 8;
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.TWCT = 0;
     if (this.weapons != this.weaponset) {
       this.weaponset = this.weapons;
       this.flags |= 1073741824;
@@ -393,18 +393,18 @@ public class FlightModelTrack extends NetObj
       this.flags |= 268435456;
     }
     else {
-      i = 0;
-      for (int j = 0; j < localFlightModel.CT.Weapons.length; j++) {
-        BulletEmitter[] arrayOfBulletEmitter = localFlightModel.CT.Weapons[j];
+      int k = 0;
+      for (int n = 0; n < localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; n++) {
+        BulletEmitter[] arrayOfBulletEmitter = localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[n];
         if (arrayOfBulletEmitter != null) {
-          for (int k = 0; k < arrayOfBulletEmitter.length; k++)
-            if ((arrayOfBulletEmitter[k] instanceof Gun)) {
-              Gun localGun = (Gun)arrayOfBulletEmitter[k];
-              i += localGun.countBullets();
+          for (int i1 = 0; i1 < arrayOfBulletEmitter.length; i1++)
+            if ((arrayOfBulletEmitter[i1] instanceof Gun)) {
+              Gun localGun = (Gun)arrayOfBulletEmitter[i1];
+              k += localGun.countBullets();
             }
         }
       }
-      if (i != this.gunsset) {
+      if (k != this.gunsset) {
         this.flags |= 268435456;
       }
     }
@@ -419,53 +419,53 @@ public class FlightModelTrack extends NetObj
       if (!this.bFirstUpdate)
         postTo(this.channel, this.msgOut);
     } catch (Exception localException) {
-      printDebug(localException);
+      NetObj.printDebug(localException);
     }
     if (!this.bFirstUpdate)
       this.msgOut = null;
   }
 
   private void netWrite() throws IOException {
-    FlightModel localFlightModel = this.air.FM;
+    FlightModel localFlightModel = this.air.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     RealFlightModel localRealFlightModel = null;
     if ((localFlightModel instanceof RealFlightModel))
       localRealFlightModel = (RealFlightModel)localFlightModel;
     this.msgOut.writeInt(this.flags);
 
-    this.ct_GearControl = writeByte(1, localFlightModel.CT.GearControl, this.ct_GearControl, this._ct_GearControl);
-    this.ct_FlapsControl = writeByte(2, localFlightModel.CT.FlapsControl, this.ct_FlapsControl, this._ct_FlapsControl);
-    this.ct_BrakeControl = writeByte(4, localFlightModel.CT.BrakeControl, this.ct_BrakeControl, this._ct_BrakeControl);
-    this.ct_AileronControl = writeByte(8, localFlightModel.CT.AileronControl, this.ct_AileronControl, this._ct_AileronControl);
-    this.ct_ElevatorControl = writeByte(16, localFlightModel.CT.ElevatorControl, this.ct_ElevatorControl, this._ct_ElevatorControl);
-    this.ct_RudderControl = writeByte(32, localFlightModel.CT.RudderControl, this.ct_RudderControl, this._ct_RudderControl);
-    this.ct_TrimHorControl = writeByte(64, localFlightModel.CT.getTrimAileronControl(), this.ct_TrimHorControl, this._ct_TrimHorControl);
-    this.ct_TrimVerControl = writeByte(128, localFlightModel.CT.getTrimElevatorControl(), this.ct_TrimVerControl, this._ct_TrimVerControl);
-    this.ct_TrimRudControl = writeByte(256, localFlightModel.CT.getTrimRudderControl(), this.ct_TrimRudControl, this._ct_TrimRudControl);
-    this.mass_fuel1 = writeShort(512, localFlightModel.M.fuel, this.mass_fuel1, this._mass_fuel1);
+    this.ct_GearControl = writeByte(1, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl, this.ct_GearControl, this._ct_GearControl);
+    this.ct_FlapsControl = writeByte(2, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl, this.ct_FlapsControl, this._ct_FlapsControl);
+    this.ct_BrakeControl = writeByte(4, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl, this.ct_BrakeControl, this._ct_BrakeControl);
+    this.ct_AileronControl = writeByte(8, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl, this.ct_AileronControl, this._ct_AileronControl);
+    this.ct_ElevatorControl = writeByte(16, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl, this.ct_ElevatorControl, this._ct_ElevatorControl);
+    this.ct_RudderControl = writeByte(32, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl, this.ct_RudderControl, this._ct_RudderControl);
+    this.ct_TrimHorControl = writeByte(64, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl(), this.ct_TrimHorControl, this._ct_TrimHorControl);
+    this.ct_TrimVerControl = writeByte(128, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl(), this.ct_TrimVerControl, this._ct_TrimVerControl);
+    this.ct_TrimRudControl = writeByte(256, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl(), this.ct_TrimRudControl, this._ct_TrimRudControl);
+    this.mass_fuel1 = writeShort(512, localFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel, this.mass_fuel1, this._mass_fuel1);
     this.cockpit_AzimuthSpeed = writeByte(1024, this.cockpitAzimuthSpeed, this.cockpit_AzimuthSpeed, this._cockpit_AzimuthSpeed);
     if (localRealFlightModel != null) {
       this.fm_saveDeep = writeShort(2048, localRealFlightModel.saveDeep, this.fm_saveDeep, this._fm_saveDeep);
       this.fm_shakeLevel = writeByte(4096, localRealFlightModel.shakeLevel, this.fm_shakeLevel, this._fm_shakeLevel);
     }
-    this.fm_AMx = writeByte(8192, (float)localFlightModel.AM.x, this.fm_AMx, this._fm_AMx);
+    this.fm_AMx = writeByte(8192, (float)localFlightModel.jdField_AM_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double, this.fm_AMx, this._fm_AMx);
 
-    for (int i = 0; i < localFlightModel.EI.getNum(); i++) {
+    for (int i = 0; i < localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); i++) {
       if ((this.flags & 1 << 14 + i) != 0) {
         this.msgOut.writeShort(this.m[i]);
 
-        this.ei_tOilIn[i] = writeMByte(i, 1, localFlightModel.EI.engines[i].tOilIn, this.ei_tOilIn[i], this._ei_tOilIn);
-        this.ei_tOilOut[i] = writeMByte(i, 2, localFlightModel.EI.engines[i].tOilOut, this.ei_tOilOut[i], this._ei_tOilOut);
-        this.ei_tWaterOut[i] = writeMByte(i, 4, localFlightModel.EI.engines[i].tWaterOut, this.ei_tWaterOut[i], this._ei_tWaterOut);
-        this.ei_propPhi[i] = writeMShort(i, 8, localFlightModel.EI.engines[i].getPropPhi(), this.ei_propPhi[i], this._ei_propPhi);
-        this.ei_compressorManifoldPressure[i] = writeMByte(i, 16, localFlightModel.EI.engines[i].getManifoldPressure(), this.ei_compressorManifoldPressure[i], this._ei_compressorManifoldPressure);
-        this.ei_w1[i] = writeMShort(i, 32, localFlightModel.EI.engines[i].getw(), this.ei_w1[i], this._ei_w1);
-        this.ei_controlThrottle[i] = writeMByte(i, 64, localFlightModel.EI.engines[i].getControlThrottle(), this.ei_controlThrottle[i], this._ei_controlThrottle);
-        this.ei_controlProp[i] = writeMByte(i, 128, localFlightModel.EI.engines[i].getControlProp(), this.ei_controlProp[i], this._ei_controlProp);
-        this.ei_controlMix[i] = writeMByte(i, 256, localFlightModel.EI.engines[i].getControlMix(), this.ei_controlMix[i], this._ei_controlMix);
+        this.ei_tOilIn[i] = writeMByte(i, 1, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilIn, this.ei_tOilIn[i], this._ei_tOilIn);
+        this.ei_tOilOut[i] = writeMByte(i, 2, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilOut, this.ei_tOilOut[i], this._ei_tOilOut);
+        this.ei_tWaterOut[i] = writeMByte(i, 4, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tWaterOut, this.ei_tWaterOut[i], this._ei_tWaterOut);
+        this.ei_propPhi[i] = writeMShort(i, 8, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getPropPhi(), this.ei_propPhi[i], this._ei_propPhi);
+        this.ei_compressorManifoldPressure[i] = writeMByte(i, 16, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getManifoldPressure(), this.ei_compressorManifoldPressure[i], this._ei_compressorManifoldPressure);
+        this.ei_w1[i] = writeMShort(i, 32, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getw(), this.ei_w1[i], this._ei_w1);
+        this.ei_controlThrottle[i] = writeMByte(i, 64, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlThrottle(), this.ei_controlThrottle[i], this._ei_controlThrottle);
+        this.ei_controlProp[i] = writeMByte(i, 128, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlProp(), this.ei_controlProp[i], this._ei_controlProp);
+        this.ei_controlMix[i] = writeMByte(i, 256, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlMix(), this.ei_controlMix[i], this._ei_controlMix);
         if ((this.m[i] & 0x200) != 0)
-          this.msgOut.writeByte(this.ei_controlMagneto[i] = (byte)localFlightModel.EI.engines[i].getControlMagnetos());
+          this.msgOut.writeByte(this.ei_controlMagneto[i] = (byte)localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlMagnetos());
         if ((this.m[i] & 0x400) != 0) {
-          this.msgOut.writeByte(this.ei_controlCompressor[i] = (byte)localFlightModel.EI.engines[i].getControlCompressor());
+          this.msgOut.writeByte(this.ei_controlCompressor[i] = (byte)localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlCompressor());
         }
       }
     }
@@ -478,18 +478,18 @@ public class FlightModelTrack extends NetObj
       this.msgOut.writeInt(this.weapons);
     }
 
-    this.ct_Sensitivity = writeByte(536870912, localFlightModel.CT.Sensitivity, this.ct_Sensitivity, this._ct_Sensitivity);
+    this.ct_Sensitivity = writeByte(536870912, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Sensitivity, this.ct_Sensitivity, this._ct_Sensitivity);
 
     if ((this.flags & 0x10000000) != 0)
     {
-      i = 0;
-      for (int j = 0; j < localFlightModel.CT.Weapons.length; j++) {
-        BulletEmitter[] arrayOfBulletEmitter = localFlightModel.CT.Weapons[j];
+      int j = 0;
+      for (int k = 0; k < localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; k++) {
+        BulletEmitter[] arrayOfBulletEmitter = localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[k];
         if (arrayOfBulletEmitter != null) {
-          for (int k = 0; k < arrayOfBulletEmitter.length; k++) {
-            if ((arrayOfBulletEmitter[k] instanceof Gun)) {
-              Gun localGun = (Gun)arrayOfBulletEmitter[k];
-              i += localGun.countBullets();
+          for (int n = 0; n < arrayOfBulletEmitter.length; n++) {
+            if ((arrayOfBulletEmitter[n] instanceof Gun)) {
+              Gun localGun = (Gun)arrayOfBulletEmitter[n];
+              j += localGun.countBullets();
               this.msgOut.writeShort(localGun.countBullets());
             }
           }
@@ -498,7 +498,7 @@ public class FlightModelTrack extends NetObj
 
       }
 
-      this.gunsset = i;
+      this.gunsset = j;
     }
   }
 
@@ -507,30 +507,30 @@ public class FlightModelTrack extends NetObj
       return false;
     }
     this.msgIn = paramNetMsgInput;
-    FlightModel localFlightModel = this.air.FM;
+    FlightModel localFlightModel = this.air.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     RealFlightModel localRealFlightModel = null;
     if ((localFlightModel instanceof RealFlightModel))
-      localRealFlightModel = (RealFlightModel)this.air.FM;
+      localRealFlightModel = (RealFlightModel)this.air.jdField_FM_of_type_ComMaddoxIl2FmFlightModel;
     this.flags = this.msgIn.readInt();
 
-    localFlightModel.CT.GearControl = readByte(1, localFlightModel.CT.GearControl, this._ct_GearControl);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl = readByte(1, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl, this._ct_GearControl);
     if (this.bFirstInput) {
-      localFlightModel.CT.forceGear(localFlightModel.CT.GearControl);
+      localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceGear(localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl);
 
-      Aircraft.forceGear(this.air.getClass(), this.air.hierMesh(), localFlightModel.CT.GearControl);
+      Aircraft.forceGear(this.air.getClass(), this.air.hierMesh(), localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.GearControl);
     }
-    localFlightModel.CT.FlapsControl = readByte(2, localFlightModel.CT.FlapsControl, this._ct_FlapsControl);
-    localFlightModel.CT.BrakeControl = readByte(4, localFlightModel.CT.BrakeControl, this._ct_BrakeControl);
-    localFlightModel.CT.AileronControl = readByte(8, localFlightModel.CT.AileronControl, this._ct_AileronControl);
-    localFlightModel.CT.ElevatorControl = readByte(16, localFlightModel.CT.ElevatorControl, this._ct_ElevatorControl);
-    localFlightModel.CT.RudderControl = readByte(32, localFlightModel.CT.RudderControl, this._ct_RudderControl);
-    localFlightModel.CT.setTrimAileronControl(readByte(64, localFlightModel.CT.getTrimAileronControl(), this._ct_TrimHorControl));
-    localFlightModel.CT.setTrimElevatorControl(readByte(128, localFlightModel.CT.getTrimElevatorControl(), this._ct_TrimVerControl));
-    localFlightModel.CT.setTrimRudderControl(readByte(256, localFlightModel.CT.getTrimRudderControl(), this._ct_TrimRudControl));
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl = readByte(2, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.FlapsControl, this._ct_FlapsControl);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl = readByte(4, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.BrakeControl, this._ct_BrakeControl);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl = readByte(8, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AileronControl, this._ct_AileronControl);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl = readByte(16, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.ElevatorControl, this._ct_ElevatorControl);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl = readByte(32, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.RudderControl, this._ct_RudderControl);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimAileronControl(readByte(64, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimAileronControl(), this._ct_TrimHorControl));
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimElevatorControl(readByte(128, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimElevatorControl(), this._ct_TrimVerControl));
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setTrimRudderControl(readByte(256, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.getTrimRudderControl(), this._ct_TrimRudControl));
     if (NetMissionTrack.playingVersion() == 100)
-      localFlightModel.M.fuel = readByte(512, localFlightModel.M.fuel, this._mass_fuel);
+      localFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel = readByte(512, localFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel, this._mass_fuel);
     else
-      localFlightModel.M.fuel = readShort(512, localFlightModel.M.fuel, this._mass_fuel1);
+      localFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel = readShort(512, localFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.fuel, this._mass_fuel1);
     this.cockpitAzimuthSpeed = readByte(1024, this.cockpitAzimuthSpeed, this._cockpit_AzimuthSpeed);
     if (localRealFlightModel != null) {
       localRealFlightModel.saveDeep = readShort(2048, localRealFlightModel.saveDeep, this._fm_saveDeep);
@@ -539,65 +539,65 @@ public class FlightModelTrack extends NetObj
       if ((this.flags & 0x800) != 0) this.msgIn.readShort();
       if ((this.flags & 0x1000) != 0) this.msgIn.readByte();
     }
-    localFlightModel.AM.x = readByte(8192, (float)localFlightModel.AM.x, this._fm_AMx);
+    localFlightModel.jdField_AM_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double = readByte(8192, (float)localFlightModel.jdField_AM_of_type_ComMaddoxJGPVector3d.jdField_x_of_type_Double, this._fm_AMx);
 
-    for (int i = 0; i < localFlightModel.EI.getNum(); i++) {
+    for (int i = 0; i < localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.getNum(); i++) {
       if ((this.flags & 1 << 14 + i) != 0) {
         this.m[i] = this.msgIn.readShort();
 
-        localFlightModel.EI.engines[i].tOilIn = readMByte(i, 1, localFlightModel.EI.engines[i].tOilIn, this._ei_tOilIn);
-        localFlightModel.EI.engines[i].tOilOut = readMByte(i, 2, localFlightModel.EI.engines[i].tOilOut, this._ei_tOilOut);
-        localFlightModel.EI.engines[i].tWaterOut = readMByte(i, 4, localFlightModel.EI.engines[i].tWaterOut, this._ei_tWaterOut);
-        localFlightModel.EI.engines[i].setPropPhi(readMShort(i, 8, localFlightModel.EI.engines[i].getPropPhi(), this._ei_propPhi));
-        localFlightModel.EI.engines[i].setManifoldPressure(readMByte(i, 16, localFlightModel.EI.engines[i].getManifoldPressure(), this._ei_compressorManifoldPressure));
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilIn = readMByte(i, 1, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilIn, this._ei_tOilIn);
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilOut = readMByte(i, 2, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tOilOut, this._ei_tOilOut);
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tWaterOut = readMByte(i, 4, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].tWaterOut, this._ei_tWaterOut);
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setPropPhi(readMShort(i, 8, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getPropPhi(), this._ei_propPhi));
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setManifoldPressure(readMByte(i, 16, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getManifoldPressure(), this._ei_compressorManifoldPressure));
         if (NetMissionTrack.playingVersion() == 100)
-          localFlightModel.EI.engines[i].setw(readMByte(i, 32, localFlightModel.EI.engines[i].getw(), this._ei_w));
+          localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setw(readMByte(i, 32, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getw(), this._ei_w));
         else
-          localFlightModel.EI.engines[i].setw(readMShort(i, 32, localFlightModel.EI.engines[i].getw(), this._ei_w1));
-        localFlightModel.EI.engines[i].setControlThrottle(readMByte(i, 64, localFlightModel.EI.engines[i].getControlThrottle(), this._ei_controlThrottle));
-        localFlightModel.EI.engines[i].setControlProp(readMByte(i, 128, localFlightModel.EI.engines[i].getControlProp(), this._ei_controlProp));
-        localFlightModel.EI.engines[i].setControlMix(readMByte(i, 256, localFlightModel.EI.engines[i].getControlMix(), this._ei_controlMix));
+          localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setw(readMShort(i, 32, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getw(), this._ei_w1));
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setControlThrottle(readMByte(i, 64, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlThrottle(), this._ei_controlThrottle));
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setControlProp(readMByte(i, 128, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlProp(), this._ei_controlProp));
+        localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setControlMix(readMByte(i, 256, localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].getControlMix(), this._ei_controlMix));
         if ((this.m[i] & 0x200) != 0)
-          localFlightModel.EI.engines[i].setControlMagneto(this.msgIn.readByte());
+          localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setControlMagneto(this.msgIn.readByte());
         if ((this.m[i] & 0x400) != 0) {
-          localFlightModel.EI.engines[i].setControlCompressor(this.msgIn.readByte());
+          localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[i].setControlCompressor(this.msgIn.readByte());
         }
       }
     }
     if ((this.flags & 0x80000000) != 0) {
       this.bits = this.msgIn.readByte();
 
-      localFlightModel.CT.setRadiatorControl((this.bits & 0x1) != 0 ? 1.0F : 0.0F);
+      localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setRadiatorControl((this.bits & 0x1) != 0 ? 1.0F : 0.0F);
 
-      localFlightModel.Gears.lgear = ((this.bits & 0x2) != 0);
-      localFlightModel.Gears.rgear = ((this.bits & 0x4) != 0);
-      localFlightModel.Gears.bIsHydroOperable = ((this.bits & 0x8) != 0);
-      localFlightModel.Gears.onGround = ((this.bits & 0x10) != 0);
+      localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.lgear = ((this.bits & 0x2) != 0);
+      localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.rgear = ((this.bits & 0x4) != 0);
+      localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.bIsHydroOperable = ((this.bits & 0x8) != 0);
+      localFlightModel.jdField_Gears_of_type_ComMaddoxIl2FmGear.onGround = ((this.bits & 0x10) != 0);
 
-      localFlightModel.CT.AirBrakeControl = ((this.bits & 0x20) != 0 ? 1.0F : 0.0F);
+      localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.AirBrakeControl = ((this.bits & 0x20) != 0 ? 1.0F : 0.0F);
     }
-
+    int j;
     if ((this.flags & 0x40000000) != 0) {
       this.weapons = this.msgIn.readInt();
 
-      for (i = 0; i < 20; i++) {
-        localFlightModel.CT.WeaponControl[i] = ((this.weapons & 1 << i) != 0 ? 1 : false);
+      for (j = 0; j < 20; j++) {
+        localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.WeaponControl[j] = ((this.weapons & 1 << j) != 0 ? 1 : false);
       }
     }
 
-    localFlightModel.CT.Sensitivity = readByte(536870912, localFlightModel.CT.Sensitivity, this._ct_Sensitivity);
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Sensitivity = readByte(536870912, localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Sensitivity, this._ct_Sensitivity);
 
     if ((this.flags & 0x10000000) != 0)
     {
-      for (i = 0; i < localFlightModel.CT.Weapons.length; i++) {
-        BulletEmitter[] arrayOfBulletEmitter = localFlightModel.CT.Weapons[i];
+      for (j = 0; j < localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons.length; j++) {
+        BulletEmitter[] arrayOfBulletEmitter = localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[j];
         if (arrayOfBulletEmitter != null) {
-          for (int j = 0; j < arrayOfBulletEmitter.length; j++) {
-            if ((arrayOfBulletEmitter[j] instanceof Gun)) {
+          for (int k = 0; k < arrayOfBulletEmitter.length; k++) {
+            if ((arrayOfBulletEmitter[k] instanceof Gun)) {
               if (this.msgIn.available() < 4) break;
-              int k = this.msgIn.readShort();
-              Gun localGun = (Gun)arrayOfBulletEmitter[j];
-              localGun._loadBullets(k);
+              int n = this.msgIn.readShort();
+              Gun localGun = (Gun)arrayOfBulletEmitter[k];
+              localGun._loadBullets(n);
             }
           }
 
@@ -607,11 +607,11 @@ public class FlightModelTrack extends NetObj
 
     }
 
-    localFlightModel.CT.setPowerControl(localFlightModel.EI.engines[0].getControlThrottle());
-    localFlightModel.CT.setStepControl(localFlightModel.EI.engines[0].getControlProp());
-    localFlightModel.CT.setMixControl(localFlightModel.EI.engines[0].getControlMix());
-    localFlightModel.CT.setMagnetoControl(localFlightModel.EI.engines[0].getControlMagnetos());
-    localFlightModel.CT.setCompressorControl(localFlightModel.EI.engines[0].getControlCompressor());
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setPowerControl(localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlThrottle());
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setStepControl(localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlProp());
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setMixControl(localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlMix());
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setMagnetoControl(localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlMagnetos());
+    localFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.setCompressorControl(localFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlCompressor());
 
     this.msgIn = null;
 
@@ -622,7 +622,7 @@ public class FlightModelTrack extends NetObj
         netWrite();
         post(this.msgOut);
       } catch (Exception localException) {
-        printDebug(localException);
+        NetObj.printDebug(localException);
       }
       this.msgOut = localNetMsgGuaranted;
     }
@@ -643,7 +643,7 @@ public class FlightModelTrack extends NetObj
     this.air.setFMTrack(this);
     this.channel = paramNetChannel;
     ((NetUser)NetEnv.host()).setArmy(this.air.getArmy());
-    this.air.FM.Gravity = (this.air.FM.M.getFullMass() * Atmosphere.g());
+    this.air.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gravity = (this.air.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_M_of_type_ComMaddoxIl2FmMass.getFullMass() * Atmosphere.g());
   }
 
   public void msgNetDelChannel(NetChannel paramNetChannel) {
@@ -660,12 +660,12 @@ public class FlightModelTrack extends NetObj
   public NetMsgSpawn netReplicate(NetChannel paramNetChannel) throws IOException {
     if (!(paramNetChannel instanceof NetChannelOutStream))
       return null;
-    if (!paramNetChannel.isMirrored(this.air.net))
+    if (!paramNetChannel.isMirrored(this.air.jdField_net_of_type_ComMaddoxIl2EngineActorNet))
       return null;
     if (paramNetChannel.isMirrored(this))
       return null;
     NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this);
-    localNetMsgSpawn.writeNetObj(this.air.net);
+    localNetMsgSpawn.writeNetObj(this.air.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
     this.channel = paramNetChannel;
     this.msgOut = localNetMsgSpawn;
     this.bFirstUpdate = true;

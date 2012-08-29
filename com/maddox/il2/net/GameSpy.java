@@ -29,7 +29,7 @@ public class GameSpy
   public String gameType = "dogfight";
   public int maxClients = 16;
   private static final String gamename = "il2sturmovikfb";
-  private static final String gamever = "4.10.1m";
+  private static final String gamever = "4.09m";
   private static final String secret_key = "h53Ew8";
   public static int MASTER_PORT = 27900;
   public static String MASTER_ADDR = "master.gamespy.com";
@@ -103,7 +103,7 @@ public class GameSpy
   private void send_basic()
   {
     this.strBuf.append("\\gamename\\"); this.strBuf.append("il2sturmovikfb");
-    this.strBuf.append("\\gamever\\"); this.strBuf.append("4.10.1m");
+    this.strBuf.append("\\gamever\\"); this.strBuf.append("4.09m");
     this.strBuf.append("\\location\\"); this.strBuf.append(1);
     buffer_send(this.strBuf);
     this.strBuf.delete(0, this.strBuf.length());
@@ -181,14 +181,6 @@ public class GameSpy
     this.strBuf.append("\\NoMapIcons\\"); this.strBuf.append(localDifficultySettings.No_Map_Icons ? "1" : "0");
     this.strBuf.append("\\NoMinimapPath\\"); this.strBuf.append(localDifficultySettings.NoMinimapPath ? "1" : "0");
     this.strBuf.append("\\NoSpeedBar\\"); this.strBuf.append(localDifficultySettings.NoSpeedBar ? "1" : "0");
-
-    this.strBuf.append("\\Reliability\\"); this.strBuf.append(localDifficultySettings.Reliability ? "1" : "0");
-    this.strBuf.append("\\GLimits\\"); this.strBuf.append(localDifficultySettings.G_Limits ? "1" : "0");
-    this.strBuf.append("\\RealisticPilotVulnerability\\"); this.strBuf.append(localDifficultySettings.RealisticPilotVulnerability ? "1" : "0");
-    this.strBuf.append("\\RealisticNavigationInstruments\\"); this.strBuf.append(localDifficultySettings.RealisticNavigationInstruments ? "1" : "0");
-    this.strBuf.append("\\NoPlayerIcon\\"); this.strBuf.append(localDifficultySettings.No_Player_Icon ? "1" : "0");
-    this.strBuf.append("\\NoFogOfWarIcons\\"); this.strBuf.append(localDifficultySettings.No_Fog_Of_War_Icons ? "1" : "0");
-
     if (Main.cur().netServerParams.isProtected())
       this.strBuf.append("\\password\\1");
     buffer_send(this.strBuf);
@@ -211,18 +203,18 @@ public class GameSpy
     for (int i = 0; i < this.armyScore.length; i++) {
       this.armyScore[i] = -1;
     }
-    i = 0;
+    int j = 0;
     if (!Main.cur().netServerParams.isDedicated())
-      send_player(i++, (NetUser)NetEnv.host());
+      send_player(j++, (NetUser)NetEnv.host());
     List localList = NetEnv.hosts();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      send_player(i++, (NetUser)localList.get(k));
+    int k = localList.size();
+    for (int m = 0; m < k; m++) {
+      send_player(j++, (NetUser)localList.get(m));
     }
-    for (k = 0; k < this.armyScore.length; k++) {
-      if (this.armyScore[k] >= 0) {
-        this.strBuf.append("\\team_t" + k + "\\" + Army.name(k));
-        this.strBuf.append("\\score_t" + k + "\\" + this.armyScore[k]);
+    for (int n = 0; n < this.armyScore.length; n++) {
+      if (this.armyScore[n] >= 0) {
+        this.strBuf.append("\\team_t" + n + "\\" + Army.name(n));
+        this.strBuf.append("\\score_t" + n + "\\" + this.armyScore[n]);
       }
     }
     correctASCII();
@@ -438,7 +430,7 @@ public class GameSpy
           this.queryVal_0 = m;
           while (m < i) {
             n = this.queryBuf.charAt(m++);
-            if (n != 92) continue;
+            if (n == 92) break;
           }
           this.queryVal_1 = (m - 1);
           return true;
@@ -570,10 +562,10 @@ public class GameSpy
       this._state[m] = this._state[k];
       this._state[k] = i1;
       int n = (this._state[k] + this._state[m]) % 256;
-      int tmp222_220 = j;
-      char[] tmp222_219 = paramArrayOfChar; tmp222_219[tmp222_220] = (char)(tmp222_219[tmp222_220] ^ this._state[n]);
-      int tmp237_235 = j;
-      char[] tmp237_234 = paramArrayOfChar; tmp237_234[tmp237_235] = (char)(tmp237_234[tmp237_235] & 0xFF);
+      int tmp219_217 = j;
+      char[] tmp219_216 = paramArrayOfChar; tmp219_216[tmp219_217] = (char)(tmp219_216[tmp219_217] ^ this._state[n]);
+      int tmp234_232 = j;
+      char[] tmp234_231 = paramArrayOfChar; tmp234_231[tmp234_232] = (char)(tmp234_231[tmp234_232] & 0xFF);
     }
   }
 }

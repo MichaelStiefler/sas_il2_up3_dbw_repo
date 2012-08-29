@@ -103,35 +103,35 @@ public class Mat extends FObj
   {
     super(paramInt);
   }
-  public boolean isValidLayer(int paramInt) { return IsValidLayer(this.cppObj, paramInt); } 
-  public void setLayer(int paramInt) { SetLayer(this.cppObj, paramInt); }
+  public boolean isValidLayer(int paramInt) { return IsValidLayer(this.jdField_cppObj_of_type_Int, paramInt); } 
+  public void setLayer(int paramInt) { SetLayer(this.jdField_cppObj_of_type_Int, paramInt); }
 
   public boolean get(short paramShort) {
-    return Get(this.cppObj, paramShort); } 
-  public boolean set(short paramShort, boolean paramBoolean) { return Set(this.cppObj, paramShort, paramBoolean);
+    return Get(this.jdField_cppObj_of_type_Int, paramShort); } 
+  public boolean set(short paramShort, boolean paramBoolean) { return Set(this.jdField_cppObj_of_type_Int, paramShort, paramBoolean);
   }
 
   public int get(int paramInt)
   {
-    return Get(this.cppObj, paramInt); } 
-  public int set(int paramInt1, int paramInt2) { return Set(this.cppObj, paramInt1, paramInt2);
+    return Get(this.jdField_cppObj_of_type_Int, paramInt); } 
+  public int set(int paramInt1, int paramInt2) { return Set(this.jdField_cppObj_of_type_Int, paramInt1, paramInt2);
   }
 
   public float get(byte paramByte)
   {
-    return Get(this.cppObj, paramByte); } 
-  public float set(byte paramByte, float paramFloat) { return Set(this.cppObj, paramByte, paramFloat); }
+    return Get(this.jdField_cppObj_of_type_Int, paramByte); } 
+  public float set(byte paramByte, float paramFloat) { return Set(this.jdField_cppObj_of_type_Int, paramByte, paramFloat); }
 
   public String get(char paramChar)
   {
-    return Get(this.cppObj, paramChar); } 
-  public void set(char paramChar, String paramString) { Set(this.cppObj, paramChar, paramString); }
+    return Get(this.jdField_cppObj_of_type_Int, paramChar); } 
+  public void set(char paramChar, String paramString) { Set(this.jdField_cppObj_of_type_Int, paramChar, paramString); }
 
   public int preRender(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    return PreRender(this.cppObj, paramFloat1, paramFloat2, paramFloat3, paramFloat4);
+    return PreRender(this.jdField_cppObj_of_type_Int, paramFloat1, paramFloat2, paramFloat3, paramFloat4);
   }
   public int preRender() {
-    return PreRender(this.cppObj);
+    return PreRender(this.jdField_cppObj_of_type_Int);
   }
 
   public static Mat New(String paramString) {
@@ -148,11 +148,11 @@ public class Mat extends FObj
 
   public void updateImage(int paramInt1, int paramInt2, int paramInt3, byte[] paramArrayOfByte)
   {
-    UpdateImage(this.cppObj, paramInt1, paramInt2, paramInt3, paramArrayOfByte);
+    UpdateImage(this.jdField_cppObj_of_type_Int, paramInt1, paramInt2, paramInt3, paramArrayOfByte);
   }
 
   public void grabFromScreen(int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
-    GrabFromScreen(this.cppObj, paramInt1, paramInt2, paramInt3, paramInt4);
+    GrabFromScreen(this.jdField_cppObj_of_type_Int, paramInt1, paramInt2, paramInt3, paramInt4);
   }
 
   public static native boolean tgaInfo(String paramString, int[] paramArrayOfInt);

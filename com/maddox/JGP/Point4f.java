@@ -41,10 +41,10 @@ public class Point4f extends Tuple4f
 
   public final float distanceSquared(Point4f paramPoint4f)
   {
-    double d1 = this.x - paramPoint4f.x;
-    double d2 = this.y - paramPoint4f.y;
-    double d3 = this.z - paramPoint4f.z;
-    double d4 = this.z - paramPoint4f.w;
+    double d1 = this.jdField_x_of_type_Float - paramPoint4f.jdField_x_of_type_Float;
+    double d2 = this.jdField_y_of_type_Float - paramPoint4f.jdField_y_of_type_Float;
+    double d3 = this.jdField_z_of_type_Float - paramPoint4f.jdField_z_of_type_Float;
+    double d4 = this.jdField_z_of_type_Float - paramPoint4f.jdField_w_of_type_Float;
     return (float)(d1 * d1 + d2 * d2 + d3 * d3 + d4 * d4);
   }
 
@@ -55,19 +55,19 @@ public class Point4f extends Tuple4f
 
   public final float distanceL1(Point4f paramPoint4f)
   {
-    return Math.abs(this.x - paramPoint4f.x) + Math.abs(this.y - paramPoint4f.y) + Math.abs(this.z - paramPoint4f.z) + Math.abs(this.w - paramPoint4f.w);
+    return Math.abs(this.jdField_x_of_type_Float - paramPoint4f.jdField_x_of_type_Float) + Math.abs(this.jdField_y_of_type_Float - paramPoint4f.jdField_y_of_type_Float) + Math.abs(this.jdField_z_of_type_Float - paramPoint4f.jdField_z_of_type_Float) + Math.abs(this.jdField_w_of_type_Float - paramPoint4f.jdField_w_of_type_Float);
   }
 
   public final float distanceLinf(Point4f paramPoint4f)
   {
-    return Math.max(Math.max(Math.abs(this.x - paramPoint4f.x), Math.abs(this.y - paramPoint4f.y)), Math.max(Math.abs(this.z - paramPoint4f.z), Math.abs(this.w - paramPoint4f.w)));
+    return Math.max(Math.max(Math.abs(this.jdField_x_of_type_Float - paramPoint4f.jdField_x_of_type_Float), Math.abs(this.jdField_y_of_type_Float - paramPoint4f.jdField_y_of_type_Float)), Math.max(Math.abs(this.jdField_z_of_type_Float - paramPoint4f.jdField_z_of_type_Float), Math.abs(this.jdField_w_of_type_Float - paramPoint4f.jdField_w_of_type_Float)));
   }
 
   public final void project(Point4f paramPoint4f)
   {
-    paramPoint4f.x /= paramPoint4f.w;
-    paramPoint4f.y /= paramPoint4f.w;
-    paramPoint4f.z /= paramPoint4f.w;
-    this.w = 1.0F;
+    this.jdField_x_of_type_Float = (paramPoint4f.jdField_x_of_type_Float / paramPoint4f.jdField_w_of_type_Float);
+    this.jdField_y_of_type_Float = (paramPoint4f.jdField_y_of_type_Float / paramPoint4f.jdField_w_of_type_Float);
+    this.jdField_z_of_type_Float = (paramPoint4f.jdField_z_of_type_Float / paramPoint4f.jdField_w_of_type_Float);
+    this.jdField_w_of_type_Float = 1.0F;
   }
 }

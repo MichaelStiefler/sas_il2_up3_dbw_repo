@@ -74,7 +74,6 @@ public class GameState
   public static final int NET_SERVER_NGEN_SELECT = 68;
   public static final int NET_SERVER_NGEN_PROP = 69;
   public static final int DGEN_DOCS = 70;
-  public static final int QUICK_STATS = 71;
   protected int id;
   protected static HashMapInt states = new HashMapInt();
 

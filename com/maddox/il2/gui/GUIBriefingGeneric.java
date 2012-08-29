@@ -102,8 +102,8 @@ public class GUIBriefingGeneric extends GameState
     }
     Front.setMarkersChanged();
     this.wScrollDescription.resized();
-    if (this.wScrollDescription.vScroll.isVisible())
-      this.wScrollDescription.vScroll.setPos(0.0F, true); 
+    if (this.wScrollDescription.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible())
+      this.wScrollDescription.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(0.0F, true); 
   }
 
   public void _leave() {
@@ -120,7 +120,7 @@ public class GUIBriefingGeneric extends GameState
   }
 
   private void scaleCamera() {
-    this.cameraMap2D.worldScale = (this.scale[this.curScale] * this.renders.root.win.dx / 1024.0F);
+    this.cameraMap2D.worldScale = (this.scale[this.curScale] * this.renders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 1024.0F);
   }
 
   private void clipCamera() {
@@ -138,8 +138,8 @@ public class GUIBriefingGeneric extends GameState
   }
 
   private void computeScales() {
-    float f1 = this.renders.win.dx * 1024.0F / this.renders.root.win.dx;
-    float f2 = this.renders.win.dy * 768.0F / this.renders.root.win.dy;
+    float f1 = this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dx * 1024.0F / this.renders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+    float f2 = this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy * 768.0F / this.renders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
     int i = 0;
     float f3 = 0.064F;
     float f4;
@@ -180,27 +180,25 @@ public class GUIBriefingGeneric extends GameState
     float f5 = (float)(i * this.cameraMap2D.worldScale);
     this._gridCount = 0;
     Render.drawBeginLines(-1);
-    float f6;
-    int i2;
     for (int i1 = 0; i1 <= n; i1++) {
-      f6 = f2 + i1 * f5;
-      i2 = (i1 + k) % 10 == 0 ? 192 : 127;
+      float f6 = f2 + i1 * f5;
+      int i3 = (i1 + k) % 10 == 0 ? 192 : 127;
       this.line2XYZ[0] = f1; this.line2XYZ[1] = f6; this.line2XYZ[2] = 0.0F;
       this.line2XYZ[3] = (f1 + f3); this.line2XYZ[4] = f6; this.line2XYZ[5] = 0.0F;
-      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
+      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i3 << 16 | i3 << 8 | i3, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
 
-      if (i2 == 192)
+      if (i3 == 192)
         drawGridText(0, (int)f6, (k + i1) * i);
     }
-    for (i1 = 0; i1 <= m; i1++) {
-      f6 = f1 + i1 * f5;
-      i2 = (i1 + j) % 10 == 0 ? 192 : 127;
-      this.line2XYZ[0] = f6; this.line2XYZ[1] = f2; this.line2XYZ[2] = 0.0F;
-      this.line2XYZ[3] = f6; this.line2XYZ[4] = (f2 + f4); this.line2XYZ[5] = 0.0F;
-      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i2 << 16 | i2 << 8 | i2, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
+    for (int i2 = 0; i2 <= m; i2++) {
+      float f7 = f1 + i2 * f5;
+      int i4 = (i2 + j) % 10 == 0 ? 192 : 127;
+      this.line2XYZ[0] = f7; this.line2XYZ[1] = f2; this.line2XYZ[2] = 0.0F;
+      this.line2XYZ[3] = f7; this.line2XYZ[4] = (f2 + f4); this.line2XYZ[5] = 0.0F;
+      Render.drawLines(this.line2XYZ, 2, 1.0F, 0xFF000000 | i4 << 16 | i4 << 8 | i4, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 0);
 
-      if (i2 == 192)
-        drawGridText((int)f6, 0, (j + i1) * i);
+      if (i4 == 192)
+        drawGridText((int)f7, 0, (j + i2) * i);
     }
     Render.drawEnd();
     drawGridText();
@@ -213,9 +211,9 @@ public class GUIBriefingGeneric extends GameState
     if (f2 < f1) d = f2;
     d /= this.cameraMap2D.worldScale;
     int i = 100000;
-    for (int j = 0; (j < 5) && 
-      (i * 3 > d); j++)
-    {
+    for (int j = 0; j < 5; j++) {
+      if (i * 3 <= d)
+        break;
       i /= 10;
     }
     return i;
@@ -243,12 +241,12 @@ public class GUIBriefingGeneric extends GameState
   {
     if (paramInt == 0) {
       this.bLPressed = paramBoolean;
-      this.renders.mouseCursor = (this.bLPressed ? 7 : 3);
+      this.renders.jdField_mouseCursor_of_type_Int = (this.bLPressed ? 7 : 3);
     } else if ((paramInt == 1) && (this.scales > 1)) {
       this.bRPressed = paramBoolean;
       if ((this.bRPressed) && (!this.bLPressed)) {
         float f1 = (float)(this.cameraMap2D.worldXOffset + paramFloat1 / this.cameraMap2D.worldScale);
-        float f2 = (float)(this.cameraMap2D.worldYOffset + (this.renders.win.dy - paramFloat2 - 1.0F) / this.cameraMap2D.worldScale);
+        float f2 = (float)(this.cameraMap2D.worldYOffset + (this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - paramFloat2 - 1.0F) / this.cameraMap2D.worldScale);
 
         this.curScale += this.curScaleDirect;
         if (this.curScaleDirect < 0) {
@@ -263,17 +261,17 @@ public class GUIBriefingGeneric extends GameState
         }
 
         scaleCamera();
-        f1 = (float)(f1 - (paramFloat1 - this.renders.win.dx / 2.0F) / this.cameraMap2D.worldScale);
-        f2 = (float)(f2 + (paramFloat2 - this.renders.win.dy / 2.0F) / this.cameraMap2D.worldScale);
+        f1 = (float)(f1 - (paramFloat1 - this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dx / 2.0F) / this.cameraMap2D.worldScale);
+        f2 = (float)(f2 + (paramFloat2 - this.renders.jdField_win_of_type_ComMaddoxGwindowGRegion.dy / 2.0F) / this.cameraMap2D.worldScale);
         setPosCamera(f1, f2);
       }
     }
   }
 
   protected void doMouseMove(float paramFloat1, float paramFloat2) {
-    if ((this.bLPressed) && (this.renders.mouseCursor == 7)) {
-      this.cameraMap2D.worldXOffset -= this.renders.root.mouseStep.dx / this.cameraMap2D.worldScale;
-      this.cameraMap2D.worldYOffset += this.renders.root.mouseStep.dy / this.cameraMap2D.worldScale;
+    if ((this.bLPressed) && (this.renders.jdField_mouseCursor_of_type_Int == 7)) {
+      this.cameraMap2D.worldXOffset -= this.renders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dx / this.cameraMap2D.worldScale;
+      this.cameraMap2D.worldYOffset += this.renders.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.mouseStep.dy / this.cameraMap2D.worldScale;
       clipCamera();
     }
   }
@@ -287,7 +285,7 @@ public class GUIBriefingGeneric extends GameState
         GUIBriefingGeneric.this.doMouseMove(paramFloat1, paramFloat2);
       }
     };
-    this.renders.mouseCursor = 3;
+    this.renders.jdField_mouseCursor_of_type_Int = 3;
     this.renders.bNotify = true;
 
     this.cameraMap2D = new CameraOrtho2D();
@@ -394,9 +392,8 @@ public class GUIBriefingGeneric extends GameState
           subString(localStringBuffer, this.textDescription, k, m);
         }
         i = m + "</ARMY>".length();
-        if ((i < j) && (this.textDescription.charAt(i) == '\n')) i++; 
-      }
-      else {
+        if ((i >= j) || (this.textDescription.charAt(i) != '\n')) continue; i++;
+      } else {
         subString(localStringBuffer, this.textDescription, i, j);
         i = j;
       }
@@ -526,12 +523,7 @@ public class GUIBriefingGeneric extends GameState
 
     public void render() {
       super.render();
-
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(924.0F), 2.5F);
-      GUISeparate.draw(this, GColor.Gray, x1024(457.0F), y1024(686.0F), x1024(30.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(537.0F), y1024(686.0F), x1024(30.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(457.0F), y1024(640.0F), 1.0F, x1024(46.0F));
-      GUISeparate.draw(this, GColor.Gray, x1024(567.0F), y1024(640.0F), 1.0F, x1024(46.0F));
+      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(960.0F), 2.0F);
 
       setCanvasColorWHITE();
       GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
@@ -554,13 +546,10 @@ public class GUIBriefingGeneric extends GameState
     public void setPosSize()
     {
       set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-
-      GUIBriefingGeneric.this.bPrev.setPosC(x1024(85.0F), y1024(689.0F));
-
-      GUIBriefingGeneric.this.bDifficulty.setPosC(x1024(298.0F), y1024(689.0F));
-      GUIBriefingGeneric.this.bLoodout.setPosC(x1024(768.0F), y1024(689.0F));
-      GUIBriefingGeneric.this.bNext.setPosC(x1024(512.0F), y1024(689.0F));
-
+      GUIBriefingGeneric.this.bPrev.setPosC(x1024(104.0F), y1024(680.0F));
+      GUIBriefingGeneric.this.bDifficulty.setPosC(x1024(502.0F), y1024(680.0F));
+      GUIBriefingGeneric.this.bLoodout.setPosC(x1024(744.0F), y1024(680.0F));
+      GUIBriefingGeneric.this.bNext.setPosC(x1024(968.0F), y1024(680.0F));
       GUIBriefingGeneric.this.wScrollDescription.setPosSize(x1024(592.0F), y1024(32.0F), x1024(400.0F), y1024(560.0F));
       GUIBriefingGeneric.this.clientSetPosSize();
     }
@@ -574,8 +563,8 @@ public class GUIBriefingGeneric extends GameState
 
     public void created()
     {
-      this.fixed = (GUIBriefingGeneric.this.wDescript = GUIBriefingGeneric.this.createDescript(this));
-      this.fixed.bNotify = true;
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient = (GUIBriefingGeneric.this.wDescript = GUIBriefingGeneric.this.createDescript(this));
+      this.jdField_fixed_of_type_ComMaddoxGwindowGWindowDialogClient.bNotify = true;
       this.bNotify = true;
     }
     public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
@@ -589,17 +578,17 @@ public class GUIBriefingGeneric extends GameState
         GUIBriefingGeneric.this.wDescript.computeSize();
       }
       super.resized();
-      if (this.vScroll.isVisible()) {
+      if (this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.isVisible()) {
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setPos(this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
+        this.jdField_vScroll_of_type_ComMaddoxGwindowGWindowVScrollBar.setSize(lookAndFeel().getVScrollBarW(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy - localGBevel.T.dy - localGBevel.B.dy);
       }
     }
 
     public void render() {
       setCanvasColorWHITE();
       GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx, this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
     }
   }
 
@@ -616,28 +605,28 @@ public class GUIBriefingGeneric extends GameState
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
         setCanvasFont(0);
         setCanvasColorBLACK();
-        this.root.C.clip.y += localGBevel.T.dy;
-        this.root.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
-        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.root.C.font.height);
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.y += localGBevel.T.dy;
+        this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
+        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height);
       }
     }
 
     public void computeSize() {
       String str = GUIBriefingGeneric.this.textDescription();
       if (str != null) {
-        this.win.dx = this.parentWindow.win.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
         GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
         setCanvasFont(0);
-        int i = computeLines(str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-        this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
-        if (this.win.dy > this.parentWindow.win.dy) {
-          this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-          i = computeLines(str, 0, str.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-          this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        int i = computeLines(str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        if (this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy > this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy) {
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = (this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - lookAndFeel().getVScrollBarW());
+          i = computeLines(str, 0, str.length(), this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
+          this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = (this.jdField_root_of_type_ComMaddoxGwindowGWindowRoot.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
         }
       } else {
-        this.win.dx = this.parentWindow.win.dx;
-        this.win.dy = this.parentWindow.win.dy;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dx = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dx;
+        this.jdField_win_of_type_ComMaddoxGwindowGRegion.dy = this.jdField_parentWindow_of_type_ComMaddoxGwindowGWindow.jdField_win_of_type_ComMaddoxGwindowGRegion.dy;
       }
     }
   }

@@ -79,52 +79,54 @@ public class NearestTargets
     double d1 = paramDouble * paramDouble;
     int j = 0;
     for (int k = 0; k < i; k++) {
-      Actor localActor2 = (Actor)localList.get(k);
+      localActor = (Actor)localList.get(k);
 
-      int n = localActor2.getArmy();
-      if ((n == 0) || (n == paramInt3)) {
+      m = localActor.getArmy();
+      if ((m == 0) || (m == paramInt3)) {
         continue;
       }
-      if ((!localClass1.isInstance(localActor2)) && (!localClass2.isInstance(localActor2))) {
+      if ((!localClass1.isInstance(localActor)) && (!localClass2.isInstance(localActor))) {
         continue;
       }
-      if ((paramInt1 == 0) && ((localActor2 instanceof BridgeSegment))) {
+      if ((paramInt1 == 0) && ((localActor instanceof BridgeSegment))) {
         continue;
       }
-      if ((((Prey)localActor2).HitbyMask() & paramInt2) == 0) {
+      if ((((Prey)localActor).HitbyMask() & paramInt2) == 0) {
         continue;
       }
-      Point3d localPoint3d = localActor2.pos.getAbsPoint();
-      double d2 = (localPoint3d.x - paramPoint3d.x) * (localPoint3d.x - paramPoint3d.x) + (localPoint3d.y - paramPoint3d.y) * (localPoint3d.y - paramPoint3d.y) + (localPoint3d.z - paramPoint3d.z) * (localPoint3d.z - paramPoint3d.z);
+      Point3d localPoint3d = localActor.pos.getAbsPoint();
+      double d2 = (localPoint3d.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double) * (localPoint3d.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double) + (localPoint3d.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double) * (localPoint3d.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double) + (localPoint3d.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double) * (localPoint3d.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double);
 
       if (d2 > d1)
       {
         continue;
       }
-      for (int i1 = 0; (i1 < j) && 
-        (d2 >= nearDSq[i1]); i1++);
-      if (i1 >= j) {
+      for (int n = 0; n < j; n++) {
+        if (d2 < nearDSq[n])
+          break;
+      }
+      if (n >= j) {
         if (j < 32) {
-          nearAct[j] = localActor2;
+          nearAct[j] = localActor;
           nearDSq[j] = d2;
           j++;
         }
       }
       else
       {
-        int i2;
+        int i1;
         if (j < 32) {
-          i2 = j - 1;
+          i1 = j - 1;
           j++;
         } else {
-          i2 = j - 2;
+          i1 = j - 2;
         }
-        for (; i2 >= i1; i2--) {
-          nearAct[(i2 + 1)] = nearAct[i2];
-          nearDSq[(i2 + 1)] = nearDSq[i2];
+        for (; i1 >= n; i1--) {
+          nearAct[(i1 + 1)] = nearAct[i1];
+          nearDSq[(i1 + 1)] = nearDSq[i1];
         }
-        nearAct[i1] = localActor2;
-        nearDSq[i1] = d2;
+        nearAct[n] = localActor;
+        nearDSq[n] = d2;
       }
     }
 
@@ -132,9 +134,9 @@ public class NearestTargets
       if (paramInt1 == 0) return getBridge(paramInt2, paramPoint3d, paramDouble);
       return null;
     }
-    Actor localActor1 = nearAct[World.Rnd().nextInt(j)];
+    Actor localActor = nearAct[World.Rnd().nextInt(j)];
     for (int m = 0; m < j; m++) nearAct[m] = null;
-    return localActor1;
+    return localActor;
   }
 
   public static Actor getBridge(int paramInt, Point3d paramPoint3d, double paramDouble)
@@ -150,7 +152,7 @@ public class NearestTargets
       LongBridge localLongBridge = (LongBridge)localArrayList.get(j);
       if (localLongBridge.isAlive()) {
         Point3d localPoint3d = localLongBridge.pos.getAbsPoint();
-        double d2 = (localPoint3d.x - paramPoint3d.x) * (localPoint3d.x - paramPoint3d.x) + (localPoint3d.y - paramPoint3d.y) * (localPoint3d.y - paramPoint3d.y) + (localPoint3d.z - paramPoint3d.z) * (localPoint3d.z - paramPoint3d.z);
+        double d2 = (localPoint3d.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double) * (localPoint3d.jdField_x_of_type_Double - paramPoint3d.jdField_x_of_type_Double) + (localPoint3d.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double) * (localPoint3d.jdField_y_of_type_Double - paramPoint3d.jdField_y_of_type_Double) + (localPoint3d.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double) * (localPoint3d.jdField_z_of_type_Double - paramPoint3d.jdField_z_of_type_Double);
 
         if (d2 <= d1) {
           localObject = localLongBridge;

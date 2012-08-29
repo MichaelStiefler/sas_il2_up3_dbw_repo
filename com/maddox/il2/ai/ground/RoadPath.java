@@ -190,11 +190,12 @@ public class RoadPath
   {
     if ((paramInt1 < 0) || (paramInt2 >= this.segments.size()))
       return;
-    while (paramInt1 <= paramInt2) {
+    do {
       RoadSegment localRoadSegment = (RoadSegment)this.segments.get(paramInt1++);
       if (localRoadSegment.br != null)
         localRoadSegment.br.setSupervisor(paramActor);
     }
+    while (paramInt1 <= paramInt2);
   }
 
   public double ComputeMinRoadWidth(int paramInt1, int paramInt2)

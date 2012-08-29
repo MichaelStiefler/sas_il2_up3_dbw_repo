@@ -132,11 +132,6 @@ public class Paratrooper extends ActorMesh
 
   private boolean bCheksCaptured = false;
 
-  public boolean isChuteSafelyOpened()
-  {
-    return (this.st == 2) || (this.st == 6) || (this.st == 8) || (this.st == 9);
-  }
-
   public static void resetGame()
   {
     _counter = 0;
@@ -185,7 +180,7 @@ public class Paratrooper extends ActorMesh
 
     if ((paramActor != null) && (((paramActor instanceof ShipGeneric)) || ((paramActor instanceof BigshipGeneric))))
     {
-      int i = Math.abs(this.speed.z) > 10.0D ? 1 : 0;
+      int i = Math.abs(this.speed.jdField_z_of_type_Double) > 10.0D ? 1 : 0;
       if (i != 0) {
         Die(paramActor);
       }
@@ -194,10 +189,10 @@ public class Paratrooper extends ActorMesh
     }
 
     Point3d localPoint3d1 = p;
-    this.pos.getAbs(p);
-    Point3d localPoint3d2 = paramActor.pos.getAbsPoint();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(p);
+    Point3d localPoint3d2 = paramActor.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
     Vector3d localVector3d = new Vector3d();
-    localVector3d.set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y, 0.0D);
+    localVector3d.set(localPoint3d1.jdField_x_of_type_Double - localPoint3d2.jdField_x_of_type_Double, localPoint3d1.jdField_y_of_type_Double - localPoint3d2.jdField_y_of_type_Double, 0.0D);
     if (localVector3d.length() < 0.001D) {
       f1 = World.Rnd().nextFloat(0.0F, 359.98999F);
       localVector3d.set(Geom.sinDeg(f1), Geom.cosDeg(f1), 0.0D);
@@ -211,10 +206,10 @@ public class Paratrooper extends ActorMesh
     float f2 = 13.090909F * Time.tickLenFs();
     localVector3d.scale(f2);
 
-    this.speed.z *= 0.5D;
+    this.speed.jdField_z_of_type_Double *= 0.5D;
 
     localPoint3d1.add(localVector3d);
-    this.pos.setAbs(localPoint3d1);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(localPoint3d1);
 
     if (this.st == 4) {
       this.st = 5;
@@ -339,10 +334,10 @@ public class Paratrooper extends ActorMesh
         NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
         localNetMsgGuaranted.writeByte(68);
         if (paramActor != null)
-          localNetMsgGuaranted.writeNetObj(paramActor.net);
+          localNetMsgGuaranted.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
         else
           localNetMsgGuaranted.writeNetObj(null);
-        this.net.postExclude(null, localNetMsgGuaranted);
+        this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postExclude(null, localNetMsgGuaranted);
       }
       catch (Exception localException) {
       }
@@ -376,7 +371,7 @@ public class Paratrooper extends ActorMesh
     {
       this.st = 3;
       this.animStartTime = Time.current();
-      this.pos.setAbs(this.faceOrient);
+      this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(this.faceOrient);
 
       if ((this.logAircraftName != null) && (((this.driver == null) && (isNetMaster())) || ((this.driver != null) && (this.driver.isMaster()))))
       {
@@ -387,10 +382,10 @@ public class Paratrooper extends ActorMesh
           NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
           localNetMsgGuaranted.writeByte(83);
           if (paramActor != null)
-            localNetMsgGuaranted.writeNetObj(paramActor.net);
+            localNetMsgGuaranted.writeNetObj(paramActor.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
           else
             localNetMsgGuaranted.writeNetObj(null);
-          this.net.postExclude(null, localNetMsgGuaranted);
+          this.jdField_net_of_type_ComMaddoxIl2EngineActorNet.postExclude(null, localNetMsgGuaranted);
         }
         catch (Exception localException)
         {
@@ -637,8 +632,8 @@ public class Paratrooper extends ActorMesh
 
     o.setAT0(this.speed);
     o.set(o.azimut(), 0.0F, 0.0F);
-    this.pos.setAbs(paramLoc);
-    this.pos.reset();
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(paramLoc);
+    this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.reset();
 
     this.st = 0;
     this.animStartTime = Time.tick();
@@ -660,9 +655,9 @@ public class Paratrooper extends ActorMesh
     }
 
     if (paramNetMsgInput == null)
-      this.net = new Master(this);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Master(this);
     else
-      this.net = new Mirror(this, paramNetMsgInput, paramInt3);
+      this.jdField_net_of_type_ComMaddoxIl2EngineActorNet = new Mirror(this, paramNetMsgInput, paramInt3);
   }
 
   private void testDriver() {
@@ -688,21 +683,21 @@ public class Paratrooper extends ActorMesh
   public NetMsgSpawn netReplicate(NetChannel paramNetChannel)
     throws IOException
   {
-    NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this.net);
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    localNetMsgSpawn.writeFloat((float)localPoint3d.x);
-    localNetMsgSpawn.writeFloat((float)localPoint3d.y);
-    localNetMsgSpawn.writeFloat((float)localPoint3d.z);
-    Orient localOrient = this.pos.getAbsOrient();
+    NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this.jdField_net_of_type_ComMaddoxIl2EngineActorNet);
+    Point3d localPoint3d = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsPoint();
+    localNetMsgSpawn.writeFloat((float)localPoint3d.jdField_x_of_type_Double);
+    localNetMsgSpawn.writeFloat((float)localPoint3d.jdField_y_of_type_Double);
+    localNetMsgSpawn.writeFloat((float)localPoint3d.jdField_z_of_type_Double);
+    Orient localOrient = this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbsOrient();
     localNetMsgSpawn.writeFloat(localOrient.getAzimut());
     localNetMsgSpawn.writeFloat(localOrient.getTangage());
     localNetMsgSpawn.writeFloat(localOrient.getKren());
-    localNetMsgSpawn.writeFloat((float)this.speed.x);
-    localNetMsgSpawn.writeFloat((float)this.speed.y);
-    localNetMsgSpawn.writeFloat((float)this.speed.z);
+    localNetMsgSpawn.writeFloat((float)this.speed.jdField_x_of_type_Double);
+    localNetMsgSpawn.writeFloat((float)this.speed.jdField_y_of_type_Double);
+    localNetMsgSpawn.writeFloat((float)this.speed.jdField_z_of_type_Double);
     localNetMsgSpawn.writeByte(getArmy());
-    if ((getOwner() != null) && (paramNetChannel != null) && (paramNetChannel.isMirrored(getOwner().net)))
-      localNetMsgSpawn.writeNetObj(getOwner().net);
+    if ((getOwner() != null) && (paramNetChannel != null) && (paramNetChannel.isMirrored(getOwner().jdField_net_of_type_ComMaddoxIl2EngineActorNet)))
+      localNetMsgSpawn.writeNetObj(getOwner().jdField_net_of_type_ComMaddoxIl2EngineActorNet);
     else
       localNetMsgSpawn.writeNetObj(null);
     localNetMsgSpawn.writeByte(this.idxOfPilotPlace);
@@ -780,7 +775,7 @@ public class Paratrooper extends ActorMesh
           arrayOfClass = new Class[1];
           arrayOfClass[0] = ((Class)localObject);
         } else {
-          arrayOfClass = (Class[])(Class[])localObject;
+          arrayOfClass = (Class[])localObject;
         }
         for (int i = 0; i < arrayOfClass.length; i++) {
           int j = Property.intValue(arrayOfClass[i], "astatePilotIndx", 0);
@@ -897,29 +892,29 @@ public class Paratrooper extends ActorMesh
       case 1:
       case 2:
       case 3:
-        Paratrooper.this.pos.getAbs(Paratrooper.p);
-        Engine.land(); float f1 = Landscape.HQ((float)Paratrooper.p.x, (float)Paratrooper.p.y);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.p);
+        Engine.land(); float f1 = Landscape.HQ((float)Paratrooper.p.jdField_x_of_type_Double, (float)Paratrooper.p.jdField_y_of_type_Double);
 
         if (Paratrooper.this.st == 0)
         {
           if (l >= 2500L) {
-            Paratrooper.this.pos.setAbs(Paratrooper.this.faceOrient);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.this.faceOrient);
             if ((Paratrooper.this.dying == 0) && 
-              ((float)Paratrooper.p.z - f1 <= Paratrooper.this.turn_para_on_height) && (Paratrooper.this.speed.z < -5.0D))
+              ((float)Paratrooper.p.jdField_z_of_type_Double - f1 <= Paratrooper.this.turn_para_on_height) && (Paratrooper.this.speed.jdField_z_of_type_Double < -5.0D))
             {
               Paratrooper.access$002(Paratrooper.this, 1);
               Paratrooper.access$302(Paratrooper.this, Time.current());
               l = Time.tickNext() - Paratrooper.this.animStartTime;
-              new Chute(this.actor);
+              new Chute(this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
             }
           }
           else {
-            Paratrooper.this.pos.getAbs(Paratrooper.o);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.o);
             float f2 = (float)l / 2500.0F;
             if (f2 <= 0.0F) f2 = 0.0F;
             if (f2 >= 1.0F) f2 = 1.0F;
             Paratrooper.o.interpolate(Paratrooper.this.startOrient, Paratrooper.this.faceOrient, f2);
-            Paratrooper.this.pos.setAbs(Paratrooper.o);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.o);
           }
         }
 
@@ -931,38 +926,38 @@ public class Paratrooper extends ActorMesh
         }
 
         Paratrooper.p.scaleAdd(Time.tickLenFs(), Paratrooper.this.speed, Paratrooper.p);
-        Paratrooper.this.speed.z -= Time.tickLenFs() * World.g();
+        Paratrooper.this.speed.jdField_z_of_type_Double -= Time.tickLenFs() * World.g();
         if (Paratrooper.this.st == 2) {
-          if (Paratrooper.this.speed.x != 0.0D) Paratrooper.this.speed.x -= Math.abs(Paratrooper.this.speed.x) / Paratrooper.this.speed.x * 0.009999999776482582D * (Paratrooper.this.speed.x * Paratrooper.this.speed.x) * Time.tickLenFs();
-          if (Paratrooper.this.speed.y != 0.0D) Paratrooper.this.speed.y -= Math.abs(Paratrooper.this.speed.y) / Paratrooper.this.speed.y * 0.009999999776482582D * (Paratrooper.this.speed.y * Paratrooper.this.speed.y) * Time.tickLenFs(); 
+          if (Paratrooper.this.speed.jdField_x_of_type_Double != 0.0D) Paratrooper.this.speed.jdField_x_of_type_Double -= Math.abs(Paratrooper.this.speed.jdField_x_of_type_Double) / Paratrooper.this.speed.jdField_x_of_type_Double * 0.009999999776482582D * (Paratrooper.this.speed.jdField_x_of_type_Double * Paratrooper.this.speed.jdField_x_of_type_Double) * Time.tickLenFs();
+          if (Paratrooper.this.speed.jdField_y_of_type_Double != 0.0D) Paratrooper.this.speed.jdField_y_of_type_Double -= Math.abs(Paratrooper.this.speed.jdField_y_of_type_Double) / Paratrooper.this.speed.jdField_y_of_type_Double * 0.009999999776482582D * (Paratrooper.this.speed.jdField_y_of_type_Double * Paratrooper.this.speed.jdField_y_of_type_Double) * Time.tickLenFs(); 
         }
         else {
-          if (Paratrooper.this.speed.x != 0.0D) Paratrooper.this.speed.x -= Math.abs(Paratrooper.this.speed.x) / Paratrooper.this.speed.x * 0.001000000047497451D * (Paratrooper.this.speed.x * Paratrooper.this.speed.x) * Time.tickLenFs();
-          if (Paratrooper.this.speed.y != 0.0D) Paratrooper.this.speed.y -= Math.abs(Paratrooper.this.speed.y) / Paratrooper.this.speed.y * 0.001000000047497451D * (Paratrooper.this.speed.y * Paratrooper.this.speed.y) * Time.tickLenFs();
+          if (Paratrooper.this.speed.jdField_x_of_type_Double != 0.0D) Paratrooper.this.speed.jdField_x_of_type_Double -= Math.abs(Paratrooper.this.speed.jdField_x_of_type_Double) / Paratrooper.this.speed.jdField_x_of_type_Double * 0.001000000047497451D * (Paratrooper.this.speed.jdField_x_of_type_Double * Paratrooper.this.speed.jdField_x_of_type_Double) * Time.tickLenFs();
+          if (Paratrooper.this.speed.jdField_y_of_type_Double != 0.0D) Paratrooper.this.speed.jdField_y_of_type_Double -= Math.abs(Paratrooper.this.speed.jdField_y_of_type_Double) / Paratrooper.this.speed.jdField_y_of_type_Double * 0.001000000047497451D * (Paratrooper.this.speed.jdField_y_of_type_Double * Paratrooper.this.speed.jdField_y_of_type_Double) * Time.tickLenFs();
 
         }
 
         double d1 = Paratrooper.this.st == 2 ? 5.0F : 50.0F;
-        if (-Paratrooper.this.speed.z > d1) {
-          double d2 = -Paratrooper.this.speed.z - d1;
+        if (-Paratrooper.this.speed.jdField_z_of_type_Double > d1) {
+          double d2 = -Paratrooper.this.speed.jdField_z_of_type_Double - d1;
           if (d2 > Time.tickLenFs() * 20.0F) {
             d2 = Time.tickLenFs() * 20.0F;
           }
-          Paratrooper.this.speed.z += d2;
+          Paratrooper.this.speed.jdField_z_of_type_Double += d2;
         }
 
-        if (Paratrooper.p.z <= f1) {
+        if (Paratrooper.p.jdField_z_of_type_Double <= f1) {
           int i = Paratrooper.this.speed.length() > 10.0D ? 1 : 0;
 
           Vector3d localVector3d = new Vector3d();
           localVector3d.set(1.0D, 0.0D, 0.0D);
           Paratrooper.this.faceOrient.transform(localVector3d);
           Paratrooper.this.speed.set(localVector3d);
-          Paratrooper.this.speed.z = 0.0D;
+          Paratrooper.this.speed.jdField_z_of_type_Double = 0.0D;
           Paratrooper.this.speed.normalize();
           Paratrooper.this.speed.scale(6.545454502105713D);
 
-          Paratrooper.p.z = f1;
+          Paratrooper.p.jdField_z_of_type_Double = f1;
 
           if ((i != 0) || (Paratrooper.this.dying != 0)) {
             Paratrooper.access$002(Paratrooper.this, 7);
@@ -970,12 +965,10 @@ public class Paratrooper extends ActorMesh
             Paratrooper.access$202(Paratrooper.this, Time.tickNext() + 1000 * World.Rnd().nextInt(25, 35));
 
             Paratrooper.access$402(Paratrooper.this, World.Rnd().nextInt(0, 3));
-            new MsgAction(0.0D, this.actor) {
-              public void doAction(Object paramObject) {
-                Paratrooper localParatrooper = (Paratrooper)paramObject;
-                localParatrooper.Die(Engine.actorLand());
-              } } ;
-          } else {
+            new Paratrooper.1(this, 0.0D, this.jdField_actor_of_type_ComMaddoxIl2EngineActor);
+          }
+          else
+          {
             Paratrooper.access$002(Paratrooper.this, 4);
             Paratrooper.access$302(Paratrooper.this, Time.current());
             if ((Paratrooper.this.name().equals("_paraplayer_")) && (Mission.isNet()) && (World.getPlayerFM() != null) && (Actor.isValid(World.getPlayerAircraft())) && (World.getPlayerAircraft().isNetPlayer()))
@@ -986,7 +979,7 @@ public class Paratrooper extends ActorMesh
               }
             }
           }
-          Paratrooper.this.pos.setAbs(Paratrooper.this.faceOrient);
+          Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.this.faceOrient);
 
           Object localObject = Paratrooper.this.getOwnerAttached();
           for (int j = 0; j < localObject.length; j++) {
@@ -996,23 +989,23 @@ public class Paratrooper extends ActorMesh
             }
           }
         }
-        Paratrooper.this.pos.setAbs(Paratrooper.p);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.p);
         break;
       case 4:
-        Paratrooper.this.pos.getAbs(Paratrooper.p);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.p);
         Paratrooper.p.scaleAdd(Time.tickLenFs(), Paratrooper.this.speed, Paratrooper.p);
-        Paratrooper.p.z = Engine.land().HQ(Paratrooper.p.x, Paratrooper.p.y);
-        Paratrooper.this.pos.setAbs(Paratrooper.p);
+        Paratrooper.p.jdField_z_of_type_Double = Engine.land().HQ(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.p);
 
-        if (World.land().isWater(Paratrooper.p.x, Paratrooper.p.y)) {
+        if (World.land().isWater(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double)) {
           if (Paratrooper.this.swimMeshCode < 0) {
             Paratrooper.access$002(Paratrooper.this, 5);
             Paratrooper.access$302(Paratrooper.this, Time.current());
           } else {
             Paratrooper.this.setMesh(Paratrooper.access$1300(Paratrooper.this.swimMeshCode));
-            Paratrooper.this.pos.getAbs(Paratrooper.p);
-            Paratrooper.p.z = Engine.land().HQ(Paratrooper.p.x, Paratrooper.p.y);
-            Paratrooper.this.pos.setAbs(Paratrooper.p);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.p);
+            Paratrooper.p.jdField_z_of_type_Double = Engine.land().HQ(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.p);
             Paratrooper.access$002(Paratrooper.this, 8);
             Paratrooper.access$302(Paratrooper.this, Time.current());
             Paratrooper.access$202(Paratrooper.this, Time.tickNext() + 1000 * World.Rnd().nextInt(25, 35));
@@ -1024,17 +1017,17 @@ public class Paratrooper extends ActorMesh
           Paratrooper.access$002(Paratrooper.this, 5);
           Paratrooper.access$302(Paratrooper.this, Time.current()); } break;
       case 5:
-        Paratrooper.this.pos.getAbs(Paratrooper.p);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.p);
         Paratrooper.p.scaleAdd(Time.tickLenFs(), Paratrooper.this.speed, Paratrooper.p);
-        Paratrooper.p.z = Engine.land().HQ(Paratrooper.p.x, Paratrooper.p.y);
-        if (World.land().isWater(Paratrooper.p.x, Paratrooper.p.y)) {
+        Paratrooper.p.jdField_z_of_type_Double = Engine.land().HQ(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double);
+        if (World.land().isWater(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double)) {
           if (Paratrooper.this.swimMeshCode < 0) {
-            Paratrooper.p.z -= 0.5D;
+            Paratrooper.p.jdField_z_of_type_Double -= 0.5D;
           } else {
             Paratrooper.this.setMesh(Paratrooper.access$1300(Paratrooper.this.swimMeshCode));
-            Paratrooper.this.pos.getAbs(Paratrooper.p);
-            Paratrooper.p.z = Engine.land().HQ(Paratrooper.p.x, Paratrooper.p.y);
-            Paratrooper.this.pos.setAbs(Paratrooper.p);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.p);
+            Paratrooper.p.jdField_z_of_type_Double = Engine.land().HQ(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double);
+            Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.p);
             Paratrooper.access$002(Paratrooper.this, 8);
             Paratrooper.access$302(Paratrooper.this, Time.current());
             Paratrooper.access$202(Paratrooper.this, Time.tickNext() + 1000 * World.Rnd().nextInt(25, 35));
@@ -1043,7 +1036,7 @@ public class Paratrooper extends ActorMesh
             break;
           }
         }
-        Paratrooper.this.pos.setAbs(Paratrooper.p);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.p);
 
         if (l < 1066L) break;
         Paratrooper.access$002(Paratrooper.this, 6);
@@ -1053,12 +1046,12 @@ public class Paratrooper extends ActorMesh
         Paratrooper.this.checkCaptured(); break;
       case 6:
       case 7:
-        Paratrooper.this.pos.getAbs(Paratrooper.p);
-        Paratrooper.p.z = Engine.land().HQ(Paratrooper.p.x, Paratrooper.p.y);
-        if (World.land().isWater(Paratrooper.p.x, Paratrooper.p.y)) {
-          Paratrooper.p.z -= 3.0D;
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.getAbs(Paratrooper.p);
+        Paratrooper.p.jdField_z_of_type_Double = Engine.land().HQ(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double);
+        if (World.land().isWater(Paratrooper.p.jdField_x_of_type_Double, Paratrooper.p.jdField_y_of_type_Double)) {
+          Paratrooper.p.jdField_z_of_type_Double -= 3.0D;
         }
-        Paratrooper.this.pos.setAbs(Paratrooper.p);
+        Paratrooper.this.jdField_pos_of_type_ComMaddoxIl2EngineActorPos.setAbs(Paratrooper.p);
       }
 
       Paratrooper.this.setAnimFrame(Time.tickNext());

@@ -29,8 +29,8 @@ public class YAK_9K extends YAK
 
   public void update(float paramFloat)
   {
-    hierMesh().chunkSetAngles("Wind_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
-    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
+    hierMesh().chunkSetAngles("Wind_luk", 0.0F, 12.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator(), 0.0F);
+    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_EI_of_type_ComMaddoxIl2FmEnginesInterface.engines[0].getControlRadiator(), 0.0F);
     super.update(paramFloat);
   }
 
@@ -52,11 +52,11 @@ public class YAK_9K extends YAK
     Property.set(localClass, "cockpitClass", CockpitYAK_9T.class);
     Property.set(localClass, "LOSElevation", 0.661F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 1 });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunNS45ki 29" });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunNS45ki 29" });
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null });
   }
 }

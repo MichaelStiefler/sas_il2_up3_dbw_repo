@@ -107,48 +107,48 @@ public class GUIPlayerSelect extends GameState
       localSectFile.lineAdd(i, localUserCfg.sId, UnicodeTo8bit.save(localUserCfg.name, true) + " " + UnicodeTo8bit.save(localUserCfg.callsign, true) + " " + UnicodeTo8bit.save(localUserCfg.surname, true));
     }
 
-    j = localSectFile.sectionAdd("current");
-    int k = this.wTable.selectRow;
-    if (k < 0) k = 0;
-    if (k >= this.wTable.users.size())
-      k = this.wTable.users.size() - 1;
-    localSectFile.lineAdd(j, "" + k);
+    int k = localSectFile.sectionAdd("current");
+    int m = this.wTable.jdField_selectRow_of_type_Int;
+    if (m < 0) m = 0;
+    if (m >= this.wTable.users.size())
+      m = this.wTable.users.size() - 1;
+    localSectFile.lineAdd(k, "" + m);
     localSectFile.saveFile();
   }
 
   private void sort(int paramInt) {
-    UserCfg localUserCfg1 = null;
-    int i = this.wTable.selectRow;
+    UserCfg localUserCfg = null;
+    int i = this.wTable.jdField_selectRow_of_type_Int;
     int j = this.wTable.selectCol;
     if (i >= 0)
-      localUserCfg1 = (UserCfg)this.wTable.users.get(i);
+      localUserCfg = (UserCfg)this.wTable.users.get(i);
     this.wTable.setSelect(-1, -1);
-    Object localObject1;
+    Object localObject2;
     for (int k = 0; k < this.wTable.users.size(); k++) {
-      UserCfg localUserCfg2 = (UserCfg)this.wTable.users.get(k);
-      localObject1 = localUserCfg2.name;
+      localObject1 = (UserCfg)this.wTable.users.get(k);
+      String str = ((UserCfg)localObject1).name;
       switch (paramInt) { case 1:
-        localObject1 = localUserCfg2.callsign; break;
+        str = ((UserCfg)localObject1).callsign; break;
       case 2:
-        localObject1 = localUserCfg2.surname;
+        str = ((UserCfg)localObject1).surname;
       }
-      Object localObject2 = localObject1; int n = 0;
+      localObject2 = str; int n = 0;
       while (this._sortMap.containsKey(localObject2)) {
-        localObject2 = (String)localObject1 + n++;
+        localObject2 = str + n++;
       }
-      this._sortMap.put(localObject2, localUserCfg2);
+      this._sortMap.put(localObject2, localObject1);
     }
     this.wTable.users.clear();
-    Iterator localIterator = this._sortMap.keySet().iterator();
+    Object localObject1 = this._sortMap.keySet().iterator();
     int m = 0;
     i = 0;
-    while (localIterator.hasNext()) {
-      localObject1 = (UserCfg)this._sortMap.get(localIterator.next());
-      this.wTable.users.add(localObject1);
-      if (localObject1 == localUserCfg1) m = i;
+    while (((Iterator)localObject1).hasNext()) {
+      localObject2 = (UserCfg)this._sortMap.get(((Iterator)localObject1).next());
+      this.wTable.users.add(localObject2);
+      if (localObject2 == localUserCfg) m = i;
       i++;
     }
-    if (localUserCfg1 != null)
+    if (localUserCfg != null)
       this.wTable.setSelect(m, j);
     this._sortMap.clear();
   }
@@ -234,22 +234,22 @@ public class GUIPlayerSelect extends GameState
     public ArrayList users = new ArrayList();
 
     public void addUser() {
-      int i = this.selectRow + 1;
+      int i = this.jdField_selectRow_of_type_Int + 1;
       this.users.add(i, new UserCfg(UserCfg.defName, UserCfg.defCallsign, UserCfg.defSurname));
       setSelect(i, 0);
       resized();
     }
     public void removeUser() {
       if (this.users.size() <= 1) return;
-      int i = this.selectRow;
+      int i = this.jdField_selectRow_of_type_Int;
       if (i < 0) return;
       UserCfg localUserCfg = (UserCfg)this.users.get(i);
       if (localUserCfg.sId != null)
         localUserCfg.removeUserDir();
       this.users.remove(i);
-      if (this.editor != null) {
-        ((GWindow)this.editor).hideWindow();
-        this.editor = null;
+      if (this.jdField_editor_of_type_ComMaddoxGwindowGWindowCellEdit != null) {
+        ((GWindow)this.jdField_editor_of_type_ComMaddoxGwindowGWindowCellEdit).hideWindow();
+        this.jdField_editor_of_type_ComMaddoxGwindowGWindowCellEdit = null;
       }
       i--; if (i < 0) i = 0;
       setSelect(i, 0);
@@ -301,11 +301,11 @@ public class GUIPlayerSelect extends GameState
       addColumn(I18N.gui("player.Name"), null);
       addColumn(I18N.gui("player.Callsign"), null);
       addColumn(I18N.gui("player.Surname"), null);
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       resized();
     }
     public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
+      this.jdField_vSB_of_type_ComMaddoxGwindowGWindowVScrollBar.scroll = rowHeight(0);
       super.resolutionChanged();
     }
     public Table(GWindow arg2) {

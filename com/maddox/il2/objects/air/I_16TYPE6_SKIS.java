@@ -11,7 +11,6 @@ import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.HomePath;
@@ -39,12 +38,12 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
   public void hitDaSilk()
   {
     super.hitDaSilk();
-    if ((!this.sideDoorOpened) && (this.FM.AS.bIsAboutToBailout) && (!this.FM.AS.isPilotDead(0)))
+    if ((!this.sideDoorOpened) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.bIsAboutToBailout) && (!this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.isPilotDead(0)))
     {
       this.sideDoorOpened = true;
-      this.FM.CT.bHasCockpitDoorControl = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.bHasCockpitDoorControl = true;
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.forceCockpitDoor(0.0F);
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_AS_of_type_ComMaddoxIl2FmAircraftState.setCockpitDoor(this, 1);
     }
   }
 
@@ -127,8 +126,6 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
 
   private void customization()
   {
-    if (!Mission.isSingle())
-      return;
     int i = 0;
     int j = 0;
     int k = hierMesh().chunkFindCheck("CF_D0");
@@ -163,9 +160,9 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 0;
             i4 = 0;
             i5 = 0;
-            i6 = 0; continue;
+            i6 = 0;
           }
-          if (str3.equals("[OldStyleSkis]"))
+          else if (str3.equals("[OldStyleSkis]"))
           {
             n = 0;
             i1 = 1;
@@ -173,9 +170,9 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 0;
             i4 = 0;
             i5 = 0;
-            i6 = 0; continue;
+            i6 = 0;
           }
-          if (str3.equals("[RadioWires]"))
+          else if (str3.equals("[RadioWires]"))
           {
             n = 0;
             i1 = 0;
@@ -183,9 +180,9 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 0;
             i4 = 0;
             i5 = 0;
-            i6 = 0; continue;
+            i6 = 0;
           }
-          if (str3.equals("[FullWheelCovers]"))
+          else if (str3.equals("[FullWheelCovers]"))
           {
             n = 0;
             i1 = 0;
@@ -193,9 +190,9 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 1;
             i4 = 0;
             i5 = 0;
-            i6 = 0; continue;
+            i6 = 0;
           }
-          if (str3.equals("[RemoveSpinner]"))
+          else if (str3.equals("[RemoveSpinner]"))
           {
             n = 0;
             i1 = 0;
@@ -203,9 +200,9 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 0;
             i4 = 0;
             i5 = 0;
-            i6 = 1; continue;
+            i6 = 1;
           }
-          if (str3.equals("[KeepSpinner]"))
+          else if (str3.equals("[KeepSpinner]"))
           {
             n = 0;
             i1 = 0;
@@ -213,9 +210,9 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 0;
             i4 = 0;
             i5 = 1;
-            i6 = 0; continue;
+            i6 = 0;
           }
-          if (str3.equals("[CanopyRails]"))
+          else if (str3.equals("[CanopyRails]"))
           {
             n = 0;
             i1 = 0;
@@ -223,42 +220,42 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
             i3 = 0;
             i4 = 1;
             i5 = 0;
-            i6 = 0; continue;
-          }
-          if (!str3.equals(str1))
-            continue;
-          if (n != 0)
-          {
-            this.hasTubeSight = true;
-          }
-          if (i1 != 0)
-          {
-            hierMesh().chunkVisible("SkiL1_D0", false);
-            hierMesh().chunkVisible("SkiR1_D0", false);
-            hierMesh().chunkVisible("OldSkiL1_D0", true);
-            hierMesh().chunkVisible("OldSkiR1_D0", true);
-          }
-          if (i2 != 0)
-          {
-            hierMesh().chunkVisible("RadioWire1_d0", true);
-            hierMesh().chunkVisible("RadioWire2_d0", true);
-          }
-          if (i3 != 0)
-          {
-            hierMesh().chunkVisible("GearCoverR_D0", true);
-            hierMesh().chunkVisible("GearCoverL_D0", true);
-          }
-          if (i4 != 0)
-          {
-            hierMesh().chunkVisible("Rails_d0", true);
-            hierMesh().chunkVisible("Blister2Rail_D0", true);
-            hierMesh().chunkVisible("Blister2_D0", false);
-            hierMesh().chunkVisible("T6Rail_D0", false);
-          }
-          if (i5 != 0)
-            j = 1;
-          if (i6 != 0) {
-            i = 1;
+            i6 = 0;
+          } else {
+            if (!str3.equals(str1))
+              continue;
+            if (n != 0)
+            {
+              this.hasTubeSight = true;
+            }
+            if (i1 != 0)
+            {
+              hierMesh().chunkVisible("SkiL1_D0", false);
+              hierMesh().chunkVisible("SkiR1_D0", false);
+              hierMesh().chunkVisible("OldSkiL1_D0", true);
+              hierMesh().chunkVisible("OldSkiR1_D0", true);
+            }
+            if (i2 != 0)
+            {
+              hierMesh().chunkVisible("RadioWire1_d0", true);
+              hierMesh().chunkVisible("RadioWire2_d0", true);
+            }
+            if (i3 != 0)
+            {
+              hierMesh().chunkVisible("GearCoverR_D0", true);
+              hierMesh().chunkVisible("GearCoverL_D0", true);
+            }
+            if (i4 != 0)
+            {
+              hierMesh().chunkVisible("Rails_d0", true);
+              hierMesh().chunkVisible("Blister2Rail_D0", true);
+              hierMesh().chunkVisible("Blister2_D0", false);
+              hierMesh().chunkVisible("T6Rail_D0", false);
+            }
+            if (i5 != 0)
+              j = 1;
+            if (i6 != 0)
+              i = 1;
           }
         }
         localBufferedReader.close();
@@ -289,7 +286,7 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
     hierMesh().chunkVisible("Sight_D0", !this.hasTubeSight);
     hierMesh().chunkVisible("TubeSight_D0", this.hasTubeSight);
 
-    if ((i != 0) || ((j == 0) && ((this.FM.CT.Weapons[2] != null) || (this.FM.CT.Weapons[3] != null))))
+    if ((i != 0) || ((j == 0) && ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[2] != null) || (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.jdField_CT_of_type_ComMaddoxIl2FmControls.Weapons[3] != null))))
     {
       this.removeSpinnerHub = true;
       hierMesh().chunkVisible("PropHubRot1_D0", false);
@@ -321,7 +318,7 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
       hierMesh().chunkVisible("RadioWire2_d0", false);
       break;
     case 19:
-      this.FM.Gears.hitCentreGear();
+      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Gears.hitCentreGear();
       hierMesh().chunkVisible("RadioWire1_d0", false);
       hierMesh().chunkVisible("RadioWire2_d0", false);
     }
@@ -345,20 +342,20 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
 
     Property.set(localClass, "LOSElevation", 0.82595F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 2, 2, 2, 2, 2, 2, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 2, 2, 2, 2, 2, 2, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4xRS-82", new String[] { "MGunShKASk 900", "MGunShKASk 900", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", null, null, null, null, "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "4xRS-82", new String[] { "MGunShKASk 900", "MGunShKASk 900", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", null, null, null, null, "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", null, null, null, null });
 
-    weaponsRegister(localClass, "6xRS-82", new String[] { "MGunShKASk 900", "MGunShKASk 900", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", null, null, "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", null, null });
+    Aircraft.weaponsRegister(localClass, "6xRS-82", new String[] { "MGunShKASk 900", "MGunShKASk 900", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", "RocketGunRS82 1", null, null, "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", "PylonRO_82_1 1", null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }
