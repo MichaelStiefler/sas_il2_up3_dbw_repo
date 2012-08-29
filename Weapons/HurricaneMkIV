@@ -1,0 +1,9 @@
+default,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334, , , , , , , , , , , , , , , , , , , , , , , , , , 
+VickerS40mmAP,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334,1 MGunVickers40mmAPk 15,1 MGunVickers40mmAPk 15, , , , , , , , , , , , , , , , , , , , , , , , 
+VickerS40mmHE,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334,1 MGunVickers40mmk 15,1 MGunVickers40mmk 15, , , , , , , , , , , , , , , , , , , , , , , , 
+2x250,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334, , , , , , ,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , , , , , , , , , , , , , , , , , 
+2x500,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334, , , , , , ,3 BombGun500lbsE 1,3 BombGun500lbsE 1, , , , , , , , , , , , , , , , , , 
+8xRP3,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334, , , , , , , , ,9 PylonTEMPESTPLN3 1,9 PylonTEMPESTPLN4 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1, ,2 RocketGunHVAR5BEAU 1
+4xRP3_1xDrop,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334, , ,9 FuelTankGun_Tank44gal 1, , , , , , ,9 PylonTEMPESTPLN4 1, , , ,2 RocketGunHVAR5BEAU 1,2 BombGunNull 1, , ,2 RocketGunHVAR5BEAU 1,2 BombGunNull 1, , ,2 RocketGunHVAR5BEAU 1,2 BombGunNull 1, , ,2 RocketGunHVAR5BEAU 1
+2xDrop90,0 MGunBrowning303Trak 334,0 MGunBrowning303Trak 334, , ,9 FuelTankGun_TankTempest 1,9 FuelTankGun_TankTempest 1, , , , , , , , , , , , , , , , , , , , , , 
+none, , , , , , , , , , , , , , , , , , , , , , , , , , , , 

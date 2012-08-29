@@ -1,0 +1,7 @@
+mesh S 3DO/Arms/15kgFragJ/mono.sim
+kalibr D 0.3199999928474426
+power D 7.5
+radius D 15.0
+massa D 15.0
+sound S weapon.bomb_mid
+powerType L 1

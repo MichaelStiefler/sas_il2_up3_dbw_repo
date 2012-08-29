@@ -1,0 +1,1363 @@
+# ADDED BY |ZUTI|
+#-----------------------------------------------------------
+[SpawnPlaceholder]
+Spawnplaceholder  vehicles.planes.Plane$Spawnplaceholder  0
+#-----------------------------------------------------------
+
+[Artillery]
+Battery88mm     vehicles.artillery.Artillery$Battery88mm     2
+Battery88mm_barrage     vehicles.artillery.Artillery$Battery88mm     2
+Battery75mm     vehicles.artillery.Artillery$Battery75mm     2
+WWIBattery75mm  vehicles.artillery.Artillery$WWIBattery75mm  2
+Battery85mm     vehicles.artillery.Artillery$Battery85mm     1
+Battery85mm_barrage     vehicles.artillery.Artillery$Battery85mm     1
+Arty_Barrage    vehicles.artillery.Artillery$Arty_Barrage    1
+ATG38_45mm      vehicles.artillery.Artillery$ATG38_45mm      1
+ZIS-3           vehicles.artillery.Artillery$ZIS3            1
+M30_122mm       vehicles.artillery.Artillery$M30_122mm       1
+ML-20           vehicles.artillery.Artillery$ML20            1
+M5_75mm         vehicles.artillery.Artillery$M5_75mm         1
+M2A1_105mm      vehicles.artillery.Artillery$M2A1_105mm      1
+Maxime          vehicles.artillery.Artillery$Maxime          1
+Maxime4         vehicles.artillery.Artillery$Maxime4         1
+Zenit25mm1940   vehicles.artillery.Artillery$Zenit25mm_1940  1
+Zenit61K        vehicles.artillery.Artillery$Zenit61K        1
+Zenit3K         vehicles.artillery.Artillery$Zenit3K         1
+Zenit85mm1939   vehicles.artillery.Artillery$Zenit85mm_1939  1
+BA_64           vehicles.artillery.Artillery$BA_64           1
+BA_10           vehicles.artillery.Artillery$BA_10           1
+BA_6            vehicles.artillery.Artillery$BA_6            1
+FAIM            vehicles.artillery.Artillery$FAIM            1
+LVT_2           vehicles.artillery.Artillery$LVT_2           1
+M8_Greyhound    vehicles.artillery.Artillery$M8_Greyhound    1
+ZIS5_AA         vehicles.artillery.Artillery$ZIS5_AA         1
+MaximeGAZ       vehicles.artillery.Artillery$MaximeGAZ       1
+M3A1_APC        vehicles.artillery.Artillery$M3A1_APC        1
+M16             vehicles.artillery.Artillery$M16             1
+M16_US          vehicles.artillery.Artillery$M16_US          1
+M3_75mm_GMC     vehicles.artillery.Artillery$M3_75mm_GMC     1
+CrusaderAAA     vehicles.artillery.Artillery$CrusaderAAA     1
+Bofors_40mm_UK  vehicles.artillery.Artillery$Bofors_40mm_UK  1
+Bofors_40mm_US  vehicles.artillery.Artillery$Bofors_40mm_US  1
+StBofors_40mm_UK vehicles.artillery.Artillery$StBofors_40mm_UK  1
+StBofors_40mm_US vehicles.artillery.Artillery$StBofors_40mm_US  1
+StudebeckerRocket   vehicles.artillery.Artillery$StudebeckerRocket 1
+Katyusha            vehicles.artillery.Artillery$Katyusha          1
+DShK            vehicles.artillery.Artillery$DShK            1
+DShKAA          vehicles.artillery.Artillery$DShKAA          1
+BunkerR1_gun    vehicles.artillery.Artillery$BunkerR1_gun    1
+BunkerR2_gun    vehicles.artillery.Artillery$BunkerR2_gun    1
+CoastBunker_ETO1    vehicles.artillery.Artillery$CoastBunker_ETO1    1
+CoastBunker_ETO2    vehicles.artillery.Artillery$CoastBunker_ETO2    1
+
+_50calMG_water_US vehicles.artillery.Artillery$_50calMG_water_US  1
+_50calMG_US_M2HB  vehicles.artillery.Artillery$_50calMG_US_M2HB   1
+
+RusInfantry vehicles.artillery.Artillery$RusInfantry  1
+USInfantry  vehicles.artillery.Artillery$USInfantry   1
+GBInfantry vehicles.artillery.Artillery$GBInfantry  1
+USBazooka  vehicles.artillery.Artillery$USBazooka   1
+GBBazooka  vehicles.artillery.Artillery$GBBazooka   1
+RusBazooka  vehicles.artillery.Artillery$RusBazooka   1
+
+PaK35           vehicles.artillery.Artillery$PaK35           2
+PaK38           vehicles.artillery.Artillery$PaK38           2
+PaK40           vehicles.artillery.Artillery$PaK40           2
+Howitzer_150mm  vehicles.artillery.Artillery$Howitzer_150mm  2
+Flak30_20mm     vehicles.artillery.Artillery$Flak30_20mm     2
+Flak38_20mm     vehicles.artillery.Artillery$Flak38_20mm     2
+Flak18_37mm     vehicles.artillery.Artillery$Flak18_37mm     2
+Flak18_88mm     vehicles.artillery.Artillery$Flak18_88mm     2
+OpelBlitzMaultierAA vehicles.artillery.Artillery$OpelBlitzMaultierAA 2
+SdKfz251        vehicles.artillery.Artillery$SdKfz251        2
+DemagFlak       vehicles.artillery.Artillery$DemagFlak       2
+SdKfz6Flak37    vehicles.artillery.Artillery$SdKfz6Flak37    2
+Tatra_OA30      vehicles.artillery.Artillery$Tatra_OA30      2
+Nimrod          vehicles.artillery.Artillery$Nimrod          2
+Wirbelwind      vehicles.artillery.Artillery$Wirbelwind      2
+Panzerwerfer42      vehicles.artillery.Artillery$OpelBlitzMaultierRocket 2
+Coelian         vehicles.artillery.Artillery$Coelian         2
+
+Type94_37mm_JA  vehicles.artillery.Artillery$Type94_37mm_JA  2
+Type38_75mm     vehicles.artillery.Artillery$Type38_75mm     2
+Type91_105mm    vehicles.artillery.Artillery$Type91_105mm    2
+Type98_20mm_JA  vehicles.artillery.Artillery$Type98_20mm_JA  2
+Twin25mm_JA     vehicles.artillery.Artillery$Twin25mm_JA     2
+Trip25mm_JA     vehicles.artillery.Artillery$Trip25mm_JA     2
+Type88_75mm_JA  vehicles.artillery.Artillery$Type88_75mm_JA  2
+
+BunkerA_gun   vehicles.artillery.Artillery$BunkerA_gun   2
+BunkerA2_gun  vehicles.artillery.Artillery$BunkerA2_gun  2
+BunkerD_gun   vehicles.artillery.Artillery$BunkerD_gun   2
+BunkerS2_gun  vehicles.artillery.Artillery$BunkerS2_gun  2
+CoastBunker_PTO  vehicles.artillery.Artillery$CoastBunker_PTO  2
+BunkerG1_gun  vehicles.artillery.Artillery$BunkerG1_gun  2
+MG42          vehicles.artillery.Artillery$MG42          2
+
+AxisInfantry   vehicles.artillery.Artillery$AxisInfantry   2
+AxisPnzrInfantry  vehicles.artillery.Artillery$AxisPnzrInfantry  2
+AxisBazooka  vehicles.artillery.Artillery$AxisBazooka  2
+JapInfantry          vehicles.artillery.Artillery$JapInfantry          2
+
+[StationaryArmor]
+BT7             vehicles.artillery.Artillery$BT7             1
+T40S            vehicles.artillery.Artillery$T40S            1
+T60             vehicles.artillery.Artillery$T60             1
+7TP             vehicles.artillery.Artillery$_7TP            1
+M3A1Stuart      vehicles.artillery.Artillery$M3A1Stuart      1
+M5A1Stuart      vehicles.artillery.Artillery$M5A1Stuart      1
+T70M            vehicles.artillery.Artillery$T70M            1
+T26_Early       vehicles.artillery.Artillery$T26_Early       1
+T26_Late        vehicles.artillery.Artillery$T26_Late        1
+HotchkissH35    vehicles.artillery.Artillery$HotchkissH35    1
+RenaultR35      vehicles.artillery.Artillery$RenaultR35      1
+VickersMKVI     vehicles.artillery.Artillery$VickersMKVI     1
+Crusader        vehicles.artillery.Artillery$Crusader        1
+ValentineII     vehicles.artillery.Artillery$ValentineII     1
+MatildaMkII_UK  vehicles.artillery.Artillery$MatildaMkII_UK  1
+MatildaMkII_AU  vehicles.artillery.Artillery$MatildaMkII_AU  1
+M3Lee		vehicles.artillery.Artillery$M3Lee           1
+M4A2            vehicles.artillery.Artillery$M4A2            1
+M4A2_US         vehicles.artillery.Artillery$M4A2_US         1
+M4A2_76W        vehicles.artillery.Artillery$M4A2_76W        1
+M4A2_76W_US     vehicles.artillery.Artillery$M4A2_76W_US     1
+SomuaS35        vehicles.artillery.Artillery$SomuaS35        1
+T34             vehicles.artillery.Artillery$T34             1
+T34_85          vehicles.artillery.Artillery$T34_85          1
+T28             vehicles.artillery.Artillery$T28             1
+KV1             vehicles.artillery.Artillery$KV1             1
+IS2             vehicles.artillery.Artillery$IS2             1
+T35             vehicles.artillery.Artillery$T35             1
+IS3             vehicles.artillery.Artillery$IS3             1
+T44             vehicles.artillery.Artillery$T44             1
+
+ZSU37           vehicles.artillery.Artillery$ZSU37           1
+SU76M           vehicles.artillery.Artillery$SU76M           1
+SU85            vehicles.artillery.Artillery$SU85            1
+SU100           vehicles.artillery.Artillery$SU100           1
+ISU152          vehicles.artillery.Artillery$ISU152          1
+
+
+PzIIF           vehicles.artillery.Artillery$PzIIF           2
+LT_35           vehicles.artillery.Artillery$LT_35           2
+LT_35Ro         vehicles.artillery.Artillery$LT_35Ro         2
+LT_35Sl         vehicles.artillery.Artillery$LT_35Sl         2
+LT_38           vehicles.artillery.Artillery$LT_38           2
+LT_38Sl         vehicles.artillery.Artillery$LT_38Sl         2
+LT_40           vehicles.artillery.Artillery$LT_40           2
+LT_40MG         vehicles.artillery.Artillery$LT_40MG         2
+Fiat_M13        vehicles.artillery.Artillery$Fiat_M13        2
+Fiat_M15        vehicles.artillery.Artillery$Fiat_M15        2
+HaGo            vehicles.artillery.Artillery$HaGo            2
+HaGoRadio       vehicles.artillery.Artillery$HaGoRadio       2
+ChiHa           vehicles.artillery.Artillery$ChiHa           2
+ChiHa_alt       vehicles.artillery.Artillery$ChiHa_alt       2
+PzIIIG          vehicles.artillery.Artillery$PzIIIG          2
+PzIIIJ          vehicles.artillery.Artillery$PzIIIJ          2
+PzIIIM          vehicles.artillery.Artillery$PzIIIM          2
+PzIIIN          vehicles.artillery.Artillery$PzIIIN          2
+TuranI          vehicles.artillery.Artillery$TuranI          2
+TuranII         vehicles.artillery.Artillery$TuranII         2
+PzIVE           vehicles.artillery.Artillery$PzIVE           2
+PzIVF           vehicles.artillery.Artillery$PzIVF           2
+PzIVF2          vehicles.artillery.Artillery$PzIVF2          2
+PzIVJ           vehicles.artillery.Artillery$PzIVJ           2
+PzVA            vehicles.artillery.Artillery$PzVA            2
+PzVIE           vehicles.artillery.Artillery$PzVIE           2
+PzVIB           vehicles.artillery.Artillery$PzVIB           2
+PzV_II          vehicles.artillery.Artillery$PzV_II          2
+Maus            vehicles.artillery.Artillery$Maus            2
+
+ZrinyiII        vehicles.artillery.Artillery$ZrinyiII        2
+Fiat_M40	vehicles.artillery.Artillery$Fiat_M40        2
+Fiat_M42	vehicles.artillery.Artillery$Fiat_M42        2
+Hetzer          vehicles.artillery.Artillery$Hetzer          2
+Jagdpanther     vehicles.artillery.Artillery$Jagdpanther     2
+Ferdinand       vehicles.artillery.Artillery$Ferdinand       2
+StuGIIIG        vehicles.artillery.Artillery$StuGIIIG        2
+StuGIV          vehicles.artillery.Artillery$StuGIV          2
+MarderIII       vehicles.artillery.Artillery$MarderIII       2
+Karl_600mm      vehicles.artillery.Artillery$Karl_600mm      2
+HoRo            vehicles.artillery.Artillery$HoRo            2
+
+[StationaryObjects]
+Wagon1          vehicles.stationary.Stationary$Wagon1    1
+Wagon2          vehicles.stationary.Stationary$Wagon2    1
+Wagon3          vehicles.stationary.Stationary$Wagon3    1
+Wagon4          vehicles.stationary.Stationary$Wagon4    1
+Wagon5          vehicles.stationary.Stationary$Wagon5    1
+Wagon6          vehicles.stationary.Stationary$Wagon6    1
+Wagon7          vehicles.stationary.Stationary$Wagon7    1
+Wagon8          vehicles.stationary.Stationary$Wagon8    1
+Wagon9          vehicles.stationary.Stationary$Wagon9    1
+Wagon10         vehicles.stationary.Stationary$Wagon10   1
+Wagon11         vehicles.stationary.Stationary$Wagon11   2
+Wagon12         vehicles.stationary.Stationary$Wagon12   2
+Wagon13         vehicles.stationary.Stationary$Wagon13   1
+
+GAZ67         vehicles.stationary.Stationary$GAZ67         1
+GAZ67t        vehicles.stationary.Stationary$GAZ67t        1
+GAZ_M1        vehicles.stationary.Stationary$GAZ_M1        1
+WillisMB      vehicles.stationary.Stationary$WillisMB      1
+WillisMB_US   vehicles.stationary.Stationary$WillisMB_US   1
+WillisMBt     vehicles.stationary.Stationary$WillisMBt     1
+WillisMBt_US  vehicles.stationary.Stationary$WillisMBt_US  1
+WillisMBtc_US vehicles.stationary.Stationary$WillisMBtc_US 1
+Motorcycle    vehicles.stationary.Stationary$Motorcycle    1
+
+FAC           vehicles.stationary.FAC$FACUnit	  1
+GCI(m)        vehicles.stationary.GCI$GCIUnit	  2
+GCI(ft)       vehicles.stationary.AGCI$AGCIUnit	  1
+RCGCI	      vehicles.stationary.RCGCI$RCGCIUnit 2
+OBS           vehicles.stationary.OBS$OBSUnit	  1
+CW            vehicles.stationary.CW$CWUnit	  1
+FUG202        vehicles.stationary.FUG$FUGUnit	  2
+FUG218	      vehicles.stationary.FUG218$FUG218Unit 2
+SN2	      vehicles.stationary.SN2$SN2Unit 2
+SN2b	      vehicles.stationary.SN2b$SN2bUnit 2
+Naxos	      vehicles.stationary.Naxos$NaxosUnit 2
+Flensburg     vehicles.stationary.Flensburg$FlensburgUnit 2
+AImkIV	      vehicles.stationary.AImkIV$AImkIVUnit 1
+AImkVIII      vehicles.stationary.AImkVIII$AImkVIIIUnit 1
+AImkX	      vehicles.stationary.AImkX$AImkXUnit 1
+AImkXV	      vehicles.stationary.AImkXV$AImkXVUnit 1
+Serrate       vehicles.stationary.Serrate$SerrateUnit 1
+Monica        vehicles.stationary.Monica$MonicaUnit 1
+GTW	      vehicles.stationary.GTW$GTWUnit 	  2
+GNR           vehicles.stationary.GNR$GNRUnit	  1
+Corkscrew     vehicles.stationary.Corkscrew$CorkscrewUnit 1
+Window	      vehicles.stationary.Window$WindowUnit 1	
+RO            vehicles.stationary.RadioOperator$RadioOperatorUnit 2
+NAV	      vehicles.stationary.NAV$NAVUnit	1
+OBOE	      vehicles.stationary.OBOE$OBOEUnit 1
+SPR           vehicles.stationary.SPR$SPRUnit	  1
+ASD	      vehicles.stationary.ASD$ASDUnit	  1
+ASG	      vehicles.stationary.ASG$ASGUnit	  1
+ASVmkIII      vehicles.stationary.ASVmkIII$ASVmkIIIUnit	  1
+ANAPS4	      vehicles.stationary.ANAPS4$ANAPS4Unit	1
+Taki	      vehicles.stationary.Taki$TakiUnit	  2
+RESCAP	      vehicles.stationary.RESCAP$RESCAPUnit 1
+SAR	      vehicles.stationary.SAR$SARUnit 1
+DZ	      vehicles.stationary.DZ$DZUnit 1
+Arty(g)	      vehicles.stationary.NGS$NGSUnit 1
+Arty(n)	      vehicles.stationary.NGS1$NGS1Unit 1
+
+StudebeckerTruck     vehicles.stationary.Stationary$StudebeckerTruck     1
+ZIS5_PC              vehicles.stationary.Stationary$ZIS5_PC              1
+ZIS6_fuel            vehicles.stationary.Stationary$ZIS6_fuel            1
+ZIS5_medic           vehicles.stationary.Stationary$ZIS5_medic           1
+ZIS5_radio           vehicles.stationary.Stationary$ZIS5_radio           1
+Chevrolet_flatbed_US vehicles.stationary.Stationary$Chevrolet_flatbed_US 1
+Chevrolet_medic_US   vehicles.stationary.Stationary$Chevrolet_medic_US   1
+Chevrolet_radio_US   vehicles.stationary.Stationary$Chevrolet_radio_US   1
+DiamondT_US          vehicles.stationary.Stationary$DiamondT_US          1
+M3_Halftrack         vehicles.stationary.Stationary$M3_Halftrack         1
+M3_Halftrack_ppl     vehicles.stationary.Stationary$M3_Halftrack_ppl     1
+Tractor_US           vehicles.stationary.Stationary$Tractor_US           1
+DUKW                 vehicles.stationary.Stationary$DUKW                 1
+Bulldozer_US         vehicles.stationary.Stationary$Bulldozer_US         1
+Bus_US               vehicles.stationary.Stationary$Bus_US               1
+GAZ_55               vehicles.stationary.Stationary$GAZ_55               1
+GAZ_Bus              vehicles.stationary.Stationary$GAZ_Bus              1
+GAZ_AA               vehicles.stationary.Stationary$GAZ_AA               1
+GAZ_AAA              vehicles.stationary.Stationary$GAZ_AAA              1
+
+Bus_NAAFI            vehicles.stationary.Stationary$Bus_NAAFI         1
+RAF_Bus		     vehicles.stationary.Stationary$RAF_Bus     1
+US_Bus 	             vehicles.stationary.Stationary$US_Bus           1
+FireTender           vehicles.stationary.Stationary$Citerne_POMP         1
+FireEngine           vehicles.stationary.Stationary$Fourgon_POMP         1
+BlueCivilTruck       vehicles.stationary.Stationary$GuyOtterBl           1
+BrownCivilTruck      vehicles.stationary.Stationary$GuyOtterBr           1
+BeigeCar             vehicles.stationary.Stationary$Voit2P_Beige         1
+BlueCar              vehicles.stationary.Stationary$Voit4P_Bleue         1
+Limosine             vehicles.stationary.Stationary$Voit4P_Noire_R       1
+
+ZIS5_AA           vehicles.stationary.Stationary$ZIS5_AA           1
+MaximeGAZ         vehicles.stationary.Stationary$MaximeGAZ         1
+M3A1_APC          vehicles.stationary.Stationary$M3A1_APC          1
+M16               vehicles.stationary.Stationary$M16               1
+M16_US            vehicles.stationary.Stationary$M16_US            1
+M3_75mm_GMC       vehicles.stationary.Stationary$M3_75mm_GMC       1
+CrusaderAAA       vehicles.stationary.Stationary$CrusaderAAA       1
+Katyusha          vehicles.stationary.Stationary$Katyusha          1
+StudebeckerRocket vehicles.stationary.Stationary$StudebeckerRocket 1
+
+BA_64           vehicles.stationary.Stationary$BA_64           1
+BA_10           vehicles.stationary.Stationary$BA_10           1
+BA_6            vehicles.stationary.Stationary$BA_6            1
+FAIM            vehicles.stationary.Stationary$FAIM            1
+LVT_2           vehicles.stationary.Stationary$LVT_2           1
+
+BT7             vehicles.stationary.Stationary$BT7             1
+T40S            vehicles.stationary.Stationary$T40S            1
+T60             vehicles.stationary.Stationary$T60             1
+7TP             vehicles.stationary.Stationary$_7TP            1
+M3A1Stuart      vehicles.stationary.Stationary$M3A1Stuart      1
+M5A1Stuart      vehicles.stationary.Stationary$M5A1Stuart      1
+T70M            vehicles.stationary.Stationary$T70M            1
+T26_Early       vehicles.stationary.Stationary$T26_Early       1
+T26_Late        vehicles.stationary.Stationary$T26_Late        1
+HotchkissH35    vehicles.stationary.Stationary$HotchkissH35    1
+RenaultR35      vehicles.stationary.Stationary$RenaultR35      1
+VickersMKVI     vehicles.stationary.Stationary$VickersMKVI     1
+Crusader        vehicles.stationary.Stationary$Crusader        1
+ValentineII     vehicles.stationary.Stationary$ValentineII     1
+MatildaMkII_UK  vehicles.stationary.Stationary$MatildaMkII_UK  1
+MatildaMkII_AU  vehicles.stationary.Stationary$MatildaMkII_AU  1
+Bishop          vehicles.stationary.Stationary$Bishop	         1
+ChurchillMkIVA  vehicles.stationary.Stationary$ChurchillMkIVA  1
+ChurchillMkVII  vehicles.stationary.Stationary$ChurchillMkVII  1
+CromwellMkIV    vehicles.stationary.Stationary$CromwellMkIV    1
+ChallengerMkI   vehicles.stationary.Stationary$ChallengerMkI   1
+CometMkI        vehicles.stationary.Stationary$CometMkI        1
+M3Lee           vehicles.stationary.Stationary$M3Lee           1
+M4A2            vehicles.stationary.Stationary$M4A2            1
+M4A2_US         vehicles.stationary.Stationary$M4A2_US         1
+M4A2_76W        vehicles.stationary.Stationary$M4A2_76W        1
+M4A2_76W_US     vehicles.stationary.Stationary$M4A2_76W_US     1
+SomuaS35        vehicles.stationary.Stationary$SomuaS35        1
+T34             vehicles.stationary.Stationary$T34             1
+T34_85          vehicles.stationary.Stationary$T34_85          1
+T28             vehicles.stationary.Stationary$T28             1
+KV1             vehicles.stationary.Stationary$KV1             1
+IS2             vehicles.stationary.Stationary$IS2             1
+T35             vehicles.stationary.Stationary$T35             1
+IS3             vehicles.stationary.Stationary$IS3             1
+T44             vehicles.stationary.Stationary$T44             1
+
+ZSU37           vehicles.stationary.Stationary$ZSU37           1
+SU76M           vehicles.stationary.Stationary$SU76M           1
+SU85            vehicles.stationary.Stationary$SU85            1
+SU100           vehicles.stationary.Stationary$SU100           1
+ISU152          vehicles.stationary.Stationary$ISU152          1
+
+Maxime          vehicles.stationary.Stationary$Maxime          1
+Maxime4         vehicles.stationary.Stationary$Maxime4         1
+Zenit25mm1940   vehicles.stationary.Stationary$Zenit25mm_1940  1
+Zenit61K        vehicles.stationary.Stationary$Zenit61K        1
+Zenit3K         vehicles.stationary.Stationary$Zenit3K         1
+Zenit85mm1939   vehicles.stationary.Stationary$Zenit85mm_1939  1
+
+ATG38_45mm      vehicles.stationary.Stationary$ATG38_45mm      1
+ZIS-3           vehicles.stationary.Stationary$ZIS3            1
+M30_122mm       vehicles.stationary.Stationary$M30_122mm       1
+ML-20           vehicles.stationary.Stationary$ML20            1
+M5_75mm         vehicles.stationary.Stationary$M5_75mm         1
+M2A1_105mm      vehicles.stationary.Stationary$M2A1_105mm      1
+DShK            vehicles.stationary.Stationary$DShK            1
+DShKAA          vehicles.stationary.Stationary$DShKAA          1
+BunkerR1_gun    vehicles.stationary.Stationary$BunkerR1_gun    1
+BunkerR2_gun    vehicles.stationary.Stationary$BunkerR2_gun    1
+CoastBunker_ETO1    vehicles.stationary.Stationary$CoastBunker_ETO1    1
+CoastBunker_ETO2    vehicles.stationary.Stationary$CoastBunker_ETO2    1
+
+_50calMG_water_US vehicles.stationary.Stationary$_50calMG_water_US  1
+_50calMG_US_M2HB  vehicles.stationary.Stationary$_50calMG_US_M2HB   1
+
+
+VW82            vehicles.stationary.Stationary$VW82         2
+VW82t           vehicles.stationary.Stationary$VW82t        2
+OpelKadett      vehicles.stationary.Stationary$OpelKadett   2
+Kurogane        vehicles.stationary.Stationary$Kurogane     2
+BikeBMW         vehicles.stationary.Stationary$BikeBMW      2
+
+Truck_Fiat           vehicles.stationary.Stationary$Camion_SK         2
+Truck_Type94         vehicles.stationary.Stationary$Truck_Type94         2
+OpelBlitz36S         vehicles.stationary.Stationary$OpelBlitz36S         2
+OpelBlitz6700A       vehicles.stationary.Stationary$OpelBlitz6700A       2
+OpelBlitz6700A_fuel  vehicles.stationary.Stationary$OpelBlitz6700A_fuel  2
+OpelBlitz6700A_medic vehicles.stationary.Stationary$OpelBlitz6700A_medic 2
+OpelBlitz6700A_radio vehicles.stationary.Stationary$OpelBlitz6700A_radio 2
+Kettenkrad           vehicles.stationary.Stationary$Kettenkrad           2
+RSO                  vehicles.stationary.Stationary$RSO                  2
+OpelBlitzMaultier    vehicles.stationary.Stationary$OpelBlitzMaultier    2
+HoHa                 vehicles.stationary.Stationary$HoHa                 2
+
+OpelBlitzMaultierAA     vehicles.stationary.Stationary$OpelBlitzMaultierAA     2
+Nimrod                  vehicles.stationary.Stationary$Nimrod                  2
+Wirbelwind              vehicles.stationary.Stationary$Wirbelwind              2
+Coelian                 vehicles.stationary.Stationary$Coelian                 2
+SdKfz251                vehicles.stationary.Stationary$SdKfz251                2
+DemagD7                 vehicles.stationary.Stationary$DemagD7                 2
+DemagFlak               vehicles.stationary.Stationary$DemagFlak               2
+SdKfz6                  vehicles.stationary.Stationary$SdKfz6                  2
+SdKfz6Flak37            vehicles.stationary.Stationary$SdKfz6Flak37            2
+Tatra_OA30              vehicles.stationary.Stationary$Tatra_OA30              2
+OpelBlitzMaultierRocket vehicles.stationary.Stationary$OpelBlitzMaultierRocket 2
+
+PzIIF           vehicles.stationary.Stationary$PzIIF           2
+LT_35           vehicles.stationary.Stationary$LT_35           2
+LT_35Ro         vehicles.stationary.Stationary$LT_35Ro         2
+LT_35Sl         vehicles.stationary.Stationary$LT_35Sl         2
+LT_38           vehicles.stationary.Stationary$LT_38           2
+LT_38Sl         vehicles.stationary.Stationary$LT_38Sl         2
+LT_40           vehicles.stationary.Stationary$LT_40           2
+LT_40MG         vehicles.stationary.Stationary$LT_40MG         2
+Fiat_M13        vehicles.stationary.Stationary$Fiat_M13        2
+Fiat_M15        vehicles.stationary.Stationary$Fiat_M15        2
+HaGo            vehicles.stationary.Stationary$HaGo            2
+HaGoRadio       vehicles.stationary.Stationary$HaGoRadio       2
+ChiHa           vehicles.stationary.Stationary$ChiHa           2
+ChiHa_alt       vehicles.stationary.Stationary$ChiHa_alt       2
+PzIIIG          vehicles.stationary.Stationary$PzIIIG          2
+PzIIIJ          vehicles.stationary.Stationary$PzIIIJ          2
+PzIIIM          vehicles.stationary.Stationary$PzIIIM          2
+PzIIIN          vehicles.stationary.Stationary$PzIIIN          2
+TuranI          vehicles.stationary.Stationary$TuranI          2
+TuranII         vehicles.stationary.Stationary$TuranII         2
+PzIVE           vehicles.stationary.Stationary$PzIVE           2
+PzIVF           vehicles.stationary.Stationary$PzIVF           2
+PzIVF2          vehicles.stationary.Stationary$PzIVF2          2
+PzIVJ           vehicles.stationary.Stationary$PzIVJ           2
+PzVA            vehicles.stationary.Stationary$PzVA            2
+PzVIE           vehicles.stationary.Stationary$PzVIE           2
+PzVIB           vehicles.stationary.Stationary$PzVIB           2
+PzV_II          vehicles.stationary.Stationary$PzV_II          2
+Maus            vehicles.stationary.Stationary$Maus            2
+
+ZrinyiII        vehicles.stationary.Stationary$ZrinyiII        2
+Fiat_M40        vehicles.stationary.Stationary$Fiat_M40        2
+Fiat_M42        vehicles.stationary.Stationary$Fiat_M42        2
+Hetzer          vehicles.stationary.Stationary$Hetzer          2
+Jagdpanther     vehicles.stationary.Stationary$Jagdpanther     2
+Ferdinand       vehicles.stationary.Stationary$Ferdinand       2
+StuGIIIG        vehicles.stationary.Stationary$StuGIIIG        2
+StuGIV          vehicles.stationary.Stationary$StuGIV          2
+MarderIII       vehicles.stationary.Stationary$MarderIII       2
+Karl_600mm      vehicles.stationary.Stationary$Karl_600mm      2
+
+Flak30_20mm     vehicles.stationary.Stationary$Flak30_20mm     2
+Flak38_20mm     vehicles.stationary.Stationary$Flak38_20mm     2
+Flak18_37mm     vehicles.stationary.Stationary$Flak18_37mm     2
+Flak18_88mm     vehicles.stationary.Stationary$Flak18_88mm     2
+
+PaK35           vehicles.stationary.Stationary$PaK35           2
+PaK38           vehicles.stationary.Stationary$PaK38           2
+PaK40           vehicles.stationary.Stationary$PaK40           2
+Howitzer_150mm  vehicles.stationary.Stationary$Howitzer_150mm  2
+  
+Type98_20mm_JA  vehicles.stationary.Stationary$Type98_20mm_JA   2
+Twin25mm_JA     vehicles.stationary.Stationary$Twin25mm_JA      2
+Trip25mm_JA     vehicles.stationary.Stationary$Trip25mm_JA      2
+Type88_75mm_JA  vehicles.stationary.Stationary$Type88_75mm_JA   2
+
+Type94_37mm_JA  vehicles.stationary.Stationary$Type94_37mm_JA   2
+Type38_75mm     vehicles.stationary.Stationary$Type38_75mm      2
+Type91_105mm    vehicles.stationary.Stationary$Type91_105mm     2
+
+BunkerA_gun   vehicles.stationary.Stationary$BunkerA_gun    2
+BunkerA2_gun  vehicles.stationary.Stationary$BunkerA2_gun   2
+BunkerD_gun   vehicles.stationary.Stationary$BunkerD_gun    2
+BunkerS2_gun  vehicles.stationary.Stationary$BunkerS2_gun   2
+CoastBunker_PTO  vehicles.stationary.Stationary$CoastBunker_PTO   2
+BunkerG1_gun  vehicles.stationary.Stationary$BunkerG1_gun   2
+MG42          vehicles.stationary.Stationary$MG42           2
+
+
+Siren                 vehicles.stationary.Siren$SirenCity         1
+SearchlightManualBlue vehicles.lights.Searchlight$SL_ManualBlue   1
+RadioBeacon           vehicles.radios.Beacon$RadioBeacon          2
+RadioBeaconLowVis     vehicles.radios.Beacon$RadioBeaconLowVis    2
+Meacon                vehicles.radios.Beacon$Meacon               1
+YGBeacon              vehicles.radios.Beacon$YGBeacon             1
+LorenzBLBeacon        vehicles.radios.Beacon$LorenzBLBeacon       2
+LorenzBLBeacon_LongRunway        vehicles.radios.Beacon$LorenzBLBeacon_LongRunway      2
+LorenzBLBeacon_AAIAS  vehicles.radios.Beacon$LorenzBLBeacon_AAIAS      1
+Radio_BBC             vehicles.radios.Beacon$Radio_BBC            1
+Radio_Honolulu        vehicles.radios.Beacon$Radio_Honolulu       1
+Radio_Moscow          vehicles.radios.Beacon$Radio_Moscow         1
+Radio_Suomen_Yleisradio        vehicles.radios.Beacon$Radio_Suomen_Yleisradio       2
+Magyar_Radio          vehicles.radios.Beacon$Magyar_Radio         2
+Radio_Roma          vehicles.radios.Beacon$Radio_Roma        2
+Grossdeutscher_Rundfunk          vehicles.radios.Beacon$Grossdeutscher_Rundfunk         2
+
+BarrageBalloon_600m  vehicles.aeronautics.Aeronautics$BarrageBalloon_600m  1
+BarrageBalloon_1200m vehicles.aeronautics.Aeronautics$BarrageBalloon_1200m 1
+BarrageBalloon_1800m vehicles.aeronautics.Aeronautics$BarrageBalloon_1800m 1
+BarrageBalloon_2400m vehicles.aeronautics.Aeronautics$BarrageBalloon_2400m 1
+
+ObservBalloon_30m vehicles.aeronautics.Aeronautics$ObservBalloon_30m 2
+ObservBalloon_60m vehicles.aeronautics.Aeronautics$ObservBalloon_60m 2
+ObservBalloon_90m vehicles.aeronautics.Aeronautics$ObservBalloon_90m 2
+
+CampfireAirfield vehicles.stationary.Campfire$CampfireAirfield 0
+
+Smoke1           vehicles.stationary.Smoke$Smoke1       0
+Smoke2           vehicles.stationary.Smoke$Smoke2       0
+Smoke3           vehicles.stationary.Smoke$Smoke3       0
+Smoke4           vehicles.stationary.Smoke$Smoke4       0
+Smoke5           vehicles.stationary.Smoke$Smoke5       0
+Smoke6           vehicles.stationary.Smoke$Smoke6       0
+Smoke7           vehicles.stationary.Smoke$Smoke7       0
+Smoke8           vehicles.stationary.Smoke$Smoke8       0
+Smoke9           vehicles.stationary.Smoke$Smoke9       0
+Smoke10           vehicles.stationary.Smoke$Smoke10       0
+Smoke11           vehicles.stationary.Smoke$Smoke11       0
+Smoke12           vehicles.stationary.Smoke$Smoke12       0
+Smoke13           vehicles.stationary.Smoke$Smoke13       0
+Smoke14           vehicles.stationary.Smoke$Smoke14       0
+Smoke15           vehicles.stationary.Smoke$Smoke15       0
+
+[StationaryPlanes]
+A_20B	          	vehicles.planes.Plane$A_20B	          	1
+A_20B3	          	vehicles.planes.Plane$A_20B3	          	1
+A_20B3S	          	vehicles.planes.Plane$A_20B3S	          	1
+A_20C             vehicles.planes.Plane$A_20C             1
+A_20G             vehicles.planes.Plane$A_20G             1 // 16
+AD4	          	vehicles.planes.Plane$AD4	          	1
+A1H_Tanker	     vehicles.planes.Plane$A1H_Tanker	 	1
+A1J	          	vehicles.planes.Plane$A1J	          	1
+AT6	          	vehicles.planes.Plane$AT6	          	1
+TBM3AVENGER3      vehicles.planes.Plane$TBM3AVENGER3      1 // 8
+B_17D             vehicles.planes.Plane$B_17D             1 // 16
+B_17E             vehicles.planes.Plane$B_17E             1 // 16
+B_17F             vehicles.planes.Plane$B_17F             1 // 16
+B_17G             vehicles.planes.Plane$B_17G             1
+B_24J100          vehicles.planes.Plane$B_24J100          1 // 16
+B_29              vehicles.planes.Plane$B_29              1 // 16
+B_29SP	          	vehicles.planes.Plane$B_29SP	          	1
+KB_29P	          	vehicles.planes.Plane$KB_29P	          	1
+B_25C25           vehicles.planes.Plane$B_25C25           1 // 8
+B_25G1            vehicles.planes.Plane$B_25G1            1 // 8
+B_25H1            vehicles.planes.Plane$B_25H1            1 // 8
+B_25J1            vehicles.planes.Plane$B_25J1            1 // 8
+B_25D20	          	vehicles.planes.Plane$B_25D20	          	1
+B_25D5	          	vehicles.planes.Plane$B_25D5	          	1
+B_25J15	          	vehicles.planes.Plane$B_25J15	          	1
+B_25J22	          	vehicles.planes.Plane$B_25J22	          	1
+BattleMkII	       vehicles.planes.Plane$BattleMkII	 	1
+BEAU10	          	vehicles.planes.Plane$BEAU10	          	1
+BEAUMKI	          	vehicles.planes.Plane$BEAUMKI	          	1
+BEAUMKIF	          	vehicles.planes.Plane$BEAUMKIF	        1
+BEAU21            vehicles.planes.Plane$BEAU21            1 // 4
+BELL_47	          	vehicles.planes.Plane$BELL_47	          	1
+BI_1              vehicles.planes.Plane$BI_1              1
+BI_6              vehicles.planes.Plane$BI_6              1
+BLENHEIM1F	          	vehicles.planes.Plane$BLENHEIM1F	   1
+BLENHEIM4F	          	vehicles.planes.Plane$BLENHEIM4F	   1
+F2A_B339          vehicles.planes.Plane$F2A_B339          1
+C_47              vehicles.planes.Plane$C_47              1
+AC_47	          	vehicles.planes.Plane$AC_47	          	1
+CW_21             vehicles.planes.Plane$CW_21             1
+DXXI_DK		  vehicles.planes.Plane$DXXI_DK           1
+DXXI_DU		  vehicles.planes.Plane$DXXI_DU           1
+F4UCORSAIR1       vehicles.planes.Plane$F4UCORSAIR1       1
+F4UCORSAIR2       vehicles.planes.Plane$F4UCORSAIR2       1          
+F4UCORSAIR4       vehicles.planes.Plane$F4UCORSAIR4       1
+FULMAR            vehicles.planes.Plane$FULMAR            1
+SEAGLADIATOR2     vehicles.planes.Plane$SEAGLADIATOR2     1
+IL_4_DB3B         vehicles.planes.Plane$IL_4_DB3B         1
+IL_4_DB3M         vehicles.planes.Plane$IL_4_DB3M         1
+IL_4_DB3T         vehicles.planes.Plane$IL_4_DB3T         1
+IL_4_DB3F         vehicles.planes.Plane$IL_4_DB3F         1
+F2A2              vehicles.planes.Plane$F2A2              1
+F4F3              vehicles.planes.Plane$F4F3              1
+F4F4              vehicles.planes.Plane$F4F4              1
+F4F_FM2           vehicles.planes.Plane$F4F_FM2           1
+F4U1A             vehicles.planes.Plane$F4U1A             1
+F4U1C             vehicles.planes.Plane$F4U1C             1
+F4U1D             vehicles.planes.Plane$F4U1D             1
+F6F3Early	        vehicles.planes.Plane$F6F3Early	        1
+F6F3              vehicles.planes.Plane$F6F3              1
+F6F5              vehicles.planes.Plane$F6F5              1
+F_80A	          	vehicles.planes.Plane$F_80A	          	1
+F_80C	          	vehicles.planes.Plane$F_80C	          	1
+F_86A5	          	vehicles.planes.Plane$F_86A5	          	1
+F_86E_10	          	vehicles.planes.Plane$F_86E_10	          	1
+F_86F_25E	          	vehicles.planes.Plane$F_86F_25E	          	1
+F_86F_25L	          	vehicles.planes.Plane$F_86F_25L	          	1
+F_86F_30	          	vehicles.planes.Plane$F_86F_30	          	1
+F_86F_40	          	vehicles.planes.Plane$F_86F_40	          	1
+F_86K	          	vehicles.planes.Plane$F_86K	          	1
+F84G1	          	vehicles.planes.Plane$F84G1	          	1
+F84G2	          	vehicles.planes.Plane$F84G2	          	1
+F84G3	          	vehicles.planes.Plane$F84G3	          	1
+F9F2	          	vehicles.planes.Plane$F9F2	          	1
+FJ_3M	          	vehicles.planes.Plane$FJ_3M	          	1
+CAC_Sabre_Mk31	    vehicles.planes.Plane$CAC_Sabre_Mk31	 	1
+CAC_Sabre_Mk32	    vehicles.planes.Plane$CAC_Sabre_Mk32	 	1
+G_11              vehicles.planes.Plane$G_11              1
+P_40SUKAISVOLOCHHAWKA2 vehicles.planes.Plane$P_40SUKAISVOLOCHHAWKA2 1
+SeaHurricaneMkIb	          	vehicles.planes.Plane$SeaHurricaneMkIb   	1
+SeaHurricaneMkIIc	          	vehicles.planes.Plane$SeaHurricaneMkIIc	 	1
+HalifaxBMkIII	          	vehicles.planes.Plane$HalifaxBMkIII	   	1
+HurricaneMkIaFAC	    vehicles.planes.Plane$HurricaneMkIaFAC      	1
+HurricaneMkI_BoB	     vehicles.planes.Plane$HurricaneMkI_BoB	    	1
+HurricaneMkIb	       vehicles.planes.Plane$HurricaneMkIb	        	1
+HurricaneMkIIa	        vehicles.planes.Plane$HurricaneMkIIa	    	1
+HurricaneMkIIb    vehicles.planes.Plane$HurricaneMkIIb    1 // 2
+HurricaneMkIId	        vehicles.planes.Plane$HurricaneMkIId	    	1
+HurricaneMkIV	          vehicles.planes.Plane$HurricaneMkIV	      	1
+HurricaneMkIvroeg	      vehicles.planes.Plane$HurricaneMkIvroeg	   	1
+HurricaneMkIIc    vehicles.planes.Plane$HurricaneMkIIc    1 // 2
+HurricaneMkIIbMod vehicles.planes.Plane$HurricaneMkIIbMod 1 // 2
+H19D	          	vehicles.planes.Plane$H19D	          	1
+HRS3	          	vehicles.planes.Plane$HRS3	          	1
+I_15BIS           vehicles.planes.Plane$I_15BIS           1
+I_15BIS_SKIS      vehicles.planes.Plane$I_15BIS_SKIS      1
+I_15_m22	          	vehicles.planes.Plane$I_15_m22	         	1
+I_15_m25	          	vehicles.planes.Plane$I_15_m25	        	1
+I_153_M62         vehicles.planes.Plane$I_153_M62         1
+I_153P            vehicles.planes.Plane$I_153P            1
+I_153_2BS	          	vehicles.planes.Plane$I_153_2BS	          	1
+I_153_2SHKAS_BS	      vehicles.planes.Plane$I_153_2SHKAS_BS	   	1
+I_153_fin	          	vehicles.planes.Plane$I_153_fin	         	2
+I_16TYPE5	  vehicles.planes.Plane$I_16TYPE5         1
+I_16TYPE5_SKIS	  vehicles.planes.Plane$I_16TYPE5_SKIS    1
+I_16TYPE6	  vehicles.planes.Plane$I_16TYPE6         1
+I_16TYPE6_SKIS	  vehicles.planes.Plane$I_16TYPE6_SKIS    1
+I_16TYPE10	          vehicles.planes.Plane$I_16TYPE10	       	1
+I_16TYPE10WC	        vehicles.planes.Plane$I_16TYPE10WC	      	1
+I_16TYPE17	          	vehicles.planes.Plane$I_16TYPE17	     	1
+I_16TYPE18        vehicles.planes.Plane$I_16TYPE18        1
+I_16TYPE24        vehicles.planes.Plane$I_16TYPE24        1
+I_16TYPE18_BS	         vehicles.planes.Plane$I_16TYPE18_BS	    	1
+I_16TYPE27	          	vehicles.planes.Plane$I_16TYPE27	    	1
+I_16TYPE28	          	vehicles.planes.Plane$I_16TYPE28	     	1
+I_16TYPE29	          	vehicles.planes.Plane$I_16TYPE29	    	1
+I_185M71          vehicles.planes.Plane$I_185M71          1
+I_185M82A         vehicles.planes.Plane$I_185M82A         1
+I_250             vehicles.planes.Plane$I_250             1
+IL_2_1940Early    vehicles.planes.Plane$IL_2_1940Early    1
+IL_2_1940Late     vehicles.planes.Plane$IL_2_1940Late     1
+IL_2_1941Early    vehicles.planes.Plane$IL_2_1941Early    1
+IL_2_1941Late     vehicles.planes.Plane$IL_2_1941Late     1
+IL_2I             vehicles.planes.Plane$IL_2I             1
+IL_2MEarly        vehicles.planes.Plane$IL_2MEarly        1
+IL_2MLate         vehicles.planes.Plane$IL_2MLate         1
+IL_2T             vehicles.planes.Plane$IL_2T             1
+IL_2Type3         vehicles.planes.Plane$IL_2Type3         1
+IL_2Type3M        vehicles.planes.Plane$IL_2Type3M        1
+IL_4_IL4          vehicles.planes.Plane$IL_4_IL4          1
+IL_10             vehicles.planes.Plane$IL_10             1
+JEEP	          	vehicles.planes.Plane$JEEP	          	1
+LAGG_3SERIES1	    vehicles.planes.Plane$LAGG_3SERIES1	    1
+LAGG_3SERIES4     vehicles.planes.Plane$LAGG_3SERIES4     1
+LAGG_3SERIES29    vehicles.planes.Plane$LAGG_3SERIES29    1
+LAGG_3SERIES35    vehicles.planes.Plane$LAGG_3SERIES35    1
+LAGG_3IT          vehicles.planes.Plane$LAGG_3IT          1
+LAGG_3SERIES66    vehicles.planes.Plane$LAGG_3SERIES66    1
+LAGG_3RD          vehicles.planes.Plane$LAGG_3RD          1
+Lagg_5	          vehicles.planes.Plane$Lagg_5	          1
+LA_5              vehicles.planes.Plane$LA_5              1 // 2
+LA_5F             vehicles.planes.Plane$LA_5F             1 // 2
+LA_5FN            vehicles.planes.Plane$LA_5FN            1
+LA_7              vehicles.planes.Plane$LA_7              1
+LA_7B20           vehicles.planes.Plane$LA_7B20           1 // 2
+LA_7R             vehicles.planes.Plane$LA_7R             1
+LI_2              vehicles.planes.Plane$LI_2              1
+LANCASTER	          	vehicles.planes.Plane$LANCASTER	      	1
+L_5	          	     vehicles.planes.Plane$L_5	          	1
+L_5_Float	          	vehicles.planes.Plane$L_5_Float	      1
+MagisterM14A	         vehicles.planes.Plane$MagisterM14A	   1
+MBR_2AM34         vehicles.planes.Plane$MBR_2AM34         1
+MIG_3EARLY        vehicles.planes.Plane$MIG_3EARLY        1
+MIG_3UD           vehicles.planes.Plane$MIG_3UD           1
+MIG_3UB           vehicles.planes.Plane$MIG_3UB           1
+MIG_3SHVAK        vehicles.planes.Plane$MIG_3SHVAK        1
+MIG_3AM38         vehicles.planes.Plane$MIG_3AM38         1
+MIG_3U            vehicles.planes.Plane$MIG_3U            1
+MIG_9_I_300       vehicles.planes.Plane$MIG_9_I_300       1
+MIG_9FS           vehicles.planes.Plane$MIG_9FS           1
+Mig_15bis	          	vehicles.planes.Plane$Mig_15bis	          	1
+Mig_15bislate	          	vehicles.planes.Plane$Mig_15bislate	     	1
+MiG_15SB	          	vehicles.planes.Plane$MiG_15SB	          	1
+Mig_17A	          	vehicles.planes.Plane$Mig_17A	          	1
+Mig_17AS	          	vehicles.planes.Plane$Mig_17AS	          	1
+Mig_17F	          	vehicles.planes.Plane$Mig_17F	          	1
+Mig_17PF	          	vehicles.planes.Plane$Mig_17PF	          	1
+MohawkIII_BoB	      vehicles.planes.Plane$MohawkIII_BoB	      	1
+MOSQUITO4         vehicles.planes.Plane$MOSQUITO4         1 // 8
+MOSQUITO6         vehicles.planes.Plane$MOSQUITO6         1 // 8
+MOSQUITO16	          	vehicles.planes.Plane$MOSQUITO16	          	1
+MOSQUITO2NF	          	vehicles.planes.Plane$MOSQUITO2NF	          	1
+MOSQUITO6CC	          	vehicles.planes.Plane$MOSQUITO6CC	          	1
+MOSQUITOtsts	          	vehicles.planes.Plane$MOSQUITOtsts	     1
+MS_502	          	vehicles.planes.Plane$MS_502	          	1
+P_11C             vehicles.planes.Plane$P_11C             1
+P2V5	          	vehicles.planes.Plane$P2V5	          	1
+P_26	          	vehicles.planes.Plane$P_26	          	1
+P_36A3            vehicles.planes.Plane$P_36A3            1
+P_36A4            vehicles.planes.Plane$P_36A4            1                  
+P_38J             vehicles.planes.Plane$P_38J             1
+P_38L             vehicles.planes.Plane$P_38L             1
+P_38LLate         vehicles.planes.Plane$P_38LLate         1
+P_38DroopSnoot	  vehicles.planes.Plane$P_38DroopSnoot	          1
+P_38E	          	vehicles.planes.Plane$P_38E	          	1
+P_38F1LO	          	vehicles.planes.Plane$P_38F1LO	          	1
+P_38G10LO	          	vehicles.planes.Plane$P_38G10LO	          	1
+P_38G15LO	          	vehicles.planes.Plane$P_38G15LO	          	1
+P_38G5LO	          	vehicles.planes.Plane$P_38G5LO	          	1
+P_38H5LO	          	vehicles.planes.Plane$P_38H5LO	          	1
+P_38J10LO	          	vehicles.planes.Plane$P_38J10LO	          	1
+P_38J15LO	          	vehicles.planes.Plane$P_38J15LO	          	1
+P_38J25LO	          	vehicles.planes.Plane$P_38J25LO	          	1
+P_38L5LO	          	vehicles.planes.Plane$P_38L5LO	          	1
+P_38M	          	vehicles.planes.Plane$P_38M	          	1
+P_39D1            vehicles.planes.Plane$P_39D1            1
+P_39D2            vehicles.planes.Plane$P_39D2            1
+P_39N             vehicles.planes.Plane$P_39N             1
+P_39Q1            vehicles.planes.Plane$P_39Q1            1
+P_39Q10           vehicles.planes.Plane$P_39Q10           1
+P_400             vehicles.planes.Plane$P_400             1
+P_40SUKAISVOLOCHB vehicles.planes.Plane$P_40SUKAISVOLOCHB 1
+P_40SUKAISVOLOCHC vehicles.planes.Plane$P_40SUKAISVOLOCHC 1
+P_40E             vehicles.planes.Plane$P_40E             1 // 2
+P_40EM105         vehicles.planes.Plane$P_40EM105         1 // 2
+P_40M             vehicles.planes.Plane$P_40M             1 // 2
+P_47B	          	vehicles.planes.Plane$P_47B	          	1
+P_47D             vehicles.planes.Plane$P_47D             1 
+P_47D10           vehicles.planes.Plane$P_47D10           1 // 8
+P_47D22           vehicles.planes.Plane$P_47D22           1 // 8
+P_47D27           vehicles.planes.Plane$P_47D27           1 // 8
+P_51A	            vehicles.planes.Plane$P_51A	      	1
+MustangMkI	      vehicles.planes.Plane$MustangMkI	      	1
+P_51B             vehicles.planes.Plane$P_51B             1
+P_51B10	               vehicles.planes.Plane$P_51B10	      	1
+P_51C             vehicles.planes.Plane$P_51C             1
+P_51D5NT          vehicles.planes.Plane$P_51D5NT          1
+P_51D20NA         vehicles.planes.Plane$P_51D20NA         1
+P_51D20NT	          	vehicles.planes.Plane$P_51D20NT	          	1
+P_51D25NA	          	vehicles.planes.Plane$P_51D25NA	          	1
+P_51D30NA	          	vehicles.planes.Plane$P_51D30NA	          	1
+P_51CM            vehicles.planes.Plane$P_51CM             1
+F_51D30NA	          	vehicles.planes.Plane$F_51D30NA	          	1
+P_63C             vehicles.planes.Plane$P_63C             1
+P_80A             vehicles.planes.Plane$P_80A             1
+P_11F	          	vehicles.planes.Plane$P_11F	          	1
+PBN1              vehicles.planes.Plane$PBN1              1
+PBY	          	vehicles.planes.Plane$PBY	          	1
+PE_2SERIES1       vehicles.planes.Plane$PE_2SERIES1       1
+PE_2SERIES32	    vehicles.planes.Plane$PE_2SERIES32	          	1
+PE_2SERIES84      vehicles.planes.Plane$PE_2SERIES84      1
+PE_2SERIES110     vehicles.planes.Plane$PE_2SERIES110     1
+PE_2SERIES206	   vehicles.planes.Plane$PE_2SERIES206	          	1
+PE_2SERIES359     vehicles.planes.Plane$PE_2SERIES359     1
+PE_3SERIES1       vehicles.planes.Plane$PE_3SERIES1       1
+PE_3BIS           vehicles.planes.Plane$PE_3BIS           1
+PE_3M	          	vehicles.planes.Plane$PE_3M	          	1
+PE_8              vehicles.planes.Plane$PE_8              1
+PZL23B	          	vehicles.planes.Plane$PZL23B	          	1
+PZL37B	          	vehicles.planes.Plane$PZL37B	          	1
+PZL42	          	vehicles.planes.Plane$PZL42	          	1
+RWD_10	          	vehicles.planes.Plane$RWD_10	          	1
+RWD_8	          	vehicles.planes.Plane$RWD_8	          	1
+R_5               vehicles.planes.Plane$R_5               1
+R_5_SKIS          vehicles.planes.Plane$R_5_SKIS          1
+R_10              vehicles.planes.Plane$R_10              1
+SB_2M100A         vehicles.planes.Plane$SB_2M100A         1 // 8
+SB_2M103          vehicles.planes.Plane$SB_2M103          1 // 8
+SBD3              vehicles.planes.Plane$SBD3              1
+SBD5              vehicles.planes.Plane$SBD5              1 
+SEAFIRE3          vehicles.planes.Plane$SEAFIRE3          1
+SEAFIRE3F         vehicles.planes.Plane$SEAFIRE3F         1
+SEAFIRE1	          	vehicles.planes.Plane$SEAFIRE1	          	1
+SEAFIRE15	          	vehicles.planes.Plane$SEAFIRE15	          	1
+SEAFIRE245	          	vehicles.planes.Plane$SEAFIRE245	          	1
+SEAFIRE250	          	vehicles.planes.Plane$SEAFIRE250	          	1
+SEAFIRE2C	          	vehicles.planes.Plane$SEAFIRE2C	          	1
+SEAFIRE2C4	          	vehicles.planes.Plane$SEAFIRE2C4	          	1
+SeaFuryMkI	          	vehicles.planes.Plane$SeaFuryMkI	          	1
+SeaFury_MkX	          	vehicles.planes.Plane$SeaFury_MkX	          	1
+SPITFIRE5B        vehicles.planes.Plane$SPITFIRE5B        1
+SPITFIRE5B12LBS   vehicles.planes.Plane$SPITFIRE5B12LBS   1
+SPITFIRE5B16LBS   vehicles.planes.Plane$SPITFIRE5B16LBS   1
+SPITFIRE5BCLP     vehicles.planes.Plane$SPITFIRE5BCLP     1
+SPITFIRE5BLF      vehicles.planes.Plane$SPITFIRE5BLF      1
+SPITFIRE5BLFCLP   vehicles.planes.Plane$SPITFIRE5BLFCLP   1
+SPITFIRE5BM4616LBS vehicles.planes.Plane$SPITFIRE5BM4616LBS  1
+SPITFIRE5C2       vehicles.planes.Plane$SPITFIRE5C2       1
+SPITFIRE5C216LBS  vehicles.planes.Plane$SPITFIRE5C216LBS  1
+SPITFIRE5C4       vehicles.planes.Plane$SPITFIRE5C4       1
+SPITFIRE8         vehicles.planes.Plane$SPITFIRE8         1
+SPITFIRE8CLP      vehicles.planes.Plane$SPITFIRE8CLP      1
+SPITFIRE9M63      vehicles.planes.Plane$SPITFIRE9M63      1
+SPITFIRE9M61      vehicles.planes.Plane$SPITFIRE9M61      1
+SPITFIRE9C        vehicles.planes.Plane$SPITFIRE9C        1
+SPITFIRE9CCLP     vehicles.planes.Plane$SPITFIRE9CCLP     1
+SPITFIRE9CHF      vehicles.planes.Plane$SPITFIRE9CHF      1
+SPITFIRE9E        vehicles.planes.Plane$SPITFIRE9E        1
+SPITFIRE9ECLP     vehicles.planes.Plane$SPITFIRE9ECLP     1
+SPITFIRE9EHF      vehicles.planes.Plane$SPITFIRE9EHF      1
+SPITFIRE925LBS    vehicles.planes.Plane$SPITFIRE925LBS    1
+SPITFIRE925LBSCW  vehicles.planes.Plane$SPITFIRE925LBSCW  1
+SPITFIRE1	          	vehicles.planes.Plane$SPITFIRE1	          	1
+SPITFIRE11	          	vehicles.planes.Plane$SPITFIRE11	          	1
+SPITFIRE12	          	vehicles.planes.Plane$SPITFIRE12	          	1
+SPITFIRE14C	          	vehicles.planes.Plane$SPITFIRE14C	          	1
+SPITFIRE16E	          	vehicles.planes.Plane$SPITFIRE16E	          	1
+SPITFIRE16E25	          	vehicles.planes.Plane$SPITFIRE16E25	          	1
+SPITFIRE16ECLP	          	vehicles.planes.Plane$SPITFIRE16ECLP	     	1
+SPITFIRE16ECLP25	          	vehicles.planes.Plane$SPITFIRE16ECLP25	   	1
+SPITFIRE1B	          	vehicles.planes.Plane$SPITFIRE1B	          	1
+SPITFIRE1vroeg	        vehicles.planes.Plane$SPITFIRE1vroeg	          	1
+SPITFIRE2A	          	vehicles.planes.Plane$SPITFIRE2A	          	1
+SPITFIRE2B	          	vehicles.planes.Plane$SPITFIRE2B	          	1
+SPITFIRE5A	          	vehicles.planes.Plane$SPITFIRE5A	          	1
+SPITFIRELF14E	          	vehicles.planes.Plane$SPITFIRELF14E	          	1
+SPITFIREXIIclpearly	       vehicles.planes.Plane$SPITFIREXIIclpearly   	1
+SNJ_5C	          	vehicles.planes.Plane$SNJ_5C	          	1
+Swordfish1         vehicles.planes.Plane$Swordfish1         1
+SU_2              vehicles.planes.Plane$SU_2              1 // 8
+TEMPEST5          vehicles.planes.Plane$TEMPEST5          1
+TEMPEST511LBS	          	vehicles.planes.Plane$TEMPEST511LBS	    	1
+TEMPEST513LBS	          	vehicles.planes.Plane$TEMPEST513LBS	    1
+TEMPESTFB2	          	vehicles.planes.Plane$TEMPESTFB2	          	1
+TYPHOON1B	          	vehicles.planes.Plane$TYPHOON1B	          	1
+TYPHOON1BLate	          	vehicles.planes.Plane$TYPHOON1BLate	  	1
+TB_3_4M_17        vehicles.planes.Plane$TB_3_4M_17        1 // 16
+TB_3_4M_34R       vehicles.planes.Plane$TB_3_4M_34R       1 // 16
+TBM1	          	vehicles.planes.Plane$TBM1	          	1
+TBF1              vehicles.planes.Plane$TBF1              1 //8
+TBF1C             vehicles.planes.Plane$TBF1C             1 //8
+TBM3              vehicles.planes.Plane$TBM3              1 //8
+TU_4	          	vehicles.planes.Plane$TU_4	          	1
+P_40SUKAISVOLOCH2A vehicles.planes.Plane$P_40SUKAISVOLOCH2A 1
+P_40SUKAISVOLOCH2B vehicles.planes.Plane$P_40SUKAISVOLOCH2B 1
+TU_2S             vehicles.planes.Plane$TU_2S             1
+U_2VS             vehicles.planes.Plane$U_2VS             1
+UTI_4	          	vehicles.planes.Plane$UTI_4	          	1
+UTI_4B	          	vehicles.planes.Plane$UTI_4B	          	1
+U_2NB	          	vehicles.planes.Plane$U_2NB	          	1
+U_2TM	          	vehicles.planes.Plane$U_2TM	          	1
+U_2UT	          	vehicles.planes.Plane$U_2UT	          	1
+U_2VS_shkas	      vehicles.planes.Plane$U_2VS_shkas	   	1
+YAK_1             vehicles.planes.Plane$YAK_1             1
+YAK_1B            vehicles.planes.Plane$YAK_1B            1
+YAK_3             vehicles.planes.Plane$YAK_3             1
+YAK_3P            vehicles.planes.Plane$YAK_3P            1
+YAK_3R            vehicles.planes.Plane$YAK_3R            1
+YAK_3VK107        vehicles.planes.Plane$YAK_3VK107        1
+YAK_7A            vehicles.planes.Plane$YAK_7A            1
+YAK_7B            vehicles.planes.Plane$YAK_7B            1
+Yak_7DI	          	vehicles.planes.Plane$Yak_7DI	          	1
+Yak_7R	          	vehicles.planes.Plane$Yak_7R	          	1
+YAK_7UTI	          	vehicles.planes.Plane$YAK_7UTI	   	1
+YAK_7V	          	vehicles.planes.Plane$YAK_7V	          	1
+Yak_7_37	          	vehicles.planes.Plane$Yak_7_37	  	1
+YAK_9             vehicles.planes.Plane$YAK_9             1 // 2
+YAK_9B            vehicles.planes.Plane$YAK_9B            1
+YAK_9D            vehicles.planes.Plane$YAK_9D            1 // 2
+YAK_9M            vehicles.planes.Plane$YAK_9M            1
+YAK_9K            vehicles.planes.Plane$YAK_9K            1
+YAK_9T            vehicles.planes.Plane$YAK_9T            1
+YAK_9U            vehicles.planes.Plane$YAK_9U            1
+YAK_9UT           vehicles.planes.Plane$YAK_9UT           1
+YAK_9P	          	vehicles.planes.Plane$YAK_9P	        	1
+YAK_9T_20	          	vehicles.planes.Plane$YAK_9T_20	       	1
+YAK_9UT_NS45	          	vehicles.planes.Plane$YAK_9UT_NS45	   	1
+Yak_9UVK_107	          	vehicles.planes.Plane$Yak_9UVK_107	  	1
+Yak_9U_Late	          	vehicles.planes.Plane$Yak_9U_Late	       	1
+YAK_9_Early	          	vehicles.planes.Plane$YAK_9_Early	      	1
+YAK_15            vehicles.planes.Plane$YAK_15            1
+
+
+A5M4              vehicles.planes.Plane$A5M4              2
+A6M2              vehicles.planes.Plane$A6M2              2 // 8
+A6M2_21           vehicles.planes.Plane$A6M2_21           2
+A6M2N             vehicles.planes.Plane$A6M2N             2
+A6M_21Late	     vehicles.planes.Plane$A6M_21Late	  	2
+A6M_21LateFM	    vehicles.planes.Plane$A6M_21LateFM	   	2
+A6M_22	          	vehicles.planes.Plane$A6M_22	          	2
+A6M_22Kai	          	vehicles.planes.Plane$A6M_22Kai	  2
+A6M_22ko	          	vehicles.planes.Plane$A6M_22ko	   2
+A6M3              vehicles.planes.Plane$A6M3              2
+A6M_32FM	          	vehicles.planes.Plane$A6M_32FM	 2
+A6M_52Early	          	vehicles.planes.Plane$A6M_52Early	 2
+A6M_52NF	          	vehicles.planes.Plane$A6M_52NF		2
+A6M_54	          	vehicles.planes.Plane$A6M_54	 2
+A6M_NLate	          	vehicles.planes.Plane$A6M_NLate	 	2
+A6M5              vehicles.planes.Plane$A6M5              2
+A6M5A             vehicles.planes.Plane$A6M5A             2 // 8
+A6M5B             vehicles.planes.Plane$A6M5B             2
+A6M5C             vehicles.planes.Plane$A6M5C             2
+A6M7_62           vehicles.planes.Plane$A6M7_62           2
+A6M7_63           vehicles.planes.Plane$A6M7_63           2
+AR_196A3          vehicles.planes.Plane$AR_196A3          2 // 8
+AR_196T0	          vehicles.planes.Plane$AR_196T0	     2
+AR_234B2          vehicles.planes.Plane$AR_234B2          2
+AR_234B2NJ	      vehicles.planes.Plane$AR_234B2NJ		    2
+AR_234F	          vehicles.planes.Plane$AR_234F	          2
+AVIA_B534         vehicles.planes.Plane$AVIA_B534         2
+B5N2              vehicles.planes.Plane$B5N2              2
+B6N2              vehicles.planes.Plane$B6N2              2
+F2A_B239          vehicles.planes.Plane$F2A_B239          2 // 2
+BF_109B1	          	vehicles.planes.Plane$BF_109B1	          	2
+BF_109B2	          	vehicles.planes.Plane$BF_109B2	          	2
+BF_109C1	          	vehicles.planes.Plane$BF_109C1	          	2
+BF_109D1	          	vehicles.planes.Plane$BF_109D1	          	2
+BF_109D1L	          	vehicles.planes.Plane$BF_109D1L	          	2
+BF_109E1	          	vehicles.planes.Plane$BF_109E1	          	2
+BF_109E3	          	vehicles.planes.Plane$BF_109E3	          	2
+BF_109E4          vehicles.planes.Plane$BF_109E4          2
+BF_109E4B         vehicles.planes.Plane$BF_109E4B         2
+BF_109E4N	          	vehicles.planes.Plane$BF_109E4N	          	2
+BF_109E7          vehicles.planes.Plane$BF_109E7          2
+BF_109E7NZ        vehicles.planes.Plane$BF_109E7NZ        2 // 2
+BF_109E7N	         vehicles.planes.Plane$BF_109E7N	          	2
+BF_109T	          	vehicles.planes.Plane$BF_109T	  	2
+BF_109F0	          	vehicles.planes.Plane$BF_109F0	          	2
+BF_109F1	          	vehicles.planes.Plane$BF_109F1	          	2
+BF_109F2          vehicles.planes.Plane$BF_109F2          2
+BF_109F2U	          	vehicles.planes.Plane$BF_109F2U	          	2
+BF_109F3	          	vehicles.planes.Plane$BF_109F3	          	2
+BF_109F4          vehicles.planes.Plane$BF_109F4          2
+BF_109F413ATA	        vehicles.planes.Plane$BF_109F413ATA	        2
+BF_109F4MSTL	       	vehicles.planes.Plane$BF_109F4MSTL	       	2
+BF_109F4Z	          	vehicles.planes.Plane$BF_109F4Z	          	2
+BF_109G1	          	vehicles.planes.Plane$BF_109G1	          	2
+BF_109G2          vehicles.planes.Plane$BF_109G2          2
+BF_109G3	          	vehicles.planes.Plane$BF_109G3	          	2
+BF_109G4	          	vehicles.planes.Plane$BF_109G4	          	2
+BF_109G5	          	vehicles.planes.Plane$BF_109G5	          	2
+BF_109G5AS	          vehicles.planes.Plane$BF_109G5AS	          	2
+BF_109G613ATA	       	vehicles.planes.Plane$BF_109G613ATA	          	2
+BF_109G6          vehicles.planes.Plane$BF_109G6          2
+BF_109G6Erla	       	vehicles.planes.Plane$BF_109G6Erla	          	2
+BF_109G6Mid	        	vehicles.planes.Plane$BF_109G6Mid	          	2
+BF_109G6AS        vehicles.planes.Plane$BF_109G6AS        2
+BF_109G6Late      vehicles.planes.Plane$BF_109G6Late      2
+BF_109G10         vehicles.planes.Plane$BF_109G10         2 // 2
+BF_109G10C3	          vehicles.planes.Plane$BF_109G10C3	          2
+BF_109G10Erla	       	vehicles.planes.Plane$BF_109G10Erla	       	2
+BF_109G14         vehicles.planes.Plane$BF_109G14         2 // 2
+BF_109G14AS	         	vehicles.planes.Plane$BF_109G14AS	          2
+BF_109K4          vehicles.planes.Plane$BF_109K4          2
+BF_109K4C3        vehicles.planes.Plane$BF_109K4C3        2
+BF_109K6	          	vehicles.planes.Plane$BF_109K6	          	2
+BF_109K14	          	vehicles.planes.Plane$BF_109K14	          	2
+BF_109Z           vehicles.planes.Plane$BF_109Z           2
+S_199	          	vehicles.planes.Plane$S_199	          	2
+BF_110C1	          	vehicles.planes.Plane$BF_110C1	          	2
+BF_110C4          vehicles.planes.Plane$BF_110C4          2 // 8
+BF_110C4B         vehicles.planes.Plane$BF_110C4B         2 // 8
+BF_110C7	          	vehicles.planes.Plane$BF_110C7	          	2
+BF_110D3	          	vehicles.planes.Plane$BF_110D3	          	2
+BF_110E1	          	vehicles.planes.Plane$BF_110E1	          	2
+BF_110F2	          	vehicles.planes.Plane$BF_110F2	          	2
+BF_110G2          vehicles.planes.Plane$BF_110G2          2 // 8
+BF_110G4	          	vehicles.planes.Plane$BF_110G4	          	2
+BLENHEIM1         vehicles.planes.Plane$BLENHEIM1         2 // 8
+BLENHEIM4         vehicles.planes.Plane$BLENHEIM4         2 // 8
+CANT_Z1007_BIS    vehicles.planes.Plane$CANT_Z1007_BIS    2
+CR_32quater	      vehicles.planes.Plane$CR_32quater	       	2
+D3A1              vehicles.planes.Plane$D3A1              2
+D3A2	          	  vehicles.planes.Plane$D3A2	       	2
+DO_217_K1         vehicles.planes.Plane$DO_217_K1         2
+DO_217_K2         vehicles.planes.Plane$DO_217_K2         2
+DO_335A0          vehicles.planes.Plane$DO_335A0          2 // 2
+DO_335V13         vehicles.planes.Plane$DO_335V13         2
+DXXI_SARJA3_EARLY vehicles.planes.Plane$DXXI_SARJA3_EARLY        2
+DXXI_SARJA3_LATE  vehicles.planes.Plane$DXXI_SARJA3_LATE        2
+DXXI_SARJA4	  vehicles.planes.Plane$DXXI_SARJA4        2
+FI_156            vehicles.planes.Plane$FI_156            2
+FW_189A2          vehicles.planes.Plane$FW_189A2          2
+FW_190A2	          	vehicles.planes.Plane$FW_190A2	          	2
+FW_190A3	          	vehicles.planes.Plane$FW_190A3	          	2
+FW_190A4          vehicles.planes.Plane$FW_190A4          2
+FW_190A5          vehicles.planes.Plane$FW_190A5          2
+FW_190A5165ATA    vehicles.planes.Plane$FW_190A5165ATA    2
+FW_190A5U14	      vehicles.planes.Plane$FW_190A5U14	       	2
+FW_190A6          vehicles.planes.Plane$FW_190A6          2
+FW_190A7	          vehicles.planes.Plane$FW_190A7	          	2
+FW_190A7STURM	     vehicles.planes.Plane$FW_190A7STURM	    2
+FW_190A8          vehicles.planes.Plane$FW_190A8          2
+FW_190A9          vehicles.planes.Plane$FW_190A9          2 // 2
+FW_190D9          vehicles.planes.Plane$FW_190D9          2 // 2
+FW_190D9LATE      vehicles.planes.Plane$FW_190D9LATE      2 // 2
+FW_190D11	          	vehicles.planes.Plane$FW_190D11	          	2
+FW_190D13	          	vehicles.planes.Plane$FW_190D13	          	2
+FW_190D15	          	vehicles.planes.Plane$FW_190D15	          	2
+FW_190F1	          	vehicles.planes.Plane$FW_190F1	          	2
+FW_190F2	          	vehicles.planes.Plane$FW_190F2	          	2
+FW_190F3	          	vehicles.planes.Plane$FW_190F3	          	2
+FW_190F8          vehicles.planes.Plane$FW_190F8          2 // 2
+FW_190F8PB	          	vehicles.planes.Plane$FW_190F8PB	        2
+FW_190G1	          	vehicles.planes.Plane$FW_190G1	          	2
+FW_190G2	          	vehicles.planes.Plane$FW_190G2	          	2
+FW_190G3	          	vehicles.planes.Plane$FW_190G3	          	2
+FW_190G8	          	vehicles.planes.Plane$FW_190G8	          	2
+FW_200C3U4        vehicles.planes.Plane$FW_200C3U4        2
+CR_42             vehicles.planes.Plane$CR_42             2
+G4M1_11           vehicles.planes.Plane$G4M1_11           2 //16
+G4M2E             vehicles.planes.Plane$G4M2E             2
+G50               vehicles.planes.Plane$G50               2 /// 2
+G_55              vehicles.planes.Plane$G_55              2 /// 2
+G_55_ss0          vehicles.planes.Plane$G_55_ss0          2
+GLADIATOR1        vehicles.planes.Plane$GLADIATOR1        2
+GLADIATOR2        vehicles.planes.Plane$GLADIATOR2        2
+Go_229A_1         vehicles.planes.Plane$GO_229A1          2 
+H8K1              vehicles.planes.Plane$H8K1              2
+He45	          	vehicles.planes.Plane$He45	          	2
+He51C	          	vehicles.planes.Plane$He51C	          	2
+HE_111P2	          	vehicles.planes.Plane$HE_111P2	          	2
+HE_111H2          vehicles.planes.Plane$HE_111H2          2
+HE_111H6          vehicles.planes.Plane$HE_111H6          2
+HE_111H12         vehicles.planes.Plane$HE_111H12         2
+HE_111H21	        vehicles.planes.Plane$HE_111H21	        2
+HE_111Z           vehicles.planes.Plane$HE_111Z           2
+HE_219UHU	        vehicles.planes.Plane$HE_219UHU	        2
+HE_162A2          vehicles.planes.Plane$HE_162A2          2
+HE_162B           vehicles.planes.Plane$HE_162B           2
+HE_162C           vehicles.planes.Plane$HE_162C           2
+HE_LERCHE3        vehicles.planes.Plane$HE_LERCHE3        2
+HurricaneMkIa     vehicles.planes.Plane$HurricaneMkIa     2 // 2
+HS123	          	vehicles.planes.Plane$HS123	          	2
+HS_129B2          vehicles.planes.Plane$HS_129B2          2
+HS_129B3Wa        vehicles.planes.Plane$HS_129B3Wa        2
+IAR_80            vehicles.planes.Plane$IAR_80            2
+IAR_81A           vehicles.planes.Plane$IAR_81A           2
+IAR_81C           vehicles.planes.Plane$IAR_81C           2
+J2M3              vehicles.planes.Plane$J2M3              2
+J2M5_kai	          vehicles.planes.Plane$J2M5_kai	        	2
+J2M5              vehicles.planes.Plane$J2M5              2 // 2
+GLADIATOR1J8A     vehicles.planes.Plane$GLADIATOR1J8A     2
+JU_52_3MG3E	      vehicles.planes.Plane$JU_52_3MG3E	      2
+JU_52_3MG4E       vehicles.planes.Plane$JU_52_3MG4E       2
+JU_52_3MG5E       vehicles.planes.Plane$JU_52_3MG5E       2
+JU_87B1	          	vehicles.planes.Plane$JU_87B1	          	2
+JU_87B2           vehicles.planes.Plane$JU_87B2           2
+JU_87C	          	vehicles.planes.Plane$JU_87C	   	2
+JU_87D1	          	vehicles.planes.Plane$JU_87D1	          	2
+JU_87D3           vehicles.planes.Plane$JU_87D3           2
+Ju_87D5           vehicles.planes.Plane$JU_87D5           2
+JU_87D7	          	vehicles.planes.Plane$JU_87D7	          	2
+JU_87D8	          	vehicles.planes.Plane$JU_87D8	          	2
+JU_87G1           vehicles.planes.Plane$JU_87G1           2
+JU_87G2	          	vehicles.planes.Plane$JU_87G2	          	2
+JU_87R1	          	vehicles.planes.Plane$JU_87R1	          	2
+JU_87R2	          	vehicles.planes.Plane$JU_87R2	          	2
+JU_88A4           vehicles.planes.Plane$JU_88A4           2
+JU_88A17          vehicles.planes.Plane$JU_88A17          2
+JU_88A4torp       vehicles.planes.Plane$JU_88A4torp       2
+JU_88C6	          	vehicles.planes.Plane$JU_88C6	          	2
+JU_88C6NJ	          	vehicles.planes.Plane$JU_88C6NJ	        2
+KI_21_I           vehicles.planes.Plane$KI_21_I           2
+KI_21_II          vehicles.planes.Plane$KI_21_II          2
+KI_27_KO          vehicles.planes.Plane$KI_27_KO          2
+KI_27_OTSU        vehicles.planes.Plane$KI_27_OTSU        2
+KI_43_IA          vehicles.planes.Plane$KI_43_IA          2
+KI_43_IB          vehicles.planes.Plane$KI_43_IB          2
+KI_43_IC          vehicles.planes.Plane$KI_43_IC          2
+KI_43_II          vehicles.planes.Plane$KI_43_II          2
+KI_43_IIKAI       vehicles.planes.Plane$KI_43_IIKAI       2
+KI_43_IIIKO	         vehicles.planes.Plane$KI_43_IIIKO	      	2
+KI_44_IIKO	      vehicles.planes.Plane$KI_44_IIKO	      2
+KI_46_OTSU        vehicles.planes.Plane$KI_46_OTSU        2
+KI_46_OTSUHEI     vehicles.planes.Plane$KI_46_OTSUHEI     2
+KI_46_RECCE       vehicles.planes.Plane$KI_46_RECCE       2
+KI_61_IKO         vehicles.planes.Plane$KI_61_IKO         2
+KI_61_IHEI        vehicles.planes.Plane$KI_61_IHEI        2
+KI_61_IOTSU       vehicles.planes.Plane$KI_61_IOTSU       2
+KI_84_IA          vehicles.planes.Plane$KI_84_IA          2
+KI_84_IB          vehicles.planes.Plane$KI_84_IB          2
+KI_84_IC          vehicles.planes.Plane$KI_84_IC          2
+KI_100_IKO        vehicles.planes.Plane$KI_100_IKO        2
+L2D               vehicles.planes.Plane$L2D               2
+MC_202            vehicles.planes.Plane$MC_202            2 // 2
+MC_200_1          vehicles.planes.Plane$MC_200_1          2 // 2
+MC_200_3          vehicles.planes.Plane$MC_200_3          2
+MC_200_7          vehicles.planes.Plane$MC_200_7          2
+MC_200_7FB        vehicles.planes.Plane$MC_200_7FB        2
+MC_202_3          vehicles.planes.Plane$MC_202_3          2
+MC_202_7          vehicles.planes.Plane$MC_202_7          2
+MC_202_12         vehicles.planes.Plane$MC_202_12         2
+MC_205_1          vehicles.planes.Plane$MC_205_1          2
+MC_205_3          vehicles.planes.Plane$MC_205_3          2
+ME_163B1A         vehicles.planes.Plane$ME_163B1A         2 // 8
+ME_210CA1         vehicles.planes.Plane$ME_210CA1         2 // 8
+ME_210CA1ZSTR     vehicles.planes.Plane$ME_210CA1ZSTR     2 // 8
+ME_262V3	          	vehicles.planes.Plane$ME_262V3	      	2
+ME_262A1A         vehicles.planes.Plane$ME_262A1A         2
+ME_262A1AU4       vehicles.planes.Plane$ME_262A1AU4       2
+ME_262A2A         vehicles.planes.Plane$ME_262A2A         2
+ME_262A2NJ	      vehicles.planes.Plane$ME_262A2NJ	   	  2
+ME_262HGII        vehicles.planes.Plane$ME_262HGII        2
+ME_321            vehicles.planes.Plane$ME_321            2
+ME_323            vehicles.planes.Plane$ME_323            2
+ME_410A	          	vehicles.planes.Plane$ME_410A	          	2
+ME_410B	          	vehicles.planes.Plane$ME_410B	          	2
+ME_410D	          	vehicles.planes.Plane$ME_410D	          	2
+ME_410DNJ	          	vehicles.planes.Plane$ME_410DNJ	          	2
+MS406             vehicles.planes.Plane$MS406             2 // 2
+MS410             vehicles.planes.Plane$MS410             2 // 2
+MSMORKO           vehicles.planes.Plane$MSMORKO           2 // 2
+MXY_7             vehicles.planes.Plane$MXY_7             2
+N1K1J             vehicles.planes.Plane$N1K1J             2
+N1KS	          	vehicles.planes.Plane$N1KS	          	2
+N1K1JA            vehicles.planes.Plane$N1K1JA            2
+N1K2JA            vehicles.planes.Plane$N1K2JA            2 // 2
+N1K4J	          	  vehicles.planes.Plane$N1K4J	   	2
+N1K3J	          	  vehicles.planes.Plane$N1K3J	  	2
+N1K3A	          	  vehicles.planes.Plane$N1K3A	       	2
+RE_2000		  vehicles.planes.Plane$RE_2000        2
+RE_2002           vehicles.planes.Plane$RE_2002           2
+LetovS_328	  vehicles.planes.Plane$LetovS_328        2
+SM79i		  vehicles.planes.Plane$SM79i        2
+TA_152C           vehicles.planes.Plane$TA_152C           2
+TA_152C1	          	vehicles.planes.Plane$TA_152C1	     	2
+TA_152C3	          	vehicles.planes.Plane$TA_152C3	    	2
+TA_152H1          vehicles.planes.Plane$TA_152H1          2 // 8
+TA_183            vehicles.planes.Plane$TA_183        2
+WAGEN	          	vehicles.planes.Plane$WAGEN	          	2
+
+[StationaryShips]
+G5                    ships.Ship$G5                          1
+MO4                   ships.Ship$MO4                         1
+BBK_1942              ships.Ship$BBK_1942                    1
+BBK1124_1943          ships.Ship$BBK1124_1943                1
+Destroyer_USSR_Type7    ships.Ship$Destroyer_USSR_Type7      1
+Destroyer_USSR_Type7_44 ships.Ship$Destroyer_USSR_Type7_44   1
+Aurora                ships.Ship$Aurora                      1
+Marat                 ships.Ship$Marat                       1
+Kirov                 ships.Ship$Kirov                       1
+Tashkent              ships.Ship$Tashkent                    1
+Tral                  ships.Ship$Tral                        1
+Tramp                 ships.Ship$Tramp                       1
+Tanker                ships.Ship$Tanker                      1
+Shuka                 ships.Ship$Shuka                       1
+
+USSLexingtonCV2       ships.Ship$USSLexingtonCV2             1
+USSSaratogaCV3        ships.Ship$USSSaratogaCV3              1
+USSCVGeneric          ships.Ship$USSCVGeneric                1
+USSBBGeneric          ships.Ship$USSBBGeneric                1
+USSIndianapolisCA35   ships.Ship$USSIndianapolisCA35         1
+USSGreenlingSS213_Srf ships.Ship$USSGreenlingSS213_Srf       1
+USSGreenlingSS213_Sub ships.Ship$USSGreenlingSS213_Sub       1
+USSGatoSS212_Srf      ships.Ship$USSGatoSS212_Srf            1
+USSGatoSS212_Sub      ships.Ship$USSGatoSS212_Sub            1
+USSWardDD139          ships.Ship$USSWardDD139                1
+USSDentDD116          ships.Ship$USSDentDD116                1
+USSFletcherDD445      ships.Ship$USSFletcherDD445            1
+USSMcKean             ships.Ship$USSMcKean               1
+USSOBannonDD450       ships.Ship$USSOBannonDD450             1
+USSKiddDD661          ships.Ship$USSKiddDD661                1
+USSHoustonCA30        ships.Ship$USSHoustonCA30      1
+USSChesterCA27        ships.Ship$USSChesterCA27      1
+USSPortlandCA33       ships.Ship$USSPortlandCA33     1
+USSBelleauWoodCVL24   ships.Ship$USSBelleauWoodCVL24     1 
+USSPrincetonCVL23     ships.Ship$USSPrincetonCVL23       1
+USSSanJacintoCVL30    ships.Ship$USSSanJacintoCVL30      1
+USSCasablancaCVE55    ships.Ship$USSCasablancaCVE55          1
+USSKitkunBayCVE71     ships.Ship$USSKitkunBayCVE71           1
+USSShamrockBayCVE84   ships.Ship$USSShamrockBayCVE84         1
+USSEssexCV9           ships.Ship$USSEssexCV9                 1
+USSYorktownCV10_1944  ships.Ship$USSYorktownCV10_1944    1
+USSIntrepidCV11       ships.Ship$USSIntrepidCV11             1
+USSIntrepidCV11_1944  ships.Ship$USSIntrepidCV11_1944    1
+USSHornetCV12_1944    ships.Ship$USSHornetCV12_1944      1
+USSFranklinCV13_1943  ships.Ship$USSFranklinCV13_1943    1
+USSFranklinCV13_1944  ships.Ship$USSFranklinCV13_1944    1
+USSTiconderogaCV14_1944 ships.Ship$USSTiconderogaCV14_1944 1
+USSLexingtonCV16      ships.Ship$USSLexingtonCV16        1
+USSBunkerHillCV17_1944 ships.Ship$USSBunkerHillCV17_1944 1
+USSWaspCV18_1944       ships.Ship$USSWaspCV18_1944       1
+USSHancockCV19_1944    ships.Ship$USSHancockCV19_1944    1
+USSGenericCV9ClassMS21 ships.Ship$USSGenericCV9ClassMS21 1
+USSValleyForgeCV45    ships.Ship$USSValleyForgeCV45  1
+USSBoxerCV21          ships.Ship$USSBoxerCV21        1
+LVT_2WAT              ships.Ship$LVT_2WAT                    1
+DUKW_WAT              ships.Ship$DUKW_WAT                    1
+LCVP                  ships.Ship$LCVP                        1
+
+HMSFormidableCV       ships.Ship$HMSFormidableCV         1
+HMSIndomitableCV      ships.Ship$HMSIndomitableCV        1
+HMSIllustriousCV      ships.Ship$HMSIllustriousCV            1
+HMSPoWBB              ships.Ship$HMSPoWBB                    1
+HMSKingGeorgeVBB      ships.Ship$HMSKingGeorgeVBB            1
+HMSDukeOfYorkBB       ships.Ship$HMSDukeOfYorkBB             1
+HMSWarspite           ships.Ship$HMSWarspite             1
+HMSCossack            ships.Ship$HMSCossack              1
+HMSMatabele           ships.Ship$HMSMatabele             1
+HMSNubian             ships.Ship$HMSNubian               1
+HMSTartar             ships.Ship$HMSTartar               1
+HMSFiji   	      ships.Ship$HMSFiji   	     1
+HMSJupiter            ships.Ship$HMSJupiter              1
+HMASNapier            ships.Ship$HMASNapier              1
+HMSJavelin            ships.Ship$HMSJavelin              1
+HMSKipling            ships.Ship$HMSKipling              1
+
+PilotWater_US         ships.Ship$PilotWater_US               1
+PilotBoatWater_US     ships.Ship$PilotBoatWater_US           1
+
+MAS501                ships.Ship$MAS501                      2
+S80                   ships.Ship$S80                         2
+MFP                   ships.Ship$MFP                         2
+MFP2                  ships.Ship$MFP2                        2
+Murgesku              ships.Ship$Murgesku                    2
+MBoat                 ships.Ship$MBoat                       2
+Niobe                 ships.Ship$Niobe                       2
+Illmarinen            ships.Ship$Illmarinen                  2
+Vainamoinen           ships.Ship$Vainamoinen                 2
+Tirpitz               ships.Ship$Tirpitz                     2
+Bismarck              ships.Ship$Bismarck                    2
+Submarine             ships.Ship$Submarine                   2
+SubTypeVIIC_Srf       ships.Ship$SubTypeVIIC_Srf             2
+SubTypeVIIC_Sub       ships.Ship$SubTypeVIIC_Sub             2
+PAM                   ships.Ship$PAM                         2
+
+GrafZeppelin          ships.Ship$GrafZeppelin         2
+PeterStrasser         ships.Ship$PeterStrasser        2
+Aquila                ships.Ship$Aquila               2
+
+IJNAkagiCV            ships.Ship$IJNAkagiCV                  2
+IJNShokakuCV          ships.Ship$IJNShokakuCV                2
+IJNZuikakuCV          ships.Ship$IJNZuikakuCV                2
+IJNHiryuCV            ships.Ship$IJNHiryuCV              2
+IJNKagaCV             ships.Ship$IJNKagaCV               2
+IJNSoryuCV            ships.Ship$IJNSoryuCV              2
+IJNRyujoCV            ships.Ship$IJNRyujoCV               2
+IJNCVLgeneric         ships.Ship$IJNCVLGeneric           2
+IJNCVGeneric          ships.Ship$IJNCVGeneric                2
+IJNBBGeneric          ships.Ship$IJNBBGeneric                2
+IJNAkizukiDD42        ships.Ship$IJNAkizukiDD42              2
+IJNAmatsukazeDD41     ships.Ship$IJNAmatsukazeDD41           2
+IJNArashiDD41         ships.Ship$IJNArashiDD41               2
+IJNKageroDD41         ships.Ship$IJNKageroDD41               2
+IJNNowakiDD41         ships.Ship$IJNNowakiDD41               2
+IJNYukikazeDD41       ships.Ship$IJNYukikazeDD41             2
+IJNAmatsukazeDD43     ships.Ship$IJNAmatsukazeDD43           2
+IJNNowakiDD43         ships.Ship$IJNNowakiDD43               2
+IJNYukikazeDD43       ships.Ship$IJNYukikazeDD43             2
+IJNAmatsukazeDD45     ships.Ship$IJNAmatsukazeDD45           2
+IJNYukikazeDD45       ships.Ship$IJNYukikazeDD45             2
+IJNFishJunk           ships.Ship$IJNFishJunk                 2
+IJNFishJunkA          ships.Ship$IJNFishJunkA                2
+DaihatsuLC            ships.Ship$DaihatsuLC                  2
+HMSColossusCV         ships.Ship$HMSColossusCV      1
+
+Littorio              ships.Ship$Littorio                2
+Italia0               ships.Ship$Italia0                 2
+Italia1               ships.Ship$Italia1                 2
+Soldati	              ships.Ship$Soldati                 2
+
+PilotWater_JA         ships.Ship$PilotWater_JA               2
+
+RwyCon                ships.Ship$RwyCon                      1
+RwySteel              ships.Ship$RwySteel                    1
+RwySteelLow           ships.Ship$RwySteelLow                 1
+RwyTransp             ships.Ship$RwyTransp                   1
+RwyTranspWide         ships.Ship$RwyTranspWide               1
+RwyTranspSqr          ships.Ship$RwyTranspSqr                1
+
+FortGeorge            ships.Ship$FortGeorge              1 
+RedCanyon             ships.Ship$RedCanyon               1 
+WhiteRiver            ships.Ship$WhiteRiver              1
+
+TroopTrans0           ships.Ship$TroopTrans0             1
+TroopTrans1           ships.Ship$TroopTrans1             1
+TroopTrans2           ships.Ship$TroopTrans2             1
+TroopTrans3           ships.Ship$TroopTrans3             1
+
+Destroyer0            ships.Ship$Destroyer0              1
+Destroyer1            ships.Ship$Destroyer1              1
+Destroyer2            ships.Ship$Destroyer2              2
+DestroyerKM    	      ships.Ship$DestroyerKM    	     2
+DestroyerRN   	      ships.Ship$DestroyerRN   	     1
+DestroyerDmg          ships.Ship$DestroyerDmg            1
+DestroyerWreck        ships.Ship$DestroyerWreck          2
+
+MAS501UNE             ships.Ship$MAS501UNE               1
+MAS501UNP             ships.Ship$MAS501UNP               1
+MAS501RN              ships.Ship$MAS501RN                1
+MAS501JP              ships.Ship$MAS501JP                2
+MFPIT                 ships.Ship$MFPIT                   2
+MFPT                  ships.Ship$MFPT                    2
+
+DLCWreck              ships.Ship$DLCWreck                1
+LCVPWreck             ships.Ship$LCVPWreck               1
+SmallWreck            ships.Ship$SmallWreck              2
+ 
+Carrier1              ships.Ship$Carrier1                1
+
+Barge0                ships.Ship$Barge0                  2
+Barge1                ships.Ship$Barge1                  2
+Boat                  ships.Ship$Boat                    2
+Boat1                 ships.Ship$Boat1                   2
+Fisherman             ships.Ship$Fisherman               2
+Fisherman1            ships.Ship$Fisherman               2
+Fisherman2            ships.Ship$Fisherman               2
+
+Tanker0               ships.Ship$Tanker0                 1
+Tanker1               ships.Ship$Tanker1                 1
+Tanker2               ships.Ship$Tanker2                 1
+TankerDmg             ships.Ship$TankerDmg               1
+
+HospitalShip          ships.Ship$HospitalShip            1
+
+IIbfinlandP           ships.Ship$IIbfinlandP      2
+IIbfinland            ships.Ship$IIbfinland       2 
+IICU12P               ships.Ship$IICU12P          2
+IICU12                ships.Ship$IICU12           2
+IICU3P                ships.Ship$IICU3P           2
+IICU3                 ships.Ship$IICU3            2 
+IICU57P               ships.Ship$IICU57P          2 
+IICU57                ships.Ship$IICU57           2  
+
+VIICRO500_Sub         ships.Ship$VIICRO500_Sub      2
+VIICRO500_Srf         ships.Ship$VIICRO500_Srf      2
+VIICswordfish_Sub     ships.Ship$VIICswordfish_Sub  2 
+VIICswordfish_Srf     ships.Ship$VIICswordfish_Srf  2 
+VIICU124_Sub          ships.Ship$VIICU124_Sub       2 
+VIICU124_Srf          ships.Ship$VIICU124_Srf       2 
+VIICU564_Sub          ships.Ship$VIICU564_Sub       2 
+VIICU564_Srf          ships.Ship$VIICU564_Srf       2 
+VIICwinter_Sub        ships.Ship$VIICwinter_Sub     2 
+VIICwinter_Srf        ships.Ship$VIICwinter_Srf     2
+
+Transport1            ships.Ship$Transport1              1
+Transport2            ships.Ship$Transport2              1
+Transport3            ships.Ship$Transport3              2
+Transport4            ships.Ship$Transport4              1 
+Transport5            ships.Ship$Transport5              2 
+Transport6            ships.Ship$Transport6              2 
+Transport7            ships.Ship$Transport7              2 
+TransDmg              ships.Ship$TransDmg                2
+TransWreck            ships.Ship$TransWreck              2
+
+// Flakiten & Asheshouse Ship Pack
+
+HospitalShip2	      ships.Ship$Hospital_2		      1
+LCM_1		      ships.Ship$LCM_1		      1
+LCM_2		      ships.Ship$LCM_2                    1
+LCM_3		      ships.Ship$LCM_3		      1
+LCVP_1	    	      ships.Ship$LCVP_1                   1
+LCVP_2      	      ships.Ship$LCVP_2                   1
+LSD_1       	      ships.Ship$LSD_1   	              1
+LST_1       	      ships.Ship$LST_1		      1
+LST_3 		      ships.Ship$LST_3		      1
+IceBreaker_1          ships.Ship$Icebreaker_1	      1
+ColdWarSubmarine      ships.Ship$Sub_Coldwar	      1
+
+USSBesugo_Srf         ships.Ship$USSBesugo_Srf       1
+USSBesugo_Sub         ships.Ship$USSBesugo_Sub       1
+USSNautilus_Srf       ships.Ship$USSNautilus_Srf     1
+USSNautilus_Sub       ships.Ship$USSNautilus_Sub     1
+USSPermit_Srf         ships.Ship$USSPermit_Srf       1
+USSPermit_Sub         ships.Ship$USSPermit_Sub       1
+USSSpot_Srf           ships.Ship$USSSpot_Srf         1
+USSSpot_Sub           ships.Ship$USSSpot_Sub         1
+
+KMHansa               ships.Ship$KMHansa        2
+Janssens              ships.Ship$Janssens      2
+
+HokokuMaru            ships.Ship$HokokuMaru       2
+TakatsuMaru           ships.Ship$TakatsuMaru      2
+SetsuMaru             ships.Ship$SetsuMaru      2
+
+MSAtenfels           ships.Ship$MSAtenfels       1
+LSSimonBenson        ships.Ship$LSSimonBenson          1
+LSHuddell            ships.Ship$LSHuddell   1
+
+Apanui               ships.Ship$Apanui			1
+Awanui               ships.Ship$Awanui			1
+Holmlea              ships.Ship$Holmlea			1
+MalaysianQueen       ships.Ship$MalaysianQueen	        1
+Mapito               ships.Ship$Mapito			1
+Mararoa              ships.Ship$Mararoa			1
+SeawayPrincess       ships.Ship$SeawayPrincess	        1
+Speedwell            ships.Ship$Speedwell		1
+Sumatra              ships.Ship$Sumatra			1
+Zephyr               ships.Ship$Zephyr			1
+germantrawlerA       ships.Ship$germantrawlerA            2

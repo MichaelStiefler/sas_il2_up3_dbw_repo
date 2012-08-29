@@ -1,0 +1,5 @@
+default,0 MGunBrowning50si 250,0 MGunBrowning50si 250,0 MGunBrowning303k 300,0 MGunBrowning303k 240,0 MGunBrowning303k 300,0 MGunBrowning303k 240, , , 
+1x75dt,0 MGunBrowning50si 250,0 MGunBrowning50si 250,0 MGunBrowning303k 300,0 MGunBrowning303k 240,0 MGunBrowning303k 300,0 MGunBrowning303k 240,9 PylonP39PLN1 -12345, ,9 FuelTankGun_Tank75gal -12345
+1x100,0 MGunBrowning50si 250,0 MGunBrowning50si 250,0 MGunBrowning303k 300,0 MGunBrowning303k 240,0 MGunBrowning303k 300,0 MGunBrowning303k 240,9 PylonP39PLN1 -12345,3 BombGun100Lbs 1, 
+1x250,0 MGunBrowning50si 250,0 MGunBrowning50si 250,0 MGunBrowning303k 300,0 MGunBrowning303k 240,0 MGunBrowning303k 300,0 MGunBrowning303k 240,9 PylonP39PLN1 -12345,3 BombGun250lbs 1, 
+none, , , , , , , , , 

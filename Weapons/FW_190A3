@@ -1,0 +1,11 @@
+default,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250,1 MGunMGFFkih 90,1 MGunMGFFkih 90, , , , , , , , , , , 
+u1, , ,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , , , , 
+u11sc250, , ,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1, ,3 BombGunSC250 1
+u11ab250, , ,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1, ,3 BombGunAB250 1
+u3,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , , , , 
+u31sc250,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1, ,3 BombGunSC250 1
+u31ab250,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1, ,3 BombGunAB250 1
+u31sc500,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1, ,3 BombGunSC500 1
+u31ab500,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1, ,3 BombGunAB500 1
+u31tank,0 MGunMG17si 1000,0 MGunMG17si 1000,0 MGunMG15120MGs 250,0 MGunMG15120MGs 250, , , , , , , , , , ,9 PylonETC501FW190 1,9 FuelTankGun_Type_D 1, 
+none, , , , , , , , , , , , , , , , , 

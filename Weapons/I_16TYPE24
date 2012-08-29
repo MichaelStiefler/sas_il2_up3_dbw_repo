@@ -1,0 +1,7 @@
+default,0 MGunShKASsi 650,0 MGunShKASsi 650,0 MGunShKASk 750,0 MGunShKASk 750, , , , , , , , , , , , , , , , 
+2fab50,0 MGunShKASsi 650,0 MGunShKASsi 650,0 MGunShKASk 750,0 MGunShKASk 750, , , , , , ,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345, , , , , , , , 
+2fab100,0 MGunShKASsi 650,0 MGunShKASsi 650,0 MGunShKASk 750,0 MGunShKASk 750, , , , , , ,3 BombGunFAB100 -12345,3 BombGunFAB100 -12345, , , , , , , , 
+2tank100,0 MGunShKASsi 650,0 MGunShKASsi 650,0 MGunShKASk 750,0 MGunShKASk 750, , , , , , , , , , , , , , ,9 FuelTankGun_Tank100i16 -12345,9 FuelTankGun_Tank100i16 -12345
+6rs82,0 MGunShKASsi 650,0 MGunShKASsi 650,0 MGunShKASk 750,0 MGunShKASk 750,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345, , ,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345, , 
+6rs82tank,0 MGunShKASsi 650,0 MGunShKASsi 650,0 MGunShKASk 750,0 MGunShKASk 750,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345, , ,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 FuelTankGun_Tank100i16 -12345,9 FuelTankGun_Tank100i16 -12345
+none, , , , , , , , , , , , , , , , , , , , 
