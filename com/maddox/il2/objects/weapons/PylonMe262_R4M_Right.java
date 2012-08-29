@@ -1,11 +1,32 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PylonMe262_R4M_Right.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class PylonMe262_R4M_Right extends Pylon
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Pylon
+
+public class PylonMe262_R4M_Right extends com.maddox.il2.objects.weapons.Pylon
 {
-  static
-  {
-    Property.set(PylonMe262_R4M_Right.class, "mesh", "3DO/Arms/R4M-RAK_R/mono.sim");
-  }
+
+    public PylonMe262_R4M_Right()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.objects.weapons.PylonMe262_R4M_Right.class, "mesh", "3DO/Arms/R4M-RAK_R/mono.sim");
+    }
 }

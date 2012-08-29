@@ -1,8 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdActorSpawn.java
+
 package com.maddox.il2.engine.cmd;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
@@ -19,494 +23,808 @@ import com.maddox.util.QuoteTokenizer;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-public class CmdActorSpawn extends Cmd
+public class CmdActorSpawn extends com.maddox.rts.Cmd
 {
-  public static final String EMPTY = "";
-  public static final String NAME = "NAME";
-  public static final String OVR = "OVR";
-  public static final String ARMY = "ARMY";
-  public static final String POSP = "POSP";
-  public static final String POSO = "POSO";
-  public static final String BASED = "BASED";
-  public static final String BASE = "BASE";
-  public static final String HOOK = "HOOK";
-  public static final String OWNER = "OWNER";
-  public static final String ICON = "ICON";
-  public static final String MESH = "MESH";
-  public static final String MAT = "MAT";
-  public static final String PARAMFILE = "PARAMFILE";
-  public static final String SIZE = "SIZE";
-  public static final String TIMELEN = "TIMELEN";
-  public static final String TIMENATIVE = "TIMENATIVE";
-  public static final String TYPE = "TYPE";
-  public static final String PATH = "PATH";
-  public static final String TARGET = "TARGET";
-  public static final String ACOUSTIC = "ACOUSTIC";
-  public static final String SOUND = "SOUND";
-  public static final String PRELOAD = "PRELOAD";
-  public static final String COLOR = "COLOR";
-  public static final String LIGHT = "LIGHT";
-  public static final String Z0 = "Z0";
-  public static final String FM = "FM";
-  public static final String FM_Type = "FM_Type";
-  public static final String WEAPONS = "WEAPONS";
-  public static final String FUEL = "FUEL";
-  public static final String SPEED = "SPEED";
-  public static final String SKILL = "SKILL";
-  public static final String PLAYER = "PLAYER";
-  public static final String BORNPLACE = "BORNPLACE";
-  public static final String STAYPLACE = "STAYPLACE";
-  public static final String NUMBEROFF = "NUMBEROFF";
-  public static final String RAWDATA = "RAWDATA";
-  private boolean nameExist;
-  private boolean ovrExist;
-  private Actor basedActor;
-  private QuoteTokenizer tokens;
-  private String word;
-  private ActorSpawnArg sarg = new ActorSpawnArg();
-  private Point3d P = new Point3d();
-  private Orient O = new Orient();
-  private float[] light = new float[2];
-  private Color3f color3f = new Color3f();
-  private Vector3d speed3d = new Vector3d();
-  private boolean bExit;
-
-  public boolean isRawFormat()
-  {
-    return true;
-  }
-
-  protected boolean paramContainsKey(String paramString)
-  {
-    return this.param.containsKey(paramString);
-  }
-  protected void ERR_HARD(String paramString) { super.ERR_HARD(paramString); }
-
-  public Object exec(CmdEnv paramCmdEnv, String paramString)
-  {
-    ActorSpawn localActorSpawn = null;
-    this.nameExist = false;
-    this.ovrExist = false;
-    this.basedActor = null;
-    this.bExit = false;
-    this.sarg.clear();
-
-    this.tokens = new QuoteTokenizer(paramString);
-    this.word = null;
-    Object localObject2;
-    while ((this.tokens.hasMoreTokens()) || (this.word != null)) {
-      if (this.word == null)
-        this.word = this.tokens.nextToken();
-      localObject1 = (Token)this.param.get(this.word);
-      if (localObject1 != null) {
-        if (localActorSpawn == null) {
-          ERR_HARD("class of actor NOT present");
-          this.basedActor = null;
-          return null;
-        }
-        ((Token)localObject1).parse();
-        if (this.bExit) {
-          this.basedActor = null;
-          return null;
-        }
-      }
-      else
-      {
-        localObject2 = Spawn.get_WithSoftClass(this.word, false);
-        if (localObject2 == null)
-          localObject2 = Spawn.get_WithSoftClass("com.maddox.il2." + this.word, false);
-        if (localObject2 == null)
-          localObject2 = Spawn.get_WithSoftClass("com.maddox.il2.objects." + this.word, false);
-        if (localActorSpawn == null) {
-          if (localObject2 == null) {
-            ERR_HARD("class " + this.word + " NOT found or NOT registered in Spawn database");
-            this.basedActor = null;
-            return null;
-          }
-          if (!(localObject2 instanceof ActorSpawn)) {
-            ERR_HARD("class " + this.word + " NOT contains ActorSpawn interface");
-            this.basedActor = null;
-            return null;
-          }
-          localActorSpawn = (ActorSpawn)localObject2;
-        }
-        this.word = null;
-      }
-    }
-
-    if (this.nameExist) {
-      localObject1 = Actor.getByName(this.sarg.name);
-      if (localObject1 != null) {
-        if (this.ovrExist) {
-          ((Actor)localObject1).destroy();
-        } else {
-          ERR_HARD("actor: " + this.sarg.name + " alredy exist");
-          this.basedActor = null;
-          return null;
-        }
-      }
-    }
-
-    if (this.basedActor != null)
+    class Token
     {
-      if (this.sarg.baseActor != null) {
-        localObject1 = this.basedActor.pos.getRelPoint();
-        localObject2 = this.basedActor.pos.getRelOrient();
-      } else {
-        localObject1 = this.basedActor.pos.getAbsPoint();
-        localObject2 = this.basedActor.pos.getAbsOrient();
-      }
-      if (this.sarg.point != null) { this.sarg.point.add((Tuple3d)localObject1); } else {
-        this.P.set((Tuple3d)localObject1); this.sarg.point = this.P;
-      }if (this.sarg.orient != null) { this.sarg.orient.add((Orient)localObject2); } else {
-        this.O.set((Orient)localObject2); this.sarg.orient = this.O;
-      }
+
+        public void parse()
+        {
+        }
+
+        public java.lang.String getStr()
+        {
+            if(!tokens.hasMoreTokens())
+            {
+                word = null;
+                return "";
+            }
+            java.lang.StringBuffer stringbuffer = new StringBuffer();
+            int i = 0;
+            Object obj = null;
+            word = null;
+            java.lang.String s;
+            for(; tokens.hasMoreTokens(); stringbuffer.append(s))
+            {
+                s = tokens.nextToken();
+                if(paramContainsKey(s))
+                {
+                    word = s;
+                    break;
+                }
+                if(i++ > 0)
+                    stringbuffer.append(' ');
+            }
+
+            if(stringbuffer.length() > 0)
+                return stringbuffer.toString();
+            else
+                return "";
+        }
+
+        Token()
+        {
+        }
     }
-    this.basedActor = null;
 
-    Object localObject1 = localActorSpawn.actorSpawn(this.sarg);
-    if ((localObject1 != null) && (Config.isAppEditor())) {
-      Property.set(localObject1, "spawn", paramString);
-      Property.set(localObject1, "spawn arg", new ActorSpawnArg(this.sarg));
-    }
 
-    return localObject1;
-  }
-
-  public CmdActorSpawn()
-  {
-    this.param.put("NAME", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.name = getStr(); CmdActorSpawn.access$302(CmdActorSpawn.this, true);
-      }
-    });
-    this.param.put("OVR", new Token() {
-      public void parse() { getStr(); CmdActorSpawn.access$402(CmdActorSpawn.this, true);
-      }
-    });
-    this.param.put("ARMY", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.armyExist = true;
-        String str = getStr();
-        try { CmdActorSpawn.this.sarg.army = Integer.parseInt(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format army: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("POSP", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.point = CmdActorSpawn.this.P;
-        CmdActorSpawn.this.sarg.point.set(0.0D, 0.0D, 0.0D);
-        if (str != "") {
-          NumberTokenizer localNumberTokenizer = new NumberTokenizer(str, " ");
-          try {
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.sarg.point.x = localNumberTokenizer.nextDouble();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.sarg.point.y = localNumberTokenizer.nextDouble();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.sarg.point.z = localNumberTokenizer.nextDouble(); 
-          }
-          catch (Exception localException) {
-            CmdActorSpawn.this.ERR_HARD("bad format position: " + str);
-            CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-          }
-        }
-      }
-    });
-    this.param.put("POSO", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.orient = CmdActorSpawn.this.O;
-        CmdActorSpawn.this.sarg.orient.set(0.0F, 0.0F, 0.0F);
-        if (str != "") {
-          NumberTokenizer localNumberTokenizer = new NumberTokenizer(str, " ");
-          try {
-            float f1 = 0.0F; float f2 = 0.0F; float f3 = 0.0F;
-            if (localNumberTokenizer.hasMoreTokens()) f1 = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) f2 = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) f3 = localNumberTokenizer.nextFloat();
-            CmdActorSpawn.this.sarg.orient.set(f1, f2, f3);
-          } catch (Exception localException) {
-            CmdActorSpawn.this.ERR_HARD("bad format orientation: " + str);
-            CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-          }
-        }
-      }
-    });
-    this.param.put("BASED", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.access$802(CmdActorSpawn.this, Actor.getByName(str));
-        if (CmdActorSpawn.this.basedActor == null) {
-          CmdActorSpawn.this.ERR_HARD("based actor: " + str + " not found");
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("BASE", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.baseActor = Actor.getByName(str);
-        if (CmdActorSpawn.this.sarg.baseActor == null) {
-          CmdActorSpawn.this.ERR_HARD("base actor: " + str + " not found");
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("HOOK", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.hookName = getStr();
-      }
-    });
-    this.param.put("OWNER", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.ownerActor = Actor.getByName(str);
-        if (CmdActorSpawn.this.sarg.ownerActor == null) {
-          CmdActorSpawn.this.ERR_HARD("owner actor: " + str + " not found");
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("ICON", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.iconName = getStr();
-      }
-    });
-    this.param.put("MESH", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.meshName = getStr();
-      }
-    });
-    this.param.put("MAT", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.matName = getStr();
-      }
-    });
-    this.param.put("PARAMFILE", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.paramFileName = getStr();
-      }
-    });
-    this.param.put("SIZE", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.sizeExist = true;
-        String str = getStr();
-        try { CmdActorSpawn.this.sarg.size = Float.parseFloat(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format size: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("TIMELEN", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.timeLenExist = true;
-        String str = getStr();
-        try { CmdActorSpawn.this.sarg.timeLen = Float.parseFloat(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format timeLen: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("TIMENATIVE", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.timeNativeExist = true;
-        String str = getStr();
-        try { CmdActorSpawn.this.sarg.timeNative = (Integer.parseInt(str) != 0);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format timeNative: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("TYPE", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.typeExist = true;
-        String str = getStr();
-        try { CmdActorSpawn.this.sarg.type = Integer.parseInt(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format type: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("PATH", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.path = getStr();
-      }
-    });
-    this.param.put("TARGET", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.target = getStr();
-      }
-    });
-    this.param.put("ACOUSTIC", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.acoustic = getStr();
-      }
-    });
-    this.param.put("SOUND", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.sound = getStr();
-      }
-    });
-    this.param.put("PRELOAD", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.preload = getStr();
-      }
-    });
-    this.param.put("COLOR", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.color3f = CmdActorSpawn.this.color3f;
-        CmdActorSpawn.this.color3f.set(1.0F, 1.0F, 1.0F);
-        if (str != "") {
-          NumberTokenizer localNumberTokenizer = new NumberTokenizer(str, " ");
-          try {
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.color3f.x = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.color3f.y = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.color3f.z = localNumberTokenizer.nextFloat(); 
-          }
-          catch (Exception localException) {
-            CmdActorSpawn.this.ERR_HARD("bad format color3f: " + str);
-            CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-          }
-        }
-      }
-    });
-    this.param.put("LIGHT", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.light = CmdActorSpawn.this.light;
-        CmdActorSpawn.this.sarg.light[0] = 1.0F; CmdActorSpawn.this.sarg.light[1] = 10.0F;
-        if (str != "") {
-          NumberTokenizer localNumberTokenizer = new NumberTokenizer(str, " ");
-          try {
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.sarg.light[0] = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.sarg.light[1] = localNumberTokenizer.nextFloat(); 
-          }
-          catch (Exception localException) {
-            CmdActorSpawn.this.ERR_HARD("bad format light: " + str);
-            CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-          }
-        }
-      }
-    });
-    this.param.put("Z0", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.Z0Exist = true;
-        String str = getStr();
-        try { CmdActorSpawn.this.sarg.Z0 = Float.parseFloat(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format Z0: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("FM", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.FM = getStr();
-      }
-    });
-    this.param.put("FM_Type", new Token() {
-      public void parse() { String str = getStr();
-        try {
-          CmdActorSpawn.this.sarg.FM_Type = Integer.parseInt(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format FM_Type: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("WEAPONS", new Token() {
-      public void parse() { CmdActorSpawn.this.sarg.weapons = getStr();
-      }
-    });
-    this.param.put("FUEL", new Token() {
-      public void parse() { String str = getStr();
-        try {
-          CmdActorSpawn.this.sarg.fuel = (Float.parseFloat(str) / 100.0F);
-          if (CmdActorSpawn.this.sarg.fuel > 1.0F) CmdActorSpawn.this.sarg.fuel = 1.0F;
-          if (CmdActorSpawn.this.sarg.fuel < 0.0F) CmdActorSpawn.this.sarg.fuel = 0.0F; 
-        }
-        catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format fuel: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("SPEED", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.speed = CmdActorSpawn.this.speed3d;
-        CmdActorSpawn.this.speed3d.set(0.0D, 0.0D, -1.0D);
-        if (str != "") {
-          NumberTokenizer localNumberTokenizer = new NumberTokenizer(str, " ");
-          try {
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.speed3d.x = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.speed3d.y = localNumberTokenizer.nextFloat();
-            if (localNumberTokenizer.hasMoreTokens()) CmdActorSpawn.this.speed3d.z = localNumberTokenizer.nextFloat(); 
-          }
-          catch (Exception localException) {
-            CmdActorSpawn.this.ERR_HARD("bad format speed: " + str);
-            CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-          }
-        }
-      }
-    });
-    this.param.put("SKILL", new Token() {
-      public void parse() { String str = getStr();
-        try { CmdActorSpawn.this.sarg.skill = Integer.parseInt(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format skill: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-      }
-    });
-    this.param.put("PLAYER", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.bPlayer = true;
-      }
-    });
-    this.param.put("NUMBEROFF", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.bNumberOn = false;
-      }
-    });
-    this.param.put("BORNPLACE", new Token() {
-      public void parse() { String str = getStr();
-        try { CmdActorSpawn.this.sarg.bornPlace = Integer.parseInt(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format born place: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-        CmdActorSpawn.this.sarg.bornPlaceExist = true;
-      }
-    });
-    this.param.put("STAYPLACE", new Token() {
-      public void parse() { String str = getStr();
-        try { CmdActorSpawn.this.sarg.stayPlace = Integer.parseInt(str);
-        } catch (Exception localException) {
-          CmdActorSpawn.this.ERR_HARD("bad format stay place: " + str);
-          CmdActorSpawn.access$502(CmdActorSpawn.this, true);
-        }
-        CmdActorSpawn.this.sarg.stayPlaceExist = true;
-      }
-    });
-    this.param.put("RAWDATA", new Token() {
-      public void parse() { String str = getStr();
-        CmdActorSpawn.this.sarg.rawData = str;
-      }
-    });
-    this._properties.put("NAME", "spawn");
-    this._levelAccess = 0;
-  }
-
-  class Token
-  {
-    Token()
+    public boolean isRawFormat()
     {
+        return true;
     }
 
-    public void parse()
+    protected boolean paramContainsKey(java.lang.String s)
     {
+        return param.containsKey(s);
     }
 
-    public String getStr()
+    protected void ERR_HARD(java.lang.String s)
     {
-      if (!CmdActorSpawn.this.tokens.hasMoreTokens()) { CmdActorSpawn.access$102(CmdActorSpawn.this, null); return ""; }
-      StringBuffer localStringBuffer = new StringBuffer();
-      int i = 0;
-      String str = null;
-      CmdActorSpawn.access$102(CmdActorSpawn.this, null);
-      while (CmdActorSpawn.this.tokens.hasMoreTokens()) {
-        str = CmdActorSpawn.this.tokens.nextToken();
-        if (CmdActorSpawn.this.paramContainsKey(str)) {
-          CmdActorSpawn.access$102(CmdActorSpawn.this, str);
-          break;
+        super.ERR_HARD(s);
+    }
+
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.lang.String s)
+    {
+        com.maddox.il2.engine.ActorSpawn actorspawn = null;
+        nameExist = false;
+        ovrExist = false;
+        basedActor = null;
+        bExit = false;
+        sarg.clear();
+        tokens = new QuoteTokenizer(s);
+        for(word = null; tokens.hasMoreTokens() || word != null;)
+        {
+            if(word == null)
+                word = tokens.nextToken();
+            com.maddox.il2.engine.cmd.Token token = (com.maddox.il2.engine.cmd.Token)param.get(word);
+            if(token != null)
+            {
+                if(actorspawn == null)
+                {
+                    ERR_HARD("class of actor NOT present");
+                    basedActor = null;
+                    return null;
+                }
+                token.parse();
+                if(bExit)
+                {
+                    basedActor = null;
+                    return null;
+                }
+            } else
+            {
+                java.lang.Object obj = com.maddox.rts.Spawn.get_WithSoftClass(word, false);
+                if(obj == null)
+                    obj = com.maddox.rts.Spawn.get_WithSoftClass("com.maddox.il2." + word, false);
+                if(obj == null)
+                    obj = com.maddox.rts.Spawn.get_WithSoftClass("com.maddox.il2.objects." + word, false);
+                if(actorspawn == null)
+                {
+                    if(obj == null)
+                    {
+                        ERR_HARD("class " + word + " NOT found or NOT registered in Spawn database");
+                        basedActor = null;
+                        return null;
+                    }
+                    if(!(obj instanceof com.maddox.il2.engine.ActorSpawn))
+                    {
+                        ERR_HARD("class " + word + " NOT contains ActorSpawn interface");
+                        basedActor = null;
+                        return null;
+                    }
+                    actorspawn = (com.maddox.il2.engine.ActorSpawn)obj;
+                }
+                word = null;
+            }
         }
-        if (i++ > 0) localStringBuffer.append(' ');
-        localStringBuffer.append(str);
-      }
-      if (localStringBuffer.length() > 0) return localStringBuffer.toString();
-      return "";
+
+        if(nameExist)
+        {
+            com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Actor.getByName(sarg.name);
+            if(actor != null)
+                if(ovrExist)
+                {
+                    actor.destroy();
+                } else
+                {
+                    ERR_HARD("actor: " + sarg.name + " alredy exist");
+                    basedActor = null;
+                    return null;
+                }
+        }
+        if(basedActor != null)
+        {
+            com.maddox.JGP.Point3d point3d;
+            com.maddox.il2.engine.Orient orient;
+            if(sarg.baseActor != null)
+            {
+                point3d = basedActor.pos.getRelPoint();
+                orient = basedActor.pos.getRelOrient();
+            } else
+            {
+                point3d = basedActor.pos.getAbsPoint();
+                orient = basedActor.pos.getAbsOrient();
+            }
+            if(sarg.point != null)
+            {
+                sarg.point.add(point3d);
+            } else
+            {
+                P.set(point3d);
+                sarg.point = P;
+            }
+            if(sarg.orient != null)
+            {
+                sarg.orient.add(orient);
+            } else
+            {
+                O.set(orient);
+                sarg.orient = O;
+            }
+        }
+        basedActor = null;
+        com.maddox.il2.engine.Actor actor1 = actorspawn.actorSpawn(sarg);
+        if(actor1 != null && com.maddox.il2.engine.Config.isAppEditor())
+        {
+            com.maddox.rts.Property.set(actor1, "spawn", s);
+            com.maddox.rts.Property.set(actor1, "spawn arg", new ActorSpawnArg(sarg));
+        }
+        return actor1;
     }
-  }
+
+    public CmdActorSpawn()
+    {
+        sarg = new ActorSpawnArg();
+        P = new Point3d();
+        O = new Orient();
+        light = new float[2];
+        color3f = new Color3f();
+        speed3d = new Vector3d();
+        param.put("NAME", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.name = getStr();
+                nameExist = true;
+            }
+
+        }
+);
+        param.put("OVR", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                getStr();
+                ovrExist = true;
+            }
+
+        }
+);
+        param.put("ARMY", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.armyExist = true;
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.army = java.lang.Integer.parseInt(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format army: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("POSP", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.point = P;
+                sarg.point.set(0.0D, 0.0D, 0.0D);
+                if(s != "")
+                {
+                    com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s, " ");
+                    try
+                    {
+                        if(numbertokenizer.hasMoreTokens())
+                            sarg.point.x = numbertokenizer.nextDouble();
+                        if(numbertokenizer.hasMoreTokens())
+                            sarg.point.y = numbertokenizer.nextDouble();
+                        if(numbertokenizer.hasMoreTokens())
+                            sarg.point.z = numbertokenizer.nextDouble();
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        ERR_HARD("bad format position: " + s);
+                        bExit = true;
+                    }
+                }
+            }
+
+        }
+);
+        param.put("POSO", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.orient = O;
+                sarg.orient.set(0.0F, 0.0F, 0.0F);
+                if(s != "")
+                {
+                    com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s, " ");
+                    try
+                    {
+                        float f = 0.0F;
+                        float f1 = 0.0F;
+                        float f2 = 0.0F;
+                        if(numbertokenizer.hasMoreTokens())
+                            f = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            f1 = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            f2 = numbertokenizer.nextFloat();
+                        sarg.orient.set(f, f1, f2);
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        ERR_HARD("bad format orientation: " + s);
+                        bExit = true;
+                    }
+                }
+            }
+
+        }
+);
+        param.put("BASED", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                basedActor = com.maddox.il2.engine.Actor.getByName(s);
+                if(basedActor == null)
+                {
+                    ERR_HARD("based actor: " + s + " not found");
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("BASE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.baseActor = com.maddox.il2.engine.Actor.getByName(s);
+                if(sarg.baseActor == null)
+                {
+                    ERR_HARD("base actor: " + s + " not found");
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("HOOK", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.hookName = getStr();
+            }
+
+        }
+);
+        param.put("OWNER", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.ownerActor = com.maddox.il2.engine.Actor.getByName(s);
+                if(sarg.ownerActor == null)
+                {
+                    ERR_HARD("owner actor: " + s + " not found");
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("ICON", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.iconName = getStr();
+            }
+
+        }
+);
+        param.put("MESH", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.meshName = getStr();
+            }
+
+        }
+);
+        param.put("MAT", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.matName = getStr();
+            }
+
+        }
+);
+        param.put("PARAMFILE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.paramFileName = getStr();
+            }
+
+        }
+);
+        param.put("SIZE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.sizeExist = true;
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.size = java.lang.Float.parseFloat(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format size: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("TIMELEN", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.timeLenExist = true;
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.timeLen = java.lang.Float.parseFloat(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format timeLen: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("TIMENATIVE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.timeNativeExist = true;
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.timeNative = java.lang.Integer.parseInt(s) != 0;
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format timeNative: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("TYPE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.typeExist = true;
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.type = java.lang.Integer.parseInt(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format type: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("PATH", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.path = getStr();
+            }
+
+        }
+);
+        param.put("TARGET", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.target = getStr();
+            }
+
+        }
+);
+        param.put("ACOUSTIC", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.acoustic = getStr();
+            }
+
+        }
+);
+        param.put("SOUND", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.sound = getStr();
+            }
+
+        }
+);
+        param.put("PRELOAD", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.preload = getStr();
+            }
+
+        }
+);
+        param.put("COLOR", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.color3f = color3f;
+                color3f.set(1.0F, 1.0F, 1.0F);
+                if(s != "")
+                {
+                    com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s, " ");
+                    try
+                    {
+                        if(numbertokenizer.hasMoreTokens())
+                            color3f.x = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            color3f.y = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            color3f.z = numbertokenizer.nextFloat();
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        ERR_HARD("bad format color3f: " + s);
+                        bExit = true;
+                    }
+                }
+            }
+
+        }
+);
+        param.put("LIGHT", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.light = light;
+                sarg.light[0] = 1.0F;
+                sarg.light[1] = 10F;
+                if(s != "")
+                {
+                    com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s, " ");
+                    try
+                    {
+                        if(numbertokenizer.hasMoreTokens())
+                            sarg.light[0] = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            sarg.light[1] = numbertokenizer.nextFloat();
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        ERR_HARD("bad format light: " + s);
+                        bExit = true;
+                    }
+                }
+            }
+
+        }
+);
+        param.put("Z0", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.Z0Exist = true;
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.Z0 = java.lang.Float.parseFloat(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format Z0: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("FM", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.FM = getStr();
+            }
+
+        }
+);
+        param.put("FM_Type", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.FM_Type = java.lang.Integer.parseInt(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format FM_Type: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("WEAPONS", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                sarg.weapons = getStr();
+            }
+
+        }
+);
+        param.put("FUEL", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.fuel = java.lang.Float.parseFloat(s) / 100F;
+                    if(sarg.fuel > 1.0F)
+                        sarg.fuel = 1.0F;
+                    if(sarg.fuel < 0.0F)
+                        sarg.fuel = 0.0F;
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format fuel: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("SPEED", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.speed = speed3d;
+                speed3d.set(0.0D, 0.0D, -1D);
+                if(s != "")
+                {
+                    com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s, " ");
+                    try
+                    {
+                        if(numbertokenizer.hasMoreTokens())
+                            speed3d.x = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            speed3d.y = numbertokenizer.nextFloat();
+                        if(numbertokenizer.hasMoreTokens())
+                            speed3d.z = numbertokenizer.nextFloat();
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        ERR_HARD("bad format speed: " + s);
+                        bExit = true;
+                    }
+                }
+            }
+
+        }
+);
+        param.put("SKILL", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.skill = java.lang.Integer.parseInt(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format skill: " + s);
+                    bExit = true;
+                }
+            }
+
+        }
+);
+        param.put("PLAYER", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.bPlayer = true;
+            }
+
+        }
+);
+        param.put("NUMBEROFF", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.bNumberOn = false;
+            }
+
+        }
+);
+        param.put("BORNPLACE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.bornPlace = java.lang.Integer.parseInt(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format born place: " + s);
+                    bExit = true;
+                }
+                sarg.bornPlaceExist = true;
+            }
+
+        }
+);
+        param.put("STAYPLACE", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                try
+                {
+                    sarg.stayPlace = java.lang.Integer.parseInt(s);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD("bad format stay place: " + s);
+                    bExit = true;
+                }
+                sarg.stayPlaceExist = true;
+            }
+
+        }
+);
+        param.put("RAWDATA", new com.maddox.il2.engine.cmd.Token() {
+
+            public void parse()
+            {
+                java.lang.String s = getStr();
+                sarg.rawData = s;
+            }
+
+        }
+);
+        _properties.put("NAME", "spawn");
+        _levelAccess = 0;
+    }
+
+    public static final java.lang.String EMPTY = "";
+    public static final java.lang.String NAME = "NAME";
+    public static final java.lang.String OVR = "OVR";
+    public static final java.lang.String ARMY = "ARMY";
+    public static final java.lang.String POSP = "POSP";
+    public static final java.lang.String POSO = "POSO";
+    public static final java.lang.String BASED = "BASED";
+    public static final java.lang.String BASE = "BASE";
+    public static final java.lang.String HOOK = "HOOK";
+    public static final java.lang.String OWNER = "OWNER";
+    public static final java.lang.String ICON = "ICON";
+    public static final java.lang.String MESH = "MESH";
+    public static final java.lang.String MAT = "MAT";
+    public static final java.lang.String PARAMFILE = "PARAMFILE";
+    public static final java.lang.String SIZE = "SIZE";
+    public static final java.lang.String TIMELEN = "TIMELEN";
+    public static final java.lang.String TIMENATIVE = "TIMENATIVE";
+    public static final java.lang.String TYPE = "TYPE";
+    public static final java.lang.String PATH = "PATH";
+    public static final java.lang.String TARGET = "TARGET";
+    public static final java.lang.String ACOUSTIC = "ACOUSTIC";
+    public static final java.lang.String SOUND = "SOUND";
+    public static final java.lang.String PRELOAD = "PRELOAD";
+    public static final java.lang.String COLOR = "COLOR";
+    public static final java.lang.String LIGHT = "LIGHT";
+    public static final java.lang.String Z0 = "Z0";
+    public static final java.lang.String FM = "FM";
+    public static final java.lang.String FM_Type = "FM_Type";
+    public static final java.lang.String WEAPONS = "WEAPONS";
+    public static final java.lang.String FUEL = "FUEL";
+    public static final java.lang.String SPEED = "SPEED";
+    public static final java.lang.String SKILL = "SKILL";
+    public static final java.lang.String PLAYER = "PLAYER";
+    public static final java.lang.String BORNPLACE = "BORNPLACE";
+    public static final java.lang.String STAYPLACE = "STAYPLACE";
+    public static final java.lang.String NUMBEROFF = "NUMBEROFF";
+    public static final java.lang.String RAWDATA = "RAWDATA";
+    private boolean nameExist;
+    private boolean ovrExist;
+    private com.maddox.il2.engine.Actor basedActor;
+    private com.maddox.util.QuoteTokenizer tokens;
+    private java.lang.String word;
+    private com.maddox.il2.engine.ActorSpawnArg sarg;
+    private com.maddox.JGP.Point3d P;
+    private com.maddox.il2.engine.Orient O;
+    private float light[];
+    private com.maddox.JGP.Color3f color3f;
+    private com.maddox.JGP.Vector3d speed3d;
+    private boolean bExit;
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

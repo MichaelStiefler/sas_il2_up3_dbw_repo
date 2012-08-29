@@ -1,69 +1,103 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIMesh.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.gwindow.GMesh;
-import com.maddox.gwindow.GMesh.Loader;
 import com.maddox.gwindow.GSize;
 import com.maddox.util.HashMapExt;
 import java.io.PrintStream;
 
-public class GUIMesh extends GMesh
+// Referenced classes of package com.maddox.il2.engine:
+//            Mesh
+
+public class GUIMesh extends com.maddox.gwindow.GMesh
 {
-  public Mesh mesh = null;
-  public float[] boundBox = { 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F };
-
-  private static HashMapExt _shared = new HashMapExt();
-  private static float[] _box = { 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F };
-
-  private GUIMesh()
-  {
-  }
-
-  GUIMesh(1 param1)
-  {
-    this();
-  }
-
-  public static class _Loader extends GMesh.Loader
-  {
-    public GMesh load(String paramString)
+    public static class _Loader extends com.maddox.gwindow.GMesh.Loader
     {
-      GUIMesh localGUIMesh = new GUIMesh(null);
-      localGUIMesh.size = new GSize(1.0F, 1.0F);
-      try {
-        localGUIMesh.mesh = new Mesh(paramString);
-        int i = localGUIMesh.mesh.frames();
-        if (i > 1) {
-          localGUIMesh.mesh.setFrame(0);
-          localGUIMesh.mesh.getBoundBox(localGUIMesh.boundBox);
-          for (int j = 1; j < i; j++) {
-            localGUIMesh.mesh.setFrame(j);
-            localGUIMesh.mesh.getBoundBox(GUIMesh._box);
-            if (localGUIMesh.boundBox[0] > GUIMesh._box[0]) localGUIMesh.boundBox[0] = GUIMesh.access$100()[0];
-            if (localGUIMesh.boundBox[1] > GUIMesh._box[1]) localGUIMesh.boundBox[1] = GUIMesh.access$100()[1];
-            if (localGUIMesh.boundBox[2] > GUIMesh._box[2]) localGUIMesh.boundBox[2] = GUIMesh.access$100()[2];
-            if (localGUIMesh.boundBox[3] < GUIMesh._box[3]) localGUIMesh.boundBox[3] = GUIMesh.access$100()[3];
-            if (localGUIMesh.boundBox[4] < GUIMesh._box[4]) localGUIMesh.boundBox[4] = GUIMesh.access$100()[4];
-            if (localGUIMesh.boundBox[5] >= GUIMesh._box[5]) continue; localGUIMesh.boundBox[5] = GUIMesh.access$100()[5];
-          }
-          localGUIMesh.mesh.setFrame(0);
-        } else {
-          localGUIMesh.mesh.getBoundBox(localGUIMesh.boundBox);
+
+        public com.maddox.gwindow.GMesh load(java.lang.String s)
+        {
+            com.maddox.il2.engine.GUIMesh guimesh = new GUIMesh();
+            guimesh.size = new GSize(1.0F, 1.0F);
+            try
+            {
+                guimesh.mesh = new Mesh(s);
+                int i = guimesh.mesh.frames();
+                if(i > 1)
+                {
+                    guimesh.mesh.setFrame(0);
+                    guimesh.mesh.getBoundBox(guimesh.boundBox);
+                    for(int j = 1; j < i; j++)
+                    {
+                        guimesh.mesh.setFrame(j);
+                        guimesh.mesh.getBoundBox(com.maddox.il2.engine.GUIMesh._box);
+                        if(guimesh.boundBox[0] > com.maddox.il2.engine.GUIMesh._box[0])
+                            guimesh.boundBox[0] = com.maddox.il2.engine.GUIMesh._box[0];
+                        if(guimesh.boundBox[1] > com.maddox.il2.engine.GUIMesh._box[1])
+                            guimesh.boundBox[1] = com.maddox.il2.engine.GUIMesh._box[1];
+                        if(guimesh.boundBox[2] > com.maddox.il2.engine.GUIMesh._box[2])
+                            guimesh.boundBox[2] = com.maddox.il2.engine.GUIMesh._box[2];
+                        if(guimesh.boundBox[3] < com.maddox.il2.engine.GUIMesh._box[3])
+                            guimesh.boundBox[3] = com.maddox.il2.engine.GUIMesh._box[3];
+                        if(guimesh.boundBox[4] < com.maddox.il2.engine.GUIMesh._box[4])
+                            guimesh.boundBox[4] = com.maddox.il2.engine.GUIMesh._box[4];
+                        if(guimesh.boundBox[5] < com.maddox.il2.engine.GUIMesh._box[5])
+                            guimesh.boundBox[5] = com.maddox.il2.engine.GUIMesh._box[5];
+                    }
+
+                    guimesh.mesh.setFrame(0);
+                } else
+                {
+                    guimesh.mesh.getBoundBox(guimesh.boundBox);
+                }
+                guimesh.size.set(guimesh.boundBox[3] - guimesh.boundBox[0], guimesh.boundBox[4] - guimesh.boundBox[1]);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+            return guimesh;
         }
-        localGUIMesh.size.set(localGUIMesh.boundBox[3] - localGUIMesh.boundBox[0], localGUIMesh.boundBox[4] - localGUIMesh.boundBox[1]);
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-      return localGUIMesh;
+
+        public com.maddox.gwindow.GMesh loadShared(java.lang.String s)
+        {
+            java.lang.Object obj = com.maddox.il2.engine.GUIMesh._shared.get(s);
+            if(obj != null)
+            {
+                return (com.maddox.gwindow.GMesh)obj;
+            } else
+            {
+                com.maddox.gwindow.GMesh gmesh = load(s);
+                com.maddox.il2.engine.GUIMesh._shared.put(s, gmesh);
+                return gmesh;
+            }
+        }
+
+        public _Loader()
+        {
+        }
     }
 
-    public GMesh loadShared(String paramString) {
-      Object localObject = GUIMesh._shared.get(paramString);
-      if (localObject != null)
-        return (GMesh)localObject;
-      GMesh localGMesh = load(paramString);
-      GUIMesh._shared.put(paramString, localGMesh);
-      return localGMesh;
+
+    private GUIMesh()
+    {
+        mesh = null;
     }
-  }
+
+
+    public com.maddox.il2.engine.Mesh mesh;
+    public float boundBox[] = {
+        0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F
+    };
+    private static com.maddox.util.HashMapExt _shared = new HashMapExt();
+    private static float _box[] = {
+        0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F
+    };
+
+
+
 }

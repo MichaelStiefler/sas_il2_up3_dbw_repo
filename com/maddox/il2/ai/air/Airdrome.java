@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Airdrome.java
+
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point2f;
@@ -16,350 +21,411 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.EnginesInterface;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.rts.MsgDestroy;
 import com.maddox.rts.Time;
 import java.util.ArrayList;
 
+// Referenced classes of package com.maddox.il2.ai.air:
+//            Point_Any, Point_Stay, Point_Null, Pilot, 
+//            Point_Runaway, Point_Taxi
+
 public class Airdrome
 {
-  public static float CONN_DIST = 10.0F;
-  public Point_Runaway[][] runw;
-  public Point_Taxi[][] taxi;
-  public Point_Stay[][] stay;
-  public boolean[] stayHold;
-  AiardromePoint[] aPoints;
-  int poiNum;
-  AiardromeLine[] aLines;
-  int lineNum;
-  Point_Any[] airdromeWay;
-  Point3d testParkPoint;
-  ArrayList airdromeList;
-  private static Point3d P = new Point3d();
-  private static Point2f Pcur = new Point2f();
-  private static Vector2f Vcur = new Vector2f();
-  private static Vector2f V_to = new Vector2f();
-  private static Vector2f Vdiff = new Vector2f();
+    class AiardromeLine
+    {
 
-  private static Vector2f V_pn = new Vector2f();
-  private static Vector2f Vrun = new Vector2f();
-  private static Orient tmpOr = new Orient();
+        int from;
+        int to;
 
-  public Airdrome()
-  {
-    this.aPoints = new AiardromePoint[512];
-    this.poiNum = 0;
-    this.aLines = new AiardromeLine[512];
-    this.lineNum = 0;
-    this.airdromeWay = new Point_Any[512];
-    this.testParkPoint = new Point3d();
-    this.airdromeList = new ArrayList();
+        AiardromeLine()
+        {
+        }
+    }
 
-    for (int i = 0; i < 512; i++) this.aPoints[i] = new AiardromePoint();
-    for (i = 0; i < 512; i++) this.aLines[i] = new AiardromeLine();
-    for (i = 0; i < 512; i++) this.airdromeWay[i] = new Point_Any(0.0F, 0.0F);
-  }
+    class AiardromePoint
+    {
 
-  private void freeStayPoint(Point_Any paramPoint_Any)
-  {
-    if (paramPoint_Any == null) return;
+        com.maddox.il2.ai.air.Point_Any poi;
+        int from;
+        int poiCounter;
 
-    if ((paramPoint_Any instanceof Point_Stay))
-      for (int i = 0; i < this.stayHold.length; i++)
-        for (int j = 0; j < this.stay[i].length - 1; j++)
-          if (paramPoint_Any == this.stay[i][j]) {
-            this.stayHold[i] = false;
+        AiardromePoint()
+        {
+        }
+    }
+
+
+    public Airdrome()
+    {
+        aPoints = new com.maddox.il2.ai.air.AiardromePoint[512];
+        poiNum = 0;
+        aLines = new com.maddox.il2.ai.air.AiardromeLine[512];
+        lineNum = 0;
+        airdromeWay = new com.maddox.il2.ai.air.Point_Any[512];
+        testParkPoint = new Point3d();
+        airdromeList = new ArrayList();
+        for(int i = 0; i < 512; i++)
+            aPoints[i] = new AiardromePoint();
+
+        for(int j = 0; j < 512; j++)
+            aLines[j] = new AiardromeLine();
+
+        for(int k = 0; k < 512; k++)
+            airdromeWay[k] = new Point_Any(0.0F, 0.0F);
+
+    }
+
+    private void freeStayPoint(com.maddox.il2.ai.air.Point_Any point_any)
+    {
+        if(point_any == null)
             return;
-          }
-  }
-
-  public void findTheWay(Pilot paramPilot)
-  {
-    int i3 = 0; int i4 = 0;
-
-    this.poiNum = 0;
-    this.lineNum = 0;
-
-    Vrun.x = (float)paramPilot.Vwld.x;
-    Vrun.y = (float)paramPilot.Vwld.y;
-    Point_Null localPoint_Null = new Point_Null((float)paramPilot.Loc.x, (float)paramPilot.Loc.y);
-
-    int m = -1; int n = -1;
-    int i1 = -1; int i2 = -1;
-    float f2;
-    float f3 = f2 = 2000.0F;
-    int j;
-    float f1;
-    for (int i = 0; i < this.runw.length; i++) {
-      for (j = 0; j < this.runw[i].length; j++) {
-        f1 = localPoint_Null.distance(this.runw[i][j]);
-        if (f1 < f2) {
-          f2 = f1; m = i; n = j;
-        }
-        if (f1 < f3) {
-          V_pn.sub(this.runw[i][j], localPoint_Null);
-          V_pn.normalize();
-          Vrun.normalize();
-          if (V_pn.dot(Vrun) > 0.9F) {
-            f3 = f1; i1 = i; i2 = j;
-          }
-        }
-      }
-    }
-    this.aPoints[this.poiNum].poiCounter = 0;
-    if (i1 >= 0) this.aPoints[(this.poiNum++)].poi = this.runw[i1][i2];
-    else if (m >= 0) this.aPoints[(this.poiNum++)].poi = this.runw[m][n];
-    int i5;
-    for (i = 0; i < this.stay.length; i++) {
-      if (this.stay[i].length >= 2) {
-        f1 = localPoint_Null.distance(this.stay[i][1]);
-        if ((f1 < 2000.0F) && (this.stayHold[i] == 0)) {
-          Engine.land(); this.testParkPoint.set(this.stay[i][1].x, this.stay[i][1].y, Landscape.HQ_Air(this.stay[i][1].x, this.stay[i][1].y));
-          Engine.collideEnv().getSphere(this.airdromeList, this.testParkPoint, 1.5F * paramPilot.actor.collisionR() + 10.0F);
-          i5 = this.airdromeList.size();
-          this.airdromeList.clear();
-          if (i5 == 0) {
-            this.aLines[this.lineNum].to = this.poiNum;
-            this.aPoints[this.poiNum].poiCounter = (777 + i); this.aPoints[(this.poiNum++)].poi = this.stay[i][1];
-            this.aLines[(this.lineNum++)].from = this.poiNum;
-            this.aPoints[this.poiNum].poiCounter = 255; this.aPoints[(this.poiNum++)].poi = this.stay[i][0];
-          }
-        }
-      }
-    }
-
-    if (this.poiNum >= 3)
-    {
-      m = -1; n = -1;
-      int k;
-      for (i = 0; i < this.taxi.length; i++) {
-        if ((this.taxi[i].length < 2) || 
-          (localPoint_Null.distance(this.taxi[i][0]) > 2000.0F))
-          continue;
-        i6 = 0;
-        for (k = 0; k < this.poiNum; k++) {
-          if (this.aPoints[k].poi.distance(this.taxi[i][0]) < 18.0F) {
-            i3 = k;
-            i6 = 1;
-            break;
-          }
-        }
-        if (i6 == 0) {
-          i3 = this.poiNum;
-          this.aPoints[this.poiNum].poiCounter = 255; this.aPoints[(this.poiNum++)].poi = this.taxi[i][0];
-        }
-
-        for (j = 1; j < this.taxi[i].length; j++) {
-          i6 = 0;
-          for (k = 0; k < this.poiNum; k++) {
-            if (this.aPoints[k].poi.distance(this.taxi[i][j]) < 18.0F) {
-              i4 = k;
-              i6 = 1;
-              break;
-            }
-          }
-          if (i6 == 0) {
-            i4 = this.poiNum;
-            this.aPoints[this.poiNum].poiCounter = 255; this.aPoints[(this.poiNum++)].poi = this.taxi[i][j];
-          }
-          this.aLines[this.lineNum].from = i3; this.aLines[(this.lineNum++)].to = i4;
-          i3 = i4;
-        }
-      }
-
-      for (i = 0; i < this.poiNum; i++) {
-        Engine.land(); this.testParkPoint.set(this.aPoints[i].poi.x, this.aPoints[i].poi.y, Landscape.HQ_Air(this.aPoints[i].poi.x, this.aPoints[i].poi.y));
-        Engine.collideEnv().getSphere(this.airdromeList, this.testParkPoint, 1.2F * paramPilot.actor.collisionR() + 3.0F);
-        i5 = this.airdromeList.size();
-        if ((i5 == 1) && ((this.airdromeList.get(0) instanceof Aircraft))) i5 = 0;
-        this.airdromeList.clear();
-        if (i5 <= 0) continue; this.aPoints[i].poiCounter = -100;
-      }
-
-      for (int i6 = 0; i6 < 255; i6++) {
-        int i7 = 0;
-        for (i = 0; i < this.poiNum; i++) {
-          if (this.aPoints[i].poiCounter == i6)
-            for (j = 0; j < this.lineNum; j++) {
-              int i8 = 0;
-              if (this.aLines[j].to == i) i8 = this.aLines[j].from;
-              if (this.aLines[j].from == i) i8 = this.aLines[j].to;
-              if (i8 != 0) {
-                if (this.aPoints[i8].poiCounter >= 777)
-                {
-                  this.aPoints[i8].from = i;
-                  this.stayHold[(this.aPoints[i8].poiCounter - 777)] = true;
-
-                  int i9 = i8;
-                  k = 0;
-                  while ((i9 > 0) || (k > 128))
-                  {
-                    this.airdromeWay[(k++)] = this.aPoints[i9].poi;
-                    i9 = this.aPoints[i9].from;
-                  }
-
-                  this.airdromeWay[(k++)] = this.aPoints[0].poi;
-                  paramPilot.airdromeWay = new Point_Any[k];
-                  for (int i10 = 0; i10 < k; i10++) {
-                    paramPilot.airdromeWay[i10] = new Point_Any(0.0F, 0.0F);
-                    paramPilot.airdromeWay[i10].set(this.airdromeWay[(k - i10 - 1)]);
-                  }
-                  return;
-                }
-                if (i6 + 1 < this.aPoints[i8].poiCounter) {
-                  this.aPoints[i8].poiCounter = (i6 + 1);
-                  this.aPoints[i8].from = i;
-                  i7 = 1;
-                }
-              }
-            }
-        }
-        if (i7 == 0)
-          break;
-      }
-    }
-    World.cur(); if (paramPilot.actor != World.getPlayerAircraft()) {
-      MsgDestroy.Post(Time.current() + 30000L, paramPilot.actor);
-      paramPilot.setStationedOnGround(true);
-    }
-    if (this.poiNum > 0) {
-      paramPilot.airdromeWay = new Point_Any[this.poiNum];
-      for (i = 0; i < this.poiNum; i++) paramPilot.airdromeWay[i] = this.aPoints[i].poi;
-    }
-  }
-
-  private Point_Any getNext(Pilot paramPilot)
-  {
-    if (paramPilot.airdromeWay == null) return null;
-    if (paramPilot.airdromeWay.length == 0) return null;
-    if (paramPilot.curAirdromePoi >= paramPilot.airdromeWay.length) return null;
-    return paramPilot.airdromeWay[(paramPilot.curAirdromePoi++)];
-  }
-
-  public void update(Pilot paramPilot, float paramFloat)
-  {
-    if ((!paramPilot.isCapableOfTaxiing()) || (paramPilot.EI.getThrustOutput() < 0.01F)) {
-      paramPilot.TaxiMode = false;
-      paramPilot.set_task(3);
-      paramPilot.set_maneuver(49);
-      paramPilot.AP.setStabAll(false);
-      return;
-    }
-    if (paramPilot.AS.isPilotDead(0)) {
-      paramPilot.TaxiMode = false;
-      paramPilot.setSpeedMode(8);
-      paramPilot.smConstPower = 0.0F;
-      if (Airport.distToNearestAirport(paramPilot.Loc) > 900.0D)
-        ((Aircraft)paramPilot.actor).postEndAction(6000.0D, paramPilot.actor, 3, null);
-      else
-        MsgDestroy.Post(Time.current() + 300000L, paramPilot.actor);
-      return;
-    }
-
-    P.x = paramPilot.Loc.x;
-    P.y = paramPilot.Loc.y;
-
-    Vcur.x = (float)paramPilot.Vwld.x;
-    Vcur.y = (float)paramPilot.Vwld.y;
-    paramPilot.super_update(paramFloat);
-    P.z = paramPilot.Loc.z;
-    if (paramPilot.wayCurPos == null) {
-      findTheWay(paramPilot);
-      paramPilot.wayPrevPos = (paramPilot.wayCurPos = getNext(paramPilot));
-    }
-    if (paramPilot.wayCurPos != null) {
-      Point_Any localPoint_Any1 = paramPilot.wayCurPos;
-      Point_Any localPoint_Any2 = paramPilot.wayPrevPos;
-      Pcur.set((float)P.x, (float)P.y);
-      float f1 = Pcur.distance(localPoint_Any1);
-      float f2 = Pcur.distance(localPoint_Any2);
-
-      V_to.sub(localPoint_Any1, Pcur);
-      V_to.normalize();
-
-      float f3 = 5.0F + 0.1F * f1;
-      if (f3 > 12.0F) f3 = 12.0F;
-      if (f3 > 0.9F * paramPilot.VminFLAPS) f3 = 0.9F * paramPilot.VminFLAPS;
-      if (((paramPilot.curAirdromePoi < paramPilot.airdromeWay.length) && (f1 < 15.0F)) || (f1 < 4.0F))
-      {
-        f3 = 0.0F;
-        Point_Any localPoint_Any3 = getNext(paramPilot);
-        if (localPoint_Any3 == null) {
-          paramPilot.CT.setPowerControl(0.0F);
-          paramPilot.Loc.set(P);
-          if (paramPilot.finished) return;
-          paramPilot.finished = true;
-
-          int i = 1000;
-          if (paramPilot.wayCurPos != null) i = 2400000;
-          paramPilot.actor.collide(true);
-          paramPilot.Vwld.set(0.0D, 0.0D, 0.0D);
-          paramPilot.CT.setPowerControl(0.0F);
-          paramPilot.EI.setCurControlAll(true);
-          paramPilot.EI.setEngineStops();
-          paramPilot.TaxiMode = false;
-          World.cur(); if (paramPilot.actor != World.getPlayerAircraft())
-          {
-            if ((Mission.isDogfight()) && (Main.cur().mission.zutiMisc_DespawnAIPlanesAfterLanding))
+        if(point_any instanceof com.maddox.il2.ai.air.Point_Stay)
+        {
+            for(int i = 0; i < stayHold.length; i++)
             {
-              MsgDestroy.Post(Time.current() + 4000L, paramPilot.actor);
+                for(int j = 0; j < stay[i].length - 1; j++)
+                    if(point_any == stay[i][j])
+                    {
+                        stayHold[i] = false;
+                        return;
+                    }
+
             }
-            else
-              MsgDestroy.Post(Time.current() + i, paramPilot.actor);
-          }
-          paramPilot.setStationedOnGround(true);
-          paramPilot.set_maneuver(1);
-          paramPilot.setSpeedMode(8);
-          return;
+
         }
-        paramPilot.wayPrevPos = paramPilot.wayCurPos;
-        paramPilot.wayCurPos = localPoint_Any3;
-      }
-      V_to.scale(f3);
-
-      float f4 = 2.0F * paramFloat;
-      Vdiff.set(V_to);
-      Vdiff.sub(Vcur);
-      float f5 = Vdiff.length();
-      if (f5 > f4) {
-        Vdiff.normalize();
-        Vdiff.scale(f4);
-      }
-      Vcur.add(Vdiff);
-
-      tmpOr.setYPR(Pilot.RAD2DEG(Vcur.direction()), paramPilot.Or.getPitch(), 0.0F);
-      paramPilot.Or.interpolate(tmpOr, 0.2F);
-      paramPilot.Vwld.x = Vcur.x;
-      paramPilot.Vwld.y = Vcur.y;
-      P.x += Vcur.x * paramFloat;
-      P.y += Vcur.y * paramFloat;
-    } else {
-      paramPilot.TaxiMode = false;
-      paramPilot.wayPrevPos = (paramPilot.wayCurPos = new Point_Null((float)paramPilot.Loc.x, (float)paramPilot.Loc.y));
     }
-    paramPilot.Loc.set(P);
-  }
 
-  class AiardromeLine
-  {
-    int from;
-    int to;
-
-    AiardromeLine()
+    public void findTheWay(com.maddox.il2.ai.air.Pilot pilot)
     {
+        int i4 = 0;
+        int j4 = 0;
+        poiNum = 0;
+        lineNum = 0;
+        Vrun.x = (float)pilot.Vwld.x;
+        Vrun.y = (float)pilot.Vwld.y;
+        com.maddox.il2.ai.air.Point_Null point_null = new Point_Null((float)pilot.Loc.x, (float)pilot.Loc.y);
+        int i3 = -1;
+        int j3 = -1;
+        int k3 = -1;
+        int l3 = -1;
+        float f2;
+        float f3 = f2 = 2000F;
+        for(int i = 0; i < runw.length; i++)
+        {
+            for(int k1 = 0; k1 < runw[i].length; k1++)
+            {
+                float f = point_null.distance(runw[i][k1]);
+                if(f < f2)
+                {
+                    f2 = f;
+                    i3 = i;
+                    j3 = k1;
+                }
+                if(f < f3)
+                {
+                    V_pn.sub(runw[i][k1], point_null);
+                    V_pn.normalize();
+                    Vrun.normalize();
+                    if(V_pn.dot(Vrun) > 0.9F)
+                    {
+                        f3 = f;
+                        k3 = i;
+                        l3 = k1;
+                    }
+                }
+            }
+
+        }
+
+        aPoints[poiNum].poiCounter = 0;
+        if(k3 >= 0)
+            aPoints[poiNum++].poi = runw[k3][l3];
+        else
+        if(i3 >= 0)
+            aPoints[poiNum++].poi = runw[i3][j3];
+        for(int j = 0; j < stay.length; j++)
+            if(stay[j].length >= 2)
+            {
+                float f1 = point_null.distance(stay[j][1]);
+                if(f1 < 2000F && !stayHold[j])
+                {
+                    com.maddox.il2.engine.Engine.land();
+                    testParkPoint.set(stay[j][1].x, stay[j][1].y, com.maddox.il2.engine.Landscape.HQ_Air(stay[j][1].x, stay[j][1].y));
+                    com.maddox.il2.engine.Engine.collideEnv().getSphere(airdromeList, testParkPoint, 1.5F * pilot.actor.collisionR() + 10F);
+                    int k4 = airdromeList.size();
+                    airdromeList.clear();
+                    if(k4 == 0)
+                    {
+                        aLines[lineNum].to = poiNum;
+                        aPoints[poiNum].poiCounter = 777 + j;
+                        aPoints[poiNum++].poi = stay[j][1];
+                        aLines[lineNum++].from = poiNum;
+                        aPoints[poiNum].poiCounter = 255;
+                        aPoints[poiNum++].poi = stay[j][0];
+                    }
+                }
+            }
+
+        if(poiNum >= 3)
+        {
+            byte byte0 = -1;
+            byte byte1 = -1;
+            for(int k = 0; k < taxi.length; k++)
+                if(taxi[k].length >= 2 && point_null.distance(taxi[k][0]) <= 2000F)
+                {
+                    boolean flag = false;
+                    for(int j2 = 0; j2 < poiNum; j2++)
+                    {
+                        if(aPoints[j2].poi.distance(taxi[k][0]) >= 18F)
+                            continue;
+                        i4 = j2;
+                        flag = true;
+                        break;
+                    }
+
+                    if(!flag)
+                    {
+                        i4 = poiNum;
+                        aPoints[poiNum].poiCounter = 255;
+                        aPoints[poiNum++].poi = taxi[k][0];
+                    }
+                    for(int l1 = 1; l1 < taxi[k].length; l1++)
+                    {
+                        boolean flag1 = false;
+                        for(int k2 = 0; k2 < poiNum; k2++)
+                        {
+                            if(aPoints[k2].poi.distance(taxi[k][l1]) >= 18F)
+                                continue;
+                            j4 = k2;
+                            flag1 = true;
+                            break;
+                        }
+
+                        if(!flag1)
+                        {
+                            j4 = poiNum;
+                            aPoints[poiNum].poiCounter = 255;
+                            aPoints[poiNum++].poi = taxi[k][l1];
+                        }
+                        aLines[lineNum].from = i4;
+                        aLines[lineNum++].to = j4;
+                        i4 = j4;
+                    }
+
+                }
+
+            for(int l = 0; l < poiNum; l++)
+            {
+                com.maddox.il2.engine.Engine.land();
+                testParkPoint.set(aPoints[l].poi.x, aPoints[l].poi.y, com.maddox.il2.engine.Landscape.HQ_Air(aPoints[l].poi.x, aPoints[l].poi.y));
+                com.maddox.il2.engine.Engine.collideEnv().getSphere(airdromeList, testParkPoint, 1.2F * pilot.actor.collisionR() + 3F);
+                int l4 = airdromeList.size();
+                if(l4 == 1 && (airdromeList.get(0) instanceof com.maddox.il2.objects.air.Aircraft))
+                    l4 = 0;
+                airdromeList.clear();
+                if(l4 > 0)
+                    aPoints[l].poiCounter = -100;
+            }
+
+            for(int i5 = 0; i5 < 255; i5++)
+            {
+                boolean flag2 = false;
+                for(int i1 = 0; i1 < poiNum; i1++)
+                    if(aPoints[i1].poiCounter == i5)
+                    {
+                        for(int i2 = 0; i2 < lineNum; i2++)
+                        {
+                            int j5 = 0;
+                            if(aLines[i2].to == i1)
+                                j5 = aLines[i2].from;
+                            if(aLines[i2].from == i1)
+                                j5 = aLines[i2].to;
+                            if(j5 != 0)
+                            {
+                                if(aPoints[j5].poiCounter >= 777)
+                                {
+                                    aPoints[j5].from = i1;
+                                    stayHold[aPoints[j5].poiCounter - 777] = true;
+                                    int k5 = j5;
+                                    int l2;
+                                    for(l2 = 0; k5 > 0 || l2 > 128; k5 = aPoints[k5].from)
+                                        airdromeWay[l2++] = aPoints[k5].poi;
+
+                                    airdromeWay[l2++] = aPoints[0].poi;
+                                    pilot.airdromeWay = new com.maddox.il2.ai.air.Point_Any[l2];
+                                    for(int l5 = 0; l5 < l2; l5++)
+                                    {
+                                        pilot.airdromeWay[l5] = new Point_Any(0.0F, 0.0F);
+                                        pilot.airdromeWay[l5].set(airdromeWay[l2 - l5 - 1]);
+                                    }
+
+                                    return;
+                                }
+                                if(i5 + 1 < aPoints[j5].poiCounter)
+                                {
+                                    aPoints[j5].poiCounter = i5 + 1;
+                                    aPoints[j5].from = i1;
+                                    flag2 = true;
+                                }
+                            }
+                        }
+
+                    }
+
+                if(!flag2)
+                    break;
+            }
+
+        }
+        com.maddox.il2.ai.World.cur();
+        if(pilot.actor != com.maddox.il2.ai.World.getPlayerAircraft())
+        {
+            com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 30000L, pilot.actor);
+            pilot.setStationedOnGround(true);
+        }
+        if(poiNum > 0)
+        {
+            pilot.airdromeWay = new com.maddox.il2.ai.air.Point_Any[poiNum];
+            for(int j1 = 0; j1 < poiNum; j1++)
+                pilot.airdromeWay[j1] = aPoints[j1].poi;
+
+        }
     }
-  }
 
-  class AiardromePoint
-  {
-    Point_Any poi;
-    int from;
-    int poiCounter;
-
-    AiardromePoint()
+    private com.maddox.il2.ai.air.Point_Any getNext(com.maddox.il2.ai.air.Pilot pilot)
     {
+        if(pilot.airdromeWay == null)
+            return null;
+        if(pilot.airdromeWay.length == 0)
+            return null;
+        if(pilot.curAirdromePoi >= pilot.airdromeWay.length)
+            return null;
+        else
+            return pilot.airdromeWay[pilot.curAirdromePoi++];
     }
-  }
+
+    public void update(com.maddox.il2.ai.air.Pilot pilot, float f)
+    {
+        if(!pilot.isCapableOfTaxiing() || pilot.EI.getThrustOutput() < 0.01F)
+        {
+            pilot.TaxiMode = false;
+            pilot.set_task(3);
+            pilot.set_maneuver(49);
+            pilot.AP.setStabAll(false);
+            return;
+        }
+        if(pilot.AS.isPilotDead(0))
+        {
+            pilot.TaxiMode = false;
+            pilot.setSpeedMode(8);
+            pilot.smConstPower = 0.0F;
+            if(com.maddox.il2.ai.Airport.distToNearestAirport(pilot.Loc) > 900D)
+                ((com.maddox.il2.objects.air.Aircraft)pilot.actor).postEndAction(6000D, pilot.actor, 3, null);
+            else
+                com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 0x493e0L, pilot.actor);
+            return;
+        }
+        P.x = pilot.Loc.x;
+        P.y = pilot.Loc.y;
+        Vcur.x = (float)pilot.Vwld.x;
+        Vcur.y = (float)pilot.Vwld.y;
+        pilot.super_update(f);
+        P.z = pilot.Loc.z;
+        if(pilot.wayCurPos == null)
+        {
+            findTheWay(pilot);
+            pilot.wayPrevPos = pilot.wayCurPos = getNext(pilot);
+        }
+        if(pilot.wayCurPos != null)
+        {
+            com.maddox.il2.ai.air.Point_Any point_any = pilot.wayCurPos;
+            com.maddox.il2.ai.air.Point_Any point_any1 = pilot.wayPrevPos;
+            Pcur.set((float)P.x, (float)P.y);
+            float f1 = Pcur.distance(point_any);
+            float f2 = Pcur.distance(point_any1);
+            V_to.sub(point_any, Pcur);
+            V_to.normalize();
+            float f3 = 5F + 0.1F * f1;
+            if(f3 > 12F)
+                f3 = 12F;
+            if(f3 > 0.9F * pilot.VminFLAPS)
+                f3 = 0.9F * pilot.VminFLAPS;
+            if(pilot.curAirdromePoi < pilot.airdromeWay.length && f1 < 15F || f1 < 4F)
+            {
+                f3 = 0.0F;
+                com.maddox.il2.ai.air.Point_Any point_any2 = getNext(pilot);
+                if(point_any2 == null)
+                {
+                    pilot.CT.setPowerControl(0.0F);
+                    pilot.Loc.set(P);
+                    if(pilot.finished)
+                        return;
+                    pilot.finished = true;
+                    int i = 1000;
+                    if(pilot.wayCurPos != null)
+                        i = 0x249f00;
+                    pilot.actor.collide(true);
+                    pilot.Vwld.set(0.0D, 0.0D, 0.0D);
+                    pilot.CT.setPowerControl(0.0F);
+                    pilot.EI.setCurControlAll(true);
+                    pilot.EI.setEngineStops();
+                    pilot.TaxiMode = false;
+                    com.maddox.il2.ai.World.cur();
+                    if(pilot.actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                        com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + (long)i, pilot.actor);
+                    pilot.setStationedOnGround(true);
+                    pilot.set_maneuver(1);
+                    pilot.setSpeedMode(8);
+                    return;
+                }
+                pilot.wayPrevPos = pilot.wayCurPos;
+                pilot.wayCurPos = point_any2;
+            }
+            V_to.scale(f3);
+            float f4 = 2.0F * f;
+            Vdiff.set(V_to);
+            Vdiff.sub(Vcur);
+            float f5 = Vdiff.length();
+            if(f5 > f4)
+            {
+                Vdiff.normalize();
+                Vdiff.scale(f4);
+            }
+            Vcur.add(Vdiff);
+            tmpOr.setYPR(pilot.RAD2DEG(Vcur.direction()), pilot.Or.getPitch(), 0.0F);
+            pilot.Or.interpolate(tmpOr, 0.2F);
+            pilot.Vwld.x = Vcur.x;
+            pilot.Vwld.y = Vcur.y;
+            P.x += Vcur.x * f;
+            P.y += Vcur.y * f;
+        } else
+        {
+            pilot.TaxiMode = false;
+            pilot.wayPrevPos = pilot.wayCurPos = new Point_Null((float)pilot.Loc.x, (float)pilot.Loc.y);
+        }
+        pilot.Loc.set(P);
+    }
+
+    public static float CONN_DIST = 10F;
+    public com.maddox.il2.ai.air.Point_Runaway runw[][];
+    public com.maddox.il2.ai.air.Point_Taxi taxi[][];
+    public com.maddox.il2.ai.air.Point_Stay stay[][];
+    public boolean stayHold[];
+    com.maddox.il2.ai.air.AiardromePoint aPoints[];
+    int poiNum;
+    com.maddox.il2.ai.air.AiardromeLine aLines[];
+    int lineNum;
+    com.maddox.il2.ai.air.Point_Any airdromeWay[];
+    com.maddox.JGP.Point3d testParkPoint;
+    java.util.ArrayList airdromeList;
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    private static com.maddox.JGP.Point2f Pcur = new Point2f();
+    private static com.maddox.JGP.Vector2f Vcur = new Vector2f();
+    private static com.maddox.JGP.Vector2f V_to = new Vector2f();
+    private static com.maddox.JGP.Vector2f Vdiff = new Vector2f();
+    private static com.maddox.JGP.Vector2f V_pn = new Vector2f();
+    private static com.maddox.JGP.Vector2f Vrun = new Vector2f();
+    private static com.maddox.il2.engine.Orient tmpOr = new Orient();
+
 }

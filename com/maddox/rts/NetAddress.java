@@ -1,44 +1,59 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetAddress.java
+
 package com.maddox.rts;
 
 import java.net.UnknownHostException;
 
 public abstract class NetAddress
 {
-  public String getHostName()
-  {
-    return null;
-  }
-  public byte[] getAddress() {
-    return null;
-  }
-  public String getHostAddress() {
-    return null;
-  }
 
-  public String toString() {
-    return getHostAddress();
-  }
+    public NetAddress()
+    {
+    }
 
-  public void create(String paramString)
-    throws UnknownHostException
-  {
-  }
+    public java.lang.String getHostName()
+    {
+        return null;
+    }
 
-  public NetAddress getLocalHost()
-    throws UnknownHostException
-  {
-    return null;
-  }
+    public byte[] getAddress()
+    {
+        return null;
+    }
 
-  public NetAddress getByName(String paramString)
-    throws UnknownHostException
-  {
-    return null;
-  }
+    public java.lang.String getHostAddress()
+    {
+        return null;
+    }
 
-  public NetAddress[] getAllByName(String paramString)
-    throws UnknownHostException
-  {
-    return null;
-  }
+    public java.lang.String toString()
+    {
+        return getHostAddress();
+    }
+
+    public void create(java.lang.String s)
+        throws java.net.UnknownHostException
+    {
+    }
+
+    public com.maddox.rts.NetAddress getLocalHost()
+        throws java.net.UnknownHostException
+    {
+        return null;
+    }
+
+    public com.maddox.rts.NetAddress getByName(java.lang.String s)
+        throws java.net.UnknownHostException
+    {
+        return null;
+    }
+
+    public com.maddox.rts.NetAddress[] getAllByName(java.lang.String s)
+        throws java.net.UnknownHostException
+    {
+        return null;
+    }
 }

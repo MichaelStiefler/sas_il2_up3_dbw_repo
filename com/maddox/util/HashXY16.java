@@ -1,23 +1,39 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HashXY16.java
+
 package com.maddox.util;
+
 
 public class HashXY16
 {
-  private static int[] tbl = new int[256];
 
-  public static int key(int paramInt1, int paramInt2)
-  {
-    return tbl[((paramInt1 & 0xF) << 4 | paramInt2 & 0xF)] | tbl[(paramInt1 & 0xF0 | (paramInt2 & 0xF0) >> 4)] << 8 | (paramInt1 & 0xFF00) << 24 | (paramInt2 & 0xFF00) << 16;
-  }
-
-  static
-  {
-    int i = 0;
-    for (int j = 0; j < 16; j++) {
-      int k = (j & 0x1) << 1 | (j & 0x2) << 2 | (j & 0x4) << 3 | (j & 0x8) << 4;
-      for (int m = 0; m < 16; m++) {
-        int n = (m & 0x1) << 0 | (m & 0x2) << 1 | (m & 0x4) << 2 | (m & 0x8) << 3;
-        tbl[(i++)] = (k | n);
-      }
+    public static int key(int i, int j)
+    {
+        return tbl[(i & 0xf) << 4 | j & 0xf] | tbl[i & 0xf0 | (j & 0xf0) >> 4] << 8 | (i & 0xff00) << 24 | (j & 0xff00) << 16;
     }
-  }
+
+    private HashXY16()
+    {
+    }
+
+    private static int tbl[];
+
+    static 
+    {
+        tbl = new int[256];
+        int i = 0;
+        for(int j = 0; j < 16; j++)
+        {
+            int k = (j & 1) << 1 | (j & 2) << 2 | (j & 4) << 3 | (j & 8) << 4;
+            for(int l = 0; l < 16; l++)
+            {
+                int i1 = (l & 1) << 0 | (l & 2) << 1 | (l & 4) << 2 | (l & 8) << 3;
+                tbl[i++] = k | i1;
+            }
+
+        }
+
+    }
 }

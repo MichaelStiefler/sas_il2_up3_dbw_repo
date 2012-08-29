@@ -1,145 +1,191 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PBN1.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class PBN1 extends PBYX
+// Referenced classes of package com.maddox.il2.objects.air:
+//            PBYX, PaintSchemeBMPar04, NetAircraft, Aircraft
+
+public class PBN1 extends com.maddox.il2.objects.air.PBYX
 {
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
-    switch (paramInt) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      this.FM.turret[0].setHealth(paramFloat);
-      break;
-    case 5:
-      this.FM.turret[1].setHealth(paramFloat);
-      break;
-    case 6:
-      this.FM.turret[2].setHealth(paramFloat);
-    case 3:
-    case 4:
+
+    public PBN1()
+    {
     }
-  }
-  public void doMurderPilot(int paramInt) {
-    switch (paramInt) {
-    case 0:
-      hierMesh().chunkVisible("Pilot1_D0", false);
-      hierMesh().chunkVisible("HMask1_D0", false);
-      hierMesh().chunkVisible("Pilot1_D1", true);
-      hierMesh().chunkVisible("Head1_D0", false);
-      break;
-    case 1:
-      hierMesh().chunkVisible("Pilot2_D0", false);
-      hierMesh().chunkVisible("HMask2_D0", false);
-      hierMesh().chunkVisible("Pilot2_D1", true);
-      break;
-    case 2:
-      hierMesh().chunkVisible("Pilot3_D0", false);
-      hierMesh().chunkVisible("HMask3_D0", false);
-      hierMesh().chunkVisible("Pilot3_D1", true);
-      break;
-    case 3:
-      hierMesh().chunkVisible("Pilot4_D0", false);
-      hierMesh().chunkVisible("HMask4_D0", false);
-      hierMesh().chunkVisible("Pilot4_D1", true);
-      break;
-    case 5:
-      hierMesh().chunkVisible("Pilot6_D0", false);
-      hierMesh().chunkVisible("HMask6_D0", false);
-      hierMesh().chunkVisible("Pilot6_D1", true);
-      break;
-    case 6:
-      hierMesh().chunkVisible("Pilot7_D0", false);
-      hierMesh().chunkVisible("HMask7_D0", false);
-      hierMesh().chunkVisible("Pilot7_D1", true);
-    case 4:
+
+    public void doKillPilot(int i)
+    {
+        switch(i)
+        {
+        case 2: // '\002'
+            FM.turret[0].bIsOperable = false;
+            break;
+
+        case 5: // '\005'
+            FM.turret[1].bIsOperable = false;
+            break;
+
+        case 6: // '\006'
+            FM.turret[2].bIsOperable = false;
+            break;
+        }
     }
-  }
 
-  public boolean typeBomberToggleAutomation()
-  {
-    return false;
-  }
+    public void doMurderPilot(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            hierMesh().chunkVisible("Pilot1_D0", false);
+            hierMesh().chunkVisible("HMask1_D0", false);
+            hierMesh().chunkVisible("Pilot1_D1", true);
+            hierMesh().chunkVisible("Head1_D0", false);
+            break;
 
-  public void typeBomberAdjDistanceReset()
-  {
-  }
+        case 1: // '\001'
+            hierMesh().chunkVisible("Pilot2_D0", false);
+            hierMesh().chunkVisible("HMask2_D0", false);
+            hierMesh().chunkVisible("Pilot2_D1", true);
+            break;
 
-  public void typeBomberAdjDistancePlus()
-  {
-  }
+        case 2: // '\002'
+            hierMesh().chunkVisible("Pilot3_D0", false);
+            hierMesh().chunkVisible("HMask3_D0", false);
+            hierMesh().chunkVisible("Pilot3_D1", true);
+            break;
 
-  public void typeBomberAdjDistanceMinus()
-  {
-  }
+        case 3: // '\003'
+            hierMesh().chunkVisible("Pilot4_D0", false);
+            hierMesh().chunkVisible("HMask4_D0", false);
+            hierMesh().chunkVisible("Pilot4_D1", true);
+            break;
 
-  public void typeBomberAdjSideslipReset()
-  {
-  }
+        case 5: // '\005'
+            hierMesh().chunkVisible("Pilot6_D0", false);
+            hierMesh().chunkVisible("HMask6_D0", false);
+            hierMesh().chunkVisible("Pilot6_D1", true);
+            break;
 
-  public void typeBomberAdjSideslipPlus() {
-  }
+        case 6: // '\006'
+            hierMesh().chunkVisible("Pilot7_D0", false);
+            hierMesh().chunkVisible("HMask7_D0", false);
+            hierMesh().chunkVisible("Pilot7_D1", true);
+            break;
+        }
+    }
 
-  public void typeBomberAdjSideslipMinus() {
-  }
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeBomberAdjAltitudeReset() {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-  public void typeBomberAdjAltitudePlus() {
-  }
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-  public void typeBomberAdjAltitudeMinus() {
-  }
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-  public void typeBomberAdjSpeedReset() {
-  }
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-  public void typeBomberAdjSpeedPlus() {
-  }
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-  public void typeBomberAdjSpeedMinus() {
-  }
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
 
-  static {
-    Class localClass = PBN1.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeBomberAdjSpeedReset()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "PBY");
-    Property.set(localClass, "meshName", "3DO/Plane/PBN-1/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar04());
+    public void typeBomberAdjSpeedPlus()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 2048.0F);
+    public void typeBomberAdjSpeedMinus()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/PBN-1.fmd");
+    public void typeBomberUpdate(float f)
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50t 1000", "MGunBrowning50t 1000", "MGunBrowning50t 1000", null, null, null, null });
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    weaponsRegister(localClass, "4500", new String[] { "MGunBrowning50t 1000", "MGunBrowning50t 1000", "MGunBrowning50t 1000", "BombGun500lbs 1", "BombGun500lbs 1", "BombGun500lbs 1", "BombGun500lbs 1" });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponsRegister(localClass, "41000", new String[] { "MGunBrowning50t 1000", "MGunBrowning50t 1000", "MGunBrowning50t 1000", "BombGun1000lbs 1", "BombGun1000lbs 1", "BombGun1000lbs 1", "BombGun1000lbs 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.PBN1.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "PBY");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/PBN-1/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar04());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 2048F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/PBN-1.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            10, 11, 12, 3, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50t 1000", "MGunBrowning50t 1000", "MGunBrowning50t 1000", null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4500", new java.lang.String[] {
+            "MGunBrowning50t 1000", "MGunBrowning50t 1000", "MGunBrowning50t 1000", "BombGun500lbs 1", "BombGun500lbs 1", "BombGun500lbs 1", "BombGun500lbs 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "41000", new java.lang.String[] {
+            "MGunBrowning50t 1000", "MGunBrowning50t 1000", "MGunBrowning50t 1000", "BombGun1000lbs 1", "BombGun1000lbs 1", "BombGun1000lbs 1", "BombGun1000lbs 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null
+        });
+    }
 }

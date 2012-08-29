@@ -1,39 +1,60 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HotKeyCmdTrackIRAngles.java
+
 package com.maddox.rts;
 
-public abstract class HotKeyCmdTrackIRAngles extends HotKeyCmd
+
+// Referenced classes of package com.maddox.rts:
+//            HotKeyCmd, Time, HotKeyCmdEnv, RTSConf, 
+//            HotKeyCmdEnvs
+
+public abstract class HotKeyCmdTrackIRAngles extends com.maddox.rts.HotKeyCmd
 {
-  protected float _yaw;
-  protected float _pitch;
-  protected float _roll;
 
-  public void angles(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-  }
+    public void angles(float f, float f1, float f2)
+    {
+    }
 
-  public final void setAngles(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this._yaw = paramFloat1;
-    this._pitch = paramFloat2;
-    this._roll = paramFloat3;
-  }
+    public final void setAngles(float f, float f1, float f2)
+    {
+        _yaw = f;
+        _pitch = f1;
+        _roll = f2;
+    }
 
-  public final void doAngles() {
-    this.bActive = true;
-    angles(this._yaw, this._pitch, this._roll);
-    this.bActive = false;
-  }
+    public final void doAngles()
+    {
+        bActive = true;
+        angles(_yaw, _pitch, _roll);
+        bActive = false;
+    }
 
-  public HotKeyCmdTrackIRAngles(boolean paramBoolean, String paramString) {
-    super(paramBoolean, paramString);
-  }
+    public HotKeyCmdTrackIRAngles(boolean flag, java.lang.String s)
+    {
+        super(flag, s);
+    }
 
-  public void _exec(float paramFloat1, float paramFloat2, float paramFloat3) {
-    boolean bool = Time.isPaused();
-    if ((Time.isPaused()) && (!isRealTime())) return;
-    if (!this.hotKeyCmdEnv.isEnabled()) return;
-    setAngles(paramFloat1, paramFloat2, paramFloat3);
-    RTSConf.cur.hotKeyCmdEnvs.post(this, true, true);
-    doAngles();
-    RTSConf.cur.hotKeyCmdEnvs.post(this, true, false);
-  }
+    public void _exec(float f, float f1, float f2)
+    {
+        boolean flag = com.maddox.rts.Time.isPaused();
+        if(com.maddox.rts.Time.isPaused() && !isRealTime())
+            return;
+        if(!hotKeyCmdEnv.isEnabled())
+        {
+            return;
+        } else
+        {
+            setAngles(f, f1, f2);
+            com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(this, true, true);
+            doAngles();
+            com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(this, true, false);
+            return;
+        }
+    }
+
+    protected float _yaw;
+    protected float _pitch;
+    protected float _roll;
 }

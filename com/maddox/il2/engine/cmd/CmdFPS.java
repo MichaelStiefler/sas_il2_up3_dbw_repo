@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdFPS.java
+
 package com.maddox.il2.engine.cmd;
 
 import com.maddox.il2.engine.Actor;
@@ -16,147 +21,168 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdFPS extends Cmd
-  implements MsgTimeOutListener
+public class CmdFPS extends com.maddox.rts.Cmd
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  private boolean bGo = false;
-  private boolean bShow = false;
-  private long timeStart;
-  private int frameStart;
-  private double fpsMin;
-  private double fpsMax;
-  private double fpsCur;
-  private long timePrev;
-  private int framePrev;
-  private long logPeriod = 5000L;
-  private long logPrintTime = -1L;
-  public static final String LOG = "LOG";
-  public static final String START = "START";
-  public static final String STOP = "STOP";
-  public static final String SHOW = "SHOW";
-  public static final String HIDE = "HIDE";
-  public static final String PERF = "PERF";
-  private MsgTimeOut msg;
 
-  public void msgTimeOut(Object paramObject)
-  {
-    this.msg.post();
-    if (!this.bGo) return;
-    long l = Time.real();
-    int i = RendersMain.frame();
-    if (l >= this.timePrev + 250L) {
-      this.fpsCur = (1000.0D * (i - this.framePrev) / (l - this.timePrev));
-      if (this.fpsMin > this.fpsCur)
-        this.fpsMin = this.fpsCur;
-      if (this.fpsMax < this.fpsCur)
-        this.fpsMax = this.fpsCur;
-      this.framePrev = i;
-      this.timePrev = l;
-    }
-    if (this.framePrev == this.frameStart) {
-      return;
-    }
-    if (this.bShow) {
-      Render localRender = (Render)Actor.getByName("renderTextScr");
-      if (localRender == null) return;
-      TTFont localTTFont = TextScr.font();
-      int j = localRender.getViewPortWidth();
-      int k = localRender.getViewPortHeight();
-      String str = "fps:" + fpsInfo();
-      int m = (int)localTTFont.width(str);
-      int n = k - localTTFont.height() - 5;
-      int i1 = (j - m) / 2;
-      TextScr.output(i1, n, str);
-    }
-    if ((this.logPeriod > 0L) && 
-      (l >= this.logPrintTime + this.logPeriod)) {
-      System.out.println("fps:" + fpsInfo());
-      this.logPrintTime = l;
-    }
-  }
-
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    int i = 0;
-    checkMsg();
-
-    if (paramMap.containsKey("SHOW")) {
-      this.bShow = true;
-      i = 1;
-    } else if (paramMap.containsKey("HIDE")) {
-      this.bShow = false;
-      i = 1;
-    }
-    if (paramMap.containsKey("LOG")) {
-      int j = arg(paramMap, "LOG", 0, 5);
-      if (j < 0) j = 0;
-      this.logPeriod = (j * 1000L);
-      i = 1;
-    }
-    if (paramMap.containsKey("PERF")) {
-      AudioDevice.setPerformInfo(true);
-      i = 1;
-    }
-    if (paramMap.containsKey("START")) {
-      if ((this.bGo) && (this.timeStart != this.timePrev) && (this.logPeriod == 0L))
-        INFO_HARD("fps:" + fpsInfo());
-      this.timeStart = Time.real();
-      this.frameStart = RendersMain.frame();
-      this.fpsMin = 1000000.0D;
-      this.fpsMax = 0.0D;
-      this.fpsCur = 0.0D;
-      this.timePrev = this.timeStart;
-      this.framePrev = this.frameStart;
-      this.logPrintTime = this.timeStart;
-      this.bGo = true;
-      i = 1;
-    } else if (paramMap.containsKey("STOP")) {
-      if ((this.bGo) && (this.timeStart != this.timePrev) && (this.logPeriod == 0L))
-        INFO_HARD("fps:" + fpsInfo());
-      this.bGo = false;
-      i = 1;
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        msg.post();
+        if(!bGo)
+            return;
+        long l = com.maddox.rts.Time.real();
+        int i = com.maddox.il2.engine.RendersMain.frame();
+        if(l >= timePrev + 250L)
+        {
+            fpsCur = (1000D * (double)(i - framePrev)) / (double)(l - timePrev);
+            if(fpsMin > fpsCur)
+                fpsMin = fpsCur;
+            if(fpsMax < fpsCur)
+                fpsMax = fpsCur;
+            framePrev = i;
+            timePrev = l;
+        }
+        if(framePrev == frameStart)
+            return;
+        if(bShow)
+        {
+            com.maddox.il2.engine.Render render = (com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderTextScr");
+            if(render == null)
+                return;
+            com.maddox.il2.engine.TTFont ttfont = com.maddox.il2.engine.TextScr.font();
+            int j = render.getViewPortWidth();
+            int k = render.getViewPortHeight();
+            java.lang.String s = "fps:" + fpsInfo();
+            int i1 = (int)ttfont.width(s);
+            int j1 = k - ttfont.height() - 5;
+            int k1 = (j - i1) / 2;
+            com.maddox.il2.engine.TextScr.output(k1, j1, s);
+        }
+        if(logPeriod > 0L && l >= logPrintTime + logPeriod)
+        {
+            java.lang.System.out.println("fps:" + fpsInfo());
+            logPrintTime = l;
+        }
     }
 
-    if (i == 0) {
-      INFO_HARD("  LOG  " + this.logPeriod / 1000L);
-      if (this.bShow) INFO_HARD("  SHOW"); else
-        INFO_HARD("  HIDE");
-      if (this.bGo) {
-        if (this.timeStart != this.timePrev)
-          INFO_HARD("  " + fpsInfo());
-      }
-      else INFO_HARD("  STOPPED");
-
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        boolean flag = false;
+        checkMsg();
+        if(map.containsKey("SHOW"))
+        {
+            bShow = true;
+            flag = true;
+        } else
+        if(map.containsKey("HIDE"))
+        {
+            bShow = false;
+            flag = true;
+        }
+        if(map.containsKey("LOG"))
+        {
+            int i = com.maddox.rts.Cmd.arg(map, "LOG", 0, 5);
+            if(i < 0)
+                i = 0;
+            logPeriod = (long)i * 1000L;
+            flag = true;
+        }
+        if(map.containsKey("PERF"))
+        {
+            com.maddox.sound.AudioDevice.setPerformInfo(true);
+            flag = true;
+        }
+        if(map.containsKey("START"))
+        {
+            if(bGo && timeStart != timePrev && logPeriod == 0L)
+                INFO_HARD("fps:" + fpsInfo());
+            timeStart = com.maddox.rts.Time.real();
+            frameStart = com.maddox.il2.engine.RendersMain.frame();
+            fpsMin = 1000000D;
+            fpsMax = 0.0D;
+            fpsCur = 0.0D;
+            timePrev = timeStart;
+            framePrev = frameStart;
+            logPrintTime = timeStart;
+            bGo = true;
+            flag = true;
+        } else
+        if(map.containsKey("STOP"))
+        {
+            if(bGo && timeStart != timePrev && logPeriod == 0L)
+                INFO_HARD("fps:" + fpsInfo());
+            bGo = false;
+            flag = true;
+        }
+        if(!flag)
+        {
+            INFO_HARD("  LOG  " + logPeriod / 1000L);
+            if(bShow)
+                INFO_HARD("  SHOW");
+            else
+                INFO_HARD("  HIDE");
+            if(bGo)
+            {
+                if(timeStart != timePrev)
+                    INFO_HARD("  " + fpsInfo());
+            } else
+            {
+                INFO_HARD("  STOPPED");
+            }
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
 
-    return CmdEnv.RETURN_OK;
-  }
-
-  private String fpsInfo() {
-    return "" + (int)Math.floor(this.fpsCur) + " avg:" + (int)Math.floor(1000.0D * (this.framePrev - this.frameStart) / (this.timePrev - this.timeStart)) + " max:" + (int)Math.floor(this.fpsMax) + " min:" + (int)Math.floor(this.fpsMin) + " #fr:" + (this.framePrev - this.frameStart);
-  }
-
-  private void checkMsg()
-  {
-    if (this.msg == null) {
-      this.msg = new MsgTimeOut();
-      this.msg.setListener(this);
-      this.msg.setNotCleanAfterSend();
-      this.msg.setFlags(72);
+    private java.lang.String fpsInfo()
+    {
+        return "" + (int)java.lang.Math.floor(fpsCur) + " avg:" + (int)java.lang.Math.floor((1000D * (double)(framePrev - frameStart)) / (double)(timePrev - timeStart)) + " max:" + (int)java.lang.Math.floor(fpsMax) + " min:" + (int)java.lang.Math.floor(fpsMin) + " #fr:" + (framePrev - frameStart);
     }
-    if (!this.msg.busy())
-      this.msg.post();
-  }
 
-  public CmdFPS()
-  {
-    this.param.put("LOG", null);
-    this.param.put("START", null);
-    this.param.put("STOP", null);
-    this.param.put("SHOW", null);
-    this.param.put("HIDE", null);
-    this.param.put("PERF", null);
-    this._properties.put("NAME", "fps");
-    this._levelAccess = 1;
-  }
+    private void checkMsg()
+    {
+        if(msg == null)
+        {
+            msg = new MsgTimeOut();
+            msg.setListener(this);
+            msg.setNotCleanAfterSend();
+            msg.setFlags(72);
+        }
+        if(!msg.busy())
+            msg.post();
+    }
+
+    public CmdFPS()
+    {
+        bGo = false;
+        bShow = false;
+        logPeriod = 5000L;
+        logPrintTime = -1L;
+        param.put("LOG", null);
+        param.put("START", null);
+        param.put("STOP", null);
+        param.put("SHOW", null);
+        param.put("HIDE", null);
+        param.put("PERF", null);
+        _properties.put("NAME", "fps");
+        _levelAccess = 1;
+    }
+
+    private boolean bGo;
+    private boolean bShow;
+    private long timeStart;
+    private int frameStart;
+    private double fpsMin;
+    private double fpsMax;
+    private double fpsCur;
+    private long timePrev;
+    private int framePrev;
+    private long logPeriod;
+    private long logPrintTime;
+    public static final java.lang.String LOG = "LOG";
+    public static final java.lang.String START = "START";
+    public static final java.lang.String STOP = "STOP";
+    public static final java.lang.String SHOW = "SHOW";
+    public static final java.lang.String HIDE = "HIDE";
+    public static final java.lang.String PERF = "PERF";
+    private com.maddox.rts.MsgTimeOut msg;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   War.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point3d;
@@ -24,423 +29,499 @@ import com.maddox.rts.Time;
 import java.io.PrintStream;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            Chief, World, RangeRandom
+
 public class War
 {
-  public static final int TICK_DIV4 = 4;
-  public static final int TICK_DIV8 = 8;
-  public static final int TICK_DIV16 = 16;
-  public static final int TICK_DIV32 = 32;
-  public static final int ARMY_NUM = 2;
-  public static AirGroupList[] Groups = new AirGroupList[2];
 
-  private static int curArmy = 0;
-  private static int curGroup = 0;
-
-  private static Vector3d tmpV = new Vector3d();
-  private static Vector3d Ve = new Vector3d();
-  private static Vector3d Vtarg = new Vector3d();
-
-  public static War cur()
-  {
-    return World.cur().war;
-  }
-  public boolean isActive() {
-    if (!Mission.isPlaying()) return false;
-    if (NetMissionTrack.isPlaying()) return false;
-    if (Mission.isSingle()) return true;
-
-    return (Mission.isServer()) && ((Mission.isCoop()) || (Mission.isDogfight()));
-  }
-
-  public void onActorDied(Actor paramActor1, Actor paramActor2)
-  {
-    if (!isActive()) return;
-    if (((paramActor1 instanceof Aircraft)) && 
-      ((((Aircraft)paramActor1).FM instanceof Maneuver))) {
-      Maneuver localManeuver = (Maneuver)((Aircraft)paramActor1).FM;
-      if (localManeuver.Group != null) {
-        localManeuver.Group.delAircraft((Aircraft)paramActor1);
-        localManeuver.Group = null;
-      }
-    }
-  }
-
-  public void missionLoaded()
-  {
-  }
-
-  public void resetGameCreate()
-  {
-    curArmy = 0;
-    curGroup = 0;
-  }
-
-  public void resetGameClear()
-  {
-    for (int i = 0; i < 2; i++)
-      while (Groups[i] != null) {
-        Groups[i].G.release();
-        AirGroupList.delAirGroup(Groups, i, Groups[i].G);
-      }
-  }
-
-  public void interpolateTick()
-  {
-    if (!isActive()) return; try
+    public static com.maddox.il2.ai.War cur()
     {
-      if (Time.tickCounter() % 4 == 0) {
-        checkCollisionForAircraft();
-        if (Time.tickCounter() % 32 == 0) {
-          checkGroupsContact();
-          if (Time.tickCounter() % 64 == 0) {
-            delEmptyGroups();
-          }
-        }
-        upgradeGroups();
-      }
-      formationUpdate();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void upgradeGroups()
-  {
-    int i = AirGroupList.length(Groups[curArmy]);
-    if (i > curGroup) { AirGroupList.getGroup(Groups[curArmy], curGroup).update();
-    } else {
-      curArmy += 1;
-      if (curArmy > 1) curArmy = 0;
-      curGroup = 0;
-      return;
-    }
-    curGroup += 1;
-  }
-
-  private void formationUpdate() {
-    for (int i = 0; i < 2; i++)
-      if (Groups[i] != null) {
-        int j = AirGroupList.length(Groups[i]);
-        for (int k = 0; k < j; k++)
-          AirGroupList.getGroup(Groups[i], k).formationUpdate();
-      }
-  }
-
-  private void checkGroupsContact()
-  {
-    int i = AirGroupList.length(Groups[0]);
-    int j = AirGroupList.length(Groups[1]);
-    for (int k = 0; k < i; k++) {
-      AirGroup localAirGroup1 = AirGroupList.getGroup(Groups[0], k);
-      if ((localAirGroup1 == null) || (localAirGroup1.Pos == null))
-        continue;
-      for (int m = 0; m < j; m++) {
-        AirGroup localAirGroup2 = AirGroupList.getGroup(Groups[1], m);
-        if ((localAirGroup2 == null) || (localAirGroup2.Pos == null))
-          continue;
-        tmpV.sub(localAirGroup1.Pos, localAirGroup2.Pos);
-        if ((tmpV.lengthSquared() < 400000000.0D) && (localAirGroup1.groupsInContact(localAirGroup2))) {
-          if (!AirGroupList.groupInList(localAirGroup1.enemies[0], localAirGroup2)) {
-            AirGroupList.addAirGroup(localAirGroup1.enemies, 0, localAirGroup2);
-            if ((localAirGroup1.airc[0] != null) && (localAirGroup2.airc[0] != null)) Voice.speakEnemyDetected(localAirGroup1.airc[0], localAirGroup2.airc[0]);
-            localAirGroup1.setEnemyFighters();
-          }
-          if (!AirGroupList.groupInList(localAirGroup2.enemies[0], localAirGroup1)) {
-            AirGroupList.addAirGroup(localAirGroup2.enemies, 0, localAirGroup1);
-            if ((localAirGroup1.airc[0] != null) && (localAirGroup2.airc[0] != null)) Voice.speakEnemyDetected(localAirGroup2.airc[0], localAirGroup1.airc[0]);
-            localAirGroup2.setEnemyFighters();
-          }
-        } else {
-          if (AirGroupList.groupInList(localAirGroup1.enemies[0], localAirGroup2)) {
-            AirGroupList.delAirGroup(localAirGroup1.enemies, 0, localAirGroup2);
-            localAirGroup1.setEnemyFighters();
-          }
-          if (AirGroupList.groupInList(localAirGroup2.enemies[0], localAirGroup1)) {
-            AirGroupList.delAirGroup(localAirGroup2.enemies, 0, localAirGroup1);
-            localAirGroup2.setEnemyFighters();
-          }
-        }
-      }
-    }
-  }
-
-  private void delEmptyGroups()
-  {
-    int i = AirGroupList.length(Groups[0]);
-    int j = AirGroupList.length(Groups[1]);
-    AirGroup localAirGroup;
-    for (int k = 0; k < i; k++) {
-      localAirGroup = AirGroupList.getGroup(Groups[0], k);
-      if ((localAirGroup != null) && (localAirGroup.nOfAirc == 0)) {
-        localAirGroup.release();
-        AirGroupList.delAirGroup(Groups, 0, localAirGroup);
-      }
-    }
-    for (k = 0; k < j; k++) {
-      localAirGroup = AirGroupList.getGroup(Groups[1], k);
-      if ((localAirGroup != null) && (localAirGroup.nOfAirc == 0)) {
-        localAirGroup.release();
-        AirGroupList.delAirGroup(Groups, 1, localAirGroup);
-      }
-    }
-  }
-
-  private void checkCollisionForAircraft()
-  {
-    List localList = Engine.targets();
-    int k = localList.size();
-
-    for (int i = 0; i < k; i++) {
-      Actor localActor1 = (Actor)localList.get(i);
-      if ((localActor1 instanceof Aircraft)) {
-        FlightModel localFlightModel1 = ((Aircraft)localActor1).FM;
-        for (int j = i + 1; j < k; j++) {
-          Actor localActor2 = (Actor)localList.get(j);
-          if ((i != j) && ((localActor2 instanceof Aircraft))) {
-            FlightModel localFlightModel2 = ((Aircraft)localActor2).FM;
-            if (((localFlightModel1 instanceof Pilot)) && ((localFlightModel2 instanceof Pilot))) {
-              float f1 = (float)localFlightModel1.Loc.distanceSquared(localFlightModel2.Loc);
-              if (f1 <= 10000000.0F) {
-                if (localFlightModel1.actor.getArmy() != localFlightModel2.actor.getArmy()) {
-                  if ((localFlightModel1 instanceof RealFlightModel)) testAsDanger(localFlightModel1, localFlightModel2);
-                  if ((localFlightModel2 instanceof RealFlightModel)) testAsDanger(localFlightModel2, localFlightModel1);
-                }
-                Ve.sub(localFlightModel1.Loc, localFlightModel2.Loc);
-                float f2 = (float)Ve.length();
-                Ve.normalize();
-                if (localFlightModel1.actor.getArmy() == localFlightModel2.actor.getArmy()) {
-                  tmpV.set(Ve);
-                  localFlightModel2.Or.transformInv(tmpV);
-                  if ((tmpV.x > 0.0D) && 
-                    (tmpV.y > -0.1D) && (tmpV.y < 0.1D) && (tmpV.z > -0.1D) && (tmpV.z < 0.1D)) {
-                    ((Maneuver)localFlightModel2).setShotAtFriend(f2);
-                  }
-
-                  tmpV.set(Ve);
-                  tmpV.scale(-1.0D);
-                  localFlightModel1.Or.transformInv(tmpV);
-                  if ((tmpV.x > 0.0D) && 
-                    (tmpV.y > -0.1D) && (tmpV.y < 0.1D) && (tmpV.z > -0.1D) && (tmpV.z < 0.1D)) {
-                    ((Maneuver)localFlightModel1).setShotAtFriend(f2);
-                  }
-                }
-
-                if (f1 <= 20000.0F) {
-                  float f3 = (localFlightModel1.actor.collisionR() + localFlightModel2.actor.collisionR()) * 1.5F;
-                  f2 -= f3;
-                  Vtarg.sub(localFlightModel2.Vwld, localFlightModel1.Vwld);
-                  Vtarg.scale(1.5D);
-                  float f4 = (float)Vtarg.length();
-                  if (f4 >= f2) {
-                    Vtarg.normalize();
-                    Vtarg.scale(f2);
-                    Ve.scale(Vtarg.dot(Ve));
-                    Vtarg.sub(Ve);
-                    if ((Vtarg.length() < f3) || (f2 < 0.0F)) {
-                      if ((((Aircraft)localActor1).FM instanceof Pilot)) ((Maneuver)((Aircraft)localActor1).FM).setStrikeEmer(localFlightModel2);
-                      if (!(((Aircraft)localActor2).FM instanceof Pilot)) continue; ((Maneuver)((Aircraft)localActor2).FM).setStrikeEmer(localFlightModel1);
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  public static void testAsDanger(FlightModel paramFlightModel1, FlightModel paramFlightModel2) {
-    if ((paramFlightModel1.actor instanceof TypeTransport)) return;
-    Ve.sub(paramFlightModel2.Loc, paramFlightModel1.Loc);
-    paramFlightModel1.Or.transformInv(Ve);
-    if (Ve.x > 0.0D) {
-      float f = (float)Ve.length();
-      Ve.normalize();
-      ((Maneuver)paramFlightModel2).incDangerAggressiveness(4, (float)Ve.x, f, paramFlightModel1);
-    }
-  }
-
-  public static Aircraft getNearestFriend(Aircraft paramAircraft)
-  {
-    return getNearestFriend(paramAircraft, 10000.0F);
-  }
-
-  public static Aircraft getNearestFriend(Aircraft paramAircraft, float paramFloat) {
-    Point3d localPoint3d1 = paramAircraft.pos.getAbsPoint();
-    double d1 = paramFloat * paramFloat;
-    int i = paramAircraft.getArmy();
-    Aircraft localAircraft = null;
-    List localList = Engine.targets();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      Actor localActor = (Actor)localList.get(k);
-      if ((!(localActor instanceof Aircraft)) || 
-        (localActor == paramAircraft) || (localActor.getArmy() != i))
-        continue;
-      Point3d localPoint3d2 = localActor.pos.getAbsPoint();
-      double d2 = (localPoint3d1.x - localPoint3d2.x) * (localPoint3d1.x - localPoint3d2.x) + (localPoint3d1.y - localPoint3d2.y) * (localPoint3d1.y - localPoint3d2.y) + (localPoint3d1.z - localPoint3d2.z) * (localPoint3d1.z - localPoint3d2.z);
-
-      if (d2 < d1) {
-        localAircraft = (Aircraft)localActor;
-        d1 = d2;
-      }
-
+        return com.maddox.il2.ai.World.cur().war;
     }
 
-    return localAircraft;
-  }
-
-  public static Aircraft getNearestFriendAtPoint(Point3d paramPoint3d, Aircraft paramAircraft, float paramFloat) {
-    double d1 = paramFloat * paramFloat;
-    int i = paramAircraft.getArmy();
-    Aircraft localAircraft = null;
-    List localList = Engine.targets();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      Actor localActor = (Actor)localList.get(k);
-      if ((!(localActor instanceof Aircraft)) || 
-        (localActor.getArmy() != i)) continue;
-      Point3d localPoint3d = localActor.pos.getAbsPoint();
-      double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
-
-      if (d2 < d1) {
-        localAircraft = (Aircraft)localActor;
-        d1 = d2;
-      }
-
+    public boolean isActive()
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return false;
+        if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+            return false;
+        if(com.maddox.il2.game.Mission.isSingle())
+            return true;
+        return com.maddox.il2.game.Mission.isServer() && com.maddox.il2.game.Mission.isCoop();
     }
 
-    return localAircraft;
-  }
-
-  public static Aircraft getNearestFriendlyFighter(Aircraft paramAircraft, float paramFloat)
-  {
-    double d1 = paramFloat * paramFloat;
-    Point3d localPoint3d1 = paramAircraft.pos.getAbsPoint();
-    int i = paramAircraft.getArmy();
-    Object localObject = null;
-    List localList = Engine.targets();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      Actor localActor = (Actor)localList.get(k);
-      if ((localActor instanceof Aircraft)) {
-        Aircraft localAircraft = (Aircraft)localActor;
-        if ((localAircraft == paramAircraft) || (localAircraft.getArmy() != i) || (localAircraft.getWing() == paramAircraft.getWing()) || (!(localAircraft instanceof TypeFighter)))
+    public void onActorDied(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!isActive())
+            return;
+        if((actor instanceof com.maddox.il2.objects.air.Aircraft) && (((com.maddox.il2.objects.air.Aircraft)actor).FM instanceof com.maddox.il2.ai.air.Maneuver))
         {
-          continue;
+            com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor).FM;
+            if(maneuver.Group != null)
+            {
+                maneuver.Group.delAircraft((com.maddox.il2.objects.air.Aircraft)actor);
+                maneuver.Group = null;
+            }
         }
-        Point3d localPoint3d2 = localAircraft.pos.getAbsPoint();
-        double d2 = (localPoint3d1.x - localPoint3d2.x) * (localPoint3d1.x - localPoint3d2.x) + (localPoint3d1.y - localPoint3d2.y) * (localPoint3d1.y - localPoint3d2.y) + (localPoint3d1.z - localPoint3d2.z) * (localPoint3d1.z - localPoint3d2.z);
+    }
 
-        if (d2 < d1) {
-          localObject = localAircraft;
-          d1 = d2;
+    public void missionLoaded()
+    {
+    }
+
+    public void resetGameCreate()
+    {
+        curArmy = 0;
+        curGroup = 0;
+    }
+
+    public void resetGameClear()
+    {
+        for(int i = 0; i < 2; i++)
+            while(Groups[i] != null) 
+            {
+                Groups[i].G.release();
+                com.maddox.il2.ai.air.AirGroupList.delAirGroup(Groups, i, Groups[i].G);
+            }
+
+    }
+
+    public War()
+    {
+    }
+
+    public void interpolateTick()
+    {
+        if(!isActive())
+            return;
+        try
+        {
+            if(com.maddox.rts.Time.tickCounter() % 4 == 0)
+            {
+                checkCollisionForAircraft();
+                if(com.maddox.rts.Time.tickCounter() % 32 == 0)
+                {
+                    checkGroupsContact();
+                    if(com.maddox.rts.Time.tickCounter() % 64 == 0)
+                        delEmptyGroups();
+                }
+                upgradeGroups();
+            }
+            formationUpdate();
         }
-      }
-    }
-
-    return localObject;
-  }
-
-  public static Aircraft getNearestEnemy(Aircraft paramAircraft, float paramFloat)
-  {
-    double d1 = paramFloat * paramFloat;
-    Point3d localPoint3d1 = paramAircraft.pos.getAbsPoint();
-    int i = paramAircraft.getArmy();
-    Aircraft localAircraft = null;
-    List localList = Engine.targets();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      Actor localActor = (Actor)localList.get(k);
-      if ((!(localActor instanceof Aircraft)) || 
-        (localActor.getArmy() == i)) continue;
-      Point3d localPoint3d2 = localActor.pos.getAbsPoint();
-      double d2 = (localPoint3d1.x - localPoint3d2.x) * (localPoint3d1.x - localPoint3d2.x) + (localPoint3d1.y - localPoint3d2.y) * (localPoint3d1.y - localPoint3d2.y) + (localPoint3d1.z - localPoint3d2.z) * (localPoint3d1.z - localPoint3d2.z);
-
-      if (d2 < d1) {
-        localAircraft = (Aircraft)localActor;
-        d1 = d2;
-      }
-
-    }
-
-    return localAircraft;
-  }
-
-  public static Actor GetNearestEnemy(Actor paramActor, int paramInt, float paramFloat)
-  {
-    return NearestTargets.getEnemy(0, paramInt, paramActor.pos.getAbsPoint(), paramFloat, paramActor.getArmy());
-  }
-
-  public static Actor GetNearestEnemy(Actor paramActor, int paramInt1, float paramFloat, int paramInt2)
-  {
-    return NearestTargets.getEnemy(paramInt2, paramInt1, paramActor.pos.getAbsPoint(), paramFloat, paramActor.getArmy());
-  }
-
-  public static Actor GetNearestEnemy(Actor paramActor, int paramInt, float paramFloat, Point3d paramPoint3d)
-  {
-    return NearestTargets.getEnemy(0, paramInt, paramPoint3d, paramFloat, paramActor.getArmy());
-  }
-
-  public static Actor GetNearestEnemy(Actor paramActor, int paramInt, Point3d paramPoint3d, float paramFloat)
-  {
-    return NearestTargets.getEnemy(paramInt, 16, paramPoint3d, paramFloat, paramActor.getArmy());
-  }
-
-  public static Actor GetNearestEnemy(Actor paramActor, Point3d paramPoint3d, float paramFloat)
-  {
-    return NearestTargets.getEnemy(0, 16, paramPoint3d, paramFloat, paramActor.getArmy());
-  }
-
-  public static Actor GetNearestFromChief(Actor paramActor1, Actor paramActor2)
-  {
-    if (!Actor.isAlive(paramActor2)) return null;
-    Object localObject = null;
-    if (((paramActor2 instanceof Chief)) || ((paramActor2 instanceof Bridge))) {
-      int i = paramActor2.getOwnerAttachedCount();
-      if (i < 1) return null;
-      localObject = (Actor)paramActor2.getOwnerAttached(0);
-      double d1 = paramActor1.pos.getAbsPoint().distance(((Actor)localObject).pos.getAbsPoint());
-      for (int j = 1; j < i; j++) {
-        Actor localActor = (Actor)paramActor2.getOwnerAttached(j);
-        double d2 = paramActor1.pos.getAbsPoint().distance(localActor.pos.getAbsPoint());
-        if (d2 < d1) {
-          d2 = d1;
-          localObject = localActor;
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
-      }
     }
-    return (Actor)localObject;
-  }
 
-  public static Actor GetRandomFromChief(Actor paramActor1, Actor paramActor2)
-  {
-    if (!Actor.isAlive(paramActor2)) return null;
-    if (((paramActor2 instanceof Chief)) || ((paramActor2 instanceof Bridge))) {
-      int i = paramActor2.getOwnerAttachedCount();
-      if (i < 1) return null;
-      Actor localActor;
-      for (int j = 0; j < i; j++) {
-        localActor = (Actor)paramActor2.getOwnerAttached(World.Rnd().nextInt(0, i - 1));
-        if ((Actor.isValid(localActor)) && (localActor.isAlive())) return localActor;
-      }
-      for (j = 0; j < i; j++) {
-        localActor = (Actor)paramActor2.getOwnerAttached(j);
-        if ((Actor.isValid(localActor)) && (localActor.isAlive())) return localActor;
-      }
+    private void upgradeGroups()
+    {
+        int i = com.maddox.il2.ai.air.AirGroupList.length(Groups[curArmy]);
+        if(i > curGroup)
+        {
+            com.maddox.il2.ai.air.AirGroupList.getGroup(Groups[curArmy], curGroup).update();
+        } else
+        {
+            curArmy++;
+            if(curArmy > 1)
+                curArmy = 0;
+            curGroup = 0;
+            return;
+        }
+        curGroup++;
     }
-    return paramActor2;
-  }
 
-  public static Aircraft GetNearestEnemyAircraft(Actor paramActor, float paramFloat, int paramInt)
-  {
-    Actor localActor = GetNearestEnemy(paramActor, -1, paramFloat, paramInt);
-    if ((localActor != null) && ((localActor instanceof Aircraft))) return (Aircraft)localActor;
-    localActor = GetNearestEnemy(paramActor, -1, paramFloat, 9);
-    if ((localActor != null) && ((localActor instanceof Aircraft)))
-      return (Aircraft)localActor;
-    return null;
-  }
+    private void formationUpdate()
+    {
+        for(int i = 0; i < 2; i++)
+            if(Groups[i] != null)
+            {
+                int j = com.maddox.il2.ai.air.AirGroupList.length(Groups[i]);
+                for(int k = 0; k < j; k++)
+                    com.maddox.il2.ai.air.AirGroupList.getGroup(Groups[i], k).formationUpdate();
+
+            }
+
+    }
+
+    private void checkGroupsContact()
+    {
+        int i = com.maddox.il2.ai.air.AirGroupList.length(Groups[0]);
+        int j = com.maddox.il2.ai.air.AirGroupList.length(Groups[1]);
+        for(int k = 0; k < i; k++)
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup = com.maddox.il2.ai.air.AirGroupList.getGroup(Groups[0], k);
+            for(int l = 0; l < j; l++)
+            {
+                com.maddox.il2.ai.air.AirGroup airgroup1 = com.maddox.il2.ai.air.AirGroupList.getGroup(Groups[1], l);
+                tmpV.sub(airgroup.Pos, airgroup1.Pos);
+                if(tmpV.lengthSquared() < 400000000D && airgroup.groupsInContact(airgroup1))
+                {
+                    if(!com.maddox.il2.ai.air.AirGroupList.groupInList(airgroup.enemies[0], airgroup1))
+                    {
+                        com.maddox.il2.ai.air.AirGroupList.addAirGroup(airgroup.enemies, 0, airgroup1);
+                        if(airgroup.airc[0] != null && airgroup1.airc[0] != null)
+                            com.maddox.il2.objects.sounds.Voice.speakEnemyDetected(airgroup.airc[0], airgroup1.airc[0]);
+                        airgroup.setEnemyFighters();
+                    }
+                    if(!com.maddox.il2.ai.air.AirGroupList.groupInList(airgroup1.enemies[0], airgroup))
+                    {
+                        com.maddox.il2.ai.air.AirGroupList.addAirGroup(airgroup1.enemies, 0, airgroup);
+                        if(airgroup.airc[0] != null && airgroup1.airc[0] != null)
+                            com.maddox.il2.objects.sounds.Voice.speakEnemyDetected(airgroup1.airc[0], airgroup.airc[0]);
+                        airgroup1.setEnemyFighters();
+                    }
+                } else
+                {
+                    if(com.maddox.il2.ai.air.AirGroupList.groupInList(airgroup.enemies[0], airgroup1))
+                    {
+                        com.maddox.il2.ai.air.AirGroupList.delAirGroup(airgroup.enemies, 0, airgroup1);
+                        airgroup.setEnemyFighters();
+                    }
+                    if(com.maddox.il2.ai.air.AirGroupList.groupInList(airgroup1.enemies[0], airgroup))
+                    {
+                        com.maddox.il2.ai.air.AirGroupList.delAirGroup(airgroup1.enemies, 0, airgroup);
+                        airgroup1.setEnemyFighters();
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    private void delEmptyGroups()
+    {
+        int i = com.maddox.il2.ai.air.AirGroupList.length(Groups[0]);
+        int j = com.maddox.il2.ai.air.AirGroupList.length(Groups[1]);
+        for(int k = 0; k < i; k++)
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup = com.maddox.il2.ai.air.AirGroupList.getGroup(Groups[0], k);
+            if(airgroup != null && airgroup.nOfAirc == 0)
+            {
+                airgroup.release();
+                com.maddox.il2.ai.air.AirGroupList.delAirGroup(Groups, 0, airgroup);
+            }
+        }
+
+        for(int l = 0; l < j; l++)
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup1 = com.maddox.il2.ai.air.AirGroupList.getGroup(Groups[1], l);
+            if(airgroup1 != null && airgroup1.nOfAirc == 0)
+            {
+                airgroup1.release();
+                com.maddox.il2.ai.air.AirGroupList.delAirGroup(Groups, 1, airgroup1);
+            }
+        }
+
+    }
+
+    private void checkCollisionForAircraft()
+    {
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int k = list.size();
+        for(int i = 0; i < k; i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(i);
+            if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            {
+                com.maddox.il2.fm.FlightModel flightmodel = ((com.maddox.il2.objects.air.Aircraft)actor).FM;
+                for(int j = i + 1; j < k; j++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(j);
+                    if(i != j && (actor1 instanceof com.maddox.il2.objects.air.Aircraft))
+                    {
+                        com.maddox.il2.fm.FlightModel flightmodel1 = ((com.maddox.il2.objects.air.Aircraft)actor1).FM;
+                        if((flightmodel instanceof com.maddox.il2.ai.air.Pilot) && (flightmodel1 instanceof com.maddox.il2.ai.air.Pilot))
+                        {
+                            float f = (float)flightmodel.Loc.distanceSquared(flightmodel1.Loc);
+                            if(f <= 1E+007F)
+                            {
+                                if(flightmodel.actor.getArmy() != flightmodel1.actor.getArmy())
+                                {
+                                    if(flightmodel instanceof com.maddox.il2.fm.RealFlightModel)
+                                        com.maddox.il2.ai.War.testAsDanger(flightmodel, flightmodel1);
+                                    if(flightmodel1 instanceof com.maddox.il2.fm.RealFlightModel)
+                                        com.maddox.il2.ai.War.testAsDanger(flightmodel1, flightmodel);
+                                }
+                                Ve.sub(flightmodel.Loc, flightmodel1.Loc);
+                                float f1 = (float)Ve.length();
+                                Ve.normalize();
+                                if(flightmodel.actor.getArmy() == flightmodel1.actor.getArmy())
+                                {
+                                    tmpV.set(Ve);
+                                    flightmodel1.Or.transformInv(tmpV);
+                                    if(tmpV.x > 0.0D && tmpV.y > -0.10000000000000001D && tmpV.y < 0.10000000000000001D && tmpV.z > -0.10000000000000001D && tmpV.z < 0.10000000000000001D)
+                                        ((com.maddox.il2.ai.air.Maneuver)flightmodel1).setShotAtFriend(f1);
+                                    tmpV.set(Ve);
+                                    tmpV.scale(-1D);
+                                    flightmodel.Or.transformInv(tmpV);
+                                    if(tmpV.x > 0.0D && tmpV.y > -0.10000000000000001D && tmpV.y < 0.10000000000000001D && tmpV.z > -0.10000000000000001D && tmpV.z < 0.10000000000000001D)
+                                        ((com.maddox.il2.ai.air.Maneuver)flightmodel).setShotAtFriend(f1);
+                                }
+                                if(f <= 20000F)
+                                {
+                                    float f2 = (flightmodel.actor.collisionR() + flightmodel1.actor.collisionR()) * 1.5F;
+                                    f1 -= f2;
+                                    Vtarg.sub(flightmodel1.Vwld, flightmodel.Vwld);
+                                    Vtarg.scale(1.5D);
+                                    float f3 = (float)Vtarg.length();
+                                    if(f3 >= f1)
+                                    {
+                                        Vtarg.normalize();
+                                        Vtarg.scale(f1);
+                                        Ve.scale(Vtarg.dot(Ve));
+                                        Vtarg.sub(Ve);
+                                        if(Vtarg.length() < (double)f2 || f1 < 0.0F)
+                                        {
+                                            if(((com.maddox.il2.objects.air.Aircraft)actor).FM instanceof com.maddox.il2.ai.air.Pilot)
+                                                ((com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor).FM).setStrikeEmer(flightmodel1);
+                                            if(((com.maddox.il2.objects.air.Aircraft)actor1).FM instanceof com.maddox.il2.ai.air.Pilot)
+                                                ((com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor1).FM).setStrikeEmer(flightmodel);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    public static void testAsDanger(com.maddox.il2.fm.FlightModel flightmodel, com.maddox.il2.fm.FlightModel flightmodel1)
+    {
+        if(flightmodel.actor instanceof com.maddox.il2.objects.air.TypeTransport)
+            return;
+        Ve.sub(flightmodel1.Loc, flightmodel.Loc);
+        flightmodel.Or.transformInv(Ve);
+        if(Ve.x > 0.0D)
+        {
+            float f = (float)Ve.length();
+            Ve.normalize();
+            ((com.maddox.il2.ai.air.Maneuver)flightmodel1).incDangerAggressiveness(4, (float)Ve.x, f, flightmodel);
+        }
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft getNearestFriend(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        return com.maddox.il2.ai.War.getNearestFriend(aircraft, 10000F);
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft getNearestFriend(com.maddox.il2.objects.air.Aircraft aircraft, float f)
+    {
+        com.maddox.JGP.Point3d point3d = aircraft.pos.getAbsPoint();
+        double d = f * f;
+        int i = aircraft.getArmy();
+        com.maddox.il2.objects.air.Aircraft aircraft1 = null;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && actor != aircraft && actor.getArmy() == i)
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                double d1 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+                if(d1 < d)
+                {
+                    aircraft1 = (com.maddox.il2.objects.air.Aircraft)actor;
+                    d = d1;
+                }
+            }
+        }
+
+        return aircraft1;
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft getNearestFriendAtPoint(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aircraft, float f)
+    {
+        double d = f * f;
+        int i = aircraft.getArmy();
+        com.maddox.il2.objects.air.Aircraft aircraft1 = null;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && actor.getArmy() == i)
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                double d1 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+                if(d1 < d)
+                {
+                    aircraft1 = (com.maddox.il2.objects.air.Aircraft)actor;
+                    d = d1;
+                }
+            }
+        }
+
+        return aircraft1;
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft getNearestFriendlyFighter(com.maddox.il2.objects.air.Aircraft aircraft, float f)
+    {
+        double d = f * f;
+        com.maddox.JGP.Point3d point3d = aircraft.pos.getAbsPoint();
+        int i = aircraft.getArmy();
+        com.maddox.il2.objects.air.Aircraft aircraft1 = null;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft2 = (com.maddox.il2.objects.air.Aircraft)actor;
+                if(aircraft2 != aircraft && aircraft2.getArmy() == i && aircraft2.getWing() != aircraft.getWing() && (aircraft2 instanceof com.maddox.il2.objects.air.TypeFighter))
+                {
+                    com.maddox.JGP.Point3d point3d1 = aircraft2.pos.getAbsPoint();
+                    double d1 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+                    if(d1 < d)
+                    {
+                        aircraft1 = aircraft2;
+                        d = d1;
+                    }
+                }
+            }
+        }
+
+        return aircraft1;
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft getNearestEnemy(com.maddox.il2.objects.air.Aircraft aircraft, float f)
+    {
+        double d = f * f;
+        com.maddox.JGP.Point3d point3d = aircraft.pos.getAbsPoint();
+        int i = aircraft.getArmy();
+        com.maddox.il2.objects.air.Aircraft aircraft1 = null;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && actor.getArmy() != i)
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                double d1 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+                if(d1 < d)
+                {
+                    aircraft1 = (com.maddox.il2.objects.air.Aircraft)actor;
+                    d = d1;
+                }
+            }
+        }
+
+        return aircraft1;
+    }
+
+    public static com.maddox.il2.engine.Actor GetNearestEnemy(com.maddox.il2.engine.Actor actor, int i, float f)
+    {
+        return com.maddox.il2.ai.air.NearestTargets.getEnemy(0, i, actor.pos.getAbsPoint(), f, actor.getArmy());
+    }
+
+    public static com.maddox.il2.engine.Actor GetNearestEnemy(com.maddox.il2.engine.Actor actor, int i, float f, int j)
+    {
+        return com.maddox.il2.ai.air.NearestTargets.getEnemy(j, i, actor.pos.getAbsPoint(), f, actor.getArmy());
+    }
+
+    public static com.maddox.il2.engine.Actor GetNearestEnemy(com.maddox.il2.engine.Actor actor, int i, float f, com.maddox.JGP.Point3d point3d)
+    {
+        return com.maddox.il2.ai.air.NearestTargets.getEnemy(0, i, point3d, f, actor.getArmy());
+    }
+
+    public static com.maddox.il2.engine.Actor GetNearestEnemy(com.maddox.il2.engine.Actor actor, int i, com.maddox.JGP.Point3d point3d, float f)
+    {
+        return com.maddox.il2.ai.air.NearestTargets.getEnemy(i, 16, point3d, f, actor.getArmy());
+    }
+
+    public static com.maddox.il2.engine.Actor GetNearestEnemy(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, float f)
+    {
+        return com.maddox.il2.ai.air.NearestTargets.getEnemy(0, 16, point3d, f, actor.getArmy());
+    }
+
+    public static com.maddox.il2.engine.Actor GetNearestFromChief(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.engine.Actor.isAlive(actor1))
+            return null;
+        com.maddox.il2.engine.Actor actor2 = null;
+        if((actor1 instanceof com.maddox.il2.ai.Chief) || (actor1 instanceof com.maddox.il2.objects.bridges.Bridge))
+        {
+            int i = actor1.getOwnerAttachedCount();
+            if(i < 1)
+                return null;
+            actor2 = (com.maddox.il2.engine.Actor)actor1.getOwnerAttached(0);
+            double d = actor.pos.getAbsPoint().distance(actor2.pos.getAbsPoint());
+            for(int j = 1; j < i; j++)
+            {
+                com.maddox.il2.engine.Actor actor3 = (com.maddox.il2.engine.Actor)actor1.getOwnerAttached(j);
+                double d1 = actor.pos.getAbsPoint().distance(actor3.pos.getAbsPoint());
+                if(d1 < d)
+                {
+                    double d2 = d;
+                    actor2 = actor3;
+                }
+            }
+
+        }
+        return actor2;
+    }
+
+    public static com.maddox.il2.engine.Actor GetRandomFromChief(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.engine.Actor.isAlive(actor1))
+            return null;
+        if((actor1 instanceof com.maddox.il2.ai.Chief) || (actor1 instanceof com.maddox.il2.objects.bridges.Bridge))
+        {
+            int i = actor1.getOwnerAttachedCount();
+            if(i < 1)
+                return null;
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)actor1.getOwnerAttached(com.maddox.il2.ai.World.Rnd().nextInt(0, i - 1));
+                if(com.maddox.il2.engine.Actor.isValid(actor2) && actor2.isAlive())
+                    return actor2;
+            }
+
+            for(int k = 0; k < i; k++)
+            {
+                com.maddox.il2.engine.Actor actor3 = (com.maddox.il2.engine.Actor)actor1.getOwnerAttached(k);
+                if(com.maddox.il2.engine.Actor.isValid(actor3) && actor3.isAlive())
+                    return actor3;
+            }
+
+        }
+        return actor1;
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft GetNearestEnemyAircraft(com.maddox.il2.engine.Actor actor, float f, int i)
+    {
+        com.maddox.il2.engine.Actor actor1 = com.maddox.il2.ai.War.GetNearestEnemy(actor, -1, f, i);
+        if(actor1 != null)
+        {
+            return (com.maddox.il2.objects.air.Aircraft)actor1;
+        } else
+        {
+            com.maddox.il2.engine.Actor actor2 = com.maddox.il2.ai.War.GetNearestEnemy(actor, -1, f, 9);
+            return (com.maddox.il2.objects.air.Aircraft)actor2;
+        }
+    }
+
+    public static final int TICK_DIV4 = 4;
+    public static final int TICK_DIV8 = 8;
+    public static final int TICK_DIV16 = 16;
+    public static final int TICK_DIV32 = 32;
+    public static final int ARMY_NUM = 2;
+    public static com.maddox.il2.ai.air.AirGroupList Groups[] = new com.maddox.il2.ai.air.AirGroupList[2];
+    private static int curArmy = 0;
+    private static int curGroup = 0;
+    private static com.maddox.JGP.Vector3d tmpV = new Vector3d();
+    private static com.maddox.JGP.Vector3d Ve = new Vector3d();
+    private static com.maddox.JGP.Vector3d Vtarg = new Vector3d();
+
 }

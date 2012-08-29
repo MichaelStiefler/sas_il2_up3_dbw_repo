@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Regiment.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.il2.engine.Actor;
@@ -12,191 +17,273 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 
-public class Regiment extends Actor
+// Referenced classes of package com.maddox.il2.ai:
+//            Army
+
+public class Regiment extends com.maddox.il2.engine.Actor
 {
-  public static final String prefixPath = "PaintSchemes/";
-  public int diedBombers = 0;
-  public int diedAircrafts = 0;
-  protected String country;
-  protected String branch;
-  protected String shortFileName;
-  protected char[] id = new char[2];
-  protected String sid;
-  protected String shortInfo;
-  protected String info;
-  protected int gruppeNumber = 1;
-  protected String speech;
-  private static ArrayList all = new ArrayList();
-  protected static HashMapExt branchMap = new HashMapExt();
 
-  private static HashMap firstMap = new HashMap();
-
-  public String country()
-  {
-    return this.country; } 
-  public String branch() { return this.branch; } 
-  public String fileName() { return "PaintSchemes/" + this.shortFileName; } 
-  public String fileNameTga() { return "../" + this.shortFileName + ".tga"; } 
-  public String id() { return this.sid; } 
-  public char[] aid() { return this.id; } 
-  public int gruppeNumber() { return this.gruppeNumber; } 
-  public String shortInfo() { return this.shortInfo; } 
-  public String info() { return this.info == null ? this.shortInfo : this.info; } 
-  public String speech() { return this.speech;
-  }
-
-  public static String getCountryFromBranch(String paramString)
-  {
-    if (branchMap.containsKey(paramString)) {
-      return (String)branchMap.get(paramString);
+    public java.lang.String country()
+    {
+        return country;
     }
-    return paramString;
-  }
-  public boolean isUserDefined() {
-    return false;
-  }
-  public static void resetGame() {
-    int i = all.size();
-    for (int j = 0; j < i; j++) {
-      Regiment localRegiment = (Regiment)all.get(j);
-      localRegiment.diedBombers = 0;
-      localRegiment.diedAircrafts = 0;
+
+    public java.lang.String branch()
+    {
+        return branch;
     }
-  }
 
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-  public Regiment(String paramString1, String paramString2, int paramInt) {
-    this.flags |= 16384;
-    setArmy(paramInt);
-    setName(paramString1);
-    this.shortFileName = paramString2;
-    try {
-      PropertyResourceBundle localPropertyResourceBundle = new PropertyResourceBundle(new SFSInputStream(fileName()));
+    public java.lang.String fileName()
+    {
+        return "PaintSchemes/" + shortFileName;
+    }
 
-      this.country = localPropertyResourceBundle.getString("country");
-      this.country = this.country.toLowerCase().intern();
-      this.branch = this.country;
-      if (branchMap.containsKey(this.country)) {
-        this.country = ((String)branchMap.get(this.branch));
-      }
-      String str1 = localPropertyResourceBundle.getString("id");
-      this.id[0] = str1.charAt(0);
-      this.id[1] = str1.charAt(1);
-      if (((this.id[0] < '0') || (this.id[0] > '9')) && ((this.id[0] < 'A') || (this.id[0] > 'Z')) && (this.id[0] != '_'))
-      {
-        throw new RuntimeException("Bad regiment id[0]");
-      }if (((this.id[1] < '0') || (this.id[1] > '9')) && ((this.id[1] < 'A') || (this.id[1] > 'Z')) && (this.id[1] != '_'))
-      {
-        throw new RuntimeException("Bad regiment id[1]");
-      }this.sid = new String(this.id);
-      this.speech = this.country;
-      try {
-        this.speech = localPropertyResourceBundle.getString("speech");
-        this.speech = this.speech.toLowerCase().intern();
-      }
-      catch (Exception localException2)
-      {
-      }
+    public java.lang.String fileNameTga()
+    {
+        return "../" + shortFileName + ".tga";
+    }
 
-      this.shortInfo = I18N.regimentShort(paramString1);
-      this.info = I18N.regimentInfo(paramString1);
-      try {
-        String str2 = localPropertyResourceBundle.getString("gruppeNumber");
-        if (str2 != null) {
-          try { this.gruppeNumber = Integer.parseInt(str2); } catch (Exception localException4) {
-          }
-          if (this.gruppeNumber < 1) this.gruppeNumber = 1;
-          if (this.gruppeNumber > 5) this.gruppeNumber = 5; 
+    public java.lang.String id()
+    {
+        return sid;
+    }
+
+    public char[] aid()
+    {
+        return id;
+    }
+
+    public int gruppeNumber()
+    {
+        return gruppeNumber;
+    }
+
+    public java.lang.String shortInfo()
+    {
+        return shortInfo;
+    }
+
+    public java.lang.String info()
+    {
+        return info != null ? info : shortInfo;
+    }
+
+    public java.lang.String speech()
+    {
+        return speech;
+    }
+
+    public static java.lang.String getCountryFromBranch(java.lang.String s)
+    {
+        if(branchMap.containsKey(s))
+            return (java.lang.String)branchMap.get(s);
+        else
+            return s;
+    }
+
+    public boolean isUserDefined()
+    {
+        return false;
+    }
+
+    public static void resetGame()
+    {
+        int i = all.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Regiment regiment = (com.maddox.il2.ai.Regiment)all.get(j);
+            regiment.diedBombers = 0;
+            regiment.diedAircrafts = 0;
         }
-      } catch (Exception localException3) {
-      }
-    } catch (Exception localException1) {
-      System.out.println("Regiment load failed: " + localException1.getMessage());
-      localException1.printStackTrace();
-      destroy();
-      return;
+
     }
-    all.add(this);
-  }
 
-  public Regiment(String paramString, int paramInt) {
-    this(paramString, makeShortFileName(paramString, paramInt), paramInt);
-  }
-  private static String makeShortFileName(String paramString, int paramInt) {
-    if (paramInt < Army.amountSingle()) {
-      return Army.name(paramInt) + "/" + paramString;
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
     }
-    return paramString;
-  }
 
-  protected Regiment()
-  {
-  }
-
-  protected void createActorHashCode()
-  {
-    makeActorRealHashCode();
-  }
-
-  public static List getAll() {
-    return all;
-  }
-
-  public static Regiment findFirst(String paramString, int paramInt) {
-    String str1 = null;
-    Object localObject = null;
-    if (paramString != null) {
-      str1 = paramString + "_" + paramInt;
-      localObject = (Regiment)firstMap.get(str1);
-      if (localObject != null)
-        return localObject;
-      for (int i = 0; i < all.size(); i++) {
-        Regiment localRegiment = (Regiment)all.get(i);
-        if ((paramString.equals(localRegiment.country())) && (paramInt == localRegiment.getArmy())) {
-          localObject = localRegiment;
-          break;
+    public Regiment(java.lang.String s, java.lang.String s1, int i)
+    {
+        diedBombers = 0;
+        diedAircrafts = 0;
+        id = new char[2];
+        gruppeNumber = 1;
+        flags |= 0x4000;
+        setArmy(i);
+        setName(s);
+        shortFileName = s1;
+        try
+        {
+            java.util.PropertyResourceBundle propertyresourcebundle = new PropertyResourceBundle(new SFSInputStream(fileName()));
+            country = propertyresourcebundle.getString("country");
+            country = country.toLowerCase().intern();
+            branch = country;
+            if(branchMap.containsKey(country))
+                country = (java.lang.String)branchMap.get(branch);
+            java.lang.String s2 = propertyresourcebundle.getString("id");
+            id[0] = s2.charAt(0);
+            id[1] = s2.charAt(1);
+            if((id[0] < '0' || id[0] > '9') && (id[0] < 'A' || id[0] > 'Z') && id[0] != '_')
+                throw new RuntimeException("Bad regiment id[0]");
+            if((id[1] < '0' || id[1] > '9') && (id[1] < 'A' || id[1] > 'Z') && id[1] != '_')
+                throw new RuntimeException("Bad regiment id[1]");
+            sid = new String(id);
+            speech = country;
+            try
+            {
+                speech = propertyresourcebundle.getString("speech");
+                speech = speech.toLowerCase().intern();
+            }
+            catch(java.lang.Exception exception1) { }
+            shortInfo = com.maddox.il2.game.I18N.regimentShort(s);
+            info = com.maddox.il2.game.I18N.regimentInfo(s);
+            try
+            {
+                java.lang.String s3 = propertyresourcebundle.getString("gruppeNumber");
+                if(s3 != null)
+                {
+                    try
+                    {
+                        gruppeNumber = java.lang.Integer.parseInt(s3);
+                    }
+                    catch(java.lang.Exception exception3) { }
+                    if(gruppeNumber < 1)
+                        gruppeNumber = 1;
+                    if(gruppeNumber > 5)
+                        gruppeNumber = 5;
+                }
+            }
+            catch(java.lang.Exception exception2) { }
         }
-      }
-    }
-    if (localObject == null) {
-      String str2 = "NoNe";
-      switch (paramInt) { case 1:
-        str2 = "r01"; break;
-      case 2:
-        str2 = "g01";
-      }
-      localObject = (Regiment)Actor.getByName(str2);
-    }
-    if ((localObject != null) && (paramString != null))
-      firstMap.put(str1, localObject);
-    return (Regiment)localObject;
-  }
-
-  public static void loadAll()
-  {
-    SectFile localSectFile = new SectFile("PaintSchemes/regiments.ini", 0);
-    int i = localSectFile.sectionIndex("branch");
-    if (i >= 0) {
-      j = localSectFile.vars(i);
-      for (int k = 0; k < j; k++) {
-        String str1 = localSectFile.var(i, k);
-        String str2 = localSectFile.value(i, k);
-        if ((str1 != null) && (str2 != null)) {
-          branchMap.put(str1.toLowerCase().intern(), str2.toLowerCase().intern());
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("Regiment load failed: " + exception.getMessage());
+            exception.printStackTrace();
+            destroy();
+            return;
         }
-      }
+        all.add(this);
     }
-    for (int j = 1; j < Army.amountSingle(); j++)
-      loadSection(localSectFile, Army.name(j), j);
-    loadSection(localSectFile, "NoNe", 0);
-  }
-  private static void loadSection(SectFile paramSectFile, String paramString, int paramInt) {
-    int i = paramSectFile.sectionIndex(paramString);
-    if (i < 0) return;
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++)
-      new Regiment(paramSectFile.var(i, k), paramInt);
-  }
+
+    public Regiment(java.lang.String s, int i)
+    {
+        this(s, com.maddox.il2.ai.Regiment.makeShortFileName(s, i), i);
+    }
+
+    private static java.lang.String makeShortFileName(java.lang.String s, int i)
+    {
+        if(i < com.maddox.il2.ai.Army.amountSingle())
+            return com.maddox.il2.ai.Army.name(i) + "/" + s;
+        else
+            return s;
+    }
+
+    protected Regiment()
+    {
+        diedBombers = 0;
+        diedAircrafts = 0;
+        id = new char[2];
+        gruppeNumber = 1;
+    }
+
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
+
+    public static java.util.List getAll()
+    {
+        return all;
+    }
+
+    public static com.maddox.il2.ai.Regiment findFirst(java.lang.String s, int i)
+    {
+        java.lang.String s1 = null;
+        com.maddox.il2.ai.Regiment regiment = null;
+        if(s != null)
+        {
+            s1 = s + "_" + i;
+            regiment = (com.maddox.il2.ai.Regiment)firstMap.get(s1);
+            if(regiment != null)
+                return regiment;
+            for(int j = 0; j < all.size(); j++)
+            {
+                com.maddox.il2.ai.Regiment regiment1 = (com.maddox.il2.ai.Regiment)all.get(j);
+                if(!s.equals(regiment1.country()) || i != regiment1.getArmy())
+                    continue;
+                regiment = regiment1;
+                break;
+            }
+
+        }
+        if(regiment == null)
+        {
+            java.lang.String s2 = "NoNe";
+            switch(i)
+            {
+            case 1: // '\001'
+                s2 = "r01";
+                break;
+
+            case 2: // '\002'
+                s2 = "g01";
+                break;
+            }
+            regiment = (com.maddox.il2.ai.Regiment)com.maddox.il2.engine.Actor.getByName(s2);
+        }
+        if(regiment != null && s != null)
+            firstMap.put(s1, regiment);
+        return regiment;
+    }
+
+    public static void loadAll()
+    {
+        com.maddox.rts.SectFile sectfile = new SectFile("PaintSchemes/regiments.ini", 0);
+        int i = sectfile.sectionIndex("branch");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            for(int l = 0; l < j; l++)
+            {
+                java.lang.String s = sectfile.var(i, l);
+                java.lang.String s1 = sectfile.value(i, l);
+                if(s != null && s1 != null)
+                    branchMap.put(s.toLowerCase().intern(), s1.toLowerCase().intern());
+            }
+
+        }
+        for(int k = 1; k < com.maddox.il2.ai.Army.amountSingle(); k++)
+            com.maddox.il2.ai.Regiment.loadSection(sectfile, com.maddox.il2.ai.Army.name(k), k);
+
+        com.maddox.il2.ai.Regiment.loadSection(sectfile, "NoNe", 0);
+    }
+
+    private static void loadSection(com.maddox.rts.SectFile sectfile, java.lang.String s, int i)
+    {
+        int j = sectfile.sectionIndex(s);
+        if(j < 0)
+            return;
+        int k = sectfile.vars(j);
+        for(int l = 0; l < k; l++)
+            new Regiment(sectfile.var(j, l), i);
+
+    }
+
+    public static final java.lang.String prefixPath = "PaintSchemes/";
+    public int diedBombers;
+    public int diedAircrafts;
+    protected java.lang.String country;
+    protected java.lang.String branch;
+    protected java.lang.String shortFileName;
+    protected char id[];
+    protected java.lang.String sid;
+    protected java.lang.String shortInfo;
+    protected java.lang.String info;
+    protected int gruppeNumber;
+    protected java.lang.String speech;
+    private static java.util.ArrayList all = new ArrayList();
+    protected static com.maddox.util.HashMapExt branchMap = new HashMapExt();
+    private static java.util.HashMap firstMap = new HashMap();
+
 }

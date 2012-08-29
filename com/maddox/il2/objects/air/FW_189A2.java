@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   FW_189A2.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -16,252 +21,325 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class FW_189A2 extends Scheme3
-  implements TypeScout, TypeBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Scheme3, PaintSchemeBMPar03, TypeScout, TypeBomber, 
+//            Aircraft, NetAircraft, PaintScheme
+
+public class FW_189A2 extends com.maddox.il2.objects.air.Scheme3
+    implements com.maddox.il2.objects.air.TypeScout, com.maddox.il2.objects.air.TypeBomber
 {
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, 115.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, 115.0F * paramFloat, 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, 100.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 90.0F * paramFloat, 0.0F);
-
-    float f = Math.max(-paramFloat * 1500.0F, -110.0F);
-    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, -f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, -f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, -f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, -f, 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat);
-  }
-
-  protected void moveFlap(float paramFloat)
-  {
-    float f = -40.0F * paramFloat;
-    hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f, 0.0F);
-    hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f, 0.0F);
-    hierMesh().chunkSetAngles("Flap03_D0", 0.0F, f, 0.0F);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    setShot(paramShot);
-
-    if (paramShot.chunkName.startsWith("WingLIn")) {
-      if (World.Rnd().nextFloat() < 0.048F) this.FM.AS.setJamBullets(0, 0);
-      if ((v1.x < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < paramShot.mass)) {
-        this.FM.AS.hitTank(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 26.08F));
-      }
-    }
-    if (paramShot.chunkName.startsWith("WingRIn")) {
-      if (World.Rnd().nextFloat() < 0.048F) this.FM.AS.setJamBullets(0, 1);
-      if ((v1.x < 0.25D) && (World.Rnd().nextFloat() < 0.25F) && (World.Rnd().nextFloat(0.01F, 0.121F) < paramShot.mass)) {
-        this.FM.AS.hitTank(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 26.08F));
-      }
+    public FW_189A2()
+    {
     }
 
-    if (paramShot.chunkName.startsWith("Engine1")) {
-      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) this.FM.AS.hitEngine(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 20.700001F));
-      if (World.Rnd().nextFloat() < 0.01F) this.FM.AS.hitEngine(paramShot.initiator, 0, 5);
-    }
-    if (paramShot.chunkName.startsWith("Engine2")) {
-      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F) this.FM.AS.hitEngine(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 20.700001F));
-      if (World.Rnd().nextFloat() < 0.01F) this.FM.AS.hitEngine(paramShot.initiator, 1, 5);
-    }
-
-    if (paramShot.chunkName.startsWith("Pilot1")) {
-      if ((v1.x > -0.5D) || (paramShot.power * -v1.x > 12800.0D)) {
-        killPilot(paramShot.initiator, 0);
-        this.FM.setCapableOfBMP(false, paramShot.initiator);
-        if ((Pd.z > 0.5D) && 
-          (paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
-      }
-
-      paramShot.chunkName = "CF_D0";
-    }
-    if (paramShot.chunkName.startsWith("Pilot2")) {
-      killPilot(paramShot.initiator, 1);
-      if ((Pd.z > 0.5D) && 
-        (paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
-
-      paramShot.chunkName = "CF_D0";
-    }
-    if (paramShot.chunkName.startsWith("Pilot3")) {
-      killPilot(paramShot.initiator, 2);
-      if ((Pd.z > 0.5D) && 
-        (paramShot.initiator == World.getPlayerAircraft()) && (World.cur().isArcade())) HUD.logCenter("H E A D S H O T");
-
-      paramShot.chunkName = "CF_D0";
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 115F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 115F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 100F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 90F * f, 0.0F);
+        float f1 = java.lang.Math.max(-f * 1500F, -110F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -f1, 0.0F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, -f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, -f1, 0.0F);
     }
 
-    if ((paramShot.chunkName.startsWith("Tail1")) && 
-      (World.Rnd().nextFloat() < 0.05F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 0, (int)(1.0F + paramShot.mass * 26.08F));
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.FW_189A2.moveGear(hierMesh(), f);
     }
 
-    if ((paramShot.chunkName.startsWith("Tail2")) && 
-      (World.Rnd().nextFloat() < 0.05F)) {
-      this.FM.AS.hitTank(paramShot.initiator, 1, (int)(1.0F + paramShot.mass * 26.08F));
+    protected void moveFlap(float f)
+    {
+        float f1 = -40F * f;
+        hierMesh().chunkSetAngles("Flap01_D0", 0.0F, f1, 0.0F);
+        hierMesh().chunkSetAngles("Flap02_D0", 0.0F, f1, 0.0F);
+        hierMesh().chunkSetAngles("Flap03_D0", 0.0F, f1, 0.0F);
     }
 
-    if (((this.FM.AS.astateEngineStates[0] == 4) || (this.FM.AS.astateEngineStates[1] == 4)) && (World.Rnd().nextInt(0, 99) < 33)) {
-      this.FM.setCapableOfBMP(false, paramShot.initiator);
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        setShot(shot);
+        if(shot.chunkName.startsWith("WingLIn"))
+        {
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.048F)
+                FM.AS.setJamBullets(0, 0);
+            if(com.maddox.il2.objects.air.Aircraft.v1.x < 0.25D && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && com.maddox.il2.ai.World.Rnd().nextFloat(0.01F, 0.121F) < shot.mass)
+                FM.AS.hitTank(shot.initiator, 0, (int)(1.0F + shot.mass * 26.08F));
+        }
+        if(shot.chunkName.startsWith("WingRIn"))
+        {
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.048F)
+                FM.AS.setJamBullets(0, 1);
+            if(com.maddox.il2.objects.air.Aircraft.v1.x < 0.25D && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && com.maddox.il2.ai.World.Rnd().nextFloat(0.01F, 0.121F) < shot.mass)
+                FM.AS.hitTank(shot.initiator, 1, (int)(1.0F + shot.mass * 26.08F));
+        }
+        if(shot.chunkName.startsWith("Engine1"))
+        {
+            if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
+                FM.AS.hitEngine(shot.initiator, 0, (int)(1.0F + shot.mass * 20.7F));
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.01F)
+                FM.AS.hitEngine(shot.initiator, 0, 5);
+        }
+        if(shot.chunkName.startsWith("Engine2"))
+        {
+            if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
+                FM.AS.hitEngine(shot.initiator, 1, (int)(1.0F + shot.mass * 20.7F));
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.01F)
+                FM.AS.hitEngine(shot.initiator, 1, 5);
+        }
+        if(shot.chunkName.startsWith("Pilot1"))
+        {
+            if(com.maddox.il2.objects.air.Aircraft.v1.x > -0.5D || (double)shot.power * -com.maddox.il2.objects.air.Aircraft.v1.x > 12800D)
+            {
+                killPilot(shot.initiator, 0);
+                FM.setCapableOfBMP(false, shot.initiator);
+                if(com.maddox.il2.objects.air.Aircraft.Pd.z > 0.5D && shot.initiator == com.maddox.il2.ai.World.getPlayerAircraft() && com.maddox.il2.ai.World.cur().isArcade())
+                    com.maddox.il2.game.HUD.logCenter("H E A D S H O T");
+            }
+            shot.chunkName = "CF_D0";
+        }
+        if(shot.chunkName.startsWith("Pilot2"))
+        {
+            killPilot(shot.initiator, 1);
+            if(com.maddox.il2.objects.air.Aircraft.Pd.z > 0.5D && shot.initiator == com.maddox.il2.ai.World.getPlayerAircraft() && com.maddox.il2.ai.World.cur().isArcade())
+                com.maddox.il2.game.HUD.logCenter("H E A D S H O T");
+            shot.chunkName = "CF_D0";
+        }
+        if(shot.chunkName.startsWith("Pilot3"))
+        {
+            killPilot(shot.initiator, 2);
+            if(com.maddox.il2.objects.air.Aircraft.Pd.z > 0.5D && shot.initiator == com.maddox.il2.ai.World.getPlayerAircraft() && com.maddox.il2.ai.World.cur().isArcade())
+                com.maddox.il2.game.HUD.logCenter("H E A D S H O T");
+            shot.chunkName = "CF_D0";
+        }
+        if(shot.chunkName.startsWith("Tail1") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F)
+            FM.AS.hitTank(shot.initiator, 0, (int)(1.0F + shot.mass * 26.08F));
+        if(shot.chunkName.startsWith("Tail2") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F)
+            FM.AS.hitTank(shot.initiator, 1, (int)(1.0F + shot.mass * 26.08F));
+        if((FM.AS.astateEngineStates[0] == 4 || FM.AS.astateEngineStates[1] == 4) && com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 33)
+            FM.setCapableOfBMP(false, shot.initiator);
+        super.msgShot(shot);
     }
 
-    super.msgShot(paramShot);
-  }
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        switch(i)
+        {
+        case 33: // '!'
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.66F)
+                FM.AS.hitTank(this, 0, 6);
+            return super.cutFM(34, j, actor);
 
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    switch (paramInt1) {
-    case 33:
-      if (World.Rnd().nextFloat() < 0.66F) this.FM.AS.hitTank(this, 0, 6);
-      return super.cutFM(34, paramInt2, paramActor);
-    case 36:
-      if (World.Rnd().nextFloat() < 0.66F) this.FM.AS.hitTank(this, 1, 6);
-      return super.cutFM(37, paramInt2, paramActor);
-    }
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
-
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-
-    for (int i = 1; i < 4; i++)
-      if (this.FM.getAltitude() < 3000.0F)
-        hierMesh().chunkVisible("HMask" + i + "_D0", false);
-      else
-        hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
-  }
-
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
-    if (paramInt == 1) {
-      this.FM.turret[1].setHealth(paramFloat);
-      hierMesh().chunkVisible("Turret2A_D0", false);
-      hierMesh().chunkVisible("Turret2B_D0", false);
-      hierMesh().chunkVisible("Turret2B_D1", true);
-    }
-    if (paramInt == 2) {
-      this.FM.turret[0].setHealth(paramFloat);
-      hierMesh().chunkVisible("Turret1A_D0", false);
-      hierMesh().chunkVisible("Turret1B_D0", false);
-      hierMesh().chunkVisible("Turret1B_D1", true);
-    }
-  }
-
-  public void doMurderPilot(int paramInt) {
-    switch (paramInt) {
-    case 0:
-      hierMesh().chunkVisible("Pilot1_D0", false);
-      hierMesh().chunkVisible("Head1_D0", false);
-      hierMesh().chunkVisible("HMask1_D0", false);
-      hierMesh().chunkVisible("Pilot1_D1", true);
-      break;
-    case 1:
-      hierMesh().chunkVisible("Pilot2_D0", false);
-      hierMesh().chunkVisible("HMask2_D0", false);
-      hierMesh().chunkVisible("Pilot2_D1", true);
-    }
-  }
-
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
-    switch (paramInt) {
-    case 0:
-      if (f2 < 40.0F) { f2 = 40.0F; bool = false; }
-      if (f2 <= 96.0F) break; f2 = 96.0F; bool = false; break;
-    case 1:
-      if (f1 < -75.0F) { f1 = -75.0F; bool = false; }
-      if (f1 > 85.0F) { f1 = 85.0F; bool = false; }
-      if (f2 < 4.0F) { f2 = 4.0F; bool = false; }
-      if (f2 <= 80.0F) break; f2 = 80.0F; bool = false;
+        case 36: // '$'
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.66F)
+                FM.AS.hitTank(this, 1, 6);
+            return super.cutFM(37, j, actor);
+        }
+        return super.cutFM(i, j, actor);
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
-    return bool;
-  }
+    public void rareAction(float f, boolean flag)
+    {
+        super.rareAction(f, flag);
+        for(int i = 1; i < 4; i++)
+            if(FM.getAltitude() < 3000F)
+                hierMesh().chunkVisible("HMask" + i + "_D0", false);
+            else
+                hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
 
-  public boolean typeBomberToggleAutomation()
-  {
-    return false;
-  }
+    }
 
-  public void typeBomberAdjDistanceReset()
-  {
-  }
+    public void doKillPilot(int i)
+    {
+        if(i == 1)
+        {
+            FM.turret[1].bIsOperable = false;
+            hierMesh().chunkVisible("Turret2A_D0", false);
+            hierMesh().chunkVisible("Turret2B_D0", false);
+            hierMesh().chunkVisible("Turret2B_D1", true);
+        }
+        if(i == 2)
+        {
+            FM.turret[0].bIsOperable = false;
+            hierMesh().chunkVisible("Turret1A_D0", false);
+            hierMesh().chunkVisible("Turret1B_D0", false);
+            hierMesh().chunkVisible("Turret1B_D1", true);
+        }
+    }
 
-  public void typeBomberAdjDistancePlus()
-  {
-  }
+    public void doMurderPilot(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            hierMesh().chunkVisible("Pilot1_D0", false);
+            hierMesh().chunkVisible("Head1_D0", false);
+            hierMesh().chunkVisible("HMask1_D0", false);
+            hierMesh().chunkVisible("Pilot1_D1", true);
+            break;
 
-  public void typeBomberAdjDistanceMinus()
-  {
-  }
+        case 1: // '\001'
+            hierMesh().chunkVisible("Pilot2_D0", false);
+            hierMesh().chunkVisible("HMask2_D0", false);
+            hierMesh().chunkVisible("Pilot2_D1", true);
+            break;
+        }
+    }
 
-  public void typeBomberAdjSideslipReset()
-  {
-  }
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        switch(i)
+        {
+        default:
+            break;
 
-  public void typeBomberAdjSideslipPlus() {
-  }
+        case 0: // '\0'
+            if(f1 < 40F)
+            {
+                f1 = 40F;
+                flag = false;
+            }
+            if(f1 > 96F)
+            {
+                f1 = 96F;
+                flag = false;
+            }
+            break;
 
-  public void typeBomberAdjSideslipMinus() {
-  }
+        case 1: // '\001'
+            if(f < -75F)
+            {
+                f = -75F;
+                flag = false;
+            }
+            if(f > 85F)
+            {
+                f = 85F;
+                flag = false;
+            }
+            if(f1 < 4F)
+            {
+                f1 = 4F;
+                flag = false;
+            }
+            if(f1 > 80F)
+            {
+                f1 = 80F;
+                flag = false;
+            }
+            break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
+    }
 
-  public void typeBomberAdjAltitudeReset() {
-  }
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeBomberAdjAltitudePlus() {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-  public void typeBomberAdjAltitudeMinus() {
-  }
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-  public void typeBomberAdjSpeedReset() {
-  }
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-  public void typeBomberAdjSpeedPlus() {
-  }
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-  public void typeBomberAdjSpeedMinus() {
-  }
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
 
-  static {
-    Class localClass = FW_189A2.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Fw-189");
-    Property.set(localClass, "meshName", "3do/plane/Fw-189A-2/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar03());
-    Property.set(localClass, "originCountry", PaintScheme.countryGermany);
+    public void typeBomberAdjSpeedReset()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1941.6F);
-    Property.set(localClass, "yearExpired", 1948.0F);
+    public void typeBomberAdjSpeedPlus()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Fw-189A-2.fmd");
+    public void typeBomberAdjSpeedMinus()
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3, 10, 10, 11, 11 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
+    public void typeBomberUpdate(float f)
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17k 660", "MGunMG17k 660", null, null, null, null, "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500" });
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-    weaponsRegister(localClass, "4xSC50", new String[] { "MGunMG17k 660", "MGunMG17k 660", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500" });
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.FW_189A2.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Fw-189");
+        com.maddox.rts.Property.set(class1, "meshName", "3do/plane/Fw-189A-2/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar03());
+        com.maddox.rts.Property.set(class1, "originCountry", com.maddox.il2.objects.air.PaintScheme.countryGermany);
+        com.maddox.rts.Property.set(class1, "yearService", 1941.6F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Fw-189A-2.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 3, 3, 3, 3, 10, 10, 11, 11
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG17k 660", "MGunMG17k 660", null, null, null, null, "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4xSC50", new java.lang.String[] {
+            "MGunMG17k 660", "MGunMG17k 660", "BombGunSC50", "BombGunSC50", "BombGunSC50", "BombGunSC50", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 1500", "MGunMG81t 1500"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null
+        });
+    }
 }

@@ -1,124 +1,146 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Ray2f.java
+
 package com.maddox.JGP;
 
 import java.io.PrintStream;
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Line2f, JGPException, Point2f, Vector2f, 
+//            NSolvef
+
 public class Ray2f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Line2f LA = new Line2f();
 
-  public Line2f LN = new Line2f();
-
-  public Ray2f()
-  {
-  }
-
-  public Ray2f(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    set(paramPoint2f1, paramPoint2f2);
-  }
-
-  public final void set(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    this.LN.N.x = (paramPoint2f2.x - paramPoint2f1.x);
-    this.LN.N.y = (paramPoint2f2.y - paramPoint2f1.y);
-    this.LN.N.normalize();
-    this.LN.C = (-this.LN.N.dot(paramPoint2f1));
-
-    this.LA.set(paramPoint2f1, paramPoint2f2);
-  }
-
-  public final void set(Point2f paramPoint2f, Vector2f paramVector2f)
-  {
-    this.LN.N.set(paramVector2f);
-    this.LN.N.normalize();
-    this.LN.C = (-this.LN.N.dot(paramPoint2f));
-
-    this.LA.set(paramPoint2f, paramVector2f);
-  }
-
-  public final float deviationLR(Point2f paramPoint2f)
-  {
-    return this.LA.deviation(paramPoint2f);
-  }
-
-  public final float deviationFB(Point2f paramPoint2f)
-  {
-    return this.LN.deviation(paramPoint2f);
-  }
-
-  public final Point2f cross(Ray2f paramRay2f)
-    throws JGPException
-  {
-    float[] arrayOfFloat = { this.LA.N.x, this.LA.N.y, -this.LA.C, paramRay2f.LA.N.x, paramRay2f.LA.N.y, -paramRay2f.LA.C };
-
-    Point2f localPoint2f = NSolvef.Solve2f(arrayOfFloat);
-    if ((deviationFB(localPoint2f) >= 0.0F) && (paramRay2f.deviationFB(localPoint2f) >= 0.0F)) return localPoint2f;
-    throw new JGPException("Rays are not crossed");
-  }
-
-  public final Point2f cross(Line2f paramLine2f)
-    throws JGPException
-  {
-    float[] arrayOfFloat = { this.LA.N.x, this.LA.N.y, -this.LA.C, paramLine2f.N.x, paramLine2f.N.y, -paramLine2f.C };
-
-    Point2f localPoint2f = NSolvef.Solve2f(arrayOfFloat);
-    if (deviationFB(localPoint2f) >= 0.0F) return localPoint2f;
-    throw new JGPException("Ray and Line are'nt crossed");
-  }
-
-  public final boolean crossed(Ray2f paramRay2f)
-  {
-    if (this.LA.N.equals(paramRay2f.LA.N)) return false; try {
-      cross(paramRay2f); } catch (Exception localException) {
-      return false;
-    }return true;
-  }
-
-  public final boolean equals(Ray2f paramRay2f)
-  {
-    return (this.LA.equals(paramRay2f.LA)) && (this.LN.C == paramRay2f.LN.C);
-  }
-
-  public final boolean parallel(Ray2f paramRay2f)
-  {
-    return this.LA.N.equals(paramRay2f.LA.N);
-  }
-
-  public final float cos(Ray2f paramRay2f)
-  {
-    return this.LA.N.dot(paramRay2f.LA.N);
-  }
-
-  public String toString()
-  {
-    try
+    public Ray2f()
     {
-      return "( " + this.LN.N.x + "," + this.LN.N.y + "," + this.LA.cross(this.LN) + " )"; } catch (Exception localException) {
+        LA = new Line2f();
+        LN = new Line2f();
     }
-    return localException.toString();
-  }
 
-  public static void main(String[] paramArrayOfString) throws JGPException
-  {
-    Point2f localPoint2f1 = new Point2f(0.0F, 0.0F);
-    Point2f localPoint2f2 = new Point2f(0.0F, 1.0F);
-    Point2f localPoint2f3 = new Point2f(1.0F, 1.0F);
-    Point2f localPoint2f4 = new Point2f(1.0F, 0.0F);
-    Ray2f localRay2f1 = new Ray2f(localPoint2f1, localPoint2f3);
-    Ray2f localRay2f2 = new Ray2f(localPoint2f2, localPoint2f4);
-    System.out.println("Ray1: " + localRay2f1);
-    System.out.println("Ray2: " + localRay2f2);
+    public Ray2f(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        LA = new Line2f();
+        LN = new Line2f();
+        set(point2f, point2f1);
+    }
 
-    Point2f localPoint2f5 = localRay2f1.cross(localRay2f2);
-    System.out.println("CrossPoint: " + localPoint2f5 + "\n");
+    public final void set(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        LN.N.x = point2f1.x - point2f.x;
+        LN.N.y = point2f1.y - point2f.y;
+        LN.N.normalize();
+        LN.C = -LN.N.dot(point2f);
+        LA.set(point2f, point2f1);
+    }
 
-    localRay2f2 = new Ray2f(localPoint2f1, localPoint2f4);
-    System.out.println("Ray1: " + localRay2f1);
-    System.out.println("Horiz: " + localRay2f2);
-    localPoint2f5 = localRay2f1.cross(localRay2f2);
-    System.out.println("CrossPoint: " + localPoint2f5);
-    System.out.println("Cos: " + localRay2f1.cos(localRay2f2));
-  }
+    public final void set(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Vector2f vector2f)
+    {
+        LN.N.set(vector2f);
+        LN.N.normalize();
+        LN.C = -LN.N.dot(point2f);
+        LA.set(point2f, vector2f);
+    }
+
+    public final float deviationLR(com.maddox.JGP.Point2f point2f)
+    {
+        return LA.deviation(point2f);
+    }
+
+    public final float deviationFB(com.maddox.JGP.Point2f point2f)
+    {
+        return LN.deviation(point2f);
+    }
+
+    public final com.maddox.JGP.Point2f cross(com.maddox.JGP.Ray2f ray2f)
+        throws com.maddox.JGP.JGPException
+    {
+        float af[] = {
+            LA.N.x, LA.N.y, -LA.C, ray2f.LA.N.x, ray2f.LA.N.y, -ray2f.LA.C
+        };
+        com.maddox.JGP.Point2f point2f = com.maddox.JGP.NSolvef.Solve2f(af);
+        if(deviationFB(point2f) >= 0.0F && ray2f.deviationFB(point2f) >= 0.0F)
+            return point2f;
+        else
+            throw new JGPException("Rays are not crossed");
+    }
+
+    public final com.maddox.JGP.Point2f cross(com.maddox.JGP.Line2f line2f)
+        throws com.maddox.JGP.JGPException
+    {
+        float af[] = {
+            LA.N.x, LA.N.y, -LA.C, line2f.N.x, line2f.N.y, -line2f.C
+        };
+        com.maddox.JGP.Point2f point2f = com.maddox.JGP.NSolvef.Solve2f(af);
+        if(deviationFB(point2f) >= 0.0F)
+            return point2f;
+        else
+            throw new JGPException("Ray and Line are'nt crossed");
+    }
+
+    public final boolean crossed(com.maddox.JGP.Ray2f ray2f)
+    {
+        if(LA.N.equals(ray2f.LA.N))
+            return false;
+        try
+        {
+            cross(ray2f);
+        }
+        catch(java.lang.Exception exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public final boolean equals(com.maddox.JGP.Ray2f ray2f)
+    {
+        return LA.equals(ray2f.LA) && LN.C == ray2f.LN.C;
+    }
+
+    public final boolean parallel(com.maddox.JGP.Ray2f ray2f)
+    {
+        return LA.N.equals(ray2f.LA.N);
+    }
+
+    public final float cos(com.maddox.JGP.Ray2f ray2f)
+    {
+        return LA.N.dot(ray2f.LA.N);
+    }
+
+    public java.lang.String toString()
+    {
+        return "( " + LN.N.x + "," + LN.N.y + "," + LA.cross(LN) + " )";
+        java.lang.Exception exception;
+        exception;
+        return exception.toString();
+    }
+
+    public static void main(java.lang.String args[])
+        throws com.maddox.JGP.JGPException
+    {
+        com.maddox.JGP.Point2f point2f = new Point2f(0.0F, 0.0F);
+        com.maddox.JGP.Point2f point2f1 = new Point2f(0.0F, 1.0F);
+        com.maddox.JGP.Point2f point2f2 = new Point2f(1.0F, 1.0F);
+        com.maddox.JGP.Point2f point2f3 = new Point2f(1.0F, 0.0F);
+        com.maddox.JGP.Ray2f ray2f = new Ray2f(point2f, point2f2);
+        com.maddox.JGP.Ray2f ray2f1 = new Ray2f(point2f1, point2f3);
+        java.lang.System.out.println("Ray1: " + ray2f);
+        java.lang.System.out.println("Ray2: " + ray2f1);
+        com.maddox.JGP.Point2f point2f4 = ray2f.cross(ray2f1);
+        java.lang.System.out.println("CrossPoint: " + point2f4 + "\n");
+        ray2f1 = new Ray2f(point2f, point2f3);
+        java.lang.System.out.println("Ray1: " + ray2f);
+        java.lang.System.out.println("Horiz: " + ray2f1);
+        point2f4 = ray2f.cross(ray2f1);
+        java.lang.System.out.println("CrossPoint: " + point2f4);
+        java.lang.System.out.println("Cos: " + ray2f.cos(ray2f1));
+    }
+
+    public com.maddox.JGP.Line2f LA;
+    public com.maddox.JGP.Line2f LN;
 }

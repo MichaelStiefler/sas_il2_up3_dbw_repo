@@ -1,28 +1,47 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BackgroundLoop.java
+
 package com.maddox.rts;
+
+
+// Referenced classes of package com.maddox.rts:
+//            Listeners, RTSConf, BackgroundTask
 
 public class BackgroundLoop
 {
-  protected BackgroundTask curTask;
-  protected Listeners listeners = new Listeners();
 
-  protected void step()
-  {
-    RTSConf.cur.loopMsgs();
-  }
-
-  protected void setThisAsCurrent()
-  {
-    BackgroundLoop localBackgroundLoop = RTSConf.cur.backgroundLoop;
-    RTSConf.cur.backgroundLoop = this;
-    if (localBackgroundLoop != null) {
-      Object[] arrayOfObject = localBackgroundLoop.listeners.get();
-      if (arrayOfObject != null) {
-        for (int i = 0; i < arrayOfObject.length; i++) {
-          localBackgroundLoop.listeners.removeListener(arrayOfObject[i]);
-          this.listeners.addListener(arrayOfObject[i]);
-        }
-      }
-      this.curTask = localBackgroundLoop.curTask;
+    public BackgroundLoop()
+    {
+        listeners = new Listeners();
     }
-  }
+
+    protected void step()
+    {
+        com.maddox.rts.RTSConf.cur.loopMsgs();
+    }
+
+    protected void setThisAsCurrent()
+    {
+        com.maddox.rts.BackgroundLoop backgroundloop = com.maddox.rts.RTSConf.cur.backgroundLoop;
+        com.maddox.rts.RTSConf.cur.backgroundLoop = this;
+        if(backgroundloop != null)
+        {
+            java.lang.Object aobj[] = backgroundloop.listeners.get();
+            if(aobj != null)
+            {
+                for(int i = 0; i < aobj.length; i++)
+                {
+                    backgroundloop.listeners.removeListener(aobj[i]);
+                    listeners.addListener(aobj[i]);
+                }
+
+            }
+            curTask = backgroundloop.curTask;
+        }
+    }
+
+    protected com.maddox.rts.BackgroundTask curTask;
+    protected com.maddox.rts.Listeners listeners;
 }

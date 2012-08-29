@@ -1,326 +1,391 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorPosStatic.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActorPosStatic extends ActorPos
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorPos, Actor, ActorException, Loc, 
+//            Engine, DrawEnv, CollideEnv, DreamEnv, 
+//            Orient
+
+public class ActorPosStatic extends com.maddox.il2.engine.ActorPos
 {
-  private Actor actor = null;
 
-  private List baseAttached = null;
-
-  private Loc L = new Loc();
-
-  public Actor actor() {
-    return this.actor;
-  }
-
-  public Object[] getBaseAttached() {
-    if (this.baseAttached != null)
-      return this.baseAttached.toArray();
-    return null;
-  }
-
-  public Object[] getBaseAttached(Object[] paramArrayOfObject)
-  {
-    if (this.baseAttached != null)
-      return this.baseAttached.toArray(paramArrayOfObject);
-    return null;
-  }
-
-  protected List getListBaseAttached() {
-    return this.baseAttached;
-  }
-
-  public void inValidate(boolean paramBoolean) {
-    if (this.baseAttached != null) {
-      int j = this.baseAttached.size();
-      for (int i = 0; i < j; i++) {
-        Actor localActor = (Actor)this.baseAttached.get(i);
-        if (localActor == localActor.pos.actor())
-          localActor.pos.inValidate(true);
-      }
+    public com.maddox.il2.engine.Actor actor()
+    {
+        return actor;
     }
-  }
 
-  public void setBase(Actor paramActor, Object paramObject, long paramLong, boolean paramBoolean)
-  {
-    throw new ActorException("static position not changed base");
-  }
-
-  public void changeBase(Actor paramActor, Object paramObject, long paramLong, boolean paramBoolean)
-  {
-    throw new ActorException("static position not changed base");
-  }
-
-  public void getRel(Loc paramLoc)
-  {
-    paramLoc.set(this.L);
-  }
-
-  public void getRel(Point3d paramPoint3d, Orient paramOrient)
-  {
-    this.L.get(paramPoint3d, paramOrient);
-  }
-
-  public void getRel(Point3d paramPoint3d)
-  {
-    this.L.get(paramPoint3d);
-  }
-
-  public void getRel(Orient paramOrient)
-  {
-    this.L.get(paramOrient);
-  }
-  public Loc getRel() {
-    return this.L;
-  }
-  public Point3d getRelPoint() {
-    return this.L.getPoint();
-  }
-  public Orient getRelOrient() {
-    return this.L.getOrient();
-  }
-  protected void changePosInEnvs(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    inValidate(true);
-    int i = this.actor.flags;
-    if ((i & 0x1) == 1)
-      Engine.cur.drawEnv.changedPosStatic(this.actor, paramPoint3d1, paramPoint3d2);
-    if ((i & 0x30) == 16)
-      Engine.cur.collideEnv.changedPosStatic(this.actor, paramPoint3d1, paramPoint3d2);
-    if ((i & 0x200) == 512)
-      Engine.cur.dreamEnv.changedListenerPos(this.actor, paramPoint3d1, paramPoint3d2);
-    if ((i & 0x100) == 256)
-      Engine.cur.dreamEnv.changedFirePos(this.actor, paramPoint3d1, paramPoint3d2);
-  }
-
-  public void setRel(Loc paramLoc)
-  {
-    changePosInEnvs(this.L.getPoint(), paramLoc.getPoint());
-    this.L.set(paramLoc);
-  }
-
-  public void setRel(Point3d paramPoint3d, Orient paramOrient)
-  {
-    changePosInEnvs(this.L.getPoint(), paramPoint3d);
-    this.L.set(paramPoint3d, paramOrient);
-  }
-
-  public void setRel(Point3d paramPoint3d)
-  {
-    changePosInEnvs(this.L.getPoint(), paramPoint3d);
-    this.L.set(paramPoint3d);
-  }
-
-  public void setRel(Orient paramOrient)
-  {
-    this.L.set(paramOrient);
-  }
-
-  public void getAbs(Loc paramLoc)
-  {
-    paramLoc.set(this.L);
-  }
-
-  public void getAbs(Point3d paramPoint3d, Orient paramOrient)
-  {
-    this.L.get(paramPoint3d, paramOrient);
-  }
-
-  public void getAbs(Point3d paramPoint3d)
-  {
-    this.L.get(paramPoint3d);
-  }
-
-  public void getAbs(Orient paramOrient)
-  {
-    this.L.get(paramOrient);
-  }
-
-  public Loc getAbs() {
-    return this.L;
-  }
-  public Point3d getAbsPoint() {
-    return this.L.getPoint();
-  }
-  public Orient getAbsOrient() {
-    return this.L.getOrient();
-  }
-
-  public void setAbs(Loc paramLoc) {
-    setRel(paramLoc);
-  }
-
-  public void setAbs(Point3d paramPoint3d, Orient paramOrient)
-  {
-    setRel(paramPoint3d, paramOrient);
-  }
-
-  public void setAbs(Point3d paramPoint3d)
-  {
-    setRel(paramPoint3d);
-  }
-
-  public void setAbs(Orient paramOrient)
-  {
-    setRel(paramOrient);
-  }
-  public void reset() {
-  }
-
-  public void resetAsBase() {
-  }
-
-  public boolean isChanged() {
-    return false;
-  }
-
-  public void getCurrent(Loc paramLoc) {
-    paramLoc.set(this.L);
-  }
-
-  public void getCurrent(Point3d paramPoint3d)
-  {
-    this.L.get(paramPoint3d);
-  }
-
-  public Loc getCurrent() {
-    return this.L;
-  }
-  public Point3d getCurrentPoint() {
-    return this.L.getPoint();
-  }
-  public Orient getCurrentOrient() {
-    return this.L.getOrient();
-  }
-
-  public void getPrev(Loc paramLoc) {
-    paramLoc.set(this.L);
-  }
-
-  public Loc getPrev()
-  {
-    return this.L;
-  }
-
-  protected void drawingChange(boolean paramBoolean)
-  {
-    if (paramBoolean) Engine.cur.drawEnv.addStatic(this.actor); else
-      Engine.cur.drawEnv.removeStatic(this.actor);
-  }
-
-  protected void collideChange(boolean paramBoolean)
-  {
-    if (paramBoolean) Engine.cur.collideEnv.addStatic(this.actor); else
-      Engine.cur.collideEnv.removeStatic(this.actor);
-  }
-
-  protected void dreamFireChange(boolean paramBoolean)
-  {
-    if (paramBoolean) Engine.dreamEnv().addFire(this.actor); else
-      Engine.dreamEnv().removeFire(this.actor);
-  }
-
-  public Loc getRender()
-  {
-    return this.L;
-  }
-
-  public void getRender(Loc paramLoc)
-  {
-    paramLoc.set(this.L);
-  }
-
-  public void getRender(Point3d paramPoint3d, Orient paramOrient)
-  {
-    this.L.get(paramPoint3d, paramOrient);
-  }
-
-  public void getRender(Point3d paramPoint3d)
-  {
-    this.L.get(paramPoint3d);
-  }
-
-  public void getTime(long paramLong, Loc paramLoc)
-  {
-    paramLoc.set(this.L);
-  }
-
-  public void getTime(long paramLong, Point3d paramPoint3d)
-  {
-    this.L.get(paramPoint3d);
-  }
-
-  protected void addChildren(Actor paramActor)
-  {
-    if (this.baseAttached == null)
-      this.baseAttached = new ArrayList();
-    this.baseAttached.add(paramActor);
-  }
-
-  protected void removeChildren(Actor paramActor)
-  {
-    this.baseAttached.remove(this.baseAttached.indexOf(paramActor));
-  }
-
-  protected void clearEnvs(Actor paramActor) {
-    int i = paramActor.flags;
-    if (((i & 0x1) != 0) && (((i & 0x2) == 0) || (base() == null)))
-      Engine.cur.drawEnv.removeStatic(paramActor);
-    if ((i & 0x30) == 16)
-      Engine.cur.collideEnv.removeStatic(paramActor);
-    if ((i & 0x200) == 512)
-      Engine.cur.dreamEnv.removeListener(paramActor);
-    if ((i & 0x100) == 256)
-      Engine.dreamEnv().removeFire(paramActor);
-    int j = Engine.cur.posChanged.indexOf(paramActor);
-    if (j >= 0)
-      Engine.cur.posChanged.remove(j);
-  }
-
-  protected void initEnvs(Actor paramActor) {
-    paramActor.pos = this;
-    int i = paramActor.flags;
-    if (((i & 0x1) != 0) && (((i & 0x2) == 0) || (base() == null)))
-      Engine.cur.drawEnv.addStatic(paramActor);
-    if ((i & 0x30) == 16)
-      Engine.cur.collideEnv.addStatic(paramActor);
-    if ((i & 0x200) == 512)
-      Engine.cur.dreamEnv.addListener(paramActor);
-    if ((i & 0x100) == 256)
-      Engine.dreamEnv().addFire(paramActor);
-  }
-
-  public void destroy() {
-    if (this.actor == null) return;
-    clearEnvs(this.actor);
-    if (this.baseAttached != null) {
-      while (this.baseAttached.size() > 0) {
-        Actor localActor = (Actor)this.baseAttached.get(0);
-        if (localActor == localActor.pos.actor())
-          localActor.pos.changeBase(null, null, true);
+    public java.lang.Object[] getBaseAttached()
+    {
+        if(baseAttached != null)
+            return baseAttached.toArray();
         else
-          this.baseAttached.remove(0);
-      }
+            return null;
     }
-    this.actor = null;
-  }
 
-  public ActorPosStatic(Actor paramActor) {
-    this.actor = paramActor;
-    initEnvs(this.actor);
-  }
+    public java.lang.Object[] getBaseAttached(java.lang.Object aobj[])
+    {
+        if(baseAttached != null)
+            return baseAttached.toArray(aobj);
+        else
+            return null;
+    }
 
-  public ActorPosStatic(Actor paramActor, Point3d paramPoint3d, Orient paramOrient) {
-    this.actor = paramActor;
-    this.L.set(paramPoint3d, paramOrient);
-    initEnvs(this.actor);
-  }
+    protected java.util.List getListBaseAttached()
+    {
+        return baseAttached;
+    }
 
-  public ActorPosStatic(Actor paramActor, Loc paramLoc) {
-    this.actor = paramActor;
-    this.L.set(paramLoc);
-    initEnvs(this.actor);
-  }
+    public void inValidate(boolean flag)
+    {
+        if(baseAttached != null)
+        {
+            int j = baseAttached.size();
+            for(int i = 0; i < j; i++)
+            {
+                com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)baseAttached.get(i);
+                if(actor1 == actor1.pos.actor())
+                    actor1.pos.inValidate(true);
+            }
+
+        }
+    }
+
+    public void setBase(com.maddox.il2.engine.Actor actor1, java.lang.Object obj, long l, boolean flag)
+    {
+        throw new ActorException("static position not changed base");
+    }
+
+    public void changeBase(com.maddox.il2.engine.Actor actor1, java.lang.Object obj, long l, boolean flag)
+    {
+        throw new ActorException("static position not changed base");
+    }
+
+    public void getRel(com.maddox.il2.engine.Loc loc)
+    {
+        loc.set(L);
+    }
+
+    public void getRel(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        L.get(point3d, orient);
+    }
+
+    public void getRel(com.maddox.JGP.Point3d point3d)
+    {
+        L.get(point3d);
+    }
+
+    public void getRel(com.maddox.il2.engine.Orient orient)
+    {
+        L.get(orient);
+    }
+
+    public com.maddox.il2.engine.Loc getRel()
+    {
+        return L;
+    }
+
+    public com.maddox.JGP.Point3d getRelPoint()
+    {
+        return L.getPoint();
+    }
+
+    public com.maddox.il2.engine.Orient getRelOrient()
+    {
+        return L.getOrient();
+    }
+
+    protected void changePosInEnvs(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        inValidate(true);
+        int i = actor.flags;
+        if((i & 1) == 1)
+            com.maddox.il2.engine.Engine.cur.drawEnv.changedPosStatic(actor, point3d, point3d1);
+        if((i & 0x30) == 16)
+            com.maddox.il2.engine.Engine.cur.collideEnv.changedPosStatic(actor, point3d, point3d1);
+        if((i & 0x200) == 512)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.changedListenerPos(actor, point3d, point3d1);
+        if((i & 0x100) == 256)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.changedFirePos(actor, point3d, point3d1);
+    }
+
+    public void setRel(com.maddox.il2.engine.Loc loc)
+    {
+        changePosInEnvs(L.getPoint(), loc.getPoint());
+        L.set(loc);
+    }
+
+    public void setRel(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        changePosInEnvs(L.getPoint(), point3d);
+        L.set(point3d, orient);
+    }
+
+    public void setRel(com.maddox.JGP.Point3d point3d)
+    {
+        changePosInEnvs(L.getPoint(), point3d);
+        L.set(point3d);
+    }
+
+    public void setRel(com.maddox.il2.engine.Orient orient)
+    {
+        L.set(orient);
+    }
+
+    public void getAbs(com.maddox.il2.engine.Loc loc)
+    {
+        loc.set(L);
+    }
+
+    public void getAbs(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        L.get(point3d, orient);
+    }
+
+    public void getAbs(com.maddox.JGP.Point3d point3d)
+    {
+        L.get(point3d);
+    }
+
+    public void getAbs(com.maddox.il2.engine.Orient orient)
+    {
+        L.get(orient);
+    }
+
+    public com.maddox.il2.engine.Loc getAbs()
+    {
+        return L;
+    }
+
+    public com.maddox.JGP.Point3d getAbsPoint()
+    {
+        return L.getPoint();
+    }
+
+    public com.maddox.il2.engine.Orient getAbsOrient()
+    {
+        return L.getOrient();
+    }
+
+    public void setAbs(com.maddox.il2.engine.Loc loc)
+    {
+        setRel(loc);
+    }
+
+    public void setAbs(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        setRel(point3d, orient);
+    }
+
+    public void setAbs(com.maddox.JGP.Point3d point3d)
+    {
+        setRel(point3d);
+    }
+
+    public void setAbs(com.maddox.il2.engine.Orient orient)
+    {
+        setRel(orient);
+    }
+
+    public void reset()
+    {
+    }
+
+    public void resetAsBase()
+    {
+    }
+
+    public boolean isChanged()
+    {
+        return false;
+    }
+
+    public void getCurrent(com.maddox.il2.engine.Loc loc)
+    {
+        loc.set(L);
+    }
+
+    public void getCurrent(com.maddox.JGP.Point3d point3d)
+    {
+        L.get(point3d);
+    }
+
+    public com.maddox.il2.engine.Loc getCurrent()
+    {
+        return L;
+    }
+
+    public com.maddox.JGP.Point3d getCurrentPoint()
+    {
+        return L.getPoint();
+    }
+
+    public com.maddox.il2.engine.Orient getCurrentOrient()
+    {
+        return L.getOrient();
+    }
+
+    public void getPrev(com.maddox.il2.engine.Loc loc)
+    {
+        loc.set(L);
+    }
+
+    public com.maddox.il2.engine.Loc getPrev()
+    {
+        return L;
+    }
+
+    protected void drawingChange(boolean flag)
+    {
+        if(flag)
+            com.maddox.il2.engine.Engine.cur.drawEnv.addStatic(actor);
+        else
+            com.maddox.il2.engine.Engine.cur.drawEnv.removeStatic(actor);
+    }
+
+    protected void collideChange(boolean flag)
+    {
+        if(flag)
+            com.maddox.il2.engine.Engine.cur.collideEnv.addStatic(actor);
+        else
+            com.maddox.il2.engine.Engine.cur.collideEnv.removeStatic(actor);
+    }
+
+    protected void dreamFireChange(boolean flag)
+    {
+        if(flag)
+            com.maddox.il2.engine.Engine.dreamEnv().addFire(actor);
+        else
+            com.maddox.il2.engine.Engine.dreamEnv().removeFire(actor);
+    }
+
+    public com.maddox.il2.engine.Loc getRender()
+    {
+        return L;
+    }
+
+    public void getRender(com.maddox.il2.engine.Loc loc)
+    {
+        loc.set(L);
+    }
+
+    public void getRender(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        L.get(point3d, orient);
+    }
+
+    public void getRender(com.maddox.JGP.Point3d point3d)
+    {
+        L.get(point3d);
+    }
+
+    public void getTime(long l, com.maddox.il2.engine.Loc loc)
+    {
+        loc.set(L);
+    }
+
+    public void getTime(long l, com.maddox.JGP.Point3d point3d)
+    {
+        L.get(point3d);
+    }
+
+    protected void addChildren(com.maddox.il2.engine.Actor actor1)
+    {
+        if(baseAttached == null)
+            baseAttached = new ArrayList();
+        baseAttached.add(actor1);
+    }
+
+    protected void removeChildren(com.maddox.il2.engine.Actor actor1)
+    {
+        baseAttached.remove(baseAttached.indexOf(actor1));
+    }
+
+    protected void clearEnvs(com.maddox.il2.engine.Actor actor1)
+    {
+        int i = actor1.flags;
+        if((i & 1) != 0 && ((i & 2) == 0 || base() == null))
+            com.maddox.il2.engine.Engine.cur.drawEnv.removeStatic(actor1);
+        if((i & 0x30) == 16)
+            com.maddox.il2.engine.Engine.cur.collideEnv.removeStatic(actor1);
+        if((i & 0x200) == 512)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.removeListener(actor1);
+        if((i & 0x100) == 256)
+            com.maddox.il2.engine.Engine.dreamEnv().removeFire(actor1);
+        int j = com.maddox.il2.engine.Engine.cur.posChanged.indexOf(actor1);
+        if(j >= 0)
+            com.maddox.il2.engine.Engine.cur.posChanged.remove(j);
+    }
+
+    protected void initEnvs(com.maddox.il2.engine.Actor actor1)
+    {
+        actor1.pos = this;
+        int i = actor1.flags;
+        if((i & 1) != 0 && ((i & 2) == 0 || base() == null))
+            com.maddox.il2.engine.Engine.cur.drawEnv.addStatic(actor1);
+        if((i & 0x30) == 16)
+            com.maddox.il2.engine.Engine.cur.collideEnv.addStatic(actor1);
+        if((i & 0x200) == 512)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.addListener(actor1);
+        if((i & 0x100) == 256)
+            com.maddox.il2.engine.Engine.dreamEnv().addFire(actor1);
+    }
+
+    public void destroy()
+    {
+        if(actor == null)
+            return;
+        clearEnvs(actor);
+        if(baseAttached != null)
+            while(baseAttached.size() > 0) 
+            {
+                com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)baseAttached.get(0);
+                if(actor1 == actor1.pos.actor())
+                    actor1.pos.changeBase(null, null, true);
+                else
+                    baseAttached.remove(0);
+            }
+        actor = null;
+    }
+
+    public ActorPosStatic(com.maddox.il2.engine.Actor actor1)
+    {
+        actor = null;
+        baseAttached = null;
+        L = new Loc();
+        actor = actor1;
+        initEnvs(actor);
+    }
+
+    public ActorPosStatic(com.maddox.il2.engine.Actor actor1, com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        actor = null;
+        baseAttached = null;
+        L = new Loc();
+        actor = actor1;
+        L.set(point3d, orient);
+        initEnvs(actor);
+    }
+
+    public ActorPosStatic(com.maddox.il2.engine.Actor actor1, com.maddox.il2.engine.Loc loc)
+    {
+        actor = null;
+        baseAttached = null;
+        L = new Loc();
+        actor = actor1;
+        L.set(loc);
+        initEnvs(actor);
+    }
+
+    private com.maddox.il2.engine.Actor actor;
+    private java.util.List baseAttached;
+    private com.maddox.il2.engine.Loc L;
 }

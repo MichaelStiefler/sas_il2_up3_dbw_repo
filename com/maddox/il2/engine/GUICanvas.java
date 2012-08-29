@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUICanvas.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -10,230 +15,303 @@ import com.maddox.gwindow.GSize;
 import com.maddox.gwindow.GTexture;
 import com.maddox.rts.StringClipboard;
 
-public class GUICanvas extends GCanvas
+// Referenced classes of package com.maddox.il2.engine:
+//            GUITexture, GUIMesh, CameraOrtho2D, GUIFont, 
+//            Loc, Mat, Render, Mesh, 
+//            Renders, TTFont
+
+public class GUICanvas extends com.maddox.gwindow.GCanvas
 {
-  public Render render;
-  public GUITexture clear_set_z;
-  public boolean bClearZ = true;
 
-  private static Loc _meshLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-
-  private static int[] _viewPort = new int[4];
-
-  public boolean preRender(GTexture paramGTexture, float paramFloat1, float paramFloat2)
-  {
-    GUITexture localGUITexture = (GUITexture)paramGTexture;
-    if (localGUITexture.mat == null) return false;
-    if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if (this.alpha == 0) return false;
-    localGUITexture.mat.preRender();
-    return true;
-  }
-
-  public boolean draw(GTexture paramGTexture, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6)
-  {
-    if (paramGTexture == null) return false;
-    GUITexture localGUITexture = (GUITexture)paramGTexture;
-    if (localGUITexture.mat == null) return false;
-    if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if ((paramFloat5 == 0.0F) || (paramFloat6 == 0.0F)) return false;
-    if (this.alpha == 0) return false;
-    float f1 = paramFloat5 / paramFloat1;
-    float f2 = paramFloat6 / paramFloat2;
-    float f3 = this.cur.x;
-    float f4 = this.cur.y;
-    float f5 = f3 - this.clip.x;
-    float f6;
-    if (f5 < 0.0F) {
-      paramFloat1 += f5; if (paramFloat1 <= 0.0F) return false;
-      f3 = this.clip.x;
-      f6 = f5 * f1;
-      paramFloat5 += f6;
-      paramFloat3 -= f6;
-      f5 = 0.0F;
-    }
-    f5 = paramFloat1 + f5 - this.clip.dx;
-    if (f5 > 0.0F) {
-      paramFloat1 -= f5; if (paramFloat1 <= 0.0F) return false;
-      paramFloat5 -= f5 * f1;
+    public boolean preRender(com.maddox.gwindow.GTexture gtexture, float f, float f1)
+    {
+        com.maddox.il2.engine.GUITexture guitexture = (com.maddox.il2.engine.GUITexture)gtexture;
+        if(guitexture.mat == null)
+            return false;
+        if(f <= 0.0F || f1 <= 0.0F)
+            return false;
+        if(alpha == 0)
+        {
+            return false;
+        } else
+        {
+            guitexture.mat.preRender();
+            return true;
+        }
     }
 
-    f5 = f4 - this.clip.y;
-    if (f5 < 0.0F) {
-      paramFloat2 += f5; if (paramFloat2 <= 0.0F) return false;
-      f4 = this.clip.y;
-      f6 = f5 * f2;
-      paramFloat6 += f6;
-      paramFloat4 -= f6;
-      f5 = 0.0F;
-    }
-    f5 = paramFloat2 + f5 - this.clip.dy;
-    if (f5 > 0.0F) {
-      paramFloat2 -= f5; if (paramFloat2 <= 0.0F) return false;
-      f6 = f5 * f2;
-      paramFloat6 -= f6;
-    }
-
-    f4 = this.size.dy - f4;
-
-    f3 = Math.round(f3);
-    f4 = Math.round(f4);
-    paramFloat1 = Math.round(paramFloat1);
-    paramFloat2 = Math.round(paramFloat2);
-
-    Render.DrawTile(f3, f4, paramFloat1, -paramFloat2, 0.0F, localGUITexture.mat.cppObject(), this.color.color | (this.alpha & 0xFF) << 24, paramFloat3 * localGUITexture.scalex, paramFloat4 * localGUITexture.scaley, paramFloat5 * localGUITexture.scalex, paramFloat6 * localGUITexture.scaley);
-
-    return true;
-  }
-
-  public boolean preRender(GMesh paramGMesh, float paramFloat1, float paramFloat2)
-  {
-    GUIMesh localGUIMesh = (GUIMesh)paramGMesh;
-    if (localGUIMesh.mesh == null) return false;
-    if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if (this.alpha == 0) return false;
-    setMeshPos(localGUIMesh, this.cur.x, this.cur.y, paramFloat1, paramFloat2);
-    localGUIMesh.mesh.preRender();
-    return true;
-  }
-
-  private void setMeshPos(GUIMesh paramGUIMesh, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    float f1 = paramFloat3 / paramGUIMesh.size.dx;
-    float f2 = paramFloat4 / paramGUIMesh.size.dy;
-    float f3 = 1.0F;
-
-    CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)this.render.getCamera();
-
-    if ((paramGUIMesh.boundBox[2] < localCameraOrtho2D.ZNear) || (paramGUIMesh.boundBox[5] > localCameraOrtho2D.ZFar)) {
-      float f4 = localCameraOrtho2D.ZNear - paramGUIMesh.boundBox[2];
-      if (f4 < paramGUIMesh.boundBox[5] - localCameraOrtho2D.ZFar)
-        f4 = paramGUIMesh.boundBox[5] - localCameraOrtho2D.ZFar;
-      f3 = localCameraOrtho2D.ZFar / (f4 + localCameraOrtho2D.ZFar);
-    }
-    paramGUIMesh.mesh.setScaleXYZ(f1, f2, f3);
-    Point3d localPoint3d = _meshLoc.getPoint();
-    localPoint3d.x = (paramFloat1 - paramGUIMesh.boundBox[0] * f1);
-    localPoint3d.y = (this.size.dy - (paramFloat2 + paramGUIMesh.boundBox[4] * f2));
-    paramGUIMesh.mesh.setPos(_meshLoc);
-  }
-
-  public boolean draw(GMesh paramGMesh, float paramFloat1, float paramFloat2)
-  {
-    if (paramGMesh == null) return false;
-    GUIMesh localGUIMesh = (GUIMesh)paramGMesh;
-    if (localGUIMesh.mesh == null) return false;
-    if ((paramFloat1 <= 0.0F) || (paramFloat2 <= 0.0F)) return false;
-    if (this.alpha == 0) return false;
-    float f1 = this.cur.x;
-    float f2 = this.cur.y;
-    float f3 = paramFloat1;
-    float f4 = paramFloat2;
-    float f5 = f1 - this.clip.x;
-    if (f5 < 0.0F) {
-      f3 += f5; if (f3 <= 0.0F) return false;
-      f1 = this.clip.x;
-      f5 = 0.0F;
-    }
-    f5 = f3 + f5 - this.clip.dx;
-    if (f5 > 0.0F) {
-      f3 -= f5; if (f3 <= 0.0F) return false;
+    public boolean draw(com.maddox.gwindow.GTexture gtexture, float f, float f1, float f2, float f3, float f4, float f5)
+    {
+        if(gtexture == null)
+            return false;
+        com.maddox.il2.engine.GUITexture guitexture = (com.maddox.il2.engine.GUITexture)gtexture;
+        if(guitexture.mat == null)
+            return false;
+        if(f <= 0.0F || f1 <= 0.0F)
+            return false;
+        if(f4 == 0.0F || f5 == 0.0F)
+            return false;
+        if(alpha == 0)
+            return false;
+        float f6 = f4 / f;
+        float f7 = f5 / f1;
+        float f8 = cur.x;
+        float f9 = cur.y;
+        float f10 = f8 - clip.x;
+        if(f10 < 0.0F)
+        {
+            f += f10;
+            if(f <= 0.0F)
+                return false;
+            f8 = clip.x;
+            float f11 = f10 * f6;
+            f4 += f11;
+            f2 -= f11;
+            f10 = 0.0F;
+        }
+        f10 = (f + f10) - clip.dx;
+        if(f10 > 0.0F)
+        {
+            f -= f10;
+            if(f <= 0.0F)
+                return false;
+            f4 -= f10 * f6;
+        }
+        f10 = f9 - clip.y;
+        if(f10 < 0.0F)
+        {
+            f1 += f10;
+            if(f1 <= 0.0F)
+                return false;
+            f9 = clip.y;
+            float f12 = f10 * f7;
+            f5 += f12;
+            f3 -= f12;
+            f10 = 0.0F;
+        }
+        f10 = (f1 + f10) - clip.dy;
+        if(f10 > 0.0F)
+        {
+            f1 -= f10;
+            if(f1 <= 0.0F)
+                return false;
+            float f13 = f10 * f7;
+            f5 -= f13;
+        }
+        f9 = size.dy - f9;
+        f8 = java.lang.Math.round(f8);
+        f9 = java.lang.Math.round(f9);
+        f = java.lang.Math.round(f);
+        f1 = java.lang.Math.round(f1);
+        com.maddox.il2.engine.Render.DrawTile(f8, f9, f, -f1, 0.0F, guitexture.mat.cppObject(), color.color | (alpha & 0xff) << 24, f2 * guitexture.scalex, f3 * guitexture.scaley, f4 * guitexture.scalex, f5 * guitexture.scaley);
+        return true;
     }
 
-    f5 = f2 - this.clip.y;
-    if (f5 < 0.0F) {
-      f4 += f5; if (f4 <= 0.0F) return false;
-      f2 = this.clip.y;
-      f5 = 0.0F;
-    }
-    f5 = f4 + f5 - this.clip.dy;
-    if (f5 > 0.0F) {
-      f4 -= f5; if (f4 <= 0.0F) return false;
-    }
-
-    fill_z(f1, f2, f3, f4, true);
-    CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)this.render.getCamera();
-    this.render.getViewPort(_viewPort);
-    localCameraOrtho2D.activate(1.0F, this.render.renders().width(), this.render.renders().height(), _viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3], _viewPort[0] + Math.round(f1), _viewPort[1] + _viewPort[3] - Math.round(f2) - Math.round(f4), Math.round(f3), Math.round(f4));
-
-    setMeshPos(localGUIMesh, this.cur.x, this.cur.y, paramFloat1, paramFloat2);
-    localGUIMesh.mesh.render();
-
-    localCameraOrtho2D.activate(1.0F, this.render.renders().width(), this.render.renders().height(), _viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3]);
-
-    return true;
-  }
-
-  public void fill_z(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, boolean paramBoolean)
-  {
-    if (!this.bClearZ) return;
-    CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)this.render.getCamera();
-    float f = -(paramBoolean ? localCameraOrtho2D.ZFar - 0.01F : localCameraOrtho2D.ZNear + 0.01F);
-    Render.DrawTile(paramFloat1, this.size.dy - paramFloat2, paramFloat3, -paramFloat4, f, this.clear_set_z.mat.cppObject(), -1, 0.0F, 0.0F, 1.0F, 1.0F);
-  }
-
-  public boolean draw(String paramString)
-  {
-    if ((paramString == null) || (paramString.length() == 0)) return false;
-    return draw(paramString, 0, paramString.length());
-  }
-  public boolean draw(String paramString, int paramInt1, int paramInt2) {
-    if ((paramString == null) || (paramString.length() == 0)) return false;
-    if (paramInt2 <= 0) return false;
-    if (this.alpha == 0) return false;
-    GUIFont localGUIFont = (GUIFont)this.font;
-    if ((localGUIFont == null) || (localGUIFont.fnt == null)) return false;
-    float f1 = localGUIFont.height;
-    float f2 = this.cur.y;
-    float f3 = f2 - this.clip.y;
-    if (f3 < 0.0F) {
-      f1 += f3; if (f1 <= 0.0F) return false;
-      f2 = this.clip.y;
-      f3 = 0.0F;
-    }
-    f3 = f1 + f3 - this.clip.dy;
-    if (f3 > 0.0F) {
-      f1 -= f3; if (f1 <= 0.0F) return false;
+    public boolean preRender(com.maddox.gwindow.GMesh gmesh, float f, float f1)
+    {
+        com.maddox.il2.engine.GUIMesh guimesh = (com.maddox.il2.engine.GUIMesh)gmesh;
+        if(guimesh.mesh == null)
+            return false;
+        if(f <= 0.0F || f1 <= 0.0F)
+            return false;
+        if(alpha == 0)
+        {
+            return false;
+        } else
+        {
+            setMeshPos(guimesh, cur.x, cur.y, f, f1);
+            guimesh.mesh.preRender();
+            return true;
+        }
     }
 
-    localGUIFont.fnt.outputClip(this.color.color | (this.alpha & 0xFF) << 24, Math.round(this.cur.x), Math.round(this.size.dy - this.cur.y - localGUIFont.height - localGUIFont.descender), 0.0F, paramString, paramInt1, paramInt2, Math.round(this.clip.x), Math.round(this.size.dy - this.clip.y - this.clip.dy), Math.round(this.clip.dx), Math.round(this.clip.dy));
-
-    return true;
-  }
-  public boolean draw(char[] paramArrayOfChar, int paramInt1, int paramInt2) {
-    if (paramArrayOfChar == null) return false;
-    if (paramInt2 <= 0) return false;
-    if (this.alpha == 0) return false;
-    GUIFont localGUIFont = (GUIFont)this.font;
-    if ((localGUIFont == null) || (localGUIFont.fnt == null)) return false;
-    float f1 = localGUIFont.height;
-    float f2 = this.cur.y;
-    float f3 = f2 - this.clip.y;
-    if (f3 < 0.0F) {
-      f1 += f3; if (f1 <= 0.0F) return false;
-      f2 = this.clip.y;
-      f3 = 0.0F;
-    }
-    f3 = f1 + f3 - this.clip.dy;
-    if (f3 > 0.0F) {
-      f1 -= f3; if (f1 <= 0.0F) return false;
+    private void setMeshPos(com.maddox.il2.engine.GUIMesh guimesh, float f, float f1, float f2, float f3)
+    {
+        float f4 = f2 / guimesh.size.dx;
+        float f5 = f3 / guimesh.size.dy;
+        float f6 = 1.0F;
+        com.maddox.il2.engine.CameraOrtho2D cameraortho2d = (com.maddox.il2.engine.CameraOrtho2D)render.getCamera();
+        if(guimesh.boundBox[2] < cameraortho2d.ZNear || guimesh.boundBox[5] > cameraortho2d.ZFar)
+        {
+            float f7 = cameraortho2d.ZNear - guimesh.boundBox[2];
+            if(f7 < guimesh.boundBox[5] - cameraortho2d.ZFar)
+                f7 = guimesh.boundBox[5] - cameraortho2d.ZFar;
+            f6 = cameraortho2d.ZFar / (f7 + cameraortho2d.ZFar);
+        }
+        guimesh.mesh.setScaleXYZ(f4, f5, f6);
+        com.maddox.JGP.Point3d point3d = _meshLoc.getPoint();
+        point3d.x = f - guimesh.boundBox[0] * f4;
+        point3d.y = size.dy - (f1 + guimesh.boundBox[4] * f5);
+        guimesh.mesh.setPos(_meshLoc);
     }
 
-    localGUIFont.fnt.outputClip(this.color.color | (this.alpha & 0xFF) << 24, Math.round(this.cur.x), Math.round(this.size.dy - this.cur.y - localGUIFont.height - localGUIFont.descender), 0.0F, paramArrayOfChar, paramInt1, paramInt2, Math.round(this.clip.x), Math.round(this.size.dy - this.clip.y - this.clip.dy), Math.round(this.clip.dx), Math.round(this.clip.dy));
+    public boolean draw(com.maddox.gwindow.GMesh gmesh, float f, float f1)
+    {
+        if(gmesh == null)
+            return false;
+        com.maddox.il2.engine.GUIMesh guimesh = (com.maddox.il2.engine.GUIMesh)gmesh;
+        if(guimesh.mesh == null)
+            return false;
+        if(f <= 0.0F || f1 <= 0.0F)
+            return false;
+        if(alpha == 0)
+            return false;
+        float f2 = cur.x;
+        float f3 = cur.y;
+        float f4 = f;
+        float f5 = f1;
+        float f6 = f2 - clip.x;
+        if(f6 < 0.0F)
+        {
+            f4 += f6;
+            if(f4 <= 0.0F)
+                return false;
+            f2 = clip.x;
+            f6 = 0.0F;
+        }
+        f6 = (f4 + f6) - clip.dx;
+        if(f6 > 0.0F)
+        {
+            f4 -= f6;
+            if(f4 <= 0.0F)
+                return false;
+        }
+        f6 = f3 - clip.y;
+        if(f6 < 0.0F)
+        {
+            f5 += f6;
+            if(f5 <= 0.0F)
+                return false;
+            f3 = clip.y;
+            f6 = 0.0F;
+        }
+        f6 = (f5 + f6) - clip.dy;
+        if(f6 > 0.0F)
+        {
+            f5 -= f6;
+            if(f5 <= 0.0F)
+                return false;
+        }
+        fill_z(f2, f3, f4, f5, true);
+        com.maddox.il2.engine.CameraOrtho2D cameraortho2d = (com.maddox.il2.engine.CameraOrtho2D)render.getCamera();
+        render.getViewPort(_viewPort);
+        cameraortho2d.activate(1.0F, render.renders().width(), render.renders().height(), _viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3], _viewPort[0] + java.lang.Math.round(f2), (_viewPort[1] + _viewPort[3]) - java.lang.Math.round(f3) - java.lang.Math.round(f5), java.lang.Math.round(f4), java.lang.Math.round(f5));
+        setMeshPos(guimesh, cur.x, cur.y, f, f1);
+        guimesh.mesh.render();
+        cameraortho2d.activate(1.0F, render.renders().width(), render.renders().height(), _viewPort[0], _viewPort[1], _viewPort[2], _viewPort[3]);
+        return true;
+    }
 
-    return true;
-  }
+    public void fill_z(float f, float f1, float f2, float f3, boolean flag)
+    {
+        if(!bClearZ)
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.engine.CameraOrtho2D cameraortho2d = (com.maddox.il2.engine.CameraOrtho2D)render.getCamera();
+            float f4 = -(flag ? cameraortho2d.ZFar - 0.01F : cameraortho2d.ZNear + 0.01F);
+            com.maddox.il2.engine.Render.DrawTile(f, size.dy - f1, f2, -f3, f4, clear_set_z.mat.cppObject(), -1, 0.0F, 0.0F, 1.0F, 1.0F);
+            return;
+        }
+    }
 
-  public void copyToClipboard(String paramString) {
-    StringClipboard.copy(paramString);
-  }
+    public boolean draw(java.lang.String s)
+    {
+        if(s == null || s.length() == 0)
+            return false;
+        else
+            return draw(s, 0, s.length());
+    }
 
-  public String pasteFromClipboard() {
-    return StringClipboard.paste();
-  }
+    public boolean draw(java.lang.String s, int i, int j)
+    {
+        if(s == null || s.length() == 0)
+            return false;
+        if(j <= 0)
+            return false;
+        if(alpha == 0)
+            return false;
+        com.maddox.il2.engine.GUIFont guifont = (com.maddox.il2.engine.GUIFont)font;
+        if(guifont == null || guifont.fnt == null)
+            return false;
+        float f = guifont.height;
+        float f1 = cur.y;
+        float f3 = f1 - clip.y;
+        if(f3 < 0.0F)
+        {
+            f += f3;
+            if(f <= 0.0F)
+                return false;
+            float f2 = clip.y;
+            f3 = 0.0F;
+        }
+        f3 = (f + f3) - clip.dy;
+        if(f3 > 0.0F)
+        {
+            f -= f3;
+            if(f <= 0.0F)
+                return false;
+        }
+        guifont.fnt.outputClip(color.color | (alpha & 0xff) << 24, java.lang.Math.round(cur.x), java.lang.Math.round(size.dy - cur.y - guifont.height - guifont.descender), 0.0F, s, i, j, java.lang.Math.round(clip.x), java.lang.Math.round(size.dy - clip.y - clip.dy), java.lang.Math.round(clip.dx), java.lang.Math.round(clip.dy));
+        return true;
+    }
 
-  public GUICanvas(Render paramRender) {
-    super(new GSize(paramRender.getViewPortWidth(), paramRender.getViewPortHeight()));
-    this.render = paramRender;
-    this.clear_set_z = ((GUITexture)GTexture.New("gui/clear_set_z.mat"));
-  }
+    public boolean draw(char ac[], int i, int j)
+    {
+        if(ac == null)
+            return false;
+        if(j <= 0)
+            return false;
+        if(alpha == 0)
+            return false;
+        com.maddox.il2.engine.GUIFont guifont = (com.maddox.il2.engine.GUIFont)font;
+        if(guifont == null || guifont.fnt == null)
+            return false;
+        float f = guifont.height;
+        float f1 = cur.y;
+        float f3 = f1 - clip.y;
+        if(f3 < 0.0F)
+        {
+            f += f3;
+            if(f <= 0.0F)
+                return false;
+            float f2 = clip.y;
+            f3 = 0.0F;
+        }
+        f3 = (f + f3) - clip.dy;
+        if(f3 > 0.0F)
+        {
+            f -= f3;
+            if(f <= 0.0F)
+                return false;
+        }
+        guifont.fnt.outputClip(color.color | (alpha & 0xff) << 24, java.lang.Math.round(cur.x), java.lang.Math.round(size.dy - cur.y - guifont.height - guifont.descender), 0.0F, ac, i, j, java.lang.Math.round(clip.x), java.lang.Math.round(size.dy - clip.y - clip.dy), java.lang.Math.round(clip.dx), java.lang.Math.round(clip.dy));
+        return true;
+    }
+
+    public void copyToClipboard(java.lang.String s)
+    {
+        com.maddox.rts.StringClipboard.copy(s);
+    }
+
+    public java.lang.String pasteFromClipboard()
+    {
+        return com.maddox.rts.StringClipboard.paste();
+    }
+
+    public GUICanvas(com.maddox.il2.engine.Render render1)
+    {
+        super(new GSize(render1.getViewPortWidth(), render1.getViewPortHeight()));
+        bClearZ = true;
+        render = render1;
+        clear_set_z = (com.maddox.il2.engine.GUITexture)com.maddox.gwindow.GTexture.New("gui/clear_set_z.mat");
+    }
+
+    public com.maddox.il2.engine.Render render;
+    public com.maddox.il2.engine.GUITexture clear_set_z;
+    public boolean bClearZ;
+    private static com.maddox.il2.engine.Loc _meshLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+    private static int _viewPort[] = new int[4];
+
 }

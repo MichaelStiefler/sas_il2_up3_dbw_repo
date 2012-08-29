@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Zip.java
+
 package com.maddox.il2.objects.effects;
 
 import com.maddox.JGP.Point3d;
@@ -12,99 +17,146 @@ import com.maddox.il2.engine.Render;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.ActorSimpleMesh;
-import com.maddox.il2.objects.air.Cockpit;
 import com.maddox.il2.objects.sounds.SfxZip;
 import com.maddox.rts.Destroy;
 import com.maddox.rts.MsgAction;
 
 public class Zip
-  implements Destroy
+    implements com.maddox.rts.Destroy
 {
-  private float height = 1000.0F;
-  Point3d temp = new Point3d();
-  LightPointWorld light1 = null;
-  LightPointWorld light2 = null;
-  private RangeRandom rnd = new RangeRandom();
-  private ActorSimpleMesh zipMesh;
-  private static final float dT = 4.0F;
 
-  protected void zipPsss()
-  {
-    if (isDestroyed()) return;
-    this.light1.setEmit(0.0F, 0.0F);
-    this.light2.setEmit(0.0F, 0.0F);
-    this.zipMesh.drawing(false);
-    new MsgAction(this.rnd.nextFloat(4.0F, 8.0F)) {
-      public void doAction() {
-        Zip.this.zipBuhhh();
-      } } ;
-  }
+    protected void zipPsss()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            light1.setEmit(0.0F, 0.0F);
+            light2.setEmit(0.0F, 0.0F);
+            zipMesh.drawing(false);
+            new com.maddox.rts.MsgAction(rnd.nextFloat(4F, 8F)) {
 
-  protected void zipBuhhh() {
-    if (isDestroyed()) return;
-    if (!Mission.isPlaying()) return;
-    if (!Main3D.cur3D().clouds.getRandomCloudPos(this.temp)) {
-      new MsgAction(this.rnd.nextFloat(4.0F, 8.0F)) {
-        public void doAction() {
-          Zip.this.zipBuhhh();
+                public void doAction()
+                {
+                    zipBuhhh();
+                }
+
+            }
+;
+            return;
         }
-      };
-      return;
     }
-    this.temp.z -= 100.0D;
-    this.light2.setPos(this.temp);
-    this.light2.setEmit(5.0F, 100.0F);
-    this.light2.setColor(1.0F, 1.0F, 1.0F);
-    this.temp.z = (this.height * 0.3F);
-    new SfxZip(this.temp);
-    this.light1.setPos(this.temp);
-    this.light1.setEmit(50.0F, 2000.0F);
-    this.light1.setColor(1.0F, 1.0F, 1.0F);
-    this.temp.z = 0.0D;
-    this.zipMesh.pos.setAbs(this.temp);
-    this.zipMesh.pos.reset();
-    this.zipMesh.mesh().setScale(this.height * 0.001F);
-    this.zipMesh.mesh().setFrame(this.rnd.nextInt(0, 4));
-    this.zipMesh.drawing(true);
-    Cockpit.lightningStrike(this.temp);
-    new MsgAction(0.5D) {
-      public void doAction() {
-        Zip.this.zipPsss();
-      } } ;
-  }
 
-  public Zip(float paramFloat) {
-    this.height = paramFloat;
-    this.light1 = new LightPointWorld();
-    this.light2 = new LightPointWorld();
-    this.zipMesh = new ActorSimpleMesh("3do/effects/fireworks/hammerofthor/mono.sim");
-    this.zipMesh.draw = new ActorMeshDraw() {
-      public void render(Actor paramActor) {
-        if (Main3D.cur3D().bEnableFog) Render.enableFog(false);
-        super.render(paramActor);
-        if (Main3D.cur3D().bEnableFog) Render.enableFog(true);
-      }
-    };
-    this.zipMesh.drawing(false);
-    new MsgAction(15.0D) {
-      public void doAction() {
-        Zip.this.zipBuhhh();
-      } } ;
-  }
+    protected void zipBuhhh()
+    {
+        if(isDestroyed())
+            return;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(!com.maddox.il2.game.Main3D.cur3D().clouds.getRandomCloudPos(temp))
+        {
+            new com.maddox.rts.MsgAction(rnd.nextFloat(4F, 8F)) {
 
-  public boolean isDestroyed() {
-    return this.light1 == null;
-  }
+                public void doAction()
+                {
+                    zipBuhhh();
+                }
 
-  public void destroy() {
-    if (isDestroyed()) return;
-    this.light1.destroy();
-    this.light1 = null;
-    this.light2.destroy();
-    this.light2 = null;
-    if (Actor.isValid(this.zipMesh)) {
-      this.zipMesh.destroy();
-      this.zipMesh = null;
+            }
+;
+            return;
+        } else
+        {
+            temp.z -= 100D;
+            light2.setPos(temp);
+            light2.setEmit(5F, 100F);
+            light2.setColor(1.0F, 1.0F, 1.0F);
+            temp.z = height * 0.3F;
+            new SfxZip(temp);
+            light1.setPos(temp);
+            light1.setEmit(50F, 2000F);
+            light1.setColor(1.0F, 1.0F, 1.0F);
+            temp.z = 0.0D;
+            zipMesh.pos.setAbs(temp);
+            zipMesh.pos.reset();
+            zipMesh.mesh().setScale(height * 0.001F);
+            zipMesh.mesh().setFrame(rnd.nextInt(0, 4));
+            zipMesh.drawing(true);
+            new com.maddox.rts.MsgAction(0.5D) {
+
+                public void doAction()
+                {
+                    zipPsss();
+                }
+
+            }
+;
+            return;
+        }
     }
-  }
+
+    public Zip(float f)
+    {
+        height = 1000F;
+        temp = new Point3d();
+        light1 = null;
+        light2 = null;
+        rnd = new RangeRandom();
+        height = f;
+        light1 = new LightPointWorld();
+        light2 = new LightPointWorld();
+        zipMesh = new ActorSimpleMesh("3do/effects/fireworks/hammerofthor/mono.sim");
+        zipMesh.draw = new com.maddox.il2.engine.ActorMeshDraw() {
+
+            public void render(com.maddox.il2.engine.Actor actor)
+            {
+                if(com.maddox.il2.game.Main3D.cur3D().bEnableFog)
+                    com.maddox.il2.engine.Render.enableFog(false);
+                super.render(actor);
+                if(com.maddox.il2.game.Main3D.cur3D().bEnableFog)
+                    com.maddox.il2.engine.Render.enableFog(true);
+            }
+
+        }
+;
+        zipMesh.drawing(false);
+        new com.maddox.rts.MsgAction(15D) {
+
+            public void doAction()
+            {
+                zipBuhhh();
+            }
+
+        }
+;
+    }
+
+    public boolean isDestroyed()
+    {
+        return light1 == null;
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        light1.destroy();
+        light1 = null;
+        light2.destroy();
+        light2 = null;
+        if(com.maddox.il2.engine.Actor.isValid(zipMesh))
+        {
+            zipMesh.destroy();
+            zipMesh = null;
+        }
+    }
+
+    private float height;
+    com.maddox.JGP.Point3d temp;
+    com.maddox.il2.engine.LightPointWorld light1;
+    com.maddox.il2.engine.LightPointWorld light2;
+    private com.maddox.il2.ai.RangeRandom rnd;
+    private com.maddox.il2.objects.ActorSimpleMesh zipMesh;
+    private static final float dT = 4F;
 }

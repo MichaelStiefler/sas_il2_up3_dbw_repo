@@ -1,52 +1,74 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GBevel.java
+
 package com.maddox.gwindow;
+
+
+// Referenced classes of package com.maddox.gwindow:
+//            GRegion
 
 public class GBevel
 {
-  public GRegion TL = new GRegion();
-  public GRegion T = new GRegion();
-  public GRegion TR = new GRegion();
 
-  public GRegion L = new GRegion();
-  public GRegion R = new GRegion();
+    public GBevel()
+    {
+        TL = new GRegion();
+        T = new GRegion();
+        TR = new GRegion();
+        L = new GRegion();
+        R = new GRegion();
+        BL = new GRegion();
+        B = new GRegion();
+        BR = new GRegion();
+        Area = new GRegion();
+    }
 
-  public GRegion BL = new GRegion();
-  public GRegion B = new GRegion();
-  public GRegion BR = new GRegion();
-  public GRegion Area = new GRegion();
+    public void set(com.maddox.gwindow.GRegion gregion, com.maddox.gwindow.GRegion gregion1)
+    {
+        TL.x = gregion.x;
+        TL.y = gregion.y;
+        TL.dx = gregion1.x - gregion.x;
+        TL.dy = gregion1.y - gregion.y;
+        T.x = gregion.x + TL.dx;
+        T.y = gregion.y;
+        T.dx = gregion1.dx;
+        T.dy = TL.dy;
+        TR.x = gregion1.x + gregion1.dx;
+        TR.y = gregion.y;
+        TR.dx = gregion.dx - gregion1.dx - TL.dx;
+        TR.dy = TL.dy;
+        L.x = gregion.x;
+        L.y = gregion.y + TL.dy;
+        L.dx = TL.dx;
+        L.dy = gregion1.dy;
+        R.x = TR.x;
+        R.y = gregion.y + TR.dy;
+        R.dx = TR.dx;
+        R.dy = gregion1.dy;
+        BL.x = gregion.x;
+        BL.y = gregion1.y + gregion1.dy;
+        BL.dx = TL.dx;
+        BL.dy = gregion.dy - gregion1.dy - TL.dy;
+        B.x = gregion.x + BL.dx;
+        B.y = BL.y;
+        B.dx = gregion1.dx;
+        B.dy = BL.dy;
+        BR.x = TR.x;
+        BR.y = BL.y;
+        BR.dx = TR.dx;
+        BR.dy = BL.dy;
+        Area.set(gregion1);
+    }
 
-  public void set(GRegion paramGRegion1, GRegion paramGRegion2) {
-    this.TL.x = paramGRegion1.x;
-    this.TL.y = paramGRegion1.y;
-    this.TL.dx = (paramGRegion2.x - paramGRegion1.x);
-    this.TL.dy = (paramGRegion2.y - paramGRegion1.y);
-    this.T.x = (paramGRegion1.x + this.TL.dx);
-    this.T.y = paramGRegion1.y;
-    this.T.dx = paramGRegion2.dx;
-    this.T.dy = this.TL.dy;
-    this.TR.x = (paramGRegion2.x + paramGRegion2.dx);
-    this.TR.y = paramGRegion1.y;
-    this.TR.dx = (paramGRegion1.dx - paramGRegion2.dx - this.TL.dx);
-    this.TR.dy = this.TL.dy;
-    this.L.x = paramGRegion1.x;
-    this.L.y = (paramGRegion1.y + this.TL.dy);
-    this.L.dx = this.TL.dx;
-    this.L.dy = paramGRegion2.dy;
-    this.R.x = this.TR.x;
-    this.R.y = (paramGRegion1.y + this.TR.dy);
-    this.R.dx = this.TR.dx;
-    this.R.dy = paramGRegion2.dy;
-    this.BL.x = paramGRegion1.x;
-    this.BL.y = (paramGRegion2.y + paramGRegion2.dy);
-    this.BL.dx = this.TL.dx;
-    this.BL.dy = (paramGRegion1.dy - paramGRegion2.dy - this.TL.dy);
-    this.B.x = (paramGRegion1.x + this.BL.dx);
-    this.B.y = this.BL.y;
-    this.B.dx = paramGRegion2.dx;
-    this.B.dy = this.BL.dy;
-    this.BR.x = this.TR.x;
-    this.BR.y = this.BL.y;
-    this.BR.dx = this.TR.dx;
-    this.BR.dy = this.BL.dy;
-    this.Area.set(paramGRegion2);
-  }
+    public com.maddox.gwindow.GRegion TL;
+    public com.maddox.gwindow.GRegion T;
+    public com.maddox.gwindow.GRegion TR;
+    public com.maddox.gwindow.GRegion L;
+    public com.maddox.gwindow.GRegion R;
+    public com.maddox.gwindow.GRegion BL;
+    public com.maddox.gwindow.GRegion B;
+    public com.maddox.gwindow.GRegion BR;
+    public com.maddox.gwindow.GRegion Area;
 }

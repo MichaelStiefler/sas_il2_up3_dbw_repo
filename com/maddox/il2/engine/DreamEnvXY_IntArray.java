@@ -1,25 +1,48 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   DreamEnvXY.java
+
 package com.maddox.il2.engine;
+
 
 class DreamEnvXY_IntArray
 {
-  private int size = 0;
-  private int[] arr;
 
-  public int[] array()
-  {
-    return this.arr; } 
-  public int size() { return this.size; } 
-  public void clear() { this.size = 0; } 
-  public void add(int paramInt) {
-    if (this.size + 1 > this.arr.length) {
-      int[] arrayOfInt = new int[(this.size + 1) * 2];
-      for (int i = 0; i < this.size; i++) arrayOfInt[i] = this.arr[i];
-      this.arr = arrayOfInt;
+    public int[] array()
+    {
+        return arr;
     }
-    this.arr[(this.size++)] = paramInt;
-  }
 
-  public DreamEnvXY_IntArray(int paramInt) {
-    this.arr = new int[paramInt];
-  }
+    public int size()
+    {
+        return size;
+    }
+
+    public void clear()
+    {
+        size = 0;
+    }
+
+    public void add(int i)
+    {
+        if(size + 1 > arr.length)
+        {
+            int ai[] = new int[(size + 1) * 2];
+            for(int j = 0; j < size; j++)
+                ai[j] = arr[j];
+
+            arr = ai;
+        }
+        arr[size++] = i;
+    }
+
+    public DreamEnvXY_IntArray(int i)
+    {
+        size = 0;
+        arr = new int[i];
+    }
+
+    private int size;
+    private int arr[];
 }

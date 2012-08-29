@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Moving.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.JGP.Point3d;
@@ -8,152 +13,153 @@ import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Time;
 
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            UnitInterface, UnitMove
+
 public class Moving
 {
-  public Point3d srcPos;
-  public Point3d dstPos;
-  public AnglesFork angles;
-  public long moveTotTime;
-  public long moveCurTime;
-  public long rotatTotTime;
-  public long rotatCurTime;
-  public Vector3f normal;
-  public boolean rotatingInPlace;
-  public boolean movingForward;
 
-  private static final long SecsToTicks(float paramFloat)
-  {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-  public boolean IsLandAligned() { return this.normal.z < 0.0F; } 
-  public static final float distance2D(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return (float)Math.sqrt((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y));
-  }
-
-  public Moving()
-  {
-    this.moveCurTime = (this.rotatCurTime = -1L);
-    this.srcPos = new Point3d();
-    this.dstPos = new Point3d();
-    this.normal = null;
-    this.angles = new AnglesFork();
-    this.rotatingInPlace = false;
-    this.movingForward = false;
-  }
-
-  public void switchToStay(float paramFloat)
-  {
-    this.dstPos = null;
-    this.moveTotTime = (this.moveCurTime = SecsToTicks(paramFloat));
-    this.rotatCurTime = -1L;
-    this.rotatingInPlace = false;
-    this.movingForward = false;
-  }
-
-  public void switchToAsk()
-  {
-    switchToStay(0.0F);
-    this.moveCurTime = (this.rotatCurTime = -1L);
-  }
-
-  public void set(UnitMove paramUnitMove, Actor paramActor, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
-  {
-    this.dstPos = new Point3d();
-    this.normal = new Vector3f();
-    this.normal.set(paramUnitMove.normal);
-    this.srcPos.set(paramActor.pos.getAbsPoint());
-    this.moveTotTime = (this.moveCurTime = SecsToTicks(paramUnitMove.totalTime));
-    if (paramUnitMove.pos == null) {
-      switchToStay(paramUnitMove.totalTime);
-      return;
-    }
-    this.dstPos.set(paramUnitMove.pos);
-
-    this.movingForward = true;
-
-    this.angles.setDeg(paramActor.pos.getAbsOrient().getYaw());
-    double d1 = this.dstPos.x - this.srcPos.x;
-    double d2 = this.dstPos.y - this.srcPos.y;
-    if (Math.abs(d1) + Math.abs(d2) > 1.E-005D) {
-      this.angles.setDstRad((float)Math.atan2(d2, d1));
-    }
-    int i = 0;
-    if ((paramFloat2 > 0.0F) && (this.angles.getAbsDiffDeg() > 90.0F)) {
-      i = 1;
-      this.angles.reverseDst();
-      this.movingForward = false;
-    }
-
-    this.rotatingInPlace = false;
-    float f1 = 0.0F; float f2 = 0.0F; float f3 = paramUnitMove.totalTime;
-
-    if (this.angles.getAbsDiffDeg() > 0.02F) {
-      if (this.angles.getAbsDiffDeg() <= paramFloat4) {
-        f1 = this.angles.getAbsDiffDeg() / (paramFloat3 * 0.2F);
-        if (f1 > f3) {
-          f4 = f1 * 0.2F;
-          if (paramUnitMove.dontrun) {
-            f4 *= 0.6F;
-          }
-          if (f4 > f3)
-            f1 = f3 = f4;
-          else
-            f1 = f3;
-        }
-      }
-      else {
-        this.rotatingInPlace = true;
-        f1 = this.angles.getAbsDiffDeg() / paramFloat3;
-        if (f1 > f3) {
-          f3 = f1;
-        }
-        f3 -= f1;
-      }
-
-    }
-
-    f2 = f3;
-    float f4 = distance2D(this.srcPos, this.dstPos);
-    float f5 = paramUnitMove.dontrun ? paramUnitMove.walkSpeed : i != 0 ? paramFloat2 : paramFloat1;
-    if (f4 / f5 > f2) {
-      f2 = f4 / f5;
-    }
-
-    this.rotatTotTime = SecsToTicks(f1);
-    this.moveTotTime = SecsToTicks(f2);
-
-    this.moveCurTime = (f2 > 0.0F ? this.moveTotTime : -1L);
-    this.rotatCurTime = (f1 > 0.0F ? this.rotatTotTime : -1L);
-
-    if (((this.rotatCurTime < 0L) && (this.moveCurTime <= 1L)) || (distance2D(this.srcPos, this.dstPos) < 0.05F))
+    private static final long SecsToTicks(float f)
     {
-      switchToStay(((UnitInterface)paramActor).StayInterval());
-    }
-  }
-
-  public void switchToRotate(Actor paramActor, float paramFloat1, float paramFloat2)
-  {
-    if (this.normal == null) {
-      this.movingForward = false;
-      this.moveTotTime = (this.moveCurTime = -1L);
-      this.rotatTotTime = (this.rotatCurTime = -1L);
-      return;
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
     }
 
-    this.dstPos = new Point3d();
-    this.srcPos.set(paramActor.pos.getAbsPoint());
-    this.dstPos.set(this.srcPos);
+    public boolean IsLandAligned()
+    {
+        return normal.z < 0.0F;
+    }
 
-    this.rotatingInPlace = true;
-    this.angles.setDeg(paramActor.pos.getAbsOrient().getYaw());
-    this.angles.setDstDeg(this.angles.getSrcDeg() + paramFloat1);
-    float f = this.angles.getAbsDiffDeg() / paramFloat2;
-    this.rotatTotTime = SecsToTicks(f);
-    this.rotatCurTime = (this.rotatTotTime > 0L ? this.rotatTotTime : -1L);
+    public static final float distance2D(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        return (float)java.lang.Math.sqrt((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
+    }
 
-    this.movingForward = true;
-    this.moveTotTime = -1L;
-    this.moveCurTime = -1L;
-  }
+    public Moving()
+    {
+        moveCurTime = rotatCurTime = -1L;
+        srcPos = new Point3d();
+        dstPos = new Point3d();
+        normal = null;
+        angles = new AnglesFork();
+        rotatingInPlace = false;
+        movingForward = false;
+    }
+
+    public void switchToStay(float f)
+    {
+        dstPos = null;
+        moveTotTime = moveCurTime = com.maddox.il2.ai.ground.Moving.SecsToTicks(f);
+        rotatCurTime = -1L;
+        rotatingInPlace = false;
+        movingForward = false;
+    }
+
+    public void switchToAsk()
+    {
+        switchToStay(0.0F);
+        moveCurTime = rotatCurTime = -1L;
+    }
+
+    public void set(com.maddox.il2.ai.ground.UnitMove unitmove, com.maddox.il2.engine.Actor actor, float f, float f1, float f2, float f3)
+    {
+        dstPos = new Point3d();
+        normal = new Vector3f();
+        normal.set(unitmove.normal);
+        srcPos.set(actor.pos.getAbsPoint());
+        moveTotTime = moveCurTime = com.maddox.il2.ai.ground.Moving.SecsToTicks(unitmove.totalTime);
+        if(unitmove.pos == null)
+        {
+            switchToStay(unitmove.totalTime);
+            return;
+        }
+        dstPos.set(unitmove.pos);
+        movingForward = true;
+        angles.setDeg(actor.pos.getAbsOrient().getYaw());
+        double d = dstPos.x - srcPos.x;
+        double d1 = dstPos.y - srcPos.y;
+        if(java.lang.Math.abs(d) + java.lang.Math.abs(d1) > 1.0000000000000001E-005D)
+            angles.setDstRad((float)java.lang.Math.atan2(d1, d));
+        boolean flag = false;
+        if(f1 > 0.0F && angles.getAbsDiffDeg() > 90F)
+        {
+            flag = true;
+            angles.reverseDst();
+            movingForward = false;
+        }
+        rotatingInPlace = false;
+        float f4 = 0.0F;
+        d1 = 0.0F;
+        float f5 = unitmove.totalTime;
+        if(angles.getAbsDiffDeg() > 0.02F)
+            if(angles.getAbsDiffDeg() <= f3)
+            {
+                f4 = angles.getAbsDiffDeg() / (f2 * 0.2F);
+                if(f4 > f5)
+                {
+                    float f6 = f4 * 0.2F;
+                    if(unitmove.dontrun)
+                        f6 *= 0.6F;
+                    if(f6 > f5)
+                        f4 = f5 = f6;
+                    else
+                        f4 = f5;
+                }
+            } else
+            {
+                rotatingInPlace = true;
+                f4 = angles.getAbsDiffDeg() / f2;
+                if(f4 > f5)
+                    f5 = f4;
+                f5 -= f4;
+            }
+        d1 = f5;
+        float f7 = com.maddox.il2.ai.ground.Moving.distance2D(srcPos, dstPos);
+        float f8 = flag ? f1 : unitmove.dontrun ? unitmove.walkSpeed : f;
+        if(f7 / f8 > d1)
+            d1 = f7 / f8;
+        rotatTotTime = com.maddox.il2.ai.ground.Moving.SecsToTicks(f4);
+        moveTotTime = com.maddox.il2.ai.ground.Moving.SecsToTicks(d1);
+        moveCurTime = d1 <= 0.0F ? -1L : moveTotTime;
+        rotatCurTime = f4 <= 0.0F ? -1L : rotatTotTime;
+        if(rotatCurTime < 0L && moveCurTime <= 1L || com.maddox.il2.ai.ground.Moving.distance2D(srcPos, dstPos) < 0.05F)
+            switchToStay(((com.maddox.il2.ai.ground.UnitInterface)actor).StayInterval());
+    }
+
+    public void switchToRotate(com.maddox.il2.engine.Actor actor, float f, float f1)
+    {
+        if(normal == null)
+        {
+            movingForward = false;
+            moveTotTime = moveCurTime = -1L;
+            rotatTotTime = rotatCurTime = -1L;
+            return;
+        } else
+        {
+            dstPos = new Point3d();
+            srcPos.set(actor.pos.getAbsPoint());
+            dstPos.set(srcPos);
+            rotatingInPlace = true;
+            angles.setDeg(actor.pos.getAbsOrient().getYaw());
+            angles.setDstDeg(angles.getSrcDeg() + f);
+            float f2 = angles.getAbsDiffDeg() / f1;
+            rotatTotTime = com.maddox.il2.ai.ground.Moving.SecsToTicks(f2);
+            rotatCurTime = rotatTotTime <= 0L ? -1L : rotatTotTime;
+            movingForward = true;
+            moveTotTime = -1L;
+            moveCurTime = -1L;
+            return;
+        }
+    }
+
+    public com.maddox.JGP.Point3d srcPos;
+    public com.maddox.JGP.Point3d dstPos;
+    public com.maddox.il2.ai.AnglesFork angles;
+    public long moveTotTime;
+    public long moveCurTime;
+    public long rotatTotTime;
+    public long rotatCurTime;
+    public com.maddox.JGP.Vector3f normal;
+    public boolean rotatingInPlace;
+    public boolean movingForward;
 }

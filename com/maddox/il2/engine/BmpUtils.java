@@ -1,87 +1,114 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BmpUtils.java
+
 package com.maddox.il2.engine;
+
+
+// Referenced classes of package com.maddox.il2.engine:
+//            FObj, GObj
 
 public class BmpUtils
 {
-  public static native int squareSizeBMP8Pal(String paramString);
 
-  public static boolean checkBMP8Pal(String paramString, int paramInt1, int paramInt2)
-  {
-    int i = RectSizeBMP8Pal(paramString);
-    if (i == -1) return false;
-    return (paramInt1 == (i & 0xFFFF)) && (paramInt2 == (i >> 16 & 0xFFFF));
-  }
+    public static native int squareSizeBMP8Pal(java.lang.String s);
 
-  public static boolean bmp8Scale05(String paramString1, String paramString2)
-  {
-    boolean bool = BMP8Scale05(paramString1, paramString2);
-    return bool;
-  }
-
-  public static boolean bmp8PalToTGA3(String paramString1, String paramString2)
-  {
-    boolean bool = BMP8PalToTGA3(paramString1, paramString2);
-    if (bool)
-      tryReloadFObj(paramString2);
-    return bool;
-  }
-
-  public static boolean bmp8Pal192x256ToTGA3(String paramString1, String paramString2)
-  {
-    boolean bool = BMP8Pal192x256ToTGA3(paramString1, paramString2);
-    if (bool)
-      tryReloadFObj(paramString2);
-    return bool;
-  }
-
-  public static boolean bmp8PalToTGA4(String paramString1, String paramString2)
-  {
-    boolean bool = BMP8PalToTGA4(paramString1, paramString2);
-    if (bool)
-      tryReloadFObj(paramString2);
-    return bool;
-  }
-
-  public static boolean bmp8PalTo2TGA4(String paramString1, String paramString2, String paramString3)
-  {
-    boolean bool = BMP8PalTo2TGA4(paramString1, paramString2, paramString3);
-    if (bool) {
-      tryReloadFObj(paramString2);
-      tryReloadFObj(paramString3);
+    public static boolean checkBMP8Pal(java.lang.String s, int i, int j)
+    {
+        int k = com.maddox.il2.engine.BmpUtils.RectSizeBMP8Pal(s);
+        if(k == -1)
+            return false;
+        else
+            return i == (k & 0xffff) && j == (k >> 16 & 0xffff);
     }
-    return bool;
-  }
 
-  public static boolean bmp8PalTo4TGA4(String paramString1, String paramString2, String paramString3)
-  {
-    boolean bool = BMP8PalTo4TGA4(paramString1, paramString2, paramString3);
-    if (bool) {
-      tryReloadFObj(paramString3 + "/skin1o.tga");
-      tryReloadFObj(paramString3 + "/skin1p.tga");
-      tryReloadFObj(paramString3 + "/skin1q.tga");
+    public static boolean bmp8Scale05(java.lang.String s, java.lang.String s1)
+    {
+        boolean flag = com.maddox.il2.engine.BmpUtils.BMP8Scale05(s, s1);
+        return flag;
     }
-    return bool;
-  }
 
-  private static void tryReloadFObj(String paramString) {
-    if (FObj.Exist(paramString)) {
-      int i = FObj.GetFObj(paramString);
-      if (i != 0) {
-        FObj.ReLoad(i);
-        GObj.Unlink(i); }  }  } 
-  private static native int RectSizeBMP8Pal(String paramString);
+    public static boolean bmp8PalToTGA3(java.lang.String s, java.lang.String s1)
+    {
+        boolean flag = com.maddox.il2.engine.BmpUtils.BMP8PalToTGA3(s, s1);
+        if(flag)
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s1);
+        return flag;
+    }
 
-  private static native boolean BMP8Scale05(String paramString1, String paramString2);
+    public static boolean bmp8Pal192x256ToTGA3(java.lang.String s, java.lang.String s1)
+    {
+        boolean flag = com.maddox.il2.engine.BmpUtils.BMP8Pal192x256ToTGA3(s, s1);
+        if(flag)
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s1);
+        return flag;
+    }
 
-  private static native boolean BMP8PalToTGA3(String paramString1, String paramString2);
+    public static boolean bmp8PalToTGA4(java.lang.String s, java.lang.String s1)
+    {
+        boolean flag = com.maddox.il2.engine.BmpUtils.BMP8PalToTGA4(s, s1);
+        if(flag)
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s1);
+        return flag;
+    }
 
-  private static native boolean BMP8Pal192x256ToTGA3(String paramString1, String paramString2);
+    public static boolean bmp8PalTo2TGA4(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        boolean flag = com.maddox.il2.engine.BmpUtils.BMP8PalTo2TGA4(s, s1, s2);
+        if(flag)
+        {
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s1);
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s2);
+        }
+        return flag;
+    }
 
-  private static native boolean BMP8PalToTGA4(String paramString1, String paramString2);
+    public static boolean bmp8PalTo4TGA4(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        boolean flag = com.maddox.il2.engine.BmpUtils.BMP8PalTo4TGA4(s, s1, s2);
+        if(flag)
+        {
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s2 + "/skin1o.tga");
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s2 + "/skin1p.tga");
+            com.maddox.il2.engine.BmpUtils.tryReloadFObj(s2 + "/skin1q.tga");
+        }
+        return flag;
+    }
 
-  private static native boolean BMP8PalTo2TGA4(String paramString1, String paramString2, String paramString3);
+    private static void tryReloadFObj(java.lang.String s)
+    {
+        if(com.maddox.il2.engine.FObj.Exist(s))
+        {
+            int i = com.maddox.il2.engine.FObj.GetFObj(s);
+            if(i != 0)
+            {
+                com.maddox.il2.engine.FObj.ReLoad(i);
+                com.maddox.il2.engine.GObj.Unlink(i);
+            }
+        }
+    }
 
-  private static native boolean BMP8PalTo4TGA4(String paramString1, String paramString2, String paramString3);
+    private static native int RectSizeBMP8Pal(java.lang.String s);
 
-  static { GObj.loadNative();
-  }
+    private static native boolean BMP8Scale05(java.lang.String s, java.lang.String s1);
+
+    private static native boolean BMP8PalToTGA3(java.lang.String s, java.lang.String s1);
+
+    private static native boolean BMP8Pal192x256ToTGA3(java.lang.String s, java.lang.String s1);
+
+    private static native boolean BMP8PalToTGA4(java.lang.String s, java.lang.String s1);
+
+    private static native boolean BMP8PalTo2TGA4(java.lang.String s, java.lang.String s1, java.lang.String s2);
+
+    private static native boolean BMP8PalTo4TGA4(java.lang.String s, java.lang.String s1, java.lang.String s2);
+
+    private BmpUtils()
+    {
+    }
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

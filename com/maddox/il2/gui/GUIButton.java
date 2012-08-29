@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIButton.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GRegion;
@@ -7,75 +12,83 @@ import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowDialogControl;
 import com.maddox.gwindow.GWindowLookAndFeel;
 
-public class GUIButton extends GWindowDialogControl
+public class GUIButton extends com.maddox.gwindow.GWindowDialogControl
 {
-  GTexRegion texUP;
-  GTexRegion texDOWN;
 
-  public boolean _notify(int paramInt1, int paramInt2)
-  {
-    if (paramInt1 == 2)
-      lAF().soundPlay("clickButton");
-    return super._notify(paramInt1, paramInt2);
-  }
+    public boolean _notify(int i, int j)
+    {
+        if(i == 2)
+            lAF().soundPlay("clickButton");
+        return super._notify(i, j);
+    }
 
-  public void mouseClick(int paramInt, float paramFloat1, float paramFloat2) {
-    super.mouseClick(paramInt, paramFloat1, paramFloat2);
-  }
+    public void mouseClick(int i, float f, float f1)
+    {
+        super.mouseClick(i, f, f1);
+    }
 
-  public void render() {
-    setCanvasColorWHITE();
-    GTexRegion localGTexRegion = this.texUP;
-    if (this.bDown) localGTexRegion = this.texDOWN;
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, localGTexRegion);
-  }
+    public void render()
+    {
+        setCanvasColorWHITE();
+        com.maddox.gwindow.GTexRegion gtexregion = texUP;
+        if(bDown)
+            gtexregion = texDOWN;
+        draw(0.0F, 0.0F, win.dx, win.dy, gtexregion);
+    }
 
-  public void setPosSize(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    GTexRegion localGTexRegion = this.texUP;
+    public void setPosSize(float f, float f1, float f2, float f3)
+    {
+        com.maddox.gwindow.GTexRegion gtexregion = texUP;
+        float f4 = 1.0F;
+        float f5;
+        for(f5 = gtexregion.dx; f5 / f4 > f2; f4++);
+        f5 /= f4;
+        f4 = 1.0F;
+        float f6;
+        for(f6 = gtexregion.dy; f6 / f4 > f3; f4++);
+        f6 /= f4;
+        win.x = java.lang.Math.round(f);
+        win.y = java.lang.Math.round(f1);
+        win.dx = java.lang.Math.round(f2);
+        win.dy = java.lang.Math.round(f3);
+    }
 
-    float f1 = 1.0F;
-    float f2 = localGTexRegion.dx;
-    while (f2 / f1 > paramFloat3) f1 += 1.0F;
-    f2 /= f1;
-    f1 = 1.0F;
-    float f3 = localGTexRegion.dy;
-    while (f3 / f1 > paramFloat4) f1 += 1.0F;
-    f3 /= f1;
+    public void setPosC(float f, float f1)
+    {
+        super.setPos(f - win.dx / 2.0F, f1 - win.dy / 2.0F);
+    }
 
-    this.win.x = Math.round(paramFloat1);
-    this.win.y = Math.round(paramFloat2);
-    this.win.dx = Math.round(paramFloat3);
-    this.win.dy = Math.round(paramFloat4);
-  }
+    public void resolutionChanged()
+    {
+        win.dx = x1024(texUP.dx);
+        win.dy = y1024(texUP.dy);
+    }
 
-  public void setPosC(float paramFloat1, float paramFloat2)
-  {
-    super.setPos(paramFloat1 - this.win.dx / 2.0F, paramFloat2 - this.win.dy / 2.0F);
-  }
+    public void created()
+    {
+        resolutionChanged();
+    }
 
-  public void resolutionChanged() {
-    this.win.dx = x1024(this.texUP.dx);
-    this.win.dy = y1024(this.texUP.dy);
-  }
+    public GUIButton(com.maddox.gwindow.GWindow gwindow)
+    {
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
 
-  public void created() {
-    resolutionChanged();
-  }
+    public com.maddox.il2.gui.GUIButton Clone()
+    {
+        com.maddox.il2.gui.GUIButton guibutton = new GUIButton(parentWindow);
+        guibutton.texUP = texUP;
+        guibutton.texDOWN = texDOWN;
+        return guibutton;
+    }
 
-  public GUIButton(GWindow paramGWindow) {
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+    public GUIButton(com.maddox.gwindow.GWindow gwindow, com.maddox.gwindow.GTexture gtexture, float f, float f1, float f2, float f3)
+    {
+        texUP = new GTexRegion(gtexture, f, f1, f2, f3);
+        texDOWN = new GTexRegion(gtexture, f + f2, f1, f2, f3);
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
 
-  public GUIButton Clone() {
-    GUIButton localGUIButton = new GUIButton(this.parentWindow);
-    localGUIButton.texUP = this.texUP;
-    localGUIButton.texDOWN = this.texDOWN;
-    return localGUIButton;
-  }
-
-  public GUIButton(GWindow paramGWindow, GTexture paramGTexture, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    this.texUP = new GTexRegion(paramGTexture, paramFloat1, paramFloat2, paramFloat3, paramFloat4);
-    this.texDOWN = new GTexRegion(paramGTexture, paramFloat1 + paramFloat3, paramFloat2, paramFloat3, paramFloat4);
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+    com.maddox.gwindow.GTexRegion texUP;
+    com.maddox.gwindow.GTexRegion texDOWN;
 }

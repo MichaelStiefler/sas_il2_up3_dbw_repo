@@ -1,106 +1,139 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   KeyboardDX.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            KeyboardDXException, MsgTimeOut, MsgTimeOutListener, RTSConf, 
+//            MainWindow, MessageQueue, Time, Keyboard, 
+//            RTS
+
 public final class KeyboardDX
-  implements MsgTimeOutListener
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  public static final int NONEXCLUSIVE_BACKGROUND = 0;
-  public static final int NONEXCLUSIVE_FOREGROUND = 1;
-  private static final int PRESS = 0;
-  private static final int RELEASE = 1;
-  private boolean bCreated;
-  private int level;
-  private int[] param;
-  private MsgTimeOut ticker;
 
-  public final boolean isCreated()
-  {
-    return this.bCreated;
-  }
-
-  public final void create(int paramInt)
-    throws KeyboardDXException
-  {
-    if (this.bCreated) {
-      setCooperativeLevel(paramInt);
-      return;
+    public final boolean isCreated()
+    {
+        return bCreated;
     }
-    checkCoopLevel(paramInt);
-    if (RTSConf.cur.mainWindow.hWnd() == 0)
-      throw new KeyboardDXException("Keyboard DirectX driver: main window not present");
-    nCreate(paramInt);
-    this.level = paramInt;
-    this.ticker.post();
-    this.bCreated = true;
-  }
 
-  public final void create()
-    throws KeyboardDXException
-  {
-    create(this.level);
-  }
-
-  public final void setCooperativeLevel(int paramInt)
-    throws KeyboardDXException
-  {
-    checkCoopLevel(paramInt);
-    if (this.bCreated)
-      nSetCoopLevel(paramInt);
-    this.level = paramInt;
-  }
-
-  public final void destroy()
-  {
-    if (this.bCreated) {
-      nDestroy();
-      RTSConf.cur.queueRealTime.remove(this.ticker);
-      RTSConf.cur.queueRealTimeNextTick.remove(this.ticker);
-      this.bCreated = false;
-    }
-  }
-
-  public void msgTimeOut(Object paramObject)
-  {
-    if (this.bCreated) {
-      while (nGetMsg(this.param)) {
-        long l = Time.realFromRawClamp(this.param[2]);
-        switch (this.param[0]) { case 0:
-          RTSConf.cur.keyboard.setPress(l, this.param[1]); break;
-        case 1:
-          RTSConf.cur.keyboard.setRelease(l, this.param[1]);
+    public final void create(int i)
+        throws com.maddox.rts.KeyboardDXException
+    {
+        if(bCreated)
+        {
+            setCooperativeLevel(i);
+            return;
         }
-      }
-      this.ticker.post();
+        com.maddox.rts.KeyboardDX.checkCoopLevel(i);
+        if(com.maddox.rts.RTSConf.cur.mainWindow.hWnd() == 0)
+        {
+            throw new KeyboardDXException("Keyboard DirectX driver: main window not present");
+        } else
+        {
+            com.maddox.rts.KeyboardDX.nCreate(i);
+            level = i;
+            ticker.post();
+            bCreated = true;
+            return;
+        }
     }
-  }
 
-  private static final void checkCoopLevel(int paramInt)
-    throws KeyboardDXException
-  {
-    if ((paramInt < 0) || (paramInt > 1)) throw new KeyboardDXException("Keyboard DirectX driver: unknown cooperative level = " + paramInt); 
-  }
+    public final void create()
+        throws com.maddox.rts.KeyboardDXException
+    {
+        create(level);
+    }
 
-  protected KeyboardDX(int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    this.param = new int[3];
-    this.bCreated = false;
-    checkCoopLevel(paramInt2);
-    this.level = paramInt2;
-    this.ticker = new MsgTimeOut(null);
-    this.ticker.setTickPos(paramInt1);
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setFlags(88);
-    this.ticker.setListener(this);
-    if (paramBoolean)
-      create(); 
-  }
-  private static final native void nCreate(int paramInt) throws KeyboardDXException;
+    public final void setCooperativeLevel(int i)
+        throws com.maddox.rts.KeyboardDXException
+    {
+        com.maddox.rts.KeyboardDX.checkCoopLevel(i);
+        if(bCreated)
+            com.maddox.rts.KeyboardDX.nSetCoopLevel(i);
+        level = i;
+    }
 
-  private static final native void nDestroy();
+    public final void destroy()
+    {
+        if(bCreated)
+        {
+            com.maddox.rts.KeyboardDX.nDestroy();
+            com.maddox.rts.RTSConf.cur.queueRealTime.remove(ticker);
+            com.maddox.rts.RTSConf.cur.queueRealTimeNextTick.remove(ticker);
+            bCreated = false;
+        }
+    }
 
-  private static final native void nSetCoopLevel(int paramInt);
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(bCreated)
+        {
+            while(com.maddox.rts.KeyboardDX.nGetMsg(param)) 
+            {
+                long l = com.maddox.rts.Time.realFromRawClamp(param[2]);
+                switch(param[0])
+                {
+                case 0: // '\0'
+                    com.maddox.rts.RTSConf.cur.keyboard.setPress(l, param[1]);
+                    break;
 
-  private static final native boolean nGetMsg(int[] paramArrayOfInt);
+                case 1: // '\001'
+                    com.maddox.rts.RTSConf.cur.keyboard.setRelease(l, param[1]);
+                    break;
+                }
+            }
+            ticker.post();
+        }
+    }
 
-  static { RTS.loadNative();
-  }
+    private static final void checkCoopLevel(int i)
+        throws com.maddox.rts.KeyboardDXException
+    {
+        if(i < 0 || i > 1)
+            throw new KeyboardDXException("Keyboard DirectX driver: unknown cooperative level = " + i);
+        else
+            return;
+    }
+
+    protected KeyboardDX(int i, int j, boolean flag)
+    {
+        param = new int[3];
+        bCreated = false;
+        com.maddox.rts.KeyboardDX.checkCoopLevel(j);
+        level = j;
+        ticker = new MsgTimeOut(null);
+        ticker.setTickPos(i);
+        ticker.setNotCleanAfterSend();
+        ticker.setFlags(88);
+        ticker.setListener(this);
+        if(flag)
+            create();
+    }
+
+    private static final native void nCreate(int i)
+        throws com.maddox.rts.KeyboardDXException;
+
+    private static final native void nDestroy();
+
+    private static final native void nSetCoopLevel(int i);
+
+    private static final native boolean nGetMsg(int ai[]);
+
+    public static final int NONEXCLUSIVE_BACKGROUND = 0;
+    public static final int NONEXCLUSIVE_FOREGROUND = 1;
+    private static final int PRESS = 0;
+    private static final int RELEASE = 1;
+    private boolean bCreated;
+    private int level;
+    private int param[];
+    private com.maddox.rts.MsgTimeOut ticker;
+
+    static 
+    {
+        com.maddox.rts.RTS.loadNative();
+    }
 }

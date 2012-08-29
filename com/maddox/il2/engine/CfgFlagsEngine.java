@@ -1,208 +1,244 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgFlagsEngine.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.CfgFlags;
 import com.maddox.rts.CfgTools;
 import com.maddox.rts.IniFile;
 
-class CfgFlagsEngine extends CfgGObj
-  implements CfgFlags
+// Referenced classes of package com.maddox.il2.engine:
+//            CfgGObj
+
+class CfgFlagsEngine extends com.maddox.il2.engine.CfgGObj
+    implements com.maddox.rts.CfgFlags
 {
-  private int flags;
 
-  public String name()
-  {
-    return Name(this.cppObj);
-  }
+    public java.lang.String name()
+    {
+        return com.maddox.il2.engine.CfgFlagsEngine.Name(cppObj);
+    }
 
-  public boolean isPermanent()
-  {
-    return IsPermanent(this.cppObj);
-  }
+    public boolean isPermanent()
+    {
+        return com.maddox.il2.engine.CfgFlagsEngine.IsPermanent(cppObj);
+    }
 
-  public boolean isEnabled()
-  {
-    return true;
-  }
+    public boolean isEnabled()
+    {
+        return true;
+    }
 
-  public void load(IniFile paramIniFile, String paramString)
-  {
-    CfgTools.load(this, paramIniFile, paramString);
-    this.iniFile = paramIniFile;
-    this.iniSect = paramString;
-  }
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.load(this, inifile, s);
+        iniFile = inifile;
+        iniSect = s;
+    }
 
-  public void save()
-  {
-    save(this.iniFile, this.iniSect);
-  }
+    public void save()
+    {
+        save(iniFile, iniSect);
+    }
 
-  public void save(IniFile paramIniFile, String paramString)
-  {
-    CfgTools.save(true, this, paramIniFile, paramString);
-  }
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.save(true, this, inifile, s);
+    }
 
-  public int apply()
-  {
-    if (!isEnabled())
-      return 0;
-    int i = FirstFlag(this.cppObj);
-    int j = CountFlags(this.cppObj);
-    int k = 0;
-    for (int m = 0; m < j; m++) {
-      if (IsEnabledFlag(this.cppObj, i)) {
-        boolean bool1 = Get(this.cppObj, i);
-        boolean bool2 = (this.flags & 1 << m) != 0;
-        if (bool2 != bool1) {
-          k |= GetFlagStatus(this.cppObj, i);
-          Set(this.cppObj, i, bool2);
+    public int apply()
+    {
+        if(!isEnabled())
+            return 0;
+        int i = com.maddox.il2.engine.CfgFlagsEngine.FirstFlag(cppObj);
+        int j = com.maddox.il2.engine.CfgFlagsEngine.CountFlags(cppObj);
+        int k = 0;
+        for(int l = 0; l < j; l++)
+        {
+            if(com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, i))
+            {
+                boolean flag = com.maddox.il2.engine.CfgFlagsEngine.Get(cppObj, i);
+                boolean flag1 = (flags & 1 << l) != 0;
+                if(flag1 != flag)
+                {
+                    k |= com.maddox.il2.engine.CfgFlagsEngine.GetFlagStatus(cppObj, i);
+                    com.maddox.il2.engine.CfgFlagsEngine.Set(cppObj, i, flag1);
+                }
+            }
+            i++;
         }
-      }
-      i++;
+
+        return k;
     }
-    return k;
-  }
 
-  public int applyStatus()
-  {
-    int i = FirstFlag(this.cppObj);
-    int j = CountFlags(this.cppObj);
-    int k = 0;
-    for (int m = 0; m < j; m++) {
-      if (IsEnabledFlag(this.cppObj, i)) {
-        boolean bool1 = Get(this.cppObj, i);
-        boolean bool2 = (this.flags & 1 << m) != 0;
-        if (bool2 != bool1)
-          k |= GetFlagStatus(this.cppObj, i);
-      }
-      i++;
+    public int applyStatus()
+    {
+        int i = com.maddox.il2.engine.CfgFlagsEngine.FirstFlag(cppObj);
+        int j = com.maddox.il2.engine.CfgFlagsEngine.CountFlags(cppObj);
+        int k = 0;
+        for(int l = 0; l < j; l++)
+        {
+            if(com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, i))
+            {
+                boolean flag = com.maddox.il2.engine.CfgFlagsEngine.Get(cppObj, i);
+                boolean flag1 = (flags & 1 << l) != 0;
+                if(flag1 != flag)
+                    k |= com.maddox.il2.engine.CfgFlagsEngine.GetFlagStatus(cppObj, i);
+            }
+            i++;
+        }
+
+        return k;
     }
-    return k;
-  }
 
-  public void reset()
-  {
-    int i = FirstFlag(this.cppObj);
-    int j = CountFlags(this.cppObj);
-    this.flags = 0;
-    for (int k = 0; k < j; k++) {
-      if (IsEnabledFlag(this.cppObj, i)) {
-        if (Get(this.cppObj, i))
-          this.flags |= 1 << k;
-      }
-      else if (GetDefaultFlag(this.cppObj, i)) {
-        this.flags |= 1 << k;
-      }
-      i++;
+    public void reset()
+    {
+        int i = com.maddox.il2.engine.CfgFlagsEngine.FirstFlag(cppObj);
+        int j = com.maddox.il2.engine.CfgFlagsEngine.CountFlags(cppObj);
+        flags = 0;
+        for(int k = 0; k < j; k++)
+        {
+            if(com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, i))
+            {
+                if(com.maddox.il2.engine.CfgFlagsEngine.Get(cppObj, i))
+                    flags |= 1 << k;
+            } else
+            if(com.maddox.il2.engine.CfgFlagsEngine.GetDefaultFlag(cppObj, i))
+                flags |= 1 << k;
+            i++;
+        }
+
     }
-  }
 
-  public int firstFlag()
-  {
-    return FirstFlag(this.cppObj);
-  }
+    public int firstFlag()
+    {
+        return com.maddox.il2.engine.CfgFlagsEngine.FirstFlag(cppObj);
+    }
 
-  public int countFlags()
-  {
-    return CountFlags(this.cppObj);
-  }
+    public int countFlags()
+    {
+        return com.maddox.il2.engine.CfgFlagsEngine.CountFlags(cppObj);
+    }
 
-  public boolean defaultFlag(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if (i != paramInt)
-      return false;
-    return GetDefaultFlag(this.cppObj, i);
-  }
+    public boolean defaultFlag(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i)
+            return false;
+        else
+            return com.maddox.il2.engine.CfgFlagsEngine.GetDefaultFlag(cppObj, j);
+    }
 
-  public String nameFlag(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if (i != paramInt)
-      return "Unknown";
-    return NameFlag(this.cppObj, i);
-  }
+    public java.lang.String nameFlag(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i)
+            return "Unknown";
+        else
+            return com.maddox.il2.engine.CfgFlagsEngine.NameFlag(cppObj, j);
+    }
 
-  public boolean isPermanentFlag(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if (i != paramInt)
-      return false;
-    return IsPermanentFlag(this.cppObj, i);
-  }
+    public boolean isPermanentFlag(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i)
+            return false;
+        else
+            return com.maddox.il2.engine.CfgFlagsEngine.IsPermanentFlag(cppObj, j);
+    }
 
-  public boolean isEnabledFlag(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if (i != paramInt)
-      return false;
-    return IsEnabledFlag(this.cppObj, i);
-  }
+    public boolean isEnabledFlag(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i)
+            return false;
+        else
+            return com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, j);
+    }
 
-  public boolean get(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if (i != paramInt)
-      return false;
-    return Get(this.cppObj, i);
-  }
+    public boolean get(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i)
+            return false;
+        else
+            return com.maddox.il2.engine.CfgFlagsEngine.Get(cppObj, j);
+    }
 
-  public void set(int paramInt, boolean paramBoolean)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if ((i == paramInt) && (IsEnabledFlag(this.cppObj, i)))
-      if (paramBoolean) this.flags |= 1 << i - firstFlag(); else
-        this.flags &= (1 << i - firstFlag() ^ 0xFFFFFFFF);
-  }
+    public void set(int i, boolean flag)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j == i && com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, j))
+            if(flag)
+                flags |= 1 << j - firstFlag();
+            else
+                flags &= ~(1 << j - firstFlag());
+    }
 
-  public int apply(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if ((i != paramInt) || (!IsEnabledFlag(this.cppObj, i)))
-      return 0;
-    boolean bool1 = Get(this.cppObj, i);
-    boolean bool2 = (this.flags & 1 << i - firstFlag()) != 0;
-    if (bool2 == bool1) return 0;
-    int j = GetFlagStatus(this.cppObj, i);
-    Set(this.cppObj, i, bool2);
-    return j;
-  }
+    public int apply(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i || !com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, j))
+            return 0;
+        boolean flag = com.maddox.il2.engine.CfgFlagsEngine.Get(cppObj, j);
+        boolean flag1 = (flags & 1 << j - firstFlag()) != 0;
+        if(flag1 == flag)
+        {
+            return 0;
+        } else
+        {
+            int k = com.maddox.il2.engine.CfgFlagsEngine.GetFlagStatus(cppObj, j);
+            com.maddox.il2.engine.CfgFlagsEngine.Set(cppObj, j, flag1);
+            return k;
+        }
+    }
 
-  public int applyStatus(int paramInt)
-  {
-    int i = clamp(paramInt, firstFlag(), countFlags());
-    if ((i != paramInt) || (!IsEnabledFlag(this.cppObj, i)))
-      return 0;
-    boolean bool1 = Get(this.cppObj, i);
-    boolean bool2 = (this.flags & 1 << i - firstFlag()) != 0;
-    if (bool2 == bool1) return 0;
-    int j = GetFlagStatus(this.cppObj, i);
-    return j;
-  }
+    public int applyStatus(int i)
+    {
+        int j = clamp(i, firstFlag(), countFlags());
+        if(j != i || !com.maddox.il2.engine.CfgFlagsEngine.IsEnabledFlag(cppObj, j))
+            return 0;
+        boolean flag = com.maddox.il2.engine.CfgFlagsEngine.Get(cppObj, j);
+        boolean flag1 = (flags & 1 << j - firstFlag()) != 0;
+        if(flag1 == flag)
+        {
+            return 0;
+        } else
+        {
+            int k = com.maddox.il2.engine.CfgFlagsEngine.GetFlagStatus(cppObj, j);
+            return k;
+        }
+    }
 
-  public CfgFlagsEngine(int paramInt) {
-    super(paramInt);
-    reset();
-  }
+    public CfgFlagsEngine(int i)
+    {
+        super(i);
+        reset();
+    }
 
-  private static native String Name(int paramInt);
+    private static native java.lang.String Name(int i);
 
-  private static native boolean IsPermanent(int paramInt);
+    private static native boolean IsPermanent(int i);
 
-  private static native int FirstFlag(int paramInt);
+    private static native int FirstFlag(int i);
 
-  private static native int CountFlags(int paramInt);
+    private static native int CountFlags(int i);
 
-  private static native boolean GetDefaultFlag(int paramInt1, int paramInt2);
+    private static native boolean GetDefaultFlag(int i, int j);
 
-  private static native String NameFlag(int paramInt1, int paramInt2);
+    private static native java.lang.String NameFlag(int i, int j);
 
-  private static native boolean IsPermanentFlag(int paramInt1, int paramInt2);
+    private static native boolean IsPermanentFlag(int i, int j);
 
-  private static native boolean IsEnabledFlag(int paramInt1, int paramInt2);
+    private static native boolean IsEnabledFlag(int i, int j);
 
-  private static native int GetFlagStatus(int paramInt1, int paramInt2);
+    private static native int GetFlagStatus(int i, int j);
 
-  private static native boolean Get(int paramInt1, int paramInt2);
+    private static native boolean Get(int i, int j);
 
-  private static native int Set(int paramInt1, int paramInt2, boolean paramBoolean);
+    private static native int Set(int i, int j, boolean flag);
+
+    private int flags;
 }

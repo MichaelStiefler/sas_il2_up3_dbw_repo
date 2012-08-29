@@ -1,37 +1,59 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   StrMath.java
+
 package com.maddox.util;
+
 
 public class StrMath
 {
-  public static boolean simple(String paramString1, String paramString2)
-  {
-    if ((paramString1 == null) || (paramString2 == null)) return false;
-    char[] arrayOfChar1 = new char[paramString1.length() + 1];
-    char[] arrayOfChar2 = new char[paramString2.length() + 1];
-    paramString1.getChars(0, paramString1.length(), arrayOfChar1, 0);
-    paramString2.getChars(0, paramString2.length(), arrayOfChar2, 0);
-    arrayOfChar1[paramString1.length()] = '\000';
-    arrayOfChar2[paramString2.length()] = '\000';
-    int i = 0;
-    int j = 0;
-    int k = -1;
-    int m = -1;
-    while (true) {
-      if (arrayOfChar1[i] == arrayOfChar2[j]) {
-        if (arrayOfChar2[j] == 0)
-          return true;
-        j++;
-        i++; continue;
-      }
-      if ((arrayOfChar2[j] != 0) && (arrayOfChar1[i] == '?')) {
-        i++;
-        j++; continue;
-      }if (arrayOfChar1[i] == '*') {
-        i++; k = i;
-        m = j; continue;
-      }if ((m == -1) || (arrayOfChar2[m] == 0)) break;
-      m++; j = m;
-      i = k;
+
+    public StrMath()
+    {
     }
-    return false;
-  }
+
+    public static boolean simple(java.lang.String s, java.lang.String s1)
+    {
+        if(s == null || s1 == null)
+            return false;
+        char ac[] = new char[s.length() + 1];
+        char ac1[] = new char[s1.length() + 1];
+        s.getChars(0, s.length(), ac, 0);
+        s1.getChars(0, s1.length(), ac1, 0);
+        ac[s.length()] = '\0';
+        ac1[s1.length()] = '\0';
+        int i = 0;
+        int j = 0;
+        int k = -1;
+        int l = -1;
+        do
+        {
+            while(ac[i] == ac1[j]) 
+            {
+                if(ac1[j] == 0)
+                    return true;
+                j++;
+                i++;
+            }
+            if(ac1[j] != 0 && ac[i] == '?')
+            {
+                i++;
+                j++;
+            } else
+            if(ac[i] == '*')
+            {
+                k = ++i;
+                l = j;
+            } else
+            if(l != -1 && ac1[l] != 0)
+            {
+                j = ++l;
+                i = k;
+            } else
+            {
+                return false;
+            }
+        } while(true);
+    }
 }

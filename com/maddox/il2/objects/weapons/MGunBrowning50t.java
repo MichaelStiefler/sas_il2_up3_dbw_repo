@@ -1,19 +1,29 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MGunBrowning50t.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.il2.engine.GunProperties;
 
-public class MGunBrowning50t extends MGunBrowning50s
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            MGunBrowning50s
+
+public class MGunBrowning50t extends com.maddox.il2.objects.weapons.MGunBrowning50s
 {
-  public GunProperties createProperties()
-  {
-    GunProperties localGunProperties = super.createProperties();
 
-    localGunProperties.bUseHookAsRel = false;
-    localGunProperties.shells = null;
-    localGunProperties.shotFreq = 12.5F;
+    public MGunBrowning50t()
+    {
+    }
 
-    localGunProperties.maxDeltaAngle = 0.229F;
-
-    return localGunProperties;
-  }
+    public com.maddox.il2.engine.GunProperties createProperties()
+    {
+        com.maddox.il2.engine.GunProperties gunproperties = super.createProperties();
+        gunproperties.bUseHookAsRel = false;
+        gunproperties.shells = null;
+        gunproperties.shotFreq = 12.5F;
+        gunproperties.maxDeltaAngle = 0.229F;
+        return gunproperties;
+    }
 }

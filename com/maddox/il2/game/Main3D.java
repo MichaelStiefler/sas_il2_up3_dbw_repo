@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Main3D.java
+
 package com.maddox.il2.game;
 
 import com.maddox.JGP.Color4f;
@@ -73,11 +78,9 @@ import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorViewPoint;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.Cockpit;
-import com.maddox.il2.objects.air.Cockpit.Camera3DMirror;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.PaintScheme;
 import com.maddox.il2.objects.effects.Cinema;
-import com.maddox.il2.objects.effects.DarkerNight;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.effects.LightsGlare;
 import com.maddox.il2.objects.effects.OverLoad;
@@ -86,7 +89,6 @@ import com.maddox.il2.objects.effects.SunFlare;
 import com.maddox.il2.objects.effects.SunGlare;
 import com.maddox.il2.objects.effects.Zip;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.TestRunway;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.vehicles.lights.SearchlightGeneric;
 import com.maddox.il2.objects.weapons.Bomb;
@@ -130,2885 +132,3495 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Main3D extends Main
+// Referenced classes of package com.maddox.il2.game:
+//            Main, HUD, TimeSkip, AircraftHotKeys, 
+//            Selector, I18N, HookKeys, DeviceLink, 
+//            Mission, GameState, GameTrack, DotRange
+
+public class Main3D extends com.maddox.il2.game.Main
 {
-  public static float FOVX = 70.0F;
-  public static final float ZNEAR = 1.2F;
-  public static final float ZFAR = 48000.0F;
-  protected boolean bDrawIfNotFocused;
-  protected boolean bUseStartLog;
-  protected boolean bUseGUI;
-  private boolean bShowStartIntro;
-  public GUIWindowManager guiManager;
-  public KeyRecord keyRecord;
-  public OrdersTree ordersTree;
-  public TimeSkip timeSkip;
-  public HookView hookView;
-  public HookViewFly hookViewFly;
-  public HookViewEnemy hookViewEnemy;
-  public AircraftHotKeys aircraftHotKeys;
-  public Cockpit[] cockpits;
-  public Cockpit cockpitCur;
-  public OverLoad overLoad;
-  public OverLoad[] _overLoad;
-  public SunGlare sunGlare;
-  public SunGlare[] _sunGlare;
-  public LightsGlare lightsGlare;
-  public LightsGlare[] _lightsGlare;
-  private SunFlare[] _sunFlare;
-  public Render[] _sunFlareRender;
-  private boolean bViewFly;
-  private boolean bViewEnemy;
-  public boolean bEnableFog;
-  private boolean bDrawLand;
-  public EffClouds clouds;
-  public Zip zip;
-  public boolean bDrawClouds;
-  public SpritesFog spritesFog;
-  public Cinema[] _cinema;
-  public Render3D0R render3D0R;
-  public Camera3DR camera3DR;
-  public Render3D0 render3D0;
-  public Render3D1 render3D1;
-  public Camera3D camera3D;
-  public Render3D0[] _render3D0;
-  public Render3D1[] _render3D1;
-  public Camera3D[] _camera3D;
-  public Render2D render2D;
-  public CameraOrtho2D camera2D;
-  public Render2D[] _render2D;
-  public CameraOrtho2D[] _camera2D;
-  public Render3D0Mirror render3D0Mirror;
-  public Render3D1Mirror render3D1Mirror;
-  public Camera3D camera3DMirror;
-  public Render2DMirror render2DMirror;
-  public CameraOrtho2D camera2DMirror;
-  public RenderCockpit renderCockpit;
-  public Camera3D cameraCockpit;
-  public RenderCockpit[] _renderCockpit;
-  public Camera3D[] _cameraCockpit;
-  public RenderCockpitMirror renderCockpitMirror;
-  public Camera3D cameraCockpitMirror;
-  public RenderHUD renderHUD;
-  public CameraOrtho2D cameraHUD;
-  public HUD hud;
-  public RenderMap2D renderMap2D;
-  public CameraOrtho2D cameraMap2D;
-  public Land2D land2D;
-  public Land2DText land2DText;
-  public DarkerNight darkerNight;
-  private static String _sLastMusic = "ru";
-  protected int viewMirror;
-  private int iconTypes;
-  public static final String[] gameHotKeyCmdEnvs = { "Console", "hotkeys", "HookView", "PanView", "SnapView", "pilot", "move", "gunner", "misc", "orders", "aircraftView", "timeCompression", "gui" };
-
-  public static final String[] builderHotKeyCmdEnvs = { "Console", "builder", "hotkeys" };
-  KeyRecordCallback playRecordedMissionCallback;
-  String playRecordedFile;
-  int playBatchCurRecord;
-  boolean playEndBatch;
-  SectFile playRecordedSect;
-  int playRecorderIndx;
-  String playRecordedPlayFile;
-  InOutStreams playRecordedStreams;
-  NetChannelInStream playRecordedNetChannelIn;
-  GameTrack gameTrackRecord;
-  GameTrack gameTrackPlay;
-  private boolean bLoadRecordedStates1Before;
-  private boolean bRenderMirror;
-  private int iRenderIndx;
-  protected double[][] _modelMatrix3D;
-  protected double[][] _projMatrix3D;
-  protected int[][] _viewport;
-  protected double[] _modelMatrix3DMirror;
-  protected double[] _projMatrix3DMirror;
-  protected int[] _viewportMirror;
-  private double[] _dIn;
-  private double[] _dOut;
-  private static double shadowPairsR = 1000.0D;
-  private static double shadowPairsR2 = shadowPairsR * shadowPairsR;
-  private ArrayList shadowPairsList1;
-  private HashMap shadowPairsMap1;
-  private BigshipGeneric shadowPairsCur1;
-  private ArrayList shadowPairsList2;
-  private ActorFilter shadowPairsFilter;
-  private DrwArray[] drwMaster;
-  private DrwArray drwMirror;
-  private Loc __l;
-  private Point3d __p;
-  private Orient __o;
-  private Vector3d __v;
-  private boolean bShowTime;
-  public static final String ICONFAR_PROPERTY = "iconFar_shortClassName";
-  public static final float iconFarActorSizeX = 2.0F;
-  public static final float iconFarActorSizeY = 1.0F;
-  public static final float iconFarSmallActorSize = 1.0F;
-  public static int iconFarColor = 8355711;
-  protected double iconGroundDrawMin;
-  protected double iconSmallDrawMin;
-  protected double iconAirDrawMin;
-  protected double iconDrawMax;
-  private Mat iconFarMat;
-  private TTFont iconFarFont;
-  private int iconFarFinger;
-  private float iconFarFontHeight;
-  private double iconClipX0;
-  private double iconClipX1;
-  private double iconClipY0;
-  private double iconClipY1;
-  private Actor iconFarPlayerActor;
-  private Actor iconFarViewActor;
-  private Actor iconFarPadlockActor;
-  private FarActorItem iconFarPadlockItem;
-  private ArrayList[] iconFarList;
-  private int[] iconFarListLen;
-  private FarActorFilter farActorFilter;
-  private float[] line3XYZ;
-  private Point3d _lineP;
-  private Orient _lineO;
-  private TransformMirror transformMirror;
-  private long lastTimeScreenShot;
-  private ScrShot scrShot;
-  private ScreenSequence screenSequence;
-
-  public Main3D()
-  {
-    this.bDrawIfNotFocused = false;
-    this.bUseStartLog = false;
-    this.bUseGUI = true;
-    this.bShowStartIntro = false;
-
-    this._overLoad = new OverLoad[3];
-
-    this._sunGlare = new SunGlare[3];
-
-    this._lightsGlare = new LightsGlare[3];
-
-    this._sunFlare = new SunFlare[3];
-    this._sunFlareRender = new Render[3];
-
-    this.bViewFly = false;
-    this.bViewEnemy = false;
-
-    this.bEnableFog = true;
-    this.bDrawLand = false;
-
-    this.bDrawClouds = false;
-
-    this._cinema = new Cinema[3];
-
-    this._render3D0 = new Render3D0[3];
-    this._render3D1 = new Render3D1[3];
-    this._camera3D = new Camera3D[3];
-
-    this._render2D = new Render2D[3];
-    this._camera2D = new CameraOrtho2D[3];
-
-    this._renderCockpit = new RenderCockpit[3];
-    this._cameraCockpit = new Camera3D[3];
-
-    this.viewMirror = 2;
-
-    this.iconTypes = 3;
-
-    this.bLoadRecordedStates1Before = false;
-
-    this.bRenderMirror = false;
-    this.iRenderIndx = 0;
-
-    this._modelMatrix3D = new double[3][16];
-    this._projMatrix3D = new double[3][16];
-    this._viewport = new int[3][4];
-
-    this._modelMatrix3DMirror = new double[16];
-    this._projMatrix3DMirror = new double[16];
-    this._viewportMirror = new int[4];
-
-    this._dIn = new double[4];
-    this._dOut = new double[4];
-
-    this.shadowPairsList1 = new ArrayList();
-    this.shadowPairsMap1 = new HashMap();
-    this.shadowPairsCur1 = null;
-    this.shadowPairsList2 = new ArrayList();
-    this.shadowPairsFilter = new ShadowPairsFilter();
-
-    this.drwMaster = new DrwArray[] { new DrwArray(), new DrwArray(), new DrwArray() };
-    this.drwMirror = new DrwArray();
-
-    this.__l = new Loc();
-    this.__p = new Point3d();
-    this.__o = new Orient();
-    this.__v = new Vector3d();
-
-    this.bShowTime = false;
-
-    this.iconGroundDrawMin = 200.0D;
-    this.iconSmallDrawMin = 100.0D;
-
-    this.iconAirDrawMin = 1000.0D;
-    this.iconDrawMax = 10000.0D;
-
-    this.iconFarPadlockItem = new FarActorItem(0, 0, 0, 0, 0.0F, null);
-
-    this.iconFarList = new ArrayList[] { new ArrayList(), new ArrayList(), new ArrayList() };
-    this.iconFarListLen = new int[] { 0, 0, 0 };
-
-    this.farActorFilter = new FarActorFilter();
-
-    this.line3XYZ = new float[9];
-    this._lineP = new Point3d();
-    this._lineO = new Orient();
-
-    this.transformMirror = new TransformMirror(null);
-
-    this.lastTimeScreenShot = 0L;
-
-    this.scrShot = null;
-  }
-
-  public static Main3D cur3D()
-  {
-    return (Main3D)cur();
-  }
-
-  public boolean isUseStartLog()
-  {
-    return this.bUseStartLog; } 
-  public boolean isShowStartIntro() { return this.bShowStartIntro; } 
-  public boolean isDrawLand() {
-    return this.bDrawLand; } 
-  public void setDrawLand(boolean paramBoolean) { this.bDrawLand = paramBoolean;
-  }
-
-  public boolean isDemoPlaying()
-  {
-    if (this.playRecordedStreams != null) return true;
-    if (this.keyRecord == null) return false;
-    return this.keyRecord.isPlaying();
-  }
-  public Actor viewActor() {
-    return this.camera3D.pos.base();
-  }
-  public boolean isViewInsideShow() {
-    if (!Actor.isValid(this.cockpitCur))
-      return true;
-    return !this.cockpitCur.isNullShow();
-  }
-
-  public boolean isEnableRenderingCockpit() {
-    if (!Actor.isValid(this.cockpitCur))
-      return true;
-    return this.cockpitCur.isEnableRendering();
-  }
-
-  public boolean isViewOutside() {
-    if (!Actor.isValid(this.cockpitCur))
-      return true;
-    return !this.cockpitCur.isFocused();
-  }
-
-  public boolean isViewPadlock() {
-    if (!Actor.isValid(this.cockpitCur))
-      return false;
-    return this.cockpitCur.isPadlock();
-  }
-
-  public Actor getViewPadlockEnemy() {
-    if (!Actor.isValid(this.cockpitCur))
-      return null;
-    return this.cockpitCur.getPadlockEnemy();
-  }
-
-  public void setViewInsideShow(boolean paramBoolean) {
-    if ((isViewOutside()) || (isViewInsideShow() == paramBoolean))
-      return;
-    if (!Actor.isValid(this.cockpitCur))
-      return;
-    this.cockpitCur.setNullShow(!paramBoolean);
-  }
-
-  public void setEnableRenderingCockpit(boolean paramBoolean) {
-    if ((isViewOutside()) || (isEnableRenderingCockpit() == paramBoolean))
-      return;
-    if (!Actor.isValid(this.cockpitCur))
-      return;
-    this.cockpitCur.setEnableRendering(paramBoolean);
-  }
-
-  private void endViewFly() {
-    if (!this.bViewFly) return;
-    this.hookViewFly.use(false);
-    Engine.soundListener().setUseBaseSpeed(true);
-    this.bViewFly = false;
-  }
-  private void endViewEnemy() {
-    if (!this.bViewEnemy) return;
-    this.hookViewEnemy.stop();
-    this.bViewEnemy = false;
-  }
-  private void endView() {
-    if (!isViewOutside()) return;
-    if ((this.bViewFly) || (this.bViewEnemy)) return;
-    this.hookView.use(false);
-  }
-  private void endViewInside() {
-    if (isViewOutside()) return;
-    this.cockpitCur.focusLeave();
-  }
-
-  public void setViewFly(Actor paramActor) {
-    endView();
-    endViewEnemy();
-    endViewInside();
-
-    Selector.resetGame();
-    this.hookViewFly.use(true); this.bViewFly = true;
-    this.camera3D.pos.setRel(new Point3d(), new Orient());
-    this.camera3D.pos.changeBase(paramActor, this.hookViewFly, false);
-    this.camera3D.pos.resetAsBase();
-    Engine.soundListener().setUseBaseSpeed(false);
-  }
-
-  private void setViewSomebody(Actor paramActor) {
-    endView();
-    endViewFly();
-    endViewInside();
-
-    this.bViewEnemy = true;
-    this.camera3D.pos.setRel(new Point3d(), new Orient());
-    this.camera3D.pos.changeBase(paramActor, this.hookViewEnemy, false);
-    this.camera3D.pos.resetAsBase();
-    if ((paramActor instanceof ActorViewPoint))
-      ((ActorViewPoint)paramActor).setViewActor(this.hookViewEnemy.enemy());
-  }
-
-  public void setViewEnemy(Actor paramActor, boolean paramBoolean1, boolean paramBoolean2) {
-    Actor localActor = Selector.look(paramBoolean1, paramBoolean2, this.camera3D, paramActor.getArmy(), -1, paramActor, true);
-
-    if (!this.hookViewEnemy.start(paramActor, localActor, paramBoolean2, true)) {
-      if (this.bViewEnemy)
-        setView(paramActor);
-      return;
-    }
-    setViewSomebody(paramActor);
-  }
-
-  public void setViewFriend(Actor paramActor, boolean paramBoolean1, boolean paramBoolean2) {
-    Actor localActor = Selector.look(paramBoolean1, paramBoolean2, this.camera3D, -1, paramActor.getArmy(), paramActor, true);
-
-    if (!this.hookViewEnemy.start(paramActor, localActor, paramBoolean2, false)) {
-      if (this.bViewEnemy)
-        setView(paramActor);
-      return;
-    }
-    setViewSomebody(paramActor);
-  }
-
-  public void setViewPadlock(boolean paramBoolean1, boolean paramBoolean2) {
-    if (isViewOutside()) return;
-    if (!this.cockpitCur.existPadlock()) return;
-    Aircraft localAircraft = World.getPlayerAircraft();
-    Actor localActor;
-    if (World.cur().diffCur.No_Icons) {
-      localActor = Selector.look(true, paramBoolean2, this.camera3D, -1, -1, localAircraft, false);
-    }
-    else if (paramBoolean1)
-      localActor = Selector.look(true, paramBoolean2, this.camera3D, -1, localAircraft.getArmy(), localAircraft, false);
-    else {
-      localActor = Selector.look(true, paramBoolean2, this.camera3D, localAircraft.getArmy(), -1, localAircraft, false);
-    }
-    if ((localActor == null) || (localActor == localAircraft)) {
-      return;
-    }
-    if (!this.cockpitCur.startPadlock(localActor))
-      return; 
-  }
-
-  public void setViewEndPadlock() {
-    if (isViewOutside()) return;
-    if (!this.cockpitCur.existPadlock()) return;
-    this.cockpitCur.endPadlock();
-  }
-  public void setViewNextPadlock(boolean paramBoolean) {
-    if (isViewOutside()) return;
-    if (!this.cockpitCur.existPadlock()) return;
-    Actor localActor = Selector.next(paramBoolean);
-    if (localActor == null)
-      return;
-    if (!this.cockpitCur.startPadlock(localActor))
-      return;
-  }
-
-  public void setViewPadlockForward(boolean paramBoolean) {
-    if (isViewPadlock())
-      this.cockpitCur.setPadlockForward(paramBoolean);
-  }
-
-  public void setViewInside() {
-    if ((!isViewOutside()) && (!isViewPadlock())) return;
-    if (!Actor.isValid(this.cockpitCur)) return;
-    if (!this.cockpitCur.isEnableFocusing()) return;
-    endView();
-    endViewFly();
-    endViewEnemy();
-    endViewInside();
-    this.cockpitCur.focusEnter();
-  }
-
-  public void setViewFlow30(Actor paramActor) {
-    setView(paramActor, true);
-    this.hookView.set(paramActor, 30.0F, -30.0F); this.camera3D.pos.resetAsBase();
-  }
-  public void setViewFlow10(Actor paramActor, boolean paramBoolean) {
-    this.hookView.setFollow(paramBoolean);
-    setView(paramActor, true);
-    this.hookView.set(paramActor, 10.0F, -10.0F); this.camera3D.pos.resetAsBase();
-  }
-  public void setView(Actor paramActor) { setView(paramActor, false); } 
-  public void setView(Actor paramActor, boolean paramBoolean) {
-    if ((viewActor() != paramActor) || (paramBoolean) || (this.bViewFly) || (this.bViewEnemy)) {
-      endViewFly();
-      endViewEnemy();
-      endViewInside();
-
-      Selector.resetGame();
-      this.hookView.use(true);
-      this.camera3D.pos.setRel(new Point3d(), new Orient());
-      this.camera3D.pos.changeBase(paramActor, this.hookView, false);
-      this.camera3D.pos.resetAsBase();
-    }
-  }
-
-  public int cockpitCurIndx() {
-    if ((this.cockpits == null) || (this.cockpitCur == null))
-      return -1;
-    for (int i = 0; i < this.cockpits.length; i++)
-      if (this.cockpitCur == this.cockpits[i])
-        return i;
-    return -1;
-  }
-
-  public void beginStep(int paramInt) {
-    if (!this.bUseStartLog)
-      if (paramInt >= 0)
-        ConsoleGL0.exclusiveDrawStep(I18N.gui("main.loading") + " " + paramInt + "%", paramInt);
-      else
-        ConsoleGL0.exclusiveDrawStep(null, -1);
-  }
-
-  public boolean beginApp(String paramString1, String paramString2, int paramInt) {
-    Config.cur.mainSection = paramString2;
-    Engine.cur = new Engine();
-
-    Config.typeProvider();
-
-    GLContext localGLContext = Config.cur.createGlContext(Config.cur.ini.get(Config.cur.mainSection, "title", "il2"));
-    return beginApp(localGLContext, paramInt);
-  }
-
-  public boolean beginApp(GLContext paramGLContext, int paramInt)
-  {
-    Config.typeGlStrings();
-
-    Config.cur.typeContextSettings(paramGLContext);
-    this.bDrawIfNotFocused = Config.cur.ini.get("window", "DrawIfNotFocused", this.bDrawIfNotFocused);
-    this.bShowStartIntro = Config.cur.ini.get("game", "intro", this.bShowStartIntro);
-
-    RTSConf.cur.start();
-    PaintScheme.init();
-    NetEnv.cur().connect = new Connect();
-
-    NetEnv.cur(); NetEnv.host().destroy(); new NetUser("No Name");
-    NetEnv.active(true);
-    Config.cur.beginSound();
-
-    RenderContext.activate(paramGLContext);
-    RendersMain.setSaveAspect(true);
-    RendersMain.setGlContext(paramGLContext);
-    RendersMain.setTickPainting(true);
-
-    TTFont.font[0] = TTFont.get("arialSmall");
-    TTFont.font[1] = TTFont.get("arial10");
-    TTFont.font[2] = TTFont.get("arialb12");
-    TTFont.font[3] = TTFont.get("courSmall");
-
-    ConsoleGL0.init("Console", paramInt);
-
-    this.bUseStartLog = Config.cur.ini.get("Console", "UseStartLog", this.bUseStartLog);
-    if (this.bUseStartLog)
-      ConsoleGL0.exclusiveDraw(true);
-    else {
-      ConsoleGL0.exclusiveDraw("gui/background0.mat");
-    }
-    beginStep(5);
-
-    CmdEnv.top().exec("CmdLoad com.maddox.rts.cmd.CmdLoad");
-    CmdEnv.top().exec("load com.maddox.rts.cmd.CmdFile PARAM CURENV on");
-    CmdSFS.bMountError = false;
-
-    CmdEnv.top().exec("file .rc");
-    if (CmdSFS.bMountError) {
-      return false;
-    }
-    beginStep(10);
-    try {
-      Engine.setWorldAcoustics("Landscape");
-    } catch (Exception localException) {
-      System.out.println("World Acoustics NOT initialized: " + localException.getMessage());
-      return false;
-    }
-    Engine.soundListener().initDraw();
-
-    beginStep(15);
-
-    Regiment.loadAll();
-    preloadNetClasses();
-    beginStep(20);
-    preloadAirClasses();
-    beginStep(25);
-    preloadChiefClasses();
-    beginStep(30);
-    preloadStationaryClasses();
-
-    preload();
-
-    beginStep(35);
-
-    this.camera3D = new NetCamera3D();
-    this.camera3D.setName("camera");
-    this.camera3D.set(FOVX, 1.2F, 48000.0F);
-
-    this.render3D0 = new Render3D0(0, 1.0F);
-    this.render3D0.setSaveAspect(Config.cur.windowSaveAspect);
-    this.render3D0.setName("render3D0");
-    this.render3D0.setCamera(this.camera3D);
-    Engine.lightEnv().sun().setLight(0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.8F);
-    Vector3f localVector3f = new Vector3f(0.0F, 1.0F, -1.0F); localVector3f.normalize();
-    Engine.lightEnv().sun().set(localVector3f);
-
-    this._camera3D[0] = this.camera3D;
-    this._render3D0[0] = this.render3D0;
-    for (int i = 1; i < 3; i++) {
-      this._camera3D[i] = new Camera3D();
-      this._camera3D[i].set(FOVX, 1.2F, 48000.0F);
-      this._camera3D[i].pos.setBase(this.camera3D, null, false);
-      this._render3D0[i] = new Render3D0(i, 1.0F - i * 0.001F);
-      this._render3D0[i].setSaveAspect(true);
-      this._render3D0[i].setCamera(this._camera3D[i]);
-    }
-    this._camera3D[1].pos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
-    this._camera3D[2].pos.setRel(new Orient(FOVX, 0.0F, 0.0F));
-
-    this.render3D1 = new Render3D1(0, 0.9F);
-    this.render3D1.setSaveAspect(Config.cur.windowSaveAspect);
-    this.render3D1.setName("render3D1");
-    this.render3D1.setCamera(this.camera3D);
-    for (i = 1; i < 3; i++) {
-      this._render3D1[i] = new Render3D1(i, 0.9F - i * 0.001F);
-      this._render3D1[i].setSaveAspect(true);
-      this._render3D1[i].setCamera(this._camera3D[i]);
-    }
-
-    this.camera3DR = new Camera3DR();
-    this.camera3DR.setName("cameraR");
-    this.camera3DR.set(FOVX, 1.2F, 48000.0F);
-    this.camera3DR.pos.setBase(this.camera3D, new HookReflection(), false);
-    this.render3D0R = new Render3D0R(1.1F);
-    this.render3D0R.setSaveAspect(Config.cur.windowSaveAspect);
-    this.render3D0R.setName("render3D0R");
-    this.render3D0R.setCamera(this.camera3DR);
-
-    Engine.soundListener().pos.setBase(this.camera3D, null, false);
-
-    TextScr.font();
-
-    this.camera2D = new CameraOrtho2D();
-    this.camera2D.setName("camera2D");
-    this.render2D = new Render2D(0, 0.95F);
-    this.render2D.setSaveAspect(Config.cur.windowSaveAspect);
-    this.render2D.setName("render2D");
-    this.render2D.setCamera(this.camera2D);
-    this.camera2D.set(0.0F, this.render2D.getViewPortWidth(), 0.0F, this.render2D.getViewPortHeight());
-    this.camera2D.set(0.0F, 1.0F);
-    this.render2D.setShow(true);
-    this._camera2D[0] = this.camera2D;
-    this._render2D[0] = this.render2D;
-    for (i = 1; i < 3; i++) {
-      this._camera2D[i] = new CameraOrtho2D();
-      this._render2D[i] = new Render2D(i, 0.95F - i * 0.001F);
-      this._render2D[i].setSaveAspect(true);
-      this._render2D[i].setCamera(this._camera2D[i]);
-      this._camera2D[i].set(0.0F, this._render2D[i].getViewPortWidth(), 0.0F, this._render2D[i].getViewPortHeight());
-      this._camera2D[i].set(0.0F, 1.0F);
-    }
-
-    this.camera3DMirror = new Cockpit.Camera3DMirror();
-    this.camera3DMirror.setName("cameraMirror");
-    this.camera3DMirror.set(FOVX, 1.2F, 48000.0F);
-    this.camera3DMirror.pos.setBase(this.camera3D, Cockpit.getHookCamera3DMirror(false), false);
-    this.render3D0Mirror = new Render3D0Mirror(1.8F);
-    this.render3D0Mirror.setName("render3D0Mirror");
-    this.render3D0Mirror.setCamera(this.camera3DMirror);
-    this.render3D1Mirror = new Render3D1Mirror(1.78F);
-    this.render3D1Mirror.setName("render3D1Mirror");
-    this.render3D1Mirror.setCamera(this.camera3DMirror);
-    this.camera2DMirror = new CameraOrtho2D();
-    this.camera2DMirror.setName("camera2DMirror");
-    this.render2DMirror = new Render2DMirror(1.79F);
-    this.render2DMirror.setName("render2DMirror");
-    this.render2DMirror.setCamera(this.camera2DMirror);
-    this.camera2DMirror.set(0.0F, this.render2DMirror.getViewPortWidth(), 0.0F, this.render2DMirror.getViewPortHeight());
-    this.camera2DMirror.set(0.0F, 1.0F);
-
-    this.cameraCockpit = new Camera3D();
-    this.cameraCockpit.setName("cameraCockpit");
-    this.cameraCockpit.set(FOVX, 0.05F, 12.5F);
-    this.renderCockpit = new RenderCockpit(0, 0.5F);
-    this.renderCockpit.setSaveAspect(Config.cur.windowSaveAspect);
-    this.renderCockpit.setName("renderCockpit");
-    this.renderCockpit.setCamera(this.cameraCockpit);
-    this.renderCockpit.setShow(false);
-    this._cameraCockpit[0] = this.cameraCockpit;
-    this._renderCockpit[0] = this.renderCockpit;
-    for (i = 1; i < 3; i++) {
-      this._cameraCockpit[i] = new Camera3D();
-      this._cameraCockpit[i].set(FOVX, 0.05F, 12.5F);
-      this._cameraCockpit[i].pos.setBase(this.cameraCockpit, null, false);
-      this._renderCockpit[i] = new RenderCockpit(i, 0.5F - i * 0.001F);
-      this._renderCockpit[i].setSaveAspect(true);
-      this._renderCockpit[i].setCamera(this._cameraCockpit[i]);
-    }
-    this._cameraCockpit[1].pos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
-    this._cameraCockpit[2].pos.setRel(new Orient(FOVX, 0.0F, 0.0F));
-
-    this.cameraCockpitMirror = new Cockpit.Camera3DMirror();
-    this.cameraCockpitMirror.pos.setBase(this.cameraCockpit, Cockpit.getHookCamera3DMirror(true), false);
-    this.cameraCockpitMirror.setName("cameraCockpitMirror");
-    this.cameraCockpitMirror.set(FOVX, 0.05F, 12.5F);
-    this.renderCockpitMirror = new RenderCockpitMirror(1.77F);
-    this.renderCockpitMirror.setName("renderCockpitMirror");
-    this.renderCockpitMirror.setCamera(this.cameraCockpitMirror);
-
-    this.cameraHUD = new CameraOrtho2D();
-    this.cameraHUD.setName("cameraHUD");
-    this.renderHUD = new RenderHUD(0.3F);
-    this.renderHUD.setName("renderHUD");
-    this.renderHUD.setCamera(this.cameraHUD);
-    this.cameraHUD.set(0.0F, this.renderHUD.getViewPortWidth(), 0.0F, this.renderHUD.getViewPortHeight());
-    this.cameraHUD.set(-1000.0F, 1000.0F);
-    this.renderHUD.setShow(true);
-    LightEnvXY localLightEnvXY = new LightEnvXY();
-    this.renderHUD.setLightEnv(localLightEnvXY);
-    localLightEnvXY.sun().setLight(0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.8F);
-    localVector3f = new Vector3f(0.0F, 1.0F, -1.0F); localVector3f.normalize();
-    localLightEnvXY.sun().set(localVector3f);
-
-    this.hud = new HUD();
-    this.renderHUD.contextResized();
-
-    drawFarActorsInit();
-
-    this.cameraMap2D = new CameraOrtho2D();
-    this.cameraMap2D.setName("cameraMap2D");
-    this.renderMap2D = new RenderMap2D(0.2F);
-    this.renderMap2D.setName("renderMap2D");
-    this.renderMap2D.setCamera(this.cameraMap2D);
-    this.cameraMap2D.set(0.0F, this.renderMap2D.getViewPortWidth(), 0.0F, this.renderMap2D.getViewPortHeight());
-    this.renderMap2D.setShow(false);
-
-    beginStep(40);
-
-    this._sunFlareRender[0] = SunFlare.newRender(0, 0.19F, this._camera3D[0]);
-    this._sunFlareRender[0].setName("renderSunFlare");
-    this._sunFlareRender[0].setSaveAspect(Config.cur.windowSaveAspect);
-    this._sunFlareRender[0].setShow(false);
-    for (int j = 1; j < 3; j++) {
-      this._sunFlareRender[j] = SunFlare.newRender(j, 0.19F, this._camera3D[j]);
-      this._sunFlareRender[j].setSaveAspect(true);
-      this._sunFlareRender[j].setShow(false);
-    }
-
-    this.lightsGlare = new LightsGlare(0, 0.17F);
-    this.lightsGlare.setSaveAspect(Config.cur.windowSaveAspect);
-    this.lightsGlare.setCamera(new CameraOrtho2D());
-    this.lightsGlare.setShow(false);
-    this._lightsGlare[0] = this.lightsGlare;
-    for (j = 1; j < 3; j++) {
-      this._lightsGlare[j] = new LightsGlare(j, 0.17F - j * 0.001F);
-      this._lightsGlare[j].setSaveAspect(true);
-      this._lightsGlare[j].setCamera(new CameraOrtho2D());
-    }
-
-    this.sunGlare = new SunGlare(0, 0.15F);
-    this.sunGlare.setSaveAspect(Config.cur.windowSaveAspect);
-    this.sunGlare.setCamera(new CameraOrtho2D());
-    this.sunGlare.setShow(false);
-    this._sunGlare[0] = this.sunGlare;
-    for (j = 1; j < 3; j++) {
-      this._sunGlare[j] = new SunGlare(j, 0.15F - j * 0.001F);
-      this._sunGlare[j].setSaveAspect(true);
-      this._sunGlare[j].setCamera(new CameraOrtho2D());
-    }
-
-    this.overLoad = new OverLoad(0, 0.1F);
-    this.overLoad.setSaveAspect(Config.cur.windowSaveAspect);
-    this.overLoad.setCamera(new CameraOrtho2D());
-    this.overLoad.setShow(false);
-    this._overLoad[0] = this.overLoad;
-    for (j = 1; j < 3; j++) {
-      this._overLoad[j] = new OverLoad(j, 0.1F - j * 0.001F);
-      this._overLoad[j].setSaveAspect(true);
-      this._overLoad[j].setCamera(new CameraOrtho2D());
-    }
-
-    this.darkerNight = new DarkerNight(0, 0.7F);
-    this.darkerNight.setSaveAspect(Config.cur.windowSaveAspect);
-    this.darkerNight.setCamera(new CameraOrtho2D());
-    this.darkerNight.setShow(true);
-
-    this._cinema[0] = new Cinema(0, 0.09F);
-    this._cinema[0].setSaveAspect(Config.cur.windowSaveAspect);
-    this._cinema[0].setCamera(new CameraOrtho2D());
-    this._cinema[0].setShow(false);
-    for (j = 1; j < 3; j++) {
-      this._cinema[j] = new Cinema(j, 0.09F - j * 0.001F);
-      this._cinema[j].setSaveAspect(true);
-      this._cinema[j].setCamera(new CameraOrtho2D());
-      this._cinema[j].setShow(false);
-    }
-
-    this.timeSkip = new TimeSkip(-1.1F);
-
-    HotKeyEnv.fromIni("hotkeys", Config.cur.ini, Config.cur.ini.get(Config.cur.mainSection, "hotkeys", "hotkeys"));
-
-    FreeFly.init("FreeFly");
-    FreeFlyXYZ.init("FreeFlyXYZ");
-    this.hookView = new HookView("HookView");
-    this.hookView.setCamera(this.camera3D);
-    this.hookViewFly = new HookViewFly("HookViewFly");
-    this.hookViewEnemy = new HookViewEnemy();
-    this.hookViewEnemy.setCamera(this.camera3D);
-    HookPilot.New();
-    HookPilot.current.setTarget(this.cameraCockpit);
-    HookPilot.current.setTarget2(this.camera3D);
-    HookKeys.New();
-    this.aircraftHotKeys = new AircraftHotKeys();
-
-    beginStep(45);
-
-    HotKeyCmdEnv.enable("default", false);
-
-    HotKeyCmdEnv.enable("Console", false);
-    HotKeyCmdEnv.enable("hotkeys", false);
-    HotKeyCmdEnv.enable("HookView", false);
-    HotKeyCmdEnv.enable("PanView", false);
-    HotKeyCmdEnv.enable("SnapView", false);
-    HotKeyCmdEnv.enable("pilot", false);
-    HotKeyCmdEnv.enable("move", false);
-    HotKeyCmdEnv.enable("gunner", false);
-    HotKeyEnv.enable("pilot", false);
-    HotKeyEnv.enable("move", false);
-    HotKeyEnv.enable("gunner", false);
-    HotKeyCmdEnv.enable("misc", false);
-    HotKeyCmdEnv.enable("$$$misc", true);
-    HotKeyEnv.enable("$$$misc", true);
-    HotKeyCmdEnv.enable("orders", false);
-    HotKeyCmdEnv.enable("aircraftView", false);
-    HotKeyCmdEnv.enable("timeCompression", false);
-
-    HotKeyCmdEnv.enable("gui", false);
-
-    HotKeyCmdEnv.enable("builder", false);
-    HotKeyCmdEnv.enable("MouseXYZ", false);
-
-    HotKeyCmdEnv.enable("FreeFly", false);
-    HotKeyCmdEnv.enable("FreeFlyXYZ", false);
-
-    World.cur().userCfg = UserCfg.loadCurrent();
-    World.cur().setUserCovers();
-
-    this.ordersTree = new OrdersTree(true);
-
-    beginStep(50);
-
-    if (this.bUseGUI) {
-      this.guiManager = GUI.create("gui");
-      this.keyRecord = new KeyRecord();
-      this.keyRecord.addExcludePrevCmd(278);
-      Keyboard.adapter().setKeyEnable(27);
-    }
-
-    beginStep(90);
-
-    initHotKeys();
-
-    Voice.setEnableVoices(!Config.cur.ini.get("game", "NoChatter", false));
-
-    beginStep(95);
-    viewSet_Load();
-
-    DeviceLink.start();
-
-    onBeginApp();
-
-    Time.setPause(false);
-    RTSConf.cur.loopMsgs();
-    Time.setPause(true);
-
-    new MsgAction(64, 1.0D + Math.random() * 10.0D) {
-      public void doAction() {
-        try { Class.forName("fbapi");
-          Main.doGameExit();
+    class CmdExit extends com.maddox.rts.Cmd
+    {
+
+        public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+        {
+            com.maddox.il2.game.Main.doGameExit();
+            return null;
         }
-        catch (Throwable localThrowable)
+
+        CmdExit()
         {
         }
-      }
-    };
-    this.bDrawClouds = true;
-    TextScr.setColor(new Color4f(1.0F, 0.0F, 0.0F, 1.0F));
-
-    RTSConf.cur.console.getEnv().exec("file rcu");
-    beginStep(-1);
-    createConsoleServer();
-    return true;
-  }
-
-  public void setSaveAspect(boolean paramBoolean) {
-    if (Config.cur.windowSaveAspect == paramBoolean) return;
-    this.render3D0.setSaveAspect(paramBoolean);
-    this.render3D1.setSaveAspect(paramBoolean);
-    this.render2D.setSaveAspect(paramBoolean);
-    this.renderCockpit.setSaveAspect(paramBoolean);
-    this._sunFlareRender[0].setSaveAspect(paramBoolean);
-    this.lightsGlare.setSaveAspect(paramBoolean);
-    this.sunGlare.setSaveAspect(paramBoolean);
-    this.overLoad.setSaveAspect(paramBoolean);
-    this.darkerNight.setSaveAspect(paramBoolean);
-    this._cinema[0].setSaveAspect(paramBoolean);
-    Config.cur.windowSaveAspect = paramBoolean;
-  }
-
-  public static void menuMusicPlay() {
-    menuMusicPlay(_sLastMusic);
-  }
-
-  public static void menuMusicPlay(String paramString) {
-    paramString = Regiment.getCountryFromBranch(paramString);
-    _sLastMusic = paramString;
-
-    CmdEnv.top().exec("music FILE music/menu/" + _sLastMusic);
-  }
-
-  public void viewSet_Load() {
-    int i = Config.cur.ini.get("game", "viewSet", 0);
-    viewSet_Set(i);
-    this.iconTypes = Config.cur.ini.get("game", "iconTypes", 3, 0, 3);
-  }
-  public void viewSet_Save() {
-    if (this.aircraftHotKeys != null) {
-      Config.cur.ini.set("game", "viewSet", viewSet_Get());
-      Config.cur.ini.set("game", "iconTypes", iconTypes());
-    }
-  }
-
-  protected int viewSet_Get() {
-    int i = 0;
-    if ((HookKeys.current != null) && 
-      (HookKeys.current.isPanView())) i |= 1;
-    if ((HookPilot.current != null) && 
-      (HookPilot.current.isAim())) i |= 2;
-    i |= (this.viewMirror & 0x3) << 2;
-    if (!this.aircraftHotKeys.isAutoAutopilot()) i |= 16;
-    i |= (HUD.drawSpeed() & 0x3) << 5;
-    return i;
-  }
-  private void viewSet_Set(int paramInt) {
-    HookKeys.current.setMode((paramInt & 0x1) != 0);
-    HookPilot.current.doAim((paramInt & 0x2) != 0);
-    this.viewMirror = (paramInt >> 2 & 0x3);
-    this.aircraftHotKeys.setAutoAutopilot((paramInt & 0x10) == 0);
-    HUD.setDrawSpeed(paramInt >> 5 & 0x3);
-  }
-
-  public boolean isViewMirror()
-  {
-    return this.viewMirror > 0;
-  }
-
-  public int iconTypes() {
-    return this.iconTypes;
-  }
-  protected void changeIconTypes() { this.iconTypes = ((this.iconTypes + 1) % 4);
-  }
-
-  public void disableAllHotKeyCmdEnv()
-  {
-    List localList = HotKeyCmdEnv.allEnv();
-    int i = localList.size();
-    for (int j = 0; j < i; j++) {
-      HotKeyCmdEnv localHotKeyCmdEnv = (HotKeyCmdEnv)localList.get(j);
-      localHotKeyCmdEnv.enable(false);
     }
 
-    HotKeyCmdEnv.enable("hotkeys", true);
-    HotKeyCmdEnv.enable("$$$misc", true);
-  }
-  public void enableHotKeyCmdEnvs(String[] paramArrayOfString) {
-    for (int i = 0; i < paramArrayOfString.length; i++)
-      HotKeyCmdEnv.enable(paramArrayOfString[i], true); 
-  }
-
-  public void enableOnlyHotKeyCmdEnvs(String[] paramArrayOfString) {
-    disableAllHotKeyCmdEnv();
-    enableHotKeyCmdEnvs(paramArrayOfString);
-  }
-  public void enableOnlyHotKeyCmdEnv(String paramString) {
-    disableAllHotKeyCmdEnv();
-    HotKeyCmdEnv.enable(paramString, true);
-  }
-  public void enableGameHotKeyCmdEnvs() {
-    enableHotKeyCmdEnvs(gameHotKeyCmdEnvs);
-  }
-  public void enableOnlyGameHotKeyCmdEnvs() {
-    enableOnlyHotKeyCmdEnvs(gameHotKeyCmdEnvs);
-  }
-
-  public void enableCockpitHotKeys() {
-    if (isDemoPlaying()) return;
-    if (!Actor.isValid(this.cockpitCur)) return;
-    String[] arrayOfString = this.cockpitCur.getHotKeyEnvs();
-    if (arrayOfString == null) return;
-    for (int i = 0; i < arrayOfString.length; i++)
-      if (arrayOfString[i] != null)
-        HotKeyEnv.enable(arrayOfString[i], true); 
-  }
-
-  public void disableCockpitHotKeys() {
-    if (isDemoPlaying()) return;
-    if (!Actor.isValid(this.cockpitCur)) return;
-    String[] arrayOfString = this.cockpitCur.getHotKeyEnvs();
-    if (arrayOfString == null) return;
-    for (int i = 0; i < arrayOfString.length; i++)
-      if (arrayOfString[i] != null)
-        HotKeyEnv.enable(arrayOfString[i], false);
-  }
-
-  private void _disableCockpitsHotKeys() {
-    HotKeyEnv.enable("pilot", false);
-    HotKeyEnv.enable("move", false);
-    HotKeyEnv.enable("gunner", false);
-  }
-
-  public void disableCockpitsHotKeys() {
-    if (isDemoPlaying()) return;
-    _disableCockpitsHotKeys();
-  }
-
-  public void resetGameClear()
-  {
-    SearchlightGeneric.resetGame();
-
-    disableCockpitsHotKeys();
-    this.camera3D.pos.changeBase(null, null, false);
-    this.camera3D.pos.setAbs(new Point3d(), new Orient());
-    FreeFly.adapter().resetGame();
-    if (HookPilot.current != null) {
-      HookPilot.current.use(false);
-      HookPilot.current.resetGame();
-    }
-    HookGunner.resetGame();
-    if (HookKeys.current != null) {
-      HookKeys.current.resetGame();
-    }
-    this.hookViewFly.reset();
-    this.hookViewEnemy.reset();
-    this.hookView.reset();
-    this.hookView.resetGame();
-    this.hookViewEnemy.resetGame();
-
-    this.overLoad.setShow(false);
-
-    for (int i = 0; i < 3; i++) {
-      this._lightsGlare[i].setShow(false);
-      this._lightsGlare[i].resetGame();
-
-      this._sunGlare[i].setShow(false);
-      this._sunGlare[i].resetGame();
-    }
-
-    Selector.resetGame();
-    this.hud.resetGame();
-    this.aircraftHotKeys.resetGame();
-    this.bViewFly = false;
-    this.bViewEnemy = false;
-    this.ordersTree.resetGameClear();
-    if (this.clouds != null) {
-      this.clouds.destroy();
-      this.clouds = null;
-    }
-    if (this.zip != null) {
-      this.zip.destroy();
-      this.zip = null;
-    }
-    sunFlareDestroy();
-
-    if (Actor.isValid(this.spritesFog))
-      this.spritesFog.destroy();
-    this.spritesFog = null;
-    if (this.land2D != null) {
-      if (!this.land2D.isDestroyed())
-        this.land2D.destroy();
-      this.land2D = null;
-    }
-    if (this.land2DText != null) {
-      if (!this.land2DText.isDestroyed())
-        this.land2DText.destroy();
-      this.land2DText = null;
-    }
-
-    if (this.cockpits != null) {
-      for (i = 0; i < this.cockpits.length; i++) {
-        if (Actor.isValid(this.cockpits[i]))
-          this.cockpits[i].destroy();
-        this.cockpits[i] = null;
-      }
-      this.cockpits = null;
-    }
-    this.cockpitCur = null;
-    super.resetGameClear();
-  }
-
-  public void resetGameCreate() {
-    super.resetGameCreate();
-    Engine.soundListener().pos.setBase(this.camera3D, null, false);
-    Engine.soundListener().setUseBaseSpeed(true);
-  }
-
-  public void resetUserClear() {
-    World.cur().resetUser();
-    this.aircraftHotKeys.resetUser();
-    if (this.cockpits != null) {
-      for (int i = 0; i < this.cockpits.length; i++) {
-        if (Actor.isValid(this.cockpits[i]))
-          this.cockpits[i].destroy();
-        this.cockpits[i] = null;
-      }
-      this.cockpits = null;
-    }
-    this.cockpitCur = null;
-    super.resetUserClear();
-  }
-
-  public void sunFlareCreate() {
-    sunFlareDestroy();
-    for (int i = 0; i < 3; i++)
-      this._sunFlare[i] = new SunFlare(this._sunFlareRender[i]); 
-  }
-
-  public void sunFlareDestroy() {
-    for (int i = 0; i < 3; i++) {
-      if (Actor.isValid(this._sunFlare[i]))
-        this._sunFlare[i].destroy();
-      this._sunFlare[i] = null;
-    }
-  }
-
-  public void sunFlareShow(boolean paramBoolean) {
-    for (int i = 0; i < 3; i++)
-      this._sunFlareRender[i].setShow(paramBoolean);
-  }
-
-  public KeyRecordCallback playRecordedMissionCallback()
-  {
-    return this.playRecordedMissionCallback;
-  }
-  public InOutStreams playRecordedStreams() {
-    return this.playRecordedStreams;
-  }
-  NetChannelInStream playRecordedNetChannelIn() {
-    return this.playRecordedNetChannelIn;
-  }
-  public GameTrack gameTrackRecord() { return this.gameTrackRecord; } 
-  public void setGameTrackRecord(GameTrack paramGameTrack) { this.gameTrackRecord = paramGameTrack; } 
-  public GameTrack gameTrackPlay() { return this.gameTrackPlay; } 
-  public void setGameTrackPlay(GameTrack paramGameTrack) { this.gameTrackPlay = paramGameTrack; } 
-  public void clearGameTrack(GameTrack paramGameTrack) {
-    if (paramGameTrack == this.gameTrackRecord) this.gameTrackRecord = null;
-    if (paramGameTrack == this.gameTrackPlay) this.gameTrackPlay = null; 
-  }
-
-  public String playRecordedMission(String paramString)
-  {
-    this.playBatchCurRecord = -1;
-    this.playEndBatch = true;
-    this.playRecordedStreams = null;
-    return playRecordedMission(paramString, true);
-  }
-
-  public String playRecordedMission(String paramString, boolean paramBoolean) {
-    this.playRecordedFile = paramString;
-    if (this.playRecordedMissionCallback == null) {
-      this.playRecordedMissionCallback = new KeyRecordCallback() {
-        public void playRecordedEnded() {
-          if (this != Main3D.this.playRecordedMissionCallback) return;
-          GameState localGameState = Main.state();
-          Object localObject;
-          if ((localGameState instanceof GUIRecordPlay)) {
-            localObject = (GUIRecordPlay)localGameState;
-            ((GUIRecordPlay)localObject).doReplayMission(Main3D.this.playRecordedFile, Main3D.this.playEndBatch);
-          } else if ((localGameState instanceof GUITrainingPlay)) {
-            localObject = (GUITrainingPlay)localGameState;
-            ((GUITrainingPlay)localObject).doQuitMission();
-            ((GUITrainingPlay)localObject).doExit();
-          } else if ((localGameState instanceof GUIBWDemoPlay)) {
-            localObject = (GUIBWDemoPlay)localGameState;
-            ((GUIBWDemoPlay)localObject).doQuitMission();
-          }
-        }
-
-        public void doFirstHotCmd(boolean paramBoolean) {
-          if (Main3D.this.playRecordedStreams != null) {
-            AircraftHotKeys.bFirstHotCmd = paramBoolean;
-            Main3D.this.loadRecordedStates1(paramBoolean);
-            if (!paramBoolean)
-              Main3D.this.loadRecordedStates2();
-          }
-        }
-      };
-    }
-    if (this.playRecordedStreams != null) {
-      try { this.playRecordedStreams.close(); } catch (Exception localException1) {
-      }this.playRecordedStreams = null;
-      NetMissionTrack.stopPlaying();
-    }
-    if (this.playRecordedNetChannelIn != null)
-      this.playRecordedNetChannelIn.destroy();
-    this.playRecordedNetChannelIn = null;
-
-    if (InOutStreams.isExistAndValid(new File(paramString))) {
-      return playNetRecordedMission(paramString, paramBoolean);
-    }
-    String str = paramString;
-    SectFile localSectFile = new SectFile(paramString, 0, false);
-    int i = localSectFile.sectionIndex("batch");
-    if (i >= 0) {
-      j = localSectFile.vars(i);
-      if (j <= 0)
-        return "Track file '" + paramString + "' is empty";
-      this.playEndBatch = ((this.playBatchCurRecord != -1) && (this.playBatchCurRecord == j - 2));
-      if (j == 1) this.playEndBatch = true;
-      this.playBatchCurRecord += 1;
-      if (this.playBatchCurRecord >= j)
-        this.playBatchCurRecord = 0;
-      str = "Records/" + localSectFile.line(i, this.playBatchCurRecord);
-      if (InOutStreams.isExistAndValid(new File(str))) {
-        return playNetRecordedMission(str, paramBoolean);
-      }
-      localSectFile = new SectFile(str, 0, false);
-    } else {
-      this.playEndBatch = true;
-    }
-    i = localSectFile.sectionIndex("$$$record");
-    if (i < 0)
-      return "Track file '" + str + "' not included section [$$$record]";
-    if (localSectFile.vars(i) <= 10)
-      return "Track file '" + str + "' is empty";
-    int j = Integer.parseInt(localSectFile.var(i, 0));
-    if (j != 130)
-      return "Track file '" + str + "' version is not supported";
-    int k = Integer.parseInt(localSectFile.var(i, 1));
-    float f1 = Float.parseFloat(localSectFile.var(i, 2));
-    float f2 = Float.parseFloat(localSectFile.var(i, 3));
-    float f3 = Float.parseFloat(localSectFile.var(i, 4));
-    float f4 = Float.parseFloat(localSectFile.var(i, 5));
-    float f5 = Float.parseFloat(localSectFile.var(i, 6));
-    int m = Integer.parseInt(localSectFile.var(i, 7));
-    int n = Integer.parseInt(localSectFile.var(i, 8));
-
-    long l1 = Long.parseLong(localSectFile.var(i, 9));
-    long l2 = localSectFile.fingerExcludeSectPrefix("$$$");
-    l2 = Finger.incLong(l2, k);
-    l2 = Finger.incLong(l2, f1);
-    l2 = Finger.incLong(l2, f2);
-    l2 = Finger.incLong(l2, f3);
-    l2 = Finger.incLong(l2, f4);
-    l2 = Finger.incLong(l2, f5);
-    l2 = Finger.incLong(l2, m);
-    l2 = Finger.incLong(l2, n);
-    if (l1 != l2) {
-      return "Track file '" + str + "' is changed";
-    }
-    World.cur().diffCur.set(k);
-    World.cur().diffCur.Cockpit_Always_On = false;
-    World.cur().diffCur.No_Outside_Views = false;
-    World.cur().diffCur.No_Padlock = false;
-    World.cur().userCoverMashineGun = f1;
-    World.cur().userCoverCannon = f2;
-    World.cur().userCoverRocket = f3;
-    World.cur().userRocketDelay = f4;
-    World.cur().userBombDelay = f5;
-    viewSet_Set(m);
-    this.iconTypes = n;
-
-    if (Main.cur().netServerParams == null) {
-      new NetServerParams();
-      Main.cur().netServerParams.setMode(2);
-      new NetLocalControl();
-    }
-    try
+    class CmdScreenSequence extends com.maddox.rts.Cmd
     {
-      Mission.loadFromSect(localSectFile, true);
-    } catch (Exception localException2) {
-      System.out.println(localException2.getMessage());
-      localException2.printStackTrace();
-      return "Track file '" + str + "' load failed: " + localException2.getMessage();
+
+        public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+        {
+            if(screenSequence == null)
+                screenSequence = new ScreenSequence();
+            screenSequence.doSave();
+            return null;
+        }
+
+        CmdScreenSequence()
+        {
+        }
     }
-    this.playRecordedSect = localSectFile;
-    this.playRecorderIndx = i;
-    this.playRecordedPlayFile = str;
-    if (paramBoolean) doRecordedPlayFirst();
-    return null;
-  }
 
-  private String playNetRecordedMission(String paramString, boolean paramBoolean) {
-    try {
-      this.playRecordedStreams = new InOutStreams();
-      this.playRecordedStreams.open(new File(paramString), false);
-
-      InputStream localInputStream1 = this.playRecordedStreams.openStream("version");
-      BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localInputStream1));
-      int i = Integer.parseInt(localBufferedReader.readLine());
-      int j = i;
-      if (i >= 103)
-        j = Integer.parseInt(localBufferedReader.readLine());
-      localBufferedReader.close();
-
-      if ((i != 100) && (i != 101) && (i != 102) && (i != 103)) {
-        try { this.playRecordedStreams.close(); } catch (Exception localException3) {
-        }this.playRecordedStreams = null;
-        return "Track file '" + paramString + "' version is not supported";
-      }
-
-      loadRecordedStates0();
-      InputStream localInputStream2 = this.playRecordedStreams.openStream("traffic");
-      if (localInputStream2 == null)
-        throw new Exception("Stream 'traffic' not found.");
-      this.playRecordedNetChannelIn = new NetChannelInStream(localInputStream2, 1);
-      RTSConf.cur.netEnv.addChannel(this.playRecordedNetChannelIn);
-      this.playRecordedNetChannelIn.setStateInit(0);
-      this.playRecordedNetChannelIn.userState = 1;
-      NetMissionTrack.startPlaying(this.playRecordedStreams, i, j);
-      if (paramBoolean) doRecordedPlayFirst(); 
-    }
-    catch (Exception localException1) {
-      localException1.printStackTrace();
-      if (this.playRecordedStreams != null) try {
-          this.playRecordedStreams.close(); } catch (Exception localException2) {
-        } this.playRecordedStreams = null;
-      return "Track file '" + paramString + "' load failed: " + localException1.getMessage();
-    }
-    return null;
-  }
-
-  private void doRecordedPlayFirst() {
-    _disableCockpitsHotKeys();
-    HotKeyEnv.enable("misc", false);
-    HotKeyEnv.enable("orders", false);
-    HotKeyEnv.enable("timeCompression", false);
-    HotKeyEnv.enable("aircraftView", false);
-    HotKeyEnv.enable("HookView", false);
-    HotKeyEnv.enable("PanView", false);
-    HotKeyEnv.enable("SnapView", false);
-  }
-
-  public String startPlayRecordedMission()
-  {
-    if (this.playRecordedStreams != null) {
-      this.keyRecord.startPlay(this.playRecordedMissionCallback);
-    }
-    else if (!this.keyRecord.startPlay(this.playRecordedSect, this.playRecorderIndx, 10, this.playRecordedMissionCallback)) {
-      return "Track file '" + this.playRecordedPlayFile + "' load failed";
-    }
-    return null;
-  }
-
-  public void stopPlayRecordedMission() {
-    this.playRecordedSect = null;
-    if (this.keyRecord.isPlaying()) {
-      this.keyRecord.stopPlay();
-    }
-    if (this.playRecordedStreams != null) {
-      try { this.playRecordedStreams.close(); } catch (Exception localException) {
-      }this.playRecordedStreams = null;
-      NetMissionTrack.stopPlaying();
-    }
-    if (this.playRecordedNetChannelIn != null)
-      this.playRecordedNetChannelIn.destroy();
-    this.playRecordedNetChannelIn = null;
-
-    _disableCockpitsHotKeys();
-    HotKeyEnv.enable("misc", true);
-    HotKeyEnv.enable("orders", true);
-    HotKeyEnv.enable("timeCompression", true);
-    HotKeyEnv.enable("aircraftView", true);
-    HotKeyEnv.enable("HookView", true);
-    HotKeyEnv.enable("PanView", true);
-    HotKeyEnv.enable("SnapView", true);
-  }
-
-  public void flyRecordedMission() {
-    if (this.keyRecord.isPlaying()) {
-      this.keyRecord.stopPlay();
-      this.playRecordedMissionCallback = null;
-      if (Actor.isValid(this.cockpitCur))
-        HotKeyCmd.exec("misc", "cockpitEnter" + cockpitCurIndx());
-      enableCockpitHotKeys();
-      HotKeyEnv.enable("misc", true);
-      HotKeyEnv.enable("orders", true);
-      HotKeyEnv.enable("timeCompression", true);
-      HotKeyEnv.enable("aircraftView", true);
-      HotKeyEnv.enable("HookView", true);
-      HotKeyEnv.enable("PanView", true);
-      HotKeyEnv.enable("SnapView", true);
-
-      ForceFeedback.startMission();
-    }
-  }
-
-  public boolean saveRecordedMission(String paramString) {
-    if (this.mission == null) return false;
-    if (this.mission.isDestroyed()) return false;
-    if (!this.keyRecord.isContainRecorded()) return false; try
+    class ScreenSequence extends com.maddox.il2.engine.Actor
     {
-      SectFile localSectFile = this.mission.sectFile();
-      int i = localSectFile.sectionIndex("$$$record");
-      if (i >= 0)
-        localSectFile.sectionClear(i);
-      else {
-        i = localSectFile.sectionAdd("$$$record");
-      }
-      localSectFile.lineAdd(i, "130", "");
-      long l = Finger.incLong(this.mission.finger(), 130);
-      int j = World.cur().diffCur.get();
-      localSectFile.lineAdd(i, "" + j, "");
-      l = Finger.incLong(this.mission.finger(), j);
-      localSectFile.lineAdd(i, "" + World.cur().userCoverMashineGun, "");
-      l = Finger.incLong(l, World.cur().userCoverMashineGun);
-      localSectFile.lineAdd(i, "" + World.cur().userCoverCannon, "");
-      l = Finger.incLong(l, World.cur().userCoverCannon);
-      localSectFile.lineAdd(i, "" + World.cur().userCoverRocket, "");
-      l = Finger.incLong(l, World.cur().userCoverRocket);
-      localSectFile.lineAdd(i, "" + World.cur().userRocketDelay, "");
-      l = Finger.incLong(l, World.cur().userRocketDelay);
-      localSectFile.lineAdd(i, "" + World.cur().userBombDelay, "");
-      l = Finger.incLong(l, World.cur().userBombDelay);
-      localSectFile.lineAdd(i, "" + Mission.viewSet, "");
-      l = Finger.incLong(l, Mission.viewSet);
-      localSectFile.lineAdd(i, "" + Mission.iconTypes, "");
-      l = Finger.incLong(l, Mission.iconTypes);
+        class Interpolater extends com.maddox.il2.engine.Interpolate
+        {
 
-      localSectFile.lineAdd(i, "" + l, "");
-      this.keyRecord.saveRecorded(localSectFile, i);
-      return localSectFile.saveFile(paramString);
-    } catch (Exception localException) {
+            public boolean tick()
+            {
+                if(bSave)
+                    shot.grab();
+                return true;
+            }
+
+            Interpolater()
+            {
+            }
+        }
+
+
+        public void doSave()
+        {
+            bSave = !bSave;
+        }
+
+        public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+        {
+            return this;
+        }
+
+        protected void createActorHashCode()
+        {
+            makeActorRealHashCode();
+        }
+
+        boolean bSave;
+        com.maddox.opengl.util.ScrShot shot;
+
+        public ScreenSequence()
+        {
+            bSave = false;
+            shot = new ScrShot("s");
+            flags |= 0x4000;
+            interpPut(new Interpolater(), "grabber", com.maddox.rts.Time.current(), null);
+        }
     }
-    return false;
-  }
 
-  public boolean saveRecordedStates0(InOutStreams paramInOutStreams)
-  {
-    try
+    private static class TransformMirror extends com.maddox.il2.engine.TTFontTransform
     {
-      PrintWriter localPrintWriter = new PrintWriter(paramInOutStreams.createStream("states0"));
-      localPrintWriter.println(World.cur().diffCur.get());
-      localPrintWriter.println(World.cur().userCoverMashineGun);
-      localPrintWriter.println(World.cur().userCoverCannon);
-      localPrintWriter.println(World.cur().userCoverRocket);
-      localPrintWriter.println(World.cur().userRocketDelay);
-      localPrintWriter.println(World.cur().userBombDelay);
-      localPrintWriter.println(viewSet_Get());
-      localPrintWriter.println(this.iconTypes);
-      localPrintWriter.println(isViewOutside() ? "0" : "1");
-      localPrintWriter.println(FOVX);
-      localPrintWriter.flush(); localPrintWriter.close();
-      return true;
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }return false;
-  }
 
-  public boolean saveRecordedStates1(InOutStreams paramInOutStreams) {
-    try {
-      PrintWriter localPrintWriter = new PrintWriter(paramInOutStreams.createStream("states1"));
-      HookView.cur().saveRecordedStates(localPrintWriter);
-      HookPilot.cur().saveRecordedStates(localPrintWriter);
-      HookGunner.saveRecordedStates(localPrintWriter);
-      localPrintWriter.flush(); localPrintWriter.close();
-      return true;
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }return false;
-  }
-
-  public boolean saveRecordedStates2(InOutStreams paramInOutStreams) {
-    try {
-      PrintWriter localPrintWriter = new PrintWriter(paramInOutStreams.createStream("states2"));
-      localPrintWriter.println(FOVX);
-      int i = 0;
-      if (this.hud.bDrawDashBoard) i |= 1;
-      if (isViewInsideShow()) i |= 2;
-      if ((Actor.isValid(this.cockpitCur)) && (this.cockpitCur.isToggleAim()))
-        i |= 4;
-      FlightModel localFlightModel = World.getPlayerFM();
-      if ((localFlightModel != null) && (localFlightModel.AS.bShowSmokesOn))
-        i |= 8;
-      if (isEnableRenderingCockpit()) i |= 16;
-      if ((Actor.isValid(this.cockpitCur)) && (this.cockpitCur.isToggleUp()))
-        i |= 32;
-      if ((Actor.isValid(this.cockpitCur)) && (this.cockpitCur.isToggleDim()))
-        i |= 64;
-      if ((Actor.isValid(this.cockpitCur)) && (this.cockpitCur.isToggleLight()))
-        i |= 128;
-      if ((Actor.isValid(this.cockpitCur)) && (!this.cockpitCur.isEnableRenderingBall()))
-        i |= 256;
-      localPrintWriter.println(i);
-      localPrintWriter.flush(); localPrintWriter.close();
-      return true;
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }return false;
-  }
-
-  public void loadRecordedStates0()
-  {
-    try {
-      InputStream localInputStream = this.playRecordedStreams.openStream("states0");
-      BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localInputStream));
-      World.cur().diffCur.set(Integer.parseInt(localBufferedReader.readLine()));
-      World.cur().diffCur.Cockpit_Always_On = false;
-      World.cur().diffCur.No_Outside_Views = false;
-      World.cur().diffCur.No_Padlock = false;
-      World.cur().userCoverMashineGun = Float.parseFloat(localBufferedReader.readLine());
-      World.cur().userCoverCannon = Float.parseFloat(localBufferedReader.readLine());
-      World.cur().userCoverRocket = Float.parseFloat(localBufferedReader.readLine());
-      World.cur().userRocketDelay = Float.parseFloat(localBufferedReader.readLine());
-      World.cur().userBombDelay = Float.parseFloat(localBufferedReader.readLine());
-      viewSet_Set(Integer.parseInt(localBufferedReader.readLine()));
-      this.iconTypes = Integer.parseInt(localBufferedReader.readLine());
-      this.bLoadRecordedStates1Before = (Integer.parseInt(localBufferedReader.readLine()) == 1);
-      float f = Float.parseFloat(localBufferedReader.readLine());
-      if (f != FOVX)
-        CmdEnv.top().exec("fov " + f);
-      localInputStream.close();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void loadRecordedStates1(boolean paramBoolean) {
-    if (paramBoolean == this.bLoadRecordedStates1Before)
-      try {
-        InputStream localInputStream = this.playRecordedStreams.openStream("states1");
-        BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localInputStream));
-        HookView.cur().loadRecordedStates(localBufferedReader);
-        HookPilot.cur().loadRecordedStates(localBufferedReader);
-        HookGunner.loadRecordedStates(localBufferedReader);
-        localInputStream.close();
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-  }
-
-  public void loadRecordedStates2() {
-    try {
-      InputStream localInputStream = this.playRecordedStreams.openStream("states2");
-      BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localInputStream));
-      float f = Float.parseFloat(localBufferedReader.readLine());
-      if (f != FOVX)
-        CmdEnv.top().exec("fov " + f);
-      int i = Integer.parseInt(localBufferedReader.readLine());
-      this.hud.bDrawDashBoard = ((i & 0x1) != 0);
-      setViewInsideShow((i & 0x2) != 0);
-      if (Actor.isValid(this.cockpitCur))
-        this.cockpitCur.doToggleAim((i & 0x4) != 0);
-      FlightModel localFlightModel = World.getPlayerFM();
-      if (localFlightModel != null)
-        localFlightModel.AS.setAirShowState((i & 0x8) != 0);
-      if (Actor.isValid(this.cockpitCur)) {
-        setEnableRenderingCockpit((i & 0x10) != 0);
-        this.cockpitCur.doToggleUp((i & 0x20) != 0);
-        if (((i & 0x40) != 0) && 
-          (!this.cockpitCur.isToggleDim()))
-          this.cockpitCur.doToggleDim();
-        if (((i & 0x80) != 0) && 
-          (!this.cockpitCur.isToggleLight()))
-          this.cockpitCur.doToggleLight();
-        this.cockpitCur.setEnableRenderingBall((i & 0x100) == 0);
-      }
-      localInputStream.close();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void setRenderIndx(int paramInt)
-  {
-    this.iRenderIndx = paramInt;
-  }
-  public int getRenderIndx() {
-    return this.iRenderIndx;
-  }
-
-  private void transform_point(double[] paramArrayOfDouble1, double[] paramArrayOfDouble2, double[] paramArrayOfDouble3)
-  {
-    paramArrayOfDouble1[0] = (paramArrayOfDouble2[0] * paramArrayOfDouble3[0] + paramArrayOfDouble2[4] * paramArrayOfDouble3[1] + paramArrayOfDouble2[8] * paramArrayOfDouble3[2] + paramArrayOfDouble2[12] * paramArrayOfDouble3[3]);
-    paramArrayOfDouble1[1] = (paramArrayOfDouble2[1] * paramArrayOfDouble3[0] + paramArrayOfDouble2[5] * paramArrayOfDouble3[1] + paramArrayOfDouble2[9] * paramArrayOfDouble3[2] + paramArrayOfDouble2[13] * paramArrayOfDouble3[3]);
-    paramArrayOfDouble1[2] = (paramArrayOfDouble2[2] * paramArrayOfDouble3[0] + paramArrayOfDouble2[6] * paramArrayOfDouble3[1] + paramArrayOfDouble2[10] * paramArrayOfDouble3[2] + paramArrayOfDouble2[14] * paramArrayOfDouble3[3]);
-    paramArrayOfDouble1[3] = (paramArrayOfDouble2[3] * paramArrayOfDouble3[0] + paramArrayOfDouble2[7] * paramArrayOfDouble3[1] + paramArrayOfDouble2[11] * paramArrayOfDouble3[2] + paramArrayOfDouble2[15] * paramArrayOfDouble3[3]);
-  }
-
-  public boolean project2d(double paramDouble1, double paramDouble2, double paramDouble3, Point3d paramPoint3d) {
-    this._dIn[0] = paramDouble1; this._dIn[1] = paramDouble2; this._dIn[2] = paramDouble3; this._dIn[3] = 1.0D;
-    if (this.bRenderMirror) {
-      transform_point(this._dOut, this._modelMatrix3DMirror, this._dIn);
-      transform_point(this._dIn, this._projMatrix3DMirror, this._dOut);
-    } else {
-      transform_point(this._dOut, this._modelMatrix3D[this.iRenderIndx], this._dIn);
-      transform_point(this._dIn, this._projMatrix3D[this.iRenderIndx], this._dOut);
-    }
-
-    if (this._dIn[3] == 0.0D) {
-      System.out.println("BAD glu.Project: " + paramDouble1 + " " + paramDouble2 + " " + paramDouble3);
-      return false;
-    }
-
-    this._dIn[0] /= this._dIn[3]; this._dIn[1] /= this._dIn[3]; this._dIn[2] /= this._dIn[3];
-
-    if (this.bRenderMirror) {
-      paramPoint3d.x = (this._viewportMirror[0] + (1.0D + this._dIn[0]) * this._viewportMirror[2] / 2.0D);
-      paramPoint3d.y = (this._viewportMirror[1] + (1.0D + this._dIn[1]) * this._viewportMirror[3] / 2.0D);
-    } else {
-      paramPoint3d.x = (this._viewport[this.iRenderIndx][0] + (1.0D + this._dIn[0]) * this._viewport[this.iRenderIndx][2] / 2.0D);
-      paramPoint3d.y = (this._viewport[this.iRenderIndx][1] + (1.0D + this._dIn[1]) * this._viewport[this.iRenderIndx][3] / 2.0D);
-    }
-    paramPoint3d.z = ((1.0D + this._dIn[2]) / 2.0D);
-    return true;
-  }
-
-  public boolean project2d_cam(double paramDouble1, double paramDouble2, double paramDouble3, Point3d paramPoint3d) {
-    if (!project2d(paramDouble1, paramDouble2, paramDouble3, paramPoint3d))
-      return false;
-    if (this.bRenderMirror) {
-      paramPoint3d.x -= this._viewportMirror[0];
-      paramPoint3d.y -= this._viewportMirror[1];
-    } else {
-      paramPoint3d.x -= this._viewport[this.iRenderIndx][0];
-      paramPoint3d.y -= this._viewport[this.iRenderIndx][1];
-    }
-    return true;
-  }
-
-  public boolean project2d_norm(double paramDouble1, double paramDouble2, double paramDouble3, Point3d paramPoint3d) {
-    this._dIn[0] = paramDouble1; this._dIn[1] = paramDouble2; this._dIn[2] = paramDouble3; this._dIn[3] = 1.0D;
-    if (this.bRenderMirror) {
-      transform_point(this._dOut, this._modelMatrix3DMirror, this._dIn);
-      transform_point(this._dIn, this._projMatrix3DMirror, this._dOut);
-    } else {
-      transform_point(this._dOut, this._modelMatrix3D[this.iRenderIndx], this._dIn);
-      transform_point(this._dIn, this._projMatrix3D[this.iRenderIndx], this._dOut);
-    }
-
-    if (this._dIn[3] == 0.0D) {
-      System.out.println("BAD glu.Project2: " + paramDouble1 + " " + paramDouble2 + " " + paramDouble3);
-      return false;
-    }
-
-    double d = 1.0D / this._dIn[3];
-    paramPoint3d.x = (this._dIn[0] * d);
-    paramPoint3d.y = (this._dIn[1] * d);
-    paramPoint3d.z = (this._dIn[2] * d);
-
-    return true;
-  }
-
-  public boolean project2d(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return project2d(paramPoint3d1.x, paramPoint3d1.y, paramPoint3d1.z, paramPoint3d2);
-  }
-  public boolean project2d_cam(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return project2d_cam(paramPoint3d1.x, paramPoint3d1.y, paramPoint3d1.z, paramPoint3d2);
-  }
-
-  private void shadowPairsClear()
-  {
-    this.shadowPairsList1.clear();
-    this.shadowPairsMap1.clear();
-    this.shadowPairsList2.clear();
-    this.shadowPairsCur1 = null;
-  }
-  private void shadowPairsAdd(ArrayList paramArrayList) {
-    int i = paramArrayList.size();
-    for (int j = 0; j < i; j++) {
-      Object localObject = paramArrayList.get(j);
-      if (((localObject instanceof BigshipGeneric)) && (!(localObject instanceof TestRunway))) {
-        BigshipGeneric localBigshipGeneric = (BigshipGeneric)localObject;
-        if ((Actor.isValid(localBigshipGeneric.getAirport())) && (!this.shadowPairsMap1.containsKey(localBigshipGeneric))) {
-          this.shadowPairsList1.add(localBigshipGeneric);
-          this.shadowPairsMap1.put(localBigshipGeneric, null);
+        public void get(float f, float f1, float af[])
+        {
+            af[0] = (x0 + dx) - f;
+            af[1] = y0 + f1;
+            af[2] = z0;
         }
-      }
+
+        public void set(float f, float f1, float f2, float f3)
+        {
+            x0 = f;
+            y0 = f1;
+            z0 = f2;
+            dx = f3;
+        }
+
+        private float x0;
+        private float y0;
+        private float dx;
+        private float z0;
+
+        private TransformMirror()
+        {
+        }
+
     }
-  }
 
-  private void shadowPairsRender() {
-    int i = this.shadowPairsList1.size();
-    if (i == 0) return;
-    for (int j = 0; j < i; j++) {
-      this.shadowPairsCur1 = ((BigshipGeneric)this.shadowPairsList1.get(j));
-      Point3d localPoint3d = this.shadowPairsCur1.pos.getAbsPoint();
-      double d1 = localPoint3d.x - shadowPairsR;
-      double d2 = localPoint3d.y - shadowPairsR;
-      double d3 = localPoint3d.x + shadowPairsR;
-      double d4 = localPoint3d.y + shadowPairsR;
-      Engine.drawEnv().getFiltered((AbstractCollection)null, d1, d2, d3, d4, 14, this.shadowPairsFilter);
-    }
-    if (this.shadowPairsList2.size() == 0) return;
-    HierMesh.renderShadowPairs(this.shadowPairsList2);
-  }
-
-  private void doPreRender3D(Render paramRender)
-  {
-    paramRender.useClearColor((!this.bDrawLand) || ((RenderContext.texGetFlags() & 0x20) != 0));
-
-    paramRender.getCamera().pos.getRender(this.__p, this.__o);
-
-    if ((!this.bRenderMirror) && (this.iRenderIndx == 0))
+    class FarActorFilter
+        implements com.maddox.il2.engine.ActorFilter
     {
-      SearchlightGeneric.lightPlanesBySearchlights();
 
-      localObject = paramRender.getCamera().pos.base();
-      if (Actor.isValid((Actor)localObject)) {
-        ((Actor)localObject).getSpeed(this.__v);
-        Camera.SetTargetSpeed((float)this.__v.x, (float)this.__v.y, (float)this.__v.z);
-      } else {
-        Camera.SetTargetSpeed(0.0F, 0.0F, 0.0F);
-      }
-    }
-    Render.enableFog(this.bEnableFog);
-
-    if ((this.bDrawClouds) && (this.clouds != null)) {
-      this.clouds.preRender();
-    }
-    if (this.bDrawLand) {
-      Engine.land().preRender((float)this.__p.z, false);
-    }
-    this.darkerNight.preRender();
-
-    Object localObject = this.bRenderMirror ? this.drwMirror : this.drwMaster[this.iRenderIndx];
-    Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxVisualDistance, 4, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, true);
-
-    Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxLongVisualDistance, 8, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, false);
-
-    if (!this.bRenderMirror) {
-      shadowPairsAdd(((DrwArray)localObject).drwSolid);
-      shadowPairsAdd(((DrwArray)localObject).drwTransp);
-    }
-    if ((!this.bRenderMirror) || (this.viewMirror > 1)) {
-      Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxStaticVisualDistance, 2, ((DrwArray)localObject).drwSolid, ((DrwArray)localObject).drwTransp, ((DrwArray)localObject).drwShadow, false);
-
-      Engine.drawEnv().preRender(this.__p.x, this.__p.y, this.__p.z, World.MaxPlateVisualDistance, 1, ((DrwArray)localObject).drwSolidPlate, ((DrwArray)localObject).drwTranspPlate, ((DrwArray)localObject).drwShadowPlate, true);
-    }
-
-    BulletGeneric.preRenderAll();
-    if (this.bEnableFog) Render.enableFog(false); 
-  }
-
-  private void doRender3D0(Render paramRender) {
-    int i = 0;
-    Render.enableFog(this.bEnableFog);
-
-    if (this.bDrawLand) {
-      Engine.lightEnv().prepareForRender(this.camera3D.pos.getAbsPoint(), 8000.0F);
-      i = Engine.land().render0(this.bRenderMirror) != 2 ? 1 : 0;
-      LightPoint.clearRender();
-    }
-
-    if ((i != 0) && (this.bEnableFog)) Render.enableFog(false);
-
-    DrwArray localDrwArray = this.bRenderMirror ? this.drwMirror : this.drwMaster[this.iRenderIndx];
-
-    plateToRenderArray(localDrwArray.drwSolidPlate, localDrwArray.drwSolid);
-    plateToRenderArray(localDrwArray.drwTranspPlate, localDrwArray.drwTransp);
-    plateToRenderArray(localDrwArray.drwShadowPlate, localDrwArray.drwShadow);
-    MeshShared.renderArray(true);
-
-    paramRender.drawShadow(localDrwArray.drwShadow);
-
-    if ((i != 0) && (this.bEnableFog)) Render.enableFog(true);
-
-    if (this.bDrawLand) {
-      Engine.land().render1(this.bRenderMirror);
-    }
-    int j = gl.GetError();
-    if (j != 0)
-      System.out.println("***( GL error: " + j + " (render3d0)");
-  }
-
-  private void doRender3D1(Render paramRender)
-  {
-    if ((this.bDrawClouds) && (this.clouds != null) && (RenderContext.cfgSky.get() > 0)) {
-      Engine.lightEnv().prepareForRender(this.camera3D.pos.getAbsPoint(), RenderContext.cfgSky.get() * 4000.0F);
-
-      SearchlightGeneric.lightCloudsBySearchlights();
-      this.clouds.render();
-      LightPoint.clearRender();
-    }
-    DrwArray localDrwArray = this.bRenderMirror ? this.drwMirror : this.drwMaster[this.iRenderIndx];
-    paramRender.draw(localDrwArray.drwSolid, localDrwArray.drwTransp);
-
-    if (!this.bRenderMirror) shadowPairsRender();
-
-    BulletGeneric.renderAll();
-
-    if (this.bEnableFog) {
-      Render.flush();
-      Render.enableFog(false);
-    }
-
-    this.darkerNight.render();
-  }
-
-  private void plateToRenderArray(ArrayList paramArrayList1, ArrayList paramArrayList2)
-  {
-    int i = paramArrayList1.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)paramArrayList1.get(j);
-      if ((localActor instanceof ActorLandMesh)) {
-        paramArrayList2.add(localActor);
-      }
-      else if (((localActor instanceof ActorMesh)) && ((((ActorMesh)localActor).mesh() instanceof MeshShared))) {
-        localActor.pos.getRender(this.__l);
-        if (!((MeshShared)((ActorMesh)localActor).mesh()).putToRenderArray(this.__l))
-          localActor.draw.render(localActor);
-      } else {
-        localActor.draw.render(localActor);
-      }
-    }
-
-    paramArrayList1.clear();
-  }
-
-  public void _getAspectViewPort(int paramInt, float[] paramArrayOfFloat)
-  {
-    paramArrayOfFloat[0] = (paramInt == 1 ? 0.0F : 0.6666667F);
-    paramArrayOfFloat[1] = 0.0F;
-    paramArrayOfFloat[2] = 0.3333333F;
-    paramArrayOfFloat[3] = 1.0F;
-  }
-
-  public void _getAspectViewPort(int paramInt, int[] paramArrayOfInt) {
-    paramArrayOfInt[0] = (paramInt == 1 ? 0 : 2 * RendersMain.width() / 3);
-    paramArrayOfInt[1] = 0;
-    paramArrayOfInt[2] = (RendersMain.width() / 3);
-    paramArrayOfInt[3] = RendersMain.height();
-  }
-
-  private void drawTime()
-  {
-    if (!this.hud.bDrawAllMessages) return;
-    if ((this.bShowTime) || (isDemoPlaying())) {
-      int i = TextScr.This().getViewPortWidth();
-      long l = Time.current();
-      if (NetMissionTrack.isPlaying())
-        l -= NetMissionTrack.playingStartTime;
-      int j = (int)(l / 1000L % 60L);
-      int k = (int)(l / 1000L / 60L);
-      if (j > 9) TextScr.output(i - TextScr.font().height() * 3, 5, "" + k + ":" + j); else
-        TextScr.output(i - TextScr.font().height() * 3, 5, "" + k + ":0" + j);
-    }
-  }
-
-  public int mirrorX0()
-  {
-    return this.render3D0.getViewPortX0(); } 
-  public int mirrorY0() { return 0; } 
-  public int mirrorWidth() { return 256; } 
-  public int mirrorHeight() { return 256;
-  }
-
-  public void preRenderHUD()
-  {
-  }
-
-  public void renderHUD()
-  {
-  }
-
-  public void renderHUDcontextResize(int paramInt1, int paramInt2)
-  {
-  }
-
-  public void preRenderMap2D()
-  {
-  }
-
-  public void renderMap2D()
-  {
-  }
-
-  public void renderMap2DcontextResize(int paramInt1, int paramInt2)
-  {
-  }
-
-  private void insertFarActorItem(int paramInt1, int paramInt2, int paramInt3, float paramFloat, String paramString)
-  {
-    int i = (int)this.iconFarFont.width(paramString);
-    FarActorItem localFarActorItem;
-    for (int j = 0; j < this.iconFarListLen[this.iRenderIndx]; j++) {
-      localFarActorItem = (FarActorItem)this.iconFarList[this.iRenderIndx].get(j);
-      if (paramFloat > localFarActorItem.z) {
-        if (this.iconFarList[this.iRenderIndx].size() == this.iconFarListLen[this.iRenderIndx]) {
-          localFarActorItem = new FarActorItem(paramInt1, paramInt2, paramInt3, i, paramFloat, paramString);
-          this.iconFarList[this.iRenderIndx].add(localFarActorItem);
-        } else {
-          localFarActorItem = (FarActorItem)this.iconFarList[this.iRenderIndx].get(this.iconFarListLen[this.iRenderIndx]);
-          localFarActorItem.set(paramInt1, paramInt2, paramInt3, i, paramFloat, paramString);
-          this.iconFarList[this.iRenderIndx].remove(this.iconFarListLen[this.iRenderIndx]);
-          this.iconFarList[this.iRenderIndx].add(j, localFarActorItem);
-        }
-        this.iconFarListLen[this.iRenderIndx] += 1;
-        return;
-      }
-    }
-    if (this.iconFarList[this.iRenderIndx].size() == this.iconFarListLen[this.iRenderIndx]) {
-      localFarActorItem = new FarActorItem(paramInt1, paramInt2, paramInt3, i, paramFloat, paramString);
-      this.iconFarList[this.iRenderIndx].add(localFarActorItem);
-    } else {
-      localFarActorItem = (FarActorItem)this.iconFarList[this.iRenderIndx].get(this.iconFarListLen[this.iRenderIndx]);
-      localFarActorItem.set(paramInt1, paramInt2, paramInt3, i, paramFloat, paramString);
-    }
-    this.iconFarListLen[this.iRenderIndx] += 1;
-  }
-  private void clipFarActorItems() {
-    int i = this.iconFarFont.height();
-    for (int j = 0; j < this.iconFarListLen[this.iRenderIndx]; j++) {
-      FarActorItem localFarActorItem1 = (FarActorItem)this.iconFarList[this.iRenderIndx].get(j);
-      for (int k = j + 1; k < this.iconFarListLen[this.iRenderIndx]; k++) {
-        FarActorItem localFarActorItem2 = (FarActorItem)this.iconFarList[this.iRenderIndx].get(k);
-        if ((localFarActorItem2.x + localFarActorItem2.dx < localFarActorItem1.x) || 
-          (localFarActorItem2.x > localFarActorItem1.x + localFarActorItem1.dx) || 
-          (localFarActorItem2.y + i < localFarActorItem1.y) || 
-          (localFarActorItem2.y > localFarActorItem1.y + i)) continue;
-        this.iconFarList[this.iRenderIndx].remove(k);
-        this.iconFarList[this.iRenderIndx].add(localFarActorItem2);
-        k--;
-        this.iconFarListLen[this.iRenderIndx] -= 1;
-      }
-    }
-  }
-
-  private void clearFarActorItems() {
-    this.iconFarListLen[this.iRenderIndx] = 0;
-  }
-
-  private boolean isBomb(Actor paramActor)
-  {
-    return ((paramActor instanceof Bomb)) || ((paramActor instanceof Rocket));
-  }
-
-  protected void drawFarActors() {
-    if ((Main.state() != null) && (Main.state().id() == 18)) return;
-    if (this.iconFarMat == null)
-      return;
-    this.iconFarFontHeight = this.iconFarFont.height();
-    this.iconClipX0 = -2.0D;
-    this.iconClipY0 = -1.0D;
-    if (this.bRenderMirror) {
-      this.iconClipX1 = (this.render2DMirror.getViewPortWidth() + 2.0F);
-      this.iconClipY1 = (this.render2DMirror.getViewPortHeight() + 1.0F);
-    } else {
-      this.iconClipX1 = (this._render2D[this.iRenderIndx].getViewPortWidth() + 2.0F);
-      this.iconClipY1 = (this._render2D[this.iRenderIndx].getViewPortHeight() + 1.0F);
-    }
-    this.iconFarPlayerActor = World.getPlayerAircraft();
-    this.iconFarViewActor = viewActor();
-    this.iconFarPadlockItem.str = null;
-    this.iconFarPadlockActor = getViewPadlockEnemy();
-    this._camera3D[this.iRenderIndx].pos.getRender(this.farActorFilter.camp);
-    Point3d localPoint3d1 = this.farActorFilter.camp;
-
-    float f1 = Engine.lightEnv().sun().ToLight.z; if (f1 < 0.0F) f1 = 0.0F;
-    float f3 = Engine.lightEnv().sun().Ambient + Engine.lightEnv().sun().Diffuze * (0.25F + 0.4F * f1);
-    if (RenderContext.cfgHardwareShaders.get() > 0) {
-      f1 = Engine.lightEnv().sun().Ambient + f1 * Engine.lightEnv().sun().Diffuze;
-      if (f1 > 1.0F) f3 *= f1;
-    }
-    int j = (int)(127.0F * f3);
-    if (j > 255) j = 255;
-
-    iconFarColor = j | j << 8 | j << 16;
-    List localList = Engine.targets();
-    int k = localList.size();
-    for (int m = 0; m < k; m++) {
-      Actor localActor = (Actor)localList.get(m);
-      Point3d localPoint3d2 = localActor.pos.getAbsPoint();
-      double d4 = localPoint3d1.distance(localPoint3d2);
-      if (d4 < 25000.0D) {
-        this.farActorFilter.isUse(localActor, d4);
-      }
-    }
-
-    this.iconFarPlayerActor = null;
-    this.iconFarViewActor = null;
-    this.iconFarPadlockActor = null;
-    if (this.iconFarListLen[this.iRenderIndx] != 0) {
-      clipFarActorItems();
-      for (int i = 0; i < this.iconFarListLen[this.iRenderIndx]; i++) {
-        FarActorItem localFarActorItem = (FarActorItem)this.iconFarList[this.iRenderIndx].get(i);
-        if (this.bRenderMirror) {
-          this.transformMirror.set(localFarActorItem.x - localFarActorItem.dx, localFarActorItem.y, localFarActorItem.z, localFarActorItem.dx);
-          this.iconFarFont.transform(this.transformMirror, localFarActorItem.color, localFarActorItem.str);
-        } else {
-          this.iconFarFont.output(localFarActorItem.color, localFarActorItem.x, localFarActorItem.y, localFarActorItem.z, localFarActorItem.str);
-        }
-      }
-    }
-    if (this.iconFarPadlockItem.str != null) {
-      if (!this.iconFarPadlockItem.bGround)
-      {
-        FarActorItem tmp590_587 = this.iconFarPadlockItem; tmp590_587.x = (int)(tmp590_587.x + 1.0F);
-        FarActorItem tmp605_602 = this.iconFarPadlockItem; tmp605_602.y = (int)(tmp605_602.y + -7.5F);
-
-        float f2 = 16.0F;
-
-        this.line3XYZ[0] = (float)(this.iconFarPadlockItem.x - f2 * 0.866D);
-        this.line3XYZ[1] = (float)(this.iconFarPadlockItem.y - f2 * 0.5D);
-        this.line3XYZ[2] = this.iconFarPadlockItem.z;
-
-        this.line3XYZ[3] = (float)(this.iconFarPadlockItem.x + f2 * 0.866D);
-        this.line3XYZ[4] = (float)(this.iconFarPadlockItem.y - f2 * 0.5D);
-        this.line3XYZ[5] = this.iconFarPadlockItem.z;
-
-        this.line3XYZ[6] = this.iconFarPadlockItem.x;
-        this.line3XYZ[7] = (this.iconFarPadlockItem.y + f2);
-        this.line3XYZ[8] = this.iconFarPadlockItem.z;
-      } else {
-        this.camera3D.pos.getRender(this._lineP, this._lineO);
-        double d1 = -this._lineO.getKren() * 3.141592653589793D / 180.0D;
-        double d2 = Math.sin(d1);
-        double d3 = Math.cos(d1);
-        FarActorItem tmp837_834 = this.iconFarPadlockItem; tmp837_834.x = (int)(tmp837_834.x + 1.0F);
-        FarActorItem tmp852_849 = this.iconFarPadlockItem; tmp852_849.y = (int)(tmp852_849.y + -7.5F);
-
-        float f4 = 16.0F;
-
-        this.line3XYZ[0] = this.iconFarPadlockItem.x;
-        this.line3XYZ[1] = this.iconFarPadlockItem.y;
-        this.line3XYZ[2] = this.iconFarPadlockItem.z;
-
-        this.line3XYZ[3] = (float)(this.iconFarPadlockItem.x + d3 * f4 * 0.25D + d2 * 1.5D * f4);
-
-        this.line3XYZ[4] = (float)(this.iconFarPadlockItem.y - d2 * f4 * 0.25D + d3 * 1.5D * f4);
-
-        this.line3XYZ[5] = this.iconFarPadlockItem.z;
-
-        this.line3XYZ[6] = (float)(this.iconFarPadlockItem.x - d3 * f4 * 0.25D + d2 * 1.5D * f4);
-
-        this.line3XYZ[7] = (float)(this.iconFarPadlockItem.y + d2 * f4 * 0.25D + d3 * 1.5D * f4);
-
-        this.line3XYZ[8] = this.iconFarPadlockItem.z;
-      }
-
-      Render.drawBeginLines(-1);
-      Render.drawLines(this.line3XYZ, 3, 1.0F, this.iconFarPadlockItem.color, Mat.TESTZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 5);
-
-      Render.drawEnd();
-    }
-    clearFarActorItems();
-  }
-
-  protected void drawFarActorsInit()
-  {
-    this.iconFarMat = Mat.New("icons/faractor.mat");
-    this.iconFarFont = TTFont.get("arialSmallZ");
-    this.iconFarFinger = Finger.Int("iconFar_shortClassName");
-  }
-
-  public void initHotKeys()
-  {
-    CmdEnv.top().setCommand(new CmdExit(), "exit", "exit game");
-
-    HotKeyCmdEnv.setCurrentEnv("hotkeys");
-
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "exit") {
-      public void begin() { Main.doGameExit();
-      }
-    });
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "ScreenShot") {
-      public void begin() { if (Main3D.this.scrShot == null) Main3D.access$2502(Main3D.this, new ScrShot("grab"));
-
-        if (Mission.isNet()) {
-          long l = Time.real();
-          if (Main3D.this.lastTimeScreenShot + 10000L < l)
-            Main3D.access$2602(Main3D.this, l);
-          else {
-            return;
-          }
-        }
-        Main3D.this.scrShot.grab();
-      }
-    });
-    CmdEnv.top().setCommand(new CmdScreenSequence(), "avi", "start/stop save screen shot sequence");
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "ScreenSequence") {
-      public void begin() { if (Main3D.this.screenSequence == null) Main3D.access$2702(Main3D.this, new Main3D.ScreenSequence(Main3D.this));
-        Main3D.this.screenSequence.doSave();
-      }
-    });
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "land") {
-      public void begin() { if (RTSConf.cur.console.getEnv().levelAccess() == 0)
-          Main3D.this.setDrawLand(!Main3D.this.isDrawLand());
-      }
-    });
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "clouds") {
-      public void begin() { if ((Mission.isSingle()) && 
-          (RTSConf.cur.console.getEnv().levelAccess() == 0))
-          Main3D.this.bDrawClouds = (!Main3D.this.bDrawClouds);
-      }
-    });
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "showTime") {
-      public void begin() { if (RTSConf.cur.console.getEnv().levelAccess() == 0)
-          Main3D.access$2802(Main3D.this, !Main3D.this.bShowTime);
-      }
-    });
-    HotKeyCmdEnv.addCmd(new HotKeyCmd(true, "pause") {
-      public void begin() { if (TimeSkip.isDo()) return;
-        if (Time.isEnableChangePause()) {
-          Time.setPause(!Time.isPaused());
-          if (Config.cur.isSoundUse())
-            if (Time.isPaused())
-              AudioDevice.soundsOff();
+        private java.lang.String lenToString(int i)
+        {
+            java.lang.String s;
+            if(i >= 1000)
+                s = i / 1000 + ".";
             else
-              AudioDevice.soundsOn();
-        }
-      }
-    });
-  }
-
-  class CmdExit extends Cmd
-  {
-    CmdExit()
-    {
-    }
-
-    public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-    {
-      Main.doGameExit();
-      return null;
-    }
-  }
-
-  class CmdScreenSequence extends Cmd
-  {
-    CmdScreenSequence()
-    {
-    }
-
-    public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-    {
-      if (Main3D.this.screenSequence == null) Main3D.access$2702(Main3D.this, new Main3D.ScreenSequence(Main3D.this));
-      Main3D.this.screenSequence.doSave();
-      return null;
-    }
-  }
-
-  class ScreenSequence extends Actor
-  {
-    boolean bSave = false;
-    ScrShot shot = new ScrShot("s");
-
-    public void doSave()
-    {
-      this.bSave = (!this.bSave);
-    }
-
-    public Object getSwitchListener(Message paramMessage) {
-      return this;
-    }
-    public ScreenSequence() {
-      this.flags |= 16384;
-      interpPut(new Interpolater(), "grabber", Time.current(), null);
-    }
-    protected void createActorHashCode() {
-      makeActorRealHashCode();
-    }
-
-    class Interpolater extends Interpolate
-    {
-      Interpolater()
-      {
-      }
-
-      public boolean tick()
-      {
-        if (Main3D.ScreenSequence.this.bSave)
-          Main3D.ScreenSequence.this.shot.grab();
-        return true;
-      }
-    }
-  }
-
-  private static class TransformMirror extends TTFontTransform
-  {
-    private float x0;
-    private float y0;
-    private float dx;
-    private float z0;
-
-    private TransformMirror()
-    {
-    }
-
-    public void get(float paramFloat1, float paramFloat2, float[] paramArrayOfFloat)
-    {
-      paramArrayOfFloat[0] = (this.x0 + this.dx - paramFloat1);
-      paramArrayOfFloat[1] = (this.y0 + paramFloat2);
-      paramArrayOfFloat[2] = this.z0;
-    }
-    public void set(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-      this.x0 = paramFloat1;
-      this.y0 = paramFloat2;
-      this.z0 = paramFloat3;
-      this.dx = paramFloat4;
-    }
-
-    TransformMirror(Main3D.1 param1)
-    {
-      this();
-    }
-  }
-
-  class FarActorFilter
-    implements ActorFilter
-  {
-    Point3d p3d = new Point3d();
-    Point3d p2d = new Point3d();
-    Point3d camp = new Point3d();
-
-    FarActorFilter()
-    {
-    }
-
-    private String lenToString(int paramInt)
-    {
-      String str;
-      if (paramInt >= 1000) str = paramInt / 1000 + "."; else str = ".";
-      paramInt %= 1000;
-      if (paramInt < 10) return str + "00";
-      if (paramInt < 100) return str + "0" + paramInt / 10;
-      return str + paramInt / 10;
-    }
-
-    private void drawPointer(int paramInt1, double paramDouble, int paramInt2, int paramInt3) {
-      double d1 = Math.atan2(paramInt3, paramInt2);
-      double d2 = Math.atan2(this.p2d.y - paramInt3, this.p2d.x - paramInt2);
-      if (this.p2d.z > 1.0D)
-        if (d2 > 0.0D) d2 = -3.141592653589793D + d2; else
-          d2 = 3.141592653589793D + d2;
-      double d3;
-      double d4;
-      if (d2 >= 0.0D) {
-        if (d2 <= d1) {
-          d3 = paramInt2;
-          d4 = Math.tan(d2) * paramInt2;
-        } else if (d2 <= 3.141592653589793D - d1) {
-          d4 = paramInt3;
-          d3 = Math.tan(1.570796326794897D - d2) * paramInt3;
-        } else {
-          d3 = -paramInt2;
-          d4 = -Math.tan(d2) * paramInt2;
-        }
-      }
-      else if (d2 >= -d1) {
-        d3 = paramInt2;
-        d4 = Math.tan(d2) * paramInt2;
-      } else if (d2 >= -3.141592653589793D + d1) {
-        d4 = -paramInt3;
-        d3 = -Math.tan(1.570796326794897D - d2) * paramInt3;
-      } else {
-        d3 = -paramInt2;
-        d4 = -Math.tan(d2) * paramInt2;
-      }
-
-      d3 += paramInt2;
-      d4 += paramInt3;
-      HUD.addPointer((float)d3, (float)d4, Army.color(paramInt1), (float)((1.0D - paramDouble / Main3D.this.iconDrawMax) * 0.8D + 0.2D), (float)d2);
-    }
-
-    public boolean isUse(Actor paramActor, double paramDouble)
-    {
-      if (paramActor == Main3D.this.iconFarViewActor) return false;
-      if (paramDouble <= 5.0D) return false;
-      int i = paramActor.getArmy();
-      if ((i == 0) && (!Main3D.this.isBomb(paramActor))) return false;
-      DotRange localDotRange = i == World.getPlayerArmy() ? Main3D.this.dotRangeFriendly : Main3D.this.dotRangeFoe;
-      double d1 = 1.0D;
-      double d2 = 0.078D + 1.2F / Main3D.FOVX;
-      if (Main3D.FOVX < 24.0F) d2 = 0.16D;
-      if (((paramActor instanceof ActorMesh)) && (((ActorMesh)paramActor).mesh() != null)) {
-        float f1 = ((ActorMesh)paramActor).mesh().visibilityR();
-        if (f1 > 0.0F) {
-          if (f1 > 100.0F) {
-            float f2 = ((ActorMesh)paramActor).collisionR();
-            if (f2 > 0.0F)
-              d1 = f2 * d2;
-          } else {
-            d1 = f1 * d2;
-          }
-        }
-      }
-      if ((paramActor instanceof Aircraft)) {
-        if (d1 < 0.65D) d1 = 0.65D;
-        if (d1 > 2.2D) d1 = 2.2D; 
-      }
-      else {
-        d1 *= 1.2D;
-      }
-      Main3D.this.iconDrawMax = localDotRange.dot(d1);
-      if (paramDouble > Main3D.this.iconDrawMax) return false;
-
-      paramActor.pos.getRender(this.p3d);
-      if (!Main3D.this.project2d_cam(this.p3d, this.p2d)) return false;
-      if ((this.p2d.z > 1.0D) || (this.p2d.x < Main3D.this.iconClipX0) || (this.p2d.x > Main3D.this.iconClipX1) || (this.p2d.y < Main3D.this.iconClipY0) || (this.p2d.y > Main3D.this.iconClipY1))
-      {
-        if (Main3D.this.bRenderMirror) return false;
-        if (!(paramActor instanceof Aircraft)) return false;
-        if (Main3D.this.isViewInsideShow()) return false;
-        if (World.cur().diffCur.No_Icons) return false;
-        if (Main3D.this.iRenderIndx == 0)
-          drawPointer(i, paramDouble, Main3D.this.render2D.getViewPortWidth() / 2, Main3D.this.render2D.getViewPortHeight() / 2);
-        return false;
-      }
-      int j = (int)(this.p2d.x - 1.0D);
-      int k = (int)(this.p2d.y - 0.5D);
-      int m = 8355711;
-      int n = 255;
-      int i1 = 0;
-      if (Main3D.this.bEnableFog) {
-        Render.enableFog(true);
-        m = Landscape.getFogRGBA((float)this.p3d.x, (float)this.p3d.y, (float)this.p3d.z);
-        i1 = m >>> 24;
-        n -= i1;
-        Render.enableFog(false);
-      }
-      int i2 = ((int)(localDotRange.alphaDot(paramDouble * 2.2D, d1) * 255.0D) & 0xFF) << 24;
-      int i3 = ((int)(localDotRange.alphaDot(paramDouble, d1) * 255.0D) & 0xFF) << 24;
-      int i4 = i2 | (Main3D.iconFarColor & 0xFF) * n + (m & 0xFF) * i1 >>> 8 | (Main3D.iconFarColor >>> 8 & 0xFF) * n + (m >>> 8 & 0xFF) * i1 >>> 8 << 8 | (Main3D.iconFarColor >>> 16 & 0xFF) * n + (m >>> 16 & 0xFF) * i1 >>> 8 << 16;
-
-      int i5 = i3 | (Main3D.iconFarColor >>> 1 & 0x3F) * n + (m >>> 0 & 0xFF) * i1 >>> 8 | (Main3D.iconFarColor >>> 9 & 0x3F) * n + (m >>> 8 & 0xFF) * i1 >>> 8 << 8 | (Main3D.iconFarColor >>> 17 & 0x3F) * n + (m >>> 16 & 0xFF) * i1 >>> 8 << 16;
-
-      if ((paramActor instanceof Aircraft)) {
-        if (paramDouble > Main3D.this.iconAirDrawMin) {
-          Render.drawTile(j, k + 1.0F, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
-
-          Render.drawTile(j, k, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
+                s = ".";
+            i %= 1000;
+            if(i < 10)
+                return s + "00";
+            if(i < 100)
+                return s + "0" + i / 10;
+            else
+                return s + i / 10;
         }
 
-      }
-      else if (Main3D.this.isBomb(paramActor)) {
-        if (paramDouble > Main3D.this.iconSmallDrawMin) {
-          Render.drawTile(j, k + 1.0F, 1.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
-
-          Render.drawTile(j, k, 1.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
-        }
-
-      }
-      else if (paramDouble > Main3D.this.iconGroundDrawMin) {
-        Render.drawTile(j, k + 1.0F, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i4, 0.0F, 1.0F, 1.0F, -1.0F);
-
-        Render.drawTile(j, k, 2.0F, 1.0F, (float)(-this.p2d.z), Main3D.this.iconFarMat, i5, 0.0F, 1.0F, 1.0F, -1.0F);
-      }
-
-      k += 8;
-
-      if ((paramActor == Main3D.this.iconFarPadlockActor) && (Main3D.this.iconTypes() != 0)) {
-        Main3D.this.iconFarPadlockItem.set(localDotRange.colorIcon(paramDouble, i, n), j, k, 0, (float)(-this.p2d.z), "");
-        Main3D.this.iconFarPadlockItem.bGround = (!(paramActor instanceof Aircraft));
-        if (World.cur().diffCur.No_Icons) {
-          int i6 = ((int)(localDotRange.alphaIcon(paramDouble) * n) & 0xFF) << 24;
-          Main3D.this.iconFarPadlockItem.color = (i6 | 0xFF00);
-        }
-      }
-
-      if (!(paramActor instanceof Aircraft)) return false;
-      if (World.cur().diffCur.No_Icons) return false;
-      if (Main3D.this.iconTypes() == 0) return false;
-      if (paramDouble >= localDotRange.icon()) return false;
-
-      String str1 = null;
-      String str2 = null;
-      String str3 = null;
-      switch (Main3D.this.iconTypes()) {
-      case 3:
-      default:
-        if (paramDouble > localDotRange.type()) break;
-        str1 = Property.stringValue(paramActor.getClass(), Main3D.this.iconFarFinger, null);
-        if (str1 != null) break;
-        str1 = paramActor.getClass().getName();
-        int i7 = str1.lastIndexOf('.');
-        str1 = str1.substring(i7 + 1);
-        Property.set(paramActor.getClass(), "iconFar_shortClassName", str1);
-      case 2:
-        if (paramDouble <= localDotRange.id())
-          str2 = ((Aircraft)paramActor).typedName();
-        if ((Mission.isNet()) && (((NetAircraft)paramActor).isNetPlayer()) && (i == World.getPlayerArmy()) && (paramDouble <= localDotRange.name()))
+        private void drawPointer(int i, double d, int j, int k)
         {
-          localObject = ((NetAircraft)paramActor).netUser();
-          if (str2 != null)
-            str2 = str2 + " " + ((NetUser)localObject).uniqueName();
-          else
-            str2 = ((NetUser)localObject).uniqueName(); 
+            double d1 = java.lang.Math.atan2(k, j);
+            double d2 = java.lang.Math.atan2(p2d.y - (double)k, p2d.x - (double)j);
+            if(p2d.z > 1.0D)
+                if(d2 > 0.0D)
+                    d2 = -3.1415926535897931D + d2;
+                else
+                    d2 = 3.1415926535897931D + d2;
+            double d3;
+            double d4;
+            if(d2 >= 0.0D)
+            {
+                if(d2 <= d1)
+                {
+                    d3 = j;
+                    d4 = java.lang.Math.tan(d2) * (double)j;
+                } else
+                if(d2 <= 3.1415926535897931D - d1)
+                {
+                    d4 = k;
+                    d3 = java.lang.Math.tan(1.5707963267948966D - d2) * (double)k;
+                } else
+                {
+                    d3 = -j;
+                    d4 = -java.lang.Math.tan(d2) * (double)j;
+                }
+            } else
+            if(d2 >= -d1)
+            {
+                d3 = j;
+                d4 = java.lang.Math.tan(d2) * (double)j;
+            } else
+            if(d2 >= -3.1415926535897931D + d1)
+            {
+                d4 = -k;
+                d3 = -java.lang.Math.tan(1.5707963267948966D - d2) * (double)k;
+            } else
+            {
+                d3 = -j;
+                d4 = -java.lang.Math.tan(d2) * (double)j;
+            }
+            d3 += j;
+            d4 += k;
+            com.maddox.il2.game.HUD.addPointer((float)d3, (float)d4, com.maddox.il2.ai.Army.color(i), (float)((1.0D - d / iconDrawMax) * 0.80000000000000004D + 0.20000000000000001D), (float)d2);
         }
-      case 1:
-      }
-      if (paramDouble <= localDotRange.range()) {
-        str3 = lenToString((int)paramDouble);
-      }
-      Object localObject = null;
-      if (str3 != null)
-        localObject = str3;
-      if (str1 != null) {
-        if (localObject != null) localObject = (String)localObject + " " + str1; else
-          localObject = str1;
-      }
-      if (str2 != null) {
-        if (localObject != null) localObject = (String)localObject + ":" + str2; else {
-          localObject = str2;
+
+        public boolean isUse(com.maddox.il2.engine.Actor actor, double d)
+        {
+            if(actor == iconFarViewActor)
+                return false;
+            if(d <= 5D)
+                return false;
+            int i = actor.getArmy();
+            if(i == 0 && !isBomb(actor))
+                return false;
+            com.maddox.il2.game.DotRange dotrange = i != com.maddox.il2.ai.World.getPlayerArmy() ? dotRangeFoe : dotRangeFriendly;
+            double d1 = 1.0D;
+            double d2 = 0.078D + (double)(1.2F / com.maddox.il2.game.Main3D.FOVX);
+            if(com.maddox.il2.game.Main3D.FOVX < 24F)
+                d2 = 0.16D;
+            if((actor instanceof com.maddox.il2.engine.ActorMesh) && ((com.maddox.il2.engine.ActorMesh)actor).mesh() != null)
+            {
+                float f = ((com.maddox.il2.engine.ActorMesh)actor).mesh().visibilityR();
+                if(f > 0.0F)
+                    if(f > 100F)
+                    {
+                        float f1 = ((com.maddox.il2.engine.ActorMesh)actor).collisionR();
+                        if(f1 > 0.0F)
+                            d1 = (double)f1 * d2;
+                    } else
+                    {
+                        d1 = (double)f * d2;
+                    }
+            }
+            if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            {
+                if(d1 < 0.65000000000000002D)
+                    d1 = 0.65000000000000002D;
+                if(d1 > 2.2000000000000002D)
+                    d1 = 2.2000000000000002D;
+            } else
+            {
+                d1 *= 1.2D;
+            }
+            iconDrawMax = dotrange.dot(d1);
+            if(d > iconDrawMax)
+                return false;
+            actor.pos.getRender(p3d);
+            if(!project2d_cam(p3d, p2d))
+                return false;
+            if(p2d.z > 1.0D || p2d.x < iconClipX0 || p2d.x > iconClipX1 || p2d.y < iconClipY0 || p2d.y > iconClipY1)
+            {
+                if(bRenderMirror)
+                    return false;
+                if(!(actor instanceof com.maddox.il2.objects.air.Aircraft))
+                    return false;
+                if(isViewInsideShow())
+                    return false;
+                if(com.maddox.il2.ai.World.cur().diffCur.No_Icons)
+                    return false;
+                if(iRenderIndx == 0)
+                    drawPointer(i, d, render2D.getViewPortWidth() / 2, render2D.getViewPortHeight() / 2);
+                return false;
+            }
+            int j = (int)(p2d.x - 1.0D);
+            int k = (int)(p2d.y - 0.5D);
+            int l = 0x7f7f7f;
+            int i1 = 255;
+            int j1 = 0;
+            if(bEnableFog)
+            {
+                com.maddox.il2.engine.Render.enableFog(true);
+                l = com.maddox.il2.engine.Landscape.getFogRGBA((float)p3d.x, (float)p3d.y, (float)p3d.z);
+                j1 = l >>> 24;
+                i1 -= j1;
+                com.maddox.il2.engine.Render.enableFog(false);
+            }
+            int k1 = ((int)(dotrange.alphaDot(d * 2.2000000000000002D, d1) * 255D) & 0xff) << 24;
+            int l1 = ((int)(dotrange.alphaDot(d, d1) * 255D) & 0xff) << 24;
+            int i2 = k1 | (com.maddox.il2.game.Main3D.iconFarColor & 0xff) * i1 + (l & 0xff) * j1 >>> 8 | ((com.maddox.il2.game.Main3D.iconFarColor >>> 8 & 0xff) * i1 + (l >>> 8 & 0xff) * j1 >>> 8) << 8 | ((com.maddox.il2.game.Main3D.iconFarColor >>> 16 & 0xff) * i1 + (l >>> 16 & 0xff) * j1 >>> 8) << 16;
+            int j2 = l1 | (com.maddox.il2.game.Main3D.iconFarColor >>> 1 & 0x3f) * i1 + (l >>> 0 & 0xff) * j1 >>> 8 | ((com.maddox.il2.game.Main3D.iconFarColor >>> 9 & 0x3f) * i1 + (l >>> 8 & 0xff) * j1 >>> 8) << 8 | ((com.maddox.il2.game.Main3D.iconFarColor >>> 17 & 0x3f) * i1 + (l >>> 16 & 0xff) * j1 >>> 8) << 16;
+            if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            {
+                if(d > iconAirDrawMin)
+                {
+                    com.maddox.il2.engine.Render.drawTile(j, (float)k + 1.0F, 2.0F, 1.0F, (float)(-p2d.z), iconFarMat, i2, 0.0F, 1.0F, 1.0F, -1F);
+                    com.maddox.il2.engine.Render.drawTile(j, k, 2.0F, 1.0F, (float)(-p2d.z), iconFarMat, j2, 0.0F, 1.0F, 1.0F, -1F);
+                }
+            } else
+            if(isBomb(actor))
+            {
+                if(d > iconSmallDrawMin)
+                {
+                    com.maddox.il2.engine.Render.drawTile(j, (float)k + 1.0F, 1.0F, 1.0F, (float)(-p2d.z), iconFarMat, i2, 0.0F, 1.0F, 1.0F, -1F);
+                    com.maddox.il2.engine.Render.drawTile(j, k, 1.0F, 1.0F, (float)(-p2d.z), iconFarMat, j2, 0.0F, 1.0F, 1.0F, -1F);
+                }
+            } else
+            if(d > iconGroundDrawMin)
+            {
+                com.maddox.il2.engine.Render.drawTile(j, (float)k + 1.0F, 2.0F, 1.0F, (float)(-p2d.z), iconFarMat, i2, 0.0F, 1.0F, 1.0F, -1F);
+                com.maddox.il2.engine.Render.drawTile(j, k, 2.0F, 1.0F, (float)(-p2d.z), iconFarMat, j2, 0.0F, 1.0F, 1.0F, -1F);
+            }
+            k += 8;
+            if(actor == iconFarPadlockActor && iconTypes() != 0)
+            {
+                iconFarPadlockItem.set(dotrange.colorIcon(d, i, i1), j, k, 0, (float)(-p2d.z), "");
+                iconFarPadlockItem.bGround = !(actor instanceof com.maddox.il2.objects.air.Aircraft);
+                if(com.maddox.il2.ai.World.cur().diffCur.No_Icons)
+                {
+                    int k2 = ((int)(dotrange.alphaIcon(d) * (double)i1) & 0xff) << 24;
+                    iconFarPadlockItem.color = k2 | 0xff00;
+                }
+            }
+            if(!(actor instanceof com.maddox.il2.objects.air.Aircraft))
+                return false;
+            if(com.maddox.il2.ai.World.cur().diffCur.No_Icons)
+                return false;
+            if(iconTypes() == 0)
+                return false;
+            if(d >= dotrange.icon())
+                return false;
+            java.lang.String s = null;
+            java.lang.String s1 = null;
+            java.lang.String s2 = null;
+            switch(iconTypes())
+            {
+            case 3: // '\003'
+            default:
+                if(d <= dotrange.type())
+                {
+                    s = com.maddox.rts.Property.stringValue(actor.getClass(), iconFarFinger, null);
+                    if(s == null)
+                    {
+                        s = actor.getClass().getName();
+                        int l2 = s.lastIndexOf('.');
+                        s = s.substring(l2 + 1);
+                        com.maddox.rts.Property.set(actor.getClass(), "iconFar_shortClassName", s);
+                    }
+                }
+                // fall through
+
+            case 2: // '\002'
+                if(d <= dotrange.id())
+                    s1 = ((com.maddox.il2.objects.air.Aircraft)actor).typedName();
+                if(com.maddox.il2.game.Mission.isNet() && ((com.maddox.il2.objects.air.NetAircraft)actor).isNetPlayer() && i == com.maddox.il2.ai.World.getPlayerArmy() && d <= dotrange.name())
+                {
+                    com.maddox.il2.net.NetUser netuser = ((com.maddox.il2.objects.air.NetAircraft)actor).netUser();
+                    if(s1 != null)
+                        s1 = s1 + " " + netuser.uniqueName();
+                    else
+                        s1 = netuser.uniqueName();
+                }
+                break;
+
+            case 1: // '\001'
+                break;
+            }
+            if(d <= dotrange.range())
+                s2 = lenToString((int)d);
+            java.lang.String s3 = null;
+            if(s2 != null)
+                s3 = s2;
+            if(s != null)
+                if(s3 != null)
+                    s3 = s3 + " " + s;
+                else
+                    s3 = s;
+            if(s1 != null)
+                if(s3 != null)
+                    s3 = s3 + ":" + s1;
+                else
+                    s3 = s1;
+            if(s3 != null)
+                insertFarActorItem(dotrange.colorIcon(d, i, i1), j, k, (float)(-p2d.z), s3);
+            return false;
         }
-      }
-      if (localObject != null)
-        Main3D.this.insertFarActorItem(localDotRange.colorIcon(paramDouble, i, n), j, k, (float)(-this.p2d.z), (String)localObject);
-      return false;
-    }
-  }
 
-  static class FarActorItem
-  {
-    public int color;
-    public int x;
-    public int y;
-    public int dx;
-    public float z;
-    public String str;
-    public boolean bGround;
+        com.maddox.JGP.Point3d p3d;
+        com.maddox.JGP.Point3d p2d;
+        com.maddox.JGP.Point3d camp;
 
-    public void set(int paramInt1, int paramInt2, int paramInt3, int paramInt4, float paramFloat, String paramString)
-    {
-      this.color = paramInt1;
-      this.x = paramInt2;
-      this.y = paramInt3;
-      this.dx = paramInt4;
-      this.z = paramFloat;
-      this.str = paramString;
-    }
-    public FarActorItem(int paramInt1, int paramInt2, int paramInt3, int paramInt4, float paramFloat, String paramString) {
-      set(paramInt1, paramInt2, paramInt3, paramInt4, paramFloat, paramString);
-    }
-  }
-
-  public class RenderMap2D extends Render
-  {
-    protected void contextResize(int paramInt1, int paramInt2)
-    {
-      super.contextResize(paramInt1, paramInt2);
-      Main3D.this.renderMap2DcontextResize(paramInt1, paramInt2);
-      if (Main3D.this.land2DText != null)
-        Main3D.this.land2DText.contextResized(); 
-    }
-
-    public void preRender() {
-      Main3D.this.preRenderMap2D();
-      if ((Main.state() != null) && (Main.state().id() == 18)) {
-        GUIBuilder localGUIBuilder = (GUIBuilder)Main.state();
-        localGUIBuilder.builder.preRenderMap2D();
-      }
-    }
-
-    public void render() {
-      if (Main3D.this.land2D != null)
-        Main3D.this.land2D.render();
-      if ((Main.state() != null) && (Main.state().id() == 18)) {
-        GUIBuilder localGUIBuilder = (GUIBuilder)Main.state();
-        localGUIBuilder.builder.renderMap2D();
-      } else if (Main3D.this.land2DText != null) {
-        Main3D.this.land2DText.render();
-      }
-
-      Main3D.this.renderMap2D();
-    }
-
-    public RenderMap2D(float arg2) {
-      this(Engine.rendersMain(), localObject);
-    }
-
-    public RenderMap2D(Renders paramFloat, float arg3) {
-      super(localObject);
-      useClearDepth(false);
-      setClearColor(new Color4f(0.5F, 0.78F, 0.92F, 1.0F));
-    }
-  }
-
-  public class RenderHUD extends Render
-  {
-    protected void contextResize(int paramInt1, int paramInt2)
-    {
-      super.contextResize(paramInt1, paramInt2);
-      Main3D.this.renderHUDcontextResize(paramInt1, paramInt2);
-      Main3D.this.hud.contextResize(paramInt1, paramInt2);
-      renders().setCommonClearColor((this.viewPort[0] != 0.0F) || (this.viewPort[1] != 0.0F));
-    }
-    public void preRender() {
-      Main3D.this.hud.preRender();
-      Main3D.this.preRenderHUD();
-    }
-
-    public void render() {
-      Main3D.this.hud.render();
-      Main3D.this.renderHUD();
-    }
-
-    public RenderHUD(float arg2) {
-      this(Engine.rendersMain(), localObject);
-    }
-
-    public RenderHUD(Renders paramFloat, float arg3) {
-      super(localObject);
-      useClearDepth(false);
-      useClearColor(false);
-    }
-  }
-
-  public class RenderCockpitMirror extends Render
-  {
-    protected void contextResize(int paramInt1, int paramInt2)
-    {
-      setViewPort(new int[] { Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight() });
-      if (this.camera != null)
-        ((Camera3D)this.camera).set(((Camera3D)this.camera).FOV(), Main3D.this.mirrorWidth() / Main3D.this.mirrorHeight()); 
-    }
-
-    public boolean isShow() {
-      if ((Main3D.this.viewMirror > 0) && (Main3D.this.renderCockpit.isShow()))
-        return Main3D.this.cockpitCur.isExistMirror();
-      return false;
-    }
-    public void preRender() {
-      if ((Actor.isValid(Main3D.this.cockpitCur)) && (Main3D.this.cockpitCur.isFocused()))
-        Main3D.this.cockpitCur.preRender(true); 
-    }
-
-    public void render() {
-      if ((Actor.isValid(Main3D.this.cockpitCur)) && (Main3D.this.cockpitCur.isFocused())) {
-        Main3D.this.cockpitCur.render(true);
-        Render.flush();
-        Main3D.this.cockpitCur.grabMirrorFromScreen(Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight());
-      }
-    }
-
-    public RenderCockpitMirror(float arg2) {
-      super(localObject);
-      useClearDepth(true);
-      useClearColor(false);
-      contextResized();
-    }
-  }
-
-  public class RenderCockpit extends Render
-  {
-    int _indx = 0;
-
-    public void preRender() { Main3D.access$602(Main3D.this, this._indx);
-      if ((Actor.isValid(Main3D.this.cockpitCur)) && (Main3D.this.cockpitCur.isFocused()))
-        Main3D.this.cockpitCur.preRender(false);
-      Main3D.access$602(Main3D.this, 0); }
-
-    public void render() {
-      Main3D.access$602(Main3D.this, this._indx);
-      if ((Actor.isValid(Main3D.this.cockpitCur)) && (Main3D.this.cockpitCur.isFocused())) {
-        Main3D.this.cockpitCur.render(false);
-      }
-      Main3D.access$602(Main3D.this, 0);
-    }
-    public void getAspectViewPort(float[] paramArrayOfFloat) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfFloat); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfFloat);
-    }
-    public void getAspectViewPort(int[] paramArrayOfInt) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfInt); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfInt);
-    }
-    public boolean isShow() {
-      if (this._indx == 0) return super.isShow();
-      return (Config.cur.isUse3Renders()) && (Main3D.this.renderCockpit.isShow());
-    }
-    public RenderCockpit(int paramFloat, float arg3) {
-      this(paramFloat, Engine.rendersMain(), localObject);
-    }
-    public RenderCockpit(int paramRenders, Renders paramFloat, float arg4) {
-      super(localObject);
-      this._indx = paramRenders;
-      useClearDepth(true);
-      useClearColor(false);
-      contextResized();
-    }
-  }
-
-  public class Render2DMirror extends Render
-  {
-    protected void contextResize(int paramInt1, int paramInt2)
-    {
-      setViewPort(new int[] { Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight() });
-      if (this.camera != null)
-        ((CameraOrtho2D)this.camera).set(0.0F, Main3D.this.mirrorWidth(), 0.0F, Main3D.this.mirrorHeight()); 
-    }
-
-    public boolean isShow() {
-      return (Main3D.this.viewMirror > 0) && (Main3D.this.render3D0.isShow()) && (!Main3D.this.isViewOutside()) && (Main3D.this.cockpitCur.isExistMirror());
-    }
-
-    public void render()
-    {
-      Main3D.access$1202(Main3D.this, true);
-      if (Main3D.this.bEnableFog) Render.enableFog(false);
-      Main3D.this.drawFarActors();
-      if (Main3D.this.bEnableFog) Render.enableFog(true);
-      Main3D.access$1202(Main3D.this, false);
-    }
-    public Render2DMirror(float arg2) {
-      super(localObject);
-      useClearDepth(false);
-      useClearColor(false);
-      contextResized();
-    }
-  }
-
-  public class Render3D1Mirror extends Main3D.Render3DMirror
-  {
-    public void render()
-    {
-      Main3D.access$1202(Main3D.this, true);
-      Main3D.this.doRender3D1(this);
-      Main3D.access$1202(Main3D.this, false);
-    }
-    public Render3D1Mirror(float arg2) {
-      super(localObject);
-      useClearColor(false);
-      useClearDepth(false);
-      useClearStencil(false);
-    }
-  }
-
-  public class Render3D0Mirror extends Main3D.Render3DMirror
-  {
-    public void preRender()
-    {
-      Main3D.access$1202(Main3D.this, true);
-      Main3D.this.doPreRender3D(this);
-      Main3D.access$1202(Main3D.this, false);
-    }
-    public void render() {
-      this.camera.activateWorldMode(0);
-      gl.GetDoublev(2982, Main3D.this._modelMatrix3DMirror);
-      gl.GetDoublev(2983, Main3D.this._projMatrix3DMirror);
-      gl.GetIntegerv(2978, Main3D.this._viewportMirror);
-      this.camera.deactivateWorldMode();
-      Main3D.access$1202(Main3D.this, true);
-      Main3D.this.doRender3D0(this);
-      Main3D.access$1202(Main3D.this, false);
-    }
-    public Render3D0Mirror(float arg2) {
-      super(localObject);
-      setClearColor(new Color4f(0.5F, 0.78F, 0.92F, 1.0F));
-      useClearStencil(true);
-    }
-  }
-
-  public class Render3DMirror extends Render
-  {
-    protected void contextResize(int paramInt1, int paramInt2)
-    {
-      setViewPort(new int[] { Main3D.this.mirrorX0(), Main3D.this.mirrorY0(), Main3D.this.mirrorWidth(), Main3D.this.mirrorHeight() });
-      if (this.camera != null)
-        ((Camera3D)this.camera).set(((Camera3D)this.camera).FOV(), Main3D.this.mirrorWidth() / Main3D.this.mirrorHeight()); 
-    }
-
-    public boolean isShow() {
-      return (Main3D.this.viewMirror > 0) && (Main3D.this.render3D0.isShow()) && (!Main3D.this.isViewOutside()) && (Main3D.this.cockpitCur.isExistMirror());
-    }
-
-    public Render3DMirror(float arg2)
-    {
-      super(localObject);
-      contextResized();
-    }
-  }
-
-  public class Render2D extends Render
-  {
-    int _indx = 0;
-
-    public void render() { Main3D.access$602(Main3D.this, this._indx);
-      if (Main3D.this.bEnableFog) Render.enableFog(false);
-      Main3D.this.drawFarActors();
-      if (Main3D.this.bEnableFog) Render.enableFog(true);
-      Main3D.access$602(Main3D.this, 0); }
-
-    public void getAspectViewPort(float[] paramArrayOfFloat) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfFloat); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfFloat);
-    }
-    public void getAspectViewPort(int[] paramArrayOfInt) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfInt); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfInt);
-    }
-    public boolean isShow() {
-      if (this._indx == 0) return super.isShow();
-      if ((Main.state() != null) && (Main.state().id() == 18)) return false;
-      return (Config.cur.isUse3Renders()) && (Main3D.this.render2D.isShow());
-    }
-    public Render2D(int paramFloat, float arg3) {
-      this(paramFloat, Engine.rendersMain(), localObject);
-    }
-    public Render2D(int paramRenders, Renders paramFloat, float arg4) {
-      super(localObject);
-      this._indx = paramRenders;
-      useClearDepth(false);
-      useClearColor(false);
-      contextResized();
-    }
-  }
-
-  public class Render3D1 extends Render
-  {
-    int _indx = 0;
-
-    public void preRender() { if (this._indx == 0)
-        Main3D.this.drawTime(); }
-
-    public void render() {
-      Main3D.access$602(Main3D.this, this._indx);
-      Main3D.this.doRender3D1(this);
-      if ((Main.state() != null) && (Main.state().id() == 18) && (Main3D.this.iRenderIndx == 0)) {
-        GUIBuilder localGUIBuilder = (GUIBuilder)Main.state();
-        localGUIBuilder.builder.render3D();
-      }
-      Main3D.access$602(Main3D.this, 0);
-    }
-    public void getAspectViewPort(float[] paramArrayOfFloat) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfFloat); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfFloat);
-    }
-    public void getAspectViewPort(int[] paramArrayOfInt) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfInt); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfInt);
-    }
-    public boolean isShow() {
-      if (this._indx == 0) return super.isShow();
-      if ((Main.state() != null) && (Main.state().id() == 18)) return false;
-      return (Config.cur.isUse3Renders()) && (Main3D.this.render3D1.isShow());
-    }
-    public Render3D1(int paramFloat, float arg3) {
-      this(paramFloat, Engine.rendersMain(), localObject);
-    }
-    public Render3D1(int paramRenders, Renders paramFloat, float arg4) {
-      super(localObject);
-      this._indx = paramRenders;
-      useClearColor(false);
-      useClearDepth(false);
-      useClearStencil(false);
-      contextResized();
-    }
-  }
-
-  public class Render3D0 extends Render
-  {
-    int _indx = 0;
-
-    public void preRender() { Main3D.access$602(Main3D.this, this._indx);
-      if (this._indx == 0)
-        Main3D.this.shadowPairsClear();
-      Main3D.this.doPreRender3D(this);
-      Main3D.access$602(Main3D.this, 0); }
-
-    public void render() {
-      Main3D.access$602(Main3D.this, this._indx);
-      this.camera.activateWorldMode(0);
-      gl.GetDoublev(2982, Main3D.this._modelMatrix3D[Main3D.this.iRenderIndx]);
-      gl.GetDoublev(2983, Main3D.this._projMatrix3D[Main3D.this.iRenderIndx]);
-      gl.GetIntegerv(2978, Main3D.this._viewport[Main3D.this.iRenderIndx]);
-      this.camera.deactivateWorldMode();
-      Main3D.this.doRender3D0(this);
-      Main3D.access$602(Main3D.this, 0);
-    }
-    public void getAspectViewPort(float[] paramArrayOfFloat) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfFloat); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfFloat);
-    }
-    public void getAspectViewPort(int[] paramArrayOfInt) {
-      if (this._indx == 0) { super.getAspectViewPort(paramArrayOfInt); return; }
-      Main3D.this._getAspectViewPort(this._indx, paramArrayOfInt);
-    }
-    public boolean isShow() {
-      if (this._indx == 0) return super.isShow();
-      if ((Main.state() != null) && (Main.state().id() == 18)) return false;
-      return (Config.cur.isUse3Renders()) && (Main3D.this.render3D0.isShow());
-    }
-    public Render3D0(int paramFloat, float arg3) {
-      this(paramFloat, Engine.rendersMain(), localObject);
-    }
-    public Render3D0(int paramRenders, Renders paramFloat, float arg4) {
-      super(localObject);
-      this._indx = paramRenders;
-      setClearColor(new Color4f(0.5F, 0.78F, 0.92F, 1.0F));
-      useClearStencil(true);
-      contextResized();
-    }
-  }
-
-  class DrwArray
-  {
-    ArrayList drwSolidPlate = new ArrayList();
-    ArrayList drwTranspPlate = new ArrayList();
-    ArrayList drwShadowPlate = new ArrayList();
-    ArrayList drwSolid = new ArrayList();
-    ArrayList drwTransp = new ArrayList();
-    ArrayList drwShadow = new ArrayList();
-
-    DrwArray()
-    {
-    }
-  }
-
-  class ShadowPairsFilter
-    implements ActorFilter
-  {
-    ShadowPairsFilter()
-    {
-    }
-
-    public boolean isUse(Actor paramActor, double paramDouble)
-    {
-      if ((paramActor != Main3D.this.shadowPairsCur1) && ((paramActor instanceof ActorHMesh)) && (paramDouble <= Main3D.shadowPairsR2) && 
-        (((ActorHMesh)paramActor).hierMesh() != null)) {
-        Main3D.this.shadowPairsList2.add(Main3D.this.shadowPairsCur1.hierMesh());
-        Main3D.this.shadowPairsList2.add(((ActorHMesh)paramActor).hierMesh());
-      }
-
-      return false;
-    }
-  }
-
-  public class Render3D0R extends Render
-  {
-    ArrayList drwSolidL = new ArrayList();
-    ArrayList drwTranspL = new ArrayList();
-    ArrayList drwSolid = new ArrayList();
-    ArrayList drwTransp = new ArrayList();
-
-    public void preRender() { if (Engine.land().ObjectsReflections_Begin(0) == 1) {
-        getCamera().pos.getRender(Main3D.this.__p, Main3D.this.__o);
-        boolean bool = true;
-        if (Landscape.isExistMeshs()) {
-          this.drwSolid.clear();
-          this.drwTransp.clear();
-          Engine.drawEnv().preRender(Main3D.this.__p.x, Main3D.this.__p.y, Main3D.this.__p.z, World.MaxVisualDistance * 0.5F, 1, this.drwSolidL, this.drwTranspL, null, bool);
-
-          int i = this.drwSolidL.size();
-          Actor localActor;
-          for (int j = 0; j < i; j++) {
-            localActor = (Actor)this.drwSolidL.get(j);
-            if ((localActor instanceof ActorLandMesh))
-              this.drwSolid.add(localActor);
-          }
-          i = this.drwTranspL.size();
-          for (j = 0; j < i; j++) {
-            localActor = (Actor)this.drwTranspL.get(j);
-            if ((localActor instanceof ActorLandMesh))
-              this.drwTransp.add(localActor);
-          }
-          bool = false;
+        FarActorFilter()
+        {
+            p3d = new Point3d();
+            p2d = new Point3d();
+            camp = new Point3d();
         }
-        Engine.drawEnv().preRender(Main3D.this.__p.x, Main3D.this.__p.y, Main3D.this.__p.z, World.MaxVisualDistance * 0.5F, 14, this.drwSolid, this.drwTransp, null, bool);
-
-        Engine.land().ObjectsReflections_End();
-      } }
-
-    public void render() {
-      if (Engine.land().ObjectsReflections_Begin(1) == 1)
-      {
-        draw(this.drwSolid, this.drwTransp);
-
-        Engine.land().ObjectsReflections_End();
-      }
     }
 
-    public boolean isShow()
+    static class FarActorItem
     {
-      return (Main3D.this.bDrawLand) && (Main3D.this.render3D0.isShow());
-    }
-    public Render3D0R(float arg2) {
-      super(localObject);
-    }
-  }
 
-  public static class HookReflection extends HookRender
-  {
-    public boolean computeRenderPos(Actor paramActor, Loc paramLoc1, Loc paramLoc2)
+        public void set(int i, int j, int k, int l, float f, java.lang.String s)
+        {
+            color = i;
+            x = j;
+            y = k;
+            dx = l;
+            z = f;
+            str = s;
+        }
+
+        public int color;
+        public int x;
+        public int y;
+        public int dx;
+        public float z;
+        public java.lang.String str;
+        public boolean bGround;
+
+        public FarActorItem(int i, int j, int k, int l, float f, java.lang.String s)
+        {
+            set(i, j, k, l, f, s);
+        }
+    }
+
+    public class RenderMap2D extends com.maddox.il2.engine.Render
     {
-      computePos(paramActor, paramLoc1, paramLoc2);
-      return true;
-    }
-    public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2) {
-      Point3d localPoint3d = paramLoc1.getPoint();
-      Orient localOrient = paramLoc1.getOrient();
 
-      paramLoc2.set(paramLoc1);
-    }
-  }
+        protected void contextResize(int i, int j)
+        {
+            super.contextResize(i, j);
+            renderMap2DcontextResize(i, j);
+            if(land2DText != null)
+                land2DText.contextResized();
+        }
 
-  public static class Camera3DR extends Camera3D
-  {
-    public boolean activate(float paramFloat, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, int paramInt9, int paramInt10)
+        public void preRender()
+        {
+            preRenderMap2D();
+            if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18)
+            {
+                com.maddox.il2.gui.GUIBuilder guibuilder = (com.maddox.il2.gui.GUIBuilder)com.maddox.il2.game.Main.state();
+                guibuilder.builder.preRenderMap2D();
+            }
+        }
+
+        public void render()
+        {
+            if(land2D != null)
+                land2D.render();
+            if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18)
+            {
+                com.maddox.il2.gui.GUIBuilder guibuilder = (com.maddox.il2.gui.GUIBuilder)com.maddox.il2.game.Main.state();
+                guibuilder.builder.renderMap2D();
+            } else
+            if(land2DText != null)
+                land2DText.render();
+            renderMap2D();
+        }
+
+        public RenderMap2D(float f)
+        {
+            this(com.maddox.il2.engine.Engine.rendersMain(), f);
+        }
+
+        public RenderMap2D(com.maddox.il2.engine.Renders renders, float f)
+        {
+            super(renders, f);
+            useClearDepth(false);
+            setClearColor(new Color4f(0.5F, 0.78F, 0.92F, 1.0F));
+        }
+    }
+
+    public class RenderHUD extends com.maddox.il2.engine.Render
     {
-      Engine.land().ObjectsReflections_Begin(0);
-      return super.activate(paramFloat, paramInt1 / 2, paramInt2 / 2, paramInt3, paramInt4, paramInt5 / 2, paramInt6 / 2, paramInt7, paramInt8, paramInt9 / 2, paramInt10 / 2);
-    }
-  }
 
-  public class NetCamera3D extends Camera3D
-  {
-    public NetCamera3D()
+        protected void contextResize(int i, int j)
+        {
+            super.contextResize(i, j);
+            renderHUDcontextResize(i, j);
+            hud.contextResize(i, j);
+            renders().setCommonClearColor(viewPort[0] != 0.0F || viewPort[1] != 0.0F);
+        }
+
+        public void preRender()
+        {
+            hud.preRender();
+            preRenderHUD();
+        }
+
+        public void render()
+        {
+            hud.render();
+            renderHUD();
+        }
+
+        public RenderHUD(float f)
+        {
+            this(com.maddox.il2.engine.Engine.rendersMain(), f);
+        }
+
+        public RenderHUD(com.maddox.il2.engine.Renders renders, float f)
+        {
+            super(renders, f);
+            useClearDepth(false);
+            useClearColor(false);
+        }
+    }
+
+    public class RenderCockpitMirror extends com.maddox.il2.engine.Render
+    {
+
+        protected void contextResize(int i, int j)
+        {
+            setViewPort(new int[] {
+                mirrorX0(), mirrorY0(), mirrorWidth(), mirrorHeight()
+            });
+            if(camera != null)
+                ((com.maddox.il2.engine.Camera3D)camera).set(((com.maddox.il2.engine.Camera3D)camera).FOV(), (float)mirrorWidth() / (float)mirrorHeight());
+        }
+
+        public boolean isShow()
+        {
+            if(viewMirror > 0 && renderCockpit.isShow())
+                return cockpitCur.isExistMirror();
+            else
+                return false;
+        }
+
+        public void preRender()
+        {
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isFocused())
+                cockpitCur.preRender(true);
+        }
+
+        public void render()
+        {
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isFocused())
+            {
+                cockpitCur.render(true);
+                com.maddox.il2.engine.Render.flush();
+                cockpitCur.grabMirrorFromScreen(mirrorX0(), mirrorY0(), mirrorWidth(), mirrorHeight());
+            }
+        }
+
+        public RenderCockpitMirror(float f)
+        {
+            super(com.maddox.il2.engine.Engine.rendersMain(), f);
+            useClearDepth(true);
+            useClearColor(false);
+            contextResized();
+        }
+    }
+
+    public class RenderCockpit extends com.maddox.il2.engine.Render
+    {
+
+        public void preRender()
+        {
+            iRenderIndx = _indx;
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isFocused())
+                cockpitCur.preRender(false);
+            iRenderIndx = 0;
+        }
+
+        public void render()
+        {
+            iRenderIndx = _indx;
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isFocused())
+                cockpitCur.render(false);
+            iRenderIndx = 0;
+        }
+
+        public void getAspectViewPort(float af[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(af);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, af);
+                return;
+            }
+        }
+
+        public void getAspectViewPort(int ai[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(ai);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, ai);
+                return;
+            }
+        }
+
+        public boolean isShow()
+        {
+            if(_indx == 0)
+                return super.isShow();
+            else
+                return com.maddox.il2.engine.Config.cur.isUse3Renders() && renderCockpit.isShow();
+        }
+
+        int _indx;
+
+        public RenderCockpit(int i, float f)
+        {
+            this(i, com.maddox.il2.engine.Engine.rendersMain(), f);
+        }
+
+        public RenderCockpit(int i, com.maddox.il2.engine.Renders renders, float f)
+        {
+            super(renders, f);
+            _indx = 0;
+            _indx = i;
+            useClearDepth(true);
+            useClearColor(false);
+            contextResized();
+        }
+    }
+
+    public class Render2DMirror extends com.maddox.il2.engine.Render
+    {
+
+        protected void contextResize(int i, int j)
+        {
+            setViewPort(new int[] {
+                mirrorX0(), mirrorY0(), mirrorWidth(), mirrorHeight()
+            });
+            if(camera != null)
+                ((com.maddox.il2.engine.CameraOrtho2D)camera).set(0.0F, mirrorWidth(), 0.0F, mirrorHeight());
+        }
+
+        public boolean isShow()
+        {
+            return viewMirror > 0 && render3D0.isShow() && !isViewOutside() && cockpitCur.isExistMirror();
+        }
+
+        public void render()
+        {
+            bRenderMirror = true;
+            if(bEnableFog)
+                com.maddox.il2.engine.Render.enableFog(false);
+            drawFarActors();
+            if(bEnableFog)
+                com.maddox.il2.engine.Render.enableFog(true);
+            bRenderMirror = false;
+        }
+
+        public Render2DMirror(float f)
+        {
+            super(com.maddox.il2.engine.Engine.rendersMain(), f);
+            useClearDepth(false);
+            useClearColor(false);
+            contextResized();
+        }
+    }
+
+    public class Render3D1Mirror extends com.maddox.il2.game.Render3DMirror
+    {
+
+        public void render()
+        {
+            bRenderMirror = true;
+            doRender3D1(this);
+            bRenderMirror = false;
+        }
+
+        public Render3D1Mirror(float f)
+        {
+            super(f);
+            useClearColor(false);
+            useClearDepth(false);
+            useClearStencil(false);
+        }
+    }
+
+    public class Render3D0Mirror extends com.maddox.il2.game.Render3DMirror
+    {
+
+        public void preRender()
+        {
+            bRenderMirror = true;
+            doPreRender3D(this);
+            bRenderMirror = false;
+        }
+
+        public void render()
+        {
+            camera.activateWorldMode(0);
+            com.maddox.opengl.gl.GetDoublev(2982, _modelMatrix3DMirror);
+            com.maddox.opengl.gl.GetDoublev(2983, _projMatrix3DMirror);
+            com.maddox.opengl.gl.GetIntegerv(2978, _viewportMirror);
+            camera.deactivateWorldMode();
+            bRenderMirror = true;
+            doRender3D0(this);
+            bRenderMirror = false;
+        }
+
+        public Render3D0Mirror(float f)
+        {
+            super(f);
+            setClearColor(new Color4f(0.5F, 0.78F, 0.92F, 1.0F));
+            useClearStencil(true);
+        }
+    }
+
+    public class Render3DMirror extends com.maddox.il2.engine.Render
+    {
+
+        protected void contextResize(int i, int j)
+        {
+            setViewPort(new int[] {
+                mirrorX0(), mirrorY0(), mirrorWidth(), mirrorHeight()
+            });
+            if(camera != null)
+                ((com.maddox.il2.engine.Camera3D)camera).set(((com.maddox.il2.engine.Camera3D)camera).FOV(), (float)mirrorWidth() / (float)mirrorHeight());
+        }
+
+        public boolean isShow()
+        {
+            return viewMirror > 0 && render3D0.isShow() && !isViewOutside() && cockpitCur.isExistMirror();
+        }
+
+        public Render3DMirror(float f)
+        {
+            super(com.maddox.il2.engine.Engine.rendersMain(), f);
+            contextResized();
+        }
+    }
+
+    public class Render2D extends com.maddox.il2.engine.Render
+    {
+
+        public void render()
+        {
+            iRenderIndx = _indx;
+            if(bEnableFog)
+                com.maddox.il2.engine.Render.enableFog(false);
+            drawFarActors();
+            if(bEnableFog)
+                com.maddox.il2.engine.Render.enableFog(true);
+            iRenderIndx = 0;
+        }
+
+        public void getAspectViewPort(float af[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(af);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, af);
+                return;
+            }
+        }
+
+        public void getAspectViewPort(int ai[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(ai);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, ai);
+                return;
+            }
+        }
+
+        public boolean isShow()
+        {
+            if(_indx == 0)
+                return super.isShow();
+            if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18)
+                return false;
+            else
+                return com.maddox.il2.engine.Config.cur.isUse3Renders() && render2D.isShow();
+        }
+
+        int _indx;
+
+        public Render2D(int i, float f)
+        {
+            this(i, com.maddox.il2.engine.Engine.rendersMain(), f);
+        }
+
+        public Render2D(int i, com.maddox.il2.engine.Renders renders, float f)
+        {
+            super(renders, f);
+            _indx = 0;
+            _indx = i;
+            useClearDepth(false);
+            useClearColor(false);
+            contextResized();
+        }
+    }
+
+    public class Render3D1 extends com.maddox.il2.engine.Render
+    {
+
+        public void preRender()
+        {
+            if(_indx == 0)
+                drawTime();
+        }
+
+        public void render()
+        {
+            iRenderIndx = _indx;
+            doRender3D1(this);
+            if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18 && iRenderIndx == 0)
+            {
+                com.maddox.il2.gui.GUIBuilder guibuilder = (com.maddox.il2.gui.GUIBuilder)com.maddox.il2.game.Main.state();
+                guibuilder.builder.render3D();
+            }
+            iRenderIndx = 0;
+        }
+
+        public void getAspectViewPort(float af[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(af);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, af);
+                return;
+            }
+        }
+
+        public void getAspectViewPort(int ai[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(ai);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, ai);
+                return;
+            }
+        }
+
+        public boolean isShow()
+        {
+            if(_indx == 0)
+                return super.isShow();
+            if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18)
+                return false;
+            else
+                return com.maddox.il2.engine.Config.cur.isUse3Renders() && render3D1.isShow();
+        }
+
+        int _indx;
+
+        public Render3D1(int i, float f)
+        {
+            this(i, com.maddox.il2.engine.Engine.rendersMain(), f);
+        }
+
+        public Render3D1(int i, com.maddox.il2.engine.Renders renders, float f)
+        {
+            super(renders, f);
+            _indx = 0;
+            _indx = i;
+            useClearColor(false);
+            useClearDepth(false);
+            useClearStencil(false);
+            contextResized();
+        }
+    }
+
+    public class Render3D0 extends com.maddox.il2.engine.Render
+    {
+
+        public void preRender()
+        {
+            iRenderIndx = _indx;
+            if(_indx == 0)
+                shadowPairsClear();
+            doPreRender3D(this);
+            iRenderIndx = 0;
+        }
+
+        public void render()
+        {
+            iRenderIndx = _indx;
+            camera.activateWorldMode(0);
+            com.maddox.opengl.gl.GetDoublev(2982, _modelMatrix3D[iRenderIndx]);
+            com.maddox.opengl.gl.GetDoublev(2983, _projMatrix3D[iRenderIndx]);
+            com.maddox.opengl.gl.GetIntegerv(2978, _viewport[iRenderIndx]);
+            camera.deactivateWorldMode();
+            doRender3D0(this);
+            iRenderIndx = 0;
+        }
+
+        public void getAspectViewPort(float af[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(af);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, af);
+                return;
+            }
+        }
+
+        public void getAspectViewPort(int ai[])
+        {
+            if(_indx == 0)
+            {
+                super.getAspectViewPort(ai);
+                return;
+            } else
+            {
+                _getAspectViewPort(_indx, ai);
+                return;
+            }
+        }
+
+        public boolean isShow()
+        {
+            if(_indx == 0)
+                return super.isShow();
+            if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18)
+                return false;
+            else
+                return com.maddox.il2.engine.Config.cur.isUse3Renders() && render3D0.isShow();
+        }
+
+        int _indx;
+
+        public Render3D0(int i, float f)
+        {
+            this(i, com.maddox.il2.engine.Engine.rendersMain(), f);
+        }
+
+        public Render3D0(int i, com.maddox.il2.engine.Renders renders, float f)
+        {
+            super(renders, f);
+            _indx = 0;
+            _indx = i;
+            setClearColor(new Color4f(0.5F, 0.78F, 0.92F, 1.0F));
+            useClearStencil(true);
+            contextResized();
+        }
+    }
+
+    class DrwArray
+    {
+
+        java.util.ArrayList drwSolidPlate;
+        java.util.ArrayList drwTranspPlate;
+        java.util.ArrayList drwShadowPlate;
+        java.util.ArrayList drwSolid;
+        java.util.ArrayList drwTransp;
+        java.util.ArrayList drwShadow;
+
+        DrwArray()
+        {
+            drwSolidPlate = new ArrayList();
+            drwTranspPlate = new ArrayList();
+            drwShadowPlate = new ArrayList();
+            drwSolid = new ArrayList();
+            drwTransp = new ArrayList();
+            drwShadow = new ArrayList();
+        }
+    }
+
+    class ShadowPairsFilter
+        implements com.maddox.il2.engine.ActorFilter
+    {
+
+        public boolean isUse(com.maddox.il2.engine.Actor actor, double d)
+        {
+            if(actor != shadowPairsCur1 && (actor instanceof com.maddox.il2.engine.ActorHMesh) && d <= com.maddox.il2.game.Main3D.shadowPairsR2 && ((com.maddox.il2.engine.ActorHMesh)actor).hierMesh() != null)
+            {
+                shadowPairsList2.add(shadowPairsCur1.hierMesh());
+                shadowPairsList2.add(((com.maddox.il2.engine.ActorHMesh)actor).hierMesh());
+            }
+            return false;
+        }
+
+        ShadowPairsFilter()
+        {
+        }
+    }
+
+    public class Render3D0R extends com.maddox.il2.engine.Render
+    {
+
+        public void preRender()
+        {
+            if(com.maddox.il2.engine.Engine.land().ObjectsReflections_Begin(0) == 1)
+            {
+                getCamera().pos.getRender(__p, __o);
+                boolean flag = true;
+                if(com.maddox.il2.engine.Landscape.isExistMeshs())
+                {
+                    drwSolid.clear();
+                    drwTransp.clear();
+                    com.maddox.il2.ai.World _tmp = com.maddox.il2.engine.Engine.cur.world;
+                    com.maddox.il2.engine.Engine.drawEnv().preRender(__p.x, __p.y, __p.z, com.maddox.il2.ai.World.MaxVisualDistance * 0.5F, 1, drwSolidL, drwTranspL, null, flag);
+                    int i = drwSolidL.size();
+                    for(int j = 0; j < i; j++)
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)drwSolidL.get(j);
+                        if(actor instanceof com.maddox.il2.engine.ActorLandMesh)
+                            drwSolid.add(actor);
+                    }
+
+                    i = drwTranspL.size();
+                    for(int k = 0; k < i; k++)
+                    {
+                        com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)drwTranspL.get(k);
+                        if(actor1 instanceof com.maddox.il2.engine.ActorLandMesh)
+                            drwTransp.add(actor1);
+                    }
+
+                    flag = false;
+                }
+                com.maddox.il2.ai.World _tmp1 = com.maddox.il2.engine.Engine.cur.world;
+                com.maddox.il2.engine.Engine.drawEnv().preRender(__p.x, __p.y, __p.z, com.maddox.il2.ai.World.MaxVisualDistance * 0.5F, 14, drwSolid, drwTransp, null, flag);
+                com.maddox.il2.engine.Engine.land().ObjectsReflections_End();
+            }
+        }
+
+        public void render()
+        {
+            if(com.maddox.il2.engine.Engine.land().ObjectsReflections_Begin(1) == 1)
+            {
+                draw(drwSolid, drwTransp);
+                com.maddox.il2.engine.Engine.land().ObjectsReflections_End();
+            }
+        }
+
+        public boolean isShow()
+        {
+            return bDrawLand && render3D0.isShow();
+        }
+
+        java.util.ArrayList drwSolidL;
+        java.util.ArrayList drwTranspL;
+        java.util.ArrayList drwSolid;
+        java.util.ArrayList drwTransp;
+
+        public Render3D0R(float f)
+        {
+            super(com.maddox.il2.engine.Engine.rendersMain(), f);
+            drwSolidL = new ArrayList();
+            drwTranspL = new ArrayList();
+            drwSolid = new ArrayList();
+            drwTransp = new ArrayList();
+        }
+    }
+
+    public static class HookReflection extends com.maddox.il2.engine.HookRender
+    {
+
+        public boolean computeRenderPos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+        {
+            computePos(actor, loc, loc1);
+            return true;
+        }
+
+        public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+        {
+            com.maddox.JGP.Point3d point3d = loc.getPoint();
+            com.maddox.il2.engine.Orient orient = loc.getOrient();
+            loc1.set(loc);
+        }
+
+        public HookReflection()
+        {
+        }
+    }
+
+    public static class Camera3DR extends com.maddox.il2.engine.Camera3D
+    {
+
+        public boolean activate(float f, int i, int j, int k, int l, int i1, int j1, 
+                int k1, int l1, int i2, int j2)
+        {
+            com.maddox.il2.engine.Engine.land().ObjectsReflections_Begin(0);
+            return super.activate(f, i / 2, j / 2, k, l, i1 / 2, j1 / 2, k1, l1, i2 / 2, j2 / 2);
+        }
+
+        public Camera3DR()
+        {
+        }
+    }
+
+    public class NetCamera3D extends com.maddox.il2.engine.Camera3D
+    {
+
+        public void set(float f)
+        {
+            super.set(f);
+            _camera3D[1].set(f);
+            _camera3D[1].pos.setRel(new Orient(-f, 0.0F, 0.0F));
+            _camera3D[2].set(f);
+            _camera3D[2].pos.setRel(new Orient(f, 0.0F, 0.0F));
+            _cameraCockpit[1].set(f);
+            _cameraCockpit[1].pos.setRel(new Orient(-f, 0.0F, 0.0F));
+            _cameraCockpit[2].set(f);
+            _cameraCockpit[2].pos.setRel(new Orient(f, 0.0F, 0.0F));
+            camera3DR.set(f);
+        }
+
+        public NetCamera3D()
+        {
+        }
+    }
+
+
+    public Main3D()
+    {
+        bDrawIfNotFocused = false;
+        bUseStartLog = false;
+        bUseGUI = true;
+        bShowStartIntro = false;
+        _overLoad = new com.maddox.il2.objects.effects.OverLoad[3];
+        _sunGlare = new com.maddox.il2.objects.effects.SunGlare[3];
+        _lightsGlare = new com.maddox.il2.objects.effects.LightsGlare[3];
+        _sunFlare = new com.maddox.il2.objects.effects.SunFlare[3];
+        _sunFlareRender = new com.maddox.il2.engine.Render[3];
+        bViewFly = false;
+        bViewEnemy = false;
+        bEnableFog = true;
+        bDrawLand = false;
+        bDrawClouds = false;
+        _cinema = new com.maddox.il2.objects.effects.Cinema[3];
+        _render3D0 = new com.maddox.il2.game.Render3D0[3];
+        _render3D1 = new com.maddox.il2.game.Render3D1[3];
+        _camera3D = new com.maddox.il2.engine.Camera3D[3];
+        _render2D = new com.maddox.il2.game.Render2D[3];
+        _camera2D = new com.maddox.il2.engine.CameraOrtho2D[3];
+        _renderCockpit = new com.maddox.il2.game.RenderCockpit[3];
+        _cameraCockpit = new com.maddox.il2.engine.Camera3D[3];
+        viewMirror = 2;
+        iconTypes = 3;
+        bLoadRecordedStates1Before = false;
+        bRenderMirror = false;
+        iRenderIndx = 0;
+        _modelMatrix3D = new double[3][16];
+        _projMatrix3D = new double[3][16];
+        _viewport = new int[3][4];
+        _modelMatrix3DMirror = new double[16];
+        _projMatrix3DMirror = new double[16];
+        _viewportMirror = new int[4];
+        _dIn = new double[4];
+        _dOut = new double[4];
+        shadowPairsList1 = new ArrayList();
+        shadowPairsMap1 = new HashMap();
+        shadowPairsCur1 = null;
+        shadowPairsList2 = new ArrayList();
+        shadowPairsFilter = new ShadowPairsFilter();
+        drwMirror = new DrwArray();
+        __l = new Loc();
+        __p = new Point3d();
+        __o = new Orient();
+        __v = new Vector3d();
+        bShowTime = false;
+        iconGroundDrawMin = 200D;
+        iconSmallDrawMin = 100D;
+        iconAirDrawMin = 1000D;
+        iconDrawMax = 10000D;
+        iconFarPadlockItem = new FarActorItem(0, 0, 0, 0, 0.0F, null);
+        farActorFilter = new FarActorFilter();
+        line3XYZ = new float[9];
+        _lineP = new Point3d();
+        _lineO = new Orient();
+        transformMirror = new TransformMirror();
+        lastTimeScreenShot = 0L;
+        scrShot = null;
+    }
+
+    public static com.maddox.il2.game.Main3D cur3D()
+    {
+        return (com.maddox.il2.game.Main3D)com.maddox.il2.game.Main.cur();
+    }
+
+    public boolean isUseStartLog()
+    {
+        return bUseStartLog;
+    }
+
+    public boolean isShowStartIntro()
+    {
+        return bShowStartIntro;
+    }
+
+    public boolean isDrawLand()
+    {
+        return bDrawLand;
+    }
+
+    public void setDrawLand(boolean flag)
+    {
+        bDrawLand = flag;
+    }
+
+    public boolean isDemoPlaying()
+    {
+        if(playRecordedStreams != null)
+            return true;
+        if(keyRecord == null)
+            return false;
+        else
+            return keyRecord.isPlaying();
+    }
+
+    public com.maddox.il2.engine.Actor viewActor()
+    {
+        return camera3D.pos.base();
+    }
+
+    public boolean isViewInsideShow()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return true;
+        else
+            return !cockpitCur.isNullShow();
+    }
+
+    public boolean isEnableRenderingCockpit()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return true;
+        else
+            return cockpitCur.isEnableRendering();
+    }
+
+    public boolean isViewOutside()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return true;
+        else
+            return !cockpitCur.isFocused();
+    }
+
+    public boolean isViewPadlock()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return false;
+        else
+            return cockpitCur.isPadlock();
+    }
+
+    public com.maddox.il2.engine.Actor getViewPadlockEnemy()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return null;
+        else
+            return cockpitCur.getPadlockEnemy();
+    }
+
+    public void setViewInsideShow(boolean flag)
+    {
+        if(isViewOutside() || isViewInsideShow() == flag)
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+        {
+            return;
+        } else
+        {
+            cockpitCur.setNullShow(!flag);
+            return;
+        }
+    }
+
+    public void setEnableRenderingCockpit(boolean flag)
+    {
+        if(isViewOutside() || isEnableRenderingCockpit() == flag)
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+        {
+            return;
+        } else
+        {
+            cockpitCur.setEnableRendering(flag);
+            return;
+        }
+    }
+
+    private void endViewFly()
+    {
+        if(!bViewFly)
+        {
+            return;
+        } else
+        {
+            hookViewFly.use(false);
+            com.maddox.il2.engine.Engine.soundListener().setUseBaseSpeed(true);
+            bViewFly = false;
+            return;
+        }
+    }
+
+    private void endViewEnemy()
+    {
+        if(!bViewEnemy)
+        {
+            return;
+        } else
+        {
+            hookViewEnemy.stop();
+            bViewEnemy = false;
+            return;
+        }
+    }
+
+    private void endView()
+    {
+        if(!isViewOutside())
+            return;
+        if(bViewFly || bViewEnemy)
+        {
+            return;
+        } else
+        {
+            hookView.use(false);
+            return;
+        }
+    }
+
+    private void endViewInside()
+    {
+        if(isViewOutside())
+        {
+            return;
+        } else
+        {
+            cockpitCur.focusLeave();
+            return;
+        }
+    }
+
+    public void setViewFly(com.maddox.il2.engine.Actor actor)
+    {
+        endView();
+        endViewEnemy();
+        endViewInside();
+        com.maddox.il2.game.Selector.resetGame();
+        hookViewFly.use(true);
+        bViewFly = true;
+        camera3D.pos.setRel(new Point3d(), new Orient());
+        camera3D.pos.changeBase(actor, hookViewFly, false);
+        camera3D.pos.resetAsBase();
+        com.maddox.il2.engine.Engine.soundListener().setUseBaseSpeed(false);
+    }
+
+    private void setViewSomebody(com.maddox.il2.engine.Actor actor)
+    {
+        endView();
+        endViewFly();
+        endViewInside();
+        bViewEnemy = true;
+        camera3D.pos.setRel(new Point3d(), new Orient());
+        camera3D.pos.changeBase(actor, hookViewEnemy, false);
+        camera3D.pos.resetAsBase();
+        if(actor instanceof com.maddox.il2.objects.ActorViewPoint)
+            ((com.maddox.il2.objects.ActorViewPoint)actor).setViewActor(hookViewEnemy.enemy());
+    }
+
+    public void setViewEnemy(com.maddox.il2.engine.Actor actor, boolean flag, boolean flag1)
+    {
+        com.maddox.il2.engine.Actor actor1 = com.maddox.il2.game.Selector.look(flag, flag1, camera3D, actor.getArmy(), -1, actor, true);
+        if(!hookViewEnemy.start(actor, actor1, flag1, true))
+        {
+            if(bViewEnemy)
+                setView(actor);
+            return;
+        } else
+        {
+            setViewSomebody(actor);
+            return;
+        }
+    }
+
+    public void setViewFriend(com.maddox.il2.engine.Actor actor, boolean flag, boolean flag1)
+    {
+        com.maddox.il2.engine.Actor actor1 = com.maddox.il2.game.Selector.look(flag, flag1, camera3D, -1, actor.getArmy(), actor, true);
+        if(!hookViewEnemy.start(actor, actor1, flag1, false))
+        {
+            if(bViewEnemy)
+                setView(actor);
+            return;
+        } else
+        {
+            setViewSomebody(actor);
+            return;
+        }
+    }
+
+    public void setViewPadlock(boolean flag, boolean flag1)
+    {
+        if(isViewOutside())
+            return;
+        if(!cockpitCur.existPadlock())
+            return;
+        com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+        com.maddox.il2.engine.Actor actor;
+        if(com.maddox.il2.ai.World.cur().diffCur.No_Icons)
+            actor = com.maddox.il2.game.Selector.look(true, flag1, camera3D, -1, -1, aircraft, false);
+        else
+        if(flag)
+            actor = com.maddox.il2.game.Selector.look(true, flag1, camera3D, -1, aircraft.getArmy(), aircraft, false);
+        else
+            actor = com.maddox.il2.game.Selector.look(true, flag1, camera3D, aircraft.getArmy(), -1, aircraft, false);
+        if(actor == null || actor == aircraft)
+            return;
+        if(!cockpitCur.startPadlock(actor))
+            return;
+        else
+            return;
+    }
+
+    public void setViewEndPadlock()
+    {
+        if(isViewOutside())
+            return;
+        if(!cockpitCur.existPadlock())
+        {
+            return;
+        } else
+        {
+            cockpitCur.endPadlock();
+            return;
+        }
+    }
+
+    public void setViewNextPadlock(boolean flag)
+    {
+        if(isViewOutside())
+            return;
+        if(!cockpitCur.existPadlock())
+            return;
+        com.maddox.il2.engine.Actor actor = com.maddox.il2.game.Selector.next(flag);
+        if(actor == null)
+            return;
+        if(!cockpitCur.startPadlock(actor))
+            return;
+        else
+            return;
+    }
+
+    public void setViewPadlockForward(boolean flag)
+    {
+        if(isViewPadlock())
+            cockpitCur.setPadlockForward(flag);
+    }
+
+    public void setViewInside()
+    {
+        if(!isViewOutside() && !isViewPadlock())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return;
+        if(!cockpitCur.isEnableFocusing())
+        {
+            return;
+        } else
+        {
+            endView();
+            endViewFly();
+            endViewEnemy();
+            endViewInside();
+            cockpitCur.focusEnter();
+            return;
+        }
+    }
+
+    public void setViewFlow30(com.maddox.il2.engine.Actor actor)
+    {
+        setView(actor, true);
+        hookView.set(actor, 30F, -30F);
+        camera3D.pos.resetAsBase();
+    }
+
+    public void setViewFlow10(com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        hookView.setFollow(flag);
+        setView(actor, true);
+        hookView.set(actor, 10F, -10F);
+        camera3D.pos.resetAsBase();
+    }
+
+    public void setView(com.maddox.il2.engine.Actor actor)
+    {
+        setView(actor, false);
+    }
+
+    public void setView(com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(viewActor() != actor || flag || bViewFly || bViewEnemy)
+        {
+            endViewFly();
+            endViewEnemy();
+            endViewInside();
+            com.maddox.il2.game.Selector.resetGame();
+            hookView.use(true);
+            camera3D.pos.setRel(new Point3d(), new Orient());
+            camera3D.pos.changeBase(actor, hookView, false);
+            camera3D.pos.resetAsBase();
+        }
+    }
+
+    public int cockpitCurIndx()
+    {
+        if(cockpits == null || cockpitCur == null)
+            return -1;
+        for(int i = 0; i < cockpits.length; i++)
+            if(cockpitCur == cockpits[i])
+                return i;
+
+        return -1;
+    }
+
+    public void beginStep(int i)
+    {
+        if(!bUseStartLog)
+            if(i >= 0)
+                com.maddox.il2.engine.ConsoleGL0.exclusiveDrawStep(com.maddox.il2.game.I18N.gui("main.loading") + " " + i + "%", i);
+            else
+                com.maddox.il2.engine.ConsoleGL0.exclusiveDrawStep(null, -1);
+    }
+
+    public boolean beginApp(java.lang.String s, java.lang.String s1, int i)
+    {
+        com.maddox.il2.engine.Config.cur.mainSection = s1;
+        com.maddox.il2.engine.Engine.cur = new Engine();
+        com.maddox.il2.engine.Config.typeProvider();
+        com.maddox.opengl.GLContext glcontext = com.maddox.il2.engine.Config.cur.createGlContext(com.maddox.il2.engine.Config.cur.ini.get(com.maddox.il2.engine.Config.cur.mainSection, "title", "il2"));
+        return beginApp(glcontext, i);
+    }
+
+    public boolean beginApp(com.maddox.opengl.GLContext glcontext, int i)
+    {
+        com.maddox.il2.engine.Config.typeGlStrings();
+        com.maddox.il2.engine.Config.cur.typeContextSettings(glcontext);
+        bDrawIfNotFocused = com.maddox.il2.engine.Config.cur.ini.get("window", "DrawIfNotFocused", bDrawIfNotFocused);
+        bShowStartIntro = com.maddox.il2.engine.Config.cur.ini.get("game", "intro", bShowStartIntro);
+        com.maddox.rts.RTSConf.cur.start();
+        com.maddox.il2.objects.air.PaintScheme.init();
+        com.maddox.rts.NetEnv.cur().connect = new Connect();
+        com.maddox.rts.NetEnv.cur();
+        com.maddox.rts.NetEnv.host().destroy();
+        new NetUser("No Name");
+        com.maddox.rts.NetEnv.active(true);
+        com.maddox.il2.engine.Config.cur.beginSound();
+        com.maddox.il2.engine.RenderContext.activate(glcontext);
+        com.maddox.il2.engine.RendersMain.setSaveAspect(true);
+        com.maddox.il2.engine.RendersMain.setGlContext(glcontext);
+        com.maddox.il2.engine.RendersMain.setTickPainting(true);
+        com.maddox.il2.engine.TTFont.font[0] = com.maddox.il2.engine.TTFont.get("arialSmall");
+        com.maddox.il2.engine.TTFont.font[1] = com.maddox.il2.engine.TTFont.get("arial10");
+        com.maddox.il2.engine.TTFont.font[2] = com.maddox.il2.engine.TTFont.get("arialb12");
+        com.maddox.il2.engine.TTFont.font[3] = com.maddox.il2.engine.TTFont.get("courSmall");
+        com.maddox.il2.engine.ConsoleGL0.init("Console", i);
+        bUseStartLog = com.maddox.il2.engine.Config.cur.ini.get("Console", "UseStartLog", bUseStartLog);
+        if(bUseStartLog)
+            com.maddox.il2.engine.ConsoleGL0.exclusiveDraw(true);
+        else
+            com.maddox.il2.engine.ConsoleGL0.exclusiveDraw("gui/background0.mat");
+        beginStep(5);
+        com.maddox.rts.CmdEnv.top().exec("CmdLoad com.maddox.rts.cmd.CmdLoad");
+        com.maddox.rts.CmdEnv.top().exec("load com.maddox.rts.cmd.CmdFile PARAM CURENV on");
+        com.maddox.rts.cmd.CmdSFS.bMountError = false;
+        com.maddox.rts.CmdEnv.top().exec("file .rc");
+        if(com.maddox.rts.cmd.CmdSFS.bMountError)
+            return false;
+        beginStep(10);
+        try
+        {
+            com.maddox.il2.engine.Engine.setWorldAcoustics("Landscape");
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("World Acoustics NOT initialized: " + exception.getMessage());
+            return false;
+        }
+        com.maddox.il2.engine.Engine.soundListener().initDraw();
+        beginStep(15);
+        com.maddox.il2.ai.Regiment.loadAll();
+        preloadNetClasses();
+        beginStep(20);
+        preloadAirClasses();
+        beginStep(25);
+        preloadChiefClasses();
+        beginStep(30);
+        preloadStationaryClasses();
+        preload();
+        beginStep(35);
+        camera3D = new NetCamera3D();
+        camera3D.setName("camera");
+        camera3D.set(FOVX, 1.2F, 48000F);
+        render3D0 = new Render3D0(0, 1.0F);
+        render3D0.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        render3D0.setName("render3D0");
+        render3D0.setCamera(camera3D);
+        com.maddox.il2.engine.Engine.lightEnv().sun().setLight(0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.8F);
+        com.maddox.JGP.Vector3f vector3f = new Vector3f(0.0F, 1.0F, -1F);
+        vector3f.normalize();
+        com.maddox.il2.engine.Engine.lightEnv().sun().set(vector3f);
+        _camera3D[0] = camera3D;
+        _render3D0[0] = render3D0;
+        for(int j = 1; j < 3; j++)
+        {
+            _camera3D[j] = new Camera3D();
+            _camera3D[j].set(FOVX, 1.2F, 48000F);
+            _camera3D[j].pos.setBase(camera3D, null, false);
+            _render3D0[j] = new Render3D0(j, 1.0F - (float)j * 0.001F);
+            _render3D0[j].setSaveAspect(true);
+            _render3D0[j].setCamera(_camera3D[j]);
+        }
+
+        _camera3D[1].pos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
+        _camera3D[2].pos.setRel(new Orient(FOVX, 0.0F, 0.0F));
+        render3D1 = new Render3D1(0, 0.9F);
+        render3D1.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        render3D1.setName("render3D1");
+        render3D1.setCamera(camera3D);
+        for(int k = 1; k < 3; k++)
+        {
+            _render3D1[k] = new Render3D1(k, 0.9F - (float)k * 0.001F);
+            _render3D1[k].setSaveAspect(true);
+            _render3D1[k].setCamera(_camera3D[k]);
+        }
+
+        camera3DR = new Camera3DR();
+        camera3DR.setName("cameraR");
+        camera3DR.set(FOVX, 1.2F, 48000F);
+        camera3DR.pos.setBase(camera3D, new HookReflection(), false);
+        render3D0R = new Render3D0R(1.1F);
+        render3D0R.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        render3D0R.setName("render3D0R");
+        render3D0R.setCamera(camera3DR);
+        com.maddox.il2.engine.Engine.soundListener().pos.setBase(camera3D, null, false);
+        com.maddox.il2.engine.TextScr.font();
+        camera2D = new CameraOrtho2D();
+        camera2D.setName("camera2D");
+        render2D = new Render2D(0, 0.95F);
+        render2D.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        render2D.setName("render2D");
+        render2D.setCamera(camera2D);
+        camera2D.set(0.0F, render2D.getViewPortWidth(), 0.0F, render2D.getViewPortHeight());
+        camera2D.set(0.0F, 1.0F);
+        render2D.setShow(true);
+        _camera2D[0] = camera2D;
+        _render2D[0] = render2D;
+        for(int l = 1; l < 3; l++)
+        {
+            _camera2D[l] = new CameraOrtho2D();
+            _render2D[l] = new Render2D(l, 0.95F - (float)l * 0.001F);
+            _render2D[l].setSaveAspect(true);
+            _render2D[l].setCamera(_camera2D[l]);
+            _camera2D[l].set(0.0F, _render2D[l].getViewPortWidth(), 0.0F, _render2D[l].getViewPortHeight());
+            _camera2D[l].set(0.0F, 1.0F);
+        }
+
+        camera3DMirror = new com.maddox.il2.objects.air.Cockpit.Camera3DMirror();
+        camera3DMirror.setName("cameraMirror");
+        camera3DMirror.set(FOVX, 1.2F, 48000F);
+        camera3DMirror.pos.setBase(camera3D, com.maddox.il2.objects.air.Cockpit.getHookCamera3DMirror(false), false);
+        render3D0Mirror = new Render3D0Mirror(1.8F);
+        render3D0Mirror.setName("render3D0Mirror");
+        render3D0Mirror.setCamera(camera3DMirror);
+        render3D1Mirror = new Render3D1Mirror(1.78F);
+        render3D1Mirror.setName("render3D1Mirror");
+        render3D1Mirror.setCamera(camera3DMirror);
+        camera2DMirror = new CameraOrtho2D();
+        camera2DMirror.setName("camera2DMirror");
+        render2DMirror = new Render2DMirror(1.79F);
+        render2DMirror.setName("render2DMirror");
+        render2DMirror.setCamera(camera2DMirror);
+        camera2DMirror.set(0.0F, render2DMirror.getViewPortWidth(), 0.0F, render2DMirror.getViewPortHeight());
+        camera2DMirror.set(0.0F, 1.0F);
+        cameraCockpit = new Camera3D();
+        cameraCockpit.setName("cameraCockpit");
+        cameraCockpit.set(FOVX, 0.05F, 12.5F);
+        renderCockpit = new RenderCockpit(0, 0.5F);
+        renderCockpit.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        renderCockpit.setName("renderCockpit");
+        renderCockpit.setCamera(cameraCockpit);
+        renderCockpit.setShow(false);
+        _cameraCockpit[0] = cameraCockpit;
+        _renderCockpit[0] = renderCockpit;
+        for(int i1 = 1; i1 < 3; i1++)
+        {
+            _cameraCockpit[i1] = new Camera3D();
+            _cameraCockpit[i1].set(FOVX, 0.05F, 12.5F);
+            _cameraCockpit[i1].pos.setBase(cameraCockpit, null, false);
+            _renderCockpit[i1] = new RenderCockpit(i1, 0.5F - (float)i1 * 0.001F);
+            _renderCockpit[i1].setSaveAspect(true);
+            _renderCockpit[i1].setCamera(_cameraCockpit[i1]);
+        }
+
+        _cameraCockpit[1].pos.setRel(new Orient(-FOVX, 0.0F, 0.0F));
+        _cameraCockpit[2].pos.setRel(new Orient(FOVX, 0.0F, 0.0F));
+        cameraCockpitMirror = new com.maddox.il2.objects.air.Cockpit.Camera3DMirror();
+        cameraCockpitMirror.pos.setBase(cameraCockpit, com.maddox.il2.objects.air.Cockpit.getHookCamera3DMirror(true), false);
+        cameraCockpitMirror.setName("cameraCockpitMirror");
+        cameraCockpitMirror.set(FOVX, 0.05F, 12.5F);
+        renderCockpitMirror = new RenderCockpitMirror(1.77F);
+        renderCockpitMirror.setName("renderCockpitMirror");
+        renderCockpitMirror.setCamera(cameraCockpitMirror);
+        cameraHUD = new CameraOrtho2D();
+        cameraHUD.setName("cameraHUD");
+        renderHUD = new RenderHUD(0.3F);
+        renderHUD.setName("renderHUD");
+        renderHUD.setCamera(cameraHUD);
+        cameraHUD.set(0.0F, renderHUD.getViewPortWidth(), 0.0F, renderHUD.getViewPortHeight());
+        cameraHUD.set(-1000F, 1000F);
+        renderHUD.setShow(true);
+        com.maddox.il2.engine.LightEnvXY lightenvxy = new LightEnvXY();
+        renderHUD.setLightEnv(lightenvxy);
+        lightenvxy.sun().setLight(0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.8F);
+        vector3f = new Vector3f(0.0F, 1.0F, -1F);
+        vector3f.normalize();
+        lightenvxy.sun().set(vector3f);
+        hud = new HUD();
+        renderHUD.contextResized();
+        drawFarActorsInit();
+        cameraMap2D = new CameraOrtho2D();
+        cameraMap2D.setName("cameraMap2D");
+        renderMap2D = new RenderMap2D(0.2F);
+        renderMap2D.setName("renderMap2D");
+        renderMap2D.setCamera(cameraMap2D);
+        cameraMap2D.set(0.0F, renderMap2D.getViewPortWidth(), 0.0F, renderMap2D.getViewPortHeight());
+        renderMap2D.setShow(false);
+        beginStep(40);
+        _sunFlareRender[0] = com.maddox.il2.objects.effects.SunFlare.newRender(0, 0.19F, _camera3D[0]);
+        _sunFlareRender[0].setName("renderSunFlare");
+        _sunFlareRender[0].setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        _sunFlareRender[0].setShow(false);
+        for(int j1 = 1; j1 < 3; j1++)
+        {
+            _sunFlareRender[j1] = com.maddox.il2.objects.effects.SunFlare.newRender(j1, 0.19F, _camera3D[j1]);
+            _sunFlareRender[j1].setSaveAspect(true);
+            _sunFlareRender[j1].setShow(false);
+        }
+
+        lightsGlare = new LightsGlare(0, 0.17F);
+        lightsGlare.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        lightsGlare.setCamera(new CameraOrtho2D());
+        lightsGlare.setShow(false);
+        _lightsGlare[0] = lightsGlare;
+        for(int k1 = 1; k1 < 3; k1++)
+        {
+            _lightsGlare[k1] = new LightsGlare(k1, 0.17F - (float)k1 * 0.001F);
+            _lightsGlare[k1].setSaveAspect(true);
+            _lightsGlare[k1].setCamera(new CameraOrtho2D());
+        }
+
+        sunGlare = new SunGlare(0, 0.15F);
+        sunGlare.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        sunGlare.setCamera(new CameraOrtho2D());
+        sunGlare.setShow(false);
+        _sunGlare[0] = sunGlare;
+        for(int l1 = 1; l1 < 3; l1++)
+        {
+            _sunGlare[l1] = new SunGlare(l1, 0.15F - (float)l1 * 0.001F);
+            _sunGlare[l1].setSaveAspect(true);
+            _sunGlare[l1].setCamera(new CameraOrtho2D());
+        }
+
+        overLoad = new OverLoad(0, 0.1F);
+        overLoad.setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        overLoad.setCamera(new CameraOrtho2D());
+        overLoad.setShow(false);
+        _overLoad[0] = overLoad;
+        for(int i2 = 1; i2 < 3; i2++)
+        {
+            _overLoad[i2] = new OverLoad(i2, 0.1F - (float)i2 * 0.001F);
+            _overLoad[i2].setSaveAspect(true);
+            _overLoad[i2].setCamera(new CameraOrtho2D());
+        }
+
+        _cinema[0] = new Cinema(0, 0.09F);
+        _cinema[0].setSaveAspect(com.maddox.il2.engine.Config.cur.windowSaveAspect);
+        _cinema[0].setCamera(new CameraOrtho2D());
+        _cinema[0].setShow(false);
+        for(int j2 = 1; j2 < 3; j2++)
+        {
+            _cinema[j2] = new Cinema(j2, 0.09F - (float)j2 * 0.001F);
+            _cinema[j2].setSaveAspect(true);
+            _cinema[j2].setCamera(new CameraOrtho2D());
+            _cinema[j2].setShow(false);
+        }
+
+        timeSkip = new TimeSkip(-1.1F);
+        com.maddox.rts.HotKeyEnv.fromIni("hotkeys", com.maddox.il2.engine.Config.cur.ini, com.maddox.il2.engine.Config.cur.ini.get(com.maddox.il2.engine.Config.cur.mainSection, "hotkeys", "hotkeys"));
+        com.maddox.il2.engine.hotkey.FreeFly.init("FreeFly");
+        com.maddox.il2.engine.hotkey.FreeFlyXYZ.init("FreeFlyXYZ");
+        hookView = new HookView("HookView");
+        hookView.setCamera(camera3D);
+        hookViewFly = new HookViewFly("HookViewFly");
+        hookViewEnemy = new HookViewEnemy();
+        hookViewEnemy.setCamera(camera3D);
+        com.maddox.il2.engine.hotkey.HookPilot.New();
+        com.maddox.il2.engine.hotkey.HookPilot.current.setTarget(cameraCockpit);
+        com.maddox.il2.engine.hotkey.HookPilot.current.setTarget2(camera3D);
+        com.maddox.il2.game.HookKeys.New();
+        aircraftHotKeys = new AircraftHotKeys();
+        beginStep(45);
+        com.maddox.rts.HotKeyCmdEnv.enable("default", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("Console", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("hotkeys", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("HookView", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("PanView", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("SnapView", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("pilot", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("move", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("gunner", false);
+        com.maddox.rts.HotKeyEnv.enable("pilot", false);
+        com.maddox.rts.HotKeyEnv.enable("move", false);
+        com.maddox.rts.HotKeyEnv.enable("gunner", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("misc", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("$$$misc", true);
+        com.maddox.rts.HotKeyEnv.enable("$$$misc", true);
+        com.maddox.rts.HotKeyCmdEnv.enable("orders", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("aircraftView", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("timeCompression", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("gui", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("builder", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("MouseXYZ", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("FreeFly", false);
+        com.maddox.rts.HotKeyCmdEnv.enable("FreeFlyXYZ", false);
+        com.maddox.il2.ai.World.cur().userCfg = com.maddox.il2.ai.UserCfg.loadCurrent();
+        com.maddox.il2.ai.World.cur().setUserCovers();
+        ordersTree = new OrdersTree(true);
+        beginStep(50);
+        if(bUseGUI)
+        {
+            guiManager = com.maddox.il2.gui.GUI.create("gui");
+            keyRecord = new KeyRecord();
+            keyRecord.addExcludePrevCmd(278);
+            com.maddox.rts.Keyboard.adapter().setKeyEnable(27);
+        }
+        beginStep(90);
+        initHotKeys();
+        com.maddox.il2.objects.sounds.Voice.setEnableVoices(!com.maddox.il2.engine.Config.cur.ini.get("game", "NoChatter", false));
+        beginStep(95);
+        viewSet_Load();
+        com.maddox.il2.game.DeviceLink.start();
+        onBeginApp();
+        com.maddox.rts.Time.setPause(false);
+        com.maddox.rts.RTSConf.cur.loopMsgs();
+        com.maddox.rts.Time.setPause(true);
+        new com.maddox.rts.MsgAction(64, 1.0D + java.lang.Math.random() * 10D) {
+
+            public void doAction()
+            {
+                try
+                {
+                    java.lang.Class.forName("fbapi");
+                    com.maddox.il2.game.Main.doGameExit();
+                }
+                catch(java.lang.Throwable throwable) { }
+            }
+
+        }
+;
+        bDrawClouds = true;
+        com.maddox.il2.engine.TextScr.setColor(new Color4f(1.0F, 0.0F, 0.0F, 1.0F));
+        com.maddox.rts.RTSConf.cur.console.getEnv().exec("file rcu");
+        beginStep(-1);
+        createConsoleServer();
+        return true;
+    }
+
+    public void setSaveAspect(boolean flag)
+    {
+        if(com.maddox.il2.engine.Config.cur.windowSaveAspect == flag)
+        {
+            return;
+        } else
+        {
+            render3D0.setSaveAspect(flag);
+            render3D1.setSaveAspect(flag);
+            render2D.setSaveAspect(flag);
+            renderCockpit.setSaveAspect(flag);
+            _sunFlareRender[0].setSaveAspect(flag);
+            lightsGlare.setSaveAspect(flag);
+            sunGlare.setSaveAspect(flag);
+            overLoad.setSaveAspect(flag);
+            _cinema[0].setSaveAspect(flag);
+            com.maddox.il2.engine.Config.cur.windowSaveAspect = flag;
+            return;
+        }
+    }
+
+    public static void menuMusicPlay()
+    {
+        com.maddox.il2.game.Main3D.menuMusicPlay(_sLastMusic);
+    }
+
+    public static void menuMusicPlay(java.lang.String s)
+    {
+        s = com.maddox.il2.ai.Regiment.getCountryFromBranch(s);
+        _sLastMusic = s;
+        com.maddox.rts.CmdEnv.top().exec("music FILE music/menu/" + _sLastMusic);
+    }
+
+    public void viewSet_Load()
+    {
+        int i = com.maddox.il2.engine.Config.cur.ini.get("game", "viewSet", 0);
+        viewSet_Set(i);
+        iconTypes = com.maddox.il2.engine.Config.cur.ini.get("game", "iconTypes", 3, 0, 3);
+    }
+
+    public void viewSet_Save()
+    {
+        if(aircraftHotKeys != null)
+        {
+            com.maddox.il2.engine.Config.cur.ini.set("game", "viewSet", viewSet_Get());
+            com.maddox.il2.engine.Config.cur.ini.set("game", "iconTypes", iconTypes());
+        }
+    }
+
+    protected int viewSet_Get()
+    {
+        int i = 0;
+        if(com.maddox.il2.game.HookKeys.current != null && com.maddox.il2.game.HookKeys.current.isPanView())
+            i |= 1;
+        if(com.maddox.il2.engine.hotkey.HookPilot.current != null && com.maddox.il2.engine.hotkey.HookPilot.current.isAim())
+            i |= 2;
+        i |= (viewMirror & 3) << 2;
+        if(!aircraftHotKeys.isAutoAutopilot())
+            i |= 0x10;
+        i |= (com.maddox.il2.game.HUD.drawSpeed() & 3) << 5;
+        return i;
+    }
+
+    private void viewSet_Set(int i)
+    {
+        com.maddox.il2.game.HookKeys.current.setMode((i & 1) != 0);
+        com.maddox.il2.engine.hotkey.HookPilot.current.doAim((i & 2) != 0);
+        viewMirror = i >> 2 & 3;
+        aircraftHotKeys.setAutoAutopilot((i & 0x10) == 0);
+        com.maddox.il2.game.HUD.setDrawSpeed(i >> 5 & 3);
+    }
+
+    public boolean isViewMirror()
+    {
+        return viewMirror > 0;
+    }
+
+    public int iconTypes()
+    {
+        return iconTypes;
+    }
+
+    protected void changeIconTypes()
+    {
+        iconTypes = (iconTypes + 1) % 4;
+    }
+
+    public void disableAllHotKeyCmdEnv()
+    {
+        java.util.List list = com.maddox.rts.HotKeyCmdEnv.allEnv();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv = (com.maddox.rts.HotKeyCmdEnv)list.get(j);
+            hotkeycmdenv.enable(false);
+        }
+
+        com.maddox.rts.HotKeyCmdEnv.enable("hotkeys", true);
+        com.maddox.rts.HotKeyCmdEnv.enable("$$$misc", true);
+    }
+
+    public void enableHotKeyCmdEnvs(java.lang.String as[])
+    {
+        for(int i = 0; i < as.length; i++)
+            com.maddox.rts.HotKeyCmdEnv.enable(as[i], true);
+
+    }
+
+    public void enableOnlyHotKeyCmdEnvs(java.lang.String as[])
+    {
+        disableAllHotKeyCmdEnv();
+        enableHotKeyCmdEnvs(as);
+    }
+
+    public void enableOnlyHotKeyCmdEnv(java.lang.String s)
+    {
+        disableAllHotKeyCmdEnv();
+        com.maddox.rts.HotKeyCmdEnv.enable(s, true);
+    }
+
+    public void enableGameHotKeyCmdEnvs()
+    {
+        enableHotKeyCmdEnvs(gameHotKeyCmdEnvs);
+    }
+
+    public void enableOnlyGameHotKeyCmdEnvs()
+    {
+        enableOnlyHotKeyCmdEnvs(gameHotKeyCmdEnvs);
+    }
+
+    public void enableCockpitHotKeys()
+    {
+        if(isDemoPlaying())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return;
+        java.lang.String as[] = cockpitCur.getHotKeyEnvs();
+        if(as == null)
+            return;
+        for(int i = 0; i < as.length; i++)
+            if(as[i] != null)
+                com.maddox.rts.HotKeyEnv.enable(as[i], true);
+
+    }
+
+    public void disableCockpitHotKeys()
+    {
+        if(isDemoPlaying())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            return;
+        java.lang.String as[] = cockpitCur.getHotKeyEnvs();
+        if(as == null)
+            return;
+        for(int i = 0; i < as.length; i++)
+            if(as[i] != null)
+                com.maddox.rts.HotKeyEnv.enable(as[i], false);
+
+    }
+
+    private void _disableCockpitsHotKeys()
+    {
+        com.maddox.rts.HotKeyEnv.enable("pilot", false);
+        com.maddox.rts.HotKeyEnv.enable("move", false);
+        com.maddox.rts.HotKeyEnv.enable("gunner", false);
+    }
+
+    public void disableCockpitsHotKeys()
+    {
+        if(isDemoPlaying())
+        {
+            return;
+        } else
+        {
+            _disableCockpitsHotKeys();
+            return;
+        }
+    }
+
+    public void resetGameClear()
+    {
+        com.maddox.il2.objects.vehicles.lights.SearchlightGeneric.resetGame();
+        disableCockpitsHotKeys();
+        camera3D.pos.changeBase(null, null, false);
+        camera3D.pos.setAbs(new Point3d(), new Orient());
+        com.maddox.il2.engine.hotkey.FreeFly.adapter().resetGame();
+        if(com.maddox.il2.engine.hotkey.HookPilot.current != null)
+        {
+            com.maddox.il2.engine.hotkey.HookPilot.current.use(false);
+            com.maddox.il2.engine.hotkey.HookPilot.current.resetGame();
+        }
+        com.maddox.il2.engine.hotkey.HookGunner.resetGame();
+        if(com.maddox.il2.game.HookKeys.current != null)
+            com.maddox.il2.game.HookKeys.current.resetGame();
+        hookViewFly.reset();
+        hookViewEnemy.reset();
+        hookView.reset();
+        hookView.resetGame();
+        hookViewEnemy.resetGame();
+        overLoad.setShow(false);
+        for(int i = 0; i < 3; i++)
+        {
+            _lightsGlare[i].setShow(false);
+            _lightsGlare[i].resetGame();
+            _sunGlare[i].setShow(false);
+            _sunGlare[i].resetGame();
+        }
+
+        com.maddox.il2.game.Selector.resetGame();
+        hud.resetGame();
+        aircraftHotKeys.resetGame();
+        bViewFly = false;
+        bViewEnemy = false;
+        ordersTree.resetGameClear();
+        if(clouds != null)
+        {
+            clouds.destroy();
+            clouds = null;
+        }
+        if(zip != null)
+        {
+            zip.destroy();
+            zip = null;
+        }
+        sunFlareDestroy();
+        if(com.maddox.il2.engine.Actor.isValid(spritesFog))
+            spritesFog.destroy();
+        spritesFog = null;
+        if(land2D != null)
+        {
+            if(!land2D.isDestroyed())
+                land2D.destroy();
+            land2D = null;
+        }
+        if(land2DText != null)
+        {
+            if(!land2DText.isDestroyed())
+                land2DText.destroy();
+            land2DText = null;
+        }
+        if(cockpits != null)
+        {
+            for(int j = 0; j < cockpits.length; j++)
+            {
+                if(com.maddox.il2.engine.Actor.isValid(cockpits[j]))
+                    cockpits[j].destroy();
+                cockpits[j] = null;
+            }
+
+            cockpits = null;
+        }
+        cockpitCur = null;
+        super.resetGameClear();
+    }
+
+    public void resetGameCreate()
+    {
+        super.resetGameCreate();
+        com.maddox.il2.engine.Engine.soundListener().pos.setBase(camera3D, null, false);
+        com.maddox.il2.engine.Engine.soundListener().setUseBaseSpeed(true);
+    }
+
+    public void resetUserClear()
+    {
+        com.maddox.il2.ai.World.cur().resetUser();
+        aircraftHotKeys.resetUser();
+        if(cockpits != null)
+        {
+            for(int i = 0; i < cockpits.length; i++)
+            {
+                if(com.maddox.il2.engine.Actor.isValid(cockpits[i]))
+                    cockpits[i].destroy();
+                cockpits[i] = null;
+            }
+
+            cockpits = null;
+        }
+        cockpitCur = null;
+        super.resetUserClear();
+    }
+
+    public void sunFlareCreate()
+    {
+        sunFlareDestroy();
+        for(int i = 0; i < 3; i++)
+            _sunFlare[i] = new SunFlare(_sunFlareRender[i]);
+
+    }
+
+    public void sunFlareDestroy()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            if(com.maddox.il2.engine.Actor.isValid(_sunFlare[i]))
+                _sunFlare[i].destroy();
+            _sunFlare[i] = null;
+        }
+
+    }
+
+    public void sunFlareShow(boolean flag)
+    {
+        for(int i = 0; i < 3; i++)
+            _sunFlareRender[i].setShow(flag);
+
+    }
+
+    public com.maddox.rts.KeyRecordCallback playRecordedMissionCallback()
+    {
+        return playRecordedMissionCallback;
+    }
+
+    public com.maddox.rts.InOutStreams playRecordedStreams()
+    {
+        return playRecordedStreams;
+    }
+
+    com.maddox.rts.NetChannelInStream playRecordedNetChannelIn()
+    {
+        return playRecordedNetChannelIn;
+    }
+
+    public com.maddox.il2.game.GameTrack gameTrackRecord()
+    {
+        return gameTrackRecord;
+    }
+
+    public void setGameTrackRecord(com.maddox.il2.game.GameTrack gametrack)
+    {
+        gameTrackRecord = gametrack;
+    }
+
+    public com.maddox.il2.game.GameTrack gameTrackPlay()
+    {
+        return gameTrackPlay;
+    }
+
+    public void setGameTrackPlay(com.maddox.il2.game.GameTrack gametrack)
+    {
+        gameTrackPlay = gametrack;
+    }
+
+    public void clearGameTrack(com.maddox.il2.game.GameTrack gametrack)
+    {
+        if(gametrack == gameTrackRecord)
+            gameTrackRecord = null;
+        if(gametrack == gameTrackPlay)
+            gameTrackPlay = null;
+    }
+
+    public java.lang.String playRecordedMission(java.lang.String s)
+    {
+        playBatchCurRecord = -1;
+        playEndBatch = true;
+        playRecordedStreams = null;
+        return playRecordedMission(s, true);
+    }
+
+    public java.lang.String playRecordedMission(java.lang.String s, boolean flag)
+    {
+        playRecordedFile = s;
+        if(playRecordedMissionCallback == null)
+            playRecordedMissionCallback = new com.maddox.rts.KeyRecordCallback() {
+
+                public void playRecordedEnded()
+                {
+                    if(this != playRecordedMissionCallback)
+                        return;
+                    com.maddox.il2.game.GameState gamestate = com.maddox.il2.game.Main.state();
+                    if(gamestate instanceof com.maddox.il2.gui.GUIRecordPlay)
+                    {
+                        com.maddox.il2.gui.GUIRecordPlay guirecordplay = (com.maddox.il2.gui.GUIRecordPlay)gamestate;
+                        guirecordplay.doReplayMission(playRecordedFile, playEndBatch);
+                    } else
+                    if(gamestate instanceof com.maddox.il2.gui.GUITrainingPlay)
+                    {
+                        com.maddox.il2.gui.GUITrainingPlay guitrainingplay = (com.maddox.il2.gui.GUITrainingPlay)gamestate;
+                        guitrainingplay.doQuitMission();
+                        guitrainingplay.doExit();
+                    } else
+                    if(gamestate instanceof com.maddox.il2.gui.GUIBWDemoPlay)
+                    {
+                        com.maddox.il2.gui.GUIBWDemoPlay guibwdemoplay = (com.maddox.il2.gui.GUIBWDemoPlay)gamestate;
+                        guibwdemoplay.doQuitMission();
+                    }
+                }
+
+                public void doFirstHotCmd(boolean flag1)
+                {
+                    if(playRecordedStreams != null)
+                    {
+                        com.maddox.il2.game.AircraftHotKeys _tmp = aircraftHotKeys;
+                        com.maddox.il2.game.AircraftHotKeys.bFirstHotCmd = flag1;
+                        loadRecordedStates1(flag1);
+                        if(!flag1)
+                            loadRecordedStates2();
+                    }
+                }
+
+            }
+;
+        if(playRecordedStreams != null)
+        {
+            try
+            {
+                playRecordedStreams.close();
+            }
+            catch(java.lang.Exception exception) { }
+            playRecordedStreams = null;
+            com.maddox.il2.net.NetMissionTrack.stopPlaying();
+        }
+        if(playRecordedNetChannelIn != null)
+            playRecordedNetChannelIn.destroy();
+        playRecordedNetChannelIn = null;
+        if(com.maddox.rts.InOutStreams.isExistAndValid(new File(s)))
+            return playNetRecordedMission(s, flag);
+        java.lang.String s1 = s;
+        com.maddox.rts.SectFile sectfile = new SectFile(s, 0, false);
+        int i = sectfile.sectionIndex("batch");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            if(j <= 0)
+                return "Track file '" + s + "' is empty";
+            playEndBatch = playBatchCurRecord != -1 && playBatchCurRecord == j - 2;
+            if(j == 1)
+                playEndBatch = true;
+            playBatchCurRecord++;
+            if(playBatchCurRecord >= j)
+                playBatchCurRecord = 0;
+            s1 = "Records/" + sectfile.line(i, playBatchCurRecord);
+            if(com.maddox.rts.InOutStreams.isExistAndValid(new File(s1)))
+                return playNetRecordedMission(s1, flag);
+            sectfile = new SectFile(s1, 0, false);
+        } else
+        {
+            playEndBatch = true;
+        }
+        i = sectfile.sectionIndex("$$$record");
+        if(i < 0)
+            return "Track file '" + s1 + "' not included section [$$$record]";
+        if(sectfile.vars(i) <= 10)
+            return "Track file '" + s1 + "' is empty";
+        int k = java.lang.Integer.parseInt(sectfile.var(i, 0));
+        if(k != 129)
+            return "Track file '" + s1 + "' version is not supported";
+        int l = java.lang.Integer.parseInt(sectfile.var(i, 1));
+        float f = java.lang.Float.parseFloat(sectfile.var(i, 2));
+        float f1 = java.lang.Float.parseFloat(sectfile.var(i, 3));
+        float f2 = java.lang.Float.parseFloat(sectfile.var(i, 4));
+        float f3 = java.lang.Float.parseFloat(sectfile.var(i, 5));
+        float f4 = java.lang.Float.parseFloat(sectfile.var(i, 6));
+        int i1 = java.lang.Integer.parseInt(sectfile.var(i, 7));
+        int j1 = java.lang.Integer.parseInt(sectfile.var(i, 8));
+        long l1 = java.lang.Long.parseLong(sectfile.var(i, 9));
+        long l2 = sectfile.fingerExcludeSectPrefix("$$$");
+        l2 = com.maddox.rts.Finger.incLong(l2, l);
+        l2 = com.maddox.rts.Finger.incLong(l2, f);
+        l2 = com.maddox.rts.Finger.incLong(l2, f1);
+        l2 = com.maddox.rts.Finger.incLong(l2, f2);
+        l2 = com.maddox.rts.Finger.incLong(l2, f3);
+        l2 = com.maddox.rts.Finger.incLong(l2, f4);
+        l2 = com.maddox.rts.Finger.incLong(l2, i1);
+        l2 = com.maddox.rts.Finger.incLong(l2, j1);
+        if(l1 != l2)
+            return "Track file '" + s1 + "' is changed";
+        com.maddox.il2.ai.World.cur().diffCur.set(l);
+        com.maddox.il2.ai.World.cur().diffCur.Cockpit_Always_On = false;
+        com.maddox.il2.ai.World.cur().diffCur.No_Outside_Views = false;
+        com.maddox.il2.ai.World.cur().diffCur.No_Padlock = false;
+        com.maddox.il2.ai.World.cur().userCoverMashineGun = f;
+        com.maddox.il2.ai.World.cur().userCoverCannon = f1;
+        com.maddox.il2.ai.World.cur().userCoverRocket = f2;
+        com.maddox.il2.ai.World.cur().userRocketDelay = f3;
+        com.maddox.il2.ai.World.cur().userBombDelay = f4;
+        viewSet_Set(i1);
+        iconTypes = j1;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+        {
+            new NetServerParams();
+            com.maddox.il2.game.Main.cur().netServerParams.setMode(2);
+            new NetLocalControl();
+        }
+        try
+        {
+            com.maddox.il2.game.Mission.loadFromSect(sectfile, true);
+        }
+        catch(java.lang.Exception exception1)
+        {
+            java.lang.System.out.println(exception1.getMessage());
+            exception1.printStackTrace();
+            return "Track file '" + s1 + "' load failed: " + exception1.getMessage();
+        }
+        playRecordedSect = sectfile;
+        playRecorderIndx = i;
+        playRecordedPlayFile = s1;
+        if(flag)
+            doRecordedPlayFirst();
+        return null;
+    }
+
+    private java.lang.String playNetRecordedMission(java.lang.String s, boolean flag)
+    {
+        int i;
+        int j;
+        playRecordedStreams = new InOutStreams();
+        playRecordedStreams.open(new File(s), false);
+        java.io.InputStream inputstream = playRecordedStreams.openStream("version");
+        java.io.BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
+        i = java.lang.Integer.parseInt(bufferedreader.readLine());
+        j = i;
+        if(i >= 102)
+            j = java.lang.Integer.parseInt(bufferedreader.readLine());
+        bufferedreader.close();
+        if(i == 100 || i == 101 || i == 102)
+            break MISSING_BLOCK_LABEL_159;
+        try
+        {
+            playRecordedStreams.close();
+        }
+        catch(java.lang.Exception exception2) { }
+        playRecordedStreams = null;
+        return "Track file '" + s + "' version is not supported";
+        try
+        {
+            loadRecordedStates0();
+            java.io.InputStream inputstream1 = playRecordedStreams.openStream("traffic");
+            if(inputstream1 == null)
+                throw new Exception("Stream 'traffic' not found.");
+            playRecordedNetChannelIn = new NetChannelInStream(inputstream1, 1);
+            com.maddox.rts.RTSConf.cur.netEnv.addChannel(playRecordedNetChannelIn);
+            playRecordedNetChannelIn.setStateInit(0);
+            playRecordedNetChannelIn.userState = 1;
+            com.maddox.il2.net.NetMissionTrack.startPlaying(playRecordedStreams, i, j);
+            if(flag)
+                doRecordedPlayFirst();
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+            if(playRecordedStreams != null)
+                try
+                {
+                    playRecordedStreams.close();
+                }
+                catch(java.lang.Exception exception1) { }
+            playRecordedStreams = null;
+            return "Track file '" + s + "' load failed: " + exception.getMessage();
+        }
+        return null;
+    }
+
+    private void doRecordedPlayFirst()
+    {
+        _disableCockpitsHotKeys();
+        com.maddox.rts.HotKeyEnv.enable("misc", false);
+        com.maddox.rts.HotKeyEnv.enable("orders", false);
+        com.maddox.rts.HotKeyEnv.enable("timeCompression", false);
+        com.maddox.rts.HotKeyEnv.enable("aircraftView", false);
+        com.maddox.rts.HotKeyEnv.enable("HookView", false);
+        com.maddox.rts.HotKeyEnv.enable("PanView", false);
+        com.maddox.rts.HotKeyEnv.enable("SnapView", false);
+    }
+
+    public java.lang.String startPlayRecordedMission()
+    {
+        if(playRecordedStreams != null)
+            keyRecord.startPlay(playRecordedMissionCallback);
+        else
+        if(!keyRecord.startPlay(playRecordedSect, playRecorderIndx, 10, playRecordedMissionCallback))
+            return "Track file '" + playRecordedPlayFile + "' load failed";
+        return null;
+    }
+
+    public void stopPlayRecordedMission()
+    {
+        playRecordedSect = null;
+        if(keyRecord.isPlaying())
+            keyRecord.stopPlay();
+        if(playRecordedStreams != null)
+        {
+            try
+            {
+                playRecordedStreams.close();
+            }
+            catch(java.lang.Exception exception) { }
+            playRecordedStreams = null;
+            com.maddox.il2.net.NetMissionTrack.stopPlaying();
+        }
+        if(playRecordedNetChannelIn != null)
+            playRecordedNetChannelIn.destroy();
+        playRecordedNetChannelIn = null;
+        _disableCockpitsHotKeys();
+        com.maddox.rts.HotKeyEnv.enable("misc", true);
+        com.maddox.rts.HotKeyEnv.enable("orders", true);
+        com.maddox.rts.HotKeyEnv.enable("timeCompression", true);
+        com.maddox.rts.HotKeyEnv.enable("aircraftView", true);
+        com.maddox.rts.HotKeyEnv.enable("HookView", true);
+        com.maddox.rts.HotKeyEnv.enable("PanView", true);
+        com.maddox.rts.HotKeyEnv.enable("SnapView", true);
+    }
+
+    public void flyRecordedMission()
+    {
+        if(keyRecord.isPlaying())
+        {
+            keyRecord.stopPlay();
+            playRecordedMissionCallback = null;
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur))
+                com.maddox.rts.HotKeyCmd.exec("misc", "cockpitEnter" + cockpitCurIndx());
+            enableCockpitHotKeys();
+            com.maddox.rts.HotKeyEnv.enable("misc", true);
+            com.maddox.rts.HotKeyEnv.enable("orders", true);
+            com.maddox.rts.HotKeyEnv.enable("timeCompression", true);
+            com.maddox.rts.HotKeyEnv.enable("aircraftView", true);
+            com.maddox.rts.HotKeyEnv.enable("HookView", true);
+            com.maddox.rts.HotKeyEnv.enable("PanView", true);
+            com.maddox.rts.HotKeyEnv.enable("SnapView", true);
+            com.maddox.il2.objects.effects.ForceFeedback.startMission();
+        }
+    }
+
+    public boolean saveRecordedMission(java.lang.String s)
+    {
+        if(mission == null)
+            return false;
+        if(mission.isDestroyed())
+            return false;
+        if(!keyRecord.isContainRecorded())
+            return false;
+        com.maddox.rts.SectFile sectfile;
+        sectfile = mission.sectFile();
+        int i = sectfile.sectionIndex("$$$record");
+        if(i >= 0)
+            sectfile.sectionClear(i);
+        else
+            i = sectfile.sectionAdd("$$$record");
+        sectfile.lineAdd(i, "129", "");
+        long l = com.maddox.rts.Finger.incLong(mission.finger(), 129);
+        int j = com.maddox.il2.ai.World.cur().diffCur.get();
+        sectfile.lineAdd(i, "" + j, "");
+        l = com.maddox.rts.Finger.incLong(mission.finger(), j);
+        sectfile.lineAdd(i, "" + com.maddox.il2.ai.World.cur().userCoverMashineGun, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.ai.World.cur().userCoverMashineGun);
+        sectfile.lineAdd(i, "" + com.maddox.il2.ai.World.cur().userCoverCannon, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.ai.World.cur().userCoverCannon);
+        sectfile.lineAdd(i, "" + com.maddox.il2.ai.World.cur().userCoverRocket, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.ai.World.cur().userCoverRocket);
+        sectfile.lineAdd(i, "" + com.maddox.il2.ai.World.cur().userRocketDelay, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.ai.World.cur().userRocketDelay);
+        sectfile.lineAdd(i, "" + com.maddox.il2.ai.World.cur().userBombDelay, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.ai.World.cur().userBombDelay);
+        sectfile.lineAdd(i, "" + com.maddox.il2.game.Mission.viewSet, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.game.Mission.viewSet);
+        sectfile.lineAdd(i, "" + com.maddox.il2.game.Mission.iconTypes, "");
+        l = com.maddox.rts.Finger.incLong(l, com.maddox.il2.game.Mission.iconTypes);
+        sectfile.lineAdd(i, "" + l, "");
+        keyRecord.saveRecorded(sectfile, i);
+        return sectfile.saveFile(s);
+        java.lang.Exception exception;
+        exception;
+        return false;
+    }
+
+    public boolean saveRecordedStates0(com.maddox.rts.InOutStreams inoutstreams)
+    {
+        java.io.PrintWriter printwriter = new PrintWriter(inoutstreams.createStream("states0"));
+        printwriter.println(com.maddox.il2.ai.World.cur().diffCur.get());
+        printwriter.println(com.maddox.il2.ai.World.cur().userCoverMashineGun);
+        printwriter.println(com.maddox.il2.ai.World.cur().userCoverCannon);
+        printwriter.println(com.maddox.il2.ai.World.cur().userCoverRocket);
+        printwriter.println(com.maddox.il2.ai.World.cur().userRocketDelay);
+        printwriter.println(com.maddox.il2.ai.World.cur().userBombDelay);
+        printwriter.println(viewSet_Get());
+        printwriter.println(iconTypes);
+        printwriter.println(isViewOutside() ? "0" : "1");
+        printwriter.println(FOVX);
+        printwriter.flush();
+        printwriter.close();
+        return true;
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+        return false;
+    }
+
+    public boolean saveRecordedStates1(com.maddox.rts.InOutStreams inoutstreams)
+    {
+        java.io.PrintWriter printwriter = new PrintWriter(inoutstreams.createStream("states1"));
+        com.maddox.il2.engine.hotkey.HookView.cur().saveRecordedStates(printwriter);
+        com.maddox.il2.engine.hotkey.HookPilot.cur().saveRecordedStates(printwriter);
+        com.maddox.il2.engine.hotkey.HookGunner.saveRecordedStates(printwriter);
+        printwriter.flush();
+        printwriter.close();
+        return true;
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+        return false;
+    }
+
+    public boolean saveRecordedStates2(com.maddox.rts.InOutStreams inoutstreams)
+    {
+        java.io.PrintWriter printwriter = new PrintWriter(inoutstreams.createStream("states2"));
+        printwriter.println(FOVX);
+        int i = 0;
+        if(hud.bDrawDashBoard)
+            i |= 1;
+        if(isViewInsideShow())
+            i |= 2;
+        if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isToggleAim())
+            i |= 4;
+        com.maddox.il2.fm.FlightModel flightmodel = com.maddox.il2.ai.World.getPlayerFM();
+        if(flightmodel != null && flightmodel.AS.bShowSmokesOn)
+            i |= 8;
+        if(isEnableRenderingCockpit())
+            i |= 0x10;
+        if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isToggleUp())
+            i |= 0x20;
+        if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isToggleDim())
+            i |= 0x40;
+        if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && cockpitCur.isToggleLight())
+            i |= 0x80;
+        if(com.maddox.il2.engine.Actor.isValid(cockpitCur) && !cockpitCur.isEnableRenderingBall())
+            i |= 0x100;
+        printwriter.println(i);
+        printwriter.flush();
+        printwriter.close();
+        return true;
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+        return false;
+    }
+
+    public void loadRecordedStates0()
+    {
+        try
+        {
+            java.io.InputStream inputstream = playRecordedStreams.openStream("states0");
+            java.io.BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
+            com.maddox.il2.ai.World.cur().diffCur.set(java.lang.Integer.parseInt(bufferedreader.readLine()));
+            com.maddox.il2.ai.World.cur().diffCur.Cockpit_Always_On = false;
+            com.maddox.il2.ai.World.cur().diffCur.No_Outside_Views = false;
+            com.maddox.il2.ai.World.cur().diffCur.No_Padlock = false;
+            com.maddox.il2.ai.World.cur().userCoverMashineGun = java.lang.Float.parseFloat(bufferedreader.readLine());
+            com.maddox.il2.ai.World.cur().userCoverCannon = java.lang.Float.parseFloat(bufferedreader.readLine());
+            com.maddox.il2.ai.World.cur().userCoverRocket = java.lang.Float.parseFloat(bufferedreader.readLine());
+            com.maddox.il2.ai.World.cur().userRocketDelay = java.lang.Float.parseFloat(bufferedreader.readLine());
+            com.maddox.il2.ai.World.cur().userBombDelay = java.lang.Float.parseFloat(bufferedreader.readLine());
+            viewSet_Set(java.lang.Integer.parseInt(bufferedreader.readLine()));
+            iconTypes = java.lang.Integer.parseInt(bufferedreader.readLine());
+            bLoadRecordedStates1Before = java.lang.Integer.parseInt(bufferedreader.readLine()) == 1;
+            float f = java.lang.Float.parseFloat(bufferedreader.readLine());
+            if(f != FOVX)
+                com.maddox.rts.CmdEnv.top().exec("fov " + f);
+            inputstream.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public void loadRecordedStates1(boolean flag)
+    {
+        if(flag == bLoadRecordedStates1Before)
+            try
+            {
+                java.io.InputStream inputstream = playRecordedStreams.openStream("states1");
+                java.io.BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
+                com.maddox.il2.engine.hotkey.HookView.cur().loadRecordedStates(bufferedreader);
+                com.maddox.il2.engine.hotkey.HookPilot.cur().loadRecordedStates(bufferedreader);
+                com.maddox.il2.engine.hotkey.HookGunner.loadRecordedStates(bufferedreader);
+                inputstream.close();
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+    }
+
+    public void loadRecordedStates2()
+    {
+        try
+        {
+            java.io.InputStream inputstream = playRecordedStreams.openStream("states2");
+            java.io.BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(inputstream));
+            float f = java.lang.Float.parseFloat(bufferedreader.readLine());
+            if(f != FOVX)
+                com.maddox.rts.CmdEnv.top().exec("fov " + f);
+            int i = java.lang.Integer.parseInt(bufferedreader.readLine());
+            hud.bDrawDashBoard = (i & 1) != 0;
+            setViewInsideShow((i & 2) != 0);
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur))
+                cockpitCur.doToggleAim((i & 4) != 0);
+            com.maddox.il2.fm.FlightModel flightmodel = com.maddox.il2.ai.World.getPlayerFM();
+            if(flightmodel != null)
+                flightmodel.AS.setAirShowState((i & 8) != 0);
+            if(com.maddox.il2.engine.Actor.isValid(cockpitCur))
+            {
+                setEnableRenderingCockpit((i & 0x10) != 0);
+                cockpitCur.doToggleUp((i & 0x20) != 0);
+                if((i & 0x40) != 0 && !cockpitCur.isToggleDim())
+                    cockpitCur.doToggleDim();
+                if((i & 0x80) != 0 && !cockpitCur.isToggleLight())
+                    cockpitCur.doToggleLight();
+                cockpitCur.setEnableRenderingBall((i & 0x100) == 0);
+            }
+            inputstream.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public void setRenderIndx(int i)
+    {
+        iRenderIndx = i;
+    }
+
+    public int getRenderIndx()
+    {
+        return iRenderIndx;
+    }
+
+    private void transform_point(double ad[], double ad1[], double ad2[])
+    {
+        ad[0] = ad1[0] * ad2[0] + ad1[4] * ad2[1] + ad1[8] * ad2[2] + ad1[12] * ad2[3];
+        ad[1] = ad1[1] * ad2[0] + ad1[5] * ad2[1] + ad1[9] * ad2[2] + ad1[13] * ad2[3];
+        ad[2] = ad1[2] * ad2[0] + ad1[6] * ad2[1] + ad1[10] * ad2[2] + ad1[14] * ad2[3];
+        ad[3] = ad1[3] * ad2[0] + ad1[7] * ad2[1] + ad1[11] * ad2[2] + ad1[15] * ad2[3];
+    }
+
+    public boolean project2d(double d, double d1, double d2, com.maddox.JGP.Point3d point3d)
+    {
+        _dIn[0] = d;
+        _dIn[1] = d1;
+        _dIn[2] = d2;
+        _dIn[3] = 1.0D;
+        if(bRenderMirror)
+        {
+            transform_point(_dOut, _modelMatrix3DMirror, _dIn);
+            transform_point(_dIn, _projMatrix3DMirror, _dOut);
+        } else
+        {
+            transform_point(_dOut, _modelMatrix3D[iRenderIndx], _dIn);
+            transform_point(_dIn, _projMatrix3D[iRenderIndx], _dOut);
+        }
+        if(_dIn[3] == 0.0D)
+        {
+            java.lang.System.out.println("BAD glu.Project: " + d + " " + d1 + " " + d2);
+            return false;
+        }
+        _dIn[0] /= _dIn[3];
+        _dIn[1] /= _dIn[3];
+        _dIn[2] /= _dIn[3];
+        if(bRenderMirror)
+        {
+            point3d.x = (double)_viewportMirror[0] + ((1.0D + _dIn[0]) * (double)_viewportMirror[2]) / 2D;
+            point3d.y = (double)_viewportMirror[1] + ((1.0D + _dIn[1]) * (double)_viewportMirror[3]) / 2D;
+        } else
+        {
+            point3d.x = (double)_viewport[iRenderIndx][0] + ((1.0D + _dIn[0]) * (double)_viewport[iRenderIndx][2]) / 2D;
+            point3d.y = (double)_viewport[iRenderIndx][1] + ((1.0D + _dIn[1]) * (double)_viewport[iRenderIndx][3]) / 2D;
+        }
+        point3d.z = (1.0D + _dIn[2]) / 2D;
+        return true;
+    }
+
+    public boolean project2d_cam(double d, double d1, double d2, com.maddox.JGP.Point3d point3d)
+    {
+        if(!project2d(d, d1, d2, point3d))
+            return false;
+        if(bRenderMirror)
+        {
+            point3d.x -= _viewportMirror[0];
+            point3d.y -= _viewportMirror[1];
+        } else
+        {
+            point3d.x -= _viewport[iRenderIndx][0];
+            point3d.y -= _viewport[iRenderIndx][1];
+        }
+        return true;
+    }
+
+    public boolean project2d_norm(double d, double d1, double d2, com.maddox.JGP.Point3d point3d)
+    {
+        _dIn[0] = d;
+        _dIn[1] = d1;
+        _dIn[2] = d2;
+        _dIn[3] = 1.0D;
+        if(bRenderMirror)
+        {
+            transform_point(_dOut, _modelMatrix3DMirror, _dIn);
+            transform_point(_dIn, _projMatrix3DMirror, _dOut);
+        } else
+        {
+            transform_point(_dOut, _modelMatrix3D[iRenderIndx], _dIn);
+            transform_point(_dIn, _projMatrix3D[iRenderIndx], _dOut);
+        }
+        if(_dIn[3] == 0.0D)
+        {
+            java.lang.System.out.println("BAD glu.Project2: " + d + " " + d1 + " " + d2);
+            return false;
+        } else
+        {
+            double d3 = 1.0D / _dIn[3];
+            point3d.x = _dIn[0] * d3;
+            point3d.y = _dIn[1] * d3;
+            point3d.z = _dIn[2] * d3;
+            return true;
+        }
+    }
+
+    public boolean project2d(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        return project2d(point3d.x, point3d.y, point3d.z, point3d1);
+    }
+
+    public boolean project2d_cam(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        return project2d_cam(point3d.x, point3d.y, point3d.z, point3d1);
+    }
+
+    private void shadowPairsClear()
+    {
+        shadowPairsList1.clear();
+        shadowPairsMap1.clear();
+        shadowPairsList2.clear();
+        shadowPairsCur1 = null;
+    }
+
+    private void shadowPairsAdd(java.util.ArrayList arraylist)
+    {
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.Object obj = arraylist.get(j);
+            if(obj instanceof com.maddox.il2.objects.ships.BigshipGeneric)
+            {
+                com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric = (com.maddox.il2.objects.ships.BigshipGeneric)obj;
+                if(com.maddox.il2.engine.Actor.isValid(bigshipgeneric.getAirport()) && !shadowPairsMap1.containsKey(bigshipgeneric))
+                {
+                    shadowPairsList1.add(bigshipgeneric);
+                    shadowPairsMap1.put(bigshipgeneric, null);
+                }
+            }
+        }
+
+    }
+
+    private void shadowPairsRender()
+    {
+        int i = shadowPairsList1.size();
+        if(i == 0)
+            return;
+        for(int j = 0; j < i; j++)
+        {
+            shadowPairsCur1 = (com.maddox.il2.objects.ships.BigshipGeneric)shadowPairsList1.get(j);
+            com.maddox.JGP.Point3d point3d = shadowPairsCur1.pos.getAbsPoint();
+            double d = point3d.x - shadowPairsR;
+            double d1 = point3d.y - shadowPairsR;
+            double d2 = point3d.x + shadowPairsR;
+            double d3 = point3d.y + shadowPairsR;
+            com.maddox.il2.engine.Engine.drawEnv().getFiltered((java.util.AbstractCollection)null, d, d1, d2, d3, 14, shadowPairsFilter);
+        }
+
+        if(shadowPairsList2.size() == 0)
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.engine.HierMesh.renderShadowPairs(shadowPairsList2);
+            return;
+        }
+    }
+
+    private void doPreRender3D(com.maddox.il2.engine.Render render)
+    {
+        render.useClearColor(!bDrawLand || (com.maddox.il2.engine.RenderContext.texGetFlags() & 0x20) != 0);
+        render.getCamera().pos.getRender(__p, __o);
+        if(!bRenderMirror && iRenderIndx == 0)
+        {
+            com.maddox.il2.objects.vehicles.lights.SearchlightGeneric.lightPlanesBySearchlights();
+            com.maddox.il2.engine.Actor actor = render.getCamera().pos.base();
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+            {
+                actor.getSpeed(__v);
+                com.maddox.il2.engine.Camera.SetTargetSpeed((float)__v.x, (float)__v.y, (float)__v.z);
+            } else
+            {
+                com.maddox.il2.engine.Camera.SetTargetSpeed(0.0F, 0.0F, 0.0F);
+            }
+        }
+        com.maddox.il2.engine.Render.enableFog(bEnableFog);
+        if(bDrawClouds && clouds != null)
+            clouds.preRender();
+        if(bDrawLand)
+            com.maddox.il2.engine.Engine.land().preRender((float)__p.z, false);
+        com.maddox.il2.game.DrwArray drwarray = bRenderMirror ? drwMirror : drwMaster[iRenderIndx];
+        com.maddox.il2.ai.World _tmp = com.maddox.il2.engine.Engine.cur.world;
+        com.maddox.il2.engine.Engine.drawEnv().preRender(__p.x, __p.y, __p.z, com.maddox.il2.ai.World.MaxVisualDistance, 4, drwarray.drwSolid, drwarray.drwTransp, drwarray.drwShadow, true);
+        com.maddox.il2.ai.World _tmp1 = com.maddox.il2.engine.Engine.cur.world;
+        com.maddox.il2.engine.Engine.drawEnv().preRender(__p.x, __p.y, __p.z, com.maddox.il2.ai.World.MaxLongVisualDistance, 8, drwarray.drwSolid, drwarray.drwTransp, drwarray.drwShadow, false);
+        if(!bRenderMirror)
+        {
+            shadowPairsAdd(drwarray.drwSolid);
+            shadowPairsAdd(drwarray.drwTransp);
+        }
+        if(!bRenderMirror || viewMirror > 1)
+        {
+            com.maddox.il2.ai.World _tmp2 = com.maddox.il2.engine.Engine.cur.world;
+            com.maddox.il2.engine.Engine.drawEnv().preRender(__p.x, __p.y, __p.z, com.maddox.il2.ai.World.MaxStaticVisualDistance, 2, drwarray.drwSolid, drwarray.drwTransp, drwarray.drwShadow, false);
+            com.maddox.il2.ai.World _tmp3 = com.maddox.il2.engine.Engine.cur.world;
+            com.maddox.il2.engine.Engine.drawEnv().preRender(__p.x, __p.y, __p.z, com.maddox.il2.ai.World.MaxPlateVisualDistance, 1, drwarray.drwSolidPlate, drwarray.drwTranspPlate, drwarray.drwShadowPlate, true);
+        }
+        com.maddox.il2.engine.BulletGeneric.preRenderAll();
+        if(bEnableFog)
+            com.maddox.il2.engine.Render.enableFog(false);
+    }
+
+    private void doRender3D0(com.maddox.il2.engine.Render render)
+    {
+        boolean flag = false;
+        com.maddox.il2.engine.Render.enableFog(bEnableFog);
+        if(bDrawLand)
+        {
+            com.maddox.il2.engine.Engine.lightEnv().prepareForRender(camera3D.pos.getAbsPoint(), 8000F);
+            flag = com.maddox.il2.engine.Engine.land().render0(bRenderMirror) != 2;
+            com.maddox.il2.engine.LightPoint.clearRender();
+        }
+        if(flag && bEnableFog)
+            com.maddox.il2.engine.Render.enableFog(false);
+        com.maddox.il2.game.DrwArray drwarray = bRenderMirror ? drwMirror : drwMaster[iRenderIndx];
+        plateToRenderArray(drwarray.drwSolidPlate, drwarray.drwSolid);
+        plateToRenderArray(drwarray.drwTranspPlate, drwarray.drwTransp);
+        plateToRenderArray(drwarray.drwShadowPlate, drwarray.drwShadow);
+        com.maddox.il2.engine.MeshShared.renderArray(true);
+        render.drawShadow(drwarray.drwShadow);
+        if(flag && bEnableFog)
+            com.maddox.il2.engine.Render.enableFog(true);
+        if(bDrawLand)
+            com.maddox.il2.engine.Engine.land().render1(bRenderMirror);
+        int i = com.maddox.opengl.gl.GetError();
+        if(i != 0)
+            java.lang.System.out.println("***( GL error: " + i + " (render3d0)");
+    }
+
+    private void doRender3D1(com.maddox.il2.engine.Render render)
+    {
+        if(bDrawClouds && clouds != null && com.maddox.il2.engine.RenderContext.cfgSky.get() > 0)
+        {
+            com.maddox.il2.engine.Engine.lightEnv().prepareForRender(camera3D.pos.getAbsPoint(), (float)com.maddox.il2.engine.RenderContext.cfgSky.get() * 4000F);
+            com.maddox.il2.objects.vehicles.lights.SearchlightGeneric.lightCloudsBySearchlights();
+            clouds.render();
+            com.maddox.il2.engine.LightPoint.clearRender();
+        }
+        com.maddox.il2.game.DrwArray drwarray = bRenderMirror ? drwMirror : drwMaster[iRenderIndx];
+        render.draw(drwarray.drwSolid, drwarray.drwTransp);
+        if(!bRenderMirror)
+            shadowPairsRender();
+        com.maddox.il2.engine.BulletGeneric.renderAll();
+        if(bEnableFog)
+        {
+            com.maddox.il2.engine.Render.flush();
+            com.maddox.il2.engine.Render.enableFog(false);
+        }
+    }
+
+    private void plateToRenderArray(java.util.ArrayList arraylist, java.util.ArrayList arraylist1)
+    {
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)arraylist.get(j);
+            if(actor instanceof com.maddox.il2.engine.ActorLandMesh)
+                arraylist1.add(actor);
+            else
+            if((actor instanceof com.maddox.il2.engine.ActorMesh) && (((com.maddox.il2.engine.ActorMesh)actor).mesh() instanceof com.maddox.il2.engine.MeshShared))
+            {
+                actor.pos.getRender(__l);
+                if(!((com.maddox.il2.engine.MeshShared)((com.maddox.il2.engine.ActorMesh)actor).mesh()).putToRenderArray(__l))
+                    actor.draw.render(actor);
+            } else
+            {
+                actor.draw.render(actor);
+            }
+        }
+
+        arraylist.clear();
+    }
+
+    public void _getAspectViewPort(int i, float af[])
+    {
+        af[0] = i != 1 ? 0.6666667F : 0.0F;
+        af[1] = 0.0F;
+        af[2] = 0.3333333F;
+        af[3] = 1.0F;
+    }
+
+    public void _getAspectViewPort(int i, int ai[])
+    {
+        ai[0] = i != 1 ? (2 * com.maddox.il2.engine.RendersMain.width()) / 3 : 0;
+        ai[1] = 0;
+        ai[2] = com.maddox.il2.engine.RendersMain.width() / 3;
+        ai[3] = com.maddox.il2.engine.RendersMain.height();
+    }
+
+    private void drawTime()
+    {
+        if(!hud.bDrawAllMessages)
+            return;
+        if(bShowTime || isDemoPlaying())
+        {
+            int i = com.maddox.il2.engine.TextScr.This().getViewPortWidth();
+            long l = com.maddox.rts.Time.current();
+            if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+                l -= com.maddox.il2.net.NetMissionTrack.playingStartTime;
+            int j = (int)((l / 1000L) % 60L);
+            int k = (int)(l / 1000L / 60L);
+            if(j > 9)
+                com.maddox.il2.engine.TextScr.output(i - com.maddox.il2.engine.TextScr.font().height() * 3, 5, "" + k + ":" + j);
+            else
+                com.maddox.il2.engine.TextScr.output(i - com.maddox.il2.engine.TextScr.font().height() * 3, 5, "" + k + ":0" + j);
+        }
+    }
+
+    public int mirrorX0()
+    {
+        return render3D0.getViewPortX0();
+    }
+
+    public int mirrorY0()
+    {
+        return 0;
+    }
+
+    public int mirrorWidth()
+    {
+        return 256;
+    }
+
+    public int mirrorHeight()
+    {
+        return 256;
+    }
+
+    public void preRenderHUD()
     {
     }
 
-    public void set(float paramFloat)
+    public void renderHUD()
     {
-      super.set(paramFloat);
-      Main3D.this._camera3D[1].set(paramFloat);
-      Main3D.this._camera3D[1].pos.setRel(new Orient(-paramFloat, 0.0F, 0.0F));
-      Main3D.this._camera3D[2].set(paramFloat);
-      Main3D.this._camera3D[2].pos.setRel(new Orient(paramFloat, 0.0F, 0.0F));
-      Main3D.this._cameraCockpit[1].set(paramFloat);
-      Main3D.this._cameraCockpit[1].pos.setRel(new Orient(-paramFloat, 0.0F, 0.0F));
-      Main3D.this._cameraCockpit[2].set(paramFloat);
-      Main3D.this._cameraCockpit[2].pos.setRel(new Orient(paramFloat, 0.0F, 0.0F));
-      Main3D.this.camera3DR.set(paramFloat);
     }
-  }
+
+    public void renderHUDcontextResize(int i, int j)
+    {
+    }
+
+    public void preRenderMap2D()
+    {
+    }
+
+    public void renderMap2D()
+    {
+    }
+
+    public void renderMap2DcontextResize(int i, int j)
+    {
+    }
+
+    private void insertFarActorItem(int i, int j, int k, float f, java.lang.String s)
+    {
+        int l = (int)iconFarFont.width(s);
+        for(int i1 = 0; i1 < iconFarListLen[iRenderIndx]; i1++)
+        {
+            com.maddox.il2.game.FarActorItem faractoritem = (com.maddox.il2.game.FarActorItem)iconFarList[iRenderIndx].get(i1);
+            if(f > faractoritem.z)
+            {
+                if(iconFarList[iRenderIndx].size() == iconFarListLen[iRenderIndx])
+                {
+                    com.maddox.il2.game.FarActorItem faractoritem1 = new FarActorItem(i, j, k, l, f, s);
+                    iconFarList[iRenderIndx].add(faractoritem1);
+                } else
+                {
+                    com.maddox.il2.game.FarActorItem faractoritem2 = (com.maddox.il2.game.FarActorItem)iconFarList[iRenderIndx].get(iconFarListLen[iRenderIndx]);
+                    faractoritem2.set(i, j, k, l, f, s);
+                    iconFarList[iRenderIndx].remove(iconFarListLen[iRenderIndx]);
+                    iconFarList[iRenderIndx].add(i1, faractoritem2);
+                }
+                iconFarListLen[iRenderIndx]++;
+                return;
+            }
+        }
+
+        if(iconFarList[iRenderIndx].size() == iconFarListLen[iRenderIndx])
+        {
+            com.maddox.il2.game.FarActorItem faractoritem3 = new FarActorItem(i, j, k, l, f, s);
+            iconFarList[iRenderIndx].add(faractoritem3);
+        } else
+        {
+            com.maddox.il2.game.FarActorItem faractoritem4 = (com.maddox.il2.game.FarActorItem)iconFarList[iRenderIndx].get(iconFarListLen[iRenderIndx]);
+            faractoritem4.set(i, j, k, l, f, s);
+        }
+        iconFarListLen[iRenderIndx]++;
+    }
+
+    private void clipFarActorItems()
+    {
+        int i = iconFarFont.height();
+        for(int j = 0; j < iconFarListLen[iRenderIndx]; j++)
+        {
+            com.maddox.il2.game.FarActorItem faractoritem = (com.maddox.il2.game.FarActorItem)iconFarList[iRenderIndx].get(j);
+            for(int k = j + 1; k < iconFarListLen[iRenderIndx]; k++)
+            {
+                com.maddox.il2.game.FarActorItem faractoritem1 = (com.maddox.il2.game.FarActorItem)iconFarList[iRenderIndx].get(k);
+                if(faractoritem1.x + faractoritem1.dx >= faractoritem.x && faractoritem1.x <= faractoritem.x + faractoritem.dx && faractoritem1.y + i >= faractoritem.y && faractoritem1.y <= faractoritem.y + i)
+                {
+                    iconFarList[iRenderIndx].remove(k);
+                    iconFarList[iRenderIndx].add(faractoritem1);
+                    k--;
+                    iconFarListLen[iRenderIndx]--;
+                }
+            }
+
+        }
+
+    }
+
+    private void clearFarActorItems()
+    {
+        iconFarListLen[iRenderIndx] = 0;
+    }
+
+    private boolean isBomb(com.maddox.il2.engine.Actor actor)
+    {
+        return (actor instanceof com.maddox.il2.objects.weapons.Bomb) || (actor instanceof com.maddox.il2.objects.weapons.Rocket);
+    }
+
+    protected void drawFarActors()
+    {
+        if(com.maddox.il2.game.Main.state() != null && com.maddox.il2.game.Main.state().id() == 18)
+            return;
+        if(iconFarMat == null)
+            return;
+        iconFarFontHeight = iconFarFont.height();
+        iconClipX0 = -2D;
+        iconClipY0 = -1D;
+        if(bRenderMirror)
+        {
+            iconClipX1 = (float)render2DMirror.getViewPortWidth() + 2.0F;
+            iconClipY1 = (float)render2DMirror.getViewPortHeight() + 1.0F;
+        } else
+        {
+            iconClipX1 = (float)_render2D[iRenderIndx].getViewPortWidth() + 2.0F;
+            iconClipY1 = (float)_render2D[iRenderIndx].getViewPortHeight() + 1.0F;
+        }
+        iconFarPlayerActor = com.maddox.il2.ai.World.getPlayerAircraft();
+        iconFarViewActor = viewActor();
+        iconFarPadlockItem.str = null;
+        iconFarPadlockActor = getViewPadlockEnemy();
+        _camera3D[iRenderIndx].pos.getRender(farActorFilter.camp);
+        com.maddox.JGP.Point3d point3d = farActorFilter.camp;
+        float f = com.maddox.il2.engine.Engine.lightEnv().sun().ToLight.z;
+        if(f < 0.0F)
+            f = 0.0F;
+        float f2 = com.maddox.il2.engine.Engine.lightEnv().sun().Ambient + com.maddox.il2.engine.Engine.lightEnv().sun().Diffuze * (0.25F + 0.4F * f);
+        if(com.maddox.il2.engine.RenderContext.cfgHardwareShaders.get() > 0)
+        {
+            f = com.maddox.il2.engine.Engine.lightEnv().sun().Ambient + f * com.maddox.il2.engine.Engine.lightEnv().sun().Diffuze;
+            if(f > 1.0F)
+                f2 *= f;
+        }
+        int j = (int)(127F * f2);
+        if(j > 255)
+            j = 255;
+        iconFarColor = j | j << 8 | j << 16;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int k = list.size();
+        for(int l = 0; l < k; l++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(l);
+            com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+            double d3 = point3d.distance(point3d1);
+            if(d3 < 25000D)
+                farActorFilter.isUse(actor, d3);
+        }
+
+        iconFarPlayerActor = null;
+        iconFarViewActor = null;
+        iconFarPadlockActor = null;
+        if(iconFarListLen[iRenderIndx] != 0)
+        {
+            clipFarActorItems();
+            for(int i = 0; i < iconFarListLen[iRenderIndx]; i++)
+            {
+                com.maddox.il2.game.FarActorItem faractoritem = (com.maddox.il2.game.FarActorItem)iconFarList[iRenderIndx].get(i);
+                if(bRenderMirror)
+                {
+                    transformMirror.set(faractoritem.x - faractoritem.dx, faractoritem.y, faractoritem.z, faractoritem.dx);
+                    iconFarFont.transform(transformMirror, faractoritem.color, faractoritem.str);
+                } else
+                {
+                    iconFarFont.output(faractoritem.color, faractoritem.x, faractoritem.y, faractoritem.z, faractoritem.str);
+                }
+            }
+
+        }
+        if(iconFarPadlockItem.str != null)
+        {
+            if(!iconFarPadlockItem.bGround)
+            {
+                iconFarPadlockItem.x++;
+                iconFarPadlockItem.y += -7.5F;
+                float f1 = 16F;
+                line3XYZ[0] = (float)((double)iconFarPadlockItem.x - (double)f1 * 0.86599999999999999D);
+                line3XYZ[1] = (float)((double)iconFarPadlockItem.y - (double)f1 * 0.5D);
+                line3XYZ[2] = iconFarPadlockItem.z;
+                line3XYZ[3] = (float)((double)iconFarPadlockItem.x + (double)f1 * 0.86599999999999999D);
+                line3XYZ[4] = (float)((double)iconFarPadlockItem.y - (double)f1 * 0.5D);
+                line3XYZ[5] = iconFarPadlockItem.z;
+                line3XYZ[6] = iconFarPadlockItem.x;
+                line3XYZ[7] = (float)iconFarPadlockItem.y + f1;
+                line3XYZ[8] = iconFarPadlockItem.z;
+            } else
+            {
+                camera3D.pos.getRender(_lineP, _lineO);
+                double d = ((double)(-_lineO.getKren()) * 3.1415926535897931D) / 180D;
+                double d1 = java.lang.Math.sin(d);
+                double d2 = java.lang.Math.cos(d);
+                iconFarPadlockItem.x++;
+                iconFarPadlockItem.y += -7.5F;
+                float f3 = 16F;
+                line3XYZ[0] = iconFarPadlockItem.x;
+                line3XYZ[1] = iconFarPadlockItem.y;
+                line3XYZ[2] = iconFarPadlockItem.z;
+                line3XYZ[3] = (float)((double)iconFarPadlockItem.x + d2 * (double)f3 * 0.25D + d1 * 1.5D * (double)f3);
+                line3XYZ[4] = (float)(((double)iconFarPadlockItem.y - d1 * (double)f3 * 0.25D) + d2 * 1.5D * (double)f3);
+                line3XYZ[5] = iconFarPadlockItem.z;
+                line3XYZ[6] = (float)(((double)iconFarPadlockItem.x - d2 * (double)f3 * 0.25D) + d1 * 1.5D * (double)f3);
+                line3XYZ[7] = (float)((double)iconFarPadlockItem.y + d1 * (double)f3 * 0.25D + d2 * 1.5D * (double)f3);
+                line3XYZ[8] = iconFarPadlockItem.z;
+            }
+            com.maddox.il2.engine.Render.drawBeginLines(-1);
+            com.maddox.il2.engine.Render.drawLines(line3XYZ, 3, 1.0F, iconFarPadlockItem.color, com.maddox.il2.engine.Mat.TESTZ | com.maddox.il2.engine.Mat.MODULATE | com.maddox.il2.engine.Mat.NOTEXTURE | com.maddox.il2.engine.Mat.BLEND, 5);
+            com.maddox.il2.engine.Render.drawEnd();
+        }
+        clearFarActorItems();
+    }
+
+    protected void drawFarActorsInit()
+    {
+        iconFarMat = com.maddox.il2.engine.Mat.New("icons/faractor.mat");
+        iconFarFont = com.maddox.il2.engine.TTFont.get("arialSmallZ");
+        iconFarFinger = com.maddox.rts.Finger.Int("iconFar_shortClassName");
+    }
+
+    public void initHotKeys()
+    {
+        com.maddox.rts.CmdEnv.top().setCommand(new CmdExit(), "exit", "exit game");
+        com.maddox.rts.HotKeyCmdEnv.setCurrentEnv("hotkeys");
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "exit") {
+
+            public void begin()
+            {
+                com.maddox.il2.game.Main.doGameExit();
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "ScreenShot") {
+
+            public void begin()
+            {
+                if(scrShot == null)
+                    scrShot = new ScrShot("grab");
+                if(com.maddox.il2.game.Mission.isNet())
+                {
+                    long l = com.maddox.rts.Time.real();
+                    if(lastTimeScreenShot + 10000L < l)
+                        lastTimeScreenShot = l;
+                    else
+                        return;
+                }
+                scrShot.grab();
+            }
+
+        }
+);
+        com.maddox.rts.CmdEnv.top().setCommand(new CmdScreenSequence(), "avi", "start/stop save screen shot sequence");
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "ScreenSequence") {
+
+            public void begin()
+            {
+                if(screenSequence == null)
+                    screenSequence = new ScreenSequence();
+                screenSequence.doSave();
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "land") {
+
+            public void begin()
+            {
+                if(com.maddox.rts.RTSConf.cur.console.getEnv().levelAccess() == 0)
+                    setDrawLand(!isDrawLand());
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "clouds") {
+
+            public void begin()
+            {
+                if(com.maddox.il2.game.Mission.isSingle() && com.maddox.rts.RTSConf.cur.console.getEnv().levelAccess() == 0)
+                    bDrawClouds = !bDrawClouds;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "showTime") {
+
+            public void begin()
+            {
+                if(com.maddox.rts.RTSConf.cur.console.getEnv().levelAccess() == 0)
+                    bShowTime = !bShowTime;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(new com.maddox.rts.HotKeyCmd(true, "pause") {
+
+            public void begin()
+            {
+                if(com.maddox.il2.game.TimeSkip.isDo())
+                    return;
+                if(com.maddox.rts.Time.isEnableChangePause())
+                {
+                    com.maddox.rts.Time.setPause(!com.maddox.rts.Time.isPaused());
+                    if(com.maddox.il2.engine.Config.cur.isSoundUse())
+                        if(com.maddox.rts.Time.isPaused())
+                            com.maddox.sound.AudioDevice.soundsOff();
+                        else
+                            com.maddox.sound.AudioDevice.soundsOn();
+                }
+            }
+
+        }
+);
+    }
+
+    public static float FOVX = 70F;
+    public static final float ZNEAR = 1.2F;
+    public static final float ZFAR = 48000F;
+    protected boolean bDrawIfNotFocused;
+    protected boolean bUseStartLog;
+    protected boolean bUseGUI;
+    private boolean bShowStartIntro;
+    public com.maddox.il2.engine.GUIWindowManager guiManager;
+    public com.maddox.rts.KeyRecord keyRecord;
+    public com.maddox.il2.game.order.OrdersTree ordersTree;
+    public com.maddox.il2.game.TimeSkip timeSkip;
+    public com.maddox.il2.engine.hotkey.HookView hookView;
+    public com.maddox.il2.engine.hotkey.HookViewFly hookViewFly;
+    public com.maddox.il2.engine.hotkey.HookViewEnemy hookViewEnemy;
+    public com.maddox.il2.game.AircraftHotKeys aircraftHotKeys;
+    public com.maddox.il2.objects.air.Cockpit cockpits[];
+    public com.maddox.il2.objects.air.Cockpit cockpitCur;
+    public com.maddox.il2.objects.effects.OverLoad overLoad;
+    public com.maddox.il2.objects.effects.OverLoad _overLoad[];
+    public com.maddox.il2.objects.effects.SunGlare sunGlare;
+    public com.maddox.il2.objects.effects.SunGlare _sunGlare[];
+    public com.maddox.il2.objects.effects.LightsGlare lightsGlare;
+    public com.maddox.il2.objects.effects.LightsGlare _lightsGlare[];
+    private com.maddox.il2.objects.effects.SunFlare _sunFlare[];
+    public com.maddox.il2.engine.Render _sunFlareRender[];
+    private boolean bViewFly;
+    private boolean bViewEnemy;
+    public boolean bEnableFog;
+    private boolean bDrawLand;
+    public com.maddox.il2.engine.EffClouds clouds;
+    public com.maddox.il2.objects.effects.Zip zip;
+    public boolean bDrawClouds;
+    public com.maddox.il2.objects.effects.SpritesFog spritesFog;
+    public com.maddox.il2.objects.effects.Cinema _cinema[];
+    public com.maddox.il2.game.Render3D0R render3D0R;
+    public com.maddox.il2.game.Camera3DR camera3DR;
+    public com.maddox.il2.game.Render3D0 render3D0;
+    public com.maddox.il2.game.Render3D1 render3D1;
+    public com.maddox.il2.engine.Camera3D camera3D;
+    public com.maddox.il2.game.Render3D0 _render3D0[];
+    public com.maddox.il2.game.Render3D1 _render3D1[];
+    public com.maddox.il2.engine.Camera3D _camera3D[];
+    public com.maddox.il2.game.Render2D render2D;
+    public com.maddox.il2.engine.CameraOrtho2D camera2D;
+    public com.maddox.il2.game.Render2D _render2D[];
+    public com.maddox.il2.engine.CameraOrtho2D _camera2D[];
+    public com.maddox.il2.game.Render3D0Mirror render3D0Mirror;
+    public com.maddox.il2.game.Render3D1Mirror render3D1Mirror;
+    public com.maddox.il2.engine.Camera3D camera3DMirror;
+    public com.maddox.il2.game.Render2DMirror render2DMirror;
+    public com.maddox.il2.engine.CameraOrtho2D camera2DMirror;
+    public com.maddox.il2.game.RenderCockpit renderCockpit;
+    public com.maddox.il2.engine.Camera3D cameraCockpit;
+    public com.maddox.il2.game.RenderCockpit _renderCockpit[];
+    public com.maddox.il2.engine.Camera3D _cameraCockpit[];
+    public com.maddox.il2.game.RenderCockpitMirror renderCockpitMirror;
+    public com.maddox.il2.engine.Camera3D cameraCockpitMirror;
+    public com.maddox.il2.game.RenderHUD renderHUD;
+    public com.maddox.il2.engine.CameraOrtho2D cameraHUD;
+    public com.maddox.il2.game.HUD hud;
+    public com.maddox.il2.game.RenderMap2D renderMap2D;
+    public com.maddox.il2.engine.CameraOrtho2D cameraMap2D;
+    public com.maddox.il2.engine.Land2D land2D;
+    public com.maddox.il2.engine.Land2DText land2DText;
+    private static java.lang.String _sLastMusic = "ru";
+    protected int viewMirror;
+    private int iconTypes;
+    public static final java.lang.String gameHotKeyCmdEnvs[] = {
+        "Console", "hotkeys", "HookView", "PanView", "SnapView", "pilot", "move", "gunner", "misc", "orders", 
+        "aircraftView", "timeCompression", "gui"
+    };
+    public static final java.lang.String builderHotKeyCmdEnvs[] = {
+        "Console", "builder", "hotkeys"
+    };
+    com.maddox.rts.KeyRecordCallback playRecordedMissionCallback;
+    java.lang.String playRecordedFile;
+    int playBatchCurRecord;
+    boolean playEndBatch;
+    com.maddox.rts.SectFile playRecordedSect;
+    int playRecorderIndx;
+    java.lang.String playRecordedPlayFile;
+    com.maddox.rts.InOutStreams playRecordedStreams;
+    com.maddox.rts.NetChannelInStream playRecordedNetChannelIn;
+    com.maddox.il2.game.GameTrack gameTrackRecord;
+    com.maddox.il2.game.GameTrack gameTrackPlay;
+    private boolean bLoadRecordedStates1Before;
+    private boolean bRenderMirror;
+    private int iRenderIndx;
+    protected double _modelMatrix3D[][];
+    protected double _projMatrix3D[][];
+    protected int _viewport[][];
+    protected double _modelMatrix3DMirror[];
+    protected double _projMatrix3DMirror[];
+    protected int _viewportMirror[];
+    private double _dIn[];
+    private double _dOut[];
+    private static double shadowPairsR;
+    private static double shadowPairsR2;
+    private java.util.ArrayList shadowPairsList1;
+    private java.util.HashMap shadowPairsMap1;
+    private com.maddox.il2.objects.ships.BigshipGeneric shadowPairsCur1;
+    private java.util.ArrayList shadowPairsList2;
+    private com.maddox.il2.engine.ActorFilter shadowPairsFilter;
+    private com.maddox.il2.game.DrwArray drwMaster[] = {
+        new DrwArray(), new DrwArray(), new DrwArray()
+    };
+    private com.maddox.il2.game.DrwArray drwMirror;
+    private com.maddox.il2.engine.Loc __l;
+    private com.maddox.JGP.Point3d __p;
+    private com.maddox.il2.engine.Orient __o;
+    private com.maddox.JGP.Vector3d __v;
+    private boolean bShowTime;
+    public static final java.lang.String ICONFAR_PROPERTY = "iconFar_shortClassName";
+    public static final float iconFarActorSizeX = 2F;
+    public static final float iconFarActorSizeY = 1F;
+    public static final float iconFarSmallActorSize = 1F;
+    public static int iconFarColor = 0x7f7f7f;
+    protected double iconGroundDrawMin;
+    protected double iconSmallDrawMin;
+    protected double iconAirDrawMin;
+    protected double iconDrawMax;
+    private com.maddox.il2.engine.Mat iconFarMat;
+    private com.maddox.il2.engine.TTFont iconFarFont;
+    private int iconFarFinger;
+    private float iconFarFontHeight;
+    private double iconClipX0;
+    private double iconClipX1;
+    private double iconClipY0;
+    private double iconClipY1;
+    private com.maddox.il2.engine.Actor iconFarPlayerActor;
+    private com.maddox.il2.engine.Actor iconFarViewActor;
+    private com.maddox.il2.engine.Actor iconFarPadlockActor;
+    private com.maddox.il2.game.FarActorItem iconFarPadlockItem;
+    private java.util.ArrayList iconFarList[] = {
+        new ArrayList(), new ArrayList(), new ArrayList()
+    };
+    private int iconFarListLen[] = {
+        0, 0, 0
+    };
+    private com.maddox.il2.game.FarActorFilter farActorFilter;
+    private float line3XYZ[];
+    private com.maddox.JGP.Point3d _lineP;
+    private com.maddox.il2.engine.Orient _lineO;
+    private com.maddox.il2.game.TransformMirror transformMirror;
+    private long lastTimeScreenShot;
+    private com.maddox.opengl.util.ScrShot scrShot;
+    private com.maddox.il2.game.ScreenSequence screenSequence;
+
+    static 
+    {
+        shadowPairsR = 1000D;
+        shadowPairsR2 = shadowPairsR * shadowPairsR;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

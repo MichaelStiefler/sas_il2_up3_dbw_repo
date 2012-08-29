@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetMsgOutput.java
+
 package com.maddox.rts;
 
 import java.io.DataOutput;
@@ -7,303 +12,389 @@ import java.io.UTFDataFormatException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetMsgOutput extends OutputStream
-  implements DataOutput
+// Referenced classes of package com.maddox.rts:
+//            NetMsgInput, NetObj
+
+public class NetMsgOutput extends java.io.OutputStream
+    implements java.io.DataOutput
 {
-  protected NetObj _sender;
-  protected int _len;
-  private int _lockCount;
-  protected ArrayList objects = null;
-  protected int count;
-  protected byte[] buf = null;
 
-  public List objects() {
-    return this.objects;
-  }
-  public byte[] data() { return this.buf; } 
-  public int dataLength() {
-    return this.count;
-  }
-
-  public boolean isLocked() {
-    return this._lockCount > 0;
-  }
-
-  public int lockCount() {
-    return this._lockCount;
-  }
-
-  public void checkLock() throws IOException {
-    if (this._lockCount > 0)
-      throw new IOException("Message is LOCKED");
-  }
-
-  public void lockInc()
-  {
-    this._lockCount += 1;
-  }
-
-  public void lockDec()
-  {
-    this._lockCount -= 1;
-    if (this._lockCount < 0)
-      throw new RuntimeException("Lock counter in network output message is negative");
-    if (this._lockCount == 0)
-      unLocking();
-  }
-
-  public void unLocking()
-  {
-  }
-
-  public int size()
-  {
-    if (this.objects == null) return this.count;
-    return this.count + this.objects.size() * 2;
-  }
-
-  public void clear() throws IOException {
-    if (this._lockCount > 0)
-      throw new IOException("Message is LOCKED");
-    this.count = 0;
-    if (this.objects != null)
-      this.objects.clear();
-  }
-
-  public void writeNetObj(NetObj paramNetObj) throws IOException
-  {
-    if (this._lockCount > 0)
-      throw new IOException("Message is LOCKED");
-    if (this.objects == null)
-      this.objects = new ArrayList(2);
-    this.objects.add(paramNetObj);
-  }
-  public static int netObjReferenceLen() {
-    return 2;
-  }
-
-  public void write(int paramInt)
-    throws IOException
-  {
-    if (this._lockCount > 0)
-      throw new IOException("Message is LOCKED");
-    int i = this.count + 1;
-    if (i > this.buf.length) {
-      byte[] arrayOfByte = new byte[Math.max(this.buf.length << 1, i)];
-      System.arraycopy(this.buf, 0, arrayOfByte, 0, this.count);
-      this.buf = arrayOfByte;
-    }
-    this.buf[this.count] = (byte)paramInt;
-    this.count = i;
-  }
-
-  public void writeBoolean(boolean paramBoolean) throws IOException {
-    write(paramBoolean ? 1 : 0);
-  }
-
-  public void writeByte(int paramInt) throws IOException {
-    write(paramInt);
-  }
-
-  public void writeShort(int paramInt) throws IOException {
-    write(paramInt >>> 8 & 0xFF);
-    write(paramInt >>> 0 & 0xFF);
-  }
-
-  public void writeChar(int paramInt) throws IOException {
-    write(paramInt >>> 8 & 0xFF);
-    write(paramInt >>> 0 & 0xFF);
-  }
-
-  public void writeInt(int paramInt) throws IOException {
-    write(paramInt >>> 24 & 0xFF);
-    write(paramInt >>> 16 & 0xFF);
-    write(paramInt >>> 8 & 0xFF);
-    write(paramInt >>> 0 & 0xFF);
-  }
-
-  public void writeLong(long paramLong) throws IOException {
-    write((int)(paramLong >>> 56) & 0xFF);
-    write((int)(paramLong >>> 48) & 0xFF);
-    write((int)(paramLong >>> 40) & 0xFF);
-    write((int)(paramLong >>> 32) & 0xFF);
-    write((int)(paramLong >>> 24) & 0xFF);
-    write((int)(paramLong >>> 16) & 0xFF);
-    write((int)(paramLong >>> 8) & 0xFF);
-    write((int)(paramLong >>> 0) & 0xFF);
-  }
-
-  public void writeFloat(float paramFloat) throws IOException {
-    writeInt(Float.floatToIntBits(paramFloat));
-  }
-
-  public void writeDouble(double paramDouble) throws IOException {
-    writeLong(Double.doubleToLongBits(paramDouble));
-  }
-
-  public void writeBytes(String paramString) throws IOException {
-    int i = paramString.length();
-    for (int j = 0; j < i; j++)
-      write((byte)paramString.charAt(j));
-  }
-
-  public void writeChars(String paramString) throws IOException {
-    int i = paramString.length();
-    for (int j = 0; j < i; j++) {
-      int k = paramString.charAt(j);
-      write(k >>> 8 & 0xFF);
-      write(k >>> 0 & 0xFF);
-    }
-  }
-
-  public void writeUTF(String paramString) throws IOException {
-    int i = paramString.length();
-    int j = 0;
-    int m;
-    for (int k = 0; k < i; k++) {
-      m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127))
-        j++;
-      else if (m > 2047)
-        j += 3;
-      else {
-        j += 2;
-      }
+    public java.util.List objects()
+    {
+        return objects;
     }
 
-    if (j > 65535) {
-      throw new UTFDataFormatException();
-    }
-    write(j >>> 8 & 0xFF);
-    write(j >>> 0 & 0xFF);
-    for (k = 0; k < i; k++) {
-      m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127)) {
-        write(m);
-      } else if (m > 2047) {
-        write(0xE0 | m >> 12 & 0xF);
-        write(0x80 | m >> 6 & 0x3F);
-        write(0x80 | m >> 0 & 0x3F);
-      } else {
-        write(0xC0 | m >> 6 & 0x1F);
-        write(0x80 | m >> 0 & 0x3F);
-      }
-    }
-  }
-
-  public static int len255(String paramString) {
-    int i = paramString.length();
-    int j = 0;
-
-    for (int k = 0; k < i; k++) {
-      int m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127))
-        j++;
-      else if (m > 2047)
-        j += 3;
-      else {
-        j += 2;
-      }
-    }
-    return j + 1;
-  }
-
-  public void write255(String paramString) throws IOException
-  {
-    int i = paramString.length();
-    int j = 0;
-    int m;
-    for (int k = 0; k < i; k++) {
-      m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127))
-        j++;
-      else if (m > 2047)
-        j += 3;
-      else {
-        j += 2;
-      }
+    public byte[] data()
+    {
+        return buf;
     }
 
-    if (j > 255) {
-      throw new UTFDataFormatException();
+    public int dataLength()
+    {
+        return count;
     }
-    write(j & 0xFF);
-    for (k = 0; k < i; k++) {
-      m = paramString.charAt(k);
-      if ((m >= 1) && (m <= 127)) {
-        write(m);
-      } else if (m > 2047) {
-        write(0xE0 | m >> 12 & 0xF);
-        write(0x80 | m >> 6 & 0x3F);
-        write(0x80 | m >> 0 & 0x3F);
-      } else {
-        write(0xC0 | m >> 6 & 0x1F);
-        write(0x80 | m >> 0 & 0x3F);
-      }
+
+    public boolean isLocked()
+    {
+        return _lockCount > 0;
     }
-  }
 
-  public void writeMsg(NetMsgInput paramNetMsgInput, int paramInt) throws IOException {
-    if (this._lockCount > 0)
-      throw new IOException("Message is LOCKED");
-    int i = paramNetMsgInput.pos;
-    int j = paramNetMsgInput.end;
-    try {
-      paramNetMsgInput.reset();
-      if ((paramInt > 0) && (this.objects == null))
-        this.objects = new ArrayList(2);
-      while (paramInt-- > 0) {
-        this.objects.add(paramNetMsgInput.readNetObj());
-      }
-      int k = paramNetMsgInput.available();
-      while (k-- > 0)
-        write(paramNetMsgInput.read());
+    public int lockCount()
+    {
+        return _lockCount;
     }
-    catch (IOException localIOException) {
-      paramNetMsgInput.pos = i; paramNetMsgInput.end = j;
-      throw localIOException;
+
+    public void checkLock()
+        throws java.io.IOException
+    {
+        if(_lockCount > 0)
+            throw new IOException("Message is LOCKED");
+        else
+            return;
     }
-    paramNetMsgInput.pos = i; paramNetMsgInput.end = j;
-  }
 
-  protected NetMsgOutput()
-  {
-    this(16);
-  }
+    public void lockInc()
+    {
+        _lockCount++;
+    }
 
-  protected NetMsgOutput(byte[] paramArrayOfByte) {
-    this.buf = paramArrayOfByte;
-  }
+    public void lockDec()
+    {
+        _lockCount--;
+        if(_lockCount < 0)
+            throw new RuntimeException("Lock counter in network output message is negative");
+        if(_lockCount == 0)
+            unLocking();
+    }
 
-  protected NetMsgOutput(int paramInt)
-  {
-    if (paramInt < 0)
-      throw new IllegalArgumentException("Negative initial size: " + paramInt);
-    this.buf = new byte[paramInt];
-  }
+    public void unLocking()
+    {
+    }
 
-  protected NetMsgOutput(NetMsgInput paramNetMsgInput, int paramInt) throws IOException
-  {
-    int i = paramNetMsgInput.pos;
-    int j = paramNetMsgInput.end;
-    try {
-      paramNetMsgInput.reset();
-      while (paramInt-- > 0) {
-        writeNetObj(paramNetMsgInput.readNetObj());
-      }
-      if (paramNetMsgInput.available() > 0) {
-        this.count = paramNetMsgInput.available();
-        if (paramNetMsgInput.pos == 0) {
-          this.buf = paramNetMsgInput.buf;
-        } else {
-          this.buf = new byte[this.count];
-          paramNetMsgInput.readFully(this.buf);
+    public int size()
+    {
+        if(objects == null)
+            return count;
+        else
+            return count + objects.size() * 2;
+    }
+
+    public void clear()
+        throws java.io.IOException
+    {
+        if(_lockCount > 0)
+            throw new IOException("Message is LOCKED");
+        count = 0;
+        if(objects != null)
+            objects.clear();
+    }
+
+    public void writeNetObj(com.maddox.rts.NetObj netobj)
+        throws java.io.IOException
+    {
+        if(_lockCount > 0)
+            throw new IOException("Message is LOCKED");
+        if(objects == null)
+            objects = new ArrayList(2);
+        objects.add(netobj);
+    }
+
+    public static int netObjReferenceLen()
+    {
+        return 2;
+    }
+
+    public void write(int i)
+        throws java.io.IOException
+    {
+        if(_lockCount > 0)
+            throw new IOException("Message is LOCKED");
+        int j = count + 1;
+        if(j > buf.length)
+        {
+            byte abyte0[] = new byte[java.lang.Math.max(buf.length << 1, j)];
+            java.lang.System.arraycopy(buf, 0, abyte0, 0, count);
+            buf = abyte0;
         }
-      }
-    } catch (IOException localIOException) {
-      paramNetMsgInput.pos = i; paramNetMsgInput.end = j;
-      throw localIOException;
+        buf[count] = (byte)i;
+        count = j;
     }
-    paramNetMsgInput.pos = i; paramNetMsgInput.end = j;
-  }
+
+    public void writeBoolean(boolean flag)
+        throws java.io.IOException
+    {
+        write(flag ? 1 : 0);
+    }
+
+    public void writeByte(int i)
+        throws java.io.IOException
+    {
+        write(i);
+    }
+
+    public void writeShort(int i)
+        throws java.io.IOException
+    {
+        write(i >>> 8 & 0xff);
+        write(i >>> 0 & 0xff);
+    }
+
+    public void writeChar(int i)
+        throws java.io.IOException
+    {
+        write(i >>> 8 & 0xff);
+        write(i >>> 0 & 0xff);
+    }
+
+    public void writeInt(int i)
+        throws java.io.IOException
+    {
+        write(i >>> 24 & 0xff);
+        write(i >>> 16 & 0xff);
+        write(i >>> 8 & 0xff);
+        write(i >>> 0 & 0xff);
+    }
+
+    public void writeLong(long l)
+        throws java.io.IOException
+    {
+        write((int)(l >>> 56) & 0xff);
+        write((int)(l >>> 48) & 0xff);
+        write((int)(l >>> 40) & 0xff);
+        write((int)(l >>> 32) & 0xff);
+        write((int)(l >>> 24) & 0xff);
+        write((int)(l >>> 16) & 0xff);
+        write((int)(l >>> 8) & 0xff);
+        write((int)(l >>> 0) & 0xff);
+    }
+
+    public void writeFloat(float f)
+        throws java.io.IOException
+    {
+        writeInt(java.lang.Float.floatToIntBits(f));
+    }
+
+    public void writeDouble(double d)
+        throws java.io.IOException
+    {
+        writeLong(java.lang.Double.doubleToLongBits(d));
+    }
+
+    public void writeBytes(java.lang.String s)
+        throws java.io.IOException
+    {
+        int i = s.length();
+        for(int j = 0; j < i; j++)
+            write((byte)s.charAt(j));
+
+    }
+
+    public void writeChars(java.lang.String s)
+        throws java.io.IOException
+    {
+        int i = s.length();
+        for(int j = 0; j < i; j++)
+        {
+            char c = s.charAt(j);
+            write(c >>> 8 & 0xff);
+            write(c >>> 0 & 0xff);
+        }
+
+    }
+
+    public void writeUTF(java.lang.String s)
+        throws java.io.IOException
+    {
+        int i = s.length();
+        int j = 0;
+        for(int k = 0; k < i; k++)
+        {
+            char c = s.charAt(k);
+            if(c >= '\001' && c <= '\177')
+                j++;
+            else
+            if(c > '\u07FF')
+                j += 3;
+            else
+                j += 2;
+        }
+
+        if(j > 65535)
+            throw new UTFDataFormatException();
+        write(j >>> 8 & 0xff);
+        write(j >>> 0 & 0xff);
+        for(int l = 0; l < i; l++)
+        {
+            char c1 = s.charAt(l);
+            if(c1 >= '\001' && c1 <= '\177')
+                write(c1);
+            else
+            if(c1 > '\u07FF')
+            {
+                write(0xe0 | c1 >> 12 & 0xf);
+                write(0x80 | c1 >> 6 & 0x3f);
+                write(0x80 | c1 >> 0 & 0x3f);
+            } else
+            {
+                write(0xc0 | c1 >> 6 & 0x1f);
+                write(0x80 | c1 >> 0 & 0x3f);
+            }
+        }
+
+    }
+
+    public static int len255(java.lang.String s)
+    {
+        int i = s.length();
+        int j = 0;
+        for(int k = 0; k < i; k++)
+        {
+            char c = s.charAt(k);
+            if(c >= '\001' && c <= '\177')
+                j++;
+            else
+            if(c > '\u07FF')
+                j += 3;
+            else
+                j += 2;
+        }
+
+        return j + 1;
+    }
+
+    public void write255(java.lang.String s)
+        throws java.io.IOException
+    {
+        int i = s.length();
+        int j = 0;
+        for(int k = 0; k < i; k++)
+        {
+            char c = s.charAt(k);
+            if(c >= '\001' && c <= '\177')
+                j++;
+            else
+            if(c > '\u07FF')
+                j += 3;
+            else
+                j += 2;
+        }
+
+        if(j > 255)
+            throw new UTFDataFormatException();
+        write(j & 0xff);
+        for(int l = 0; l < i; l++)
+        {
+            char c1 = s.charAt(l);
+            if(c1 >= '\001' && c1 <= '\177')
+                write(c1);
+            else
+            if(c1 > '\u07FF')
+            {
+                write(0xe0 | c1 >> 12 & 0xf);
+                write(0x80 | c1 >> 6 & 0x3f);
+                write(0x80 | c1 >> 0 & 0x3f);
+            } else
+            {
+                write(0xc0 | c1 >> 6 & 0x1f);
+                write(0x80 | c1 >> 0 & 0x3f);
+            }
+        }
+
+    }
+
+    public void writeMsg(com.maddox.rts.NetMsgInput netmsginput, int i)
+        throws java.io.IOException
+    {
+        if(_lockCount > 0)
+            throw new IOException("Message is LOCKED");
+        int j = netmsginput.pos;
+        int k = netmsginput.end;
+        try
+        {
+            netmsginput.reset();
+            if(i > 0 && objects == null)
+                objects = new ArrayList(2);
+            while(i-- > 0) 
+                objects.add(netmsginput.readNetObj());
+            for(int l = netmsginput.available(); l-- > 0;)
+                write(netmsginput.read());
+
+        }
+        catch(java.io.IOException ioexception)
+        {
+            netmsginput.pos = j;
+            netmsginput.end = k;
+            throw ioexception;
+        }
+        netmsginput.pos = j;
+        netmsginput.end = k;
+    }
+
+    protected NetMsgOutput()
+    {
+        this(16);
+    }
+
+    protected NetMsgOutput(byte abyte0[])
+    {
+        objects = null;
+        buf = null;
+        buf = abyte0;
+    }
+
+    protected NetMsgOutput(int i)
+    {
+        objects = null;
+        buf = null;
+        if(i < 0)
+        {
+            throw new IllegalArgumentException("Negative initial size: " + i);
+        } else
+        {
+            buf = new byte[i];
+            return;
+        }
+    }
+
+    protected NetMsgOutput(com.maddox.rts.NetMsgInput netmsginput, int i)
+        throws java.io.IOException
+    {
+        objects = null;
+        buf = null;
+        int j = netmsginput.pos;
+        int k = netmsginput.end;
+        try
+        {
+            netmsginput.reset();
+            while(i-- > 0) 
+                writeNetObj(netmsginput.readNetObj());
+            if(netmsginput.available() > 0)
+            {
+                count = netmsginput.available();
+                if(netmsginput.pos == 0)
+                {
+                    buf = netmsginput.buf;
+                } else
+                {
+                    buf = new byte[count];
+                    netmsginput.readFully(buf);
+                }
+            }
+        }
+        catch(java.io.IOException ioexception)
+        {
+            netmsginput.pos = j;
+            netmsginput.end = k;
+            throw ioexception;
+        }
+        netmsginput.pos = j;
+        netmsginput.end = k;
+    }
+
+    protected com.maddox.rts.NetObj _sender;
+    protected int _len;
+    private int _lockCount;
+    protected java.util.ArrayList objects;
+    protected int count;
+    protected byte buf[];
 }

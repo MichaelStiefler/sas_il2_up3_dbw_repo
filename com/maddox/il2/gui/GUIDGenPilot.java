@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIDGenPilot.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GBevel;
@@ -23,278 +28,333 @@ import com.maddox.il2.game.Main;
 import com.maddox.il2.game.campaign.Campaign;
 import java.util.ArrayList;
 
-public class GUIDGenPilot extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIDGenRoster, GUIClient, GUIInfoMenu, GUIInfoName, 
+//            GUILookAndFeel, GUIButton, GUIDialogClient, GUISeparate, 
+//            GUIAwards
+
+public class GUIDGenPilot extends com.maddox.il2.game.GameState
 {
-  public GUIDGenRoster.Pilot pilot = null;
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public Scroll wScroll;
-  public Info wInfo;
-  public WAwardButton bViewAward;
-  public GUIButton bBack;
-  public GUIButton bDetailProfile;
-  private GUITexture matPhoto;
-  private boolean bMatPhotoValid = false;
-  private GTexture lastAward;
-
-  public void enterPush(GameState paramGameState)
-  {
-    this.pilot = ((GUIDGenRoster)paramGameState).pilotCur;
-    if (this.pilot.bPlayer) this.bDetailProfile.showWindow(); else
-      this.bDetailProfile.hideWindow();
-    this.wInfo.doComputeDy();
-    this.wScroll.resized();
-    String str = this.pilot.photo;
-    if ((str != null) && (!str.endsWith(".bmp"))) {
-      str = str + ".bmp";
-    }
-    if ((str != null) && (BmpUtils.bmp8Pal192x256ToTGA3(str, "PaintSchemes/Cache/photo.tga"))) {
-      this.matPhoto.mat.set('\000', "PaintSchemes/Cache/photo.tga");
-      this.bMatPhotoValid = true;
-    } else {
-      this.bMatPhotoValid = false;
-    }
-    this.lastAward = null;
-    if (this.pilot.medals != null) {
-      int i = this.pilot.medals.length - 1;
-      if ((Main.cur().campaign.branch().equals("de")) && (World.cur().isHakenAllowed()))
-        this.lastAward = GTexture.New("missions/campaign/de/awardh" + this.pilot.medals[i] + ".mat");
-      else if ((Main.cur().campaign.branch().equals("fi")) && (World.cur().isHakenAllowed()))
-        this.lastAward = GTexture.New("missions/campaign/fi/awardh" + this.pilot.medals[i] + ".mat");
-      else
-        this.lastAward = GTexture.New("missions/campaign/" + Main.cur().campaign.branch() + "/award" + this.pilot.medals[i] + ".mat");
-      this.bViewAward.showWindow();
-    } else {
-      this.bViewAward.hideWindow();
-    }
-
-    this.client.activateWindow();
-  }
-  public void enterPop(GameState paramGameState) {
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public GUIDGenPilot(GWindowRoot paramGWindowRoot)
-  {
-    super(66);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("dgenpilot.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.matPhoto = ((GUITexture)GUITexture.New("gui/game/photo.mat"));
-    this.matPhoto.mat.setLayer(0);
-
-    this.dialogClient.create(this.wScroll = new Scroll());
-    this.bViewAward = ((WAwardButton)this.wInfo.addControl(new WAwardButton(this.wInfo)));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-    this.bBack = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bDetailProfile = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bBack)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            }
+            if(gwindow == bDetailProfile)
+            {
+                if(pilot.bPlayer)
+                    com.maddox.il2.game.Main.stateStack().push(67);
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
+        }
+
+        public void render()
+        {
+            super.render();
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(96F), y1024(656F), x1024(288F), y1024(48F), 0, i18n("camps.Back"));
+            if(bDetailProfile.isVisible())
+                draw(x1024(464F), y1024(656F), x1024(460F), y1024(48F), 2, i18n("dgenpilot.Detail"));
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(960F), 2.0F);
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 32F, 1024F, 736F);
+            bBack.setPosC(x1024(56F), y1024(680F));
+            bDetailProfile.setPosC(x1024(968F), y1024(680F));
+            wScroll.set1024PosSize(32F, 32F, 962F, 560F);
+            bViewAward.set1024PosSize(32F, 304F, 192F, 164F);
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
+    public class Scroll extends com.maddox.gwindow.GWindowScrollingDialogClient
     {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
 
-      if (paramGWindow == GUIDGenPilot.this.bBack) {
-        Main.stateStack().pop();
-        return true;
-      }
-      if (paramGWindow == GUIDGenPilot.this.bDetailProfile) {
-        if (GUIDGenPilot.this.pilot.bPlayer)
-          Main.stateStack().push(67);
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        public void created()
+        {
+            fixed = wInfo = (com.maddox.il2.gui.Info)create(new Info());
+            fixed.bNotify = true;
+            bNotify = true;
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void resized()
+        {
+            if(wInfo != null)
+                wInfo.computeSize();
+            super.resized();
+            if(vScroll.isVisible())
+            {
+                com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+                vScroll.setPos(win.dx - lookAndFeel().getVScrollBarW() - gbevel.R.dx, gbevel.T.dy);
+                vScroll.setSize(lookAndFeel().getVScrollBarW(), win.dy - gbevel.T.dy - gbevel.B.dy);
+            }
+        }
+
+        public void render()
+        {
+            setCanvasColorWHITE();
+            com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+            lookAndFeel().drawBevel(this, 0.0F, 0.0F, win.dx, win.dy, gbevel, ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).basicelements, true);
+        }
+
+        public Scroll()
+        {
+        }
     }
 
-    public void render() {
-      super.render();
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-
-      draw(x1024(96.0F), y1024(656.0F), x1024(288.0F), y1024(48.0F), 0, GUIDGenPilot.this.i18n("camps.Back"));
-      if (GUIDGenPilot.this.bDetailProfile.isVisible()) {
-        draw(x1024(464.0F), y1024(656.0F), x1024(460.0F), y1024(48.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Detail"));
-      }
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(960.0F), 2.0F);
-    }
-
-    public void setPosSize() {
-      set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUIDGenPilot.this.bBack.setPosC(x1024(56.0F), y1024(680.0F));
-      GUIDGenPilot.this.bDetailProfile.setPosC(x1024(968.0F), y1024(680.0F));
-      GUIDGenPilot.this.wScroll.set1024PosSize(32.0F, 32.0F, 962.0F, 560.0F);
-
-      GUIDGenPilot.this.bViewAward.set1024PosSize(32.0F, 304.0F, 192.0F, 164.0F);
-    }
-  }
-
-  public class Scroll extends GWindowScrollingDialogClient
-  {
-    public Scroll()
+    public class Info extends com.maddox.gwindow.GWindowDialogClient
     {
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            fnt = com.maddox.gwindow.GFont.New("courSmall");
+        }
+
+        public void render()
+        {
+            if(pilot == null)
+                return;
+            clipRegion.set(root.C.clip);
+            pushClip();
+            com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+            clipRegion.y += gbevel.T.dy + 2.0F;
+            clipRegion.dy -= gbevel.T.dy + gbevel.B.dy + 4F;
+            root.C.clip.set(clipRegion);
+            if(bMatPhotoValid)
+            {
+                int i = root.C.alpha;
+                root.C.alpha = 255;
+                setCanvasColorWHITE();
+                draw(x1024(32F), y1024(32F), x1024(192F), y1024(256F), matPhoto, 0.0F, 0.0F, 192F, 256F);
+                root.C.alpha = i;
+            }
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(128F), x1024(480F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(160F), x1024(480F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(192F), x1024(224F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(800F), y1024(192F), x1024(96F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(224F), x1024(480F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(256F), x1024(112F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(288F), x1024(112F), 1.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, myBrass, x1024(416F), y1024(320F), x1024(112F), 1.0F);
+            setCanvasColorBLACK();
+            root.C.font = fnt;
+            draw(x1024(272F), y1024(112F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.Name"));
+            draw(x1024(272F), y1024(144F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.Surname"));
+            draw(x1024(272F), y1024(176F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.Rank"));
+            draw(x1024(272F), y1024(208F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.Place"));
+            draw(x1024(272F), y1024(240F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.Sorties"));
+            draw(x1024(272F), y1024(272F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.Kills"));
+            draw(x1024(272F), y1024(304F), x1024(128F), y1024(16F), 2, i18n("dgenpilot.GroundKills"));
+            draw(x1024(648F), y1024(176F), x1024(144F), y1024(16F), 2, i18n("dgenpilot.Year"));
+            setCanvasFont(0);
+            draw(x1024(400F), y1024(16F), x1024(368F), y1024(32F), 1, i18n("dgenpilot.Title"));
+            draw(x1024(416F), y1024(100F), x1024(480F), y1024(32F), 0, pilot.firstName);
+            draw(x1024(416F), y1024(132F), x1024(480F), y1024(32F), 0, pilot.lastName);
+            draw(x1024(416F), y1024(164F), x1024(224F), y1024(32F), 0, "" + pilot.sRank);
+            draw(x1024(800F), y1024(164F), x1024(96F), y1024(32F), 0, pilot.dateBirth);
+            draw(x1024(416F), y1024(196F), x1024(480F), y1024(32F), 0, pilot.placeBirth);
+            draw(x1024(416F), y1024(228F), x1024(112F), y1024(32F), 0, "" + pilot.sorties);
+            draw(x1024(416F), y1024(260F), x1024(112F), y1024(32F), 0, "" + pilot.kills);
+            draw(x1024(416F), y1024(292F), x1024(112F), y1024(32F), 0, "" + pilot.ground);
+            int j = (int)y1024(352F);
+            for(int k = 0; k < pilot.events.size(); k++)
+            {
+                java.lang.String s = (java.lang.String)pilot.events.get(k);
+                int l = drawLines(x1024(288F), j, s, 0, s.length(), x1024(590F), root.C.font.height - root.C.font.descender);
+                j = (int)((float)j + (float)l * (root.C.font.height - root.C.font.descender));
+            }
+
+            popClip();
+        }
+
+        public void doComputeDy()
+        {
+            dy = (int)y1024(352F);
+            setCanvasFont(0);
+            for(int i = 0; i < pilot.events.size(); i++)
+            {
+                java.lang.String s = (java.lang.String)pilot.events.get(i);
+                int j = computeLines(s, 0, s.length(), x1024(590F));
+                dy += (float)j * (root.C.font.height - root.C.font.descender);
+            }
+
+            dy -= 2.0F * root.C.font.descender;
+            computeSize();
+        }
+
+        public void computeSize()
+        {
+            win.dx = parentWindow.win.dx - lookAndFeel().getVScrollBarW();
+            win.dy = parentWindow.win.dy;
+            if((float)dy > win.dy)
+                win.dy = dy;
+        }
+
+        private com.maddox.gwindow.GFont fnt;
+        private com.maddox.gwindow.GColor myBrass;
+        private com.maddox.gwindow.GRegion clipRegion;
+        private int dy;
+
+        public Info()
+        {
+            myBrass = new GColor(99, 89, 74);
+            clipRegion = new GRegion();
+            dy = 0;
+        }
     }
 
-    public void created()
+    class WAwardButton extends com.maddox.gwindow.GWindowButton
     {
-      this.fixed = (GUIDGenPilot.this.wInfo = (GUIDGenPilot.Info)create(new GUIDGenPilot.Info(GUIDGenPilot.this)));
-      this.fixed.bNotify = true;
-      this.bNotify = true;
+
+        public boolean notify(int i, int j)
+        {
+            if(i != 2)
+            {
+                return super.notify(i, j);
+            } else
+            {
+                com.maddox.il2.gui.GUIAwards.indexIcons = pilot.medals;
+                com.maddox.il2.game.Main.stateStack().push(32);
+                return true;
+            }
+        }
+
+        public void render()
+        {
+            super.render();
+            if(lastAward != null)
+            {
+                setCanvasColorWHITE();
+                int i = root.C.alpha;
+                root.C.alpha = 255;
+                if(bDown)
+                    draw(win.dx / 5F + 1.0F, win.dy / 5F + 1.0F, (3F * win.dx) / 5F, (3F * win.dy) / 5F, lastAward);
+                else
+                    draw(win.dx / 5F, win.dy / 5F, (3F * win.dx) / 5F, (3F * win.dy) / 5F, lastAward);
+                root.C.alpha = i;
+            }
+        }
+
+        public WAwardButton(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void resized() {
-      if (GUIDGenPilot.this.wInfo != null) {
-        GUIDGenPilot.this.wInfo.computeSize();
-      }
-      super.resized();
-      if (this.vScroll.isVisible()) {
-        GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
-      }
-    }
 
-    public void render() {
-      setCanvasColorWHITE();
-      GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
-    }
-  }
 
-  public class Info extends GWindowDialogClient
-  {
-    private GFont fnt;
-    private GColor myBrass = new GColor(99, 89, 74);
-    private GRegion clipRegion = new GRegion();
-    private int dy = 0;
-
-    public Info() {  }
-
-    public void afterCreated() { super.afterCreated();
-      this.fnt = GFont.New("courSmall"); }
-
-    public void render() {
-      if (GUIDGenPilot.this.pilot == null) return;
-      this.clipRegion.set(this.root.C.clip);
-      pushClip();
-      GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      this.clipRegion.y += localGBevel.T.dy + 2.0F;
-      this.clipRegion.dy -= localGBevel.T.dy + localGBevel.B.dy + 4.0F;
-      this.root.C.clip.set(this.clipRegion);
-
-      if (GUIDGenPilot.this.bMatPhotoValid) {
-        i = this.root.C.alpha;
-        this.root.C.alpha = 255;
-        setCanvasColorWHITE();
-        draw(x1024(32.0F), y1024(32.0F), x1024(192.0F), y1024(256.0F), GUIDGenPilot.this.matPhoto, 0.0F, 0.0F, 192.0F, 256.0F);
-        this.root.C.alpha = i;
-      }
-
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(128.0F), x1024(480.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(160.0F), x1024(480.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(192.0F), x1024(224.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(800.0F), y1024(192.0F), x1024(96.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(224.0F), x1024(480.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(256.0F), x1024(112.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(288.0F), x1024(112.0F), 1.0F);
-      GUISeparate.draw(this, this.myBrass, x1024(416.0F), y1024(320.0F), x1024(112.0F), 1.0F);
-
-      setCanvasColorBLACK();
-      this.root.C.font = this.fnt;
-      draw(x1024(272.0F), y1024(112.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Name"));
-      draw(x1024(272.0F), y1024(144.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Surname"));
-      draw(x1024(272.0F), y1024(176.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Rank"));
-      draw(x1024(272.0F), y1024(208.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Place"));
-      draw(x1024(272.0F), y1024(240.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Sorties"));
-      draw(x1024(272.0F), y1024(272.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Kills"));
-      draw(x1024(272.0F), y1024(304.0F), x1024(128.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.GroundKills"));
-      draw(x1024(648.0F), y1024(176.0F), x1024(144.0F), y1024(16.0F), 2, GUIDGenPilot.this.i18n("dgenpilot.Year"));
-
-      setCanvasFont(0);
-      draw(x1024(400.0F), y1024(16.0F), x1024(368.0F), y1024(32.0F), 1, GUIDGenPilot.this.i18n("dgenpilot.Title"));
-      draw(x1024(416.0F), y1024(100.0F), x1024(480.0F), y1024(32.0F), 0, GUIDGenPilot.this.pilot.firstName);
-      draw(x1024(416.0F), y1024(132.0F), x1024(480.0F), y1024(32.0F), 0, GUIDGenPilot.this.pilot.lastName);
-      draw(x1024(416.0F), y1024(164.0F), x1024(224.0F), y1024(32.0F), 0, "" + GUIDGenPilot.this.pilot.sRank);
-      draw(x1024(800.0F), y1024(164.0F), x1024(96.0F), y1024(32.0F), 0, GUIDGenPilot.this.pilot.dateBirth);
-      draw(x1024(416.0F), y1024(196.0F), x1024(480.0F), y1024(32.0F), 0, GUIDGenPilot.this.pilot.placeBirth);
-      draw(x1024(416.0F), y1024(228.0F), x1024(112.0F), y1024(32.0F), 0, "" + GUIDGenPilot.this.pilot.sorties);
-      draw(x1024(416.0F), y1024(260.0F), x1024(112.0F), y1024(32.0F), 0, "" + GUIDGenPilot.this.pilot.kills);
-      draw(x1024(416.0F), y1024(292.0F), x1024(112.0F), y1024(32.0F), 0, "" + GUIDGenPilot.this.pilot.ground);
-
-      int i = (int)y1024(352.0F);
-      for (int k = 0; k < GUIDGenPilot.this.pilot.events.size(); k++) {
-        String str = (String)GUIDGenPilot.this.pilot.events.get(k);
-        int m = drawLines(x1024(288.0F), i, str, 0, str.length(), x1024(590.0F), this.root.C.font.height - this.root.C.font.descender);
-
-        int j = (int)(i + m * (this.root.C.font.height - this.root.C.font.descender));
-      }
-
-      popClip();
-    }
-    public void doComputeDy() {
-      this.dy = (int)y1024(352.0F);
-      setCanvasFont(0);
-      for (int i = 0; i < GUIDGenPilot.this.pilot.events.size(); i++) {
-        String str = (String)GUIDGenPilot.this.pilot.events.get(i);
-        int j = computeLines(str, 0, str.length(), x1024(590.0F));
-        this.dy = (int)(this.dy + j * (this.root.C.font.height - this.root.C.font.descender));
-      }
-      this.dy = (int)(this.dy - 2.0F * this.root.C.font.descender);
-      computeSize();
-    }
-    public void computeSize() {
-      this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-      this.win.dy = this.parentWindow.win.dy;
-      if (this.dy > this.win.dy)
-        this.win.dy = this.dy;
-    }
-  }
-
-  class WAwardButton extends GWindowButton
-  {
-    public boolean notify(int paramInt1, int paramInt2)
+    public void enterPush(com.maddox.il2.game.GameState gamestate)
     {
-      if (paramInt1 != 2) return super.notify(paramInt1, paramInt2);
-      GUIAwards.indexIcons = GUIDGenPilot.this.pilot.medals;
-      Main.stateStack().push(32);
-      return true;
-    }
-    public void render() {
-      super.render();
-      if (GUIDGenPilot.this.lastAward != null) {
-        setCanvasColorWHITE();
-        int i = this.root.C.alpha;
-        this.root.C.alpha = 255;
-        if (this.bDown) draw(this.win.dx / 5.0F + 1.0F, this.win.dy / 5.0F + 1.0F, 3.0F * this.win.dx / 5.0F, 3.0F * this.win.dy / 5.0F, GUIDGenPilot.this.lastAward); else
-          draw(this.win.dx / 5.0F, this.win.dy / 5.0F, 3.0F * this.win.dx / 5.0F, 3.0F * this.win.dy / 5.0F, GUIDGenPilot.this.lastAward);
-        this.root.C.alpha = i;
-      }
+        pilot = ((com.maddox.il2.gui.GUIDGenRoster)gamestate).pilotCur;
+        if(pilot.bPlayer)
+            bDetailProfile.showWindow();
+        else
+            bDetailProfile.hideWindow();
+        wInfo.doComputeDy();
+        wScroll.resized();
+        java.lang.String s = pilot.photo;
+        if(s != null && !s.endsWith(".bmp"))
+            s = s + ".bmp";
+        if(s != null && com.maddox.il2.engine.BmpUtils.bmp8Pal192x256ToTGA3(s, "PaintSchemes/Cache/photo.tga"))
+        {
+            matPhoto.mat.set('\0', "PaintSchemes/Cache/photo.tga");
+            bMatPhotoValid = true;
+        } else
+        {
+            bMatPhotoValid = false;
+        }
+        lastAward = null;
+        if(pilot.medals != null)
+        {
+            int i = pilot.medals.length - 1;
+            if(com.maddox.il2.game.Main.cur().campaign.branch().equals("de") && com.maddox.il2.ai.World.cur().isHakenAllowed())
+                lastAward = com.maddox.gwindow.GTexture.New("missions/campaign/de/awardh" + pilot.medals[i] + ".mat");
+            else
+            if(com.maddox.il2.game.Main.cur().campaign.branch().equals("fi") && com.maddox.il2.ai.World.cur().isHakenAllowed())
+                lastAward = com.maddox.gwindow.GTexture.New("missions/campaign/fi/awardh" + pilot.medals[i] + ".mat");
+            else
+                lastAward = com.maddox.gwindow.GTexture.New("missions/campaign/" + com.maddox.il2.game.Main.cur().campaign.branch() + "/award" + pilot.medals[i] + ".mat");
+            bViewAward.showWindow();
+        } else
+        {
+            bViewAward.hideWindow();
+        }
+        client.activateWindow();
     }
 
-    public WAwardButton(GWindow arg2) {
-      super();
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        client.activateWindow();
     }
-  }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    public GUIDGenPilot(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(66);
+        pilot = null;
+        bMatPhotoValid = false;
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("dgenpilot.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        matPhoto = (com.maddox.il2.engine.GUITexture)com.maddox.il2.engine.GUITexture.New("gui/game/photo.mat");
+        matPhoto.mat.setLayer(0);
+        dialogClient.create(wScroll = new Scroll());
+        bViewAward = (com.maddox.il2.gui.WAwardButton)wInfo.addControl(new WAwardButton(wInfo));
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bBack = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bDetailProfile = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIDGenRoster.Pilot pilot;
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.Scroll wScroll;
+    public com.maddox.il2.gui.Info wInfo;
+    public com.maddox.il2.gui.WAwardButton bViewAward;
+    public com.maddox.il2.gui.GUIButton bBack;
+    public com.maddox.il2.gui.GUIButton bDetailProfile;
+    private com.maddox.il2.engine.GUITexture matPhoto;
+    private boolean bMatPhotoValid;
+    private com.maddox.gwindow.GTexture lastAward;
+
+
+
 }

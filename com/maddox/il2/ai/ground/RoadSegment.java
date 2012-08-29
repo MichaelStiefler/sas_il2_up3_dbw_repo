@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RoadSegment.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.JGP.Point3d;
@@ -11,259 +16,303 @@ import com.maddox.il2.objects.bridges.LongBridge;
 
 public class RoadSegment
 {
-  private static Point3d P = new Point3d();
-  public long waitTime;
-  public LongBridge br;
-  public BridgeSegment brSg;
-  public Point3d start;
-  public double begR;
-  public double endR;
-  public double dHeight;
-  public double length2D;
-  public double length2Dallprev;
-  public Vector3f normal;
-  public float yaw;
-  public Vector2d dir2D;
 
-  RoadSegment(RoadSegment paramRoadSegment)
-  {
-    this.waitTime = paramRoadSegment.waitTime;
-    this.br = paramRoadSegment.br;
-    this.brSg = paramRoadSegment.brSg;
-    this.start = new Point3d(paramRoadSegment.start);
-    this.begR = paramRoadSegment.begR;
-    this.endR = paramRoadSegment.endR;
-    this.dHeight = paramRoadSegment.dHeight;
-    this.length2D = paramRoadSegment.length2D;
-    this.length2Dallprev = paramRoadSegment.length2Dallprev;
-    this.normal = new Vector3f(paramRoadSegment.normal);
-    this.yaw = paramRoadSegment.yaw;
-    this.dir2D = new Vector2d(paramRoadSegment.dir2D);
-  }
-
-  private static final long convertWTime(double paramDouble)
-  {
-    if (Math.abs(paramDouble) < 0.1D)
-      return 0L;
-    return ()(paramDouble * 60.0D * 1000.0D + (paramDouble > 0.0D ? 0.5D : -0.5D));
-  }
-
-  public RoadSegment(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, int paramInt1, int paramInt2)
-  {
-    this.start = new Point3d();
-    this.normal = new Vector3f();
-    this.dir2D = new Vector2d();
-    set(paramDouble1, paramDouble2, paramDouble3, paramDouble4, paramDouble5, paramInt1, paramInt2);
-  }
-
-  public void setZ(double paramDouble)
-  {
-    this.start.z = paramDouble;
-  }
-
-  public void set(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, int paramInt1, int paramInt2)
-  {
-    this.waitTime = convertWTime(paramDouble5);
-    this.start.set(paramDouble1, paramDouble2, paramDouble3);
-    this.begR = paramDouble4;
-    if (paramInt1 < 0) {
-      this.br = null;
-      this.brSg = null;
-    } else {
-      this.br = LongBridge.getByIdx(paramInt1);
-      this.brSg = BridgeSegment.getByIdx(paramInt1, paramInt2);
+    RoadSegment(com.maddox.il2.ai.ground.RoadSegment roadsegment)
+    {
+        waitTime = roadsegment.waitTime;
+        br = roadsegment.br;
+        brSg = roadsegment.brSg;
+        start = new Point3d(roadsegment.start);
+        begR = roadsegment.begR;
+        endR = roadsegment.endR;
+        dHeight = roadsegment.dHeight;
+        length2D = roadsegment.length2D;
+        length2Dallprev = roadsegment.length2Dallprev;
+        normal = new Vector3f(roadsegment.normal);
+        yaw = roadsegment.yaw;
+        dir2D = new Vector2d(roadsegment.dir2D);
     }
-  }
 
-  public boolean IsLandAligned() {
-    return this.start.z < 0.0D;
-  }
-
-  public boolean IsPassableBy(Actor paramActor) {
-    return (this.brSg == null) || ((this.br.isUsableFor(paramActor)) && (!this.brSg.IsDamaged()));
-  }
-
-  public boolean IsDamaged() {
-    return (this.brSg != null) && (this.brSg.IsDamaged());
-  }
-
-  public void ComputeDerivedData(RoadSegment paramRoadSegment1, RoadSegment paramRoadSegment2) throws Exception
-  {
-    if (paramRoadSegment1 == null) {
-      this.length2Dallprev = 0.0D;
+    private static final long convertWTime(double d)
+    {
+        if(java.lang.Math.abs(d) < 0.10000000000000001D)
+            return 0L;
+        else
+            return (long)(d * 60D * 1000D + (d <= 0.0D ? -0.5D : 0.5D));
     }
-    else {
-      paramRoadSegment1.length2Dallprev += paramRoadSegment1.length2D;
+
+    public RoadSegment(double d, double d1, double d2, double d3, double d4, int i, int j)
+    {
+        start = new Point3d();
+        normal = new Vector3f();
+        dir2D = new Vector2d();
+        set(d, d1, d2, d3, d4, i, j);
     }
-    if (paramRoadSegment2 == null) {
-      this.endR = this.begR;
-      this.dHeight = 0.0D;
-      this.length2D = 0.0D;
-      this.normal.set(0.0F, 0.0F, 1.0F);
-      this.yaw = 0.0F;
-      this.dir2D.set(1.0D, 0.0D);
-    } else {
-      this.endR = paramRoadSegment2.begR;
-      P.sub(paramRoadSegment2.start, this.start);
 
-      if (paramRoadSegment2.IsLandAligned())
-        this.dHeight = (Engine.land().HQ(paramRoadSegment2.start.x, paramRoadSegment2.start.y) - this.start.z);
-      else {
-        this.dHeight = (paramRoadSegment2.start.z - this.start.z);
-      }
-      this.length2D = Math.sqrt(P.x * P.x + P.y * P.y);
-      if (this.length2D <= 0.0D) throw new Exception("RS: too close points");
-      this.normal.set((float)(-P.x * P.z), (float)(-P.y * P.z), (float)(this.length2D * this.length2D));
-      this.normal.normalize();
-      this.yaw = (float)(Math.atan2(P.y, P.x) * 57.295779513082323D);
-      this.dir2D.set(P.x, P.y);
-      this.dir2D.normalize();
+    public void setZ(double d)
+    {
+        start.z = d;
+    }
 
-      if (this.br != null) {
-        if ((paramRoadSegment1 != null) && (paramRoadSegment1.br == null)) {
-          paramRoadSegment1.br = this.br;
-          paramRoadSegment1.brSg = this.brSg;
-        }
-        if ((paramRoadSegment2.br == null) && ((paramRoadSegment1 == null) || (paramRoadSegment1.brSg != this.brSg)))
+    public void set(double d, double d1, double d2, double d3, double d4, int i, int j)
+    {
+        waitTime = com.maddox.il2.ai.ground.RoadSegment.convertWTime(d4);
+        start.set(d, d1, d2);
+        begR = d3;
+        if(i < 0)
         {
-          paramRoadSegment2.br = this.br;
-          paramRoadSegment2.brSg = this.brSg;
+            br = null;
+            brSg = null;
+        } else
+        {
+            br = com.maddox.il2.objects.bridges.LongBridge.getByIdx(i);
+            brSg = com.maddox.il2.objects.bridges.BridgeSegment.getByIdx(i, j);
         }
-      }
-    }
-  }
-
-  public Point3d getEndP()
-  {
-    return new Point3d(this.start.x + this.dir2D.x * this.length2D, this.start.y + this.dir2D.y * this.length2D, this.start.z + this.dHeight);
-  }
-
-  double computePosAlong(Point3d paramPoint3d)
-  {
-    if (this.length2D == 0.0D)
-      return 0.0D;
-    double d = (paramPoint3d.x - this.start.x) * this.dir2D.x + (paramPoint3d.y - this.start.y) * this.dir2D.y;
-
-    return d;
-  }
-
-  public double computePosAlong_Fit(Point3d paramPoint3d)
-  {
-    if (this.length2D == 0.0D) return 0.0D;
-    double d = (paramPoint3d.x - this.start.x) * this.dir2D.x + (paramPoint3d.y - this.start.y) * this.dir2D.y;
-
-    return d >= this.length2D ? this.length2D : d <= 0.0D ? 0.0D : d;
-  }
-
-  public double computePosSide(Point3d paramPoint3d)
-  {
-    if (this.length2D == 0.0D) return 0.0D;
-
-    Vector2d localVector2d = new Vector2d(paramPoint3d.x - this.start.x, paramPoint3d.y - this.start.y);
-    double d1 = localVector2d.dot(this.dir2D);
-    if (d1 <= 0.0D) d1 = 0.0D;
-    else if (d1 >= this.length2D) d1 = this.length2D;
-    double d2 = localVector2d.lengthSquared() - d1 * d1;
-
-    if (d2 <= 0.0D) return 0.0D;
-    d2 = Math.sqrt(d2);
-
-    return this.dir2D.x * localVector2d.y - this.dir2D.y * localVector2d.x > 0.0D ? -d2 : d2;
-  }
-
-  public double computePosSide_Fit(Point3d paramPoint3d, float paramFloat)
-  {
-    if (this.length2D == 0.0D) return 0.0D;
-
-    Vector2d localVector2d = new Vector2d(paramPoint3d.x - this.start.x, paramPoint3d.y - this.start.y);
-    double d1 = localVector2d.dot(this.dir2D);
-    if (d1 <= 0.0D) d1 = 0.0D;
-    else if (d1 >= this.length2D) d1 = this.length2D;
-    double d2 = localVector2d.lengthSquared() - d1 * d1;
-
-    if (d2 <= 0.0D) return 0.0D;
-    d2 = Math.sqrt(d2);
-
-    if (this.dir2D.x * localVector2d.y - this.dir2D.y * localVector2d.x > 0.0D) d2 = -d2;
-
-    double d3 = d1 / this.length2D;
-    double d4 = this.begR * (1.0D - d3) + this.endR * d3;
-    if (paramFloat > 0.0F) {
-      d4 -= paramFloat;
-      if (d4 <= 0.0D) d4 = 0.0D;
     }
 
-    if (d2 <= -d4) d2 = -d4;
-    else if (d2 >= d4) d2 = d4;
-    return d2;
-  }
-
-  public Point3d computePos_Fit(double paramDouble1, double paramDouble2, float paramFloat)
-  {
-    if (this.length2D == 0.0D) return new Point3d(this.start);
-    if (paramDouble1 <= 0.0D) paramDouble1 = 0.0D;
-    else if (paramDouble1 >= this.length2D) paramDouble1 = this.length2D;
-    double d1 = paramDouble1 / this.length2D;
-    double d2 = this.begR * (1.0D - d1) + this.endR * d1;
-    if (paramFloat > 0.0F) {
-      d2 -= paramFloat;
-      if (d2 <= 0.0D) d2 = 0.0D;
+    public boolean IsLandAligned()
+    {
+        return start.z < 0.0D;
     }
-    if (paramDouble2 <= -d2) paramDouble2 = -d2;
-    else if (paramDouble2 >= d2) paramDouble2 = d2;
-    Point3d localPoint3d = new Point3d(this.start);
 
-    localPoint3d.x += this.dir2D.x * paramDouble1 + this.dir2D.y * paramDouble2;
-    localPoint3d.y += this.dir2D.y * paramDouble1 - this.dir2D.x * paramDouble2;
-
-    if (localPoint3d.z < 0.0D)
-      localPoint3d.z = Engine.land().HQ(localPoint3d.x, localPoint3d.y);
-    else
-      localPoint3d.z += d1 * this.dHeight;
-    return localPoint3d;
-  }
-
-  public Point3d computePos_FitBegCirc(double paramDouble1, double paramDouble2, float paramFloat)
-  {
-    if (this.length2D == 0.0D) return new Point3d(this.start);
-    double d2;
-    double d1;
-    if (paramDouble1 <= 0.0D) {
-      d2 = Math.sqrt(paramDouble1 * paramDouble1 + paramDouble2 * paramDouble2);
-      double d3;
-      if (paramFloat > 0.0F) {
-        d3 = this.begR - paramFloat;
-        if (d3 <= 0.0D) d3 = 0.0D; 
-      }
-      else {
-        d3 = this.begR;
-      }
-      if (d2 > d3) {
-        double d4 = d3 / d2;
-        paramDouble1 *= d4;
-        paramDouble2 *= d4;
-      }
-      d1 = paramDouble1 / this.length2D;
-    } else {
-      if (paramDouble1 >= this.length2D) paramDouble1 = this.length2D;
-      d1 = paramDouble1 / this.length2D;
-      d2 = this.begR * (1.0D - d1) + this.endR * d1;
-      if (paramFloat > 0.0F) {
-        d2 -= paramFloat;
-        if (d2 <= 0.0D) d2 = 0.0D;
-      }
-      if (paramDouble2 <= -d2) paramDouble2 = -d2;
-      else if (paramDouble2 >= d2) paramDouble2 = d2;
+    public boolean IsPassableBy(com.maddox.il2.engine.Actor actor)
+    {
+        return brSg == null || br.isUsableFor(actor) && !brSg.IsDamaged();
     }
-    Point3d localPoint3d = new Point3d(this.start);
 
-    localPoint3d.x += this.dir2D.x * paramDouble1 + this.dir2D.y * paramDouble2;
-    localPoint3d.y += this.dir2D.y * paramDouble1 - this.dir2D.x * paramDouble2;
+    public boolean IsDamaged()
+    {
+        return brSg != null && brSg.IsDamaged();
+    }
 
-    if (localPoint3d.z < 0.0D)
-      localPoint3d.z = Engine.land().HQ(localPoint3d.x, localPoint3d.y);
-    else
-      localPoint3d.z += d1 * this.dHeight;
-    return localPoint3d;
-  }
+    public void ComputeDerivedData(com.maddox.il2.ai.ground.RoadSegment roadsegment, com.maddox.il2.ai.ground.RoadSegment roadsegment1)
+        throws java.lang.Exception
+    {
+        if(roadsegment == null)
+            length2Dallprev = 0.0D;
+        else
+            length2Dallprev = roadsegment.length2Dallprev + roadsegment.length2D;
+        if(roadsegment1 == null)
+        {
+            endR = begR;
+            dHeight = 0.0D;
+            length2D = 0.0D;
+            normal.set(0.0F, 0.0F, 1.0F);
+            yaw = 0.0F;
+            dir2D.set(1.0D, 0.0D);
+        } else
+        {
+            endR = roadsegment1.begR;
+            P.sub(roadsegment1.start, start);
+            if(roadsegment1.IsLandAligned())
+                dHeight = com.maddox.il2.engine.Engine.land().HQ(roadsegment1.start.x, roadsegment1.start.y) - start.z;
+            else
+                dHeight = roadsegment1.start.z - start.z;
+            length2D = java.lang.Math.sqrt(P.x * P.x + P.y * P.y);
+            if(length2D <= 0.0D)
+                throw new Exception("RS: too close points");
+            normal.set((float)(-P.x * P.z), (float)(-P.y * P.z), (float)(length2D * length2D));
+            normal.normalize();
+            yaw = (float)(java.lang.Math.atan2(P.y, P.x) * 57.295779513082323D);
+            dir2D.set(P.x, P.y);
+            dir2D.normalize();
+            if(br != null)
+            {
+                if(roadsegment != null && roadsegment.br == null)
+                {
+                    roadsegment.br = br;
+                    roadsegment.brSg = brSg;
+                }
+                if(roadsegment1.br == null && (roadsegment == null || roadsegment.brSg != brSg))
+                {
+                    roadsegment1.br = br;
+                    roadsegment1.brSg = brSg;
+                }
+            }
+        }
+    }
+
+    public com.maddox.JGP.Point3d getEndP()
+    {
+        return new Point3d(start.x + dir2D.x * length2D, start.y + dir2D.y * length2D, start.z + dHeight);
+    }
+
+    double computePosAlong(com.maddox.JGP.Point3d point3d)
+    {
+        if(length2D == 0.0D)
+        {
+            return 0.0D;
+        } else
+        {
+            double d = (point3d.x - start.x) * dir2D.x + (point3d.y - start.y) * dir2D.y;
+            return d;
+        }
+    }
+
+    public double computePosAlong_Fit(com.maddox.JGP.Point3d point3d)
+    {
+        if(length2D == 0.0D)
+        {
+            return 0.0D;
+        } else
+        {
+            double d = (point3d.x - start.x) * dir2D.x + (point3d.y - start.y) * dir2D.y;
+            return d > 0.0D ? d < length2D ? d : length2D : 0.0D;
+        }
+    }
+
+    public double computePosSide(com.maddox.JGP.Point3d point3d)
+    {
+        if(length2D == 0.0D)
+            return 0.0D;
+        com.maddox.JGP.Vector2d vector2d = new Vector2d(point3d.x - start.x, point3d.y - start.y);
+        double d = vector2d.dot(dir2D);
+        if(d <= 0.0D)
+            d = 0.0D;
+        else
+        if(d >= length2D)
+            d = length2D;
+        double d1 = vector2d.lengthSquared() - d * d;
+        if(d1 <= 0.0D)
+        {
+            return 0.0D;
+        } else
+        {
+            d1 = java.lang.Math.sqrt(d1);
+            return dir2D.x * vector2d.y - dir2D.y * vector2d.x <= 0.0D ? d1 : -d1;
+        }
+    }
+
+    public double computePosSide_Fit(com.maddox.JGP.Point3d point3d, float f)
+    {
+        if(length2D == 0.0D)
+            return 0.0D;
+        com.maddox.JGP.Vector2d vector2d = new Vector2d(point3d.x - start.x, point3d.y - start.y);
+        double d = vector2d.dot(dir2D);
+        if(d <= 0.0D)
+            d = 0.0D;
+        else
+        if(d >= length2D)
+            d = length2D;
+        double d1 = vector2d.lengthSquared() - d * d;
+        if(d1 <= 0.0D)
+            return 0.0D;
+        d1 = java.lang.Math.sqrt(d1);
+        if(dir2D.x * vector2d.y - dir2D.y * vector2d.x > 0.0D)
+            d1 = -d1;
+        double d2 = d / length2D;
+        double d3 = begR * (1.0D - d2) + endR * d2;
+        if(f > 0.0F)
+        {
+            d3 -= f;
+            if(d3 <= 0.0D)
+                d3 = 0.0D;
+        }
+        if(d1 <= -d3)
+            d1 = -d3;
+        else
+        if(d1 >= d3)
+            d1 = d3;
+        return d1;
+    }
+
+    public com.maddox.JGP.Point3d computePos_Fit(double d, double d1, float f)
+    {
+        if(length2D == 0.0D)
+            return new Point3d(start);
+        if(d <= 0.0D)
+            d = 0.0D;
+        else
+        if(d >= length2D)
+            d = length2D;
+        double d2 = d / length2D;
+        double d3 = begR * (1.0D - d2) + endR * d2;
+        if(f > 0.0F)
+        {
+            d3 -= f;
+            if(d3 <= 0.0D)
+                d3 = 0.0D;
+        }
+        if(d1 <= -d3)
+            d1 = -d3;
+        else
+        if(d1 >= d3)
+            d1 = d3;
+        com.maddox.JGP.Point3d point3d = new Point3d(start);
+        point3d.x += dir2D.x * d + dir2D.y * d1;
+        point3d.y += dir2D.y * d - dir2D.x * d1;
+        if(point3d.z < 0.0D)
+            point3d.z = com.maddox.il2.engine.Engine.land().HQ(point3d.x, point3d.y);
+        else
+            point3d.z += d2 * dHeight;
+        return point3d;
+    }
+
+    public com.maddox.JGP.Point3d computePos_FitBegCirc(double d, double d1, float f)
+    {
+        if(length2D == 0.0D)
+            return new Point3d(start);
+        double d2;
+        if(d <= 0.0D)
+        {
+            double d3 = java.lang.Math.sqrt(d * d + d1 * d1);
+            double d5;
+            if(f > 0.0F)
+            {
+                d5 = begR - (double)f;
+                if(d5 <= 0.0D)
+                    d5 = 0.0D;
+            } else
+            {
+                d5 = begR;
+            }
+            if(d3 > d5)
+            {
+                double d6 = d5 / d3;
+                d *= d6;
+                d1 *= d6;
+            }
+            d2 = d / length2D;
+        } else
+        {
+            if(d >= length2D)
+                d = length2D;
+            d2 = d / length2D;
+            double d4 = begR * (1.0D - d2) + endR * d2;
+            if(f > 0.0F)
+            {
+                d4 -= f;
+                if(d4 <= 0.0D)
+                    d4 = 0.0D;
+            }
+            if(d1 <= -d4)
+                d1 = -d4;
+            else
+            if(d1 >= d4)
+                d1 = d4;
+        }
+        com.maddox.JGP.Point3d point3d = new Point3d(start);
+        point3d.x += dir2D.x * d + dir2D.y * d1;
+        point3d.y += dir2D.y * d - dir2D.x * d1;
+        if(point3d.z < 0.0D)
+            point3d.z = com.maddox.il2.engine.Engine.land().HQ(point3d.x, point3d.y);
+        else
+            point3d.z += d2 * dHeight;
+        return point3d;
+    }
+
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    public long waitTime;
+    public com.maddox.il2.objects.bridges.LongBridge br;
+    public com.maddox.il2.objects.bridges.BridgeSegment brSg;
+    public com.maddox.JGP.Point3d start;
+    public double begR;
+    public double endR;
+    public double dHeight;
+    public double length2D;
+    public double length2Dallprev;
+    public com.maddox.JGP.Vector3f normal;
+    public float yaw;
+    public com.maddox.JGP.Vector2d dir2D;
+
 }

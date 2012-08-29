@@ -1,99 +1,132 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Target.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.il2.ai.ground.ChiefGround;
 import com.maddox.il2.engine.Actor;
 
-class TEscort extends Target
+// Referenced classes of package com.maddox.il2.ai:
+//            Target, Wing
+
+class TEscort extends com.maddox.il2.ai.Target
 {
-  String nameTarget;
-  Actor actor;
-  int destructLevel;
-  int alive = -1;
 
-  public void destroy() { super.destroy(); this.actor = null; }
-
-  boolean checkActor() {
-    if ((this.actor != null) && (this.alive > 0))
-      return true;
-    this.actor = Actor.getByName(this.nameTarget);
-    if ((this.actor != null) && (this.alive == -1)) {
-      if (((this.actor instanceof ChiefGround)) && (((ChiefGround)this.actor).isPacked()) && (this.actor.isAlive()))
-      {
-        return false;
-      }int i = this.actor.getOwnerAttachedCount();
-      if (i > 0) {
-        this.alive = (i - Math.round(i * this.destructLevel / 100.0F));
-        if (this.alive == 0) this.alive = 1;
-      }
-    }
-    return this.actor != null;
-  }
-
-  protected boolean checkPeriodic() {
-    if (!checkActor())
-      return false;
-    if (!Actor.isValid(this.actor)) {
-      setDiedFlag(true);
-      return true;
-    }
-    int i = this.actor.getOwnerAttachedCount();
-    if (((i == 0) && (!(this.actor instanceof Wing))) || (this.alive == -1))
+    public void destroy()
     {
-      return false;
-    }int j = 0;
-    int k = 0;
-    for (int m = 0; m < i; m++) {
-      Actor localActor = (Actor)this.actor.getOwnerAttached(m);
-      if (Actor.isAlive(localActor)) {
-        j++;
-        if (localActor.isTaskComplete())
-          k++;
-      }
+        super.destroy();
+        actor = null;
     }
-    if (j < this.alive) {
-      setDiedFlag(true);
-      return true;
-    }
-    if (k >= this.alive) {
-      setTaskCompleteFlag(true);
-      setDiedFlag(true);
-      return true;
-    }
-    return false;
-  }
 
-  protected boolean checkActorDied(Actor paramActor) {
-    if (!checkActor())
-      return false;
-    if (this.actor == paramActor) {
-      setDiedFlag(true);
-      return true;
+    boolean checkActor()
+    {
+        if(actor != null && alive > 0)
+            return true;
+        actor = com.maddox.il2.engine.Actor.getByName(nameTarget);
+        if(actor != null && alive == -1)
+        {
+            if((actor instanceof com.maddox.il2.ai.ground.ChiefGround) && ((com.maddox.il2.ai.ground.ChiefGround)actor).isPacked() && actor.isAlive())
+                return false;
+            int i = actor.getOwnerAttachedCount();
+            if(i > 0)
+            {
+                alive = i - java.lang.Math.round((float)(i * destructLevel) / 100F);
+                if(alive == 0)
+                    alive = 1;
+            }
+        }
+        return actor != null;
     }
-    return checkPeriodic();
-  }
 
-  protected boolean checkTaskComplete(Actor paramActor)
-  {
-    if (!checkActor())
-      return false;
-    if (paramActor == this.actor) {
-      setTaskCompleteFlag(true);
-      setDiedFlag(true);
-      return true;
+    protected boolean checkPeriodic()
+    {
+        if(!checkActor())
+            return false;
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+        {
+            setDiedFlag(true);
+            return true;
+        }
+        int i = actor.getOwnerAttachedCount();
+        if(i == 0 && !(actor instanceof com.maddox.il2.ai.Wing) || alive == -1)
+            return false;
+        int j = 0;
+        int k = 0;
+        for(int l = 0; l < i; l++)
+        {
+            com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)actor.getOwnerAttached(l);
+            if(com.maddox.il2.engine.Actor.isAlive(actor1))
+            {
+                j++;
+                if(actor1.isTaskComplete())
+                    k++;
+            }
+        }
+
+        if(j < alive)
+        {
+            setDiedFlag(true);
+            return true;
+        }
+        if(k >= alive)
+        {
+            setTaskCompleteFlag(true);
+            setDiedFlag(true);
+            return true;
+        } else
+        {
+            return false;
+        }
     }
-    return checkPeriodic();
-  }
 
-  protected boolean checkTimeoutOff()
-  {
-    setTaskCompleteFlag(true);
-    setDiedFlag(true);
-    return true;
-  }
+    protected boolean checkActorDied(com.maddox.il2.engine.Actor actor1)
+    {
+        if(!checkActor())
+            return false;
+        if(actor == actor1)
+        {
+            setDiedFlag(true);
+            return true;
+        } else
+        {
+            return checkPeriodic();
+        }
+    }
 
-  public TEscort(int paramInt1, int paramInt2, String paramString, int paramInt3) {
-    super(paramInt1, paramInt2);
-    this.nameTarget = paramString;
-    this.destructLevel = paramInt3;
-  }
+    protected boolean checkTaskComplete(com.maddox.il2.engine.Actor actor1)
+    {
+        if(!checkActor())
+            return false;
+        if(actor1 == actor)
+        {
+            setTaskCompleteFlag(true);
+            setDiedFlag(true);
+            return true;
+        } else
+        {
+            return checkPeriodic();
+        }
+    }
+
+    protected boolean checkTimeoutOff()
+    {
+        setTaskCompleteFlag(true);
+        setDiedFlag(true);
+        return true;
+    }
+
+    public TEscort(int i, int j, java.lang.String s, int k)
+    {
+        super(i, j);
+        alive = -1;
+        nameTarget = s;
+        destructLevel = k;
+    }
+
+    java.lang.String nameTarget;
+    com.maddox.il2.engine.Actor actor;
+    int destructLevel;
+    int alive;
 }

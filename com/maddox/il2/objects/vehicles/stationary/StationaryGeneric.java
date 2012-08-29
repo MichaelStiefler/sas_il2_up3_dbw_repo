@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   StationaryGeneric.java
+
 package com.maddox.il2.objects.vehicles.stationary;
 
 import com.maddox.JGP.Matrix4d;
@@ -11,7 +16,6 @@ import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.TableFunctions;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.ZutiTargetsSupportMethods;
 import com.maddox.il2.ai.ground.Obstacle;
 import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.ai.ground.TgtTank;
@@ -36,7 +40,6 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -45,685 +48,640 @@ import com.maddox.util.TableFunction2;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public abstract class StationaryGeneric extends ActorHMesh
-  implements MsgExplosionListener, MsgShotListener, Prey, Obstacle, ActorAlign
+public abstract class StationaryGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Prey, com.maddox.il2.ai.ground.Obstacle, com.maddox.il2.objects.ActorAlign
 {
-  private StationaryProperties prop = null;
-  private float heightAboveLandSurface;
-  private int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_DEAD = 1;
-  private static StationaryProperties constr_arg1 = null;
-  private static ActorSpawnArg constr_arg2 = null;
-
-  private static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3f n = new Vector3f();
-  private static Vector3d tmpv = new Vector3d();
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  public boolean isStaticPos()
-  {
-    return true;
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramShot.isMirage())) {
-      return;
-    }
-
-    if (paramShot.powerType == 1) {
-      if (RndB(0.15F)) {
-        return;
-      }
-
-      Die(paramShot.initiator, 0, true);
-      return;
-    }
-
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
-
-    f1 *= Rnd(0.93F, 1.07F);
-
-    float f2 = this.prop.fnShotPanzer.Value(paramShot.power, f1);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramShot.initiator, 0, true);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && (paramExplosion.isMirage())) {
-      return;
-    }
-
-    if (paramExplosion.power <= 0.0F) {
-      return;
-    }
-
-    if (paramExplosion.powerType == 1) {
-      if (TankGeneric.splintersKill(paramExplosion, this.prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP))
-      {
-        Die(paramExplosion.initiator, 0, true);
-      }
-      return;
-    }
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null)) {
-      Die(paramExplosion.initiator, 0, true);
-      return;
-    }
-    float f1;
-    if (paramExplosion.chunkName != null)
-      f1 = 0.5F * paramExplosion.power;
-    else {
-      f1 = paramExplosion.receivedTNTpower(this);
-    }
-    f1 *= Rnd(0.95F, 1.05F);
-
-    float f2 = this.prop.fnExplodePanzer.Value(f1, this.prop.PANZER_TNT_TYPE);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramExplosion.initiator, 0, true);
-  }
-
-  private void ShowExplode(float paramFloat, Actor paramActor)
-  {
-    if (paramFloat > 0.0F) {
-      paramFloat = Rnd(paramFloat, paramFloat * 1.6F);
-    }
-    Explosions.runByName(this.prop.explodeName, this, "Smoke", "SmokeHead", paramFloat, paramActor);
-  }
-
-  private void Die(Actor paramActor, short paramShort, boolean paramBoolean)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShort <= 0) {
-      if (isNetMirror()) {
-        send_DeathRequest(paramActor);
-        return;
-      }
-
-      paramShort = 1;
-    }
-
-    this.dying = 1;
-    World.onActorDied(this, paramActor);
-
-    if (this.prop.meshName1 == null)
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
     {
-      mesh().makeAllMaterialsDarker(0.22F, 0.35F);
-    }
-    else setMesh(this.prop.meshName1);
 
-    int i = mesh().hookFind("Ground_Level");
-    if (i != -1) {
-      Matrix4d localMatrix4d = new Matrix4d();
-      mesh().hookMatrix(i, localMatrix4d);
-      this.heightAboveLandSurface = (float)(-localMatrix4d.m23);
-    }
-
-    Align();
-
-    if (paramBoolean) {
-      ShowExplode(15.0F, paramActor);
-    }
-
-    if (paramBoolean)
-      send_DeathCommand(paramActor);
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed())
-      return;
-    super.destroy();
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  protected StationaryGeneric()
-  {
-    this(constr_arg1, constr_arg2);
-  }
-
-  private StationaryGeneric(StationaryProperties paramStationaryProperties, ActorSpawnArg paramActorSpawnArg)
-  {
-    super(paramStationaryProperties.meshName);
-    this.prop = paramStationaryProperties;
-
-    paramActorSpawnArg.setStationary(this);
-
-    collide(true);
-    drawing(true);
-
-    createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-
-    this.heightAboveLandSurface = 0.0F;
-    int i = mesh().hookFind("Ground_Level");
-    if (i != -1) {
-      Matrix4d localMatrix4d = new Matrix4d();
-      mesh().hookMatrix(i, localMatrix4d);
-      this.heightAboveLandSurface = (float)(-localMatrix4d.m23);
-    } else {
-      System.out.println("Stationary " + getClass().getName() + ": hook Ground_Level not found");
-    }
-
-    Align();
-  }
-
-  private void Align()
-  {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
-    o.orient(n);
-    this.pos.setAbs(p, o);
-  }
-
-  public void align()
-  {
-    Align();
-  }
-
-  public int HitbyMask()
-  {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if ((this instanceof TgtTank)) {
-      if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-      {
-        return 1;
-      }
-
-      if (paramArrayOfBulletProperties[0].power <= 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].power <= 0.0F)
-      {
-        return 1;
-      }
-    } else {
-      if (paramArrayOfBulletProperties[0].power <= 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].power <= 0.0F)
-      {
-        return 1;
-      }
-
-      if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-      {
-        return 1;
-      }
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 0)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  public boolean unmovableInFuture()
-  {
-    return true;
-  }
-
-  public void collisionDeath()
-  {
-    if (isNet()) {
-      return;
-    }
-
-    ShowExplode(-1.0F, null);
-
-    destroy();
-  }
-
-  public float futurePosition(float paramFloat, Point3d paramPoint3d)
-  {
-    this.pos.getAbs(paramPoint3d);
-    return paramFloat <= 0.0F ? 0.0F : paramFloat;
-  }
-
-  private void send_DeathCommand(Actor paramActor)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_DeathRequest(Actor paramActor)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
-      return;
-    try
-    {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(100);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-    }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(73);
-    if (this.dying == 0)
-      localNetMsgGuaranted.writeShort(0);
-    else {
-      localNetMsgGuaranted.writeShort(1);
-    }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public static class SPAWN implements ActorSpawn {
-    public Class cls;
-    public StationaryGeneric.StationaryProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2) {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Stationary: Parameter [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
-        }
-        else {
-          System.out.println("Stationary: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
-        }
-
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Stationary: Parameter [" + paramString1 + "]:<" + paramString2 + "> ");
-        System.out.println(str == null ? "not found" : "is empty");
-        throw new RuntimeException("Can't set property");
-      }
-      return str;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        return paramString3;
-      }
-      return str;
-    }
-
-    private static StationaryGeneric.StationaryProperties LoadStationaryProperties(SectFile paramSectFile, String paramString, Class paramClass)
-    {
-      StationaryGeneric.StationaryProperties localStationaryProperties = new StationaryGeneric.StationaryProperties();
-
-      String str = getS(paramSectFile, paramString, "PanzerType", null);
-      if (str == null) {
-        str = "Tank";
-      }
-      localStationaryProperties.fnShotPanzer = TableFunctions.GetFunc2(str + "ShotPanzer");
-      localStationaryProperties.fnExplodePanzer = TableFunctions.GetFunc2(str + "ExplodePanzer");
-
-      localStationaryProperties.PANZER_TNT_TYPE = getF(paramSectFile, paramString, "PanzerSubtype", 0.0F, 100.0F);
-
-      localStationaryProperties.meshSummer = getS(paramSectFile, paramString, "MeshSummer");
-      localStationaryProperties.meshDesert = getS(paramSectFile, paramString, "MeshDesert", localStationaryProperties.meshSummer);
-      localStationaryProperties.meshWinter = getS(paramSectFile, paramString, "MeshWinter", localStationaryProperties.meshSummer);
-      localStationaryProperties.meshSummer1 = getS(paramSectFile, paramString, "MeshSummerDamage", null);
-      localStationaryProperties.meshDesert1 = getS(paramSectFile, paramString, "MeshDesertDamage", localStationaryProperties.meshSummer1);
-      localStationaryProperties.meshWinter1 = getS(paramSectFile, paramString, "MeshWinterDamage", localStationaryProperties.meshSummer1);
-
-      int i = (localStationaryProperties.meshSummer1 == null ? 1 : 0) + (localStationaryProperties.meshDesert1 == null ? 1 : 0) + (localStationaryProperties.meshWinter1 == null ? 1 : 0);
-
-      if ((i != 0) && (i != 3)) {
-        System.out.println("Stationary: Uncomplete set of damage meshes for '" + paramString + "'");
-
-        throw new RuntimeException("Can't register stationary object");
-      }
-
-      localStationaryProperties.explodeName = getS(paramSectFile, paramString, "Explode", "Stationary");
-
-      localStationaryProperties.PANZER_BODY_FRONT = getF(paramSectFile, paramString, "PanzerBodyFront", 0.001F, 9.999F);
-
-      if (paramSectFile.get(paramString, "PanzerBodyBack", -9865.3447F) == -9865.3447F) {
-        localStationaryProperties.PANZER_BODY_BACK = localStationaryProperties.PANZER_BODY_FRONT;
-        localStationaryProperties.PANZER_BODY_SIDE = localStationaryProperties.PANZER_BODY_FRONT;
-        localStationaryProperties.PANZER_BODY_TOP = localStationaryProperties.PANZER_BODY_FRONT;
-      } else {
-        localStationaryProperties.PANZER_BODY_BACK = getF(paramSectFile, paramString, "PanzerBodyBack", 0.001F, 9.999F);
-        localStationaryProperties.PANZER_BODY_SIDE = getF(paramSectFile, paramString, "PanzerBodySide", 0.001F, 9.999F);
-        localStationaryProperties.PANZER_BODY_TOP = getF(paramSectFile, paramString, "PanzerBodyTop", 0.001F, 9.999F);
-      }
-
-      if (paramSectFile.get(paramString, "PanzerHead", -9865.3447F) == -9865.3447F)
-        localStationaryProperties.PANZER_HEAD = localStationaryProperties.PANZER_BODY_FRONT;
-      else {
-        localStationaryProperties.PANZER_HEAD = getF(paramSectFile, paramString, "PanzerHead", 0.001F, 9.999F);
-      }
-
-      if (paramSectFile.get(paramString, "PanzerHeadTop", -9865.3447F) == -9865.3447F)
-        localStationaryProperties.PANZER_HEAD_TOP = localStationaryProperties.PANZER_BODY_TOP;
-      else {
-        localStationaryProperties.PANZER_HEAD_TOP = getF(paramSectFile, paramString, "PanzerHeadTop", 0.001F, 9.999F);
-      }
-
-      float f = Math.min(Math.min(localStationaryProperties.PANZER_BODY_BACK, localStationaryProperties.PANZER_BODY_TOP), Math.min(localStationaryProperties.PANZER_BODY_SIDE, localStationaryProperties.PANZER_HEAD_TOP));
-
-      localStationaryProperties.HITBY_MASK = (f > 0.015F ? -2 : -1);
-
-      Property.set(paramClass, "iconName", "icons/" + getS(paramSectFile, paramString, "Icon") + ".mat");
-      Property.set(paramClass, "meshName", localStationaryProperties.meshSummer);
-
-      return localStationaryProperties;
-    }
-
-    public SPAWN(Class paramClass)
-    {
-      try
-      {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j) {
-          i = j;
-        }
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadStationaryProperties(Statics.getTechnicsFile(), str2, paramClass);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in spawn: " + paramClass.getName());
-      }
-
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
-
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg)
-    {
-      switch (World.cur().camouflage) {
-      case 1:
-        this.proper.meshName = this.proper.meshWinter;
-        this.proper.meshName1 = this.proper.meshWinter1;
-        break;
-      case 2:
-        this.proper.meshName = this.proper.meshDesert;
-        this.proper.meshName1 = this.proper.meshDesert1;
-        break;
-      default:
-        this.proper.meshName = this.proper.meshSummer;
-        this.proper.meshName1 = this.proper.meshSummer1;
-      }
-
-      StationaryGeneric localStationaryGeneric = null;
-      try
-      {
-        StationaryGeneric.access$202(this.proper);
-        StationaryGeneric.access$302(paramActorSpawnArg);
-        localStationaryGeneric = (StationaryGeneric)this.cls.newInstance();
-        StationaryGeneric.access$202(null);
-        StationaryGeneric.access$302(null);
-      } catch (Exception localException) {
-        StationaryGeneric.access$202(null);
-        StationaryGeneric.access$302(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create Stationary object [class:" + this.cls.getName() + "]");
-
-        return null;
-      }
-      return localStationaryGeneric;
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        Object localObject;
-        switch (paramNetMsgInput.readByte())
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
         {
-        case 73:
-          if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted);
-          }
-          int i = paramNetMsgInput.readShort();
-          if (i > 0)
-          {
-            if (StationaryGeneric.this.dying != 1) {
-              StationaryGeneric.this.Die(null, 1, false);
-              try
-              {
-                ZutiTargetsSupportMethods.staticActorDied(StationaryGeneric.this);
-              }
-              catch (Exception localException1)
-              {
-                System.out.println("StationaryGeneric error, ID_01: " + localException1.toString());
-              }
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Stationary: Parameter [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Stationary: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
             }
-          }
+        }
 
-          return true;
-        case 68:
-          if (isMirrored())
-          {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-            post((NetMsgGuaranted)localObject);
-          }
-          if (StationaryGeneric.this.dying != 1) {
-            localObject = paramNetMsgInput.readNetObj();
-            Actor localActor = localObject == null ? null : ((ActorNet)localObject).actor();
-            StationaryGeneric.this.Die(localActor, 1, true);
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Stationary: Parameter [" + s + "]:<" + s1 + "> ");
+                java.lang.System.out.println(s2 != null ? "is empty" : "not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return s2;
+            }
+        }
+
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return s3;
+        }
+
+        private static com.maddox.il2.objects.vehicles.stationary.StationaryProperties LoadStationaryProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.vehicles.stationary.StationaryProperties stationaryproperties = new StationaryProperties();
+            java.lang.String s1 = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "PanzerType", null);
+            if(s1 == null)
+                s1 = "Tank";
+            stationaryproperties.fnShotPanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ShotPanzer");
+            stationaryproperties.fnExplodePanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ExplodePanzer");
+            stationaryproperties.PANZER_TNT_TYPE = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerSubtype", 0.0F, 100F);
+            stationaryproperties.meshSummer = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "MeshSummer");
+            stationaryproperties.meshDesert = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "MeshDesert", stationaryproperties.meshSummer);
+            stationaryproperties.meshWinter = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "MeshWinter", stationaryproperties.meshSummer);
+            stationaryproperties.meshSummer1 = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "MeshSummerDamage", null);
+            stationaryproperties.meshDesert1 = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "MeshDesertDamage", stationaryproperties.meshSummer1);
+            stationaryproperties.meshWinter1 = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "MeshWinterDamage", stationaryproperties.meshSummer1);
+            float f = (stationaryproperties.meshSummer1 != null ? 0 : 1) + (stationaryproperties.meshDesert1 != null ? 0 : 1) + (stationaryproperties.meshWinter1 != null ? 0 : 1);
+            if(f != 0 && f != 3)
+            {
+                java.lang.System.out.println("Stationary: Uncomplete set of damage meshes for '" + s + "'");
+                throw new RuntimeException("Can't register stationary object");
+            }
+            stationaryproperties.explodeName = com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "Explode", "Stationary");
+            stationaryproperties.PANZER_BODY_FRONT = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerBodyFront", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerBodyBack", -9865.345F) == -9865.345F)
+            {
+                stationaryproperties.PANZER_BODY_BACK = stationaryproperties.PANZER_BODY_FRONT;
+                stationaryproperties.PANZER_BODY_SIDE = stationaryproperties.PANZER_BODY_FRONT;
+                stationaryproperties.PANZER_BODY_TOP = stationaryproperties.PANZER_BODY_FRONT;
+            } else
+            {
+                stationaryproperties.PANZER_BODY_BACK = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerBodyBack", 0.001F, 9.999F);
+                stationaryproperties.PANZER_BODY_SIDE = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerBodySide", 0.001F, 9.999F);
+                stationaryproperties.PANZER_BODY_TOP = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerBodyTop", 0.001F, 9.999F);
+            }
+            if(sectfile.get(s, "PanzerHead", -9865.345F) == -9865.345F)
+                stationaryproperties.PANZER_HEAD = stationaryproperties.PANZER_BODY_FRONT;
+            else
+                stationaryproperties.PANZER_HEAD = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerHead", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerHeadTop", -9865.345F) == -9865.345F)
+                stationaryproperties.PANZER_HEAD_TOP = stationaryproperties.PANZER_BODY_TOP;
+            else
+                stationaryproperties.PANZER_HEAD_TOP = com.maddox.il2.objects.vehicles.stationary.SPAWN.getF(sectfile, s, "PanzerHeadTop", 0.001F, 9.999F);
+            f = java.lang.Math.min(java.lang.Math.min(stationaryproperties.PANZER_BODY_BACK, stationaryproperties.PANZER_BODY_TOP), java.lang.Math.min(stationaryproperties.PANZER_BODY_SIDE, stationaryproperties.PANZER_HEAD_TOP));
+            stationaryproperties.HITBY_MASK = f <= 0.015F ? -1 : -2;
+            com.maddox.rts.Property.set(class1, "iconName", "icons/" + com.maddox.il2.objects.vehicles.stationary.SPAWN.getS(sectfile, s, "Icon") + ".mat");
+            com.maddox.rts.Property.set(class1, "meshName", stationaryproperties.meshSummer);
+            return stationaryproperties;
+        }
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            switch(com.maddox.il2.ai.World.cur().camouflage)
+            {
+            case 1: // '\001'
+                proper.meshName = proper.meshWinter;
+                proper.meshName1 = proper.meshWinter1;
+                break;
+
+            case 2: // '\002'
+                proper.meshName = proper.meshDesert;
+                proper.meshName1 = proper.meshDesert1;
+                break;
+
+            default:
+                proper.meshName = proper.meshSummer;
+                proper.meshName1 = proper.meshSummer1;
+                break;
+            }
+            com.maddox.il2.objects.vehicles.stationary.StationaryGeneric stationarygeneric = null;
             try
             {
-              ZutiTargetsSupportMethods.staticActorDied(StationaryGeneric.this);
+                com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.constr_arg2 = actorspawnarg;
+                stationarygeneric = (com.maddox.il2.objects.vehicles.stationary.StationaryGeneric)cls.newInstance();
+                com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.constr_arg2 = null;
             }
-            catch (Exception localException2)
+            catch(java.lang.Exception exception)
             {
-              System.out.println("StationaryGeneric error, ID_02: " + localException2.toString());
+                com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create Stationary object [class:" + cls.getName() + "]");
+                return null;
             }
-          }
-
-          return true;
-        case 100:
-          localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-          postTo(masterChannel(), (NetMsgGuaranted)localObject);
-          return true;
+            return stationarygeneric;
         }
-        return false;
-      }
 
-      return true;
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.vehicles.stationary.StationaryProperties proper;
+
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.vehicles.stationary.SPAWN.LoadStationaryProperties(com.maddox.il2.objects.Statics.getTechnicsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
     }
 
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
+    class Mirror extends com.maddox.il2.engine.ActorNet
     {
-      super();
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                switch(netmsginput.readByte())
+                {
+                case 73: // 'I'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted);
+                    }
+                    short word0 = netmsginput.readShort();
+                    if(word0 > 0 && dying != 1)
+                        Die(null, (short)1, false);
+                    return true;
+
+                case 68: // 'D'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted1);
+                    }
+                    if(dying != 1)
+                    {
+                        com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                        com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                        Die(actor, (short)1, true);
+                    }
+                    return true;
+
+                case 100: // 'd'
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted2 = new NetMsgGuaranted(netmsginput, 1);
+                    postTo(masterChannel(), netmsgguaranted2);
+                    return true;
+                }
+                return false;
+            } else
+            {
+                return true;
+            }
+        }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        if (paramNetMsgInput.readByte() != 100)
-          return false;
-      }
-      else return false;
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
 
-      if (StationaryGeneric.this.dying == 1) {
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                if(netmsginput.readByte() != 100)
+                    return false;
+            } else
+            {
+                return false;
+            }
+            if(dying == 1)
+            {
+                return true;
+            } else
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                Die(actor, (short)0, true);
+                return true;
+            }
+        }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+    public static class StationaryProperties
+    {
+
+        public java.lang.String meshName;
+        public java.lang.String meshName1;
+        public java.lang.String meshSummer;
+        public java.lang.String meshDesert;
+        public java.lang.String meshWinter;
+        public java.lang.String meshSummer1;
+        public java.lang.String meshDesert1;
+        public java.lang.String meshWinter1;
+        public com.maddox.util.TableFunction2 fnShotPanzer;
+        public com.maddox.util.TableFunction2 fnExplodePanzer;
+        public float PANZER_BODY_FRONT;
+        public float PANZER_BODY_BACK;
+        public float PANZER_BODY_SIDE;
+        public float PANZER_BODY_TOP;
+        public float PANZER_HEAD;
+        public float PANZER_HEAD_TOP;
+        public float PANZER_TNT_TYPE;
+        public int HITBY_MASK;
+        public java.lang.String explodeName;
+
+        public StationaryProperties()
+        {
+            meshName = null;
+            meshName1 = null;
+            meshSummer = null;
+            meshDesert = null;
+            meshWinter = null;
+            meshSummer1 = null;
+            meshDesert1 = null;
+            meshWinter1 = null;
+            fnShotPanzer = null;
+            fnExplodePanzer = null;
+            PANZER_BODY_FRONT = 0.001F;
+            PANZER_BODY_BACK = 0.001F;
+            PANZER_BODY_SIDE = 0.001F;
+            PANZER_BODY_TOP = 0.001F;
+            PANZER_HEAD = 0.001F;
+            PANZER_HEAD_TOP = 0.001F;
+            PANZER_TNT_TYPE = 1.0F;
+            HITBY_MASK = -2;
+            explodeName = null;
+        }
+    }
+
+
+    public static final double Rnd(double d, double d1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
+    }
+
+    public static final float Rnd(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    private boolean RndB(float f)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    public boolean isStaticPos()
+    {
         return true;
-      }
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      StationaryGeneric.this.Die(localActor, 0, true);
-      return true;
     }
-  }
 
-  public static class StationaryProperties
-  {
-    public String meshName = null;
-    public String meshName1 = null;
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 2;
+        if(dying != 0)
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(isNetMirror() && shot.isMirage())
+            return;
+        if(shot.powerType == 1)
+            if(RndB(0.15F))
+            {
+                return;
+            } else
+            {
+                Die(shot.initiator, (short)0, true);
+                return;
+            }
+        float f = com.maddox.il2.ai.Shot.panzerThickness(pos.getAbsOrient(), shot.v, shot.chunkName.equalsIgnoreCase("Head"), prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP);
+        f *= com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.Rnd(0.93F, 1.07F);
+        float f1 = prop.fnShotPanzer.Value(shot.power, f);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(shot.initiator, (short)0, true);
+    }
 
-    public String meshSummer = null;
-    public String meshDesert = null;
-    public String meshWinter = null;
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror() && explosion.isMirage())
+            return;
+        if(explosion.power <= 0.0F)
+            return;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 1)
+        {
+            if(com.maddox.il2.objects.vehicles.tanks.TankGeneric.splintersKill(explosion, prop.fnShotPanzer, com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.Rnd(0.0F, 1.0F), com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP))
+                Die(explosion.initiator, (short)0, true);
+            return;
+        }
+        com.maddox.il2.ai.Explosion _tmp1 = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+        {
+            Die(explosion.initiator, (short)0, true);
+            return;
+        }
+        float f;
+        if(explosion.chunkName != null)
+            f = 0.5F * explosion.power;
+        else
+            f = explosion.receivedTNTpower(this);
+        f *= com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.Rnd(0.95F, 1.05F);
+        float f1 = prop.fnExplodePanzer.Value(f, prop.PANZER_TNT_TYPE);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(explosion.initiator, (short)0, true);
+    }
 
-    public String meshSummer1 = null;
-    public String meshDesert1 = null;
-    public String meshWinter1 = null;
+    private void ShowExplode(float f, com.maddox.il2.engine.Actor actor)
+    {
+        if(f > 0.0F)
+            f = com.maddox.il2.objects.vehicles.stationary.StationaryGeneric.Rnd(f, f * 1.6F);
+        com.maddox.il2.objects.effects.Explosions.runByName(prop.explodeName, this, "Smoke", "SmokeHead", f, actor);
+    }
 
-    public TableFunction2 fnShotPanzer = null;
-    public TableFunction2 fnExplodePanzer = null;
+    private void Die(com.maddox.il2.engine.Actor actor, short word0, boolean flag)
+    {
+        if(dying != 0)
+            return;
+        if(word0 <= 0)
+        {
+            if(isNetMirror())
+            {
+                send_DeathRequest(actor);
+                return;
+            }
+            word0 = 1;
+        }
+        dying = 1;
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        if(prop.meshName1 == null)
+            mesh().makeAllMaterialsDarker(0.22F, 0.35F);
+        else
+            setMesh(prop.meshName1);
+        int i = mesh().hookFind("Ground_Level");
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            mesh().hookMatrix(i, matrix4d);
+            heightAboveLandSurface = (float)(-matrix4d.m23);
+        }
+        Align();
+        if(flag)
+            ShowExplode(15F, actor);
+        if(flag)
+            send_DeathCommand(actor);
+    }
 
-    public float PANZER_BODY_FRONT = 0.001F;
-    public float PANZER_BODY_BACK = 0.001F;
-    public float PANZER_BODY_SIDE = 0.001F;
-    public float PANZER_BODY_TOP = 0.001F;
-    public float PANZER_HEAD = 0.001F;
-    public float PANZER_HEAD_TOP = 0.001F;
+    public void destroy()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            super.destroy();
+            return;
+        }
+    }
 
-    public float PANZER_TNT_TYPE = 1.0F;
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
 
-    public int HITBY_MASK = -2;
+    protected StationaryGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
 
-    public String explodeName = null;
-  }
+    private StationaryGeneric(com.maddox.il2.objects.vehicles.stationary.StationaryProperties stationaryproperties, com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+    {
+        super(stationaryproperties.meshName);
+        prop = null;
+        dying = 0;
+        prop = stationaryproperties;
+        actorspawnarg.setStationary(this);
+        collide(true);
+        drawing(true);
+        createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+        heightAboveLandSurface = 0.0F;
+        int i = mesh().hookFind("Ground_Level");
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            mesh().hookMatrix(i, matrix4d);
+            heightAboveLandSurface = (float)(-matrix4d.m23);
+        } else
+        {
+            java.lang.System.out.println("Stationary " + getClass().getName() + ": hook Ground_Level not found");
+        }
+        Align();
+    }
+
+    private void Align()
+    {
+        pos.getAbs(p);
+        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) + (double)heightAboveLandSurface;
+        o.setYPR(pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+        com.maddox.il2.engine.Engine.land().N(p.x, p.y, n);
+        o.orient(n);
+        pos.setAbs(p, o);
+    }
+
+    public void align()
+    {
+        Align();
+    }
+
+    public int HitbyMask()
+    {
+        return prop.HITBY_MASK;
+    }
+
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
+    {
+        if(dying != 0)
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(this instanceof com.maddox.il2.ai.ground.TgtTank)
+        {
+            if(abulletproperties[0].cumulativePower > 0.0F)
+                return 0;
+            if(abulletproperties[1].cumulativePower > 0.0F)
+                return 1;
+            if(abulletproperties[0].power <= 0.0F)
+                return 0;
+            if(abulletproperties[1].power <= 0.0F)
+                return 1;
+        } else
+        {
+            if(abulletproperties[0].power <= 0.0F)
+                return 0;
+            if(abulletproperties[1].power <= 0.0F)
+                return 1;
+            if(abulletproperties[0].cumulativePower > 0.0F)
+                return 0;
+            if(abulletproperties[1].cumulativePower > 0.0F)
+                return 1;
+        }
+        if(abulletproperties[0].powerType == 1)
+            return 0;
+        if(abulletproperties[1].powerType == 1)
+            return 1;
+        return abulletproperties[0].powerType != 0 ? 0 : 1;
+    }
+
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
+    {
+        return dying == 0 ? 0 : -1;
+    }
+
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
+    {
+        if(dying != 0)
+            return false;
+        if(i != 0)
+            return false;
+        if(point3d != null)
+            point3d.set(0.0D, 0.0D, 0.0D);
+        return true;
+    }
+
+    public boolean unmovableInFuture()
+    {
+        return true;
+    }
+
+    public void collisionDeath()
+    {
+        if(isNet())
+        {
+            return;
+        } else
+        {
+            ShowExplode(-1F, null);
+            destroy();
+            return;
+        }
+    }
+
+    public float futurePosition(float f, com.maddox.JGP.Point3d point3d)
+    {
+        pos.getAbs(point3d);
+        return f > 0.0F ? f : 0.0F;
+    }
+
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMaster())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(68);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_DeathRequest(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(100);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.postTo(net.masterChannel(), netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        if(dying == 0)
+            netmsgguaranted.writeShort(0);
+        else
+            netmsgguaranted.writeShort(1);
+        net.postTo(netchannel, netmsgguaranted);
+    }
+
+    private com.maddox.il2.objects.vehicles.stationary.StationaryProperties prop;
+    private float heightAboveLandSurface;
+    private int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_DEAD = 1;
+    private static com.maddox.il2.objects.vehicles.stationary.StationaryProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.ActorSpawnArg constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3f n = new Vector3f();
+    private static com.maddox.JGP.Vector3d tmpv = new Vector3d();
+
+
+
+
+
 }

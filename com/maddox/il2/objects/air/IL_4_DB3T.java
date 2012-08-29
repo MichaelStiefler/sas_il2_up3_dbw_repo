@@ -1,33 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   IL_4_DB3T.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class IL_4_DB3T extends IL_4
-  implements TypeBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            IL_4, PaintSchemeBMPar01, TypeBomber, NetAircraft, 
+//            Aircraft
+
+public class IL_4_DB3T extends com.maddox.il2.objects.air.IL_4
+    implements com.maddox.il2.objects.air.TypeBomber
 {
-  static
-  {
-    Class localClass = IL_4_DB3T.class;
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "DB-3");
-    Property.set(localClass, "meshName", "3DO/Plane/DB-3T/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar01());
+    public IL_4_DB3T()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1936.0F);
-    Property.set(localClass, "yearExpired", 1948.0F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/DB-3T.fmd");
-
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null });
-
-    weaponsRegister(localClass, "torp1", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGun4512" });
-
-    weaponsRegister(localClass, "1x53mmCirc", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunTorp45_36AV_A" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.IL_4_DB3T.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "DB-3");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/DB-3T/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1936F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/DB-3T.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            10, 11, 12, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "torp1", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGun4512"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

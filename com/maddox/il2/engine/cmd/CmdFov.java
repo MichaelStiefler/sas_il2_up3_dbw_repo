@@ -1,37 +1,47 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdFov.java
+
 package com.maddox.il2.engine.cmd;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Camera3D;
 import com.maddox.il2.engine.Render;
+import com.maddox.il2.game.Main3D;
 import com.maddox.rts.Cmd;
 import com.maddox.rts.CmdEnv;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CmdFov extends Cmd
+public class CmdFov extends com.maddox.rts.Cmd
 {
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (paramMap.containsKey("_$$")) {
-      float f = arg(paramMap, "_$$", 0, 70.0F, 10.0F, 170.0F);
-      Camera3D localCamera3D2 = (Camera3D)Actor.getByName("camera");
-      localCamera3D2.set(f);
-      Render localRender = (Render)Actor.getByName("renderCockpit");
-      if (localRender != null) {
-        localCamera3D2 = (Camera3D)localRender.getCamera();
-        localCamera3D2.set(f);
-      }
-      com.maddox.il2.game.Main3D.FOVX = f;
-    } else {
-      Camera3D localCamera3D1 = (Camera3D)Actor.getByName("camera");
-      INFO_HARD("Camera fov: " + localCamera3D1.FOV());
+
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(map.containsKey("_$$"))
+        {
+            float f = com.maddox.rts.Cmd.arg(map, "_$$", 0, 70F, 10F, 170F);
+            com.maddox.il2.engine.Camera3D camera3d1 = (com.maddox.il2.engine.Camera3D)com.maddox.il2.engine.Actor.getByName("camera");
+            camera3d1.set(f);
+            com.maddox.il2.engine.Render render = (com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderCockpit");
+            if(render != null)
+            {
+                com.maddox.il2.engine.Camera3D camera3d2 = (com.maddox.il2.engine.Camera3D)render.getCamera();
+                camera3d2.set(f);
+            }
+            com.maddox.il2.game.Main3D.FOVX = f;
+        } else
+        {
+            com.maddox.il2.engine.Camera3D camera3d = (com.maddox.il2.engine.Camera3D)com.maddox.il2.engine.Actor.getByName("camera");
+            INFO_HARD("Camera fov: " + camera3d.FOV());
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
 
-    return CmdEnv.RETURN_OK;
-  }
-
-  public CmdFov() {
-    this._properties.put("NAME", "fov");
-    this._levelAccess = 0;
-  }
+    public CmdFov()
+    {
+        _properties.put("NAME", "fov");
+        _levelAccess = 0;
+    }
 }

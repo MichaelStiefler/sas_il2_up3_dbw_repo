@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombAB1000.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -14,90 +19,103 @@ import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombAB1000 extends Bomb
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bomb, BombB22EZ
+
+public class BombAB1000 extends com.maddox.il2.objects.weapons.Bomb
 {
-  private long t1;
-  private int charge;
 
-  public void start()
-  {
-    super.start();
-    this.t1 = (Time.current() + 1000L * ()Math.max(this.delayExplosion, 2.21F) + World.Rnd().nextLong(-250L, 250L));
-    this.charge = 0;
-    setName("qqq");
-  }
-
-  public void interpolateTick()
-  {
-    super.interpolateTick();
-    if (this.t1 < Time.current())
-      doFireContaineds();
-  }
-
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if ((this.t1 > Time.current()) && (isFuseArmed())) {
-      doFireContaineds();
+    public BombAB1000()
+    {
     }
 
-    super.msgCollision(paramActor, paramString1, paramString2);
-  }
+    public void start()
+    {
+        super.start();
+        t1 = com.maddox.rts.Time.current() + 1000L * (long)java.lang.Math.max(delayExplosion, 2.21F) + com.maddox.il2.ai.World.Rnd().nextLong(-250L, 250L);
+        charge = 0;
+        setName("qqq");
+    }
 
-  private void doFireContaineds()
-  {
-    this.charge += 1;
-    if (this.charge < 6) {
-      Explosions.generateExplosion(this, this.pos.getCurrentPoint(), 0.01F, 0, 10.0F, 0.0D);
-      Actor localActor = getOwner();
-      if (!Actor.isValid(localActor)) {
-        return;
-      }
+    public void interpolateTick()
+    {
+        super.interpolateTick();
+        if(t1 < com.maddox.rts.Time.current())
+            doFireContaineds();
+    }
 
-      Point3d localPoint3d = new Point3d();
-      Orient localOrient = new Orient();
-      Vector3d localVector3d1 = new Vector3d();
-      Vector3d localVector3d2 = new Vector3d();
-      Loc localLoc1 = new Loc();
-      Loc localLoc2 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      this.pos.getCurrent(localLoc1);
-      findHook("_Spawn0" + this.charge).computePos(this, localLoc1, localLoc2);
-      getSpeed(localVector3d2);
-      for (int i = 0; i < 74; i++) {
-        localLoc2.get(localPoint3d, localOrient);
-        localOrient.increment(World.Rnd().nextFloat(-135.0F, 135.0F), World.Rnd().nextFloat(-17.5F, 17.5F), World.Rnd().nextFloat(-0.5F, 0.5F));
-        localVector3d1.set(1.0D, 0.0D, 0.0D);
-        localOrient.transform(localVector3d1);
-        localVector3d1.scale(World.Rnd().nextDouble(5.0D, 38.200000000000003D));
-        localVector3d1.add(localVector3d2);
-        BombB22EZ localBombB22EZ = new BombB22EZ();
-        localBombB22EZ.pos.setUpdateEnable(true);
-        localBombB22EZ.pos.setAbs(localPoint3d, localOrient);
-        localBombB22EZ.pos.reset();
-        localBombB22EZ.start();
-        localBombB22EZ.setOwner(localActor, false, false, false);
-        localBombB22EZ.setSpeed(localVector3d1);
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(t1 > com.maddox.rts.Time.current())
+            doFireContaineds();
+        super.msgCollision(actor, s, s1);
+    }
 
-        if (i % 4 == 0) {
-          Eff3DActor.New(localBombB22EZ, null, null, 3.0F, "effects/Smokes/SmokeBlack_BuletteTrail.eff", 30.0F);
+    private void doFireContaineds()
+    {
+        charge++;
+        if(charge < 6)
+        {
+            com.maddox.il2.objects.effects.Explosions.generateExplosion(this, pos.getCurrentPoint(), 0.01F, 0, 10F, 0.0D);
+            com.maddox.il2.engine.Actor actor = getOwner();
+            if(!com.maddox.il2.engine.Actor.isValid(actor))
+                return;
+            com.maddox.JGP.Point3d point3d = new Point3d();
+            com.maddox.il2.engine.Orient orient = new Orient();
+            com.maddox.JGP.Vector3d vector3d = new Vector3d();
+            com.maddox.JGP.Vector3d vector3d1 = new Vector3d();
+            com.maddox.il2.engine.Loc loc = new Loc();
+            com.maddox.il2.engine.Loc loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            pos.getCurrent(loc);
+            findHook("_Spawn0" + charge).computePos(this, loc, loc1);
+            getSpeed(vector3d1);
+            for(int i = 0; i < 74; i++)
+            {
+                loc1.get(point3d, orient);
+                orient.increment(com.maddox.il2.ai.World.Rnd().nextFloat(-135F, 135F), com.maddox.il2.ai.World.Rnd().nextFloat(-17.5F, 17.5F), com.maddox.il2.ai.World.Rnd().nextFloat(-0.5F, 0.5F));
+                vector3d.set(1.0D, 0.0D, 0.0D);
+                orient.transform(vector3d);
+                vector3d.scale(com.maddox.il2.ai.World.Rnd().nextDouble(5D, 38.200000000000003D));
+                vector3d.add(vector3d1);
+                com.maddox.il2.objects.weapons.BombB22EZ bombb22ez = new BombB22EZ();
+                ((com.maddox.il2.objects.weapons.Bomb) (bombb22ez)).pos.setUpdateEnable(true);
+                ((com.maddox.il2.objects.weapons.Bomb) (bombb22ez)).pos.setAbs(point3d, orient);
+                ((com.maddox.il2.objects.weapons.Bomb) (bombb22ez)).pos.reset();
+                bombb22ez.start();
+                bombb22ez.setOwner(actor, false, false, false);
+                bombb22ez.setSpeed(vector3d);
+                if(i % 4 == 0)
+                    com.maddox.il2.engine.Eff3DActor.New(bombb22ez, null, null, 3F, "effects/Smokes/SmokeBlack_BuletteTrail.eff", 30F);
+            }
+
+            t1 = com.maddox.rts.Time.current() + 1000L;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.AirFlak(pos.getAbsPoint(), 1);
+            postDestroy();
         }
-      }
-      this.t1 = (Time.current() + 1000L);
-    } else {
-      Explosions.AirFlak(this.pos.getAbsPoint(), 1);
-      postDestroy();
     }
-  }
 
-  static
-  {
-    Class localClass = BombAB1000.class;
-    Property.set(localClass, "mesh", "3DO/Arms/AB-1000/mono.sim");
-    Property.set(localClass, "radius", 10.0F);
-    Property.set(localClass, "power", 0.15F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.6604F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "massa", 905.30005F);
-    Property.set(localClass, "sound", "weapon.bomb_big");
-  }
+    private long t1;
+    private int charge;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombAB1000.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/AB-1000/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 10F);
+        com.maddox.rts.Property.set(class1, "power", 0.15F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.6604F);
+        com.maddox.rts.Property.set(class1, "massa", 905.3F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bomb_big");
+    }
 }

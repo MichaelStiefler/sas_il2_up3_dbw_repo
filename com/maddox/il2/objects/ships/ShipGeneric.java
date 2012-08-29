@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ShipGeneric.java
+
 package com.maddox.il2.objects.ships;
 
 import com.maddox.JGP.Geom;
@@ -37,7 +42,6 @@ import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.Landscape;
@@ -49,7 +53,6 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.VisibilityLong;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
@@ -63,7 +66,7 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -73,2028 +76,1947 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class ShipGeneric extends ActorHMesh
-  implements MsgCollisionRequestListener, MsgCollisionListener, MsgExplosionListener, MsgShotListener, Predator, ActorAlign, HunterInterface, VisibilityLong
+// Referenced classes of package com.maddox.il2.objects.ships:
+//            WeakBody, BigshipGeneric
+
+public class ShipGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.engine.MsgCollisionListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Predator, com.maddox.il2.objects.ActorAlign, com.maddox.il2.ai.ground.HunterInterface, com.maddox.il2.engine.VisibilityLong
 {
-  private ShipProperties prop = null;
-
-  private FiringDevice[] arms = null;
-  private ArrayList path;
-  private int cachedSeg = 0;
-  private float bodyDepth;
-  private float bodyYaw;
-  private float bodyPitch;
-  private float bodyRoll;
-  private float seaDepth;
-  private long timeOfDeath;
-  private long timeForRotation;
-  private float drownBodyPitch;
-  private float drownBodyRoll;
-  private float sinkingDepthSpeed;
-  private float life = 1.0F;
-  private int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_SINK = 1;
-  static final int DYING_DEAD = 2;
-  private long respawnDelay = 0L;
-
-  private long wakeupTmr = 0L;
-  public float DELAY_WAKEUP = 0.0F;
-
-  public int SKILL_IDX = 2;
-
-  public float SLOWFIRE_K = 1.0F;
-
-  private Eff3DActor pipe = null;
-
-  private Eff3DActor[] wake = { null, null, null };
-
-  private Eff3DActor nose = null;
-  private Eff3DActor tail = null;
-
-  private static ShipProperties constr_arg1 = null;
-  private static ActorSpawnArg constr_arg2 = null;
-
-  private static Point3d p = new Point3d();
-  private static Point3d p1 = new Point3d();
-  private static Point3d p2 = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3f n = new Vector3f();
-  private static Vector3d tmpv = new Vector3d();
-
-  private NetMsgFiltered outCommand = new NetMsgFiltered();
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  public static final float KmHourToMSec(float paramFloat) {
-    return paramFloat / 3.6F;
-  }
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  protected final boolean Head360(FiringDevice paramFiringDevice)
-  {
-    return this.prop.guns[paramFiringDevice.id].HEAD_YAW_RANGE.fullcircle();
-  }
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    if ((paramActor instanceof BridgeSegment)) {
-      if (this.dying != 0) {
-        paramArrayOfBoolean[0] = false;
-      }
-      return;
-    }
-
-    if ((this.path == null) && ((paramActor instanceof ActorMesh)) && (((ActorMesh)paramActor).isStaticPos()))
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
     {
-      paramArrayOfBoolean[0] = false;
-      return;
-    }
-  }
 
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (isNetMirror()) {
-      return;
-    }
-
-    if ((paramActor instanceof WeakBody)) {
-      return;
-    }
-
-    if (((paramActor instanceof ShipGeneric)) || ((paramActor instanceof BigshipGeneric)) || ((paramActor instanceof BridgeSegment)))
-    {
-      Die(null, -1L, true);
-    }
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramShot.isMirage())) {
-      return;
-    }
-
-    if (this.wakeupTmr < 0L)
-      this.wakeupTmr = SecsToTicks(Rnd(this.DELAY_WAKEUP, this.DELAY_WAKEUP * 1.2F));
-    float f1;
-    float f2;
-    if (paramShot.powerType == 1)
-    {
-      f1 = this.prop.stre.EXPLHIT_MAX_TNT;
-      f2 = this.prop.stre.EXPLHIT_MAX_TNT;
-    } else {
-      f1 = this.prop.stre.SHOT_MIN_ENERGY;
-      f2 = this.prop.stre.SHOT_MAX_ENERGY;
-    }
-
-    float f3 = paramShot.power * Rnd(1.0F, 1.1F);
-    if (f3 < f1)
-    {
-      return;
-    }
-
-    float f4 = f3 / f2;
-    this.life -= f4;
-    if (this.life > 0.0F) {
-      return;
-    }
-
-    Die(paramShot.initiator, -1L, true);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramExplosion.isMirage())) {
-      return;
-    }
-
-    if (this.wakeupTmr < 0L) {
-      this.wakeupTmr = SecsToTicks(Rnd(this.DELAY_WAKEUP, this.DELAY_WAKEUP * 1.2F));
-    }
-
-    float f1 = paramExplosion.power;
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null))
-      f1 *= 0.45F;
-    float f3;
-    float f2;
-    if (paramExplosion.chunkName != null) {
-      f3 = f1;
-
-      f3 *= Rnd(1.0F, 1.1F);
-      if (f3 < this.prop.stre.EXPLHIT_MIN_TNT) {
-        return;
-      }
-      f2 = f3 / this.prop.stre.EXPLHIT_MAX_TNT;
-    } else {
-      f3 = paramExplosion.receivedTNT_1meter(this);
-
-      f3 *= Rnd(1.0F, 1.1F);
-      if (f3 < this.prop.stre.EXPLNEAR_MIN_TNT) {
-        return;
-      }
-      f2 = f3 / this.prop.stre.EXPLNEAR_MAX_TNT;
-    }
-
-    this.life -= f2;
-    if (this.life > 0.0F) {
-      return;
-    }
-
-    Die(paramExplosion.initiator, -1L, true);
-  }
-
-  private float computeSeaDepth(Point3d paramPoint3d)
-  {
-    for (float f1 = 5.0F; f1 <= 355.0F; f1 += 10.0F) {
-      for (float f2 = 0.0F; f2 < 360.0F; f2 += 30.0F) {
-        float f3 = f1 * Geom.cosDeg(f2);
-        float f4 = f1 * Geom.sinDeg(f2);
-        f3 += (float)paramPoint3d.x;
-        f4 += (float)paramPoint3d.y;
-        if (!World.land().isWater(f3, f4)) {
-          return 50.0F * (f1 / 355.0F);
-        }
-      }
-    }
-    return 1000.0F;
-  }
-
-  private void computeSinkingParams(long paramLong)
-  {
-    RangeRandom localRangeRandom = new RangeRandom(paramLong % 11073L);
-
-    this.timeForRotation = (40000L + ()(localRangeRandom.nextFloat() * 0.0F));
-    this.drownBodyPitch = (50.0F - localRangeRandom.nextFloat() * 20.0F);
-    if (localRangeRandom.nextFloat() < 0.5F) this.drownBodyPitch = (-this.drownBodyPitch);
-    this.drownBodyRoll = (30.0F - localRangeRandom.nextFloat() * 60.0F);
-
-    this.sinkingDepthSpeed = (0.55F + localRangeRandom.nextFloat() * 0.0F);
-
-    this.seaDepth = computeSeaDepth(this.pos.getAbsPoint());
-    this.seaDepth *= (1.0F + localRangeRandom.nextFloat() * 0.2F);
-  }
-
-  private void showExplode()
-  {
-    if ((mesh() instanceof HierMesh))
-    {
-      Explosions.Antiaircraft_Explode(this.pos.getAbsPoint());
-    }
-  }
-
-  private void Die(Actor paramActor, long paramLong, boolean paramBoolean)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramLong < 0L) {
-      if (isNetMirror()) {
-        send_DeathRequest(paramActor);
-        return;
-      }
-
-      paramLong = NetServerParams.getServerTime();
-    }
-
-    this.life = 0.0F;
-    this.dying = 1;
-    World.onActorDied(this, paramActor);
-    forgetAllAiming();
-
-    SetEffectsIntens(-1.0F);
-
-    if (this.path != null) {
-      this.bodyDepth = 0.0F;
-      this.bodyPitch = (this.bodyRoll = 0.0F);
-      setMovablePosition(paramLong);
-    } else {
-      this.bodyDepth = 0.0F;
-      this.bodyPitch = (this.bodyRoll = 0.0F);
-      setPosition();
-    }
-    this.pos.reset();
-
-    computeSinkingParams(paramLong);
-
-    if (Mission.isDeathmatch())
-    {
-      this.timeOfDeath = Time.current();
-      if (!paramBoolean)
-        this.timeOfDeath = 0L;
-    }
-    else {
-      this.timeOfDeath = paramLong;
-    }
-
-    if (paramBoolean) {
-      showExplode();
-    }
-
-    if (paramBoolean)
-      send_DeathCommand(paramActor);
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed()) {
-      return;
-    }
-    eraseGuns();
-    super.destroy();
-  }
-
-  private boolean isAnyEnemyNear()
-  {
-    NearestEnemies.set(WeaponsMask());
-    Actor localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), 2000.0D, getArmy());
-
-    return localActor != null;
-  }
-
-  private final FiringDevice GetFiringDevice(Aim paramAim)
-  {
-    for (int i = 0; i < this.prop.nGuns; i++) {
-      if ((this.arms[i] != null) && (this.arms[i].aime == paramAim)) {
-        return this.arms[i];
-      }
-    }
-    System.out.println("Internal error 1: Can't find ship gun.");
-    return null;
-  }
-
-  private final ShipGunProperties GetGunProperties(Aim paramAim) {
-    for (int i = 0; i < this.prop.nGuns; i++) {
-      if (this.arms[i].aime == paramAim) {
-        return this.prop.guns[this.arms[i].id];
-      }
-    }
-    System.out.println("Internal error 2: Can't find ship gun.");
-    return null;
-  }
-
-  private void setGunAngles(FiringDevice paramFiringDevice, float paramFloat1, float paramFloat2) {
-    FiringDevice.access$202(paramFiringDevice, paramFloat1);
-    FiringDevice.access$302(paramFiringDevice, paramFloat2);
-    hierMesh().chunkSetAngles("Head" + paramFiringDevice.id, paramFiringDevice.headYaw, 0.0F, 0.0F);
-    hierMesh().chunkSetAngles("Gun" + paramFiringDevice.id, -paramFiringDevice.gunPitch, 0.0F, 0.0F);
-  }
-
-  private void eraseGuns()
-  {
-    if (this.arms != null) {
-      for (int i = 0; i < this.prop.nGuns; i++) {
-        if (this.arms[i] != null) {
-          if (this.arms[i].aime != null) {
-            this.arms[i].aime.forgetAll();
-            FiringDevice.access$102(this.arms[i], null);
-          }
-          if (this.arms[i].gun != null) {
-            destroy(this.arms[i].gun);
-            FiringDevice.access$402(this.arms[i], null);
-          }
-          this.arms[i] = null;
-        }
-      }
-      this.arms = null;
-    }
-  }
-
-  private void forgetAllAiming() {
-    if (this.arms != null)
-      for (int i = 0; i < this.prop.nGuns; i++)
-        if ((this.arms[i] != null) && (this.arms[i].aime != null))
-          this.arms[i].aime.forgetAiming();
-  }
-
-  private void CreateGuns()
-  {
-    this.arms = new FiringDevice[this.prop.nGuns];
-    for (int i = 0; i < this.prop.nGuns; i++) {
-      this.arms[i] = new FiringDevice();
-
-      FiringDevice.access$002(this.arms[i], i);
-
-      FiringDevice.access$402(this.arms[i], null);
-      try {
-        FiringDevice.access$402(this.arms[i], (Gun)this.prop.guns[i].gunClass.newInstance());
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Ship: Can't create gun '" + this.prop.guns[i].gunClass.getName() + "'");
-      }
-
-      this.arms[i].gun.set(this, "ShellStart" + i);
-      this.arms[i].gun.loadBullets(-1);
-
-      Loc localLoc = new Loc();
-
-      hierMesh().setCurChunk("Head" + i);
-      hierMesh().getChunkLocObj(localLoc);
-
-      this.prop.guns[i].fireOffset = new Point3d();
-      localLoc.get(this.prop.guns[i].fireOffset);
-
-      this.prop.guns[i].fireOrient = new Orient();
-      localLoc.get(this.prop.guns[i].fireOrient);
-
-      FiringDevice.access$102(this.arms[i], new Aim(this, isNetMirror(), this.SLOWFIRE_K * this.prop.guns[i].DELAY_AFTER_SHOOT));
-    }
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  private void setDefaultLivePose()
-  {
-    int i = mesh().hookFind("Ground_Level");
-    if (i != -1) {
-      Matrix4d localMatrix4d = new Matrix4d();
-      hierMesh().hookMatrix(i, localMatrix4d);
-    }
-
-    if ((mesh() instanceof HierMesh)) {
-      hierMesh().chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
-    }
-    for (int j = 0; j < this.prop.nGuns; j++) {
-      setGunAngles(this.arms[j], this.prop.guns[j].HEAD_STD_YAW, this.prop.guns[j].GUN_STD_PITCH);
-    }
-
-    this.bodyDepth = 0.0F;
-    align();
-  }
-
-  protected ShipGeneric()
-  {
-    this(constr_arg1, constr_arg2);
-  }
-
-  private ShipGeneric(ShipProperties paramShipProperties, ActorSpawnArg paramActorSpawnArg)
-  {
-    super(paramShipProperties.meshName);
-    this.prop = paramShipProperties;
-
-    paramActorSpawnArg.setStationary(this);
-
-    this.path = null;
-
-    collide(true);
-    drawing(true);
-
-    this.bodyDepth = 0.0F;
-    this.bodyPitch = (this.bodyRoll = 0.0F);
-    this.bodyYaw = paramActorSpawnArg.orient.getYaw();
-    setPosition();
-    this.pos.reset();
-
-    createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-
-    this.SKILL_IDX = Chief.new_SKILL_IDX;
-    this.SLOWFIRE_K = Chief.new_SLOWFIRE_K;
-    this.DELAY_WAKEUP = Chief.new_DELAY_WAKEUP;
-    this.wakeupTmr = 0L;
-    CreateGuns();
-
-    setDefaultLivePose();
-
-    if ((!isNetMirror()) && (this.prop.nGuns > 0) && (this.DELAY_WAKEUP > 0.0F))
-    {
-      this.wakeupTmr = (-SecsToTicks(Rnd(2.0F, 7.0F)));
-    }
-
-    if (!interpEnd("move"))
-      interpPut(new Move(), "move", Time.current(), null);
-  }
-
-  public void setMesh(String paramString)
-  {
-    super.setMesh(paramString);
-    if (Config.cur.b3dgunners) return;
-    mesh().materialReplaceToNull("Pilot1");
-  }
-
-  public ShipGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-  {
-    try
-    {
-      int i = paramSectFile1.sectionIndex(paramString2);
-      String str = paramSectFile1.var(i, 0);
-
-      Object localObject2 = Spawn.get(str);
-      if (localObject2 == null) {
-        throw new ActorException("Ship: Unknown class of ship (" + str + ")");
-      }
-
-      this.prop = ((SPAWN)localObject2).proper;
-      try
-      {
-        setMesh(this.prop.meshName);
-      } catch (RuntimeException localRuntimeException) {
-        super.destroy();
-        throw localRuntimeException;
-      }
-      if (this.prop.soundName != null) newSound(this.prop.soundName, true);
-
-      setName(paramString1);
-      setArmy(paramInt);
-
-      LoadPath(paramSectFile2, paramString3);
-
-      this.cachedSeg = 0;
-      this.bodyDepth = 0.0F;
-      this.bodyPitch = (this.bodyRoll = 0.0F);
-
-      setMovablePosition(NetServerParams.getServerTime());
-
-      this.pos.reset();
-
-      collide(true);
-      drawing(true);
-
-      this.pipe = null;
-      Object localObject1;
-      if (mesh().hookFind("Vapor") >= 0) {
-        localObject1 = new HookNamed(this, "Vapor");
-        this.pipe = Eff3DActor.New(this, (Hook)localObject1, null, 1.0F, "Effects/Smokes/SmokePipeShip.eff", -1.0F);
-      }
-       tmp345_344 = (this.wake[0] =  = null); this.wake[1] = tmp345_344; this.wake[2] = tmp345_344;
-      this.tail = null;
-      this.nose = null;
-      int j = this.prop.SLIDER_DIST / 2.5F < 90.0F ? 1 : 0;
-      if (mesh().hookFind("_Prop") >= 0) {
-        localObject1 = new HookNamedZ0(this, "_Prop");
-        this.tail = Eff3DActor.New(this, (Hook)localObject1, null, 1.0F, j != 0 ? "3DO/Effects/Tracers/ShipTrail/PropWakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/PropWake.eff", -1.0F);
-      }
-
-      if (mesh().hookFind("_Centre") >= 0)
-      {
-        Loc localLoc1 = new Loc();
-        Loc localLoc2 = new Loc();
-        HookNamed localHookNamed = new HookNamed(this, "_Left");
-        localHookNamed.computePos(this, new Loc(), localLoc1);
-        localObject3 = new HookNamed(this, "_Right");
-        ((HookNamed)localObject3).computePos(this, new Loc(), localLoc2);
-        float f1 = (float)localLoc1.getPoint().distance(localLoc2.getPoint());
-
-        localObject1 = new HookNamedZ0(this, "_Centre");
-        if (mesh().hookFind("_Prop") >= 0) {
-          HookNamedZ0 localHookNamedZ0 = new HookNamedZ0(this, "_Prop");
-
-          Loc localLoc3 = new Loc();
-          ((HookNamed)localObject1).computePos(this, new Loc(), localLoc3);
-          Loc localLoc4 = new Loc();
-          localHookNamedZ0.computePos(this, new Loc(), localLoc4);
-          float f2 = (float)localLoc3.getPoint().distance(localLoc4.getPoint());
-
-          this.wake[0] = Eff3DActor.New(this, localHookNamedZ0, new Loc(-f2 * 0.33D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, j != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1.0F);
-
-          this.wake[1] = Eff3DActor.New(this, (Hook)localObject1, new Loc(f2 * 0.15D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, j != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1.0F);
-
-          this.wake[2] = Eff3DActor.New(this, (Hook)localObject1, new Loc(-f2 * 0.15D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, j != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1.0F);
-        }
-        else
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
         {
-          this.wake[0] = Eff3DActor.New(this, (Hook)localObject1, new Loc(-f1 * 0.3D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, this.prop.SLIDER_DIST / 2.5D < 50.0D ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1.0F);
-        }
-
-      }
-
-      if (mesh().hookFind("_Nose") >= 0) {
-        localObject1 = new HookNamedZ0(this, "_Nose");
-        this.nose = Eff3DActor.New(this, (Hook)localObject1, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), 1.0F, "3DO/Effects/Tracers/ShipTrail/SideWave.eff", -1.0F);
-      }
-
-      SetEffectsIntens(0.0F);
-
-      int k = Mission.cur().getUnitNetIdRemote(this);
-      Object localObject3 = Mission.cur().getNetMasterChannel();
-      if (localObject3 == null)
-        this.net = new Master(this);
-      else if (k != 0) {
-        this.net = new Mirror(this, (NetChannel)localObject3, k);
-      }
-
-      this.SKILL_IDX = Chief.new_SKILL_IDX;
-      this.SLOWFIRE_K = Chief.new_SLOWFIRE_K;
-      this.DELAY_WAKEUP = Chief.new_DELAY_WAKEUP;
-      this.wakeupTmr = 0L;
-      CreateGuns();
-
-      setDefaultLivePose();
-
-      if ((!isNetMirror()) && (this.prop.nGuns > 0) && (this.DELAY_WAKEUP > 0.0F))
-      {
-        this.wakeupTmr = (-SecsToTicks(Rnd(2.0F, 7.0F)));
-      }
-
-      if (!interpEnd("move"))
-        interpPut(new Move(), "move", Time.current(), null);
-    }
-    catch (Exception localException)
-    {
-      System.out.println("Ship creation failure:");
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      throw new ActorException();
-    }
-  }
-
-  private void SetEffectsIntens(float paramFloat)
-  {
-    if (this.dying != 0) {
-      paramFloat = -1.0F;
-    }
-
-    if (this.pipe != null) {
-      if (paramFloat >= 0.0F) {
-        this.pipe._setIntesity(paramFloat);
-      } else {
-        this.pipe._finish();
-        this.pipe = null;
-      }
-    }
-
-    for (int i = 0; i < 3; i++) {
-      if (this.wake[i] != null) {
-        if (paramFloat >= 0.0F) {
-          this.wake[i]._setIntesity(paramFloat);
-        }
-        else {
-          this.wake[i]._finish();
-          this.wake[i] = null;
-        }
-      }
-    }
-
-    if (this.nose != null) {
-      if (paramFloat >= 0.0F) {
-        this.nose._setIntesity(paramFloat);
-      } else {
-        this.nose._finish();
-        this.nose = null;
-      }
-    }
-
-    if (this.tail != null)
-      if (paramFloat >= 0.0F) {
-        this.tail._setIntesity(paramFloat);
-      } else {
-        this.tail._finish();
-        this.tail = null;
-      }
-  }
-
-  private void LoadPath(SectFile paramSectFile, String paramString)
-  {
-    int i = paramSectFile.sectionIndex(paramString);
-    if (i < 0) {
-      throw new ActorException("Ship path: Section [" + paramString + "] not found");
-    }
-    int j = paramSectFile.vars(i);
-    if (j < 1) {
-      throw new ActorException("Ship path must contain at least 2 nodes");
-    }
-
-    this.path = new ArrayList();
-    Object localObject;
-    float f5;
-    for (int k = 0; k < j; k++) {
-      localObject = new StringTokenizer(paramSectFile.line(i, k));
-      float f2 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      float f3 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      f5 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      double d = 0.0D;
-      float f7 = 0.0F;
-      if (((StringTokenizer)localObject).hasMoreTokens()) {
-        d = Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-        if (((StringTokenizer)localObject).hasMoreTokens()) {
-          Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-          if (((StringTokenizer)localObject).hasMoreTokens()) {
-            f7 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-          }
-        }
-      }
-      if (k >= j - 1) d = 1.0D;
-
-      Segment localSegment6 = new Segment(null);
-      localSegment6.posIn = new Point3d(f2, f3, 0.0D);
-
-      if (Math.abs(d) < 0.1D)
-        localSegment6.timeIn = 0L;
-      else {
-        localSegment6.timeIn = ()(d * 60.0D * 1000.0D + (d > 0.0D ? 0.5D : -0.5D));
-      }
-      if ((f7 <= 0.0F) && ((k == 0) || (k == j - 1) || (localSegment6.timeIn == 0L))) {
-        f7 = this.prop.SPEED;
-      }
-      localSegment6.speedIn = f7;
-
-      this.path.add(localSegment6);
-    }
-    Segment localSegment2;
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localObject = (Segment)this.path.get(k);
-      Segment localSegment1 = (Segment)this.path.get(k + 1);
-
-      if ((((Segment)localObject).timeIn > 0L) && (localSegment1.timeIn > 0L)) {
-        localSegment2 = new Segment(null);
-        localSegment2.posIn = new Point3d(((Segment)localObject).posIn);
-        localSegment2.posIn.add(localSegment1.posIn);
-        localSegment2.posIn.scale(0.5D);
-        localSegment2.timeIn = 0L;
-        localSegment2.speedIn = ((((Segment)localObject).speedIn + localSegment1.speedIn) * 0.5F);
-        this.path.add(k + 1, localSegment2);
-      }
-
-    }
-
-    k = 0;
-    float f1 = ((Segment)this.path.get(k)).length;
-    float f9;
-    while (k < this.path.size() - 1) {
-      int m = k + 1;
-      while (true) {
-        localSegment2 = (Segment)this.path.get(m);
-        if (localSegment2.speedIn > 0.0D) {
-          break;
-        }
-        f1 += localSegment2.length;
-        m++;
-      }
-
-      if (m - k > 1) {
-        float f4 = ((Segment)this.path.get(k)).length;
-        f5 = ((Segment)this.path.get(k)).speedIn;
-        float f6 = ((Segment)this.path.get(m)).speedIn;
-        for (int i2 = k + 1; i2 < m; i2++) {
-          Segment localSegment5 = (Segment)this.path.get(i2);
-          f9 = f4 / f1;
-          localSegment5.speedIn = (f5 * (1.0F - f9) + f6 * f9);
-          f1 += localSegment5.length;
-        }
-      }
-
-      k = m;
-    }
-
-    long l = 0L;
-    for (int i1 = 0; i1 < this.path.size() - 1; i1++) {
-      Segment localSegment3 = (Segment)this.path.get(i1);
-      Segment localSegment4 = (Segment)this.path.get(i1 + 1);
-
-      if (i1 == 0) {
-        l = localSegment3.timeIn;
-      }
-
-      localSegment3.posOut = new Point3d(localSegment4.posIn);
-      localSegment4.posIn = localSegment3.posOut;
-      localSegment3.length = (float)localSegment3.posIn.distance(localSegment4.posIn);
-
-      float f8 = localSegment3.speedIn;
-      f9 = localSegment4.speedIn;
-      float f10 = (f8 + f9) * 0.5F;
-
-      if (localSegment3.timeIn > 0L) {
-        if (localSegment3.timeIn > l)
-          localSegment3.timeIn -= l;
-        else {
-          localSegment3.timeIn = 0L;
-        }
-      }
-
-      if ((localSegment3.timeIn == 0L) && (localSegment4.timeIn > 0L)) {
-        int i3 = (int)(2.0F * localSegment3.length / f8 * 1000.0F + 0.5F);
-        i3 = (int)(i3 + l);
-        if (localSegment4.timeIn > i3)
-          localSegment4.timeIn -= i3;
-        else
-          localSegment4.timeIn = 0L;
-      }
-      float f11;
-      if (localSegment3.timeIn > 0L) {
-        localSegment3.speedIn = 0.0F;
-        localSegment3.speedOut = f9;
-        f11 = 2.0F * localSegment3.length / f9 * 1000.0F + 0.5F;
-        localSegment3.timeIn = (l + localSegment3.timeIn);
-        localSegment3.timeOut = (localSegment3.timeIn + (int)f11);
-        l = localSegment3.timeOut;
-      } else if (localSegment4.timeIn > 0L) {
-        localSegment3.speedIn = f8;
-        localSegment3.speedOut = 0.0F;
-        f11 = 2.0F * localSegment3.length / f8 * 1000.0F + 0.5F;
-        localSegment3.timeIn = (l + localSegment3.timeIn);
-        localSegment3.timeOut = (localSegment3.timeIn + (int)f11);
-        l = localSegment3.timeOut + localSegment4.timeIn;
-      } else {
-        localSegment3.speedIn = f8;
-        localSegment3.speedOut = f9;
-        f11 = localSegment3.length / f10 * 1000.0F + 0.5F;
-        localSegment3.timeIn = l;
-        localSegment3.timeOut = (localSegment3.timeIn + (int)f11);
-        l = localSegment3.timeOut;
-      }
-
-    }
-
-    this.path.remove(this.path.size() - 1);
-  }
-
-  public void align()
-  {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) - this.bodyDepth);
-    this.pos.setAbs(p);
-  }
-
-  private void setMovablePosition(long paramLong)
-  {
-    if (this.cachedSeg < 0)
-      this.cachedSeg = 0;
-    else if (this.cachedSeg >= this.path.size()) {
-      this.cachedSeg = (this.path.size() - 1);
-    }
-    Segment localSegment = (Segment)this.path.get(this.cachedSeg);
-
-    if ((localSegment.timeIn <= paramLong) && (paramLong <= localSegment.timeOut))
-    {
-      SetEffectsIntens(1.0F);
-      setMovablePosition((float)(paramLong - localSegment.timeIn) / (float)(localSegment.timeOut - localSegment.timeIn));
-      return;
-    }
-
-    if (paramLong > localSegment.timeOut) {
-      while (this.cachedSeg + 1 < this.path.size()) {
-        localSegment = (Segment)this.path.get(++this.cachedSeg);
-        if (paramLong <= localSegment.timeIn) {
-          SetEffectsIntens(0.0F);
-          setMovablePosition(0.0F);
-          return;
-        }
-        if (paramLong <= localSegment.timeOut) {
-          SetEffectsIntens(1.0F);
-          setMovablePosition((float)(paramLong - localSegment.timeIn) / (float)(localSegment.timeOut - localSegment.timeIn));
-          return;
-        }
-      }
-
-      SetEffectsIntens(-1.0F);
-      setMovablePosition(1.0F);
-      return;
-    }
-
-    while (this.cachedSeg > 0) {
-      localSegment = (Segment)this.path.get(--this.cachedSeg);
-      if (paramLong >= localSegment.timeOut) {
-        SetEffectsIntens(0.0F);
-        setMovablePosition(1.0F);
-        return;
-      }
-      if (paramLong >= localSegment.timeIn) {
-        SetEffectsIntens(1.0F);
-        setMovablePosition((float)(paramLong - localSegment.timeIn) / (float)(localSegment.timeOut - localSegment.timeIn));
-        return;
-      }
-    }
-
-    SetEffectsIntens(0.0F);
-    setMovablePosition(0.0F);
-  }
-
-  private void setMovablePosition(float paramFloat)
-  {
-    Segment localSegment = (Segment)this.path.get(this.cachedSeg);
-
-    float f1 = (float)(localSegment.timeOut - localSegment.timeIn) * 0.001F;
-    float f2 = localSegment.speedIn;
-    float f3 = localSegment.speedOut;
-    float f4 = (f3 - f2) / f1;
-
-    paramFloat *= f1;
-    float f5 = f2 * paramFloat + f4 * paramFloat * paramFloat * 0.5F;
-
-    int i = this.cachedSeg;
-    float f6 = this.prop.SLIDER_DIST - (localSegment.length - f5);
-    if (f6 <= 0.0F)
-      p1.interpolate(localSegment.posIn, localSegment.posOut, (f5 + this.prop.SLIDER_DIST) / localSegment.length);
-    else {
-      while (true) {
-        if (i + 1 >= this.path.size()) {
-          p1.interpolate(localSegment.posIn, localSegment.posOut, 1.0F + f6 / localSegment.length);
-          break;
-        }
-        i++; localSegment = (Segment)this.path.get(i);
-        if (f6 <= localSegment.length) {
-          p1.interpolate(localSegment.posIn, localSegment.posOut, f6 / localSegment.length);
-          break;
-        }
-        f6 -= localSegment.length;
-      }
-
-    }
-
-    i = this.cachedSeg;
-    localSegment = (Segment)this.path.get(i);
-    f6 = this.prop.SLIDER_DIST - f5;
-    if (f6 <= 0.0F)
-      p2.interpolate(localSegment.posIn, localSegment.posOut, (f5 - this.prop.SLIDER_DIST) / localSegment.length);
-    else {
-      while (true) {
-        if (i <= 0) {
-          p2.interpolate(localSegment.posIn, localSegment.posOut, 0.0F - f6 / localSegment.length);
-          break;
-        }
-        i--; localSegment = (Segment)this.path.get(i);
-        if (f6 <= localSegment.length) {
-          p2.interpolate(localSegment.posIn, localSegment.posOut, 1.0F - f6 / localSegment.length);
-          break;
-        }
-        f6 -= localSegment.length;
-      }
-
-    }
-
-    p.interpolate(p1, p2, 0.5F);
-
-    tmpv.sub(p1, p2);
-    if (tmpv.lengthSquared() < 0.001000000047497451D) {
-      localSegment = (Segment)this.path.get(this.cachedSeg);
-      tmpv.sub(localSegment.posOut, localSegment.posIn);
-    }
-    float f7 = (float)(Math.atan2(tmpv.y, tmpv.x) * 57.295779513082323D);
-
-    setPosition(p, f7);
-  }
-
-  private void setPosition(Point3d paramPoint3d, float paramFloat)
-  {
-    this.bodyYaw = paramFloat;
-
-    o.setYPR(this.bodyYaw, this.bodyPitch, this.bodyRoll);
-
-    paramPoint3d.z = (-this.bodyDepth);
-    this.pos.setAbs(paramPoint3d, o);
-  }
-
-  private void setPosition()
-  {
-    o.setYPR(this.bodyYaw, this.bodyPitch, this.bodyRoll);
-    this.pos.setAbs(o);
-
-    align();
-  }
-
-  public int WeaponsMask()
-  {
-    return this.prop.WEAPONS_MASK;
-  }
-
-  public int HitbyMask() {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 0)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 0)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  public float AttackMaxDistance()
-  {
-    return this.prop.ATTACK_MAX_DISTANCE;
-  }
-
-  private void send_DeathCommand(Actor paramActor)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    if (Mission.isDeathmatch()) {
-      float f = Mission.respawnTime("Ship");
-      this.respawnDelay = SecsToTicks(Rnd(f, f * 1.2F));
-    } else {
-      this.respawnDelay = 0L;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeLong(this.timeOfDeath);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_RespawnCommand()
-  {
-    if ((!isNetMaster()) || (!Mission.isDeathmatch())) {
-      return;
-    }
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_FireCommand(int paramInt1, Actor paramActor, int paramInt2, float paramFloat)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-    if (!this.net.isMirrored()) {
-      return;
-    }
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
-      return;
-    }
-
-    paramInt2 &= 255;
-
-    if (paramFloat < 0.0F)
-      try {
-        this.outCommand.unLockAndClear();
-        this.outCommand.writeByte(84);
-        this.outCommand.writeByte(paramInt1);
-        this.outCommand.writeNetObj(paramActor.net);
-        this.outCommand.writeByte(paramInt2);
-        this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
-      } catch (Exception localException1) {
-        System.out.println(localException1.getMessage());
-        localException1.printStackTrace();
-      }
-    else
-      try {
-        this.outCommand.unLockAndClear();
-        this.outCommand.writeByte(70);
-        this.outCommand.writeByte(paramInt1);
-        this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
-        this.outCommand.writeByte(paramInt2);
-        this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
-      } catch (Exception localException2) {
-        System.out.println(localException2.getMessage());
-        localException2.printStackTrace();
-      }
-  }
-
-  private void send_DeathRequest(Actor paramActor)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
-      return;
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-    }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(73);
-    if (this.dying == 0)
-      localNetMsgGuaranted.writeLong(-1L);
-    else {
-      localNetMsgGuaranted.writeLong(this.timeOfDeath);
-    }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public float getReloadingTime(Aim paramAim)
-  {
-    return this.SLOWFIRE_K * GetGunProperties(paramAim).DELAY_AFTER_SHOOT;
-  }
-
-  public float chainFireTime(Aim paramAim)
-  {
-    float f = GetGunProperties(paramAim).CHAINFIRE_TIME;
-    return f <= 0.0F ? 0.0F : f * Rnd(0.75F, 1.25F);
-  }
-
-  public float probabKeepSameEnemy(Actor paramActor)
-  {
-    return 0.75F;
-  }
-
-  public float minTimeRelaxAfterFight()
-  {
-    return 0.1F;
-  }
-
-  public void gunStartParking(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    ShipGunProperties localShipGunProperties = this.prop.guns[localFiringDevice.id];
-    paramAim.setRotationForParking(localFiringDevice.headYaw, localFiringDevice.gunPitch, localShipGunProperties.HEAD_STD_YAW, localShipGunProperties.GUN_STD_PITCH, localShipGunProperties.HEAD_YAW_RANGE, localShipGunProperties.HEAD_MAX_YAW_SPEED, localShipGunProperties.GUN_MAX_PITCH_SPEED);
-  }
-
-  public void gunInMove(boolean paramBoolean, Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    float f1 = paramAim.t();
-    float f2 = paramAim.anglesYaw.getDeg(f1);
-    float f3 = paramAim.anglesPitch.getDeg(f1);
-
-    setGunAngles(localFiringDevice, f2, f3);
-
-    this.pos.inValidate(false);
-  }
-
-  public Actor findEnemy(Aim paramAim)
-  {
-    if (isNetMirror()) {
-      return null;
-    }
-
-    ShipGunProperties localShipGunProperties = GetGunProperties(paramAim);
-
-    Actor localActor = null;
-
-    switch (localShipGunProperties.ATTACK_FAST_TARGETS) {
-    case 0:
-      NearestEnemies.set(localShipGunProperties.WEAPONS_MASK, -9999.9004F, KmHourToMSec(100.0F));
-      break;
-    case 1:
-      NearestEnemies.set(localShipGunProperties.WEAPONS_MASK);
-      break;
-    default:
-      NearestEnemies.set(localShipGunProperties.WEAPONS_MASK, KmHourToMSec(100.0F), 9999.9004F);
-    }
-
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), localShipGunProperties.ATTACK_MAX_RADIUS, getArmy());
-
-    if (localActor == null) {
-      return null;
-    }
-
-    if (!(localActor instanceof Prey)) {
-      System.out.println("ship: nearest enemies: non-Prey");
-      return null;
-    }
-
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    BulletProperties localBulletProperties = null;
-
-    if (localFiringDevice.gun.prop != null) {
-      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
-
-      if (i < 0)
-      {
-        return null;
-      }
-
-      localBulletProperties = localFiringDevice.gun.prop.bullet[i];
-    }
-
-    int i = ((Prey)localActor).chooseShotpoint(localBulletProperties);
-
-    if (i < 0) {
-      return null;
-    }
-
-    paramAim.shotpoint_idx = i;
-
-    return localActor;
-  }
-
-  public boolean enterToFireMode(int paramInt, Actor paramActor, float paramFloat, Aim paramAim)
-  {
-    if (!isNetMirror()) {
-      FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-      send_FireCommand(localFiringDevice.id, paramActor, paramAim.shotpoint_idx, paramInt == 0 ? -1.0F : paramFloat);
-    }
-
-    return true;
-  }
-
-  private void Track_Mirror(int paramInt1, Actor paramActor, int paramInt2)
-  {
-    if (paramActor == null) {
-      return;
-    }
-
-    if ((this.arms == null) || (this.arms[paramInt1].aime == null))
-    {
-      return;
-    }
-
-    this.arms[paramInt1].aime.passive_StartFiring(0, paramActor, paramInt2, 0.0F);
-  }
-
-  private void Fire_Mirror(int paramInt1, Actor paramActor, int paramInt2, float paramFloat)
-  {
-    if (paramActor == null) {
-      return;
-    }
-
-    if ((this.arms == null) || (this.arms[paramInt1].aime == null))
-    {
-      return;
-    }
-
-    if (paramFloat <= 0.2F) {
-      paramFloat = 0.2F;
-    }
-
-    if (paramFloat >= 15.0F) {
-      paramFloat = 15.0F;
-    }
-
-    this.arms[paramInt1].aime.passive_StartFiring(1, paramActor, paramInt2, paramFloat);
-  }
-
-  public int targetGun(Aim paramAim, Actor paramActor, float paramFloat, boolean paramBoolean)
-  {
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isAlive()) || (paramActor.getArmy() == 0)) {
-      return 0;
-    }
-
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    if ((localFiringDevice.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
-      if (i < 0) {
-        return 0;
-      }
-      ((CannonMidrangeGeneric)localFiringDevice.gun).setBulletType(i);
-    }
-
-    boolean bool = ((Prey)paramActor).getShotpointOffset(paramAim.shotpoint_idx, p1);
-    if (!bool) {
-      return 0;
-    }
-
-    ShipGunProperties localShipGunProperties = this.prop.guns[localFiringDevice.id];
-
-    float f1 = paramFloat * Rnd(0.8F, 1.2F);
-
-    if (!Aimer.Aim((BulletAimer)localFiringDevice.gun, paramActor, this, f1, p1, localShipGunProperties.fireOffset)) {
-      return 0;
-    }
-
-    Point3d localPoint3d1 = new Point3d();
-    Aimer.GetPredictedTargetPosition(localPoint3d1);
-
-    Point3d localPoint3d2 = Aimer.GetHunterFirePoint();
-
-    float f2 = 0.05F;
-
-    double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
-
-    localPoint3d1.sub(localPoint3d2);
-    localPoint3d1.scale(Rnd(0.995D, 1.005D));
-    localPoint3d1.add(localPoint3d2);
-
-    if (f1 > 0.001F) {
-      Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
-
-      tmpv.sub(localPoint3d1, localPoint3d3);
-      double d3 = tmpv.length();
-
-      if (d3 > 0.001D) {
-        float f7 = (float)d3 / f1;
-        if (f7 > 200.0F) {
-          f7 = 200.0F;
-        }
-        float f8 = f7 * 0.01F;
-
-        localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
-
-        if (d4 > 0.01D) {
-          float f9 = (float)tmpv.dot(localPoint3d3);
-          f9 /= (float)(d3 * Math.sqrt(d4));
-
-          f9 = (float)Math.sqrt(1.0F - f9 * f9);
-
-          f8 *= (0.4F + 0.6F * f9);
-        }
-        f8 *= 1.3F;
-        f8 *= Aim.AngleErrorKoefForSkill[this.SKILL_IDX];
-
-        int k = Mission.curCloudsType();
-        if (k > 2) {
-          float f10 = k > 4 ? 400.0F : 800.0F;
-          float f11 = (float)(d1 / f10);
-          if (f11 > 1.0F) {
-            if (f11 > 10.0F) {
-              return 0;
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Ship: Value of [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Ship: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
             }
-            f11 = (f11 - 1.0F) / 9.0F;
-            f8 *= (f11 + 1.0F);
-          }
         }
 
-        if ((k >= 3) && (d2 > Mission.curCloudsHeight())) {
-          f8 *= 1.25F;
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return new String(s2);
+            }
         }
 
-        f2 += f8;
-      }
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return new String(s3);
+        }
 
+        private static com.maddox.il2.objects.ships.ShipProperties LoadShipProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.ships.ShipProperties shipproperties = new ShipProperties();
+            shipproperties.meshName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "Mesh");
+            shipproperties.soundName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "SoundMove");
+            if(shipproperties.soundName.equalsIgnoreCase("none"))
+                shipproperties.soundName = null;
+            if(!shipproperties.stre.read("Ship", sectfile, null, s))
+                throw new RuntimeException("Can't register Ship object");
+            int i;
+            for(i = 0; sectfile.sectionIndex(s + ":Gun" + i) >= 0; i++);
+            shipproperties.guns = new com.maddox.il2.objects.ships.ShipGunProperties[i];
+            shipproperties.WEAPONS_MASK = 0;
+            shipproperties.ATTACK_MAX_DISTANCE = 1.0F;
+            for(int j = 0; j < i; j++)
+            {
+                shipproperties.guns[j] = new ShipGunProperties();
+                com.maddox.il2.objects.ships.ShipGunProperties shipgunproperties = shipproperties.guns[j];
+                java.lang.String s1 = s + ":Gun" + j;
+                java.lang.String s2 = "com.maddox.il2.objects.weapons." + com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s1, "Gun");
+                try
+                {
+                    shipgunproperties.gunClass = java.lang.Class.forName(s2);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println("Ship: Can't find gun class '" + s2 + "'");
+                    throw new RuntimeException("Can't register Ship object");
+                }
+                shipgunproperties.WEAPONS_MASK = com.maddox.il2.objects.weapons.Gun.getProperties(shipgunproperties.gunClass).weaponType;
+                if(shipgunproperties.WEAPONS_MASK == 0)
+                {
+                    java.lang.System.out.println("Ship: Undefined weapon type in gun class '" + s2 + "'");
+                    throw new RuntimeException("Can't register Ship object");
+                }
+                shipproperties.WEAPONS_MASK |= shipgunproperties.WEAPONS_MASK;
+                shipgunproperties.ATTACK_MAX_DISTANCE = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "AttackMaxDistance", 6F, 50000F);
+                shipgunproperties.ATTACK_MAX_RADIUS = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "AttackMaxRadius", 6F, 50000F);
+                shipgunproperties.ATTACK_MAX_HEIGHT = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "AttackMaxHeight", 6F, 15000F);
+                if(shipgunproperties.ATTACK_MAX_DISTANCE > shipproperties.ATTACK_MAX_DISTANCE)
+                    shipproperties.ATTACK_MAX_DISTANCE = shipgunproperties.ATTACK_MAX_DISTANCE;
+                shipgunproperties.TRACKING_ONLY = false;
+                if(sectfile.exist(s1, "TrackingOnly"))
+                    shipgunproperties.TRACKING_ONLY = true;
+                shipgunproperties.ATTACK_FAST_TARGETS = 1;
+                if(sectfile.exist(s1, "FireFastTargets"))
+                {
+                    float f = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "FireFastTargets", 0.0F, 2.0F);
+                    shipgunproperties.ATTACK_FAST_TARGETS = (int)(f + 0.5F);
+                    if(shipgunproperties.ATTACK_FAST_TARGETS > 2)
+                        shipgunproperties.ATTACK_FAST_TARGETS = 2;
+                }
+                shipgunproperties.FAST_TARGETS_ANGLE_ERROR = 0.0F;
+                if(sectfile.exist(s1, "FastTargetsAngleError"))
+                {
+                    float f1 = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "FastTargetsAngleError", 0.0F, 45F);
+                    shipgunproperties.FAST_TARGETS_ANGLE_ERROR = f1;
+                }
+                float f2 = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "HeadMinYaw", -360F, 360F);
+                float f3 = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "HeadStdYaw", -360F, 360F);
+                float f4 = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "HeadMaxYaw", -360F, 360F);
+                if(f2 > f4)
+                {
+                    java.lang.System.out.println("Ship: Wrong yaw angles in gun #" + j + " of '" + s + "'");
+                    throw new RuntimeException("Can't register Ship object");
+                }
+                if(f3 < f2 || f3 > f4)
+                    java.lang.System.out.println("Ship: Wrong std yaw angle in gun #" + j + " of '" + s + "'");
+                shipgunproperties.HEAD_YAW_RANGE.set(f2, f4);
+                shipgunproperties.HEAD_STD_YAW = f3;
+                shipgunproperties.GUN_MIN_PITCH = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "GunMinPitch", -15F, 85F);
+                shipgunproperties.GUN_STD_PITCH = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "GunStdPitch", -14F, 89.9F);
+                shipgunproperties.GUN_MAX_PITCH = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "GunMaxPitch", 0.0F, 89.9F);
+                shipgunproperties.HEAD_MAX_YAW_SPEED = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "HeadMaxYawSpeed", 0.1F, 999F);
+                shipgunproperties.GUN_MAX_PITCH_SPEED = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "GunMaxPitchSpeed", 0.1F, 999F);
+                shipgunproperties.DELAY_AFTER_SHOOT = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "DelayAfterShoot", 0.0F, 999F);
+                shipgunproperties.CHAINFIRE_TIME = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "ChainfireTime", 0.0F, 600F);
+            }
+
+            shipproperties.nGuns = i;
+            shipproperties.SLIDER_DIST = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "SliderDistance", 5F, 1000F);
+            shipproperties.SPEED = com.maddox.il2.objects.ships.ShipGeneric.KmHourToMSec(com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "Speed", 0.5F, 200F));
+            shipproperties.DELAY_RESPAWN_MIN = 15F;
+            shipproperties.DELAY_RESPAWN_MAX = 30F;
+            com.maddox.rts.Property.set(class1, "iconName", "icons/" + com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "Icon") + ".mat");
+            com.maddox.rts.Property.set(class1, "meshName", shipproperties.meshName);
+            com.maddox.rts.Property.set(class1, "speed", shipproperties.SPEED);
+            return shipproperties;
+        }
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            com.maddox.il2.objects.ships.ShipGeneric shipgeneric = null;
+            try
+            {
+                com.maddox.il2.objects.ships.ShipGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.ships.ShipGeneric.constr_arg2 = actorspawnarg;
+                shipgeneric = (com.maddox.il2.objects.ships.ShipGeneric)cls.newInstance();
+                com.maddox.il2.objects.ships.ShipGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.ships.ShipGeneric.constr_arg2 = null;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.ships.ShipGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.ships.ShipGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create Ship object [class:" + cls.getName() + "]");
+                return null;
+            }
+            return shipgeneric;
+        }
+
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.ships.ShipProperties proper;
+
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.ships.SPAWN.LoadShipProperties(com.maddox.il2.objects.Statics.getTechnicsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
     }
 
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
-      if (f5 >= 1.0F) {
-        f5 = 1.0F;
-      }
-
-      if (((paramActor instanceof Aircraft)) && (Time.current() - ((Aircraft)paramActor).tmSearchlighted < 1000L))
-      {
-        f5 = 0.0F;
-      }
-      f2 += 10.0F * f5;
-    }
-
-    float f5 = (float)paramActor.getSpeed(null) - 10.0F;
-    if (f5 > 0.0F) {
-      float f6 = 83.333336F;
-      f5 = f5 >= f6 ? 1.0F : f5 / f6;
-      f2 += f5 * localShipGunProperties.FAST_TARGETS_ANGLE_ERROR;
-    }
-
-    Vector3d localVector3d = new Vector3d();
-    if (!((BulletAimer)localFiringDevice.gun).FireDirection(localPoint3d2, localPoint3d1, localVector3d))
+    class Mirror extends com.maddox.il2.engine.ActorNet
     {
-      return 0;
-    }
-    float f3;
-    float f4;
-    if (paramBoolean) {
-      f3 = 99999.0F;
-      f4 = 99999.0F;
-    } else {
-      f3 = localShipGunProperties.HEAD_MAX_YAW_SPEED;
-      f4 = localShipGunProperties.GUN_MAX_PITCH_SPEED;
-    }
 
-    o.add(localShipGunProperties.fireOrient, this.pos.getAbs().getOrient());
-    int j = paramAim.setRotationForTargeting(this, o, localPoint3d2, localFiringDevice.headYaw, localFiringDevice.gunPitch, localVector3d, f2, f1, localShipGunProperties.HEAD_YAW_RANGE, localShipGunProperties.GUN_MIN_PITCH, localShipGunProperties.GUN_MAX_PITCH, f3, f4, 0.0F);
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                switch(netmsginput.readByte())
+                {
+                case 73: // 'I'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted);
+                    }
+                    timeOfDeath = netmsginput.readLong();
+                    if(timeOfDeath < 0L)
+                    {
+                        if(dying == 0)
+                        {
+                            life = 1.0F;
+                            setDefaultLivePose();
+                            forgetAllAiming();
+                        }
+                    } else
+                    if(dying == 0)
+                        Die(null, timeOfDeath, false);
+                    return true;
 
-    return j;
-  }
+                case 82: // 'R'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted1);
+                    }
+                    life = 1.0F;
+                    dying = 0;
+                    setDiedFlag(false);
+                    setMesh(prop.meshName);
+                    setDefaultLivePose();
+                    forgetAllAiming();
+                    bodyDepth = 0.0F;
+                    bodyPitch = bodyRoll = 0.0F;
+                    setPosition();
+                    pos.reset();
+                    return true;
 
-  public void singleShot(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!this.prop.guns[localFiringDevice.id].TRACKING_ONLY)
-      localFiringDevice.gun.shots(1);
-  }
+                case 68: // 'D'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted2 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted2);
+                    }
+                    timeOfDeath = netmsginput.readLong();
+                    if(timeOfDeath >= 0L && dying == 0)
+                    {
+                        com.maddox.rts.NetObj netobj2 = netmsginput.readNetObj();
+                        com.maddox.il2.engine.Actor actor2 = netobj2 != null ? ((com.maddox.il2.engine.ActorNet)netobj2).actor() : null;
+                        Die(actor2, timeOfDeath, true);
+                    }
+                    return true;
+                }
+                return false;
+            }
+            switch(netmsginput.readByte())
+            {
+            default:
+                break;
 
-  public void startFire(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!this.prop.guns[localFiringDevice.id].TRACKING_ONLY)
-      localFiringDevice.gun.shots(-1);
-  }
+            case 84: // 'T'
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 1);
+                    out.setIncludeTime(false);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                byte byte0 = netmsginput.readByte();
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                int i = netmsginput.readUnsignedByte();
+                Track_Mirror(byte0, actor, i);
+                break;
 
-  public void continueFire(Aim paramAim)
-  {
-  }
+            case 70: // 'F'
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 1);
+                    out.setIncludeTime(true);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                byte byte1 = netmsginput.readByte();
+                com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor1 = netobj1 != null ? ((com.maddox.il2.engine.ActorNet)netobj1).actor() : null;
+                float f = netmsginput.readFloat();
+                float f1 = 0.001F * (float)(com.maddox.rts.Message.currentGameTime() - com.maddox.rts.Time.current()) + f;
+                int j = netmsginput.readUnsignedByte();
+                Fire_Mirror(byte1, actor1, j, f1);
+                break;
 
-  public void stopFire(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!this.prop.guns[localFiringDevice.id].TRACKING_ONLY)
-      localFiringDevice.gun.shots(0);
-  }
-
-  public boolean isVisibilityLong() {
-    return true;
-  }
-
-  public int zutiGetDying()
-  {
-    return this.dying;
-  }
-
-  public boolean zutiIsStatic()
-  {
-    return (this.path == null) || (this.path.size() <= 0);
-  }
-
-  public static class SPAWN
-    implements ActorSpawn
-  {
-    public Class cls;
-    public ShipGeneric.ShipProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2)
-    {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Ship: Value of [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
+            case 68: // 'D'
+                out.unLockAndSet(netmsginput, 1);
+                out.setIncludeTime(false);
+                postRealTo(com.maddox.rts.Message.currentRealTime(), masterChannel(), out);
+                break;
+            }
+            return true;
         }
-        else {
-          System.out.println("Ship: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return true;
+            if(netmsginput.readByte() != 68)
+                return false;
+            if(dying != 0)
+            {
+                return true;
+            } else
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                Die(actor, -1L, true);
+                return true;
+            }
         }
 
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
     }
 
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Ship: Value of [" + paramString1 + "]:<" + paramString2 + "> not found");
-        throw new RuntimeException("Can't set property");
-      }
-      return new String(str);
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        return paramString3;
-      }
-      return new String(str);
-    }
-
-    private static ShipGeneric.ShipProperties LoadShipProperties(SectFile paramSectFile, String paramString, Class paramClass)
+    class Move extends com.maddox.il2.engine.Interpolate
     {
-      ShipGeneric.ShipProperties localShipProperties = new ShipGeneric.ShipProperties();
 
-      localShipProperties.meshName = getS(paramSectFile, paramString, "Mesh");
-      localShipProperties.soundName = getS(paramSectFile, paramString, "SoundMove");
-      if (localShipProperties.soundName.equalsIgnoreCase("none")) localShipProperties.soundName = null;
+        public boolean tick()
+        {
+            if(dying == 0)
+            {
+                if(path != null)
+                {
+                    bodyDepth = 0.0F;
+                    bodyPitch = bodyRoll = 0.0F;
+                    setMovablePosition(com.maddox.rts.Time.tickNext());
+                }
+                if(wakeupTmr == 0L)
+                {
+                    for(int i = 0; i < prop.nGuns; i++)
+                        arms[i].aime.tick_();
 
-      if (!localShipProperties.stre.read("Ship", paramSectFile, null, paramString)) {
-        throw new RuntimeException("Can't register Ship object");
-      }
+                } else
+                if(wakeupTmr > 0L)
+                    wakeupTmr--;
+                else
+                if(++wakeupTmr == 0L)
+                    if(isAnyEnemyNear())
+                        wakeupTmr = com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
+                    else
+                        wakeupTmr = -com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(4F, 7F));
+                return true;
+            }
+            if(dying == 2)
+            {
+                if(path != null || !com.maddox.il2.game.Mission.isDeathmatch())
+                {
+                    eraseGuns();
+                    return false;
+                }
+                if(respawnDelay-- > 0L)
+                    return true;
+                if(!isNetMaster())
+                {
+                    respawnDelay = 10000L;
+                    return true;
+                } else
+                {
+                    life = 1.0F;
+                    dying = 0;
+                    wakeupTmr = 0L;
+                    setDiedFlag(false);
+                    forgetAllAiming();
+                    setDefaultLivePose();
+                    bodyDepth = 0.0F;
+                    bodyPitch = bodyRoll = 0.0F;
+                    setPosition();
+                    pos.reset();
+                    send_RespawnCommand();
+                    return true;
+                }
+            }
+            long l = com.maddox.rts.Time.tickNext() - timeOfDeath;
+            if(l <= 0L)
+                l = 0L;
+            if(l >= timeForRotation)
+            {
+                bodyPitch = drownBodyPitch;
+                bodyRoll = drownBodyRoll;
+            } else
+            {
+                bodyPitch = drownBodyPitch * ((float)l / (float)timeForRotation);
+                bodyRoll = drownBodyRoll * ((float)l / (float)timeForRotation);
+            }
+            bodyDepth = sinkingDepthSpeed * (float)l * 0.001F;
+            if(bodyDepth >= 5F)
+            {
+                float f = java.lang.Math.abs(com.maddox.JGP.Geom.sinDeg(bodyPitch) * collisionR());
+                f += bodyDepth;
+                if(f + bodyDepth >= seaDepth)
+                    dying = 2;
+                if(bodyDepth > mesh().visibilityR())
+                    dying = 2;
+            }
+            if(path != null)
+                setMovablePosition(timeOfDeath);
+            else
+                setPosition();
+            return true;
+        }
 
-      int i = 0;
-      while (paramSectFile.sectionIndex(paramString + ":Gun" + i) >= 0) {
-        i++;
-      }
+        Move()
+        {
+        }
+    }
 
-      localShipProperties.guns = new ShipGeneric.ShipGunProperties[i];
+    static class HookNamedZ0 extends com.maddox.il2.engine.HookNamed
+    {
 
-      localShipProperties.WEAPONS_MASK = 0;
-      localShipProperties.ATTACK_MAX_DISTANCE = 1.0F;
+        public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+        {
+            super.computePos(actor, loc, loc1);
+            loc1.getPoint().z = 0.25D;
+        }
 
-      for (int j = 0; j < i; j++) {
-        localShipProperties.guns[j] = new ShipGeneric.ShipGunProperties();
-        ShipGeneric.ShipGunProperties localShipGunProperties = localShipProperties.guns[j];
+        public HookNamedZ0(com.maddox.il2.engine.ActorMesh actormesh, java.lang.String s)
+        {
+            super(actormesh, s);
+        }
 
-        String str1 = paramString + ":Gun" + j;
+        public HookNamedZ0(com.maddox.il2.engine.Mesh mesh, java.lang.String s)
+        {
+            super(mesh, s);
+        }
+    }
 
-        String str2 = "com.maddox.il2.objects.weapons." + getS(paramSectFile, str1, "Gun");
+    private class Segment
+    {
+
+        public com.maddox.JGP.Point3d posIn;
+        public com.maddox.JGP.Point3d posOut;
+        public float length;
+        public long timeIn;
+        public long timeOut;
+        public float speedIn;
+        public float speedOut;
+
+        private Segment()
+        {
+        }
+
+    }
+
+    public class FiringDevice
+    {
+
+        private int id;
+        private com.maddox.il2.objects.weapons.Gun gun;
+        private com.maddox.il2.ai.ground.Aim aime;
+        private float headYaw;
+        private float gunPitch;
+
+
+
+
+
+
+
+
+
+
+
+        public FiringDevice()
+        {
+        }
+    }
+
+    public static class ShipProperties
+    {
+
+        public java.lang.String meshName;
+        public java.lang.String soundName;
+        public com.maddox.il2.ai.StrengthProperties stre;
+        public int WEAPONS_MASK;
+        public int HITBY_MASK;
+        public float ATTACK_MAX_DISTANCE;
+        public float SLIDER_DIST;
+        public float SPEED;
+        public float DELAY_RESPAWN_MIN;
+        public float DELAY_RESPAWN_MAX;
+        public com.maddox.il2.objects.ships.ShipGunProperties guns[];
+        public int nGuns;
+
+        public ShipProperties()
+        {
+            meshName = null;
+            soundName = null;
+            stre = new StrengthProperties();
+            WEAPONS_MASK = 4;
+            HITBY_MASK = -2;
+            ATTACK_MAX_DISTANCE = 1.0F;
+            SLIDER_DIST = 1.0F;
+            SPEED = 1.0F;
+            DELAY_RESPAWN_MIN = 15F;
+            DELAY_RESPAWN_MAX = 30F;
+            guns = null;
+        }
+    }
+
+    public static class ShipGunProperties
+    {
+
+        public java.lang.Class gunClass;
+        public int WEAPONS_MASK;
+        public boolean TRACKING_ONLY;
+        public float ATTACK_MAX_DISTANCE;
+        public float ATTACK_MAX_RADIUS;
+        public float ATTACK_MAX_HEIGHT;
+        public int ATTACK_FAST_TARGETS;
+        public float FAST_TARGETS_ANGLE_ERROR;
+        public com.maddox.il2.ai.AnglesRange HEAD_YAW_RANGE;
+        public float HEAD_STD_YAW;
+        public float GUN_MIN_PITCH;
+        public float GUN_STD_PITCH;
+        public float GUN_MAX_PITCH;
+        public float HEAD_MAX_YAW_SPEED;
+        public float GUN_MAX_PITCH_SPEED;
+        public float DELAY_AFTER_SHOOT;
+        public float CHAINFIRE_TIME;
+        public com.maddox.JGP.Point3d fireOffset;
+        public com.maddox.il2.engine.Orient fireOrient;
+
+        public ShipGunProperties()
+        {
+            gunClass = null;
+            WEAPONS_MASK = 4;
+            TRACKING_ONLY = false;
+            ATTACK_MAX_DISTANCE = 1.0F;
+            ATTACK_MAX_RADIUS = 1.0F;
+            ATTACK_MAX_HEIGHT = 1.0F;
+            ATTACK_FAST_TARGETS = 1;
+            FAST_TARGETS_ANGLE_ERROR = 0.0F;
+            HEAD_YAW_RANGE = new AnglesRange(-1F, 1.0F);
+            HEAD_STD_YAW = 0.0F;
+            GUN_MIN_PITCH = -20F;
+            GUN_STD_PITCH = -18F;
+            GUN_MAX_PITCH = -15F;
+            HEAD_MAX_YAW_SPEED = 720F;
+            GUN_MAX_PITCH_SPEED = 60F;
+            DELAY_AFTER_SHOOT = 1.0F;
+            CHAINFIRE_TIME = 0.0F;
+        }
+    }
+
+
+    public static final double Rnd(double d, double d1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
+    }
+
+    public static final float Rnd(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    private boolean RndB(float f)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
+    }
+
+    public static final float KmHourToMSec(float f)
+    {
+        return f / 3.6F;
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    protected final boolean Head360(com.maddox.il2.objects.ships.FiringDevice firingdevice)
+    {
+        return prop.guns[firingdevice.id].HEAD_YAW_RANGE.fullcircle();
+    }
+
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
+    {
+        if(actor instanceof com.maddox.il2.objects.bridges.BridgeSegment)
+        {
+            if(dying != 0)
+                aflag[0] = false;
+            return;
+        }
+        if(path == null && (actor instanceof com.maddox.il2.engine.ActorMesh) && ((com.maddox.il2.engine.ActorMesh)actor).isStaticPos())
+        {
+            aflag[0] = false;
+            return;
+        } else
+        {
+            return;
+        }
+    }
+
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror())
+            return;
+        if(actor instanceof com.maddox.il2.objects.ships.WeakBody)
+            return;
+        if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric) || (actor instanceof com.maddox.il2.objects.bridges.BridgeSegment))
+            Die(null, -1L, true);
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 2;
+        if(dying != 0)
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(isNetMirror() && shot.isMirage())
+            return;
+        if(wakeupTmr < 0L)
+            wakeupTmr = com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
+        float f;
+        float f1;
+        if(shot.powerType == 1)
+        {
+            f = prop.stre.EXPLHIT_MAX_TNT;
+            f1 = prop.stre.EXPLHIT_MAX_TNT;
+        } else
+        {
+            f = prop.stre.SHOT_MIN_ENERGY;
+            f1 = prop.stre.SHOT_MAX_ENERGY;
+        }
+        float f2 = shot.power * com.maddox.il2.objects.ships.ShipGeneric.Rnd(1.0F, 1.1F);
+        if(f2 < f)
+            return;
+        float f3 = f2 / f1;
+        life -= f3;
+        if(life > 0.0F)
+        {
+            return;
+        } else
+        {
+            Die(shot.initiator, -1L, true);
+            return;
+        }
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror() && explosion.isMirage())
+            return;
+        if(wakeupTmr < 0L)
+            wakeupTmr = com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
+        float f = explosion.power;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+            f *= 0.45F;
+        float f1;
+        if(explosion.chunkName != null)
+        {
+            float f2 = f;
+            f2 *= com.maddox.il2.objects.ships.ShipGeneric.Rnd(1.0F, 1.1F);
+            if(f2 < prop.stre.EXPLHIT_MIN_TNT)
+                return;
+            f1 = f2 / prop.stre.EXPLHIT_MAX_TNT;
+        } else
+        {
+            float f3 = explosion.receivedTNT_1meter(this);
+            f3 *= com.maddox.il2.objects.ships.ShipGeneric.Rnd(1.0F, 1.1F);
+            if(f3 < prop.stre.EXPLNEAR_MIN_TNT)
+                return;
+            f1 = f3 / prop.stre.EXPLNEAR_MAX_TNT;
+        }
+        life -= f1;
+        if(life > 0.0F)
+        {
+            return;
+        } else
+        {
+            Die(explosion.initiator, -1L, true);
+            return;
+        }
+    }
+
+    private float computeSeaDepth(com.maddox.JGP.Point3d point3d)
+    {
+        for(float f = 5F; f <= 355F; f += 10F)
+        {
+            for(float f1 = 0.0F; f1 < 360F; f1 += 30F)
+            {
+                float f2 = f * com.maddox.JGP.Geom.cosDeg(f1);
+                float f3 = f * com.maddox.JGP.Geom.sinDeg(f1);
+                f2 += (float)point3d.x;
+                f3 += (float)point3d.y;
+                if(!com.maddox.il2.ai.World.land().isWater(f2, f3))
+                    return 50F * (f / 355F);
+            }
+
+        }
+
+        return 1000F;
+    }
+
+    private void computeSinkingParams(long l)
+    {
+        com.maddox.il2.ai.RangeRandom rangerandom = new RangeRandom(l % 11073L);
+        timeForRotation = 40000L + (long)(rangerandom.nextFloat() * 0.0F);
+        drownBodyPitch = 50F - rangerandom.nextFloat() * 20F;
+        if(rangerandom.nextFloat() < 0.5F)
+            drownBodyPitch = -drownBodyPitch;
+        drownBodyRoll = 30F - rangerandom.nextFloat() * 60F;
+        sinkingDepthSpeed = 0.55F + rangerandom.nextFloat() * 0.0F;
+        seaDepth = computeSeaDepth(pos.getAbsPoint());
+        seaDepth *= 1.0F + rangerandom.nextFloat() * 0.2F;
+    }
+
+    private void showExplode()
+    {
+        if(mesh() instanceof com.maddox.il2.engine.HierMesh)
+            com.maddox.il2.objects.effects.Explosions.Antiaircraft_Explode(pos.getAbsPoint());
+    }
+
+    private void Die(com.maddox.il2.engine.Actor actor, long l, boolean flag)
+    {
+        if(dying != 0)
+            return;
+        if(l < 0L)
+        {
+            if(isNetMirror())
+            {
+                send_DeathRequest(actor);
+                return;
+            }
+            l = com.maddox.rts.Time.current();
+        }
+        life = 0.0F;
+        dying = 1;
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        forgetAllAiming();
+        SetEffectsIntens(-1F);
+        if(path != null)
+        {
+            bodyDepth = 0.0F;
+            bodyPitch = bodyRoll = 0.0F;
+            setMovablePosition(l);
+        } else
+        {
+            bodyDepth = 0.0F;
+            bodyPitch = bodyRoll = 0.0F;
+            setPosition();
+        }
+        pos.reset();
+        computeSinkingParams(l);
+        if(com.maddox.il2.game.Mission.isDeathmatch())
+        {
+            timeOfDeath = com.maddox.rts.Time.current();
+            if(!flag)
+                timeOfDeath = 0L;
+        } else
+        {
+            timeOfDeath = l;
+        }
+        if(flag)
+            showExplode();
+        if(flag)
+            send_DeathCommand(actor);
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            eraseGuns();
+            super.destroy();
+            return;
+        }
+    }
+
+    private boolean isAnyEnemyNear()
+    {
+        com.maddox.il2.ai.ground.NearestEnemies.set(WeaponsMask());
+        com.maddox.il2.engine.Actor actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), 2000D, getArmy());
+        return actor != null;
+    }
+
+    private final com.maddox.il2.objects.ships.FiringDevice GetFiringDevice(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < prop.nGuns; i++)
+            if(arms[i] != null && arms[i].aime == aim)
+                return arms[i];
+
+        java.lang.System.out.println("Internal error 1: Can't find ship gun.");
+        return null;
+    }
+
+    private final com.maddox.il2.objects.ships.ShipGunProperties GetGunProperties(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < prop.nGuns; i++)
+            if(arms[i].aime == aim)
+                return prop.guns[arms[i].id];
+
+        java.lang.System.out.println("Internal error 2: Can't find ship gun.");
+        return null;
+    }
+
+    private void setGunAngles(com.maddox.il2.objects.ships.FiringDevice firingdevice, float f, float f1)
+    {
+        firingdevice.headYaw = f;
+        firingdevice.gunPitch = f1;
+        hierMesh().chunkSetAngles("Head" + firingdevice.id, firingdevice.headYaw, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Gun" + firingdevice.id, -firingdevice.gunPitch, 0.0F, 0.0F);
+    }
+
+    private void eraseGuns()
+    {
+        if(arms != null)
+        {
+            for(int i = 0; i < prop.nGuns; i++)
+                if(arms[i] != null)
+                {
+                    if(arms[i].aime != null)
+                    {
+                        arms[i].aime.forgetAll();
+                        arms[i].aime = null;
+                    }
+                    if(arms[i].gun != null)
+                    {
+                        com.maddox.rts.ObjState.destroy(arms[i].gun);
+                        arms[i].gun = null;
+                    }
+                    arms[i] = null;
+                }
+
+            arms = null;
+        }
+    }
+
+    private void forgetAllAiming()
+    {
+        if(arms != null)
+        {
+            for(int i = 0; i < prop.nGuns; i++)
+                if(arms[i] != null && arms[i].aime != null)
+                    arms[i].aime.forgetAiming();
+
+        }
+    }
+
+    private void CreateGuns()
+    {
+        arms = new com.maddox.il2.objects.ships.FiringDevice[prop.nGuns];
+        for(int i = 0; i < prop.nGuns; i++)
+        {
+            arms[i] = new FiringDevice();
+            arms[i].id = i;
+            arms[i].gun = null;
+            try
+            {
+                arms[i].gun = (com.maddox.il2.objects.weapons.Gun)prop.guns[i].gunClass.newInstance();
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Ship: Can't create gun '" + prop.guns[i].gunClass.getName() + "'");
+            }
+            arms[i].gun.set(this, "ShellStart" + i);
+            arms[i].gun.loadBullets(-1);
+            com.maddox.il2.engine.Loc loc = new Loc();
+            hierMesh().setCurChunk("Head" + i);
+            hierMesh().getChunkLocObj(loc);
+            prop.guns[i].fireOffset = new Point3d();
+            loc.get(prop.guns[i].fireOffset);
+            prop.guns[i].fireOrient = new Orient();
+            loc.get(prop.guns[i].fireOrient);
+            arms[i].aime = new Aim(this, isNetMirror(), SLOWFIRE_K * prop.guns[i].DELAY_AFTER_SHOOT);
+        }
+
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    private void setDefaultLivePose()
+    {
+        int i = mesh().hookFind("Ground_Level");
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            hierMesh().hookMatrix(i, matrix4d);
+        }
+        if(mesh() instanceof com.maddox.il2.engine.HierMesh)
+            hierMesh().chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
+        for(int j = 0; j < prop.nGuns; j++)
+            setGunAngles(arms[j], prop.guns[j].HEAD_STD_YAW, prop.guns[j].GUN_STD_PITCH);
+
+        bodyDepth = 0.0F;
+        align();
+    }
+
+    protected ShipGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
+
+    private ShipGeneric(com.maddox.il2.objects.ships.ShipProperties shipproperties, com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+    {
+        super(shipproperties.meshName);
+        prop = null;
+        arms = null;
+        cachedSeg = 0;
+        life = 1.0F;
+        dying = 0;
+        respawnDelay = 0L;
+        wakeupTmr = 0L;
+        DELAY_WAKEUP = 0.0F;
+        SKILL_IDX = 2;
+        SLOWFIRE_K = 1.0F;
+        pipe = null;
+        nose = null;
+        tail = null;
+        outCommand = new NetMsgFiltered();
+        prop = shipproperties;
+        actorspawnarg.setStationary(this);
+        path = null;
+        collide(true);
+        drawing(true);
+        bodyDepth = 0.0F;
+        bodyPitch = bodyRoll = 0.0F;
+        bodyYaw = actorspawnarg.orient.getYaw();
+        setPosition();
+        pos.reset();
+        createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+        SKILL_IDX = com.maddox.il2.ai.Chief.new_SKILL_IDX;
+        SLOWFIRE_K = com.maddox.il2.ai.Chief.new_SLOWFIRE_K;
+        DELAY_WAKEUP = com.maddox.il2.ai.Chief.new_DELAY_WAKEUP;
+        wakeupTmr = 0L;
+        CreateGuns();
+        setDefaultLivePose();
+        if(!isNetMirror() && prop.nGuns > 0 && DELAY_WAKEUP > 0.0F)
+            wakeupTmr = -com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(2.0F, 7F));
+        if(!interpEnd("move"))
+            interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+    }
+
+    public void setMesh(java.lang.String s)
+    {
+        super.setMesh(s);
+        if(com.maddox.il2.engine.Config.cur.b3dgunners)
+        {
+            return;
+        } else
+        {
+            mesh().materialReplaceToNull("Pilot1");
+            return;
+        }
+    }
+
+    public ShipGeneric(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+    {
+        prop = null;
+        arms = null;
+        cachedSeg = 0;
+        life = 1.0F;
+        dying = 0;
+        respawnDelay = 0L;
+        wakeupTmr = 0L;
+        DELAY_WAKEUP = 0.0F;
+        SKILL_IDX = 2;
+        SLOWFIRE_K = 1.0F;
+        pipe = null;
+        nose = null;
+        tail = null;
+        outCommand = new NetMsgFiltered();
         try
         {
-          localShipGunProperties.gunClass = Class.forName(str2);
-        } catch (Exception localException) {
-          System.out.println("Ship: Can't find gun class '" + str2 + "'");
-
-          throw new RuntimeException("Can't register Ship object");
-        }
-
-        localShipGunProperties.WEAPONS_MASK = Gun.getProperties(localShipGunProperties.gunClass).weaponType;
-        if (localShipGunProperties.WEAPONS_MASK == 0) {
-          System.out.println("Ship: Undefined weapon type in gun class '" + str2 + "'");
-
-          throw new RuntimeException("Can't register Ship object");
-        }
-
-        localShipProperties.WEAPONS_MASK |= localShipGunProperties.WEAPONS_MASK;
-
-        localShipGunProperties.ATTACK_MAX_DISTANCE = getF(paramSectFile, str1, "AttackMaxDistance", 6.0F, 50000.0F);
-        localShipGunProperties.ATTACK_MAX_RADIUS = getF(paramSectFile, str1, "AttackMaxRadius", 6.0F, 50000.0F);
-        localShipGunProperties.ATTACK_MAX_HEIGHT = getF(paramSectFile, str1, "AttackMaxHeight", 6.0F, 15000.0F);
-
-        if (localShipGunProperties.ATTACK_MAX_DISTANCE > localShipProperties.ATTACK_MAX_DISTANCE) {
-          localShipProperties.ATTACK_MAX_DISTANCE = localShipGunProperties.ATTACK_MAX_DISTANCE;
-        }
-
-        localShipGunProperties.TRACKING_ONLY = false;
-        if (paramSectFile.exist(str1, "TrackingOnly")) {
-          localShipGunProperties.TRACKING_ONLY = true;
-        }
-
-        localShipGunProperties.ATTACK_FAST_TARGETS = 1;
-        if (paramSectFile.exist(str1, "FireFastTargets")) {
-          f1 = getF(paramSectFile, str1, "FireFastTargets", 0.0F, 2.0F);
-          localShipGunProperties.ATTACK_FAST_TARGETS = (int)(f1 + 0.5F);
-          if (localShipGunProperties.ATTACK_FAST_TARGETS > 2) {
-            localShipGunProperties.ATTACK_FAST_TARGETS = 2;
-          }
-        }
-
-        localShipGunProperties.FAST_TARGETS_ANGLE_ERROR = 0.0F;
-        if (paramSectFile.exist(str1, "FastTargetsAngleError")) {
-          f1 = getF(paramSectFile, str1, "FastTargetsAngleError", 0.0F, 45.0F);
-          localShipGunProperties.FAST_TARGETS_ANGLE_ERROR = f1;
-        }
-
-        float f1 = getF(paramSectFile, str1, "HeadMinYaw", -360.0F, 360.0F);
-        float f2 = getF(paramSectFile, str1, "HeadStdYaw", -360.0F, 360.0F);
-        float f3 = getF(paramSectFile, str1, "HeadMaxYaw", -360.0F, 360.0F);
-
-        if (f1 > f3) {
-          System.out.println("Ship: Wrong yaw angles in gun #" + j + " of '" + paramString + "'");
-
-          throw new RuntimeException("Can't register Ship object");
-        }
-        if ((f2 < f1) || (f2 > f3))
-        {
-          System.out.println("Ship: Wrong std yaw angle in gun #" + j + " of '" + paramString + "'");
-        }
-
-        localShipGunProperties.HEAD_YAW_RANGE.set(f1, f3);
-        localShipGunProperties.HEAD_STD_YAW = f2;
-
-        localShipGunProperties.GUN_MIN_PITCH = getF(paramSectFile, str1, "GunMinPitch", -15.0F, 85.0F);
-        localShipGunProperties.GUN_STD_PITCH = getF(paramSectFile, str1, "GunStdPitch", -14.0F, 89.900002F);
-        localShipGunProperties.GUN_MAX_PITCH = getF(paramSectFile, str1, "GunMaxPitch", 0.0F, 89.900002F);
-        localShipGunProperties.HEAD_MAX_YAW_SPEED = getF(paramSectFile, str1, "HeadMaxYawSpeed", 0.1F, 999.0F);
-        localShipGunProperties.GUN_MAX_PITCH_SPEED = getF(paramSectFile, str1, "GunMaxPitchSpeed", 0.1F, 999.0F);
-        localShipGunProperties.DELAY_AFTER_SHOOT = getF(paramSectFile, str1, "DelayAfterShoot", 0.0F, 999.0F);
-        localShipGunProperties.CHAINFIRE_TIME = getF(paramSectFile, str1, "ChainfireTime", 0.0F, 600.0F);
-      }
-      localShipProperties.nGuns = i;
-
-      localShipProperties.SLIDER_DIST = getF(paramSectFile, paramString, "SliderDistance", 5.0F, 1000.0F);
-
-      localShipProperties.SPEED = ShipGeneric.KmHourToMSec(getF(paramSectFile, paramString, "Speed", 0.5F, 200.0F));
-
-      localShipProperties.DELAY_RESPAWN_MIN = 15.0F;
-      localShipProperties.DELAY_RESPAWN_MAX = 30.0F;
-
-      Property.set(paramClass, "iconName", "icons/" + getS(paramSectFile, paramString, "Icon") + ".mat");
-      Property.set(paramClass, "meshName", localShipProperties.meshName);
-      Property.set(paramClass, "speed", localShipProperties.SPEED);
-
-      return localShipProperties;
-    }
-
-    public SPAWN(Class paramClass)
-    {
-      try
-      {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j) {
-          i = j;
-        }
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadShipProperties(Statics.getTechnicsFile(), str2, paramClass);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in spawn: " + paramClass.getName());
-      }
-
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
-
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg)
-    {
-      ShipGeneric localShipGeneric = null;
-      try
-      {
-        ShipGeneric.access$3302(this.proper);
-        ShipGeneric.access$3402(paramActorSpawnArg);
-        localShipGeneric = (ShipGeneric)this.cls.newInstance();
-        ShipGeneric.access$3302(null);
-        ShipGeneric.access$3402(null);
-      } catch (Exception localException) {
-        ShipGeneric.access$3302(null);
-        ShipGeneric.access$3402(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create Ship object [class:" + this.cls.getName() + "]");
-
-        return null;
-      }
-      return localShipGeneric;
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        Object localObject;
-        switch (paramNetMsgInput.readByte()) {
-        case 73:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post((NetMsgGuaranted)localObject);
-          }
-          ShipGeneric.access$2402(ShipGeneric.this, paramNetMsgInput.readLong());
-          if (ShipGeneric.this.timeOfDeath < 0L)
-          {
-            if (ShipGeneric.this.dying == 0) {
-              ShipGeneric.access$1902(ShipGeneric.this, 1.0F);
-              ShipGeneric.this.setDefaultLivePose();
-              ShipGeneric.this.forgetAllAiming();
+            int j = sectfile.sectionIndex(s1);
+            java.lang.String s3 = sectfile.var(j, 0);
+            java.lang.Object obj = com.maddox.rts.Spawn.get(s3);
+            if(obj == null)
+                throw new ActorException("Ship: Unknown class of ship (" + s3 + ")");
+            prop = ((com.maddox.il2.objects.ships.SPAWN)obj).proper;
+            try
+            {
+                setMesh(prop.meshName);
             }
-          }
-          else if (ShipGeneric.this.dying == 0) {
-            ShipGeneric.this.Die(null, ShipGeneric.this.timeOfDeath, false);
-          }
-
-          return true;
-        case 82:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post((NetMsgGuaranted)localObject);
-          }
-          ShipGeneric.access$1902(ShipGeneric.this, 1.0F);
-          ShipGeneric.access$602(ShipGeneric.this, 0);
-
-          ShipGeneric.this.setDiedFlag(false);
-
-          ShipGeneric.this.setMesh(ShipGeneric.this.prop.meshName);
-          ShipGeneric.this.setDefaultLivePose();
-          ShipGeneric.this.forgetAllAiming();
-          ShipGeneric.access$802(ShipGeneric.this, 0.0F);
-          ShipGeneric.access$902(ShipGeneric.this, ShipGeneric.access$1002(ShipGeneric.this, 0.0F));
-          ShipGeneric.this.setPosition();
-          ShipGeneric.this.pos.reset();
-
-          return true;
-        case 68:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-            post((NetMsgGuaranted)localObject);
-          }
-          ShipGeneric.access$2402(ShipGeneric.this, paramNetMsgInput.readLong());
-          if ((ShipGeneric.this.timeOfDeath >= 0L) && (ShipGeneric.this.dying == 0)) {
-            localObject = paramNetMsgInput.readNetObj();
-            Actor localActor2 = localObject == null ? null : ((ActorNet)localObject).actor();
-            ShipGeneric.this.Die(localActor2, ShipGeneric.this.timeOfDeath, true);
-          }
-          return true;
+            catch(java.lang.RuntimeException runtimeexception)
+            {
+                super.destroy();
+                throw runtimeexception;
+            }
+            if(prop.soundName != null)
+                newSound(prop.soundName, true);
+            setName(s);
+            setArmy(i);
+            LoadPath(sectfile1, s2);
+            cachedSeg = 0;
+            bodyDepth = 0.0F;
+            bodyPitch = bodyRoll = 0.0F;
+            setMovablePosition(com.maddox.rts.Time.current());
+            pos.reset();
+            collide(true);
+            drawing(true);
+            pipe = null;
+            if(mesh().hookFind("Vapor") >= 0)
+            {
+                com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(this, "Vapor");
+                pipe = com.maddox.il2.engine.Eff3DActor.New(this, hooknamed, null, 1.0F, "Effects/Smokes/SmokePipeShip.eff", -1F);
+            }
+            wake[2] = wake[1] = wake[0] = null;
+            tail = null;
+            nose = null;
+            boolean flag = prop.SLIDER_DIST / 2.5F < 90F;
+            if(mesh().hookFind("_Prop") >= 0)
+            {
+                com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0 = new HookNamedZ0(this, "_Prop");
+                tail = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0, null, 1.0F, flag ? "3DO/Effects/Tracers/ShipTrail/PropWakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/PropWake.eff", -1F);
+            }
+            if(mesh().hookFind("_Centre") >= 0)
+            {
+                com.maddox.il2.engine.Loc loc = new Loc();
+                com.maddox.il2.engine.Loc loc1 = new Loc();
+                com.maddox.il2.engine.HookNamed hooknamed1 = new HookNamed(this, "_Left");
+                hooknamed1.computePos(this, new Loc(), loc);
+                com.maddox.il2.engine.HookNamed hooknamed2 = new HookNamed(this, "_Right");
+                hooknamed2.computePos(this, new Loc(), loc1);
+                float f = (float)loc.getPoint().distance(loc1.getPoint());
+                com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0_1 = new HookNamedZ0(this, "_Centre");
+                if(mesh().hookFind("_Prop") >= 0)
+                {
+                    com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0_3 = new HookNamedZ0(this, "_Prop");
+                    com.maddox.il2.engine.Loc loc2 = new Loc();
+                    hooknamedz0_1.computePos(this, new Loc(), loc2);
+                    com.maddox.il2.engine.Loc loc3 = new Loc();
+                    hooknamedz0_3.computePos(this, new Loc(), loc3);
+                    float f1 = (float)loc2.getPoint().distance(loc3.getPoint());
+                    wake[0] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_3, new Loc((double)(-f1) * 0.33000000000000002D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, flag ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1F);
+                    wake[1] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_1, new Loc((double)f1 * 0.14999999999999999D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, flag ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1F);
+                    wake[2] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_1, new Loc((double)(-f1) * 0.14999999999999999D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, flag ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1F);
+                } else
+                {
+                    wake[0] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_1, new Loc((double)(-f) * 0.29999999999999999D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, (double)prop.SLIDER_DIST / 2.5D >= 50D ? "3DO/Effects/Tracers/ShipTrail/Wake.eff" : "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff", -1F);
+                }
+            }
+            if(mesh().hookFind("_Nose") >= 0)
+            {
+                com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0_2 = new HookNamedZ0(this, "_Nose");
+                nose = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_2, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), 1.0F, "3DO/Effects/Tracers/ShipTrail/SideWave.eff", -1F);
+            }
+            SetEffectsIntens(0.0F);
+            int k = com.maddox.il2.game.Mission.cur().getUnitNetIdRemote(this);
+            com.maddox.rts.NetChannel netchannel = com.maddox.il2.game.Mission.cur().getNetMasterChannel();
+            if(netchannel == null)
+                net = new Master(this);
+            else
+            if(k != 0)
+                net = new Mirror(this, netchannel, k);
+            SKILL_IDX = com.maddox.il2.ai.Chief.new_SKILL_IDX;
+            SLOWFIRE_K = com.maddox.il2.ai.Chief.new_SLOWFIRE_K;
+            DELAY_WAKEUP = com.maddox.il2.ai.Chief.new_DELAY_WAKEUP;
+            wakeupTmr = 0L;
+            CreateGuns();
+            setDefaultLivePose();
+            if(!isNetMirror() && prop.nGuns > 0 && DELAY_WAKEUP > 0.0F)
+                wakeupTmr = -com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(2.0F, 7F));
+            if(!interpEnd("move"))
+                interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
         }
-        return false;
-      }
-      int i;
-      NetObj localNetObj;
-      Actor localActor1;
-      switch (paramNetMsgInput.readByte())
-      {
-      case 84:
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 1);
-          this.out.setIncludeTime(false);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        i = paramNetMsgInput.readByte();
-
-        localNetObj = paramNetMsgInput.readNetObj();
-        localActor1 = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-
-        int j = paramNetMsgInput.readUnsignedByte();
-
-        ShipGeneric.this.Track_Mirror(i, localActor1, j);
-
-        break;
-      case 70:
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 1);
-          this.out.setIncludeTime(true);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        i = paramNetMsgInput.readByte();
-
-        localNetObj = paramNetMsgInput.readNetObj();
-        localActor1 = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-
-        float f1 = paramNetMsgInput.readFloat();
-        float f2 = 0.001F * (float)(Message.currentGameTime() - Time.current()) + f1;
-
-        int k = paramNetMsgInput.readUnsignedByte();
-
-        ShipGeneric.this.Fire_Mirror(i, localActor1, k, f2);
-
-        break;
-      case 68:
-        this.out.unLockAndSet(paramNetMsgInput, 1);
-        this.out.setIncludeTime(false);
-        postRealTo(Message.currentRealTime(), masterChannel(), this.out);
-      }
-
-      return true;
-    }
-
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
-    {
-      super();
-    }
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        return true;
-      }
-      if (paramNetMsgInput.readByte() != 68)
-        return false;
-      if (ShipGeneric.this.dying != 0) {
-        return true;
-      }
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      ShipGeneric.this.Die(localActor, -1L, true);
-      return true;
-    }
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      if (ShipGeneric.this.dying == 0)
-      {
-        if (ShipGeneric.this.path != null) {
-          ShipGeneric.access$802(ShipGeneric.this, 0.0F);
-          ShipGeneric.access$902(ShipGeneric.this, ShipGeneric.access$1002(ShipGeneric.this, 0.0F));
-
-          ShipGeneric.this.setMovablePosition(NetServerParams.getServerTime());
-        }
-
-        if (ShipGeneric.this.wakeupTmr == 0L)
+        catch(java.lang.Exception exception)
         {
-          for (int i = 0; i < ShipGeneric.this.prop.nGuns; i++) {
-            ShipGeneric.FiringDevice.access$100(ShipGeneric.this.arms[i]).tick_();
-          }
+            java.lang.System.out.println("Ship creation failure:");
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            throw new ActorException();
         }
-        else if (ShipGeneric.this.wakeupTmr > 0L) {
-          ShipGeneric.access$1210(ShipGeneric.this);
-        }
-        else if (ShipGeneric.access$1204(ShipGeneric.this) == 0L) {
-          if (ShipGeneric.this.isAnyEnemyNear())
-          {
-            ShipGeneric.access$1202(ShipGeneric.this, ShipGeneric.access$1600(ShipGeneric.Rnd(ShipGeneric.this.DELAY_WAKEUP, ShipGeneric.this.DELAY_WAKEUP * 1.2F)));
-          }
-          else {
-            ShipGeneric.access$1202(ShipGeneric.this, -ShipGeneric.access$1600(ShipGeneric.Rnd(4.0F, 7.0F)));
-          }
+    }
 
-        }
+    private void SetEffectsIntens(float f)
+    {
+        if(dying != 0)
+            f = -1F;
+        if(pipe != null)
+            if(f >= 0.0F)
+            {
+                pipe._setIntesity(f);
+            } else
+            {
+                pipe._finish();
+                pipe = null;
+            }
+        for(int i = 0; i < 3; i++)
+            if(wake[i] != null)
+                if(f >= 0.0F)
+                {
+                    wake[i]._setIntesity(f);
+                } else
+                {
+                    wake[i]._finish();
+                    wake[i] = null;
+                }
 
-        return true;
-      }
+        if(nose != null)
+            if(f >= 0.0F)
+            {
+                nose._setIntesity(f);
+            } else
+            {
+                nose._finish();
+                nose = null;
+            }
+        if(tail != null)
+            if(f >= 0.0F)
+            {
+                tail._setIntesity(f);
+            } else
+            {
+                tail._finish();
+                tail = null;
+            }
+    }
 
-      if (ShipGeneric.this.dying == 2)
-      {
-        if ((ShipGeneric.this.path != null) || (!Mission.isDeathmatch()))
+    private void LoadPath(com.maddox.rts.SectFile sectfile, java.lang.String s)
+    {
+        int i = sectfile.sectionIndex(s);
+        if(i < 0)
+            throw new ActorException("Ship path: Section [" + s + "] not found");
+        int j = sectfile.vars(i);
+        if(j < 1)
+            throw new ActorException("Ship path must contain at least 2 nodes");
+        path = new ArrayList();
+        for(int k = 0; k < j; k++)
         {
-          ShipGeneric.this.eraseGuns();
-          return false;
+            java.util.StringTokenizer stringtokenizer = new StringTokenizer(sectfile.line(i, k));
+            float f = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            float f1 = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            float f3 = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            double d = 0.0D;
+            float f6 = 0.0F;
+            if(stringtokenizer.hasMoreTokens())
+            {
+                d = java.lang.Double.valueOf(stringtokenizer.nextToken()).doubleValue();
+                if(stringtokenizer.hasMoreTokens())
+                {
+                    java.lang.Double.valueOf(stringtokenizer.nextToken()).doubleValue();
+                    if(stringtokenizer.hasMoreTokens())
+                        f6 = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+                }
+            }
+            if(k >= j - 1)
+                d = 1.0D;
+            com.maddox.il2.objects.ships.Segment segment5 = new Segment();
+            segment5.posIn = new Point3d(f, f1, 0.0D);
+            if(java.lang.Math.abs(d) < 0.10000000000000001D)
+                segment5.timeIn = 0L;
+            else
+                segment5.timeIn = (long)(d * 60D * 1000D + (d <= 0.0D ? -0.5D : 0.5D));
+            if(f6 <= 0.0F && (k == 0 || k == j - 1 || segment5.timeIn == 0L))
+                f6 = prop.SPEED;
+            segment5.speedIn = f6;
+            path.add(segment5);
         }
 
-        if (ShipGeneric.access$1810(ShipGeneric.this) > 0L) {
-          return true;
+        for(int l = 0; l < path.size() - 1; l++)
+        {
+            com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(l);
+            com.maddox.il2.objects.ships.Segment segment1 = (com.maddox.il2.objects.ships.Segment)path.get(l + 1);
+            if(segment.timeIn > 0L && segment1.timeIn > 0L)
+            {
+                com.maddox.il2.objects.ships.Segment segment2 = new Segment();
+                segment2.posIn = new Point3d(segment.posIn);
+                segment2.posIn.add(segment1.posIn);
+                segment2.posIn.scale(0.5D);
+                segment2.timeIn = 0L;
+                segment2.speedIn = (segment.speedIn + segment1.speedIn) * 0.5F;
+                path.add(l + 1, segment2);
+            }
         }
 
-        if (!ShipGeneric.this.isNetMaster()) {
-          ShipGeneric.access$1802(ShipGeneric.this, 10000L);
-          return true;
+        int i1 = 0;
+        float f2 = ((com.maddox.il2.objects.ships.Segment)path.get(i1)).length;
+        int j1;
+        for(; i1 < path.size() - 1; i1 = j1)
+        {
+            j1 = i1 + 1;
+            do
+            {
+                com.maddox.il2.objects.ships.Segment segment3 = (com.maddox.il2.objects.ships.Segment)path.get(j1);
+                if((double)segment3.speedIn > 0.0D)
+                    break;
+                f2 += segment3.length;
+                j1++;
+            } while(true);
+            if(j1 - i1 > 1)
+            {
+                float f4 = ((com.maddox.il2.objects.ships.Segment)path.get(i1)).length;
+                float f5 = ((com.maddox.il2.objects.ships.Segment)path.get(i1)).speedIn;
+                float f7 = ((com.maddox.il2.objects.ships.Segment)path.get(j1)).speedIn;
+                for(int i2 = i1 + 1; i2 < j1; i2++)
+                {
+                    com.maddox.il2.objects.ships.Segment segment7 = (com.maddox.il2.objects.ships.Segment)path.get(i2);
+                    float f9 = f4 / f2;
+                    segment7.speedIn = f5 * (1.0F - f9) + f7 * f9;
+                    f2 += segment7.length;
+                }
+
+            }
         }
 
-        ShipGeneric.access$1902(ShipGeneric.this, 1.0F);
-        ShipGeneric.access$602(ShipGeneric.this, 0);
+        long l1 = 0L;
+        for(int k1 = 0; k1 < path.size() - 1; k1++)
+        {
+            com.maddox.il2.objects.ships.Segment segment4 = (com.maddox.il2.objects.ships.Segment)path.get(k1);
+            com.maddox.il2.objects.ships.Segment segment6 = (com.maddox.il2.objects.ships.Segment)path.get(k1 + 1);
+            if(k1 == 0)
+                l1 = segment4.timeIn;
+            segment4.posOut = new Point3d(segment6.posIn);
+            segment6.posIn = segment4.posOut;
+            segment4.length = (float)segment4.posIn.distance(segment6.posIn);
+            float f8 = segment4.speedIn;
+            float f10 = segment6.speedIn;
+            float f11 = (f8 + f10) * 0.5F;
+            if(segment4.timeIn > 0L)
+                if(segment4.timeIn > l1)
+                    segment4.timeIn -= l1;
+                else
+                    segment4.timeIn = 0L;
+            if(segment4.timeIn == 0L && segment6.timeIn > 0L)
+            {
+                int j2 = (int)(((2.0F * segment4.length) / f8) * 1000F + 0.5F);
+                j2 = (int)((long)j2 + l1);
+                if(segment6.timeIn > (long)j2)
+                    segment6.timeIn -= j2;
+                else
+                    segment6.timeIn = 0L;
+            }
+            if(segment4.timeIn > 0L)
+            {
+                segment4.speedIn = 0.0F;
+                segment4.speedOut = f10;
+                float f12 = ((2.0F * segment4.length) / f10) * 1000F + 0.5F;
+                segment4.timeIn = l1 + segment4.timeIn;
+                segment4.timeOut = segment4.timeIn + (long)(int)f12;
+                l1 = segment4.timeOut;
+            } else
+            if(segment6.timeIn > 0L)
+            {
+                segment4.speedIn = f8;
+                segment4.speedOut = 0.0F;
+                float f13 = ((2.0F * segment4.length) / f8) * 1000F + 0.5F;
+                segment4.timeIn = l1 + segment4.timeIn;
+                segment4.timeOut = segment4.timeIn + (long)(int)f13;
+                l1 = segment4.timeOut + segment6.timeIn;
+            } else
+            {
+                segment4.speedIn = f8;
+                segment4.speedOut = f10;
+                float f14 = (segment4.length / f11) * 1000F + 0.5F;
+                segment4.timeIn = l1;
+                segment4.timeOut = segment4.timeIn + (long)(int)f14;
+                l1 = segment4.timeOut;
+            }
+        }
 
-        ShipGeneric.access$1202(ShipGeneric.this, 0L);
+        path.remove(path.size() - 1);
+    }
 
-        ShipGeneric.this.setDiedFlag(false);
+    public void align()
+    {
+        pos.getAbs(p);
+        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) - (double)bodyDepth;
+        pos.setAbs(p);
+    }
 
-        ShipGeneric.this.forgetAllAiming();
+    private void setMovablePosition(long l)
+    {
+        if(cachedSeg < 0)
+            cachedSeg = 0;
+        else
+        if(cachedSeg >= path.size())
+            cachedSeg = path.size() - 1;
+        com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(cachedSeg);
+        if(segment.timeIn <= l && l <= segment.timeOut)
+        {
+            SetEffectsIntens(1.0F);
+            setMovablePosition((float)(l - segment.timeIn) / (float)(segment.timeOut - segment.timeIn));
+            return;
+        }
+        if(l > segment.timeOut)
+        {
+            while(cachedSeg + 1 < path.size()) 
+            {
+                com.maddox.il2.objects.ships.Segment segment1 = (com.maddox.il2.objects.ships.Segment)path.get(++cachedSeg);
+                if(l <= segment1.timeIn)
+                {
+                    SetEffectsIntens(0.0F);
+                    setMovablePosition(0.0F);
+                    return;
+                }
+                if(l <= segment1.timeOut)
+                {
+                    SetEffectsIntens(1.0F);
+                    setMovablePosition((float)(l - segment1.timeIn) / (float)(segment1.timeOut - segment1.timeIn));
+                    return;
+                }
+            }
+            SetEffectsIntens(-1F);
+            setMovablePosition(1.0F);
+            return;
+        }
+        while(cachedSeg > 0) 
+        {
+            com.maddox.il2.objects.ships.Segment segment2 = (com.maddox.il2.objects.ships.Segment)path.get(--cachedSeg);
+            if(l >= segment2.timeOut)
+            {
+                SetEffectsIntens(0.0F);
+                setMovablePosition(1.0F);
+                return;
+            }
+            if(l >= segment2.timeIn)
+            {
+                SetEffectsIntens(1.0F);
+                setMovablePosition((float)(l - segment2.timeIn) / (float)(segment2.timeOut - segment2.timeIn));
+                return;
+            }
+        }
+        SetEffectsIntens(0.0F);
+        setMovablePosition(0.0F);
+    }
 
-        ShipGeneric.this.setDefaultLivePose();
+    private void setMovablePosition(float f)
+    {
+        com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(cachedSeg);
+        float f1 = (float)(segment.timeOut - segment.timeIn) * 0.001F;
+        float f2 = segment.speedIn;
+        float f3 = segment.speedOut;
+        float f4 = (f3 - f2) / f1;
+        f *= f1;
+        float f5 = f2 * f + f4 * f * f * 0.5F;
+        int i = cachedSeg;
+        float f6 = prop.SLIDER_DIST - (segment.length - f5);
+        if(f6 <= 0.0F)
+            p1.interpolate(segment.posIn, segment.posOut, (f5 + prop.SLIDER_DIST) / segment.length);
+        else
+            do
+            {
+                if(i + 1 >= path.size())
+                {
+                    p1.interpolate(segment.posIn, segment.posOut, 1.0F + f6 / segment.length);
+                    break;
+                }
+                segment = (com.maddox.il2.objects.ships.Segment)path.get(++i);
+                if(f6 <= segment.length)
+                {
+                    p1.interpolate(segment.posIn, segment.posOut, f6 / segment.length);
+                    break;
+                }
+                f6 -= segment.length;
+            } while(true);
+        i = cachedSeg;
+        segment = (com.maddox.il2.objects.ships.Segment)path.get(i);
+        f6 = prop.SLIDER_DIST - f5;
+        if(f6 <= 0.0F)
+            p2.interpolate(segment.posIn, segment.posOut, (f5 - prop.SLIDER_DIST) / segment.length);
+        else
+            do
+            {
+                if(i <= 0)
+                {
+                    p2.interpolate(segment.posIn, segment.posOut, 0.0F - f6 / segment.length);
+                    break;
+                }
+                segment = (com.maddox.il2.objects.ships.Segment)path.get(--i);
+                if(f6 <= segment.length)
+                {
+                    p2.interpolate(segment.posIn, segment.posOut, 1.0F - f6 / segment.length);
+                    break;
+                }
+                f6 -= segment.length;
+            } while(true);
+        p.interpolate(p1, p2, 0.5F);
+        tmpv.sub(p1, p2);
+        if(tmpv.lengthSquared() < 0.0010000000474974513D)
+        {
+            com.maddox.il2.objects.ships.Segment segment1 = (com.maddox.il2.objects.ships.Segment)path.get(cachedSeg);
+            tmpv.sub(segment1.posOut, segment1.posIn);
+        }
+        float f7 = (float)(java.lang.Math.atan2(tmpv.y, tmpv.x) * 57.295779513082323D);
+        setPosition(p, f7);
+    }
 
-        ShipGeneric.access$802(ShipGeneric.this, 0.0F);
-        ShipGeneric.access$902(ShipGeneric.this, ShipGeneric.access$1002(ShipGeneric.this, 0.0F));
-        ShipGeneric.this.setPosition();
-        ShipGeneric.this.pos.reset();
+    private void setPosition(com.maddox.JGP.Point3d point3d, float f)
+    {
+        bodyYaw = f;
+        o.setYPR(bodyYaw, bodyPitch, bodyRoll);
+        point3d.z = -bodyDepth;
+        pos.setAbs(point3d, o);
+    }
 
-        ShipGeneric.this.send_RespawnCommand();
+    private void setPosition()
+    {
+        o.setYPR(bodyYaw, bodyPitch, bodyRoll);
+        pos.setAbs(o);
+        align();
+    }
+
+    public int WeaponsMask()
+    {
+        return prop.WEAPONS_MASK;
+    }
+
+    public int HitbyMask()
+    {
+        return prop.HITBY_MASK;
+    }
+
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
+    {
+        if(dying != 0)
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(abulletproperties[0].power <= 0.0F)
+            return 0;
+        if(abulletproperties[1].power <= 0.0F)
+            return 1;
+        if(abulletproperties[0].cumulativePower > 0.0F)
+            return 0;
+        if(abulletproperties[1].cumulativePower > 0.0F)
+            return 1;
+        if(abulletproperties[0].powerType == 0)
+            return 0;
+        if(abulletproperties[1].powerType == 0)
+            return 1;
+        return abulletproperties[0].powerType != 1 ? 0 : 1;
+    }
+
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
+    {
+        return dying == 0 ? 0 : -1;
+    }
+
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
+    {
+        if(dying != 0)
+            return false;
+        if(i != 0)
+            return false;
+        if(point3d != null)
+            point3d.set(0.0D, 0.0D, 0.0D);
         return true;
-      }
+    }
 
-      long l = NetServerParams.getServerTime() - ShipGeneric.this.timeOfDeath;
+    public float AttackMaxDistance()
+    {
+        return prop.ATTACK_MAX_DISTANCE;
+    }
 
-      if (l <= 0L) l = 0L;
-
-      if (l >= ShipGeneric.this.timeForRotation) {
-        ShipGeneric.access$902(ShipGeneric.this, ShipGeneric.this.drownBodyPitch);
-        ShipGeneric.access$1002(ShipGeneric.this, ShipGeneric.this.drownBodyRoll);
-      } else {
-        ShipGeneric.access$902(ShipGeneric.this, ShipGeneric.this.drownBodyPitch * ((float)l / (float)ShipGeneric.this.timeForRotation));
-        ShipGeneric.access$1002(ShipGeneric.this, ShipGeneric.this.drownBodyRoll * ((float)l / (float)ShipGeneric.this.timeForRotation));
-      }
-
-      ShipGeneric.access$802(ShipGeneric.this, ShipGeneric.this.sinkingDepthSpeed * (float)l * 0.001F * 5.0F);
-
-      if (ShipGeneric.this.bodyDepth >= 5.0F) {
-        float f = Math.abs(Geom.sinDeg(ShipGeneric.this.bodyPitch) * ShipGeneric.this.collisionR());
-        f += ShipGeneric.this.bodyDepth;
-        if (f + ShipGeneric.this.bodyDepth >= ShipGeneric.this.seaDepth) {
-          ShipGeneric.access$602(ShipGeneric.this, 2);
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMaster())
+            return;
+        if(com.maddox.il2.game.Mission.isDeathmatch())
+        {
+            float f = com.maddox.il2.game.Mission.respawnTime("Ship");
+            respawnDelay = com.maddox.il2.objects.ships.ShipGeneric.SecsToTicks(com.maddox.il2.objects.ships.ShipGeneric.Rnd(f, f * 1.2F));
+        } else
+        {
+            respawnDelay = 0L;
         }
-        if (ShipGeneric.this.bodyDepth > ShipGeneric.this.mesh().visibilityR()) {
-          ShipGeneric.access$602(ShipGeneric.this, 2);
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(68);
+            netmsgguaranted.writeLong(timeOfDeath);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
         }
-      }
-
-      if (ShipGeneric.this.path != null)
-        ShipGeneric.this.setMovablePosition(ShipGeneric.this.timeOfDeath);
-      else {
-        ShipGeneric.this.setPosition();
-      }
-
-      return true;
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
     }
-  }
 
-  static class HookNamedZ0 extends HookNamed
-  {
-    public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2)
+    private void send_RespawnCommand()
     {
-      super.computePos(paramActor, paramLoc1, paramLoc2);
-      paramLoc2.getPoint().z = 0.25D;
+        if(!isNetMaster() || !com.maddox.il2.game.Mission.isDeathmatch())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(82);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
     }
-    public HookNamedZ0(ActorMesh paramActorMesh, String paramString) { super(paramString); } 
-    public HookNamedZ0(Mesh paramMesh, String paramString) { super(paramString);
-    }
-  }
 
-  private class Segment
-  {
-    public Point3d posIn;
-    public Point3d posOut;
-    public float length;
-    public long timeIn;
-    public long timeOut;
-    public float speedIn;
-    public float speedOut;
-    private final ShipGeneric this$0;
-
-    private Segment()
+    private void send_FireCommand(int i, com.maddox.il2.engine.Actor actor, int j, float f)
     {
-      this.this$0 = this$1; } 
-    Segment(ShipGeneric.1 arg2) { this();
+        if(!isNetMaster())
+            return;
+        if(!net.isMirrored())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isNet())
+            return;
+        j &= 0xff;
+        if(f < 0.0F)
+            try
+            {
+                outCommand.unLockAndClear();
+                outCommand.writeByte(84);
+                outCommand.writeByte(i);
+                outCommand.writeNetObj(actor.net);
+                outCommand.writeByte(j);
+                outCommand.setIncludeTime(false);
+                net.post(com.maddox.rts.Time.current(), outCommand);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+        else
+            try
+            {
+                outCommand.unLockAndClear();
+                outCommand.writeByte(70);
+                outCommand.writeByte(i);
+                outCommand.writeFloat(f);
+                outCommand.writeNetObj(actor.net);
+                outCommand.writeByte(j);
+                outCommand.setIncludeTime(true);
+                net.post(com.maddox.rts.Time.current(), outCommand);
+            }
+            catch(java.lang.Exception exception1)
+            {
+                java.lang.System.out.println(exception1.getMessage());
+                exception1.printStackTrace();
+            }
     }
-  }
 
-  public class FiringDevice
-  {
-    private int id;
-    private Gun gun;
-    private Aim aime;
-    private float headYaw;
-    private float gunPitch;
+    private void send_DeathRequest(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = new NetMsgFiltered();
+            netmsgfiltered.writeByte(68);
+            netmsgfiltered.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            netmsgfiltered.setIncludeTime(false);
+            net.postTo(com.maddox.rts.Time.current(), net.masterChannel(), netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
 
-    public FiringDevice()
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        if(dying == 0)
+            netmsgguaranted.writeLong(-1L);
+        else
+            netmsgguaranted.writeLong(timeOfDeath);
+        net.postTo(netchannel, netmsgguaranted);
+    }
+
+    public float getReloadingTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        return SLOWFIRE_K * GetGunProperties(aim).DELAY_AFTER_SHOOT;
+    }
+
+    public float chainFireTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        float f = GetGunProperties(aim).CHAINFIRE_TIME;
+        return f > 0.0F ? f * com.maddox.il2.objects.ships.ShipGeneric.Rnd(0.75F, 1.25F) : 0.0F;
+    }
+
+    public float probabKeepSameEnemy(com.maddox.il2.engine.Actor actor)
+    {
+        return 0.75F;
+    }
+
+    public float minTimeRelaxAfterFight()
+    {
+        return 0.1F;
+    }
+
+    public void gunStartParking(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        com.maddox.il2.objects.ships.ShipGunProperties shipgunproperties = prop.guns[firingdevice.id];
+        aim.setRotationForParking(firingdevice.headYaw, firingdevice.gunPitch, shipgunproperties.HEAD_STD_YAW, shipgunproperties.GUN_STD_PITCH, shipgunproperties.HEAD_YAW_RANGE, shipgunproperties.HEAD_MAX_YAW_SPEED, shipgunproperties.GUN_MAX_PITCH_SPEED);
+    }
+
+    public void gunInMove(boolean flag, com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        float f = aim.t();
+        float f1 = aim.anglesYaw.getDeg(f);
+        float f2 = aim.anglesPitch.getDeg(f);
+        setGunAngles(firingdevice, f1, f2);
+        pos.inValidate(false);
+    }
+
+    public com.maddox.il2.engine.Actor findEnemy(com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(isNetMirror())
+            return null;
+        com.maddox.il2.objects.ships.ShipGunProperties shipgunproperties = GetGunProperties(aim);
+        com.maddox.il2.engine.Actor actor = null;
+        switch(shipgunproperties.ATTACK_FAST_TARGETS)
+        {
+        case 0: // '\0'
+            com.maddox.il2.ai.ground.NearestEnemies.set(shipgunproperties.WEAPONS_MASK, -9999.9F, com.maddox.il2.objects.ships.ShipGeneric.KmHourToMSec(100F));
+            break;
+
+        case 1: // '\001'
+            com.maddox.il2.ai.ground.NearestEnemies.set(shipgunproperties.WEAPONS_MASK);
+            break;
+
+        default:
+            com.maddox.il2.ai.ground.NearestEnemies.set(shipgunproperties.WEAPONS_MASK, com.maddox.il2.objects.ships.ShipGeneric.KmHourToMSec(100F), 9999.9F);
+            break;
+        }
+        actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), shipgunproperties.ATTACK_MAX_RADIUS, getArmy());
+        if(actor == null)
+            return null;
+        if(!(actor instanceof com.maddox.il2.ai.ground.Prey))
+        {
+            java.lang.System.out.println("ship: nearest enemies: non-Prey");
+            return null;
+        }
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        com.maddox.il2.engine.BulletProperties bulletproperties = null;
+        if(firingdevice.gun.prop != null)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(firingdevice.gun.prop.bullet);
+            if(i < 0)
+                return null;
+            bulletproperties = firingdevice.gun.prop.bullet[i];
+        }
+        int j = ((com.maddox.il2.ai.ground.Prey)actor).chooseShotpoint(bulletproperties);
+        if(j < 0)
+        {
+            return null;
+        } else
+        {
+            aim.shotpoint_idx = j;
+            return actor;
+        }
+    }
+
+    public boolean enterToFireMode(int i, com.maddox.il2.engine.Actor actor, float f, com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(!isNetMirror())
+        {
+            com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+            send_FireCommand(firingdevice.id, actor, aim.shotpoint_idx, i != 0 ? f : -1F);
+        }
+        return true;
+    }
+
+    private void Track_Mirror(int i, com.maddox.il2.engine.Actor actor, int j)
+    {
+        if(actor == null)
+            return;
+        if(arms == null || arms[i].aime == null)
+        {
+            return;
+        } else
+        {
+            arms[i].aime.passive_StartFiring(0, actor, j, 0.0F);
+            return;
+        }
+    }
+
+    private void Fire_Mirror(int i, com.maddox.il2.engine.Actor actor, int j, float f)
+    {
+        if(actor == null)
+            return;
+        if(arms == null || arms[i].aime == null)
+            return;
+        if(f <= 0.2F)
+            f = 0.2F;
+        if(f >= 15F)
+            f = 15F;
+        arms[i].aime.passive_StartFiring(1, actor, j, f);
+    }
+
+    public int targetGun(com.maddox.il2.ai.ground.Aim aim, com.maddox.il2.engine.Actor actor, float f, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isAlive() || actor.getArmy() == 0)
+            return 0;
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(firingdevice.gun instanceof com.maddox.il2.objects.weapons.CannonMidrangeGeneric)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(firingdevice.gun.prop.bullet);
+            if(i < 0)
+                return 0;
+            ((com.maddox.il2.objects.weapons.CannonMidrangeGeneric)firingdevice.gun).setBulletType(i);
+        }
+        boolean flag1 = ((com.maddox.il2.ai.ground.Prey)actor).getShotpointOffset(aim.shotpoint_idx, p1);
+        if(!flag1)
+            return 0;
+        com.maddox.il2.objects.ships.ShipGunProperties shipgunproperties = prop.guns[firingdevice.id];
+        float f1 = f * com.maddox.il2.objects.ships.ShipGeneric.Rnd(0.8F, 1.2F);
+        if(!com.maddox.il2.ai.Aimer.Aim((com.maddox.il2.ai.BulletAimer)firingdevice.gun, actor, this, f1, p1, shipgunproperties.fireOffset))
+            return 0;
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.il2.ai.Aimer.GetPredictedTargetPosition(point3d);
+        com.maddox.JGP.Point3d point3d1 = com.maddox.il2.ai.Aimer.GetHunterFirePoint();
+        float f2 = 0.05F;
+        double d = point3d.distance(point3d1);
+        double d1 = point3d.z;
+        point3d.sub(point3d1);
+        point3d.scale(com.maddox.il2.objects.ships.ShipGeneric.Rnd(0.995D, 1.0049999999999999D));
+        point3d.add(point3d1);
+        if(f1 > 0.001F)
+        {
+            com.maddox.JGP.Point3d point3d2 = new Point3d();
+            actor.pos.getAbs(point3d2);
+            tmpv.sub(point3d, point3d2);
+            double d2 = tmpv.length();
+            if(d2 > 0.001D)
+            {
+                float f7 = (float)d2 / f1;
+                if(f7 > 200F)
+                    f7 = 200F;
+                float f8 = f7 * 0.01F;
+                point3d2.sub(point3d1);
+                double d3 = point3d2.x * point3d2.x + point3d2.y * point3d2.y + point3d2.z * point3d2.z;
+                if(d3 > 0.01D)
+                {
+                    float f9 = (float)tmpv.dot(point3d2);
+                    f9 /= (float)(d2 * java.lang.Math.sqrt(d3));
+                    f9 = (float)java.lang.Math.sqrt(1.0F - f9 * f9);
+                    f8 *= 0.4F + 0.6F * f9;
+                }
+                f8 *= 1.3F;
+                f8 *= com.maddox.il2.ai.ground.Aim.AngleErrorKoefForSkill[SKILL_IDX];
+                int k = com.maddox.il2.game.Mission.curCloudsType();
+                if(k > 2)
+                {
+                    float f10 = k <= 4 ? 800F : 400F;
+                    float f11 = (float)(d / (double)f10);
+                    if(f11 > 1.0F)
+                    {
+                        if(f11 > 10F)
+                            return 0;
+                        f11 = (f11 - 1.0F) / 9F;
+                        f8 *= f11 + 1.0F;
+                    }
+                }
+                if(k >= 3 && d1 > (double)com.maddox.il2.game.Mission.curCloudsHeight())
+                    f8 *= 1.25F;
+                f2 += f8;
+            }
+        }
+        if(com.maddox.il2.ai.World.Sun().ToSun.z < -0.15F)
+        {
+            float f4 = (-com.maddox.il2.ai.World.Sun().ToSun.z - 0.15F) / 0.13F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && com.maddox.rts.Time.current() - ((com.maddox.il2.objects.air.Aircraft)actor).tmSearchlighted < 1000L)
+                f4 = 0.0F;
+            f2 += 10F * f4;
+        }
+        float f5 = (float)actor.getSpeed(null) - 10F;
+        if(f5 > 0.0F)
+        {
+            float f6 = 83.33334F;
+            f5 = f5 < f6 ? f5 / f6 : 1.0F;
+            f2 += f5 * shipgunproperties.FAST_TARGETS_ANGLE_ERROR;
+        }
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        if(!((com.maddox.il2.ai.BulletAimer)firingdevice.gun).FireDirection(point3d1, point3d, vector3d))
+            return 0;
+        float f3;
+        if(flag)
+        {
+            f3 = 99999F;
+            d1 = 99999F;
+        } else
+        {
+            f3 = shipgunproperties.HEAD_MAX_YAW_SPEED;
+            d1 = shipgunproperties.GUN_MAX_PITCH_SPEED;
+        }
+        o.add(shipgunproperties.fireOrient, pos.getAbs().getOrient());
+        int j = aim.setRotationForTargeting(this, o, point3d1, firingdevice.headYaw, firingdevice.gunPitch, vector3d, f2, f1, shipgunproperties.HEAD_YAW_RANGE, shipgunproperties.GUN_MIN_PITCH, shipgunproperties.GUN_MAX_PITCH, f3, d1, 0.0F);
+        return j;
+    }
+
+    public void singleShot(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!prop.guns[firingdevice.id].TRACKING_ONLY)
+            firingdevice.gun.shots(1);
+    }
+
+    public void startFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!prop.guns[firingdevice.id].TRACKING_ONLY)
+            firingdevice.gun.shots(-1);
+    }
+
+    public void continueFire(com.maddox.il2.ai.ground.Aim aim)
     {
     }
-  }
 
-  public static class ShipProperties
-  {
-    public String meshName = null;
-    public String soundName = null;
+    public void stopFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!prop.guns[firingdevice.id].TRACKING_ONLY)
+            firingdevice.gun.shots(0);
+    }
 
-    public StrengthProperties stre = new StrengthProperties();
+    public boolean isVisibilityLong()
+    {
+        return true;
+    }
 
-    public int WEAPONS_MASK = 4;
-    public int HITBY_MASK = -2;
+    private com.maddox.il2.objects.ships.ShipProperties prop;
+    private com.maddox.il2.objects.ships.FiringDevice arms[];
+    private java.util.ArrayList path;
+    private int cachedSeg;
+    private float bodyDepth;
+    private float bodyYaw;
+    private float bodyPitch;
+    private float bodyRoll;
+    private float seaDepth;
+    private long timeOfDeath;
+    private long timeForRotation;
+    private float drownBodyPitch;
+    private float drownBodyRoll;
+    private float sinkingDepthSpeed;
+    private float life;
+    private int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_SINK = 1;
+    static final int DYING_DEAD = 2;
+    private long respawnDelay;
+    private long wakeupTmr;
+    public float DELAY_WAKEUP;
+    public int SKILL_IDX;
+    public float SLOWFIRE_K;
+    private com.maddox.il2.engine.Eff3DActor pipe;
+    private com.maddox.il2.engine.Eff3DActor wake[] = {
+        null, null, null
+    };
+    private com.maddox.il2.engine.Eff3DActor nose;
+    private com.maddox.il2.engine.Eff3DActor tail;
+    private static com.maddox.il2.objects.ships.ShipProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.ActorSpawnArg constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.JGP.Point3d p1 = new Point3d();
+    private static com.maddox.JGP.Point3d p2 = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3f n = new Vector3f();
+    private static com.maddox.JGP.Vector3d tmpv = new Vector3d();
+    private com.maddox.rts.NetMsgFiltered outCommand;
 
-    public float ATTACK_MAX_DISTANCE = 1.0F;
 
-    public float SLIDER_DIST = 1.0F;
 
-    public float SPEED = 1.0F;
 
-    public float DELAY_RESPAWN_MIN = 15.0F;
-    public float DELAY_RESPAWN_MAX = 30.0F;
 
-    public ShipGeneric.ShipGunProperties[] guns = null;
-    public int nGuns;
-  }
 
-  public static class ShipGunProperties
-  {
-    public Class gunClass = null;
 
-    public int WEAPONS_MASK = 4;
 
-    public boolean TRACKING_ONLY = false;
 
-    public float ATTACK_MAX_DISTANCE = 1.0F;
-    public float ATTACK_MAX_RADIUS = 1.0F;
-    public float ATTACK_MAX_HEIGHT = 1.0F;
 
-    public int ATTACK_FAST_TARGETS = 1;
-    public float FAST_TARGETS_ANGLE_ERROR = 0.0F;
 
-    public AnglesRange HEAD_YAW_RANGE = new AnglesRange(-1.0F, 1.0F);
-    public float HEAD_STD_YAW = 0.0F;
 
-    public float GUN_MIN_PITCH = -20.0F;
-    public float GUN_STD_PITCH = -18.0F;
-    public float GUN_MAX_PITCH = -15.0F;
-    public float HEAD_MAX_YAW_SPEED = 720.0F;
-    public float GUN_MAX_PITCH_SPEED = 60.0F;
-    public float DELAY_AFTER_SHOOT = 1.0F;
-    public float CHAINFIRE_TIME = 0.0F;
-    public Point3d fireOffset;
-    public Orient fireOrient;
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

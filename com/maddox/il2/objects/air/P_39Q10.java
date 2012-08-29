@@ -1,31 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   P_39Q10.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class P_39Q10 extends P_39
+// Referenced classes of package com.maddox.il2.objects.air:
+//            P_39, PaintSchemeFMPar04, NetAircraft, Aircraft
+
+public class P_39Q10 extends com.maddox.il2.objects.air.P_39
 {
-  static
-  {
-    Class localClass = P_39Q10.class;
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "P39");
-    Property.set(localClass, "meshName", "3do/plane/P-39Q-10/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar04());
+    public P_39Q10()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1944.5F);
-    Property.set(localClass, "yearExpired", 1948.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/P-39Q-10.fmd");
-    Property.set(localClass, "cockpitClass", CockpitP_39Q10.class);
-    Property.set(localClass, "LOSElevation", 0.8941F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalBomb01" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunM4ki 30", null });
-
-    weaponsRegister(localClass, "1xFAB250", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunM4ki 30", "BombGunFAB250 1" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.P_39Q10.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "P39");
+        com.maddox.rts.Property.set(class1, "meshName", "3do/plane/P-39Q-10/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar04());
+        com.maddox.rts.Property.set(class1, "yearService", 1944.5F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/P-39Q-10.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitP_39Q10.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.8941F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_CANNON01", "_ExternalBomb01"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunM4ki 30", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "1xFAB250", new java.lang.String[] {
+            "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunM4ki 30", "BombGunFAB250 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Main.java
+
 package com.maddox.il2.game;
 
 import com.maddox.il2.engine.Config;
@@ -18,13 +23,6 @@ import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.Paratrooper;
 import com.maddox.il2.objects.humans.Soldier;
 import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
-import com.maddox.il2.objects.weapons.Bomb;
-import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.FuelTank;
-import com.maddox.il2.objects.weapons.FuelTankGun;
-import com.maddox.il2.objects.weapons.Rocket;
-import com.maddox.il2.objects.weapons.RocketBombGun;
-import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Console;
 import com.maddox.rts.ConsoleOut;
@@ -57,649 +55,796 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.StringTokenizer;
+
+// Referenced classes of package com.maddox.il2.game:
+//            DotRange, GameStateStack, Mission, GameState
 
 public abstract class Main
 {
-  public static final String AIR_INI = "com/maddox/il2/objects/air.ini";
-  public ArrayList airClasses;
-  public Mission mission;
-  public Mission missionLoading;
-  public int missionCounter;
-  public Campaign campaign;
-  public DotRange dotRangeFriendly;
-  public DotRange dotRangeFoe;
-  public NetChannelListener netChannelListener;
-  public NetMissionListener netMissionListener;
-  public NetServerParams netServerParams;
-  public Chat chat;
-  public NetFileServerMissProp netFileServerMissProp;
-  public NetFileServerReg netFileServerReg;
-  public NetFileServerSkin netFileServerSkin;
-  public NetFileServerPilot netFileServerPilot;
-  public NetFileServerNoseart netFileServerNoseart;
-  public GameSpy netGameSpy;
-  public GameSpy netGameSpyListener;
-  public SectFile currentMissionFile;
-  public GameStateStack stateStack;
-  protected Object oCommandSync;
-  protected boolean bCommand;
-  protected boolean bCommandNet;
-  protected String sCommand;
-  protected ConsoleServer consoleServer;
-  private static boolean bRequestExit = false;
-  private static Main cur;
+    class ConsoleServer extends java.lang.Thread
+        implements com.maddox.rts.ConsoleOut
+    {
 
-  public Main()
-  {
-    this.airClasses = new ArrayList();
-
-    this.dotRangeFriendly = new DotRange();
-    this.dotRangeFoe = new DotRange();
-
-    this.stateStack = new GameStateStack();
-
-    this.oCommandSync = new Object();
-    this.bCommand = false;
-    this.bCommandNet = false;
-    this.sCommand = null;
-    this.consoleServer = null;
-  }
-
-  public boolean beginApp(String paramString1, String paramString2, int paramInt)
-  {
-    return false;
-  }
-
-  public void onBeginApp()
-  {
-  }
-
-  public void loopApp()
-  {
-  }
-
-  public void endApp()
-  {
-  }
-
-  public static GameStateStack stateStack()
-  {
-    return cur.stateStack;
-  }
-
-  public static GameState state() {
-    return cur.stateStack.peek();
-  }
-
-  public void resetGameClear() {
-    Engine.cur.resetGameClear();
-    RTSConf.cur.resetGameClear();
-  }
-  public void resetGameCreate() {
-    RTSConf.cur.resetGameCreate();
-    Engine.cur.resetGameCreate();
-    Paratrooper.resetGame();
-    Soldier.resetGame();
-  }
-
-  public void resetGame() {
-    RTSConf.cur.setFlagResetGame(true);
-    resetGameClear();
-
-    RTSConf.cur.setFlagResetGame(false);
-    resetGameCreate();
-
-    Runtime.getRuntime().gc();
-    Runtime.getRuntime().runFinalization();
-    GObj.DeleteCppObjects();
-  }
-  public void resetUserClear() {
-  }
-  public void resetUserCreate() {
-  }
-  public void resetUser() {
-    resetUserClear();
-    resetUserCreate();
-  }
-
-  public static void closeAllNetChannels() {
-    List localList = NetEnv.channels();
-    for (int i = 0; i < localList.size(); i++) {
-      NetChannel localNetChannel = (NetChannel)localList.get(i);
-      if (!localNetChannel.isDestroyed())
-        localNetChannel.destroy("Remote user has left the game.");
-    }
-  }
-
-  public static void doGameExit() {
-    if (bRequestExit) return;
-    bRequestExit = true;
-    List localList = NetEnv.channels();
-    if (localList.size() == 0) {
-      RTSConf.setRequestExitApp(true);
-    } else {
-      closeAllNetChannels();
-      new MsgAction(64, 2.0D, "") {
-        public void doAction(Object paramObject) {
-          RTSConf.setRequestExitApp(true);
-        }
-      };
-    }
-  }
-
-  public void preloadNetClasses() {
-    Spawn.get("com.maddox.rts.NetControl");
-    Spawn.get("com.maddox.il2.net.NetUser");
-    Spawn.get("com.maddox.il2.net.NetServerParams");
-    Spawn.get("com.maddox.il2.net.Chat");
-    Spawn.get("com.maddox.il2.game.Mission");
-    this.netFileServerMissProp = new NetFileServerMissProp(254);
-    this.netFileServerReg = new NetFileServerReg(253);
-    this.netFileServerSkin = new NetFileServerSkin(252);
-    this.netFileServerPilot = new NetFileServerPilot(251);
-    this.netFileServerNoseart = new NetFileServerNoseart(249);
-    Spawn.get("com.maddox.il2.objects.air.Paratrooper");
-    Spawn.get("com.maddox.il2.objects.air.NetGunner");
-  }
-
-  public void preloadAirClasses() {
-    SectFile localSectFile = new SectFile("com/maddox/il2/objects/air.ini", 0);
-    int i = localSectFile.sections();
-    for (int j = 0; j < i; j++) {
-      int k = localSectFile.vars(j);
-      for (int m = 0; m < k; m++) {
-        String str1 = localSectFile.value(j, m);
-        StringTokenizer localStringTokenizer = new StringTokenizer(str1);
-        if (localStringTokenizer.hasMoreTokens()) {
-          String str2 = "com.maddox.il2.objects." + localStringTokenizer.nextToken();
-          Spawn.get(str2);
-          try {
-            Class localClass = Class.forName(str2);
-            String str3 = localSectFile.var(j, m).intern();
-            Property.set(localClass, "keyName", str3);
-            Property.set(str3, "airClass", localClass);
-
-            Aircraft.weapons(localClass);
-
-            this.airClasses.add(localClass);
-          }
-          catch (Exception localException)
-          {
-          }
-        }
-      }
-    }
-  }
-
-  public void preloadChiefClasses() {
-    SectFile localSectFile = new SectFile("com/maddox/il2/objects/chief.ini", 0);
-    int i = localSectFile.sections();
-    for (int j = 0; j < i; j++)
-      if (localSectFile.sectionName(j).indexOf('.') >= 0) {
-        int k = localSectFile.vars(j);
-        for (int m = 0; m < k; m++) {
-          String str = localSectFile.var(j, m);
-          StringTokenizer localStringTokenizer = new StringTokenizer(str);
-          if (localStringTokenizer.hasMoreTokens())
-            Spawn.get_WithSoftClass(localStringTokenizer.nextToken());
-        }
-      }
-  }
-
-  public void preloadStationaryClasses()
-  {
-    SectFile localSectFile = new SectFile("com/maddox/il2/objects/stationary.ini", 0);
-    int i = localSectFile.sections();
-    for (int j = 0; j < i; j++) {
-      int k = localSectFile.vars(j);
-      for (int m = 0; m < k; m++) {
-        String str = localSectFile.value(j, m);
-        StringTokenizer localStringTokenizer = new StringTokenizer(str);
-        if (localStringTokenizer.hasMoreTokens()) {
-          Spawn.get_WithSoftClass("com.maddox.il2.objects." + localStringTokenizer.nextToken());
-        }
-      }
-    }
-
-    RocketryGeneric.PreLoad("com/maddox/il2/objects/rockets.ini");
-  }
-
-  private static int[] getSwTbl2(int paramInt)
-  {
-    if (paramInt < 0) paramInt = -paramInt;
-    int i = paramInt % 16 + 21;
-    int j = paramInt % Finger.kTable.length;
-    if (i < 0)
-      i = -i % 16;
-    if (i < 10)
-      i = 10;
-    if (j < 0)
-      j = -j % Finger.kTable.length;
-    int[] arrayOfInt = new int[i];
-    for (int k = 0; k < i; k++)
-      arrayOfInt[k] = Finger.kTable[((j + k) % Finger.kTable.length)];
-    return arrayOfInt;
-  }
-
-  public void preload() {
-    Map.Entry localEntry = Property.propertyHoldMap.nextEntry(null);
-    ArrayList localArrayList = new ArrayList();
-    while (localEntry != null) {
-      Object localObject = localEntry.getKey();
-      if ((localObject instanceof Class)) {
-        Class localClass = (Class)localObject;
-        if ((Bomb.class.isAssignableFrom(localClass)) || (BombGun.class.isAssignableFrom(localClass)) || (RocketBombGun.class.isAssignableFrom(localClass)) || (FuelTank.class.isAssignableFrom(localClass)) || (FuelTankGun.class.isAssignableFrom(localClass)) || (Rocket.class.isAssignableFrom(localClass)) || (RocketGun.class.isAssignableFrom(localClass)))
+        public void type(java.lang.String s)
         {
-          localArrayList.clear();
-          if (Property.vars(localArrayList, localObject)) {
+            if(!bEnableType)
+                return;
+            if(out != null && s != null)
+                outQueue.put(s);
+        }
+
+        public void flush()
+        {
+        }
+
+        public void typeNum()
+        {
+            if(out != null)
+                outQueue.put("<consoleN><" + (com.maddox.rts.RTSConf.cur.console.getEnv().curNumCmd() + 1) + ">");
+        }
+
+        public void run()
+        {
+            java.net.InetAddress inetaddress;
+            java.net.Socket socket;
+            inetaddress = null;
             try
             {
-              int i = Finger.Int("wp" + localClass.getName() + "mr");
-              BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.incInt(i, "slg"))), getSwTbl2(i))));
-              while (true)
-              {
-                String str1 = localBufferedReader.readLine();
-                if (str1 == null)
-                  break;
-                SharedTokenizer.set(str1);
-                String str2 = SharedTokenizer.next();
-                String str3 = SharedTokenizer.next();
-                switch (str3.charAt(0)) {
-                case 'S':
-                  String str4 = SharedTokenizer.next();
-                  Property.set(localObject, str2, str4);
-                  break;
-                case 'D':
-                  double d = SharedTokenizer.next(0.0D);
-                  Property.set(localObject, str2, d);
-                  break;
-                case 'L':
-                  long l = SharedTokenizer.next(0);
-                  Property.set(localObject, str2, l);
+                if(com.maddox.il2.engine.Config.cur.netLocalHost != null && com.maddox.il2.engine.Config.cur.netLocalHost.length() > 0)
+                    inetaddress = java.net.InetAddress.getByName(com.maddox.il2.engine.Config.cur.netLocalHost);
+                else
+                    inetaddress = java.net.InetAddress.getLocalHost();
+                serverSocket = new ServerSocket(port, 1, inetaddress);
+            }
+            catch(java.lang.Exception exception)
+            {
+                return;
+            }
+            socket = null;
+              goto _L1
+_L9:
+            try
+            {
+                socket = serverSocket.accept();
+            }
+            catch(java.lang.Exception exception1)
+            {
+                socket = null;
+                break; /* Loop/switch isn't completed */
+            }
+            boolean flag = false;
+            for(int i = 0; i < clientAdr.size(); i++)
+            {
+                java.lang.String s = (java.lang.String)clientAdr.get(i);
+                if(!socket.getInetAddress().getHostAddress().equals(s))
+                    continue;
+                flag = true;
+                break;
+            }
+
+            if(!flag && !inetaddress.equals(socket.getInetAddress()))
+            {
+                try
+                {
+                    socket.close();
+                }
+                catch(java.lang.Exception exception4) { }
+                socket = null;
+                continue; /* Loop/switch isn't completed */
+            }
+            java.io.BufferedReader bufferedreader;
+            out = new PrintWriter(socket.getOutputStream(), true);
+            bufferedreader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+              goto _L2
+_L7:
+            java.lang.String s1;
+            s1 = com.maddox.util.UnicodeTo8bit.load(s1);
+            if(s1.startsWith("<QUIT QUIT>"))
+                break; /* Loop/switch isn't completed */
+_L5:
+label0:
+            {
+                synchronized(oCommandSync)
+                {
+                    if(!com.maddox.rts.RTSConf.isRequestExitApp())
+                        break label0;
+                }
+                break; /* Loop/switch isn't completed */
+            }
+            if(bCommand)
+                break MISSING_BLOCK_LABEL_296;
+            sCommand = s1;
+            bCommandNet = true;
+            bCommand = true;
+            obj;
+            JVM INSTR monitorexit ;
+            break; /* Loop/switch isn't completed */
+            obj;
+            JVM INSTR monitorexit ;
+              goto _L3
+            exception6;
+            throw exception6;
+_L3:
+            try
+            {
+                java.lang.Thread.sleep(10L);
+            }
+            catch(java.lang.Exception exception7) { }
+            if(true) goto _L5; else goto _L4
+_L4:
+            if(com.maddox.rts.RTSConf.isRequestExitApp())
+                break; /* Loop/switch isn't completed */
+_L2:
+            if((s1 = bufferedreader.readLine()) != null) goto _L7; else goto _L6
+_L6:
+            out.close();
+            bufferedreader.close();
+            break MISSING_BLOCK_LABEL_364;
+            java.lang.Exception exception5;
+            exception5;
+            out = null;
+_L1:
+            if(com.maddox.rts.RTSConf.cur != null && !com.maddox.rts.RTSConf.isRequestExitApp()) goto _L9; else goto _L8
+_L8:
+            if(socket != null)
+                try
+                {
+                    socket.close();
+                }
+                catch(java.lang.Exception exception2) { }
+            try
+            {
+                serverSocket.close();
+            }
+            catch(java.lang.Exception exception3) { }
+            return;
+        }
+
+        java.util.ArrayList clientAdr;
+        java.net.ServerSocket serverSocket;
+        java.io.PrintWriter out;
+        com.maddox.il2.game.ConsoleWriter outWriter;
+        com.maddox.il2.game.ConsoleOutQueue outQueue;
+        int port;
+        boolean bEnableType;
+
+        public ConsoleServer(int i, java.util.ArrayList arraylist)
+        {
+            outQueue = new ConsoleOutQueue();
+            bEnableType = true;
+            port = i;
+            clientAdr = arraylist;
+            com.maddox.rts.RTSConf.cur.console.addType(false, this);
+            com.maddox.rts.RTSConf.cur.console.addType(true, this);
+            outWriter = new ConsoleWriter();
+        }
+    }
+
+    class ConsoleWriter extends java.lang.Thread
+    {
+
+        public void run()
+        {
+            while(com.maddox.rts.RTSConf.cur != null && !com.maddox.rts.RTSConf.isRequestExitApp()) 
+            {
+                java.lang.String s = consoleServer.outQueue.get();
+                s = com.maddox.util.UnicodeTo8bit.save(s, false);
+                if(consoleServer.out != null)
+                    try
+                    {
+                        consoleServer.out.print(s);
+                        consoleServer.out.println();
+                        if(consoleServer.outQueue.isEmpty())
+                            consoleServer.out.flush();
+                    }
+                    catch(java.lang.Exception exception) { }
+            }
+        }
+
+        ConsoleWriter()
+        {
+        }
+    }
+
+    class ConsoleOutQueue
+    {
+
+        public synchronized void put(java.lang.String s)
+        {
+            int i = outQueue.size();
+            if(i >= 1024)
+                truncated++;
+            else
+            if(truncated > 0)
+            {
+                if(i >= 768)
+                {
+                    truncated++;
+                } else
+                {
+                    outQueue.add("!!! Output truncated ( " + truncated + " lines )\n");
+                    outQueue.add(s);
+                    truncated = 0;
+                }
+            } else
+            {
+                outQueue.add(s);
+            }
+            notifyAll();
+        }
+
+        public synchronized java.lang.String get()
+        {
+            while(outQueue.isEmpty()) 
+                try
+                {
+                    wait();
+                }
+                catch(java.lang.InterruptedException interruptedexception) { }
+            return (java.lang.String)outQueue.removeFirst();
+        }
+
+        public synchronized boolean isEmpty()
+        {
+            return outQueue.isEmpty();
+        }
+
+        java.util.LinkedList outQueue;
+        int truncated;
+
+        ConsoleOutQueue()
+        {
+            outQueue = new LinkedList();
+            truncated = 0;
+        }
+    }
+
+
+    public Main()
+    {
+        airClasses = new ArrayList();
+        dotRangeFriendly = new DotRange();
+        dotRangeFoe = new DotRange();
+        stateStack = new GameStateStack();
+        oCommandSync = new Object();
+        bCommand = false;
+        bCommandNet = false;
+        sCommand = null;
+        consoleServer = null;
+    }
+
+    public boolean beginApp(java.lang.String s, java.lang.String s1, int i)
+    {
+        return false;
+    }
+
+    public void onBeginApp()
+    {
+    }
+
+    public void loopApp()
+    {
+    }
+
+    public void endApp()
+    {
+    }
+
+    public static com.maddox.il2.game.GameStateStack stateStack()
+    {
+        return cur.stateStack;
+    }
+
+    public static com.maddox.il2.game.GameState state()
+    {
+        return cur.stateStack.peek();
+    }
+
+    public void resetGameClear()
+    {
+        com.maddox.il2.engine.Engine.cur.resetGameClear();
+        com.maddox.rts.RTSConf.cur.resetGameClear();
+    }
+
+    public void resetGameCreate()
+    {
+        com.maddox.rts.RTSConf.cur.resetGameCreate();
+        com.maddox.il2.engine.Engine.cur.resetGameCreate();
+        com.maddox.il2.objects.air.Paratrooper.resetGame();
+        com.maddox.il2.objects.humans.Soldier.resetGame();
+    }
+
+    public void resetGame()
+    {
+        com.maddox.rts.RTSConf.cur.setFlagResetGame(true);
+        resetGameClear();
+        com.maddox.rts.RTSConf.cur.setFlagResetGame(false);
+        resetGameCreate();
+        java.lang.Runtime.getRuntime().gc();
+        java.lang.Runtime.getRuntime().runFinalization();
+        com.maddox.il2.engine.GObj.DeleteCppObjects();
+    }
+
+    public void resetUserClear()
+    {
+    }
+
+    public void resetUserCreate()
+    {
+    }
+
+    public void resetUser()
+    {
+        resetUserClear();
+        resetUserCreate();
+    }
+
+    public static void closeAllNetChannels()
+    {
+        com.maddox.rts.NetEnv _tmp = com.maddox.rts.RTSConf.cur.netEnv;
+        java.util.List list = com.maddox.rts.NetEnv.channels();
+        for(int i = 0; i < list.size(); i++)
+        {
+            com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)list.get(i);
+            if(!netchannel.isDestroyed())
+                netchannel.destroy("Remote user has left the game.");
+        }
+
+    }
+
+    public static void doGameExit()
+    {
+        if(bRequestExit)
+            return;
+        bRequestExit = true;
+        com.maddox.rts.NetEnv _tmp = com.maddox.rts.RTSConf.cur.netEnv;
+        java.util.List list = com.maddox.rts.NetEnv.channels();
+        if(list.size() == 0)
+        {
+            com.maddox.rts.RTSConf.setRequestExitApp(true);
+        } else
+        {
+            com.maddox.il2.game.Main.closeAllNetChannels();
+            new com.maddox.rts.MsgAction(64, 2D, "") {
+
+                public void doAction(java.lang.Object obj)
+                {
+                    com.maddox.rts.RTSConf.setRequestExitApp(true);
                 }
 
-              }
-
-              localBufferedReader.close();
             }
-            catch (Exception localException)
+;
+        }
+    }
+
+    public void preloadNetClasses()
+    {
+        com.maddox.rts.Spawn.get("com.maddox.rts.NetControl");
+        com.maddox.rts.Spawn.get("com.maddox.il2.net.NetUser");
+        com.maddox.rts.Spawn.get("com.maddox.il2.net.NetServerParams");
+        com.maddox.rts.Spawn.get("com.maddox.il2.net.Chat");
+        com.maddox.rts.Spawn.get("com.maddox.il2.game.Mission");
+        netFileServerMissProp = new NetFileServerMissProp(254);
+        netFileServerReg = new NetFileServerReg(253);
+        netFileServerSkin = new NetFileServerSkin(252);
+        netFileServerPilot = new NetFileServerPilot(251);
+        netFileServerNoseart = new NetFileServerNoseart(249);
+        com.maddox.rts.Spawn.get("com.maddox.il2.objects.air.Paratrooper");
+        com.maddox.rts.Spawn.get("com.maddox.il2.objects.air.NetGunner");
+    }
+
+    public void preloadAirClasses()
+    {
+        com.maddox.rts.SectFile sectfile = new SectFile("com/maddox/il2/objects/air.ini", 0);
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+        {
+            int k = sectfile.vars(j);
+            for(int l = 0; l < k; l++)
             {
+                java.lang.String s = sectfile.value(j, l);
+                java.util.StringTokenizer stringtokenizer = new StringTokenizer(s);
+                if(stringtokenizer.hasMoreTokens())
+                {
+                    java.lang.String s1 = "com.maddox.il2.objects." + stringtokenizer.nextToken();
+                    com.maddox.rts.Spawn.get(s1);
+                    try
+                    {
+                        java.lang.Class class1 = java.lang.Class.forName(s1);
+                        java.lang.String s2 = sectfile.var(j, l).intern();
+                        com.maddox.rts.Property.set(class1, "keyName", s2);
+                        com.maddox.rts.Property.set(s2, "airClass", class1);
+                        com.maddox.il2.objects.air.Aircraft.weapons(class1);
+                        airClasses.add(class1);
+                    }
+                    catch(java.lang.Exception exception) { }
+                }
             }
-
-          }
 
         }
 
-      }
-
-      localEntry = Property.propertyHoldMap.nextEntry(localEntry);
     }
-  }
 
-  private static void clearDir(File paramFile, boolean paramBoolean) {
-    File[] arrayOfFile = paramFile.listFiles();
-    if (arrayOfFile != null) {
-      for (int i = 0; i < arrayOfFile.length; i++) {
-        File localFile = arrayOfFile[i];
-        String str = localFile.getName();
-        if ((".".equals(str)) || ("..".equals(str)))
-          continue;
-        if (localFile.isDirectory())
-          clearDir(localFile, true);
+    public void preloadChiefClasses()
+    {
+        com.maddox.rts.SectFile sectfile = new SectFile("com/maddox/il2/objects/chief.ini", 0);
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+            if(sectfile.sectionName(j).indexOf('.') >= 0)
+            {
+                int k = sectfile.vars(j);
+                for(int l = 0; l < k; l++)
+                {
+                    java.lang.String s = sectfile.var(j, l);
+                    java.util.StringTokenizer stringtokenizer = new StringTokenizer(s);
+                    if(stringtokenizer.hasMoreTokens())
+                        com.maddox.rts.Spawn.get_WithSoftClass(stringtokenizer.nextToken());
+                }
+
+            }
+
+    }
+
+    public void preloadStationaryClasses()
+    {
+        com.maddox.rts.SectFile sectfile = new SectFile("com/maddox/il2/objects/stationary.ini", 0);
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+        {
+            int k = sectfile.vars(j);
+            for(int l = 0; l < k; l++)
+            {
+                java.lang.String s = sectfile.value(j, l);
+                java.util.StringTokenizer stringtokenizer = new StringTokenizer(s);
+                if(stringtokenizer.hasMoreTokens())
+                    com.maddox.rts.Spawn.get_WithSoftClass("com.maddox.il2.objects." + stringtokenizer.nextToken());
+            }
+
+        }
+
+        com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.PreLoad("com/maddox/il2/objects/rockets.ini");
+    }
+
+    private static int[] getSwTbl2(int i)
+    {
+        if(i < 0)
+            i = -i;
+        int j = i % 16 + 21;
+        int k = i % com.maddox.rts.Finger.kTable.length;
+        if(j < 0)
+            j = -j % 16;
+        if(j < 10)
+            j = 10;
+        if(k < 0)
+            k = -k % com.maddox.rts.Finger.kTable.length;
+        int ai[] = new int[j];
+        for(int l = 0; l < j; l++)
+            ai[l] = com.maddox.rts.Finger.kTable[(k + l) % com.maddox.rts.Finger.kTable.length];
+
+        return ai;
+    }
+
+    public void preload()
+    {
+        java.util.Map.Entry entry = com.maddox.rts.Property.propertyHoldMap.nextEntry(null);
+        java.util.ArrayList arraylist = new ArrayList();
+label0:
+        while(entry != null) 
+        {
+            java.lang.Object obj = entry.getKey();
+            if(!(obj instanceof java.lang.Class))
+                continue;
+            java.lang.Class class1 = (java.lang.Class)obj;
+            if(!(com.maddox.il2.objects.weapons.Bomb.class).isAssignableFrom(class1) && !(com.maddox.il2.objects.weapons.BombGun.class).isAssignableFrom(class1) && !(com.maddox.il2.objects.weapons.FuelTank.class).isAssignableFrom(class1) && !(com.maddox.il2.objects.weapons.FuelTankGun.class).isAssignableFrom(class1) && !(com.maddox.il2.objects.weapons.Rocket.class).isAssignableFrom(class1) && !(com.maddox.il2.objects.weapons.RocketGun.class).isAssignableFrom(class1))
+                continue;
+            arraylist.clear();
+            if(!com.maddox.rts.Property.vars(arraylist, obj))
+                continue;
+            try
+            {
+                int i = com.maddox.rts.Finger.Int("wp" + class1.getName() + "mr");
+                java.io.BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(com.maddox.rts.Finger.LongFN(0L, "cod/" + com.maddox.rts.Finger.incInt(i, "slg"))), com.maddox.il2.game.Main.getSwTbl2(i))));
+                do
+                {
+                    java.lang.String s = bufferedreader.readLine();
+                    if(s != null)
+                    {
+                        com.maddox.util.SharedTokenizer.set(s);
+                        java.lang.String s1 = com.maddox.util.SharedTokenizer.next();
+                        java.lang.String s2 = com.maddox.util.SharedTokenizer.next();
+                        switch(s2.charAt(0))
+                        {
+                        case 83: // 'S'
+                            java.lang.String s3 = com.maddox.util.SharedTokenizer.next();
+                            com.maddox.rts.Property.set(obj, s1, s3);
+                            break;
+
+                        case 68: // 'D'
+                            double d = com.maddox.util.SharedTokenizer.next(0.0D);
+                            com.maddox.rts.Property.set(obj, s1, d);
+                            break;
+
+                        case 76: // 'L'
+                            long l = com.maddox.util.SharedTokenizer.next(0);
+                            com.maddox.rts.Property.set(obj, s1, l);
+                            break;
+                        }
+                        continue;
+                    }
+                    bufferedreader.close();
+                    continue label0;
+                } while(true);
+            }
+            catch(java.lang.Exception exception)
+            {
+                entry = com.maddox.rts.Property.propertyHoldMap.nextEntry(entry);
+            }
+        }
+    }
+
+    private static void clearDir(java.io.File file, boolean flag)
+    {
+        java.io.File afile[] = file.listFiles();
+        if(afile != null)
+        {
+            for(int i = 0; i < afile.length; i++)
+            {
+                java.io.File file1 = afile[i];
+                java.lang.String s = file1.getName();
+                if(!".".equals(s) && !"..".equals(s))
+                    if(file1.isDirectory())
+                        com.maddox.il2.game.Main.clearDir(file1, true);
+                    else
+                        file1.delete();
+            }
+
+        }
+        if(flag)
+            file.delete();
+    }
+
+    public static void clearCache()
+    {
+        if(com.maddox.il2.engine.Config.cur == null)
+            return;
+        if(!com.maddox.il2.engine.Config.cur.clear_cache)
+            return;
+        try
+        {
+            java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("PaintSchemes/Cache", 0));
+            if(file.exists())
+                com.maddox.il2.game.Main.clearDir(file, false);
+            else
+                file.mkdirs();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public static com.maddox.il2.game.Main cur()
+    {
+        return cur;
+    }
+
+    public static void exec(com.maddox.il2.game.Main main, java.lang.String s, java.lang.String s1, int i)
+    {
+        com.maddox.rts.IniFile inifile = new IniFile(s, 0);
+        java.lang.String s2 = inifile.get("rts", "locale", "us");
+        java.util.Locale.setDefault(java.util.Locale.US);
+        try
+        {
+            s2.toLowerCase();
+            if(s2.length() == 2)
+                java.util.Locale.setDefault(new Locale(s2, ""));
+        }
+        catch(java.lang.Exception exception) { }
+        if(com.maddox.il2.engine.Config.LOCALE.equals("RU"))
+        {
+            java.util.Locale.setDefault(new Locale("ru", "RU"));
+            try
+            {
+                com.maddox.rts.Cpu86ID.getMask();
+            }
+            catch(java.lang.Throwable throwable) { }
+        } else
+        if(com.maddox.il2.engine.Config.LOCALE.equals("JP"))
+        {
+            java.util.Locale.setDefault(new Locale("ja", "JP"));
+        } else
+        {
+            java.lang.String s3 = java.util.Locale.getDefault().getLanguage();
+            if(!"de".equals(s3) && !"fr".equals(s3) && !"cs".equals(s3) && !"pl".equals(s3) && !"hu".equals(s3) && !"lt".equals(s3) && !"us".equals(s3))
+                java.util.Locale.setDefault(java.util.Locale.US);
+        }
+        if("ru".equals(java.util.Locale.getDefault().getLanguage()))
+            com.maddox.rts.RTSConf.charEncoding = "Cp1251";
         else
-          localFile.delete();
-      }
-    }
-    if (paramBoolean)
-      paramFile.delete();
-  }
-
-  public static void clearCache() {
-    if (Config.cur == null) return;
-    if (!Config.cur.clear_cache) return; try
-    {
-      File localFile = new File(HomePath.toFileSystemName("PaintSchemes/Cache", 0));
-      if (localFile.exists())
-        clearDir(localFile, false);
-      else
-        localFile.mkdirs();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public static Main cur() {
-    return cur;
-  }
-
-  public static void exec(Main paramMain, String paramString1, String paramString2, int paramInt) {
-    IniFile localIniFile = new IniFile(paramString1, 0);
-    String str = localIniFile.get("rts", "locale", "us");
-    Locale.setDefault(Locale.US);
-    try {
-      str.toLowerCase();
-      if (str.length() == 2)
-        Locale.setDefault(new Locale(str, ""));
-    } catch (Exception localException1) {
-    }
-    if (Config.LOCALE.equals("RU")) {
-      Locale.setDefault(new Locale("ru", "RU"));
-      try
-      {
-        Cpu86ID.getMask();
-      } catch (Throwable localThrowable1) {
-      }
-    } else if (Config.LOCALE.equals("JP")) {
-      Locale.setDefault(new Locale("ja", "JP"));
-    }
-    else {
-      str = Locale.getDefault().getLanguage();
-      if ((!"de".equals(str)) && (!"fr".equals(str)) && (!"cs".equals(str)) && (!"pl".equals(str)) && (!"hu".equals(str)) && (!"lt".equals(str)) && (!"us".equals(str)))
-      {
-        Locale.setDefault(Locale.US);
-      }
-    }
-    if ("ru".equals(Locale.getDefault().getLanguage()))
-      RTSConf.charEncoding = "Cp1251";
-    else if ("cs".equals(Locale.getDefault().getLanguage()))
-      RTSConf.charEncoding = "Cp1250";
-    else if ("pl".equals(Locale.getDefault().getLanguage()))
-      RTSConf.charEncoding = "Cp1250";
-    else if ("hu".equals(Locale.getDefault().getLanguage()))
-      RTSConf.charEncoding = "Cp1250";
-    else if ("lt".equals(Locale.getDefault().getLanguage()))
-      RTSConf.charEncoding = "Cp1257";
-    else if ("ja".equals(Locale.getDefault().getLanguage())) {
-      RTSConf.charEncoding = "SJIS";
-    }
-
-    if (cur != null) {
-      throw new RuntimeException("Traying recurse execute main method");
-    }
-    Runtime.getRuntime().traceInstructions(false);
-    Runtime.getRuntime().traceMethodCalls(false);
-    cur = paramMain;
-    if (!paramMain.isLifeLimitted()) {
-      try {
-        if (paramMain.beginApp(paramString1, paramString2, paramInt)) {
-          clearCache();
-
-          if (Config.LOCALE.equals("RU")) { int i;
-            try { Cpu86ID.getMask();
-            } catch (Throwable localThrowable2) {
-              i = 0; } for (; i < 10; i++)
-              new MsgAction(64, 1.0D + i * 10 + Math.random() * 10.0D) {
-                public void doAction() { Main.doGameExit(); }
-              };
-          }
-          try
-          {
-            paramMain.lifeLimitted();
-            paramMain.loopApp();
-          } catch (Exception localException2) {
-            System.out.println("Main loop: " + localException2.getMessage());
-            localException2.printStackTrace();
-          }
-        }
-      } catch (Exception localException3) {
-        System.out.println("Main begin: " + localException3.getMessage());
-        localException3.printStackTrace();
-      }
-      clearCache();
-      try {
-        paramMain.endApp();
-      } catch (Exception localException4) {
-        System.out.println("Main end: " + localException4.getMessage());
-        localException4.printStackTrace();
-      }
-      if ((RTSConf.cur != null) && (RTSConf.cur.console != null))
-        RTSConf.cur.console.log(false);
-      if ((RTSConf.cur != null) && (RTSConf.cur.execPostProcessCmd != null)) {
-        try
+        if("cs".equals(java.util.Locale.getDefault().getLanguage()))
+            com.maddox.rts.RTSConf.charEncoding = "Cp1250";
+        else
+        if("pl".equals(java.util.Locale.getDefault().getLanguage()))
+            com.maddox.rts.RTSConf.charEncoding = "Cp1250";
+        else
+        if("hu".equals(java.util.Locale.getDefault().getLanguage()))
+            com.maddox.rts.RTSConf.charEncoding = "Cp1250";
+        else
+        if("lt".equals(java.util.Locale.getDefault().getLanguage()))
+            com.maddox.rts.RTSConf.charEncoding = "Cp1257";
+        else
+        if("ja".equals(java.util.Locale.getDefault().getLanguage()))
+            com.maddox.rts.RTSConf.charEncoding = "SJIS";
+        if(cur != null)
+            throw new RuntimeException("Traying recurse execute main method");
+        java.lang.Runtime.getRuntime().traceInstructions(false);
+        java.lang.Runtime.getRuntime().traceMethodCalls(false);
+        cur = main;
+        if(!main.isLifeLimitted())
         {
-          RTS.setPostProcessCmd(RTSConf.cur.execPostProcessCmd);
-        } catch (Exception localException5) {
-          System.out.println("Exec cmd (" + RTSConf.cur.execPostProcessCmd + ") error: " + localException5.getMessage());
-          localException5.printStackTrace();
-        }
-      }
-    }
-    System.exit(0);
-  }
-
-  private boolean isLifeLimitted() {
-    return false;
-  }
-
-  private void lifeLimitted()
-  {
-  }
-
-  protected void createConsoleServer()
-  {
-    int i = Config.cur.ini.get("Console", "IP", 0, 0, 65000);
-    if (i == 0) return;
-    ArrayList localArrayList = new ArrayList();
-    String str1 = Config.cur.ini.get("Console", "IPS", (String)null);
-    if (str1 != null) {
-      StringTokenizer localStringTokenizer = new StringTokenizer(str1);
-      while (localStringTokenizer.hasMoreTokens()) {
-        String str2 = localStringTokenizer.nextToken();
-        localArrayList.add(str2);
-      }
-    }
-    this.consoleServer = new ConsoleServer(i, localArrayList);
-    this.consoleServer.setPriority(Thread.currentThread().getPriority() + 1);
-    this.consoleServer.start();
-    this.consoleServer.outWriter.setPriority(Thread.currentThread().getPriority() + 1);
-    this.consoleServer.outWriter.start();
-  }
-
-  private static int[] getSwTbl(int paramInt) {
-    if (paramInt < 0) paramInt = -paramInt;
-    int i = paramInt % 16 + 14;
-    int j = paramInt % Finger.kTable.length;
-    if (i < 0)
-      i = -i % 16;
-    if (i < 10)
-      i = 10;
-    if (j < 0)
-      j = -j % Finger.kTable.length;
-    int[] arrayOfInt = new int[i];
-    for (int k = 0; k < i; k++)
-      arrayOfInt[k] = Finger.kTable[((j + k) % Finger.kTable.length)];
-    return arrayOfInt;
-  }
-
-  static
-  {
-    try {
-      BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(Finger.LongFN(0L, "cod/" + Finger.Int("allc"))), getSwTbl(Finger.Int("alls")))));
-      while (true)
-      {
-        String str = localBufferedReader.readLine();
-        if (str == null)
-          break;
-        Class.forName("com.maddox." + str);
-      }
-      localBufferedReader.close();
-    }
-    catch (Exception localException)
-    {
-    }
-  }
-
-  class ConsoleServer extends Thread
-    implements ConsoleOut
-  {
-    ArrayList clientAdr;
-    ServerSocket serverSocket;
-    PrintWriter out;
-    Main.ConsoleWriter outWriter;
-    Main.ConsoleOutQueue outQueue = new Main.ConsoleOutQueue(Main.this);
-    int port;
-    boolean bEnableType = true;
-
-    public void type(String paramString) {
-      if (!this.bEnableType) return;
-      if ((this.out != null) && (paramString != null))
-        this.outQueue.put(paramString); 
-    }
-    public void flush() {
-    }
-    public void typeNum() {
-      if (this.out != null)
-        this.outQueue.put("<consoleN><" + (RTSConf.cur.console.getEnv().curNumCmd() + 1) + ">");
-    }
-
-    public void run() {
-      InetAddress localInetAddress = null;
-      try {
-        if ((Config.cur.netLocalHost != null) && (Config.cur.netLocalHost.length() > 0))
-          localInetAddress = InetAddress.getByName(Config.cur.netLocalHost);
-        else {
-          localInetAddress = InetAddress.getLocalHost();
-        }
-        this.serverSocket = new ServerSocket(this.port, 1, localInetAddress);
-      } catch (Exception localException1) {
-        return;
-      }
-
-      Socket localSocket = null;
-      while ((RTSConf.cur != null) && (!RTSConf.isRequestExitApp())) {
-        try {
-          localSocket = this.serverSocket.accept();
-        } catch (Exception localException2) {
-          localSocket = null;
-          break;
-        }
-
-        int i = 0;
-        String str;
-        for (int j = 0; j < this.clientAdr.size(); j++) {
-          str = (String)this.clientAdr.get(j);
-          if (localSocket.getInetAddress().getHostAddress().equals(str)) {
-            i = 1;
-            break;
-          }
-        }
-
-        if ((i == 0) && (!localInetAddress.equals(localSocket.getInetAddress()))) {
-          try { localSocket.close(); } catch (Exception localException5) {
-          }localSocket = null;
-          continue;
-        }
-        try
-        {
-          this.out = new PrintWriter(localSocket.getOutputStream(), true);
-          BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
-
-          while ((str = localBufferedReader.readLine()) != null) {
-            str = UnicodeTo8bit.load(str);
-            if (str.startsWith("<QUIT QUIT>"))
-              break;
-            while (true)
+            try
             {
-              synchronized (Main.this.oCommandSync) {
-                if (RTSConf.isRequestExitApp()) break;
-                if (!Main.this.bCommand) {
-                  Main.this.sCommand = str;
-                  Main.this.bCommandNet = true;
-                  Main.this.bCommand = true;
-                  break;
+                if(main.beginApp(s, s1, i))
+                {
+                    com.maddox.il2.game.Main.clearCache();
+                    if(com.maddox.il2.engine.Config.LOCALE.equals("RU"))
+                        try
+                        {
+                            com.maddox.rts.Cpu86ID.getMask();
+                        }
+                        catch(java.lang.Throwable throwable1)
+                        {
+                            for(int j = 0; j < 10; j++)
+                                new com.maddox.rts.MsgAction(64, 1.0D + (double)(j * 10) + java.lang.Math.random() * 10D) {
+
+                                    public void doAction()
+                                    {
+                                        com.maddox.il2.game.Main.doGameExit();
+                                    }
+
+                                }
+;
+
+                        }
+                    try
+                    {
+                        main.lifeLimitted();
+                        main.loopApp();
+                    }
+                    catch(java.lang.Exception exception1)
+                    {
+                        java.lang.System.out.println("Main loop: " + exception1.getMessage());
+                        exception1.printStackTrace();
+                    }
                 }
-              }
-              try {
-                Thread.sleep(10L); } catch (Exception localException7) {
-              }
             }
-            if (!RTSConf.isRequestExitApp()) continue;
-          }
-          this.out.close();
-          localBufferedReader.close();
-        } catch (Exception localException6) {
+            catch(java.lang.Exception exception2)
+            {
+                java.lang.System.out.println("Main begin: " + exception2.getMessage());
+                exception2.printStackTrace();
+            }
+            com.maddox.il2.game.Main.clearCache();
+            try
+            {
+                main.endApp();
+            }
+            catch(java.lang.Exception exception3)
+            {
+                java.lang.System.out.println("Main end: " + exception3.getMessage());
+                exception3.printStackTrace();
+            }
+            if(com.maddox.rts.RTSConf.cur != null && com.maddox.rts.RTSConf.cur.console != null)
+                com.maddox.rts.RTSConf.cur.console.log(false);
+            if(com.maddox.rts.RTSConf.cur != null && com.maddox.rts.RTSConf.cur.execPostProcessCmd != null)
+                try
+                {
+                    com.maddox.rts.RTS.setPostProcessCmd(com.maddox.rts.RTSConf.cur.execPostProcessCmd);
+                }
+                catch(java.lang.Exception exception4)
+                {
+                    java.lang.System.out.println("Exec cmd (" + com.maddox.rts.RTSConf.cur.execPostProcessCmd + ") error: " + exception4.getMessage());
+                    exception4.printStackTrace();
+                }
         }
-        this.out = null;
-      }
-      if (localSocket != null) try {
-          localSocket.close(); } catch (Exception localException3) {
-        } try {
-        this.serverSocket.close(); } catch (Exception localException4) {
-      }
+        java.lang.System.exit(0);
     }
 
-    public ConsoleServer(int paramArrayList, ArrayList arg3) {
-      this.port = paramArrayList;
-      Object localObject;
-      this.clientAdr = localObject;
-      RTSConf.cur.console.addType(false, this);
-      RTSConf.cur.console.addType(true, this);
-      this.outWriter = new Main.ConsoleWriter(Main.this);
+    private boolean isLifeLimitted()
+    {
+        return false;
     }
-  }
 
-  class ConsoleWriter extends Thread
-  {
-    ConsoleWriter()
+    private void lifeLimitted()
     {
     }
 
-    public void run()
+    protected void createConsoleServer()
     {
-      while ((RTSConf.cur != null) && (!RTSConf.isRequestExitApp())) {
-        String str = Main.this.consoleServer.outQueue.get();
-        str = UnicodeTo8bit.save(str, false);
-        if (Main.this.consoleServer.out != null)
-          try {
-            Main.this.consoleServer.out.print(str);
-            Main.this.consoleServer.out.println();
-            if (Main.this.consoleServer.outQueue.isEmpty()) {
-              Main.this.consoleServer.out.flush();
-              continue;
-            }
-          }
-          catch (Exception localException)
-          {
-          }
-      }
-    }
-  }
+        int i = com.maddox.il2.engine.Config.cur.ini.get("Console", "IP", 0, 0, 65000);
+        if(i == 0)
+            return;
+        java.util.ArrayList arraylist = new ArrayList();
+        java.lang.String s = com.maddox.il2.engine.Config.cur.ini.get("Console", "IPS", (java.lang.String)null);
+        if(s != null)
+        {
+            java.lang.String s1;
+            for(java.util.StringTokenizer stringtokenizer = new StringTokenizer(s); stringtokenizer.hasMoreTokens(); arraylist.add(s1))
+                s1 = stringtokenizer.nextToken();
 
-  class ConsoleOutQueue
-  {
-    LinkedList outQueue = new LinkedList();
-    int truncated = 0;
-
-    ConsoleOutQueue() {  } 
-    public synchronized void put(String paramString) { int i = this.outQueue.size();
-      if (i >= 1024)
-        this.truncated += 1;
-      else if (this.truncated > 0) {
-        if (i >= 768) {
-          this.truncated += 1;
-        } else {
-          this.outQueue.add("!!! Output truncated ( " + this.truncated + " lines )\n");
-          this.outQueue.add(paramString);
-          this.truncated = 0;
         }
-      }
-      else this.outQueue.add(paramString);
+        consoleServer = new ConsoleServer(i, arraylist);
+        consoleServer.setPriority(java.lang.Thread.currentThread().getPriority() + 1);
+        consoleServer.start();
+        consoleServer.outWriter.setPriority(java.lang.Thread.currentThread().getPriority() + 1);
+        consoleServer.outWriter.start();
+    }
 
-      notifyAll(); }
+    private static int[] getSwTbl(int i)
+    {
+        if(i < 0)
+            i = -i;
+        int j = i % 16 + 14;
+        int k = i % com.maddox.rts.Finger.kTable.length;
+        if(j < 0)
+            j = -j % 16;
+        if(j < 10)
+            j = 10;
+        if(k < 0)
+            k = -k % com.maddox.rts.Finger.kTable.length;
+        int ai[] = new int[j];
+        for(int l = 0; l < j; l++)
+            ai[l] = com.maddox.rts.Finger.kTable[(k + l) % com.maddox.rts.Finger.kTable.length];
 
-    public synchronized String get() {
-      while (this.outQueue.isEmpty())
-        try {
-          wait();
-        } catch (InterruptedException localInterruptedException) {
+        return ai;
+    }
+
+    public static final java.lang.String AIR_INI = "com/maddox/il2/objects/air.ini";
+    public java.util.ArrayList airClasses;
+    public com.maddox.il2.game.Mission mission;
+    public com.maddox.il2.game.Mission missionLoading;
+    public int missionCounter;
+    public com.maddox.il2.game.campaign.Campaign campaign;
+    public com.maddox.il2.game.DotRange dotRangeFriendly;
+    public com.maddox.il2.game.DotRange dotRangeFoe;
+    public com.maddox.il2.net.NetChannelListener netChannelListener;
+    public com.maddox.il2.net.NetMissionListener netMissionListener;
+    public com.maddox.il2.net.NetServerParams netServerParams;
+    public com.maddox.il2.net.Chat chat;
+    public com.maddox.il2.net.NetFileServerMissProp netFileServerMissProp;
+    public com.maddox.il2.net.NetFileServerReg netFileServerReg;
+    public com.maddox.il2.net.NetFileServerSkin netFileServerSkin;
+    public com.maddox.il2.net.NetFileServerPilot netFileServerPilot;
+    public com.maddox.il2.net.NetFileServerNoseart netFileServerNoseart;
+    public com.maddox.il2.net.GameSpy netGameSpy;
+    public com.maddox.il2.net.GameSpy netGameSpyListener;
+    public com.maddox.rts.SectFile currentMissionFile;
+    public com.maddox.il2.game.GameStateStack stateStack;
+    protected java.lang.Object oCommandSync;
+    protected boolean bCommand;
+    protected boolean bCommandNet;
+    protected java.lang.String sCommand;
+    protected com.maddox.il2.game.ConsoleServer consoleServer;
+    private static boolean bRequestExit = false;
+    private static com.maddox.il2.game.Main cur;
+
+    static 
+    {
+        try
+        {
+            java.io.BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(new KryptoInputFilter(new SFSInputStream(com.maddox.rts.Finger.LongFN(0L, "cod/" + com.maddox.rts.Finger.Int("allc"))), com.maddox.il2.game.Main.getSwTbl(com.maddox.rts.Finger.Int("alls")))));
+            do
+            {
+                java.lang.String s = bufferedreader.readLine();
+                if(s == null)
+                    break;
+                java.lang.Class.forName("com.maddox." + s);
+            } while(true);
+            bufferedreader.close();
         }
-      return (String)this.outQueue.removeFirst();
+        catch(java.lang.Exception exception) { }
     }
-    public synchronized boolean isEmpty() {
-      return this.outQueue.isEmpty();
-    }
-  }
+
 }

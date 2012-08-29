@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   FreeFly.java
+
 package com.maddox.il2.engine.hotkey;
 
 import com.maddox.JGP.Point3d;
@@ -22,232 +27,387 @@ import com.maddox.rts.MsgMouseListener;
 import com.maddox.rts.Time;
 
 public class FreeFly
-  implements MsgMouseListener
+    implements com.maddox.rts.MsgMouseListener
 {
-  private ActorInterpolate aInterpolator;
-  private Actor target;
-  private String envName;
-  private boolean bRealTime = false;
-
-  private Point3d vO = new Point3d(0.0D, 0.0D, 0.0D);
-  public Point3d speedO = new Point3d(10.0D, 10.0D, 10.0D);
-
-  public double maxSpeed = 10.0D;
-  public double aSpeed = 3.0D;
-  private double doSpeed = 0.0D;
-  private double speed = 0.0D;
-
-  public float koofAzimutView = 0.25F;
-  public float koofTangageView = 0.25F;
-  public boolean bViewReset = false;
-  private Point3f view = new Point3f();
-  private boolean bClipOnLand = true;
-
-  private Point3d aP = new Point3d();
-  private Orient aO = new Orientation();
-  private Orient o = new Orient();
-
-  private static FreeFly adapter = null;
-
-  float DEG2RAD(float paramFloat)
-  {
-    return paramFloat * 0.01745329F;
-  }
-  public void resetGame() {
-    this.target = null;
-  }
-
-  public void msgMouseButton(int paramInt, boolean paramBoolean)
-  {
-  }
-
-  public void msgMouseAbsMove(int paramInt1, int paramInt2, int paramInt3)
-  {
-  }
-
-  public void msgMouseMove(int paramInt1, int paramInt2, int paramInt3)
-  {
-    if ((Actor.isValid(this.target)) && ((this.target instanceof Camera))) {
-      this.view.x += paramInt1;
-      this.view.y += paramInt2;
-    }
-  }
-
-  private void initHotKeys() {
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "ResetView") {
-      public void begin() { FreeFly.this.bViewReset = true;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Azimut-") {
-      public void begin() { FreeFly.this.vO.x += -1.0D; } 
-      public void end() { FreeFly.this.vO.x -= -1.0D;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Azimut+") {
-      public void begin() { FreeFly.this.vO.x += 1.0D; } 
-      public void end() { FreeFly.this.vO.x -= 1.0D;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Tangage-") {
-      public void begin() { FreeFly.this.vO.y += -1.0D; } 
-      public void end() { FreeFly.this.vO.y -= -1.0D;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Tangage+") {
-      public void begin() { FreeFly.this.vO.y += 1.0D; } 
-      public void end() { FreeFly.this.vO.y -= 1.0D;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Kren-") {
-      public void begin() { FreeFly.this.vO.z += -1.0D; } 
-      public void end() { FreeFly.this.vO.z -= -1.0D;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Kren+") {
-      public void begin() { FreeFly.this.vO.z += 1.0D; } 
-      public void end() { FreeFly.this.vO.z -= 1.0D;
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Speed-") {
-      public void begin() { FreeFly.access$418(FreeFly.this, -1.0D); } 
-      public void end() { FreeFly.access$426(FreeFly.this, -1.0D);
-      }
-    });
-    HotKeyCmdEnv.addCmd(this.envName, new HotKeyCmd(this.bRealTime, "Speed+") {
-      public void begin() { FreeFly.access$418(FreeFly.this, 1.0D); } 
-      public void end() { FreeFly.access$426(FreeFly.this, 1.0D); }  } );
-  }
-
-  public static double speed() {
-    return adapter._speed(); } 
-  private double _speed() { return this.speed; } 
-  public static boolean clipOnLand(boolean paramBoolean) {
-    return adapter._clipOnLand(paramBoolean);
-  }
-  private boolean _clipOnLand(boolean paramBoolean) { boolean bool = this.bClipOnLand;
-    this.bClipOnLand = paramBoolean;
-    return bool; }
-
-  public static void setActor(Actor paramActor) {
-    adapter._setActor(paramActor); } 
-  private void _setActor(Actor paramActor) { this.target = paramActor; } 
-  public static Actor getActor(Actor paramActor) {
-    return adapter._getActor(); } 
-  private Actor _getActor() { return this.target; } 
-  public static String environment() {
-    return adapter._environment(); } 
-  private String _environment() { return this.envName; }
-
-  private FreeFly(String paramString) {
-    adapter = this;
-    this.envName = paramString;
-    HotKeyEnv.fromIni(this.envName, Config.cur.ini, this.envName);
-    String str = this.envName + " Config";
-    this.bRealTime = Config.cur.ini.get(str, "RealTime", this.bRealTime);
-    this.koofAzimutView = Config.cur.ini.get(str, "AzimutView", this.koofAzimutView);
-    this.koofTangageView = Config.cur.ini.get(str, "TangageView", this.koofTangageView);
-    this.speedO.x = Config.cur.ini.get(str, "SpeedAzimut", (float)this.speedO.x);
-    this.speedO.y = Config.cur.ini.get(str, "SpeedTangage", (float)this.speedO.y);
-    this.speedO.z = Config.cur.ini.get(str, "SpeedKren", (float)this.speedO.z);
-    this.maxSpeed = Config.cur.ini.get(str, "MaxSpeed", (float)this.maxSpeed);
-    this.aSpeed = Config.cur.ini.get(str, "Acselerate", (float)this.aSpeed);
-    MsgAddListener.post(this.bRealTime ? 64 : 0, Mouse.adapter(), this, null);
-    initHotKeys();
-    this.aInterpolator = new ActorInterpolate();
-    this.aInterpolator.interpPut(new FreeInterpolate(), null, this.bRealTime ? Time.currentReal() : Time.current(), null);
-  }
-  public static void initSave() {
-    adapter._initSave();
-  }
-  private void _initSave() { String str = this.envName + " Config";
-    Config.cur.ini.setValue(str, "AzimutView", Float.toString(this.koofAzimutView));
-    Config.cur.ini.setValue(str, "TangageView", Float.toString(this.koofTangageView));
-    Config.cur.ini.setValue(str, "SpeedAzimut", Float.toString((float)this.speedO.x));
-    Config.cur.ini.setValue(str, "SpeedTangage", Float.toString((float)this.speedO.y));
-    Config.cur.ini.setValue(str, "SpeedKren", Float.toString((float)this.speedO.z));
-    Config.cur.ini.setValue(str, "MaxSpeed", Float.toString((float)this.maxSpeed));
-    Config.cur.ini.setValue(str, "Acselerate", Float.toString((float)this.aSpeed)); }
-
-  public static FreeFly adapter()
-  {
-    return adapter;
-  }
-  public static void init(String paramString) {
-    if (adapter == null)
-      new FreeFly(paramString);
-  }
-
-  class ActorInterpolate extends Actor
-  {
-    public Object getSwitchListener(Message paramMessage)
+    class ActorInterpolate extends com.maddox.il2.engine.Actor
     {
-      return this;
-    }
-    public ActorInterpolate() { if (FreeFly.this.bRealTime)
-        this.flags |= 8192;
-      this.flags |= 16384; }
 
-    protected void createActorHashCode() {
-      makeActorRealHashCode();
-    }
-  }
-
-  class FreeInterpolate extends Interpolate
-  {
-    private long prevTime;
-
-    FreeInterpolate()
-    {
-    }
-
-    public void begin()
-    {
-      FreeFly.this.view.set(0.0F, 0.0F, 0.0F);
-      FreeFly.access$102(FreeFly.this, 0.0D);
-      this.prevTime = (FreeFly.this.bRealTime ? Time.currentReal() : Time.current());
-    }
-    public boolean tick() {
-      long l = FreeFly.this.bRealTime ? Time.currentReal() : Time.current();
-      if (l < this.prevTime)
-        this.prevTime = l;
-      if (l == this.prevTime)
-        return true;
-      float f = (float)(l - this.prevTime) * 0.001F;
-      this.prevTime = l;
-
-      if (!Actor.isValid(FreeFly.this.target)) {
-        return true;
-      }
-      FreeFly.access$118(FreeFly.this, FreeFly.this.doSpeed * FreeFly.this.aSpeed * f);
-      if (FreeFly.this.speed < 0.0D) FreeFly.access$102(FreeFly.this, 0.0D);
-      if (FreeFly.this.speed > FreeFly.this.maxSpeed) FreeFly.access$102(FreeFly.this, FreeFly.this.maxSpeed);
-
-      FreeFly.this.target.pos.getAbs(FreeFly.this.aP, FreeFly.this.aO);
-
-      double d1 = FreeFly.this.speed * f;
-      double d2 = Math.cos(FreeFly.this.DEG2RAD(FreeFly.this.aO.tangage())) * d1;
-      FreeFly.this.aP.y -= Math.sin(FreeFly.this.DEG2RAD(FreeFly.this.aO.azimut())) * d2;
-      FreeFly.this.aP.x += Math.cos(FreeFly.this.DEG2RAD(FreeFly.this.aO.azimut())) * d2;
-      FreeFly.this.aP.z += Math.sin(FreeFly.this.DEG2RAD(FreeFly.this.aO.tangage())) * d1;
-      if (FreeFly.this.bClipOnLand) {
-        double d3 = Engine.land().HQ(FreeFly.this.aP.x, FreeFly.this.aP.y) + 1.0D;
-        if (FreeFly.this.aP.z < d3) {
-          FreeFly.this.aP.z = d3;
+        public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+        {
+            return this;
         }
-      }
-      FreeFly.this.aO.increment((float)(FreeFly.this.vO.x * FreeFly.this.speedO.x * f), (float)(FreeFly.this.vO.y * FreeFly.this.speedO.y * f), (float)(FreeFly.this.vO.z * FreeFly.this.speedO.z * f));
 
-      FreeFly.this.o.set(FreeFly.this.aO);
+        protected void createActorHashCode()
+        {
+            makeActorRealHashCode();
+        }
 
-      if (FreeFly.this.bViewReset) {
-        FreeFly.this.view.set(0.0F, 0.0F, 0.0F);
-        FreeFly.this.bViewReset = false;
-      }
-      else if ((FreeFly.this.target instanceof Camera)) {
-        FreeFly.this.o.set(FreeFly.this.view.x * FreeFly.this.koofAzimutView, FreeFly.this.view.y * FreeFly.this.koofTangageView, 0.0F);
-      }
-      FreeFly.this.target.pos.setAbs(FreeFly.this.aP, FreeFly.this.o);
-      return true;
+        public ActorInterpolate()
+        {
+            if(bRealTime)
+                flags |= 0x2000;
+            flags |= 0x4000;
+        }
     }
-  }
+
+    class FreeInterpolate extends com.maddox.il2.engine.Interpolate
+    {
+
+        public void begin()
+        {
+            view.set(0.0F, 0.0F, 0.0F);
+            speed = 0.0D;
+            prevTime = bRealTime ? com.maddox.rts.Time.currentReal() : com.maddox.rts.Time.current();
+        }
+
+        public boolean tick()
+        {
+            long l = bRealTime ? com.maddox.rts.Time.currentReal() : com.maddox.rts.Time.current();
+            if(l < prevTime)
+                prevTime = l;
+            if(l == prevTime)
+                return true;
+            float f = (float)(l - prevTime) * 0.001F;
+            prevTime = l;
+            if(!com.maddox.il2.engine.Actor.isValid(target))
+                return true;
+            speed+= = doSpeed * aSpeed * (double)f;
+            if(speed < 0.0D)
+                speed = 0.0D;
+            if(speed > maxSpeed)
+                speed = maxSpeed;
+            target.pos.getAbs(aP, aO);
+            double d = speed * (double)f;
+            double d1 = java.lang.Math.cos(DEG2RAD(aO.tangage())) * d;
+            aP.y -= java.lang.Math.sin(DEG2RAD(aO.azimut())) * d1;
+            aP.x += java.lang.Math.cos(DEG2RAD(aO.azimut())) * d1;
+            aP.z += java.lang.Math.sin(DEG2RAD(aO.tangage())) * d;
+            if(bClipOnLand)
+            {
+                double d2 = com.maddox.il2.engine.Engine.land().HQ(aP.x, aP.y) + 1.0D;
+                if(aP.z < d2)
+                    aP.z = d2;
+            }
+            aO.increment((float)(vO.x * speedO.x * (double)f), (float)(vO.y * speedO.y * (double)f), (float)(vO.z * speedO.z * (double)f));
+            o.set(aO);
+            if(bViewReset)
+            {
+                view.set(0.0F, 0.0F, 0.0F);
+                bViewReset = false;
+            } else
+            if(target instanceof com.maddox.il2.engine.Camera)
+                o.set(view.x * koofAzimutView, view.y * koofTangageView, 0.0F);
+            target.pos.setAbs(aP, o);
+            return true;
+        }
+
+        private long prevTime;
+
+        FreeInterpolate()
+        {
+        }
+    }
+
+
+    float DEG2RAD(float f)
+    {
+        return f * 0.01745329F;
+    }
+
+    public void resetGame()
+    {
+        target = null;
+    }
+
+    public void msgMouseButton(int i, boolean flag)
+    {
+    }
+
+    public void msgMouseAbsMove(int i, int j, int k)
+    {
+    }
+
+    public void msgMouseMove(int i, int j, int k)
+    {
+        if(com.maddox.il2.engine.Actor.isValid(target) && (target instanceof com.maddox.il2.engine.Camera))
+        {
+            view.x += i;
+            view.y += j;
+        }
+    }
+
+    private void initHotKeys()
+    {
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "ResetView") {
+
+            public void begin()
+            {
+                bViewReset = true;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Azimut-") {
+
+            public void begin()
+            {
+                vO.x += -1D;
+            }
+
+            public void end()
+            {
+                vO.x -= -1D;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Azimut+") {
+
+            public void begin()
+            {
+                vO.x++;
+            }
+
+            public void end()
+            {
+                vO.x--;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Tangage-") {
+
+            public void begin()
+            {
+                vO.y += -1D;
+            }
+
+            public void end()
+            {
+                vO.y -= -1D;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Tangage+") {
+
+            public void begin()
+            {
+                vO.y++;
+            }
+
+            public void end()
+            {
+                vO.y--;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Kren-") {
+
+            public void begin()
+            {
+                vO.z += -1D;
+            }
+
+            public void end()
+            {
+                vO.z -= -1D;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Kren+") {
+
+            public void begin()
+            {
+                vO.z++;
+            }
+
+            public void end()
+            {
+                vO.z--;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Speed-") {
+
+            public void begin()
+            {
+                doSpeed+= = -1D;
+            }
+
+            public void end()
+            {
+                doSpeed-= = -1D;
+            }
+
+        }
+);
+        com.maddox.rts.HotKeyCmdEnv.addCmd(envName, new com.maddox.rts.HotKeyCmd(bRealTime, "Speed+") {
+
+            public void begin()
+            {
+                doSpeed+= = 1.0D;
+            }
+
+            public void end()
+            {
+                doSpeed-= = 1.0D;
+            }
+
+        }
+);
+    }
+
+    public static double speed()
+    {
+        return adapter._speed();
+    }
+
+    private double _speed()
+    {
+        return speed;
+    }
+
+    public static boolean clipOnLand(boolean flag)
+    {
+        return adapter._clipOnLand(flag);
+    }
+
+    private boolean _clipOnLand(boolean flag)
+    {
+        boolean flag1 = bClipOnLand;
+        bClipOnLand = flag;
+        return flag1;
+    }
+
+    public static void setActor(com.maddox.il2.engine.Actor actor)
+    {
+        adapter._setActor(actor);
+    }
+
+    private void _setActor(com.maddox.il2.engine.Actor actor)
+    {
+        target = actor;
+    }
+
+    public static com.maddox.il2.engine.Actor getActor(com.maddox.il2.engine.Actor actor)
+    {
+        return adapter._getActor();
+    }
+
+    private com.maddox.il2.engine.Actor _getActor()
+    {
+        return target;
+    }
+
+    public static java.lang.String environment()
+    {
+        return adapter._environment();
+    }
+
+    private java.lang.String _environment()
+    {
+        return envName;
+    }
+
+    private FreeFly(java.lang.String s)
+    {
+        bRealTime = false;
+        vO = new Point3d(0.0D, 0.0D, 0.0D);
+        speedO = new Point3d(10D, 10D, 10D);
+        maxSpeed = 10D;
+        aSpeed = 3D;
+        doSpeed = 0.0D;
+        speed = 0.0D;
+        koofAzimutView = 0.25F;
+        koofTangageView = 0.25F;
+        bViewReset = false;
+        view = new Point3f();
+        bClipOnLand = true;
+        aP = new Point3d();
+        aO = new Orientation();
+        o = new Orient();
+        adapter = this;
+        envName = s;
+        com.maddox.rts.HotKeyEnv.fromIni(envName, com.maddox.il2.engine.Config.cur.ini, envName);
+        java.lang.String s1 = envName + " Config";
+        bRealTime = com.maddox.il2.engine.Config.cur.ini.get(s1, "RealTime", bRealTime);
+        koofAzimutView = com.maddox.il2.engine.Config.cur.ini.get(s1, "AzimutView", koofAzimutView);
+        koofTangageView = com.maddox.il2.engine.Config.cur.ini.get(s1, "TangageView", koofTangageView);
+        speedO.x = com.maddox.il2.engine.Config.cur.ini.get(s1, "SpeedAzimut", (float)speedO.x);
+        speedO.y = com.maddox.il2.engine.Config.cur.ini.get(s1, "SpeedTangage", (float)speedO.y);
+        speedO.z = com.maddox.il2.engine.Config.cur.ini.get(s1, "SpeedKren", (float)speedO.z);
+        maxSpeed = com.maddox.il2.engine.Config.cur.ini.get(s1, "MaxSpeed", (float)maxSpeed);
+        aSpeed = com.maddox.il2.engine.Config.cur.ini.get(s1, "Acselerate", (float)aSpeed);
+        com.maddox.rts.MsgAddListener.post(bRealTime ? 64 : 0, com.maddox.rts.Mouse.adapter(), this, null);
+        initHotKeys();
+        aInterpolator = new ActorInterpolate();
+        aInterpolator.interpPut(new FreeInterpolate(), null, bRealTime ? com.maddox.rts.Time.currentReal() : com.maddox.rts.Time.current(), null);
+    }
+
+    public static void initSave()
+    {
+        adapter._initSave();
+    }
+
+    private void _initSave()
+    {
+        java.lang.String s = envName + " Config";
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "AzimutView", java.lang.Float.toString(koofAzimutView));
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "TangageView", java.lang.Float.toString(koofTangageView));
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "SpeedAzimut", java.lang.Float.toString((float)speedO.x));
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "SpeedTangage", java.lang.Float.toString((float)speedO.y));
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "SpeedKren", java.lang.Float.toString((float)speedO.z));
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "MaxSpeed", java.lang.Float.toString((float)maxSpeed));
+        com.maddox.il2.engine.Config.cur.ini.setValue(s, "Acselerate", java.lang.Float.toString((float)aSpeed));
+    }
+
+    public static com.maddox.il2.engine.hotkey.FreeFly adapter()
+    {
+        return adapter;
+    }
+
+    public static void init(java.lang.String s)
+    {
+        if(adapter == null)
+            new FreeFly(s);
+    }
+
+    private com.maddox.il2.engine.hotkey.ActorInterpolate aInterpolator;
+    private com.maddox.il2.engine.Actor target;
+    private java.lang.String envName;
+    private boolean bRealTime;
+    private com.maddox.JGP.Point3d vO;
+    public com.maddox.JGP.Point3d speedO;
+    public double maxSpeed;
+    public double aSpeed;
+    private double doSpeed;
+    private double speed;
+    public float koofAzimutView;
+    public float koofTangageView;
+    public boolean bViewReset;
+    private com.maddox.JGP.Point3f view;
+    private boolean bClipOnLand;
+    private com.maddox.JGP.Point3d aP;
+    private com.maddox.il2.engine.Orient aO;
+    private com.maddox.il2.engine.Orient o;
+    private static com.maddox.il2.engine.hotkey.FreeFly adapter = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

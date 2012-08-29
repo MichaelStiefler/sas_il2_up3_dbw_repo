@@ -1,116 +1,141 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AnglesForkExtended.java
+
 package com.maddox.il2.ai;
+
 
 public final class AnglesForkExtended
 {
-  private int src;
-  private int dst;
-  private boolean fullcircle;
-  private static final double halfCircle = -2147483648.0D;
-  private static final double fromDeg = -11930464.711111112D;
-  private static final double fromDeg2 = -5965232.3555555558D;
-  private static final double toDeg = -8.381903171539307E-008D;
-  private static final double toDeg2 = -1.676380634307861E-007D;
 
-  public AnglesForkExtended(boolean paramBoolean)
-  {
-    setDeg(paramBoolean, 0.0F, 0.0F);
-  }
-  public AnglesForkExtended(boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    setDeg(paramBoolean, paramFloat1, paramFloat2);
-  }
-
-  public final void setDeg(boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    this.fullcircle = paramBoolean;
-    if (this.fullcircle) {
-      this.src = (int)()(paramFloat1 * -11930464.711111112D);
-      this.dst = (int)()(paramFloat2 * -11930464.711111112D);
-    } else {
-      this.src = (int)()(paramFloat1 * -5965232.3555555558D);
-      this.dst = (int)()(paramFloat2 * -5965232.3555555558D);
-    }
-  }
-
-  public final void setDeg(float paramFloat1, float paramFloat2) {
-    setDeg(this.fullcircle, paramFloat1, paramFloat2);
-  }
-
-  public final void setDeg(float paramFloat) {
-    setDeg(paramFloat, paramFloat);
-  }
-
-  public final void setSrcDeg(float paramFloat) {
-    if (this.fullcircle)
-      this.src = (int)()(paramFloat * -11930464.711111112D);
-    else
-      this.src = (int)()(paramFloat * -5965232.3555555558D);
-  }
-
-  public final void setDstDeg(boolean paramBoolean, float paramFloat) {
-    if (this.fullcircle)
-      this.dst = (int)()(paramFloat * -11930464.711111112D);
-    else
-      this.dst = (int)()(paramFloat * -5965232.3555555558D);
-  }
-
-  public final void rotateDeg(float paramFloat)
-  {
-    int i;
-    if (this.fullcircle) {
-      i = (int)()(paramFloat * -11930464.711111112D);
-      this.src += i;
-      this.dst += i;
-    }
-    else
+    public AnglesForkExtended(boolean flag)
     {
-      i = (int)()(paramFloat * -5965232.3555555558D);
-      this.src += i;
-      this.dst += i;
+        setDeg(flag, 0.0F, 0.0F);
     }
-  }
 
-  public final void makeSrcSameAsDst() {
-    this.src = this.dst;
-  }
-
-  public final float getSrcDeg() {
-    if (this.fullcircle) {
-      return (float)(this.src * -8.381903171539307E-008D);
+    public AnglesForkExtended(boolean flag, float f, float f1)
+    {
+        setDeg(flag, f, f1);
     }
-    return (float)(this.src * -1.676380634307861E-007D);
-  }
 
-  public final float getDstDeg() {
-    if (this.fullcircle) {
-      return (float)(this.dst * -8.381903171539307E-008D);
+    public final void setDeg(boolean flag, float f, float f1)
+    {
+        fullcircle = flag;
+        if(fullcircle)
+        {
+            src = (int)(long)((double)f * -11930464.711111112D);
+            dst = (int)(long)((double)f1 * -11930464.711111112D);
+        } else
+        {
+            src = (int)(long)((double)f * -5965232.3555555558D);
+            dst = (int)(long)((double)f1 * -5965232.3555555558D);
+        }
     }
-    return (float)(this.dst * -1.676380634307861E-007D);
-  }
 
-  public final float getDeg(float paramFloat)
-  {
-    if (this.fullcircle) {
-      if (paramFloat <= 0.0F) return (float)(this.src * -8.381903171539307E-008D);
-      if (paramFloat >= 1.0F) return (float)(this.dst * -8.381903171539307E-008D);
-      return (float)((this.src + (int)((this.dst - this.src) * paramFloat)) * -8.381903171539307E-008D);
+    public final void setDeg(float f, float f1)
+    {
+        setDeg(fullcircle, f, f1);
     }
-    if (paramFloat <= 0.0F) return (float)(this.src * -1.676380634307861E-007D);
-    if (paramFloat >= 1.0F) return (float)(this.dst * -1.676380634307861E-007D);
-    return (float)((int)(this.src + ()((this.dst - this.src) * paramFloat)) * -1.676380634307861E-007D);
-  }
 
-  public final float getAbsDiffDeg()
-  {
-    if (this.fullcircle) {
-      return (float)Math.abs((this.dst - this.src) * -8.381903171539307E-008D);
+    public final void setDeg(float f)
+    {
+        setDeg(f, f);
     }
-    return (float)Math.abs((this.dst - this.src) * -1.676380634307861E-007D);
-  }
 
-  public final float getDiffDeg()
-  {
-    if (this.fullcircle) {
-      return (float)((this.dst - this.src) * -8.381903171539307E-008D);
+    public final void setSrcDeg(float f)
+    {
+        if(fullcircle)
+            src = (int)(long)((double)f * -11930464.711111112D);
+        else
+            src = (int)(long)((double)f * -5965232.3555555558D);
     }
-    return (float)((this.dst - this.src) * -1.676380634307861E-007D);
-  }
+
+    public final void setDstDeg(boolean flag, float f)
+    {
+        if(fullcircle)
+            dst = (int)(long)((double)f * -11930464.711111112D);
+        else
+            dst = (int)(long)((double)f * -5965232.3555555558D);
+    }
+
+    public final void rotateDeg(float f)
+    {
+        if(fullcircle)
+        {
+            int i = (int)(long)((double)f * -11930464.711111112D);
+            src += i;
+            dst += i;
+        } else
+        {
+            int j = (int)(long)((double)f * -5965232.3555555558D);
+            src += j;
+            dst += j;
+        }
+    }
+
+    public final void makeSrcSameAsDst()
+    {
+        src = dst;
+    }
+
+    public final float getSrcDeg()
+    {
+        if(fullcircle)
+            return (float)((double)src * -8.3819031715393066E-008D);
+        else
+            return (float)((double)src * -1.6763806343078613E-007D);
+    }
+
+    public final float getDstDeg()
+    {
+        if(fullcircle)
+            return (float)((double)dst * -8.3819031715393066E-008D);
+        else
+            return (float)((double)dst * -1.6763806343078613E-007D);
+    }
+
+    public final float getDeg(float f)
+    {
+        if(fullcircle)
+        {
+            if(f <= 0.0F)
+                return (float)((double)src * -8.3819031715393066E-008D);
+            if(f >= 1.0F)
+                return (float)((double)dst * -8.3819031715393066E-008D);
+            else
+                return (float)((double)(src + (int)((double)(dst - src) * (double)f)) * -8.3819031715393066E-008D);
+        }
+        if(f <= 0.0F)
+            return (float)((double)src * -1.6763806343078613E-007D);
+        if(f >= 1.0F)
+            return (float)((double)dst * -1.6763806343078613E-007D);
+        else
+            return (float)((double)(int)((long)src + (long)((double)((long)dst - (long)src) * (double)f)) * -1.6763806343078613E-007D);
+    }
+
+    public final float getAbsDiffDeg()
+    {
+        if(fullcircle)
+            return (float)java.lang.Math.abs((double)(dst - src) * -8.3819031715393066E-008D);
+        else
+            return (float)java.lang.Math.abs((double)((long)dst - (long)src) * -1.6763806343078613E-007D);
+    }
+
+    public final float getDiffDeg()
+    {
+        if(fullcircle)
+            return (float)((double)(dst - src) * -8.3819031715393066E-008D);
+        else
+            return (float)((double)((long)dst - (long)src) * -1.6763806343078613E-007D);
+    }
+
+    private int src;
+    private int dst;
+    private boolean fullcircle;
+    private static final double halfCircle = -2147483648D;
+    private static final double fromDeg = -11930464.711111112D;
+    private static final double fromDeg2 = -5965232.3555555558D;
+    private static final double toDeg = -8.3819031715393066E-008D;
+    private static final double toDeg2 = -1.6763806343078613E-007D;
 }

@@ -1,35 +1,51 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgTimerParam.java
+
 package com.maddox.rts;
+
 
 public class MsgTimerParam
 {
-  public int id = 0;
 
-  public int tickPos = 0;
+    public MsgTimerParam()
+    {
+        id = 0;
+        tickPos = 0;
+        startTime = 0L;
+        countPost = -1;
+        stepTime = 100;
+        bSkip = false;
+        bSkipBegin = true;
+    }
 
-  public long startTime = 0L;
+    public MsgTimerParam(int i, int j, long l, int k, int i1, boolean flag, 
+            boolean flag1)
+    {
+        id = 0;
+        tickPos = 0;
+        startTime = 0L;
+        countPost = -1;
+        stepTime = 100;
+        bSkip = false;
+        bSkipBegin = true;
+        id = i;
+        tickPos = j;
+        startTime = l;
+        countPost = k;
+        stepTime = i1;
+        bSkip = flag;
+        bSkipBegin = flag1;
+    }
 
-  public int countPost = -1;
-
-  public int stepTime = 100;
-
-  public boolean bSkip = false;
-
-  public boolean bSkipBegin = true;
-  public long nextTime;
-  public int curCount;
-
-  public MsgTimerParam()
-  {
-  }
-
-  public MsgTimerParam(int paramInt1, int paramInt2, long paramLong, int paramInt3, int paramInt4, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    this.id = paramInt1;
-    this.tickPos = paramInt2;
-    this.startTime = paramLong;
-    this.countPost = paramInt3;
-    this.stepTime = paramInt4;
-    this.bSkip = paramBoolean1;
-    this.bSkipBegin = paramBoolean2;
-  }
+    public int id;
+    public int tickPos;
+    public long startTime;
+    public int countPost;
+    public int stepTime;
+    public boolean bSkip;
+    public boolean bSkipBegin;
+    public long nextTime;
+    public int curCount;
 }

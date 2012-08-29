@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdExtraOcclusion.java
+
 package com.maddox.il2.game.cmd;
 
 import com.maddox.il2.game.Main;
@@ -8,31 +13,38 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdExtraOcclusion extends Cmd
+public class CmdExtraOcclusion extends com.maddox.rts.Cmd
 {
-  public static final String ON = "ON";
-  public static final String OFF = "OFF";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (Main.cur().netServerParams == null) return null;
-    if ((Main.cur().netServerParams.isMaster()) && (!Main.cur().netServerParams.isSingle())) {
-      if (paramMap.containsKey("ON")) {
-        Main.cur().netServerParams.setExtraOcclusion(true);
-        return CmdEnv.RETURN_OK;
-      }if (paramMap.containsKey("OFF")) {
-        Main.cur().netServerParams.setExtraOcclusion(false);
-        return CmdEnv.RETURN_OK;
-      }
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return null;
+        if(com.maddox.il2.game.Main.cur().netServerParams.isMaster() && !com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+        {
+            if(map.containsKey("ON"))
+            {
+                com.maddox.il2.game.Main.cur().netServerParams.setExtraOcclusion(true);
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            }
+            if(map.containsKey("OFF"))
+            {
+                com.maddox.il2.game.Main.cur().netServerParams.setExtraOcclusion(false);
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            }
+        }
+        INFO_HARD("  ExtraOcclusion is " + (com.maddox.il2.game.Main.cur().netServerParams.isExtraOcclusion() ? "ON" : "OFF"));
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
-    INFO_HARD("  ExtraOcclusion is " + (Main.cur().netServerParams.isExtraOcclusion() ? "ON" : "OFF"));
-    return CmdEnv.RETURN_OK;
-  }
 
-  public CmdExtraOcclusion() {
-    this.param.put("ON", null);
-    this.param.put("OFF", null);
-    this._properties.put("NAME", "extraocclusion");
-    this._levelAccess = 1;
-  }
+    public CmdExtraOcclusion()
+    {
+        param.put("ON", null);
+        param.put("OFF", null);
+        _properties.put("NAME", "extraocclusion");
+        _levelAccess = 1;
+    }
+
+    public static final java.lang.String ON = "ON";
+    public static final java.lang.String OFF = "OFF";
 }

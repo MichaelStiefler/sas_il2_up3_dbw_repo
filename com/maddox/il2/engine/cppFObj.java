@@ -1,95 +1,109 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   cppFObj.java
+
 package com.maddox.il2.engine;
 
-public class cppFObj extends cppGObj
+
+// Referenced classes of package com.maddox.il2.engine:
+//            cppGObj
+
+public class cppFObj extends com.maddox.il2.engine.cppGObj
 {
-  public static final float GObjHASHloadFactor = 0.75F;
-  public static final int GObjHASHinitialCapacity = 101;
-  private long hash;
-  private String name;
-  private cppFObj nextFObj;
 
-  private static boolean InsertFObj(cppFObj paramcppFObj)
-  {
-    return false;
-  }
+    private static boolean InsertFObj(com.maddox.il2.engine.cppFObj cppfobj)
+    {
+        return false;
+    }
 
-  private static void RemoveFObj(cppFObj paramcppFObj)
-  {
-  }
+    private static void RemoveFObj(com.maddox.il2.engine.cppFObj cppfobj)
+    {
+    }
 
-  protected void virtual_FObj()
-  {
-  }
+    protected cppFObj()
+    {
+    }
 
-  protected boolean Load()
-  {
-    return false;
-  }
+    protected void virtual_FObj()
+    {
+    }
 
-  public String Name()
-  {
-    return this.name;
-  }
+    protected boolean Load()
+    {
+        return false;
+    }
 
-  public boolean Rename(String paramString)
-  {
-    return false;
-  }
+    public java.lang.String Name()
+    {
+        return name;
+    }
 
-  public long Hash()
-  {
-    return this.hash;
-  }
+    public boolean Rename(java.lang.String s)
+    {
+        return false;
+    }
 
-  public cppGObj Clone()
-  {
-    return null;
-  }
+    public long Hash()
+    {
+        return hash;
+    }
 
-  public static cppFObj Get(String paramString)
-  {
-    return null;
-  }
+    public com.maddox.il2.engine.cppGObj Clone()
+    {
+        return null;
+    }
 
-  public static cppFObj Get(String paramString1, String paramString2)
-  {
-    return null;
-  }
+    public static com.maddox.il2.engine.cppFObj Get(java.lang.String s)
+    {
+        return null;
+    }
 
-  public boolean MakeFullName(String paramString1, String paramString2, String paramString3, int paramInt)
-  {
-    return false;
-  }
+    public static com.maddox.il2.engine.cppFObj Get(java.lang.String s, java.lang.String s1)
+    {
+        return null;
+    }
 
-  public static cppFObj Get(long paramLong)
-  {
-    return null;
-  }
+    public boolean MakeFullName(java.lang.String s, java.lang.String s1, java.lang.String s2, int i)
+    {
+        return false;
+    }
 
-  public static boolean Exist(String paramString)
-  {
-    return false;
-  }
+    public static com.maddox.il2.engine.cppFObj Get(long l)
+    {
+        return null;
+    }
 
-  public static boolean Exist(long paramLong)
-  {
-    return false;
-  }
+    public static boolean Exist(java.lang.String s)
+    {
+        return false;
+    }
 
-  public static cppFObj NextFObj(cppFObj paramcppFObj)
-  {
-    return null;
-  }
+    public static boolean Exist(long l)
+    {
+        return false;
+    }
 
-  public void DEFFCLASS()
-  {
-  }
+    public static com.maddox.il2.engine.cppFObj NextFObj(com.maddox.il2.engine.cppFObj cppfobj)
+    {
+        return null;
+    }
 
-  public void IMPFCLASS()
-  {
-  }
+    public void DEFFCLASS()
+    {
+    }
 
-  public void IMPFCLASSGENERIC()
-  {
-  }
+    public void IMPFCLASS()
+    {
+    }
+
+    public void IMPFCLASSGENERIC()
+    {
+    }
+
+    public static final float GObjHASHloadFactor = 0.75F;
+    public static final int GObjHASHinitialCapacity = 101;
+    private long hash;
+    private java.lang.String name;
+    private com.maddox.il2.engine.cppFObj nextFObj;
 }

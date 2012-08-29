@@ -1,39 +1,65 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowButton.java
+
 package com.maddox.gwindow;
 
-public class GWindowButton extends GWindowDialogControl
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GCaption, GWindowLookAndFeel, GWindow, 
+//            GSize, GRegion
+
+public class GWindowButton extends com.maddox.gwindow.GWindowDialogControl
 {
-  public boolean bDrawOnlyUP = false;
-  public boolean bDrawActive = true;
-  public boolean _bNoRender = false;
 
-  public void render() {
-    if (!this._bNoRender)
-      lookAndFeel().render(this); 
-  }
+    public void render()
+    {
+        if(!_bNoRender)
+            lookAndFeel().render(this);
+    }
 
-  public GSize getMinSize(GSize paramGSize) {
-    return lookAndFeel().getMinSize(this, paramGSize);
-  }
-  public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    return lookAndFeel().getClientRegion(this, paramGRegion, paramFloat);
-  }
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        return lookAndFeel().getMinSize(this, gsize);
+    }
 
-  public GWindowButton(GWindow paramGWindow) {
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+    public com.maddox.gwindow.GRegion getClientRegion(com.maddox.gwindow.GRegion gregion, float f)
+    {
+        return lookAndFeel().getClientRegion(this, gregion, f);
+    }
 
-  public GWindowButton(GWindow paramGWindow, String paramString1, String paramString2) {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    this.align = 1;
-    doNew(paramGWindow, 0.0F, 0.0F, 50.0F, 2.0F * paramGWindow.lookAndFeel().metric(), false);
-  }
+    public GWindowButton(com.maddox.gwindow.GWindow gwindow)
+    {
+        bDrawOnlyUP = false;
+        bDrawActive = true;
+        _bNoRender = false;
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
 
-  public GWindowButton(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString1, String paramString2)
-  {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    this.align = 1;
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
+    public GWindowButton(com.maddox.gwindow.GWindow gwindow, java.lang.String s, java.lang.String s1)
+    {
+        bDrawOnlyUP = false;
+        bDrawActive = true;
+        _bNoRender = false;
+        cap = new GCaption(s);
+        toolTip = s1;
+        align = 1;
+        doNew(gwindow, 0.0F, 0.0F, 50F, 2.0F * gwindow.lookAndFeel().metric(), false);
+    }
+
+    public GWindowButton(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3, java.lang.String s, java.lang.String s1)
+    {
+        bDrawOnlyUP = false;
+        bDrawActive = true;
+        _bNoRender = false;
+        cap = new GCaption(s);
+        toolTip = s1;
+        align = 1;
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
+
+    public boolean bDrawOnlyUP;
+    public boolean bDrawActive;
+    public boolean _bNoRender;
 }

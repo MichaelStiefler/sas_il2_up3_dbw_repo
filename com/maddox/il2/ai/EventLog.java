@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   EventLog.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point3d;
@@ -24,634 +29,837 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            World, ScoreCounter
+
 public class EventLog
 {
-  public static ArrayList actions = new ArrayList();
+    public static class Action
+    {
 
-  public static Action lastFly = null;
-  public static final int OCCUPIED = 0;
-  public static final int TRYOCCUPIED = 1;
-  public static final int CRASHED = 2;
-  public static final int SHOTDOWN = 3;
-  public static final int DESTROYED = 4;
-  public static final int BAILEDOUT = 5;
-  public static final int KILLED = 6;
-  public static final int LANDED = 7;
-  public static final int CAPTURED = 8;
-  public static final int WOUNDED = 9;
-  public static final int HEAVILYWOUNDED = 10;
-  public static final int FLY = 11;
-  public static final int PARAKILLED = 12;
-  public static final int CHUTEKILLED = 13;
-  public static final int SMOKEON = 14;
-  public static final int SMOKEOFF = 15;
-  public static final int LANDINGLIGHTON = 16;
-  public static final int LANDINGLIGHTOFF = 17;
-  public static final int WEAPONSLOAD = 18;
-  public static final int PARALANDED = 19;
-  public static final int DAMAGEDGROUND = 20;
-  public static final int DAMAGED = 21;
-  public static final int DISCONNECTED = 22;
-  public static final int CONNECTED = 23;
-  public static final int INFLIGHT = 24;
-  public static final int REFLY = 25;
-  public static final int REMOVED = 26;
-  private static PrintStream file = null;
-  private static boolean bBuffering = true;
-  private static String fileName = null;
-  private static boolean logKeep = false;
-  private static DateFormat longDate = null;
-  private static DateFormat shortDate = null;
-  private static boolean bInited = false;
+        public int event;
+        public float time;
+        public java.lang.String arg0;
+        public int scoreItem0;
+        public int army0;
+        public java.lang.String arg1;
+        public int scoreItem1;
+        public int argi;
+        public float x;
+        public float y;
 
-  public static void flyPlayer(Point3d paramPoint3d)
-  {
-    if (Mission.isDogfight()) return;
-    if (lastFly != null) {
-      double d = (lastFly.x - paramPoint3d.x) * (lastFly.x - paramPoint3d.x) + (lastFly.y - paramPoint3d.y) * (lastFly.y - paramPoint3d.y);
+        public Action()
+        {
+        }
 
-      if (d < 250000.0D)
-        return;
-    }
-    lastFly = new Action(11, null, -1, null, -1, 0, (float)paramPoint3d.x, (float)paramPoint3d.y);
-  }
-
-  public static void resetGameClear() {
-    actions.clear();
-    lastFly = null;
-  }
-
-  public static void resetGameCreate()
-  {
-  }
-
-  private static void checkInited()
-  {
-    if (!bInited) {
-      logKeep = Config.cur.ini.get("game", "eventlogkeep", 1, 0, 1) == 1;
-      fileName = Config.cur.ini.get("game", "eventlog", (String)null);
-      bInited = true;
-    }
-    if (longDate == null) {
-      longDate = DateFormat.getDateTimeInstance(2, 2);
-      shortDate = DateFormat.getTimeInstance(2);
-    }
-  }
-
-  public static void checkState() {
-    checkInited();
-    if ((fileName == null) && (Main.cur().campaign != null) && (Main.cur().campaign.isDGen())) {
-      fileName = "eventlog.lst";
-      Config.cur.ini.set("game", "eventlog", "eventlog.lst");
-      Config.cur.ini.saveFile();
-    }
-    if (logKeep) {
-      checkBuffering();
-    } else {
-      if (file != null) {
-        try { file.close(); } catch (Exception localException1) {
-        }file = null;
-      }
-      if (fileName != null)
-        try {
-          File localFile = new File(HomePath.toFileSystemName(fileName, 0));
-          localFile.delete(); } catch (Exception localException2) {
+        public Action(int i, java.lang.String s, int j, java.lang.String s1, int k, int l, float f, 
+                float f1)
+        {
+            event = i;
+            time = com.maddox.il2.ai.World.getTimeofDay();
+            arg0 = s;
+            scoreItem0 = j;
+            army0 = 0;
+            if(s != null)
+            {
+                com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Actor.getByName(s);
+                if(actor != null)
+                    army0 = actor.getArmy();
+            }
+            arg1 = s1;
+            scoreItem1 = k;
+            argi = l;
+            x = f;
+            y = f1;
+            if(com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isMaster() && com.maddox.il2.game.Main.cur().netServerParams.isDedicated())
+            {
+                return;
+            } else
+            {
+                com.maddox.il2.ai.EventLog.actions.add(this);
+                return;
+            }
         }
     }
-  }
 
-  private static void checkBuffering() {
-    if (file == null) return;
-    int i = 1;
-    if (((Main.cur() instanceof DServer)) || ((Main.cur().netServerParams != null) && (!Main.cur().netServerParams.isSingle()) && (Main.cur().netServerParams.isMaster())))
-    {
-      i = 0;
-    }if (i != bBuffering) {
-      close();
-      open();
-    }
-  }
 
-  public static boolean open() {
-    if (file != null)
-      return true;
-    checkInited();
-    if (fileName == null)
-      return false;
-    try {
-      bBuffering = true;
-      if (((Main.cur() instanceof DServer)) || ((Main.cur().netServerParams != null) && (!Main.cur().netServerParams.isSingle()) && (Main.cur().netServerParams.isMaster())))
-      {
-        bBuffering = false;
-      }if (bBuffering) {
-        file = new PrintStream(new BufferedOutputStream(new FileOutputStream(HomePath.toFileSystemName(fileName, 0), true), 2048));
-      }
-      else
-        file = new PrintStream(new FileOutputStream(HomePath.toFileSystemName(fileName, 0), true));
-    }
-    catch (Exception localException) {
-      return false;
-    }
-    return true;
-  }
-  public static void close() {
-    if (file != null) {
-      file.flush();
-      file.close();
-      file = null;
-    }
-  }
-
-  public static StringBuffer logOnTime(float paramFloat) {
-    if (Mission.isDogfight()) {
-      Calendar localCalendar = Calendar.getInstance();
-      StringBuffer localStringBuffer1 = new StringBuffer();
-      localStringBuffer1.append("[");
-      localStringBuffer1.append(shortDate.format(localCalendar.getTime()));
-      localStringBuffer1.append("] ");
-      return localStringBuffer1;
-    }
-    int i = (int)paramFloat;
-    int j = (int)((paramFloat - i) * 60.0F % 60.0F);
-    int k = (int)((paramFloat - i - j / 60) * 3600.0F % 60.0F);
-    StringBuffer localStringBuffer2 = new StringBuffer();
-    if (i < 10)
-      localStringBuffer2.append('0');
-    localStringBuffer2.append(i);
-    localStringBuffer2.append(':');
-    if (j < 10)
-      localStringBuffer2.append('0');
-    localStringBuffer2.append(j);
-    localStringBuffer2.append(':');
-    if (k < 10)
-      localStringBuffer2.append('0');
-    localStringBuffer2.append(k);
-    localStringBuffer2.append(' ');
-    return localStringBuffer2;
-  }
-
-  public static String name(Actor paramActor)
-  {
-    if (!Actor.isValid(paramActor)) {
-      return "";
-    }
-    if ((Mission.isNet()) && (Mission.isDogfight()) && ((paramActor instanceof Aircraft))) {
-      Aircraft localAircraft = (Aircraft)paramActor;
-      NetUser localNetUser = localAircraft.netUser();
-      if (localNetUser != null) {
-        return localNetUser.shortName() + ":" + Property.stringValue(localAircraft.getClass(), "keyName", "");
-      }
-      return Property.stringValue(localAircraft.getClass(), "keyName", "");
-    }
-
-    return paramActor.name();
-  }
-
-  private static boolean isTyping(int paramInt) {
-    if (Main.cur().netServerParams == null)
-      return true;
-    if (Main.cur().netServerParams.isMaster())
-      return true;
-    return (Main.cur().netServerParams.eventlogClient() & 1 << paramInt) != 0;
-  }
-
-  public static void type(int paramInt1, float paramFloat1, String paramString1, String paramString2, int paramInt2, float paramFloat2, float paramFloat3, boolean paramBoolean)
-  {
-    StringBuffer localStringBuffer = logOnTime(paramFloat1);
-    switch (paramInt1) {
-    case 0:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") seat occupied by ");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" at ");
-      break;
-    case 1:
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" is trying to occupy seat ");
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(")");
-      break;
-    case 2:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" crashed at ");
-      break;
-    case 3:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" shot down by ");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" at ");
-      break;
-    case 4:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" destroyed by ");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" at ");
-      break;
-    case 5:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") bailed out at ");
-      break;
-    case 6:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      if ((paramString2 == null) || ("".equals(paramString2))) {
-        localStringBuffer.append(") was killed at ");
-      } else {
-        localStringBuffer.append(") was killed by ");
-        localStringBuffer.append(paramString2);
-        localStringBuffer.append(" at ");
-      }
-      break;
-    case 7:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" landed at ");
-      break;
-    case 24:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" in flight at ");
-      break;
-    case 8:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") was captured at ");
-      break;
-    case 9:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") was wounded at ");
-      break;
-    case 10:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") was heavily wounded at ");
-      break;
-    case 12:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") was killed in his chute by ");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" at ");
-      break;
-    case 13:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") has chute destroyed by ");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" at ");
-      break;
-    case 14:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" turned wingtip smokes on at ");
-      break;
-    case 15:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" turned wingtip smokes off at ");
-      break;
-    case 16:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" turned landing lights on at ");
-      break;
-    case 17:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" turned landing lights off at ");
-      break;
-    case 18:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" loaded weapons '");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append("' fuel ");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append("%");
-      break;
-    case 19:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append("(");
-      localStringBuffer.append(paramInt2);
-      localStringBuffer.append(") successfully bailed out at ");
-      break;
-    case 20:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" damaged on the ground at ");
-      break;
-    case 21:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" damaged by ");
-      localStringBuffer.append(paramString2);
-      localStringBuffer.append(" at ");
-      break;
-    case 22:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" has disconnected");
-      break;
-    case 23:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" has connected");
-      break;
-    case 25:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" entered refly menu");
-      break;
-    case 26:
-      localStringBuffer.append(paramString1);
-      localStringBuffer.append(" removed at ");
-      break;
-    case 11:
-    default:
-      return;
-    }
-    if ((paramInt1 != 1) && (paramInt1 != 18) && (paramInt1 != 22) && (paramInt1 != 23) && (paramInt1 != 25)) {
-      localStringBuffer.append(paramFloat2);
-      localStringBuffer.append(" ");
-      localStringBuffer.append(paramFloat3);
-    }
-    if ((open()) && (isTyping(paramInt1)))
-      file.println(localStringBuffer);
-    if (paramBoolean)
-      ((NetUser)NetEnv.host()).replicateEventLog(paramInt1, paramFloat1, paramString1, paramString2, paramInt2, paramFloat2, paramFloat3);
-  }
-
-  public static void type(boolean paramBoolean, String paramString)
-  {
-    if (open()) {
-      if (paramBoolean) {
-        Calendar localCalendar = Calendar.getInstance();
-        file.println("[" + longDate.format(localCalendar.getTime()) + "] " + paramString);
-      } else {
-        file.println(paramString);
-      }
-      file.flush();
-    }
-  }
-
-  public static void type(String paramString)
-  {
-    StringBuffer localStringBuffer = logOnTime(World.getTimeofDay());
-    localStringBuffer.append(paramString);
-    if (open()) {
-      file.println(localStringBuffer);
-      file.flush();
-    }
-  }
-
-  public static void onOccupied(Aircraft paramAircraft, NetUser paramNetUser, int paramInt) {
-    if (!Actor.isValid(paramAircraft)) return;
-
-    String str = null;
-    if (paramNetUser != null)
-      str = paramNetUser.uniqueName();
-    else if (Mission.isSingle())
-      str = "Player";
-    if (str == null) return;
-    type(0, World.getTimeofDay(), name(paramAircraft), str, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-
-    if (!Mission.isDogfight())
-      new Action(0, name(paramAircraft), 0, str, -1, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
-  }
-
-  public static void onTryOccupied(String paramString, NetUser paramNetUser, int paramInt)
-  {
-    String str = null;
-    if (paramNetUser != null)
-      str = paramNetUser.uniqueName();
-    else if (Mission.isSingle())
-      str = "Player";
-    if (str == null) return;
-    type(1, World.getTimeofDay(), paramString, str, paramInt, 0.0F, 0.0F, true);
-  }
-
-  public static void onActorDied(Actor paramActor1, Actor paramActor2) {
-    if (!Mission.isPlaying()) return;
-    if (!Actor.isValid(paramActor1)) return;
-    if (((paramActor1 instanceof House)) && 
-      (Main.cur().netServerParams != null) && (Main.cur().netServerParams.eventlogHouse())) {
-      House localHouse = (House)paramActor1;
-      type(4, World.getTimeofDay(), localHouse.getMeshLiveName(), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, false);
-
-      return;
-    }
-
-    if (!paramActor1.isNamed()) return;
-    if (paramActor1.isNetMirror()) return;
-    if (World.cur().scoreCounter.getRegisteredType(paramActor1) < 0) return;
-
-    if (paramActor2 == World.remover) {
-      type(26, World.getTimeofDay(), name(paramActor1), "", 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-    }
-    else if ((paramActor1 == paramActor2) || (!Actor.isValid(paramActor2)) || (!paramActor2.isNamed())) {
-      type(2, World.getTimeofDay(), name(paramActor1), "", 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-
-      if (!Mission.isDogfight()) {
-        new Action(2, name(paramActor1), World.cur().scoreCounter.getRegisteredType(paramActor1), null, -1, 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
-      }
-    }
-    else if ((paramActor1 instanceof Aircraft)) {
-      type(3, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-
-      if (!Mission.isDogfight())
-        new Action(3, name(paramActor1), 0, name(paramActor2), World.cur().scoreCounter.getRegisteredType(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
-    }
-    else
-    {
-      type(4, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-
-      if (!Mission.isDogfight())
-        new Action(4, name(paramActor1), World.cur().scoreCounter.getRegisteredType(paramActor1), name(paramActor2), World.cur().scoreCounter.getRegisteredType(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
-    }
-  }
-
-  public static void onBailedOut(Aircraft paramAircraft, int paramInt)
-  {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    type(5, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-
-    if (!Mission.isDogfight())
-      new Action(5, name(paramAircraft), 0, null, -1, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
-  }
-
-  public static void onPilotKilled(Aircraft paramAircraft, int paramInt, Actor paramActor)
-  {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    String str = null;
-    if (Actor.isValid(paramActor))
-      str = name(paramActor);
-    type(6, World.getTimeofDay(), name(paramAircraft), str == null ? "" : str, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-
-    if (!Mission.isDogfight())
-      new Action(6, name(paramAircraft), 0, str, -1, paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
-  }
-
-  public static void onPilotKilled(Actor paramActor, String paramString, int paramInt)
-  {
-    if (!Mission.isPlaying()) return;
-
-    type(6, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
-
-    if (!Mission.isDogfight())
-      new Action(6, paramString, 0, null, -1, paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y);
-  }
-
-  public static void onAirLanded(Aircraft paramAircraft)
-  {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    type(7, World.getTimeofDay(), name(paramAircraft), "", 0, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-
-    if (!Mission.isDogfight())
-      new Action(7, name(paramAircraft), 0, null, -1, 0, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y);
-  }
-
-  public static void onAirInflight(Aircraft paramAircraft)
-  {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    type(24, World.getTimeofDay(), name(paramAircraft), "", 0, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-  }
-
-  public static void onCaptured(Actor paramActor, String paramString, int paramInt)
-  {
-    if (!Mission.isPlaying()) return;
-    if (paramActor.isNetMirror()) return;
-    type(8, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
-  }
-
-  public static void onCaptured(Aircraft paramAircraft, int paramInt) {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    type(8, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-  }
-
-  public static void onPilotWounded(Aircraft paramAircraft, int paramInt) {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    type(9, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-  }
-
-  public static void onPilotHeavilyWounded(Aircraft paramAircraft, int paramInt) {
-    if (!Mission.isPlaying()) return;
-    if (paramAircraft.isNetMirror()) return;
-    type(10, World.getTimeofDay(), name(paramAircraft), "", paramInt, (float)paramAircraft.pos.getAbsPoint().x, (float)paramAircraft.pos.getAbsPoint().y, true);
-  }
-
-  public static void onParaKilled(Actor paramActor1, String paramString, int paramInt, Actor paramActor2) {
-    if (!Mission.isPlaying()) return;
-    if (paramActor1.isNetMirror()) return;
-    type(12, World.getTimeofDay(), paramString, name(paramActor2), paramInt, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-
-    if (!Mission.isDogfight())
-      new Action(6, paramString, 0, null, -1, paramInt, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y);
-  }
-
-  public static void onChuteKilled(Actor paramActor1, String paramString, int paramInt, Actor paramActor2) {
-    if (!Mission.isPlaying()) return;
-    if (paramActor1.isNetMirror()) return;
-    type(13, World.getTimeofDay(), paramString, name(paramActor2), paramInt, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-  }
-
-  public static void onToggleSmoke(Actor paramActor, boolean paramBoolean) {
-    if (!Mission.isPlaying()) return;
-    if (paramActor.isNetMirror()) return;
-    type(paramBoolean ? 14 : 15, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
-  }
-
-  public static void onToggleLandingLight(Actor paramActor, boolean paramBoolean) {
-    if (!Mission.isPlaying()) return;
-    if (paramActor.isNetMirror()) return;
-    type(paramBoolean ? 16 : 17, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
-  }
-
-  public static void onWeaponsLoad(Actor paramActor, String paramString, int paramInt) {
-    if (paramActor.isNetMirror()) return;
-    type(18, World.getTimeofDay(), name(paramActor), paramString, paramInt, 0.0F, 0.0F, true);
-  }
-  public static void onParaLanded(Actor paramActor, String paramString, int paramInt) {
-    if (!Mission.isPlaying()) return;
-    if (paramActor.isNetMirror()) return;
-    type(19, World.getTimeofDay(), paramString, "", paramInt, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
-  }
-
-  public static void onDamagedGround(Actor paramActor) {
-    if (!Actor.isValid(paramActor)) return;
-    if (!Mission.isPlaying()) return;
-    if (paramActor.isNetMirror()) return;
-    type(20, World.getTimeofDay(), name(paramActor), "", 0, (float)paramActor.pos.getAbsPoint().x, (float)paramActor.pos.getAbsPoint().y, true);
-  }
-
-  public static void onDamaged(Actor paramActor1, Actor paramActor2) {
-    if (!Actor.isValid(paramActor1)) return;
-    if (!Mission.isPlaying()) return;
-    if (paramActor1.isNetMirror()) return;
-    type(21, World.getTimeofDay(), name(paramActor1), name(paramActor2), 0, (float)paramActor1.pos.getAbsPoint().x, (float)paramActor1.pos.getAbsPoint().y, true);
-  }
-
-  public static void onDisconnected(String paramString) {
-    if (!Mission.isPlaying()) return;
-
-    type(22, World.getTimeofDay(), paramString, "", 0, 0.0F, 0.0F, false);
-  }
-
-  public static void onConnected(String paramString) {
-    if (!Mission.isPlaying()) return;
-
-    type(23, World.getTimeofDay(), paramString, "", 0, 0.0F, 0.0F, false);
-  }
-
-  public static void onRefly(String paramString) {
-    if (!Mission.isPlaying()) return;
-    type(25, World.getTimeofDay(), paramString, "", 0, 0.0F, 0.0F, true);
-  }
-
-  public static class Action
-  {
-    public int event;
-    public float time;
-    public String arg0;
-    public int scoreItem0;
-    public int army0;
-    public String arg1;
-    public int scoreItem1;
-    public int argi;
-    public float x;
-    public float y;
-
-    public Action()
+    public EventLog()
     {
     }
 
-    public Action(int paramInt1, String paramString1, int paramInt2, String paramString2, int paramInt3, int paramInt4, float paramFloat1, float paramFloat2)
+    public static void flyPlayer(com.maddox.JGP.Point3d point3d)
     {
-      this.event = paramInt1;
-      this.time = World.getTimeofDay();
-      this.arg0 = paramString1;
-      this.scoreItem0 = paramInt2;
-      this.army0 = 0;
-      if (paramString1 != null) {
-        Actor localActor = Actor.getByName(paramString1);
-        if (localActor != null)
-          this.army0 = localActor.getArmy();
-      }
-      this.arg1 = paramString2;
-      this.scoreItem1 = paramInt3;
-      this.argi = paramInt4;
-      this.x = paramFloat1;
-      this.y = paramFloat2;
-      if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()) && (Main.cur().netServerParams.isDedicated()))
-      {
-        return;
-      }EventLog.actions.add(this);
+        if(com.maddox.il2.game.Mission.isDogfight())
+            return;
+        if(lastFly != null)
+        {
+            double d = ((double)lastFly.x - point3d.x) * ((double)lastFly.x - point3d.x) + ((double)lastFly.y - point3d.y) * ((double)lastFly.y - point3d.y);
+            if(d < 250000D)
+                return;
+        }
+        lastFly = new Action(11, null, -1, null, -1, 0, (float)point3d.x, (float)point3d.y);
     }
-  }
+
+    public static void resetGameClear()
+    {
+        actions.clear();
+        lastFly = null;
+    }
+
+    public static void resetGameCreate()
+    {
+    }
+
+    private static void checkInited()
+    {
+        if(!bInited)
+        {
+            logKeep = com.maddox.il2.engine.Config.cur.ini.get("game", "eventlogkeep", 1, 0, 1) == 1;
+            fileName = com.maddox.il2.engine.Config.cur.ini.get("game", "eventlog", (java.lang.String)null);
+            bInited = true;
+        }
+        if(longDate == null)
+        {
+            longDate = java.text.DateFormat.getDateTimeInstance(2, 2);
+            shortDate = java.text.DateFormat.getTimeInstance(2);
+        }
+    }
+
+    public static void checkState()
+    {
+        com.maddox.il2.ai.EventLog.checkInited();
+        if(fileName == null && com.maddox.il2.game.Main.cur().campaign != null && com.maddox.il2.game.Main.cur().campaign.isDGen())
+        {
+            fileName = "eventlog.lst";
+            com.maddox.il2.engine.Config.cur.ini.set("game", "eventlog", "eventlog.lst");
+            com.maddox.il2.engine.Config.cur.ini.saveFile();
+        }
+        if(logKeep)
+        {
+            com.maddox.il2.ai.EventLog.checkBuffering();
+        } else
+        {
+            if(file != null)
+            {
+                try
+                {
+                    file.close();
+                }
+                catch(java.lang.Exception exception) { }
+                file = null;
+            }
+            if(fileName != null)
+                try
+                {
+                    java.io.File file1 = new File(com.maddox.rts.HomePath.toFileSystemName(fileName, 0));
+                    file1.delete();
+                }
+                catch(java.lang.Exception exception1) { }
+        }
+    }
+
+    private static void checkBuffering()
+    {
+        if(file == null)
+            return;
+        boolean flag = true;
+        if((com.maddox.il2.game.Main.cur() instanceof com.maddox.il2.game.DServer) || com.maddox.il2.game.Main.cur().netServerParams != null && !com.maddox.il2.game.Main.cur().netServerParams.isSingle() && com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+            flag = false;
+        if(flag != bBuffering)
+        {
+            com.maddox.il2.ai.EventLog.close();
+            com.maddox.il2.ai.EventLog.open();
+        }
+    }
+
+    public static boolean open()
+    {
+        if(file != null)
+            return true;
+        com.maddox.il2.ai.EventLog.checkInited();
+        if(fileName == null)
+            return false;
+        try
+        {
+            bBuffering = true;
+            if((com.maddox.il2.game.Main.cur() instanceof com.maddox.il2.game.DServer) || com.maddox.il2.game.Main.cur().netServerParams != null && !com.maddox.il2.game.Main.cur().netServerParams.isSingle() && com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+                bBuffering = false;
+            if(bBuffering)
+                file = new PrintStream(new BufferedOutputStream(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(fileName, 0), true), 2048));
+            else
+                file = new PrintStream(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(fileName, 0), true));
+        }
+        catch(java.lang.Exception exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static void close()
+    {
+        if(file != null)
+        {
+            file.flush();
+            file.close();
+            file = null;
+        }
+    }
+
+    public static java.lang.StringBuffer logOnTime(float f)
+    {
+        if(com.maddox.il2.game.Mission.isDogfight())
+        {
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            java.lang.StringBuffer stringbuffer = new StringBuffer();
+            stringbuffer.append("[");
+            stringbuffer.append(shortDate.format(calendar.getTime()));
+            stringbuffer.append("] ");
+            return stringbuffer;
+        }
+        int i = (int)f;
+        int j = (int)(((f - (float)i) * 60F) % 60F);
+        int k = (int)(((f - (float)i - (float)(j / 60)) * 3600F) % 60F);
+        java.lang.StringBuffer stringbuffer1 = new StringBuffer();
+        if(i < 10)
+            stringbuffer1.append('0');
+        stringbuffer1.append(i);
+        stringbuffer1.append(':');
+        if(j < 10)
+            stringbuffer1.append('0');
+        stringbuffer1.append(j);
+        stringbuffer1.append(':');
+        if(k < 10)
+            stringbuffer1.append('0');
+        stringbuffer1.append(k);
+        stringbuffer1.append(' ');
+        return stringbuffer1;
+    }
+
+    public static java.lang.String name(com.maddox.il2.engine.Actor actor)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+            return "";
+        if(com.maddox.il2.game.Mission.isNet() && com.maddox.il2.game.Mission.isDogfight() && (actor instanceof com.maddox.il2.objects.air.Aircraft))
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)actor;
+            com.maddox.il2.net.NetUser netuser = aircraft.netUser();
+            if(netuser != null)
+                return netuser.shortName() + ":" + com.maddox.rts.Property.stringValue(aircraft.getClass(), "keyName", "");
+            else
+                return com.maddox.rts.Property.stringValue(aircraft.getClass(), "keyName", "");
+        } else
+        {
+            return actor.name();
+        }
+    }
+
+    private static boolean isTyping(int i)
+    {
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return true;
+        if(com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+            return true;
+        else
+            return (com.maddox.il2.game.Main.cur().netServerParams.eventlogClient() & 1 << i) != 0;
+    }
+
+    public static void type(int i, float f, java.lang.String s, java.lang.String s1, int j, float f1, float f2, boolean flag)
+    {
+        java.lang.StringBuffer stringbuffer = com.maddox.il2.ai.EventLog.logOnTime(f);
+        switch(i)
+        {
+        case 0: // '\0'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") seat occupied by ");
+            stringbuffer.append(s1);
+            stringbuffer.append(" at ");
+            break;
+
+        case 1: // '\001'
+            stringbuffer.append(s1);
+            stringbuffer.append(" is trying to occupy seat ");
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(")");
+            break;
+
+        case 2: // '\002'
+            stringbuffer.append(s);
+            stringbuffer.append(" crashed at ");
+            break;
+
+        case 3: // '\003'
+            stringbuffer.append(s);
+            stringbuffer.append(" shot down by ");
+            stringbuffer.append(s1);
+            stringbuffer.append(" at ");
+            break;
+
+        case 4: // '\004'
+            stringbuffer.append(s);
+            stringbuffer.append(" destroyed by ");
+            stringbuffer.append(s1);
+            stringbuffer.append(" at ");
+            break;
+
+        case 5: // '\005'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") bailed out at ");
+            break;
+
+        case 6: // '\006'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            if(s1 == null || "".equals(s1))
+            {
+                stringbuffer.append(") was killed at ");
+            } else
+            {
+                stringbuffer.append(") was killed by ");
+                stringbuffer.append(s1);
+                stringbuffer.append(" at ");
+            }
+            break;
+
+        case 7: // '\007'
+            stringbuffer.append(s);
+            stringbuffer.append(" landed at ");
+            break;
+
+        case 24: // '\030'
+            stringbuffer.append(s);
+            stringbuffer.append(" in flight at ");
+            break;
+
+        case 8: // '\b'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") was captured at ");
+            break;
+
+        case 9: // '\t'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") was wounded at ");
+            break;
+
+        case 10: // '\n'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") was heavily wounded at ");
+            break;
+
+        case 12: // '\f'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") was killed in his chute by ");
+            stringbuffer.append(s1);
+            stringbuffer.append(" at ");
+            break;
+
+        case 13: // '\r'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") has chute destroyed by ");
+            stringbuffer.append(s1);
+            stringbuffer.append(" at ");
+            break;
+
+        case 14: // '\016'
+            stringbuffer.append(s);
+            stringbuffer.append(" turned wingtip smokes on at ");
+            break;
+
+        case 15: // '\017'
+            stringbuffer.append(s);
+            stringbuffer.append(" turned wingtip smokes off at ");
+            break;
+
+        case 16: // '\020'
+            stringbuffer.append(s);
+            stringbuffer.append(" turned landing lights on at ");
+            break;
+
+        case 17: // '\021'
+            stringbuffer.append(s);
+            stringbuffer.append(" turned landing lights off at ");
+            break;
+
+        case 18: // '\022'
+            stringbuffer.append(s);
+            stringbuffer.append(" loaded weapons '");
+            stringbuffer.append(s1);
+            stringbuffer.append("' fuel ");
+            stringbuffer.append(j);
+            stringbuffer.append("%");
+            break;
+
+        case 19: // '\023'
+            stringbuffer.append(s);
+            stringbuffer.append("(");
+            stringbuffer.append(j);
+            stringbuffer.append(") successfully bailed out at ");
+            break;
+
+        case 20: // '\024'
+            stringbuffer.append(s);
+            stringbuffer.append(" damaged on the ground at ");
+            break;
+
+        case 21: // '\025'
+            stringbuffer.append(s);
+            stringbuffer.append(" damaged by ");
+            stringbuffer.append(s1);
+            stringbuffer.append(" at ");
+            break;
+
+        case 22: // '\026'
+            stringbuffer.append(s);
+            stringbuffer.append(" has disconnected");
+            break;
+
+        case 23: // '\027'
+            stringbuffer.append(s);
+            stringbuffer.append(" has connected");
+            break;
+
+        case 25: // '\031'
+            stringbuffer.append(s);
+            stringbuffer.append(" entered refly menu");
+            break;
+
+        case 26: // '\032'
+            stringbuffer.append(s);
+            stringbuffer.append(" removed at ");
+            break;
+
+        case 11: // '\013'
+        default:
+            return;
+        }
+        if(i != 1 && i != 18 && i != 22 && i != 23 && i != 25)
+        {
+            stringbuffer.append(f1);
+            stringbuffer.append(" ");
+            stringbuffer.append(f2);
+        }
+        if(com.maddox.il2.ai.EventLog.open() && com.maddox.il2.ai.EventLog.isTyping(i))
+            file.println(stringbuffer);
+        if(flag)
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).replicateEventLog(i, f, s, s1, j, f1, f2);
+    }
+
+    public static void type(boolean flag, java.lang.String s)
+    {
+        if(com.maddox.il2.ai.EventLog.open())
+        {
+            if(flag)
+            {
+                java.util.Calendar calendar = java.util.Calendar.getInstance();
+                file.println("[" + longDate.format(calendar.getTime()) + "] " + s);
+            } else
+            {
+                file.println(s);
+            }
+            file.flush();
+        }
+    }
+
+    public static void type(java.lang.String s)
+    {
+        java.lang.StringBuffer stringbuffer = com.maddox.il2.ai.EventLog.logOnTime(com.maddox.il2.ai.World.getTimeofDay());
+        stringbuffer.append(s);
+        if(com.maddox.il2.ai.EventLog.open())
+        {
+            file.println(stringbuffer);
+            file.flush();
+        }
+    }
+
+    public static void onOccupied(com.maddox.il2.objects.air.Aircraft aircraft, com.maddox.il2.net.NetUser netuser, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(aircraft))
+            return;
+        java.lang.String s = null;
+        if(netuser != null)
+            s = netuser.uniqueName();
+        else
+        if(com.maddox.il2.game.Mission.isSingle())
+            s = "Player";
+        if(s == null)
+            return;
+        com.maddox.il2.ai.EventLog.type(0, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), s, i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            new Action(0, com.maddox.il2.ai.EventLog.name(aircraft), 0, s, -1, i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y);
+    }
+
+    public static void onTryOccupied(java.lang.String s, com.maddox.il2.net.NetUser netuser, int i)
+    {
+        java.lang.String s1 = null;
+        if(netuser != null)
+            s1 = netuser.uniqueName();
+        else
+        if(com.maddox.il2.game.Mission.isSingle())
+            s1 = "Player";
+        if(s1 == null)
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(1, com.maddox.il2.ai.World.getTimeofDay(), s, s1, i, 0.0F, 0.0F, true);
+            return;
+        }
+    }
+
+    public static void onActorDied(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+            return;
+        if((actor instanceof com.maddox.il2.objects.buildings.House) && com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.eventlogHouse())
+        {
+            com.maddox.il2.objects.buildings.House house = (com.maddox.il2.objects.buildings.House)actor;
+            com.maddox.il2.ai.EventLog.type(4, com.maddox.il2.ai.World.getTimeofDay(), house.getMeshLiveName(), com.maddox.il2.ai.EventLog.name(actor1), 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, false);
+            return;
+        }
+        if(!actor.isNamed())
+            return;
+        if(actor.isNetMirror())
+            return;
+        if(com.maddox.il2.ai.World.cur().scoreCounter.getRegisteredType(actor) < 0)
+            return;
+        if(actor1 == com.maddox.il2.ai.World.remover)
+            com.maddox.il2.ai.EventLog.type(26, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), "", 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+        else
+        if(actor == actor1 || !com.maddox.il2.engine.Actor.isValid(actor1) || !actor1.isNamed())
+        {
+            com.maddox.il2.ai.EventLog.type(2, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), "", 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            if(!com.maddox.il2.game.Mission.isDogfight())
+                new Action(2, com.maddox.il2.ai.EventLog.name(actor), com.maddox.il2.ai.World.cur().scoreCounter.getRegisteredType(actor), null, -1, 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y);
+        } else
+        if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+        {
+            com.maddox.il2.ai.EventLog.type(3, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), com.maddox.il2.ai.EventLog.name(actor1), 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            if(!com.maddox.il2.game.Mission.isDogfight())
+                new Action(3, com.maddox.il2.ai.EventLog.name(actor), 0, com.maddox.il2.ai.EventLog.name(actor1), com.maddox.il2.ai.World.cur().scoreCounter.getRegisteredType(actor1), 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y);
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(4, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), com.maddox.il2.ai.EventLog.name(actor1), 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            if(!com.maddox.il2.game.Mission.isDogfight())
+                new Action(4, com.maddox.il2.ai.EventLog.name(actor), com.maddox.il2.ai.World.cur().scoreCounter.getRegisteredType(actor), com.maddox.il2.ai.EventLog.name(actor1), com.maddox.il2.ai.World.cur().scoreCounter.getRegisteredType(actor1), 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y);
+        }
+    }
+
+    public static void onBailedOut(com.maddox.il2.objects.air.Aircraft aircraft, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+            return;
+        com.maddox.il2.ai.EventLog.type(5, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), "", i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            new Action(5, com.maddox.il2.ai.EventLog.name(aircraft), 0, null, -1, i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y);
+    }
+
+    public static void onPilotKilled(com.maddox.il2.objects.air.Aircraft aircraft, int i, com.maddox.il2.engine.Actor actor)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+            return;
+        java.lang.String s = null;
+        if(com.maddox.il2.engine.Actor.isValid(actor))
+            s = com.maddox.il2.ai.EventLog.name(actor);
+        com.maddox.il2.ai.EventLog.type(6, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), s != null ? s : "", i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            new Action(6, com.maddox.il2.ai.EventLog.name(aircraft), 0, s, -1, i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y);
+    }
+
+    public static void onPilotKilled(com.maddox.il2.engine.Actor actor, java.lang.String s, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        com.maddox.il2.ai.EventLog.type(6, com.maddox.il2.ai.World.getTimeofDay(), s, "", i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            new Action(6, s, 0, null, -1, i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y);
+    }
+
+    public static void onAirLanded(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+            return;
+        com.maddox.il2.ai.EventLog.type(7, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), "", 0, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            new Action(7, com.maddox.il2.ai.EventLog.name(aircraft), 0, null, -1, 0, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y);
+    }
+
+    public static void onAirInflight(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(24, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), "", 0, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onCaptured(com.maddox.il2.engine.Actor actor, java.lang.String s, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(8, com.maddox.il2.ai.World.getTimeofDay(), s, "", i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onCaptured(com.maddox.il2.objects.air.Aircraft aircraft, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(8, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), "", i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onPilotWounded(com.maddox.il2.objects.air.Aircraft aircraft, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(9, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), "", i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onPilotHeavilyWounded(com.maddox.il2.objects.air.Aircraft aircraft, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(aircraft.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(10, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(aircraft), "", i, (float)aircraft.pos.getAbsPoint().x, (float)aircraft.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onParaKilled(com.maddox.il2.engine.Actor actor, java.lang.String s, int i, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+            return;
+        com.maddox.il2.ai.EventLog.type(12, com.maddox.il2.ai.World.getTimeofDay(), s, com.maddox.il2.ai.EventLog.name(actor1), i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            new Action(6, s, 0, null, -1, i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y);
+    }
+
+    public static void onChuteKilled(com.maddox.il2.engine.Actor actor, java.lang.String s, int i, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(13, com.maddox.il2.ai.World.getTimeofDay(), s, com.maddox.il2.ai.EventLog.name(actor1), i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onToggleSmoke(com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(flag ? 14 : 15, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), "", 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onToggleLandingLight(com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(flag ? 16 : 17, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), "", 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onWeaponsLoad(com.maddox.il2.engine.Actor actor, java.lang.String s, int i)
+    {
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(18, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), s, i, 0.0F, 0.0F, true);
+            return;
+        }
+    }
+
+    public static void onParaLanded(com.maddox.il2.engine.Actor actor, java.lang.String s, int i)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(19, com.maddox.il2.ai.World.getTimeofDay(), s, "", i, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onDamagedGround(com.maddox.il2.engine.Actor actor)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+            return;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(20, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), "", 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onDamaged(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+            return;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(actor.isNetMirror())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(21, com.maddox.il2.ai.World.getTimeofDay(), com.maddox.il2.ai.EventLog.name(actor), com.maddox.il2.ai.EventLog.name(actor1), 0, (float)actor.pos.getAbsPoint().x, (float)actor.pos.getAbsPoint().y, true);
+            return;
+        }
+    }
+
+    public static void onDisconnected(java.lang.String s)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(22, com.maddox.il2.ai.World.getTimeofDay(), s, "", 0, 0.0F, 0.0F, false);
+            return;
+        }
+    }
+
+    public static void onConnected(java.lang.String s)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(23, com.maddox.il2.ai.World.getTimeofDay(), s, "", 0, 0.0F, 0.0F, false);
+            return;
+        }
+    }
+
+    public static void onRefly(java.lang.String s)
+    {
+        if(!com.maddox.il2.game.Mission.isPlaying())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.EventLog.type(25, com.maddox.il2.ai.World.getTimeofDay(), s, "", 0, 0.0F, 0.0F, true);
+            return;
+        }
+    }
+
+    public static java.util.ArrayList actions = new ArrayList();
+    public static com.maddox.il2.ai.Action lastFly = null;
+    public static final int OCCUPIED = 0;
+    public static final int TRYOCCUPIED = 1;
+    public static final int CRASHED = 2;
+    public static final int SHOTDOWN = 3;
+    public static final int DESTROYED = 4;
+    public static final int BAILEDOUT = 5;
+    public static final int KILLED = 6;
+    public static final int LANDED = 7;
+    public static final int CAPTURED = 8;
+    public static final int WOUNDED = 9;
+    public static final int HEAVILYWOUNDED = 10;
+    public static final int FLY = 11;
+    public static final int PARAKILLED = 12;
+    public static final int CHUTEKILLED = 13;
+    public static final int SMOKEON = 14;
+    public static final int SMOKEOFF = 15;
+    public static final int LANDINGLIGHTON = 16;
+    public static final int LANDINGLIGHTOFF = 17;
+    public static final int WEAPONSLOAD = 18;
+    public static final int PARALANDED = 19;
+    public static final int DAMAGEDGROUND = 20;
+    public static final int DAMAGED = 21;
+    public static final int DISCONNECTED = 22;
+    public static final int CONNECTED = 23;
+    public static final int INFLIGHT = 24;
+    public static final int REFLY = 25;
+    public static final int REMOVED = 26;
+    private static java.io.PrintStream file = null;
+    private static boolean bBuffering = true;
+    private static java.lang.String fileName = null;
+    private static boolean logKeep = false;
+    private static java.text.DateFormat longDate = null;
+    private static java.text.DateFormat shortDate = null;
+    private static boolean bInited = false;
+
 }

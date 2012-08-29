@@ -1,64 +1,82 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Eff3DActor.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import java.util.ArrayList;
 
-class ActorPosStaticEff3D extends ActorPosStatic
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorPosStatic, Engine, DrawEnv, CollideEnv, 
+//            Actor, DreamEnv, Loc
+
+class ActorPosStaticEff3D extends com.maddox.il2.engine.ActorPosStatic
 {
-  protected void drawingChange(boolean paramBoolean)
-  {
-    if (paramBoolean) Engine.cur.drawEnv.add(actor()); else
-      Engine.cur.drawEnv.remove(actor());
-  }
 
-  protected void collideChange(boolean paramBoolean)
-  {
-    if (paramBoolean) Engine.cur.collideEnv.add(actor()); else
-      Engine.cur.collideEnv.remove(actor());
-  }
+    protected void drawingChange(boolean flag)
+    {
+        if(flag)
+            com.maddox.il2.engine.Engine.cur.drawEnv.add(actor());
+        else
+            com.maddox.il2.engine.Engine.cur.drawEnv.remove(actor());
+    }
 
-  protected void changePosInEnvs(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    inValidate(true);
-    int i = actor().flags;
-    if ((i & 0x1) == 1)
-      Engine.cur.drawEnv.changedPos(actor(), paramPoint3d1, paramPoint3d2);
-    if ((i & 0x30) == 16)
-      Engine.cur.collideEnv.changedPosStatic(actor(), paramPoint3d1, paramPoint3d2);
-    if ((i & 0x200) == 512)
-      Engine.cur.dreamEnv.changedListenerPos(actor(), paramPoint3d1, paramPoint3d2);
-    if ((i & 0x100) == 256)
-      Engine.cur.dreamEnv.changedFirePos(actor(), paramPoint3d1, paramPoint3d2);
-  }
+    protected void collideChange(boolean flag)
+    {
+        if(flag)
+            com.maddox.il2.engine.Engine.cur.collideEnv.add(actor());
+        else
+            com.maddox.il2.engine.Engine.cur.collideEnv.remove(actor());
+    }
 
-  protected void clearEnvs(Actor paramActor) {
-    int i = paramActor.flags;
-    if (((i & 0x1) != 0) && (((i & 0x2) == 0) || (base() == null)))
-      Engine.cur.drawEnv.remove(paramActor);
-    if ((i & 0x30) == 16)
-      Engine.cur.collideEnv.removeStatic(paramActor);
-    if ((i & 0x200) == 512)
-      Engine.cur.dreamEnv.removeListener(paramActor);
-    if ((i & 0x100) == 256)
-      Engine.dreamEnv().removeFire(paramActor);
-    int j = Engine.cur.posChanged.indexOf(paramActor);
-    if (j >= 0)
-      Engine.cur.posChanged.remove(j);
-  }
+    protected void changePosInEnvs(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        inValidate(true);
+        int i = actor().flags;
+        if((i & 1) == 1)
+            com.maddox.il2.engine.Engine.cur.drawEnv.changedPos(actor(), point3d, point3d1);
+        if((i & 0x30) == 16)
+            com.maddox.il2.engine.Engine.cur.collideEnv.changedPosStatic(actor(), point3d, point3d1);
+        if((i & 0x200) == 512)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.changedListenerPos(actor(), point3d, point3d1);
+        if((i & 0x100) == 256)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.changedFirePos(actor(), point3d, point3d1);
+    }
 
-  protected void initEnvs(Actor paramActor) {
-    paramActor.pos = this;
-    int i = paramActor.flags;
-    if (((i & 0x1) != 0) && (((i & 0x2) == 0) || (base() == null)))
-      Engine.cur.drawEnv.add(paramActor);
-    if ((i & 0x30) == 16)
-      Engine.cur.collideEnv.addStatic(paramActor);
-    if ((i & 0x200) == 512)
-      Engine.cur.dreamEnv.addListener(paramActor);
-    if ((i & 0x100) == 256)
-      Engine.dreamEnv().addFire(paramActor);
-  }
+    protected void clearEnvs(com.maddox.il2.engine.Actor actor)
+    {
+        int i = actor.flags;
+        if((i & 1) != 0 && ((i & 2) == 0 || base() == null))
+            com.maddox.il2.engine.Engine.cur.drawEnv.remove(actor);
+        if((i & 0x30) == 16)
+            com.maddox.il2.engine.Engine.cur.collideEnv.removeStatic(actor);
+        if((i & 0x200) == 512)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.removeListener(actor);
+        if((i & 0x100) == 256)
+            com.maddox.il2.engine.Engine.dreamEnv().removeFire(actor);
+        int j = com.maddox.il2.engine.Engine.cur.posChanged.indexOf(actor);
+        if(j >= 0)
+            com.maddox.il2.engine.Engine.cur.posChanged.remove(j);
+    }
 
-  public ActorPosStaticEff3D(Actor paramActor, Loc paramLoc) {
-    super(paramActor, paramLoc);
-  }
+    protected void initEnvs(com.maddox.il2.engine.Actor actor)
+    {
+        actor.pos = this;
+        int i = actor.flags;
+        if((i & 1) != 0 && ((i & 2) == 0 || base() == null))
+            com.maddox.il2.engine.Engine.cur.drawEnv.add(actor);
+        if((i & 0x30) == 16)
+            com.maddox.il2.engine.Engine.cur.collideEnv.addStatic(actor);
+        if((i & 0x200) == 512)
+            com.maddox.il2.engine.Engine.cur.dreamEnv.addListener(actor);
+        if((i & 0x100) == 256)
+            com.maddox.il2.engine.Engine.dreamEnv().addFire(actor);
+    }
+
+    public ActorPosStaticEff3D(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc)
+    {
+        super(actor, loc);
+    }
 }

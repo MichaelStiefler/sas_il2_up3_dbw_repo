@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PNodes.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point3d;
@@ -8,285 +13,312 @@ import com.maddox.il2.engine.IconDraw;
 import com.maddox.il2.engine.Mat;
 import com.maddox.rts.Property;
 
-public class PNodes extends PPoint
+// Referenced classes of package com.maddox.il2.builder:
+//            PPoint, Path, PathChief, PathFind
+
+public class PNodes extends com.maddox.il2.builder.PPoint
 {
-  public double timeoutMin = 0.0D;
-  public double speed;
-  public float[] posXYZ;
-  private static Point3d _prevP;
-  private static Point3d _curP;
-  private static Point3d _movePrevP;
 
-  public double len()
-  {
-    if (this.posXYZ == null) return 0.0D;
-    if (this.posXYZ.length / 4 <= 1) return 0.0D;
-    double d1 = this.posXYZ[0];
-    double d2 = this.posXYZ[1];
-    double d3 = this.posXYZ[2];
-    _prevP.set(d1, d2, d3);
-    double d4 = 0.0D;
-    for (int i = 1; i < this.posXYZ.length / 4; i++) {
-      d1 = this.posXYZ[(i * 4 + 0)];
-      d2 = this.posXYZ[(i * 4 + 1)];
-      d3 = this.posXYZ[(i * 4 + 2)];
-      _curP.set(d1, d2, d3);
-      d4 += _prevP.distance(_curP);
-      _prevP.set(_curP);
-    }
-    return d4;
-  }
-
-  public double computeTime(PNodes paramPNodes)
-  {
-    double d1 = len();
-    if (d1 == 0.0D) return 0.0D;
-    double d2 = 0.0D;
-
-    int i = this.posXYZ.length / 4;
-    double d3 = this.posXYZ[0];
-    double d4 = this.posXYZ[1];
-    double d5 = this.posXYZ[2];
-    _prevP.set(d3, d4, d5);
-    double d6 = 0.0D;
-    for (int j = 1; j < i; j++) {
-      d3 = this.posXYZ[(j * 4 + 0)];
-      d4 = this.posXYZ[(j * 4 + 1)];
-      d5 = this.posXYZ[(j * 4 + 2)];
-      _curP.set(d3, d4, d5);
-      double d7 = _prevP.distance(_curP);
-      double d8 = this.speed * (d6 / d1) + paramPNodes.speed * ((d1 - d6) / d1);
-      d6 += d7;
-      double d9 = this.speed * (d6 / d1) + paramPNodes.speed * ((d1 - d6) / d1);
-      double d10 = (d8 + d9) / 2.0D;
-      if (j == 1) {
-        if (this.timeoutMin != 0.0D) d8 = 0.0D; else
-          d8 = this.speed;
-      }
-      if (j == i - 1) {
-        if (paramPNodes.timeoutMin != 0.0D) d9 = 0.0D; else
-          d9 = paramPNodes.speed;
-      }
-      if ((d8 == 0.0D) && (d9 == 0.0D))
-        d10 /= 2.0D;
-      else {
-        d10 = (d8 + d9) / 2.0D;
-      }
-      d2 += d7 / d10;
-
-      _prevP.set(_curP);
-    }
-    return d2;
-  }
-
-  private void syncPathPos() {
-    Path localPath = (Path)getOwner();
-    if (localPath.points() <= 1) return;
-    PNodes localPNodes = (PNodes)localPath.point(0);
-    _curP.set(localPNodes.posXYZ[0], localPNodes.posXYZ[1], localPNodes.posXYZ[2]);
-
-    Point3d localPoint3d = localPNodes.pos.getAbsPoint();
-    if (!localPoint3d.equals(_curP)) {
-      localPNodes.pos.setAbs(_curP);
-      localPNodes.pos.reset();
-
-      _curP.set(localPNodes.posXYZ[4], localPNodes.posXYZ[5], localPNodes.posXYZ[6]);
-
-      ((PathChief)localPath).placeUnits(localPNodes.pos.getAbsPoint(), _curP);
-    }
-    for (int i = 1; i < localPath.points(); i++) {
-      localPNodes = (PNodes)localPath.point(i - 1);
-      int j = localPNodes.posXYZ.length / 4 - 1;
-      _curP.set(localPNodes.posXYZ[(j * 4 + 0)], localPNodes.posXYZ[(j * 4 + 1)], localPNodes.posXYZ[(j * 4 + 2)]);
-
-      localPath.point(i).pos.setAbs(_curP);
-      localPath.point(i).pos.reset();
-    }
-  }
-
-  public void moveTo(Point3d paramPoint3d) {
-    Path localPath = (Path)getOwner();
-    int i = localPath.moveType;
-    if (i >= 0) {
-      PathFind.setMoverType(i);
-    }
-    this.pos.getAbs(_movePrevP);
-    this.pos.setAbs(paramPoint3d);
-    align();
-    int j = localPath.points();
-    if (j == 1) {
-      if (!PathFind.setStartPoint(0, this)) {
-        this.pos.setAbs(_movePrevP);
-        throw new ActorException("PathPoint not Reacheable");
-      }
-    } else {
-      int k = localPath.pointIndx(this);
-      PNodes localPNodes1;
-      if (k == j - 1) {
-        localPNodes1 = (PNodes)localPath.point(k - 1);
-        if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.isPointReacheable(0, this)))
+    public double len()
+    {
+        if(posXYZ == null)
+            return 0.0D;
+        if(posXYZ.length / 4 <= 1)
+            return 0.0D;
+        double d = posXYZ[0];
+        double d2 = posXYZ[1];
+        double d4 = posXYZ[2];
+        _prevP.set(d, d2, d4);
+        double d6 = 0.0D;
+        for(int i = 1; i < posXYZ.length / 4; i++)
         {
-          this.pos.setAbs(_movePrevP);
-          throw new ActorException("PathPoint not Reacheable");
+            double d1 = posXYZ[i * 4 + 0];
+            double d3 = posXYZ[i * 4 + 1];
+            double d5 = posXYZ[i * 4 + 2];
+            _curP.set(d1, d3, d5);
+            d6 += _prevP.distance(_curP);
+            _prevP.set(_curP);
         }
-        localPNodes1.posXYZ = PathFind.buildPath(0, this);
-      }
-      else if (k == 0) {
-        localPNodes1 = (PNodes)localPath.point(k + 1);
-        if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.isPointReacheable(0, this)))
+
+        return d6;
+    }
+
+    public double computeTime(com.maddox.il2.builder.PNodes pnodes)
+    {
+        double d = len();
+        if(d == 0.0D)
+            return 0.0D;
+        double d1 = 0.0D;
+        int i = posXYZ.length / 4;
+        double d2 = posXYZ[0];
+        double d4 = posXYZ[1];
+        double d6 = posXYZ[2];
+        _prevP.set(d2, d4, d6);
+        double d8 = 0.0D;
+        for(int j = 1; j < i; j++)
         {
-          this.pos.setAbs(_movePrevP);
-          throw new ActorException("PathPoint not Reacheable");
+            double d3 = posXYZ[j * 4 + 0];
+            double d5 = posXYZ[j * 4 + 1];
+            double d7 = posXYZ[j * 4 + 2];
+            _curP.set(d3, d5, d7);
+            double d9 = _prevP.distance(_curP);
+            double d10 = speed * (d8 / d) + pnodes.speed * ((d - d8) / d);
+            d8 += d9;
+            double d11 = speed * (d8 / d) + pnodes.speed * ((d - d8) / d);
+            double d12 = (d10 + d11) / 2D;
+            if(j == 1)
+                if(timeoutMin != 0.0D)
+                    d10 = 0.0D;
+                else
+                    d10 = speed;
+            if(j == i - 1)
+                if(pnodes.timeoutMin != 0.0D)
+                    d11 = 0.0D;
+                else
+                    d11 = pnodes.speed;
+            if(d10 == 0.0D && d11 == 0.0D)
+                d12 /= 2D;
+            else
+                d12 = (d10 + d11) / 2D;
+            d1 += d9 / d12;
+            _prevP.set(_curP);
         }
-        this.posXYZ = PathFind.buildPath(0, this);
-        reversePathXY(this.posXYZ);
-      }
-      else {
-        localPNodes1 = (PNodes)localPath.point(k - 1);
-        PNodes localPNodes2 = (PNodes)localPath.point(k + 1);
-        if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.setStartPoint(1, localPNodes2)) || (!PathFind.isPointReacheable(0, this)) || (!PathFind.isPointReacheable(1, this)))
+
+        return d1;
+    }
+
+    private void syncPathPos()
+    {
+        com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)getOwner();
+        if(path.points() <= 1)
+            return;
+        com.maddox.il2.builder.PNodes pnodes = (com.maddox.il2.builder.PNodes)path.point(0);
+        _curP.set(pnodes.posXYZ[0], pnodes.posXYZ[1], pnodes.posXYZ[2]);
+        com.maddox.JGP.Point3d point3d = pnodes.pos.getAbsPoint();
+        if(!point3d.equals(_curP))
         {
-          this.pos.setAbs(_movePrevP);
-          throw new ActorException("PathPoint not Reacheable");
+            pnodes.pos.setAbs(_curP);
+            pnodes.pos.reset();
+            _curP.set(pnodes.posXYZ[4], pnodes.posXYZ[5], pnodes.posXYZ[6]);
+            ((com.maddox.il2.builder.PathChief)path).placeUnits(pnodes.pos.getAbsPoint(), _curP);
         }
-        localPNodes1.posXYZ = PathFind.buildPath(0, this);
-        this.posXYZ = PathFind.buildPath(1, this);
-        reversePathXY(this.posXYZ);
-      }
-    }
-    this.pos.reset();
-    syncPathPos();
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed()) return;
-    Path localPath = (Path)getOwner();
-    if (!Actor.isValid(localPath)) {
-      super.destroy();
-      return;
-    }
-    int i = localPath.points();
-    if (i > 1) {
-      int j = localPath.pointIndx(this);
-      PNodes localPNodes1;
-      if (j == i - 1)
-      {
-        localPNodes1 = (PNodes)localPath.point(j - 1);
-        localPNodes1.posXYZ = null;
-      } else if (j != 0)
-      {
-        localPNodes1 = (PNodes)localPath.point(j - 1);
-        PNodes localPNodes2 = (PNodes)localPath.point(j + 1);
-        if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.isPointReacheable(0, localPNodes2)))
+        for(int i = 1; i < path.points(); i++)
         {
-          throw new ActorException("PathPoint not Reacheable");
+            com.maddox.il2.builder.PNodes pnodes1 = (com.maddox.il2.builder.PNodes)path.point(i - 1);
+            int j = pnodes1.posXYZ.length / 4 - 1;
+            _curP.set(pnodes1.posXYZ[j * 4 + 0], pnodes1.posXYZ[j * 4 + 1], pnodes1.posXYZ[j * 4 + 2]);
+            path.point(i).pos.setAbs(_curP);
+            path.point(i).pos.reset();
         }
-        localPNodes1.posXYZ = PathFind.buildPath(0, localPNodes2);
-      }
-    }
-    super.destroy();
-    localPath.computeTimes();
-    PathChief localPathChief = (PathChief)localPath;
-    localPathChief.updateUnitsPos();
-  }
 
-  private void reversePathXY(float[] paramArrayOfFloat) {
-    int i = paramArrayOfFloat.length / 4;
-
-    int j = 0;
-    int k = i - 1;
-    while (j < k) {
-      float f1 = paramArrayOfFloat[(j * 4 + 0)];
-      float f2 = paramArrayOfFloat[(j * 4 + 1)];
-      float f3 = paramArrayOfFloat[(j * 4 + 2)];
-      float f4 = paramArrayOfFloat[(j * 4 + 3)];
-      paramArrayOfFloat[(j * 4 + 0)] = paramArrayOfFloat[(k * 4 + 0)];
-      paramArrayOfFloat[(j * 4 + 1)] = paramArrayOfFloat[(k * 4 + 1)];
-      paramArrayOfFloat[(j * 4 + 2)] = paramArrayOfFloat[(k * 4 + 2)];
-      paramArrayOfFloat[(j * 4 + 3)] = paramArrayOfFloat[(k * 4 + 3)];
-      paramArrayOfFloat[(k * 4 + 0)] = f1;
-      paramArrayOfFloat[(k * 4 + 1)] = f2;
-      paramArrayOfFloat[(k * 4 + 2)] = f3;
-      paramArrayOfFloat[(k * 4 + 3)] = f4;
-      j++; k--;
     }
-  }
 
-  public PNodes(Path paramPath, PPoint paramPPoint, Mat paramMat, Point3d paramPoint3d) {
-    super(paramPath, paramPPoint, paramMat, paramPoint3d);
-    if (paramPoint3d == null)
-      return;
-    int i = paramPath.moveType;
-    if (i >= 0) {
-      PathFind.setMoverType(i);
+    public void moveTo(com.maddox.JGP.Point3d point3d)
+    {
+        com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)getOwner();
+        int i = path.moveType;
+        if(i >= 0)
+            com.maddox.il2.builder.PathFind.setMoverType(i);
+        pos.getAbs(_movePrevP);
+        pos.setAbs(point3d);
+        align();
+        int j = path.points();
+        if(j == 1)
+        {
+            if(!com.maddox.il2.builder.PathFind.setStartPoint(0, this))
+            {
+                pos.setAbs(_movePrevP);
+                throw new ActorException("PathPoint not Reacheable");
+            }
+        } else
+        {
+            int k = path.pointIndx(this);
+            if(k == j - 1)
+            {
+                com.maddox.il2.builder.PNodes pnodes = (com.maddox.il2.builder.PNodes)path.point(k - 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, pnodes) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, this))
+                {
+                    pos.setAbs(_movePrevP);
+                    throw new ActorException("PathPoint not Reacheable");
+                }
+                pnodes.posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, this);
+            } else
+            if(k == 0)
+            {
+                com.maddox.il2.builder.PNodes pnodes1 = (com.maddox.il2.builder.PNodes)path.point(k + 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, pnodes1) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, this))
+                {
+                    pos.setAbs(_movePrevP);
+                    throw new ActorException("PathPoint not Reacheable");
+                }
+                posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, this);
+                reversePathXY(posXYZ);
+            } else
+            {
+                com.maddox.il2.builder.PNodes pnodes2 = (com.maddox.il2.builder.PNodes)path.point(k - 1);
+                com.maddox.il2.builder.PNodes pnodes3 = (com.maddox.il2.builder.PNodes)path.point(k + 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, pnodes2) || !com.maddox.il2.builder.PathFind.setStartPoint(1, pnodes3) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, this) || !com.maddox.il2.builder.PathFind.isPointReacheable(1, this))
+                {
+                    pos.setAbs(_movePrevP);
+                    throw new ActorException("PathPoint not Reacheable");
+                }
+                pnodes2.posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, this);
+                posXYZ = com.maddox.il2.builder.PathFind.buildPath(1, this);
+                reversePathXY(posXYZ);
+            }
+        }
+        pos.reset();
+        syncPathPos();
     }
-    int j = paramPath.points();
-    if (j == 1) {
-      if (!PathFind.setStartPoint(0, this)) {
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)getOwner();
+        if(!com.maddox.il2.engine.Actor.isValid(path))
+        {
+            super.destroy();
+            return;
+        }
+        int i = path.points();
+        if(i > 1)
+        {
+            int j = path.pointIndx(this);
+            if(j == i - 1)
+            {
+                com.maddox.il2.builder.PNodes pnodes = (com.maddox.il2.builder.PNodes)path.point(j - 1);
+                pnodes.posXYZ = null;
+            } else
+            if(j != 0)
+            {
+                com.maddox.il2.builder.PNodes pnodes1 = (com.maddox.il2.builder.PNodes)path.point(j - 1);
+                com.maddox.il2.builder.PNodes pnodes2 = (com.maddox.il2.builder.PNodes)path.point(j + 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, pnodes1) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, pnodes2))
+                    throw new ActorException("PathPoint not Reacheable");
+                pnodes1.posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, pnodes2);
+            }
+        }
         super.destroy();
-        throw new ActorException("PathPoint not Reacheable");
-      }
+        path.computeTimes();
+        com.maddox.il2.builder.PathChief pathchief = (com.maddox.il2.builder.PathChief)path;
+        pathchief.updateUnitsPos();
     }
-    else {
-      int k = paramPath.pointIndx(this);
-      PNodes localPNodes1;
-      if (k == j - 1) {
-        localPNodes1 = (PNodes)paramPath.point(k - 1);
-        if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.isPointReacheable(0, this)))
+
+    private void reversePathXY(float af[])
+    {
+        int i = af.length / 4;
+        int j = 0;
+        for(int k = i - 1; j < k; k--)
         {
-          super.destroy();
-          throw new ActorException("PathPoint not Reacheable");
+            float f = af[j * 4 + 0];
+            float f1 = af[j * 4 + 1];
+            float f2 = af[j * 4 + 2];
+            float f3 = af[j * 4 + 3];
+            af[j * 4 + 0] = af[k * 4 + 0];
+            af[j * 4 + 1] = af[k * 4 + 1];
+            af[j * 4 + 2] = af[k * 4 + 2];
+            af[j * 4 + 3] = af[k * 4 + 3];
+            af[k * 4 + 0] = f;
+            af[k * 4 + 1] = f1;
+            af[k * 4 + 2] = f2;
+            af[k * 4 + 3] = f3;
+            j++;
         }
-        localPNodes1.posXYZ = PathFind.buildPath(0, this);
-      }
-      else if (k == 0) {
-        localPNodes1 = (PNodes)paramPath.point(k + 1);
-        if ((!PathFind.setStartPoint(0, this)) || (!PathFind.isPointReacheable(0, localPNodes1)))
-        {
-          super.destroy();
-          throw new ActorException("PathPoint not Reacheable");
-        }
-        this.posXYZ = PathFind.buildPath(0, localPNodes1);
-      }
-      else {
-        localPNodes1 = (PNodes)paramPath.point(k - 1);
-        PNodes localPNodes2 = (PNodes)paramPath.point(k + 1);
-        if ((!PathFind.setStartPoint(0, localPNodes1)) || (!PathFind.setStartPoint(1, localPNodes2)) || (!PathFind.isPointReacheable(0, this)) || (!PathFind.isPointReacheable(1, this)))
-        {
-          super.destroy();
-          throw new ActorException("PathPoint not Reacheable");
-        }
-        localPNodes1.posXYZ = PathFind.buildPath(0, this);
-        this.posXYZ = PathFind.buildPath(1, this);
-        reversePathXY(this.posXYZ);
-      }
+
     }
-    if (((paramPath instanceof PathChief)) && (Actor.isValid(paramPath))) {
-      PathChief localPathChief = (PathChief)paramPath;
-      localPathChief.updateUnitsPos();
+
+    public PNodes(com.maddox.il2.builder.Path path, com.maddox.il2.builder.PPoint ppoint, com.maddox.il2.engine.Mat mat, com.maddox.JGP.Point3d point3d)
+    {
+        super(path, ppoint, mat, point3d);
+        timeoutMin = 0.0D;
+        if(point3d == null)
+            return;
+        int i = path.moveType;
+        if(i >= 0)
+            com.maddox.il2.builder.PathFind.setMoverType(i);
+        int j = path.points();
+        if(j == 1)
+        {
+            if(!com.maddox.il2.builder.PathFind.setStartPoint(0, this))
+            {
+                super.destroy();
+                throw new ActorException("PathPoint not Reacheable");
+            }
+        } else
+        {
+            int k = path.pointIndx(this);
+            if(k == j - 1)
+            {
+                com.maddox.il2.builder.PNodes pnodes = (com.maddox.il2.builder.PNodes)path.point(k - 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, pnodes) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, this))
+                {
+                    super.destroy();
+                    throw new ActorException("PathPoint not Reacheable");
+                }
+                pnodes.posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, this);
+            } else
+            if(k == 0)
+            {
+                com.maddox.il2.builder.PNodes pnodes1 = (com.maddox.il2.builder.PNodes)path.point(k + 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, this) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, pnodes1))
+                {
+                    super.destroy();
+                    throw new ActorException("PathPoint not Reacheable");
+                }
+                posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, pnodes1);
+            } else
+            {
+                com.maddox.il2.builder.PNodes pnodes2 = (com.maddox.il2.builder.PNodes)path.point(k - 1);
+                com.maddox.il2.builder.PNodes pnodes3 = (com.maddox.il2.builder.PNodes)path.point(k + 1);
+                if(!com.maddox.il2.builder.PathFind.setStartPoint(0, pnodes2) || !com.maddox.il2.builder.PathFind.setStartPoint(1, pnodes3) || !com.maddox.il2.builder.PathFind.isPointReacheable(0, this) || !com.maddox.il2.builder.PathFind.isPointReacheable(1, this))
+                {
+                    super.destroy();
+                    throw new ActorException("PathPoint not Reacheable");
+                }
+                pnodes2.posXYZ = com.maddox.il2.builder.PathFind.buildPath(0, this);
+                posXYZ = com.maddox.il2.builder.PathFind.buildPath(1, this);
+                reversePathXY(posXYZ);
+            }
+        }
+        if((path instanceof com.maddox.il2.builder.PathChief) && com.maddox.il2.engine.Actor.isValid(path))
+        {
+            com.maddox.il2.builder.PathChief pathchief = (com.maddox.il2.builder.PathChief)path;
+            pathchief.updateUnitsPos();
+        }
+        syncPathPos();
+        path.computeTimes();
     }
-    syncPathPos();
-    paramPath.computeTimes();
-  }
 
-  public PNodes(Path paramPath, PPoint paramPPoint, Point3d paramPoint3d) {
-    this(paramPath, paramPPoint, (Mat)null, paramPoint3d);
-    if (paramPPoint != null)
-      this.icon = paramPPoint.icon;
-  }
+    public PNodes(com.maddox.il2.builder.Path path, com.maddox.il2.builder.PPoint ppoint, com.maddox.JGP.Point3d point3d)
+    {
+        this(path, ppoint, (com.maddox.il2.engine.Mat)null, point3d);
+        if(ppoint != null)
+            icon = ppoint.icon;
+    }
 
-  public PNodes(Path paramPath, PPoint paramPPoint, String paramString, Point3d paramPoint3d) {
-    this(paramPath, paramPPoint, IconDraw.get(paramString), paramPoint3d);
-  }
+    public PNodes(com.maddox.il2.builder.Path path, com.maddox.il2.builder.PPoint ppoint, java.lang.String s, com.maddox.JGP.Point3d point3d)
+    {
+        this(path, ppoint, com.maddox.il2.engine.IconDraw.get(s), point3d);
+    }
 
-  static
-  {
-    Property.set(PNodes.class, "iconName", "icons/tank.mat");
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    _prevP = new Point3d();
-    _curP = new Point3d();
+    public double timeoutMin;
+    public double speed;
+    public float posXYZ[];
+    private static com.maddox.JGP.Point3d _prevP = new Point3d();
+    private static com.maddox.JGP.Point3d _curP = new Point3d();
+    private static com.maddox.JGP.Point3d _movePrevP = new Point3d();
 
-    _movePrevP = new Point3d();
-  }
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PNodes.class, "iconName", "icons/tank.mat");
+    }
 }

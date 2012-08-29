@@ -1,79 +1,151 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PE_3SERIES1.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.Property;
 
-public class PE_3SERIES1 extends PE_2
-  implements TypeFighter
+// Referenced classes of package com.maddox.il2.objects.air:
+//            PE_2, PaintSchemeFMPar01, TypeFighter, NetAircraft, 
+//            Aircraft
+
+public class PE_3SERIES1 extends com.maddox.il2.objects.air.PE_2
+    implements com.maddox.il2.objects.air.TypeFighter
 {
-  private long tme = 0L;
-  private float tpos = 0.0F;
-  private float tlim = 0.0F;
 
-  public void update(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Turtle_D0", 0.0F, 0.0F, -2.0F);
-    super.update(paramFloat);
-  }
-
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
-    switch (paramInt) {
-    case 0:
-      if (f1 < -45.0F) { f1 = -45.0F; bool = false; }
-      if (f1 > 45.0F) { f1 = 45.0F; bool = false; }
-      if (f2 < -1.0F) { f2 = -1.0F; bool = false; }
-      if (f2 <= 45.0F) break; f2 = 45.0F; bool = false; break;
-    case 1:
-      if (f1 < -2.0F) { f1 = -2.0F; bool = false; }
-      if (f1 > 2.0F) { f1 = 2.0F; bool = false; }
-      if (f2 < -2.0F) { f2 = -2.0F; bool = false; }
-      if (f2 <= 2.0F) break; f2 = 2.0F; bool = false;
+    public PE_3SERIES1()
+    {
+        tme = 0L;
+        tpos = 0.0F;
+        tlim = 0.0F;
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
-    return bool;
-  }
-
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
-    switch (paramInt) {
-    case 1:
-      this.FM.turret[0].setHealth(paramFloat);
-      this.FM.turret[1].setHealth(paramFloat);
+    public void update(float f)
+    {
+        hierMesh().chunkSetAngles("Turtle_D0", 0.0F, 0.0F, -2F);
+        super.update(f);
     }
-  }
 
-  static
-  {
-    Class localClass = PE_3SERIES1.class;
-    new NetAircraft.SPAWN(localClass);
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        switch(i)
+        {
+        default:
+            break;
 
-    Property.set(localClass, "iconFar_shortClassName", "Pe-3");
-    Property.set(localClass, "meshName", "3DO/Plane/Pe-3/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
+        case 0: // '\0'
+            if(f < -45F)
+            {
+                f = -45F;
+                flag = false;
+            }
+            if(f > 45F)
+            {
+                f = 45F;
+                flag = false;
+            }
+            if(f1 < -1F)
+            {
+                f1 = -1F;
+                flag = false;
+            }
+            if(f1 > 45F)
+            {
+                f1 = 45F;
+                flag = false;
+            }
+            break;
 
-    Property.set(localClass, "yearService", 1941.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+        case 1: // '\001'
+            if(f < -2F)
+            {
+                f = -2F;
+                flag = false;
+            }
+            if(f > 2.0F)
+            {
+                f = 2.0F;
+                flag = false;
+            }
+            if(f1 < -2F)
+            {
+                f1 = -2F;
+                flag = false;
+            }
+            if(f1 > 2.0F)
+            {
+                f1 = 2.0F;
+                flag = false;
+            }
+            break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Pe-3series1.fmd");
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitPE3_1.class, CockpitPE3_1_TGunner.class });
+    public void doKillPilot(int i)
+    {
+        switch(i)
+        {
+        case 1: // '\001'
+            FM.turret[0].bIsOperable = false;
+            FM.turret[1].bIsOperable = false;
+            break;
+        }
+    }
 
-    Property.set(localClass, "LOSElevation", 0.76315F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 11, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_BombSpawn05", "_BombSpawn06" });
+    private long tme;
+    private float tpos;
+    private float tlim;
 
-    weaponsRegister(localClass, "default", new String[] { "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", null, null });
-
-    weaponsRegister(localClass, "2fab50", new String[] { "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", "BombGunFAB50", "BombGunFAB50" });
-
-    weaponsRegister(localClass, "2fab100", new String[] { "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", "BombGunFAB100", "BombGunFAB100" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.PE_3SERIES1.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Pe-3");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Pe-3/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1941F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Pe-3series1.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitPE3_1.class, com.maddox.il2.objects.air.CockpitPE3_1_TGunner.class
+        });
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.76315F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 10, 11, 3, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_BombSpawn05", "_BombSpawn06"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab50", new java.lang.String[] {
+            "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", "BombGunFAB50", "BombGunFAB50"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab100", new java.lang.String[] {
+            "MGunUBk 250", "MGunUBk 350", "MGunShKASt 750", "MGunShKASki 750", "BombGunFAB100", "BombGunFAB100"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

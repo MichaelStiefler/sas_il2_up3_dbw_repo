@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetChannelOutStream.java
+
 package com.maddox.rts;
 
 import com.maddox.rts.net.NetEmptyAddress;
@@ -9,279 +14,336 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Map.Entry;
+import java.util.Map;
 
-public class NetChannelOutStream extends NetChannel
-  implements NetChannelStream
+// Referenced classes of package com.maddox.rts:
+//            NetChannel, NetChannelCallbackStream, NetObj, NetPacket, 
+//            NetMsgFiltered, NetChannelGMsgOutput, NetChannelStream, NetMsgSpawn, 
+//            NetMsgDestroy, NetMsgGuaranted, Time, MsgNet, 
+//            NetEnv, NetMsgOutput, NetChannelArrayList, MsgNetAskNak, 
+//            CRC16, RTSConf, NetMsgInput
+
+public class NetChannelOutStream extends com.maddox.rts.NetChannel
+    implements com.maddox.rts.NetChannelStream
 {
-  private static final boolean DEBUG = false;
-  OutputStream outStream;
-  DataOutputStream outData;
-  NetPacket flushPacket;
-  NetMsgFiltered flushMsg;
-  private boolean bCheckSpeed = true;
 
-  protected void putMessageSpawn(NetMsgSpawn paramNetMsgSpawn)
-    throws IOException
-  {
-    if (((paramNetMsgSpawn._sender instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgSpawn._sender).netChannelCallback(this, paramNetMsgSpawn)))
+    protected void putMessageSpawn(com.maddox.rts.NetMsgSpawn netmsgspawn)
+        throws java.io.IOException
     {
-      return;
-    }super.putMessageSpawn(paramNetMsgSpawn);
-  }
-  protected void putMessageDestroy(NetMsgDestroy paramNetMsgDestroy) throws IOException {
-    if (((paramNetMsgDestroy._sender instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgDestroy._sender).netChannelCallback(this, paramNetMsgDestroy)))
-    {
-      return;
-    }super.putMessageDestroy(paramNetMsgDestroy);
-  }
-  public void _putMessage(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    super.putMessage(paramNetMsgGuaranted);
-  }
-  protected void putMessage(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    if (((paramNetMsgGuaranted._sender instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetMsgGuaranted._sender).netChannelCallback(this, paramNetMsgGuaranted)))
-    {
-      return;
-    }super.putMessage(paramNetMsgGuaranted);
-  }
-
-  protected void computeMessageLen(NetMsgFiltered paramNetMsgFiltered, long paramLong) {
-    computeMessageLen(paramNetMsgFiltered, Time.fromReal(paramNetMsgFiltered._time), paramLong);
-  }
-
-  public void destroy()
-  {
-    if ((this.state & 0x80000000) != 0) return;
-    this.state |= -2147483648;
-
-    while (!this.objects.isEmpty()) {
-      localObject1 = this.objects.nextEntry(null);
-      if (localObject1 == null) break;
-      localObject2 = (NetObj)((HashMapIntEntry)localObject1).getValue();
-      int i = ((HashMapIntEntry)localObject1).getKey();
-      destroyNetObj((NetObj)localObject2);
-      if (this.objects.containsKey(i)) {
-        this.objects.remove(i);
-      }
-    }
-    while (!this.mirrored.isEmpty()) {
-      localObject1 = this.mirrored.nextEntry(null);
-      if (localObject1 == null) break;
-      localObject2 = (NetObj)((Map.Entry)localObject1).getKey();
-      localObject2.countMirrors -= 1;
-      this.mirrored.remove(localObject2);
-      MsgNet.postRealDelChannel(localObject2, this);
-    }
-
-    Object localObject1 = NetEnv.cur().objects;
-    Object localObject2 = ((HashMapInt)localObject1).nextEntry(null);
-    while (localObject2 != null) {
-      NetObj localNetObj = (NetObj)((HashMapIntEntry)localObject2).getValue();
-      if (localNetObj.isCommon())
-        MsgNet.postRealDelChannel(localNetObj, this);
-      localObject2 = ((HashMapInt)localObject1).nextEntry((HashMapIntEntry)localObject2);
-    }
-
-    clearSortGuaranted();
-    clearSendGMsgs();
-    clearSendFMsgs();
-    if (this.outStream != null) {
-      try {
-        this.outStream.close(); } catch (Exception localException) {
-      }
-      this.outStream = null;
-    }
-  }
-
-  protected boolean update()
-  {
-    return this.state >= 0;
-  }
-
-  public void flush()
-  {
-    boolean bool = this.bCheckSpeed;
-    this.bCheckSpeed = false;
-    if (this.flushPacket == null) {
-      this.flushPacket = new NetPacket(new byte[2048], 0);
-      this.flushMsg = new NetMsgFiltered(this.flushPacket.getData());
-    }
-    while (sendPacket(this.flushMsg, this.flushPacket));
-    this.bCheckSpeed = bool;
-  }
-
-  protected boolean sendPacket(NetMsgOutput paramNetMsgOutput, NetPacket paramNetPacket)
-  {
-    if (this.outStream == null) return false;
-    long l = Time.current();
-    int i = 0;
-
-    int j = getSendPacketLen(l);
-    if (l >= this.lastPacketSendTime + 65535L) {
-      if (j < 20) j = 20;
-      i = 1;
-    }
-    if (j <= 0) return false;
-    int k = 3;
-
-    j -= 7;
-    if (j <= 0) return false;
-
-    int m = 0;
-    int n = computeSizeSendGMsgs(l);
-
-    int i1 = computeSizeSendFMsgs(l);
-
-    int i2 = filteredSortMsgs.size();
-    Object localObject;
-    for (int i3 = 0; i3 < i2; i3++) {
-      localObject = (NetMsgFiltered)filteredSortMsgs.get(i3);
-      if ((((NetMsgFiltered)localObject)._prior >= 1.0F) || 
-        (((NetMsgFiltered)localObject)._sender == null) || (!((NetMsgFiltered)localObject)._sender.isMirror())) continue;
-      ((NetMsgFiltered)localObject)._prior = 1.0F;
-      filteredMinSizeMsgs += ((NetMsgFiltered)localObject)._len;
-    }
-
-    if ((i1 + n == 0) && (i == 0)) return false;
-    if (i1 + n > j)
-    {
-      i2 = i1;
-      i3 = n;
-      if (i3 > j) i3 = j;
-      i2 = j - i3;
-      if (i2 < filteredMinSizeMsgs) {
-        i2 = filteredMinSizeMsgs;
-
-        j = i3 + i2;
-        if (j > 1024) {
-          j = 1024;
-          if (i2 > j)
-            i2 = j;
+        if((netmsgspawn._sender instanceof com.maddox.rts.NetChannelCallbackStream) && !((com.maddox.rts.NetChannelCallbackStream)netmsgspawn._sender).netChannelCallback(this, netmsgspawn))
+        {
+            return;
+        } else
+        {
+            super.putMessageSpawn(netmsgspawn);
+            return;
         }
-      }
-      i3 = j - i2;
-      if (i3 < 0) {
-        i3 = 0;
-      }
-      if ((i3 > 0) && (i3 < n)) {
-        m = computeCountSendGMsgs(i3);
-        i3 = guarantedSizeMsgs;
-        if (j - i3 > i2) i2 = j - i3; 
-      }
-      else {
-        m = computeCountSendGMsgs(i3);
-        i3 = guarantedSizeMsgs;
-      }
-      i1 = i2;
-      n = i3;
-    }
-    else {
-      m = computeCountSendGMsgs(n);
-      n = guarantedSizeMsgs;
     }
 
-    i1 = fillFilteredArrayMessages(l, i1);
-    if ((i1 + n == 0) && (i == 0)) return false;
-    try
+    protected void putMessageDestroy(com.maddox.rts.NetMsgDestroy netmsgdestroy)
+        throws java.io.IOException
     {
-      paramNetMsgOutput.clear();
-
-      this.outData.writeShort((int)(l - this.lastPacketSendTime));
-      this.outData.writeShort(k + i1 + n);
-      sendTime(paramNetMsgOutput, this.sendSequenceNum++, l, k + i1 + n);
-
-      paramNetMsgOutput.writeShort(7361);
-
-      paramNetMsgOutput.writeByte(m);
-      if (m > 0) {
-        for (i2 = 0; i2 < m; i2++) {
-          NetChannelGMsgOutput localNetChannelGMsgOutput = (NetChannelGMsgOutput)this.sendGMsgs.get(i2);
-          putMessage(paramNetMsgOutput, localNetChannelGMsgOutput.objIndex, localNetChannelGMsgOutput.msg, localNetChannelGMsgOutput.iObjects);
-          localObject = localNetChannelGMsgOutput.msg;
-          ((NetMsgGuaranted)localObject).lockDec();
-          if (((NetMsgGuaranted)localObject).isRequiredAsk())
-            MsgNetAskNak.postGame(Time.current(), ((NetMsgGuaranted)localObject)._sender, true, (NetMsgGuaranted)localObject, this);
-          localNetChannelGMsgOutput.msg = null;
+        if((netmsgdestroy._sender instanceof com.maddox.rts.NetChannelCallbackStream) && !((com.maddox.rts.NetChannelCallbackStream)netmsgdestroy._sender).netChannelCallback(this, netmsgdestroy))
+        {
+            return;
+        } else
+        {
+            super.putMessageDestroy(netmsgdestroy);
+            return;
         }
-        this.sendGMsgs.removeRange(0, m);
-      }
-
-      i2 = filteredSortMsgs.size();
-      for (int i4 = 0; i4 < i2; i4++) {
-        localObject = (NetMsgFiltered)filteredSortMsgs.get(i4);
-        putMessage(paramNetMsgOutput, l, (NetMsgFiltered)localObject, Time.fromReal(((NetMsgFiltered)localObject)._time));
-        ((NetMsgFiltered)localObject).lockDec();
-      }
-      filteredSortMsgs.clear();
-
-      i4 = CRC16.checksum(0, paramNetMsgOutput.data(), 0, paramNetMsgOutput.dataLength());
-      paramNetMsgOutput.data()[0] = (byte)(i4 >>> 8 & 0xFF);
-      paramNetMsgOutput.data()[1] = (byte)(i4 & 0xFF);
-
-      this.outData.write(paramNetMsgOutput.data(), 0, paramNetMsgOutput.size()); } catch (Exception localException) {
-      printDebug(localException);
-    }return !this.bCheckSpeed;
-  }
-
-  protected boolean receivePacket(NetMsgInput paramNetMsgInput, long paramLong) throws IOException
-  {
-    return true;
-  }
-
-  public NetChannelOutStream(OutputStream paramOutputStream, int paramInt) {
-    this.outStream = paramOutputStream;
-    this.outData = new DataOutputStream(paramOutputStream);
-    this.flags = paramInt;
-    this.id = RTSConf.cur.netEnv.nextIdChannel(false);
-    this.remoteId = 1;
-    this.socket = new NetEmptySocket();
-    this.remoteAddress = new NetEmptyAddress();
-    this.remotePort = 0;
-    this.nextPacketSendTime = (this.lastPacketSendTime = Time.current());
-
-    this.state = 1;
-  }
-
-  public boolean isRequeredSendPacket(long paramLong) {
-    return Time.current() > this.nextPacketSendTime;
-  }
-
-  protected int getSendPacketLen(long paramLong)
-  {
-    if (!this.bCheckSpeed) return 1024;
-    if (paramLong < this.nextPacketSendTime)
-      return 0;
-    double d1 = 10.0D;
-    double d2 = this.maxChSendSpeed * d1;
-    if (d2 < 256.0D)
-      d2 = 256.0D;
-    if (d2 > 1024.0D) {
-      d2 = 1024.0D;
     }
-    return (int)d2;
-  }
 
-  protected void sendTime(NetMsgOutput paramNetMsgOutput, int paramInt1, long paramLong, int paramInt2) throws IOException {
-    double d = 10.0D;
-    if (this.maxChSendSpeed > 0.0D) {
-      d = paramInt2 / this.maxChSendSpeed;
+    public void _putMessage(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        super.putMessage(netmsgguaranted);
     }
-    if (d < 10.0D) d = 10.0D;
-    this.nextPacketSendTime = (paramLong + ()d);
-    this.lastPacketSendTime = paramLong;
-  }
 
-  public void setCheckSpeed(boolean paramBoolean)
-  {
-    this.bCheckSpeed = paramBoolean;
-  }
+    protected void putMessage(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        if((netmsgguaranted._sender instanceof com.maddox.rts.NetChannelCallbackStream) && !((com.maddox.rts.NetChannelCallbackStream)netmsgguaranted._sender).netChannelCallback(this, netmsgguaranted))
+        {
+            return;
+        } else
+        {
+            super.putMessage(netmsgguaranted);
+            return;
+        }
+    }
 
-  public double getMaxSpeed() {
-    return this.maxSendSpeed;
-  }
-  public void setMaxSpeed(double paramDouble) {
-    if (paramDouble == this.maxSendSpeed) return;
-    this.maxSendSpeed = paramDouble;
-    this.maxChSendSpeed = paramDouble;
-  }
+    protected void computeMessageLen(com.maddox.rts.NetMsgFiltered netmsgfiltered, long l)
+    {
+        computeMessageLen(netmsgfiltered, com.maddox.rts.Time.fromReal(netmsgfiltered._time), l);
+    }
+
+    public void destroy()
+    {
+        if((state & 0x80000000) != 0)
+            return;
+        state |= 0x80000000;
+        while(!objects.isEmpty()) 
+        {
+            com.maddox.util.HashMapIntEntry hashmapintentry = objects.nextEntry(null);
+            if(hashmapintentry == null)
+                break;
+            com.maddox.rts.NetObj netobj = (com.maddox.rts.NetObj)hashmapintentry.getValue();
+            int i = hashmapintentry.getKey();
+            com.maddox.rts.NetChannel.destroyNetObj(netobj);
+            if(objects.containsKey(i))
+                objects.remove(i);
+        }
+        com.maddox.rts.NetObj netobj1;
+        for(; !mirrored.isEmpty(); com.maddox.rts.MsgNet.postRealDelChannel(netobj1, this))
+        {
+            java.util.Map.Entry entry = mirrored.nextEntry(null);
+            if(entry == null)
+                break;
+            netobj1 = (com.maddox.rts.NetObj)entry.getKey();
+            netobj1.countMirrors--;
+            mirrored.remove(netobj1);
+        }
+
+        com.maddox.util.HashMapInt hashmapint = com.maddox.rts.NetEnv.cur().objects;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+        {
+            com.maddox.rts.NetObj netobj2 = (com.maddox.rts.NetObj)hashmapintentry1.getValue();
+            if(netobj2.isCommon())
+                com.maddox.rts.MsgNet.postRealDelChannel(netobj2, this);
+        }
+
+        clearSortGuaranted();
+        clearSendGMsgs();
+        clearSendFMsgs();
+        if(outStream != null)
+        {
+            try
+            {
+                outStream.close();
+            }
+            catch(java.lang.Exception exception) { }
+            outStream = null;
+        }
+    }
+
+    protected boolean update()
+    {
+        return state >= 0;
+    }
+
+    public void flush()
+    {
+        boolean flag = bCheckSpeed;
+        bCheckSpeed = false;
+        if(flushPacket == null)
+        {
+            flushPacket = new NetPacket(new byte[2048], 0);
+            flushMsg = new NetMsgFiltered(flushPacket.getData());
+        }
+        while(sendPacket(flushMsg, flushPacket)) ;
+        bCheckSpeed = flag;
+    }
+
+    protected boolean sendPacket(com.maddox.rts.NetMsgOutput netmsgoutput, com.maddox.rts.NetPacket netpacket)
+    {
+        if(outStream == null)
+            return false;
+        long l = com.maddox.rts.Time.current();
+        boolean flag = false;
+        int i = getSendPacketLen(l);
+        if(l >= lastPacketSendTime + 65535L)
+        {
+            if(i < 20)
+                i = 20;
+            flag = true;
+        }
+        if(i <= 0)
+            return false;
+        byte byte0 = 3;
+        if((i -= 7) <= 0)
+            return false;
+        int j = 0;
+        int k = computeSizeSendGMsgs(l);
+        int i1 = computeSizeSendFMsgs(l);
+        int j1 = com.maddox.rts.NetChannel.filteredSortMsgs.size();
+        for(int j2 = 0; j2 < j1; j2++)
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = (com.maddox.rts.NetMsgFiltered)com.maddox.rts.NetChannel.filteredSortMsgs.get(j2);
+            if(netmsgfiltered._prior < 1.0F && netmsgfiltered._sender != null && netmsgfiltered._sender.isMirror())
+            {
+                netmsgfiltered._prior = 1.0F;
+                com.maddox.rts.NetChannel.filteredMinSizeMsgs += netmsgfiltered._len;
+            }
+        }
+
+        if(i1 + k == 0 && !flag)
+            return false;
+        if(i1 + k > i)
+        {
+            int k1 = i1;
+            int k2 = k;
+            if(k2 > i)
+                k2 = i;
+            k1 = i - k2;
+            if(k1 < com.maddox.rts.NetChannel.filteredMinSizeMsgs)
+            {
+                k1 = com.maddox.rts.NetChannel.filteredMinSizeMsgs;
+                i = k2 + k1;
+                if(i > 1024)
+                {
+                    i = 1024;
+                    if(k1 > i)
+                        k1 = i;
+                }
+            }
+            k2 = i - k1;
+            if(k2 < 0)
+                k2 = 0;
+            if(k2 > 0 && k2 < k)
+            {
+                j = computeCountSendGMsgs(k2);
+                k2 = com.maddox.rts.NetChannel.guarantedSizeMsgs;
+                if(i - k2 > k1)
+                    k1 = i - k2;
+            } else
+            {
+                j = computeCountSendGMsgs(k2);
+                k2 = com.maddox.rts.NetChannel.guarantedSizeMsgs;
+            }
+            i1 = k1;
+            k = k2;
+        } else
+        {
+            j = computeCountSendGMsgs(k);
+            k = com.maddox.rts.NetChannel.guarantedSizeMsgs;
+        }
+        i1 = fillFilteredArrayMessages(l, i1);
+        if(i1 + k == 0 && !flag)
+            return false;
+        try
+        {
+            netmsgoutput.clear();
+            outData.writeShort((int)(l - lastPacketSendTime));
+            outData.writeShort(byte0 + i1 + k);
+            sendTime(netmsgoutput, sendSequenceNum++, l, byte0 + i1 + k);
+            netmsgoutput.writeShort(7361);
+            netmsgoutput.writeByte(j);
+            if(j > 0)
+            {
+                for(int l1 = 0; l1 < j; l1++)
+                {
+                    com.maddox.rts.NetChannelGMsgOutput netchannelgmsgoutput = (com.maddox.rts.NetChannelGMsgOutput)sendGMsgs.get(l1);
+                    putMessage(netmsgoutput, netchannelgmsgoutput.objIndex, netchannelgmsgoutput.msg, netchannelgmsgoutput.iObjects);
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted = netchannelgmsgoutput.msg;
+                    netmsgguaranted.lockDec();
+                    if(netmsgguaranted.isRequiredAsk())
+                        com.maddox.rts.MsgNetAskNak.postGame(com.maddox.rts.Time.current(), netmsgguaranted._sender, true, netmsgguaranted, this);
+                    netchannelgmsgoutput.msg = null;
+                }
+
+                sendGMsgs.removeRange(0, j);
+            }
+            int i2 = com.maddox.rts.NetChannel.filteredSortMsgs.size();
+            for(int l2 = 0; l2 < i2; l2++)
+            {
+                com.maddox.rts.NetMsgFiltered netmsgfiltered1 = (com.maddox.rts.NetMsgFiltered)com.maddox.rts.NetChannel.filteredSortMsgs.get(l2);
+                putMessage(netmsgoutput, l, netmsgfiltered1, com.maddox.rts.Time.fromReal(netmsgfiltered1._time));
+                netmsgfiltered1.lockDec();
+            }
+
+            com.maddox.rts.NetChannel.filteredSortMsgs.clear();
+            int i3 = com.maddox.rts.CRC16.checksum(0, netmsgoutput.data(), 0, netmsgoutput.dataLength());
+            netmsgoutput.data()[0] = (byte)(i3 >>> 8 & 0xff);
+            netmsgoutput.data()[1] = (byte)(i3 & 0xff);
+            outData.write(netmsgoutput.data(), 0, netmsgoutput.size());
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.NetChannel.printDebug(exception);
+        }
+        return !bCheckSpeed;
+    }
+
+    protected boolean receivePacket(com.maddox.rts.NetMsgInput netmsginput, long l)
+        throws java.io.IOException
+    {
+        return true;
+    }
+
+    public NetChannelOutStream(java.io.OutputStream outputstream, int i)
+    {
+        bCheckSpeed = true;
+        outStream = outputstream;
+        outData = new DataOutputStream(outputstream);
+        flags = i;
+        id = com.maddox.rts.RTSConf.cur.netEnv.nextIdChannel(false);
+        remoteId = 1;
+        socket = new NetEmptySocket();
+        remoteAddress = new NetEmptyAddress();
+        remotePort = 0;
+        nextPacketSendTime = lastPacketSendTime = com.maddox.rts.Time.current();
+        state = 1;
+    }
+
+    public boolean isRequeredSendPacket(long l)
+    {
+        return com.maddox.rts.Time.current() > nextPacketSendTime;
+    }
+
+    protected int getSendPacketLen(long l)
+    {
+        if(!bCheckSpeed)
+            return 1024;
+        if(l < nextPacketSendTime)
+            return 0;
+        double d = 10D;
+        double d1 = maxChSendSpeed * d;
+        if(d1 < 256D)
+            d1 = 256D;
+        if(d1 > 1024D)
+            d1 = 1024D;
+        return (int)d1;
+    }
+
+    protected void sendTime(com.maddox.rts.NetMsgOutput netmsgoutput, int i, long l, int j)
+        throws java.io.IOException
+    {
+        double d = 10D;
+        if(maxChSendSpeed > 0.0D)
+            d = (double)j / maxChSendSpeed;
+        if(d < 10D)
+            d = 10D;
+        nextPacketSendTime = l + (long)d;
+        lastPacketSendTime = l;
+    }
+
+    public void setCheckSpeed(boolean flag)
+    {
+        bCheckSpeed = flag;
+    }
+
+    public double getMaxSpeed()
+    {
+        return maxSendSpeed;
+    }
+
+    public void setMaxSpeed(double d)
+    {
+        if(d == maxSendSpeed)
+        {
+            return;
+        } else
+        {
+            maxSendSpeed = d;
+            maxChSendSpeed = d;
+            return;
+        }
+    }
+
+    private static final boolean DEBUG = false;
+    java.io.OutputStream outStream;
+    java.io.DataOutputStream outData;
+    com.maddox.rts.NetPacket flushPacket;
+    com.maddox.rts.NetMsgFiltered flushMsg;
+    private boolean bCheckSpeed;
 }

@@ -1,76 +1,108 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GameStateStack.java
+
 package com.maddox.il2.game;
 
 import java.util.ArrayList;
 
+// Referenced classes of package com.maddox.il2.game:
+//            GameState
+
 public class GameStateStack
 {
-  protected ArrayList stack = new ArrayList();
 
-  public boolean isEmpty() {
-    return this.stack.isEmpty();
-  }
-
-  public int size() {
-    return this.stack.size();
-  }
-
-  public GameState change(int paramInt) {
-    GameState localGameState = GameState.get(paramInt);
-    if (localGameState == null) return null;
-    return change(localGameState);
-  }
-
-  public GameState change(GameState paramGameState) {
-    int i = this.stack.size();
-    if (i == 0) {
-      this.stack.add(paramGameState);
-      paramGameState.enter(null);
-    } else {
-      GameState localGameState = (GameState)this.stack.get(i - 1);
-      localGameState.leave(paramGameState);
-      this.stack.set(i - 1, paramGameState);
-      paramGameState.enter(localGameState);
+    public GameStateStack()
+    {
+        stack = new ArrayList();
     }
-    return paramGameState;
-  }
 
-  public GameState push(int paramInt) {
-    GameState localGameState = GameState.get(paramInt);
-    if (localGameState == null) return null;
-    return push(localGameState);
-  }
-
-  public GameState push(GameState paramGameState) {
-    int i = this.stack.size();
-    GameState localGameState = null;
-    if (i > 0) {
-      localGameState = (GameState)this.stack.get(i - 1);
-      localGameState.leavePush(paramGameState);
+    public boolean isEmpty()
+    {
+        return stack.isEmpty();
     }
-    this.stack.add(paramGameState);
-    paramGameState.enterPush(localGameState);
-    return paramGameState;
-  }
 
-  public GameState pop() {
-    int i = this.stack.size();
-    GameState localGameState1 = null;
-    GameState localGameState2 = null;
-    if (i > 0) {
-      if (i > 1)
-        localGameState2 = (GameState)this.stack.get(i - 2);
-      localGameState1 = (GameState)this.stack.get(i - 1);
-      localGameState1.leavePop(localGameState2);
-      this.stack.remove(i - 1);
-      if (localGameState2 != null)
-        localGameState2.enterPop(localGameState1);
+    public int size()
+    {
+        return stack.size();
     }
-    return localGameState2;
-  }
 
-  public GameState peek() {
-    int i = this.stack.size();
-    if (i == 0) return null;
-    return (GameState)this.stack.get(i - 1);
-  }
+    public com.maddox.il2.game.GameState change(int i)
+    {
+        com.maddox.il2.game.GameState gamestate = com.maddox.il2.game.GameState.get(i);
+        if(gamestate == null)
+            return null;
+        else
+            return change(gamestate);
+    }
+
+    public com.maddox.il2.game.GameState change(com.maddox.il2.game.GameState gamestate)
+    {
+        int i = stack.size();
+        if(i == 0)
+        {
+            stack.add(gamestate);
+            gamestate.enter(null);
+        } else
+        {
+            com.maddox.il2.game.GameState gamestate1 = (com.maddox.il2.game.GameState)stack.get(i - 1);
+            gamestate1.leave(gamestate);
+            stack.set(i - 1, gamestate);
+            gamestate.enter(gamestate1);
+        }
+        return gamestate;
+    }
+
+    public com.maddox.il2.game.GameState push(int i)
+    {
+        com.maddox.il2.game.GameState gamestate = com.maddox.il2.game.GameState.get(i);
+        if(gamestate == null)
+            return null;
+        else
+            return push(gamestate);
+    }
+
+    public com.maddox.il2.game.GameState push(com.maddox.il2.game.GameState gamestate)
+    {
+        int i = stack.size();
+        com.maddox.il2.game.GameState gamestate1 = null;
+        if(i > 0)
+        {
+            gamestate1 = (com.maddox.il2.game.GameState)stack.get(i - 1);
+            gamestate1.leavePush(gamestate);
+        }
+        stack.add(gamestate);
+        gamestate.enterPush(gamestate1);
+        return gamestate;
+    }
+
+    public com.maddox.il2.game.GameState pop()
+    {
+        int i = stack.size();
+        Object obj = null;
+        com.maddox.il2.game.GameState gamestate1 = null;
+        if(i > 0)
+        {
+            if(i > 1)
+                gamestate1 = (com.maddox.il2.game.GameState)stack.get(i - 2);
+            com.maddox.il2.game.GameState gamestate = (com.maddox.il2.game.GameState)stack.get(i - 1);
+            gamestate.leavePop(gamestate1);
+            stack.remove(i - 1);
+            if(gamestate1 != null)
+                gamestate1.enterPop(gamestate);
+        }
+        return gamestate1;
+    }
+
+    public com.maddox.il2.game.GameState peek()
+    {
+        int i = stack.size();
+        if(i == 0)
+            return null;
+        else
+            return (com.maddox.il2.game.GameState)stack.get(i - 1);
+    }
+
+    protected java.util.ArrayList stack;
 }

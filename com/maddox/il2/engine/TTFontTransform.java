@@ -1,11 +1,22 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TTFontTransform.java
+
 package com.maddox.il2.engine;
+
 
 public class TTFontTransform
 {
-  public void get(float paramFloat1, float paramFloat2, float[] paramArrayOfFloat)
-  {
-    paramArrayOfFloat[0] = paramFloat1;
-    paramArrayOfFloat[1] = paramFloat2;
-    paramArrayOfFloat[2] = 0.0F;
-  }
+
+    public TTFontTransform()
+    {
+    }
+
+    public void get(float f, float f1, float af[])
+    {
+        af[0] = f;
+        af[1] = f1;
+        af[2] = 0.0F;
+    }
 }

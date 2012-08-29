@@ -1,21 +1,35 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIInfoMenu.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GRegion;
 
-public class GUIInfoMenu extends GUIInfoTop
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIInfoTop
+
+public class GUIInfoMenu extends com.maddox.il2.gui.GUIInfoTop
 {
-  public String info;
 
-  public void render()
-  {
-    super.render();
-    setCanvasColor(GColor.Gray);
-    setCanvasFont(0);
-    draw(M(2.0F), 0.0F, this.win.dx - M(2.0F), this.win.dy, 0, this.info);
-  }
+    public GUIInfoMenu()
+    {
+    }
 
-  public void setPosSize() {
-    set1024PosSize(0.0F, 0.0F, 300.0F, 32.0F);
-  }
+    public void render()
+    {
+        super.render();
+        setCanvasColor(com.maddox.gwindow.GColor.Gray);
+        setCanvasFont(0);
+        draw(M(2.0F), 0.0F, win.dx - M(2.0F), win.dy, 0, info);
+    }
+
+    public void setPosSize()
+    {
+        set1024PosSize(0.0F, 0.0F, 300F, 32F);
+    }
+
+    public java.lang.String info;
 }

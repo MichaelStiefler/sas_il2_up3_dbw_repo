@@ -1,149 +1,177 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   I18N.java
+
 package com.maddox.il2.game;
 
 import com.maddox.rts.LDRres;
 import com.maddox.rts.RTSConf;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class I18N
 {
-  static Res army;
-  static Res color;
-  static Res map;
-  static Res gui;
-  static Res bld;
-  static Res plane;
-  static Res weapons;
-  static Res technic;
-  static Res regimentShort;
-  static Res regimentInfo;
-  static Res gwindow;
-  static Res hud_log;
-  static Res credits;
-  private static final String[] COUNTRY_KEYS = { "de", "fi", "fr", "gb", "hu", "it", "ja", "nn", "pl", "ro", "sk", "ru", "us", "un", "um", "ra", "rz", "rn", "in", "du" };
-
-  public static String army(String paramString)
-  {
-    if (army == null) army = new Res("i18n/army");
-    return army.get(paramString);
-  }
-  public static String color(String paramString) {
-    if (color == null) color = new Res("i18n/color");
-    return color.get(paramString);
-  }
-  public static String map(String paramString) {
-    if (map == null) map = new Res("i18n/maps");
-    return map.get(paramString);
-  }
-  public static String gui(String paramString) {
-    if (gui == null) gui = new Res("i18n/gui");
-    return gui.get(paramString);
-  }
-  public static boolean isGuiExist(String paramString) {
-    if (gui == null) gui = new Res("i18n/gui");
-    return gui.isExist(paramString);
-  }
-  public static String bld(String paramString) {
-    if (bld == null) bld = new Res("i18n/bld");
-    return bld.get(paramString);
-  }
-  public static String plane(String paramString) {
-    if (plane == null) plane = new Res("i18n/plane");
-    return plane.get(paramString);
-  }
-  public static String weapons(String paramString1, String paramString2) {
-    if (weapons == null) weapons = new Res("i18n/weapons");
-    String str = paramString1 + "." + paramString2;
-    if (weapons.isExist(str))
-      return weapons.get(str);
-    return paramString2;
-  }
-  public static String technic(String paramString) {
-    if (technic == null) technic = new Res("i18n/technics");
-    return technic.get(paramString);
-  }
-  public static String regimentShort(String paramString) {
-    if (regimentShort == null) regimentShort = new Res("i18n/regShort");
-    return regimentShort.get(paramString);
-  }
-  public static String regimentInfo(String paramString) {
-    if (regimentInfo == null) regimentInfo = new Res("i18n/regInfo");
-    return regimentInfo.get(paramString);
-  }
-  public static String gwindow(String paramString) {
-    if (paramString == null) return paramString;
-    if (gwindow == null) gwindow = new Res("i18n/gwindow");
-    if (gwindow.isExist(paramString))
-      return gwindow.get(paramString);
-    if (paramString.indexOf('_') < 0) return paramString;
-    return paramString.replace('_', ' ');
-  }
-  public static String hud_log(String paramString) {
-    if (hud_log == null) hud_log = new Res("i18n/hud_log");
-    return hud_log.get(paramString);
-  }
-  public static String credits(String paramString) {
-    if (credits == null) credits = new Res("i18n/credits");
-    return credits.get(paramString);
-  }
-
-  public static String getCountryKey(String paramString)
-  {
-    ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-    for (int i = 0; i < COUNTRY_KEYS.length; i++)
+    static class Res
     {
-      String str = COUNTRY_KEYS[i];
-      try
-      {
-        if (localResourceBundle.getString(str).equals(paramString)) {
-          return str;
+
+        java.lang.String get(java.lang.String s)
+        {
+            if(res == null)
+                return s;
+            return res.getString(s);
+            java.lang.Exception exception;
+            exception;
+            return s;
         }
-      }
-      catch (MissingResourceException localMissingResourceException)
-      {
-      }
+
+        boolean isExist(java.lang.String s)
+        {
+            if(res == null)
+                return false;
+            res.getString(s);
+            return true;
+            java.lang.Exception exception;
+            exception;
+            return false;
+        }
+
+        java.util.ResourceBundle res;
+
+        Res(java.lang.String s)
+        {
+            try
+            {
+                res = java.util.ResourceBundle.getBundle(s, com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+            }
+            catch(java.lang.Exception exception) { }
+        }
     }
-    return null;
-  }
 
-  static class Res
-  {
-    private String myName;
-    ResourceBundle res;
 
-    String get(String paramString)
+    public static java.lang.String army(java.lang.String s)
     {
-      if (this.res == null) return paramString; try
-      {
-        return this.res.getString(paramString);
-      }
-      catch (Exception localException)
-      {
-      }
-
-      return paramString;
-    }
-    boolean isExist(String paramString) {
-      if (this.res == null) return false; try
-      {
-        this.res.getString(paramString);
-        return true;
-      }
-      catch (Exception localException)
-      {
-      }
-
-      return false;
+        if(army == null)
+            army = new Res("i18n/army");
+        return army.get(s);
     }
 
-    Res(String paramString) {
-      try {
-        this.res = ResourceBundle.getBundle(paramString, RTSConf.cur.locale, LDRres.loader());
-        this.myName = paramString;
-      }
-      catch (Exception localException)
-      {
-      }
+    public static java.lang.String color(java.lang.String s)
+    {
+        if(color == null)
+            color = new Res("i18n/color");
+        return color.get(s);
     }
-  }
+
+    public static java.lang.String map(java.lang.String s)
+    {
+        if(map == null)
+            map = new Res("i18n/maps");
+        return map.get(s);
+    }
+
+    public static java.lang.String gui(java.lang.String s)
+    {
+        if(gui == null)
+            gui = new Res("i18n/gui");
+        return gui.get(s);
+    }
+
+    public static boolean isGuiExist(java.lang.String s)
+    {
+        if(gui == null)
+            gui = new Res("i18n/gui");
+        return gui.isExist(s);
+    }
+
+    public static java.lang.String bld(java.lang.String s)
+    {
+        if(bld == null)
+            bld = new Res("i18n/bld");
+        return bld.get(s);
+    }
+
+    public static java.lang.String plane(java.lang.String s)
+    {
+        if(plane == null)
+            plane = new Res("i18n/plane");
+        return plane.get(s);
+    }
+
+    public static java.lang.String weapons(java.lang.String s, java.lang.String s1)
+    {
+        if(weapons == null)
+            weapons = new Res("i18n/weapons");
+        java.lang.String s2 = s + "." + s1;
+        if(weapons.isExist(s2))
+            return weapons.get(s2);
+        else
+            return s1;
+    }
+
+    public static java.lang.String technic(java.lang.String s)
+    {
+        if(technic == null)
+            technic = new Res("i18n/technics");
+        return technic.get(s);
+    }
+
+    public static java.lang.String regimentShort(java.lang.String s)
+    {
+        if(regimentShort == null)
+            regimentShort = new Res("i18n/regShort");
+        return regimentShort.get(s);
+    }
+
+    public static java.lang.String regimentInfo(java.lang.String s)
+    {
+        if(regimentInfo == null)
+            regimentInfo = new Res("i18n/regInfo");
+        return regimentInfo.get(s);
+    }
+
+    public static java.lang.String gwindow(java.lang.String s)
+    {
+        if(s == null)
+            return s;
+        if(gwindow == null)
+            gwindow = new Res("i18n/gwindow");
+        if(gwindow.isExist(s))
+            return gwindow.get(s);
+        if(s.indexOf('_') < 0)
+            return s;
+        else
+            return s.replace('_', ' ');
+    }
+
+    public static java.lang.String hud_log(java.lang.String s)
+    {
+        if(hud_log == null)
+            hud_log = new Res("i18n/hud_log");
+        return hud_log.get(s);
+    }
+
+    public static java.lang.String credits(java.lang.String s)
+    {
+        if(credits == null)
+            credits = new Res("i18n/credits");
+        return credits.get(s);
+    }
+
+    private I18N()
+    {
+    }
+
+    static com.maddox.il2.game.Res army;
+    static com.maddox.il2.game.Res color;
+    static com.maddox.il2.game.Res map;
+    static com.maddox.il2.game.Res gui;
+    static com.maddox.il2.game.Res bld;
+    static com.maddox.il2.game.Res plane;
+    static com.maddox.il2.game.Res weapons;
+    static com.maddox.il2.game.Res technic;
+    static com.maddox.il2.game.Res regimentShort;
+    static com.maddox.il2.game.Res regimentInfo;
+    static com.maddox.il2.game.Res gwindow;
+    static com.maddox.il2.game.Res hud_log;
+    static com.maddox.il2.game.Res credits;
 }

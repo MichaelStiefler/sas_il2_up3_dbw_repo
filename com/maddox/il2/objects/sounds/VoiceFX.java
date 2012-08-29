@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   VoiceFX.java
+
 package com.maddox.il2.objects.sounds;
 
 import com.maddox.rts.HomePath;
@@ -10,221 +15,248 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+// Referenced classes of package com.maddox.il2.objects.sounds:
+//            VoiceBase
+
 public class VoiceFX
 {
-  public static final int numVoices = 9;
-  protected long time;
-  protected int voice;
-  protected int armyNum;
-  protected String country;
-  protected int[] phrase;
-  protected ArrayList subFX;
-  protected static SoundPreset preset = null;
-  protected static SoundFX[] voices = new SoundFX[9];
 
-  protected static ArrayList queue = new ArrayList();
-  protected static ArrayList async = new ArrayList();
+    public VoiceFX()
+    {
+        time = 0L;
+        voice = -1;
+        armyNum = 0;
+        country = null;
+        phrase = null;
+        subFX = new ArrayList();
+    }
 
-  protected static VoiceFX curFX = null;
-  protected static VoiceFX curSync = null;
-  protected static boolean enabled = false;
-
-  private static HashMap countryMap = new HashMap();
-
-  private static Random rnd = new Random();
-  private static final int rndDelay = 3500;
-  private static final int minDelay = 1500;
-  private static int prevVoice = -1;
-  private static int curDt = 100;
-
-  public VoiceFX()
-  {
-    this.time = 0L;
-    this.voice = -1;
-    this.armyNum = 0;
-    this.country = null;
-    this.phrase = null;
-    this.subFX = new ArrayList();
-  }
-
-  protected void playVoice()
-  {
-    SoundFX localSoundFX = voices[this.voice];
-    if (localSoundFX != null)
-      for (int i = 0; i < this.phrase.length; i++) {
-        String str = null;
-        if ((this.country != null) && (countryMap.containsKey(this.country))) {
-          str = this.country;
-        }
-        else
+    protected void playVoice()
+    {
+        com.maddox.sound.SoundFX soundfx = voices[voice];
+        if(soundfx != null)
         {
-          switch (this.armyNum) { case 1:
-            str = "ru"; break;
-          case 2:
-            str = "de"; break;
-          default:
+            for(int i = 0; i < phrase.length; i++)
+            {
+                java.lang.String s = null;
+                if(country != null && countryMap.containsKey(country))
+                    s = country;
+                else
+                    switch(armyNum)
+                    {
+                    case 1: // '\001'
+                        s = "ru";
+                        break;
+
+                    case 2: // '\002'
+                        s = "de";
+                        break;
+
+                    default:
+                        return;
+                    }
+                s = "Speech/" + s + "/Actor" + (voice + 1) + "/" + com.maddox.il2.objects.sounds.VoiceBase.vbStr[phrase[i]];
+                soundfx.play(new Sample(s + ".wav", 1));
+            }
+
+        }
+    }
+
+    public static void tick()
+    {
+        if(!enabled)
             return;
-          }
+        long l = com.maddox.rts.Time.real();
+        prevVoice = -1;
+        curDt = 100;
+        if(curSync != null && !voices[curSync.voice].isPlaying())
+        {
+            long l1 = 100L;
+            com.maddox.il2.objects.sounds.VoiceFX voicefx2;
+            for(int k = -1; curSync.subFX.size() > 0; k = voicefx2.voice)
+            {
+                voicefx2 = (com.maddox.il2.objects.sounds.VoiceFX)curSync.subFX.get(0);
+                if(k >= 0 && k != voicefx2.voice)
+                    l1 = 1500 + rnd.nextInt(3500);
+                else
+                    l1 += 200L;
+                voicefx2.time = l + l1;
+                async.add(voicefx2);
+                curSync.subFX.remove(0);
+            }
+
+            curSync = null;
+            curFX = null;
+        }
+        if(curSync == null && queue.size() > 0)
+        {
+            boolean flag = false;
+            curSync = (com.maddox.il2.objects.sounds.VoiceFX)queue.get(0);
+            curSync.playVoice();
+            queue.remove(0);
+            for(; queue.size() > 0; queue.remove(0))
+            {
+                com.maddox.il2.objects.sounds.VoiceFX voicefx = (com.maddox.il2.objects.sounds.VoiceFX)queue.get(0);
+                if(voicefx.voice != curSync.voice)
+                    break;
+                voicefx.playVoice();
+                for(; voicefx.subFX.size() > 0; voicefx.subFX.remove(0))
+                {
+                    com.maddox.il2.objects.sounds.VoiceFX voicefx1 = (com.maddox.il2.objects.sounds.VoiceFX)voicefx.subFX.get(0);
+                    curSync.subFX.add(voicefx1);
+                }
+
+            }
 
         }
+        if(async.size() > 0)
+        {
+            int i = 0;
+            for(int j = 0; j < 9; j++)
+                if(voices[j].isPlaying())
+                    i++;
 
-        str = "Speech/" + str + "/Actor" + (this.voice + 1) + "/" + VoiceBase.vbStr[this.phrase[i]];
-        localSoundFX.play(new Sample(str + ".wav", 1));
-      }
-  }
+            for(int i1 = 0; i1 < async.size();)
+            {
+                com.maddox.il2.objects.sounds.VoiceFX voicefx3 = (com.maddox.il2.objects.sounds.VoiceFX)async.get(i1);
+                if(i > 2)
+                    break;
+                if(voicefx3.time < l)
+                {
+                    voicefx3.playVoice();
+                    async.remove(i1);
+                    i++;
+                    for(; async.size() > i1; async.remove(i1))
+                    {
+                        com.maddox.il2.objects.sounds.VoiceFX voicefx4 = (com.maddox.il2.objects.sounds.VoiceFX)async.get(i1);
+                        if(voicefx3.voice != voicefx4.voice)
+                            break;
+                        voicefx4.playVoice();
+                    }
 
-  public static void tick()
-  {
-    if (!enabled) return;
+                } else
+                {
+                    i1++;
+                }
+            }
 
-    long l1 = Time.real();
-    prevVoice = -1;
-    curDt = 100;
-    VoiceFX localVoiceFX3;
-    if ((curSync != null) && 
-      (!voices[curSync.voice].isPlaying())) {
-      long l2 = 100L;
-      int k = -1;
-      while (curSync.subFX.size() > 0) {
-        localVoiceFX3 = (VoiceFX)curSync.subFX.get(0);
-        if ((k >= 0) && (k != localVoiceFX3.voice)) l2 = 1500 + rnd.nextInt(3500); else
-          l2 += 200L;
-        localVoiceFX3.time = (l1 + l2);
-        async.add(localVoiceFX3);
-        curSync.subFX.remove(0);
-        k = localVoiceFX3.voice;
-      }
-      curSync = null;
-      curFX = null;
-    }
-    int i;
-    VoiceFX localVoiceFX2;
-    if ((curSync == null) && 
-      (queue.size() > 0)) {
-      i = 0;
-      curSync = (VoiceFX)queue.get(0);
-      curSync.playVoice();
-      queue.remove(0);
-      while (queue.size() > 0) {
-        VoiceFX localVoiceFX1 = (VoiceFX)queue.get(0);
-        if (localVoiceFX1.voice != curSync.voice) break;
-        localVoiceFX1.playVoice();
-        while (localVoiceFX1.subFX.size() > 0) {
-          localVoiceFX2 = (VoiceFX)localVoiceFX1.subFX.get(0);
-          curSync.subFX.add(localVoiceFX2);
-          localVoiceFX1.subFX.remove(0);
         }
-        queue.remove(0);
-      }
     }
-    int j;
-    if (async.size() > 0) {
-      i = 0;
-      for (j = 0; j < 9; j++) {
-        if (!voices[j].isPlaying()) continue; i++;
-      }
-      for (j = 0; j < async.size(); ) {
-        localVoiceFX2 = (VoiceFX)async.get(j);
-        if (i > 2) break;
-        if (localVoiceFX2.time < l1) {
-          localVoiceFX2.playVoice();
-          async.remove(j);
-          i++;
-          while (async.size() > j) {
-            localVoiceFX3 = (VoiceFX)async.get(j);
-            if (localVoiceFX2.voice != localVoiceFX3.voice) break;
-            localVoiceFX3.playVoice();
-            async.remove(j);
-          }
-        }
-        j++;
-      }
-    }
-  }
 
-  public static void play(int paramInt1, int paramInt2, int paramInt3, String paramString, int[] paramArrayOfInt)
-  {
-    if ((paramArrayOfInt == null) || (paramArrayOfInt.length == 0)) return;
-
-    VoiceFX localVoiceFX = new VoiceFX();
-    paramInt2--;
-    for (int i = 0; (i < paramArrayOfInt.length) && (paramArrayOfInt[i] != 0); i++);
-    localVoiceFX.voice = paramInt2;
-    localVoiceFX.armyNum = paramInt3;
-    localVoiceFX.country = paramString;
-    if (localVoiceFX.country != null)
-      localVoiceFX.country = localVoiceFX.country.toLowerCase();
-    localVoiceFX.phrase = new int[i];
-    for (int j = 0; j < i; j++) localVoiceFX.phrase[j] = paramArrayOfInt[j];
-    if (paramInt1 == 1) paramInt1 = 0;
-
-    if (paramInt1 == 2)
+    public static void play(int i, int j, int k, java.lang.String s, int ai[])
     {
-      async.add(localVoiceFX);
+        if(ai == null || ai.length == 0)
+            return;
+        com.maddox.il2.objects.sounds.VoiceFX voicefx = new VoiceFX();
+        j--;
+        int l;
+        for(l = 0; l < ai.length && ai[l] != 0; l++);
+        voicefx.voice = j;
+        voicefx.armyNum = k;
+        voicefx.country = s;
+        if(voicefx.country != null)
+            voicefx.country = voicefx.country.toLowerCase();
+        voicefx.phrase = new int[l];
+        for(int i1 = 0; i1 < l; i1++)
+            voicefx.phrase[i1] = ai[i1];
+
+        if(i == 1)
+            i = 0;
+        if(i == 2)
+            async.add(voicefx);
+        else
+        if(i == 0)
+        {
+            curFX = voicefx;
+            queue.add(voicefx);
+        } else
+        if(i == 1)
+            curFX.subFX.add(voicefx);
+        prevVoice = j;
     }
-    else if (paramInt1 == 0) {
-      curFX = localVoiceFX;
-      queue.add(localVoiceFX);
-    }
-    else if (paramInt1 == 1)
+
+    public static void end()
     {
-      curFX.subFX.add(localVoiceFX);
+        for(int i = 0; i < 9; i++)
+            if(voices[i] != null)
+            {
+                voices[i].cancel();
+                voices[i].clear();
+            }
+
+        queue.clear();
+        async.clear();
     }
-    prevVoice = paramInt2;
-  }
 
-  public static void end()
-  {
-    for (int i = 0; i < 9; i++) {
-      if (voices[i] != null) {
-        voices[i].cancel();
-        voices[i].clear();
-      }
+    public static boolean isEnabled()
+    {
+        return enabled;
     }
-    queue.clear();
-    async.clear();
-  }
 
-  public static boolean isEnabled()
-  {
-    return enabled;
-  }
+    public static void setEnabled(boolean flag)
+    {
+        if(preset == null)
+            preset = new SoundPreset("voice");
+        enabled = flag;
+        for(int i = 0; i < 9; i++)
+            if(enabled)
+            {
+                if(voices[i] == null)
+                    voices[i] = new SoundFX(preset);
+            } else
+            if(voices[i] != null)
+            {
+                voices[i].cancel();
+                voices[i] = null;
+            }
 
-  public static void setEnabled(boolean paramBoolean)
-  {
-    if (preset == null)
-      preset = new SoundPreset("voice");
-    enabled = paramBoolean;
-    for (int i = 0; i < 9; i++)
-      if (enabled) {
-        if (voices[i] == null) {
-          voices[i] = new SoundFX(preset);
+    }
+
+    public static final int numVoices = 9;
+    protected long time;
+    protected int voice;
+    protected int armyNum;
+    protected java.lang.String country;
+    protected int phrase[];
+    protected java.util.ArrayList subFX;
+    protected static com.maddox.sound.SoundPreset preset = null;
+    protected static com.maddox.sound.SoundFX voices[];
+    protected static java.util.ArrayList queue = new ArrayList();
+    protected static java.util.ArrayList async = new ArrayList();
+    protected static com.maddox.il2.objects.sounds.VoiceFX curFX = null;
+    protected static com.maddox.il2.objects.sounds.VoiceFX curSync = null;
+    protected static boolean enabled = false;
+    private static java.util.HashMap countryMap;
+    private static java.util.Random rnd = new Random();
+    private static final int rndDelay = 3500;
+    private static final int minDelay = 1500;
+    private static int prevVoice = -1;
+    private static int curDt = 100;
+
+    static 
+    {
+        voices = new com.maddox.sound.SoundFX[9];
+        countryMap = new HashMap();
+        for(int i = 0; i < 9; i++)
+            voices[i] = null;
+
+        countryMap.put("ru".intern(), null);
+        countryMap.put("de".intern(), null);
+        java.io.File file = new File(com.maddox.rts.HomePath.get(0), "samples/speech");
+        if(file != null)
+        {
+            java.io.File afile[] = file.listFiles();
+            if(afile != null)
+            {
+                for(int j = 0; j < afile.length; j++)
+                    if(afile[j].isDirectory() && !afile[j].isHidden())
+                    {
+                        java.lang.String s = afile[j].getName().toLowerCase();
+                        if(!countryMap.containsKey(s))
+                            countryMap.put(s.intern(), null);
+                    }
+
+            }
         }
-      }
-      else if (voices[i] != null) {
-        voices[i].cancel();
-        voices[i] = null;
-      }
-  }
-
-  static
-  {
-    for (int i = 0; i < 9; i++) voices[i] = null;
-
-    countryMap.put("ru".intern(), null);
-    countryMap.put("de".intern(), null);
-
-    File localFile = new File(HomePath.get(0), "samples/speech");
-    if (localFile != null) {
-      File[] arrayOfFile = localFile.listFiles();
-      if (arrayOfFile != null)
-        for (int j = 0; j < arrayOfFile.length; j++)
-          if ((arrayOfFile[j].isDirectory()) && (!arrayOfFile[j].isHidden())) {
-            String str = arrayOfFile[j].getName().toLowerCase();
-            if (countryMap.containsKey(str))
-              continue;
-            countryMap.put(str.intern(), null);
-          }
     }
-  }
 }

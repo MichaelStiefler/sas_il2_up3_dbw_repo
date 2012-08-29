@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUISingleBriefing.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GWindow;
@@ -10,67 +15,85 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
 import com.maddox.rts.CmdEnv;
 
-public class GUISingleBriefing extends GUIBriefing
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIBriefing, GUIClient, GUIButton, GUIBriefingGeneric
+
+public class GUISingleBriefing extends com.maddox.il2.gui.GUIBriefing
 {
-  public void enterPush(GameState paramGameState)
-  {
-    World.cur().diffUser.set(World.cur().userCfg.singleDifficulty);
-    super.enterPush(paramGameState);
-    if (this.briefSound != null) {
-      CmdEnv.top().exec("music PUSH");
-      CmdEnv.top().exec("music LIST " + this.briefSound);
-      CmdEnv.top().exec("music PLAY");
+
+    public void enterPush(com.maddox.il2.game.GameState gamestate)
+    {
+        com.maddox.il2.ai.World.cur().diffUser.set(com.maddox.il2.ai.World.cur().userCfg.singleDifficulty);
+        super.enterPush(gamestate);
+        if(briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music PUSH");
+            com.maddox.rts.CmdEnv.top().exec("music LIST " + briefSound);
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+        }
     }
-  }
 
-  public void enterPop(GameState paramGameState) {
-    if (paramGameState.id() == 17) {
-      World.cur().userCfg.singleDifficulty = World.cur().diffUser.get();
-      World.cur().userCfg.saveConf();
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate.id() == 17)
+        {
+            com.maddox.il2.ai.World.cur().userCfg.singleDifficulty = com.maddox.il2.ai.World.cur().diffUser.get();
+            com.maddox.il2.ai.World.cur().userCfg.saveConf();
+        }
+        client.activateWindow();
     }
-    this.client.activateWindow();
-  }
 
-  protected void doNext() {
-    if (this.briefSound != null) {
-      CmdEnv.top().exec("music POP");
-      CmdEnv.top().exec("music STOP");
+    protected void doNext()
+    {
+        if(briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music STOP");
+        }
+        com.maddox.il2.game.Main.stateStack().change(5);
     }
-    Main.stateStack().change(5);
-  }
-  protected void doLoodout() {
-    Main.stateStack().push(54);
-  }
 
-  protected void doDiff() {
-    Main.stateStack().push(17);
-  }
-  protected void doBack() {
-    if (this.briefSound != null) {
-      CmdEnv.top().exec("music POP");
-      CmdEnv.top().exec("music PLAY");
+    protected void doLoodout()
+    {
+        com.maddox.il2.game.Main.stateStack().push(54);
     }
-    Main.stateStack().pop();
-  }
 
-  protected void clientRender() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
+    protected void doDiff()
+    {
+        com.maddox.il2.game.Main.stateStack().push(17);
+    }
 
-    localDialogClient.draw(localDialogClient.x1024(0.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(170.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Back"));
+    protected void doBack()
+    {
+        if(briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+        }
+        com.maddox.il2.game.Main.stateStack().pop();
+    }
 
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Difficulty"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Arming"));
-    super.clientRender();
-  }
-  protected void clientSetPosSize() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
+    protected void clientRender()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp = dialogclient;
+        dialogclient.draw(dialogclient.x1024(144F), dialogclient.y1024(656F), dialogclient.x1024(160F), dialogclient.y1024(48F), 0, i18n("brief.Back"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp1 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(256F), dialogclient.y1024(656F), dialogclient.x1024(208F), dialogclient.y1024(48F), 2, i18n("brief.Difficulty"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp2 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(528F), dialogclient.y1024(656F), dialogclient.x1024(176F), dialogclient.y1024(48F), 2, i18n("brief.Arming"));
+        super.clientRender();
+    }
 
-    this.bLoodout.setPosC(localDialogClient.x1024(768.0F), localDialogClient.y1024(689.0F));
-  }
+    protected void clientSetPosSize()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        bLoodout.setPosC(dialogclient.x1024(742F), dialogclient.y1024(680F));
+    }
 
-  public GUISingleBriefing(GWindowRoot paramGWindowRoot)
-  {
-    super(4);
-    init(paramGWindowRoot);
-  }
+    public GUISingleBriefing(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(4);
+        init(gwindowroot);
+    }
 }

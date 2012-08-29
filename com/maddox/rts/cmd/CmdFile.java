@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdFile.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -10,157 +15,193 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdFile extends Cmd
+public class CmdFile extends com.maddox.rts.Cmd
 {
-  public static final String BREAK = "BREAK";
-  public static final String CURENV = "CURENV";
 
-  private void saveParams(CmdEnv paramCmdEnv, Object[] paramArrayOfObject)
-  {
-    for (int i = 0; i < 10; i++) {
-      String str = Integer.toString(i);
-      if (paramCmdEnv.existAtom(str, false)) {
-        paramArrayOfObject[i] = paramCmdEnv.atom(str);
-        paramCmdEnv.delAtom(str);
-      } else if (paramCmdEnv.existAtom(str, true)) {
-        paramCmdEnv.setAtom(str, null);
-      }
-    }
-  }
-
-  private void restoreParams(CmdEnv paramCmdEnv, Object[] paramArrayOfObject) {
-    for (int i = 0; i < 10; i++) {
-      String str = Integer.toString(i);
-      if (paramArrayOfObject[i] != null)
-        paramCmdEnv.setAtom(str, paramArrayOfObject[i]);
-      else if (paramCmdEnv.existAtom(str, false))
-        paramCmdEnv.delAtom(str);
-    }
-  }
-
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    String str1 = null;
-    Object[] arrayOfObject = new Object[10];
-    CmdEnv localCmdEnv = paramCmdEnv;
-
-    saveParams(localCmdEnv, arrayOfObject);
-
-    if (paramMap.containsKey("_$$")) {
-      localObject1 = (List)paramMap.get("_$$");
-      if (((List)localObject1).size() <= 11) {
-        str1 = (String)((List)localObject1).get(0);
-        for (int i = 1; i < ((List)localObject1).size(); i++) {
-          String str2 = (String)((List)localObject1).get(i);
-          paramCmdEnv.setAtom(Integer.toString(i - 1), str2);
-        }
-      } else {
-        restoreParams(localCmdEnv, arrayOfObject);
-        ERR_HARD("Bad command format");
-        return null;
-      }
-    } else {
-      restoreParams(localCmdEnv, arrayOfObject);
-      ERR_HARD("Bad command format");
-      return null;
-    }
-
-    Object localObject1 = null;
-    Object localObject2 = null;
-    int j = 1;
-    if (!paramMap.containsKey("CURENV")) {
-      paramCmdEnv = new CmdEnv(paramCmdEnv);
-      j = 0;
-    } else {
-      localObject1 = paramCmdEnv.atom(null, "_$$0");
-      localObject2 = paramCmdEnv.atom(null, "_$$1");
-    }
-
-    Object localObject3 = null;
-    boolean bool1 = paramMap.containsKey("BREAK");
-    boolean bool2 = paramCmdEnv.flag("fast");
-    boolean bool3 = false;
-    if (!bool2)
-      bool3 = paramCmdEnv.flag("echo");
-    try
+    private void saveParams(com.maddox.rts.CmdEnv cmdenv, java.lang.Object aobj[])
     {
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str1));
-      StringBuffer localStringBuffer = new StringBuffer();
-      String str3 = null;
-      while (true)
-      {
-        str3 = localBufferedReader.readLine();
-        if (str3 == null)
-          break;
-        if ((str3.length() > 0) && (!str3.startsWith("#"))) {
-          localStringBuffer.append(str3);
-          if ((bool3) && (localStringBuffer.charAt(0) != '@')) {
-            if (j != 0)
-              INFO_SOFT(CmdEnv.top().curNumCmd() + 1 + ">" + str3);
-            else
-              INFO_SOFT('>' + str3);
-          }
-          int k = 0;
-          for (int m = localStringBuffer.length() - 1; m >= 0; m--) {
-            if (localStringBuffer.charAt(m) == '\\') {
-              localStringBuffer.setCharAt(m, ' ');
-              k = 1;
-              break;
-            }if (localStringBuffer.charAt(m) != ' ') {
-              break;
-            }
-          }
-          if (k == 0) {
-            if (localStringBuffer.charAt(0) == '@')
-              localStringBuffer.setCharAt(0, ' ');
-            localObject3 = paramCmdEnv.exec(getStr(localStringBuffer));
-            if ((bool1) && (localObject3 == null)) {
-              ERR_HARD("Execute file is breaked");
-              break;
-            }
-            localStringBuffer.delete(0, localStringBuffer.length());
-            bool2 = paramCmdEnv.flag("fast");
-            if (bool2) { bool3 = false; continue; }
-            bool3 = paramCmdEnv.flag("echo");
-          }
+        for(int i = 0; i < 10; i++)
+        {
+            java.lang.String s = java.lang.Integer.toString(i);
+            if(cmdenv.existAtom(s, false))
+            {
+                aobj[i] = cmdenv.atom(s);
+                cmdenv.delAtom(s);
+            } else
+            if(cmdenv.existAtom(s, true))
+                cmdenv.setAtom(s, null);
         }
-      }
-      localBufferedReader.close();
-    } catch (IOException localIOException) {
-      ERR_HARD("File " + str1 + " not found");
-      localObject3 = null;
-    }
-    if (j != 0) {
-      paramCmdEnv.setAtom(null, "_$$0", localObject1);
-      paramCmdEnv.setAtom(null, "_$$1", localObject2);
-    }
-    restoreParams(localCmdEnv, arrayOfObject);
-    return localObject3;
-  }
-
-  private String getStr(StringBuffer paramStringBuffer) {
-    for (int i = 0; i < paramStringBuffer.length(); i++) {
-      if ((paramStringBuffer.charAt(i) != '\\') || 
-        (i + 1 >= paramStringBuffer.length())) continue;
-      switch (paramStringBuffer.charAt(i + 1)) { case 'n':
-        paramStringBuffer.setCharAt(i, '\n'); paramStringBuffer.deleteCharAt(i + 1); break;
-      case 'r':
-        paramStringBuffer.setCharAt(i, '\r'); paramStringBuffer.deleteCharAt(i + 1); break;
-      case 't':
-        paramStringBuffer.setCharAt(i, '\t'); paramStringBuffer.deleteCharAt(i + 1); break;
-      case 'f':
-        paramStringBuffer.setCharAt(i, '\f'); paramStringBuffer.deleteCharAt(i + 1);
-      }
 
     }
 
-    return paramStringBuffer.toString();
-  }
+    private void restoreParams(com.maddox.rts.CmdEnv cmdenv, java.lang.Object aobj[])
+    {
+        for(int i = 0; i < 10; i++)
+        {
+            java.lang.String s = java.lang.Integer.toString(i);
+            if(aobj[i] != null)
+                cmdenv.setAtom(s, aobj[i]);
+            else
+            if(cmdenv.existAtom(s, false))
+                cmdenv.delAtom(s);
+        }
 
-  public CmdFile() {
-    this.param.put("BREAK", null);
-    this.param.put("CURENV", null);
-    this._properties.put("NAME", "file");
-    this._levelAccess = 1;
-  }
+    }
+
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        java.lang.String s = null;
+        java.lang.Object aobj[] = new java.lang.Object[10];
+        com.maddox.rts.CmdEnv cmdenv1 = cmdenv;
+        saveParams(cmdenv1, aobj);
+        if(map.containsKey("_$$"))
+        {
+            java.util.List list = (java.util.List)map.get("_$$");
+            if(list.size() <= 11)
+            {
+                s = (java.lang.String)list.get(0);
+                for(int i = 1; i < list.size(); i++)
+                {
+                    java.lang.String s1 = (java.lang.String)list.get(i);
+                    cmdenv.setAtom(java.lang.Integer.toString(i - 1), s1);
+                }
+
+            } else
+            {
+                restoreParams(cmdenv1, aobj);
+                ERR_HARD("Bad command format");
+                return null;
+            }
+        } else
+        {
+            restoreParams(cmdenv1, aobj);
+            ERR_HARD("Bad command format");
+            return null;
+        }
+        java.lang.Object obj = null;
+        java.lang.Object obj1 = null;
+        boolean flag = true;
+        if(!map.containsKey("CURENV"))
+        {
+            cmdenv = new CmdEnv(cmdenv);
+            flag = false;
+        } else
+        {
+            obj = cmdenv.atom(null, "_$$0");
+            obj1 = cmdenv.atom(null, "_$$1");
+        }
+        java.lang.Object obj2 = null;
+        boolean flag1 = map.containsKey("BREAK");
+        boolean flag2 = cmdenv.flag("fast");
+        boolean flag4 = false;
+        if(!flag2)
+            flag4 = cmdenv.flag("echo");
+        try
+        {
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s));
+            java.lang.StringBuffer stringbuffer = new StringBuffer();
+            Object obj3 = null;
+            do
+            {
+                java.lang.String s2 = bufferedreader.readLine();
+                if(s2 == null)
+                    break;
+                if(s2.length() <= 0 || s2.startsWith("#"))
+                    continue;
+                stringbuffer.append(s2);
+                if(flag4 && stringbuffer.charAt(0) != '@')
+                    if(flag)
+                    {
+                        com.maddox.rts.CmdEnv _tmp = cmdenv;
+                        INFO_SOFT((com.maddox.rts.CmdEnv.top().curNumCmd() + 1) + ">" + s2);
+                    } else
+                    {
+                        INFO_SOFT('>' + s2);
+                    }
+                boolean flag5 = false;
+                for(int j = stringbuffer.length() - 1; j >= 0; j--)
+                {
+                    if(stringbuffer.charAt(j) == '\\')
+                    {
+                        stringbuffer.setCharAt(j, ' ');
+                        flag5 = true;
+                        break;
+                    }
+                    if(stringbuffer.charAt(j) != ' ')
+                        break;
+                }
+
+                if(flag5)
+                    continue;
+                if(stringbuffer.charAt(0) == '@')
+                    stringbuffer.setCharAt(0, ' ');
+                obj2 = cmdenv.exec(getStr(stringbuffer));
+                if(flag1 && obj2 == null)
+                {
+                    ERR_HARD("Execute file is breaked");
+                    break;
+                }
+                stringbuffer.delete(0, stringbuffer.length());
+                boolean flag3 = cmdenv.flag("fast");
+                if(flag3)
+                    flag4 = false;
+                else
+                    flag4 = cmdenv.flag("echo");
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            ERR_HARD("File " + s + " not found");
+            obj2 = null;
+        }
+        if(flag)
+        {
+            cmdenv.setAtom(null, "_$$0", obj);
+            cmdenv.setAtom(null, "_$$1", obj1);
+        }
+        restoreParams(cmdenv1, aobj);
+        return obj2;
+    }
+
+    private java.lang.String getStr(java.lang.StringBuffer stringbuffer)
+    {
+        for(int i = 0; i < stringbuffer.length(); i++)
+            if(stringbuffer.charAt(i) == '\\' && i + 1 < stringbuffer.length())
+                switch(stringbuffer.charAt(i + 1))
+                {
+                case 110: // 'n'
+                    stringbuffer.setCharAt(i, '\n');
+                    stringbuffer.deleteCharAt(i + 1);
+                    break;
+
+                case 114: // 'r'
+                    stringbuffer.setCharAt(i, '\r');
+                    stringbuffer.deleteCharAt(i + 1);
+                    break;
+
+                case 116: // 't'
+                    stringbuffer.setCharAt(i, '\t');
+                    stringbuffer.deleteCharAt(i + 1);
+                    break;
+
+                case 102: // 'f'
+                    stringbuffer.setCharAt(i, '\f');
+                    stringbuffer.deleteCharAt(i + 1);
+                    break;
+                }
+
+        return stringbuffer.toString();
+    }
+
+    public CmdFile()
+    {
+        param.put("BREAK", null);
+        param.put("CURENV", null);
+        _properties.put("NAME", "file");
+        _levelAccess = 1;
+    }
+
+    public static final java.lang.String BREAK = "BREAK";
+    public static final java.lang.String CURENV = "CURENV";
 }

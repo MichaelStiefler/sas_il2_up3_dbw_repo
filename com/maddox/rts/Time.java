@@ -1,509 +1,673 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Time.java
+
 package com.maddox.rts;
 
 import java.io.PrintStream;
 
+// Referenced classes of package com.maddox.rts:
+//            RTSConf, MessageQueue, Message, RTS
+
 public final class Time
 {
-  public static boolean bShowDiag = true;
-  private static final long MAX_NATIVE_DELTA = 16777215L;
-  private static final int MAX_TICK_LEN = 300;
-  private int _typedTickCounter = 0;
-  private int _newTickLen;
-  private boolean bInLoop = false;
 
-  private boolean bChangeSpeed = false;
-  private double newChangedSpeed = 1.0D;
-
-  private int tickCounter = 0;
-  private long tick = 0L;
-  protected int tickLen0 = 30;
-  protected int tickLen = this.tickLen0;
-  protected int tickConstLen = this.tickLen0;
-  private long tickNext = this.tick + this.tickLen;
-  protected float tickLenFms = 30.0F;
-  protected float tickLenFs = 0.03F;
-  protected float tickConstLenFms = 30.0F;
-  protected float tickConstLenFs = 0.03F;
-  protected int maxTimerTicksInRealTick = 5;
-  private float tickOffset = 0.0F;
-  private boolean bEnableChangePause0 = true;
-  private boolean bEnableChangePause1 = true;
-  private boolean bEnableChangeTickLen = true;
-  private boolean bEnableChangeSpeed = false;
-  private long real_time;
-  private long time = 0L;
-  private long base_real_time;
-  private long base_time = 0L;
-  protected double speed = 1.0D;
-  private double speedCur = 1.0D;
-  private long beginRealTime = 0L;
-  private long beginTime = 0L;
-  private long endRealTime = 0L;
-  private long endTime = 0L;
-  private boolean bPause = true;
-  private boolean bRealOnly = false;
-
-  public static boolean isPaused()
-  {
-    return RTSConf.cur.time.bPause;
-  }
-  public static boolean isRealOnly() {
-    return RTSConf.cur.time.bRealOnly;
-  }
-  public static int tickCounter() {
-    return RTSConf.cur.time.tickCounter;
-  }
-  public static long tick() {
-    return RTSConf.cur.time.tick;
-  }
-  public static long tickNext() {
-    return RTSConf.cur.time.tickNext;
-  }
-  public static int tickLen() {
-    return RTSConf.cur.time.tickLen;
-  }
-  public static float tickLenFms() {
-    return RTSConf.cur.time.tickLenFms;
-  }
-  public static float tickLenFs() {
-    return RTSConf.cur.time.tickLenFs;
-  }
-  public static float tickOffset() {
-    return RTSConf.cur.time._tickOffset(); } 
-  protected float _tickOffset() { return this.tickOffset; }
-
-  public static float tickOffset(long paramLong) {
-    return RTSConf.cur.time._tickOffset(paramLong);
-  }
-  protected float _tickOffset(long paramLong) { if (paramLong <= this.tick)
-      return 0.0F;
-    if (paramLong >= this.tickNext) {
-      return 1.0F;
-    }
-    return (float)(paramLong - this.tick) / this.tickLenFms;
-  }
-
-  public static long current()
-  {
-    if (RTSConf.cur == null)
-      return 0L;
-    return RTSConf.cur.time.time;
-  }
-
-  public static long currentReal()
-  {
-    return RTSConf.cur.time.real_time;
-  }
-
-  public static long end()
-  {
-    return RTSConf.cur.time._end(); } 
-  protected long _end() { return this.bPause ? this.time : this.endTime;
-  }
-
-  public static long endReal()
-  {
-    return RTSConf.cur.time._endReal(); } 
-  protected long _endReal() { return this.endRealTime; }
-
-  public static int tickConstLen() {
-    return RTSConf.cur.time.tickConstLen;
-  }
-  public static float tickConstLenFms() {
-    return RTSConf.cur.time.tickConstLenFms;
-  }
-  public static float tickConstLenFs() {
-    return RTSConf.cur.time.tickConstLenFs;
-  }
-
-  public void loopMessages()
-  {
-    if (this.bChangeSpeed) {
-      _resetSpeed(this.newChangedSpeed);
-      this.bChangeSpeed = false;
-    }
-    this.endRealTime = real();
-    if (this.endRealTime == this.real_time)
-      return;
-    this.bInLoop = true;
-    this.beginRealTime = this.real_time;
-    this.beginTime = this.time;
-    if (this.endRealTime - this.base_real_time > 16777215L) {
-      this.base_time = this.beginTime;
-      this.base_real_time = this.beginRealTime;
-    }
-    this.endTime = ()((this.endRealTime - this.base_real_time) * this.speed + 0.5D + this.base_time);
-
-    int i = 0;
-    if (this.bEnableChangeTickLen) {
-      if ((this.endTime - this.beginTime) / this.tickLen0 > this.maxTimerTicksInRealTick) {
-        this._newTickLen = (int)((this.endTime - this.beginTime) / this.maxTimerTicksInRealTick + 1L);
-
-        if (this._newTickLen > 300) {
-          this._newTickLen = 300;
-          i = 1;
-        }
-        if ((!this.bPause) && (this._typedTickCounter + 20 < this.tickCounter)) {
-          if (bShowDiag)
-            System.err.println("Time overflow (" + this.tickCounter + "): tickLen " + this._newTickLen);
-          this._typedTickCounter = this.tickCounter;
-        }
-      } else {
-        this._newTickLen = ((this.tickLen0 + 2 * this.tickLen) / 3);
-      }
-    } else {
-      this._newTickLen = this.tickLen0;
-      i = 1;
+    public static boolean isPaused()
+    {
+        return com.maddox.rts.RTSConf.cur.time.bPause;
     }
 
-    if ((this.bEnableChangeSpeed) && (i != 0)) {
-      if ((this.endTime - this.beginTime) / this.tickLen > this.maxTimerTicksInRealTick) {
-        long l1 = this.endRealTime - this.beginRealTime;
-        this.speedCur = (this.tickLen * this.maxTimerTicksInRealTick / (l1 * this.speed));
-        if (this.speedCur >= 1.0D) { this.speedCur = 1.0D;
-        } else {
-          if (this.speed * this.speedCur < 0.05D)
-            this.speedCur = (0.05D / this.speed);
-          this.endTime = ()(l1 * this.speed * this.speedCur + 0.5D + this.beginTime);
-          this.base_time = this.beginTime;
-          this.base_real_time = this.beginRealTime;
-          if ((!this.bPause) && 
-            (bShowDiag))
-            System.err.println("Time overflow (" + this.tickCounter + "): speed " + (float)this.speedCur);
-        }
-      }
-      else {
-        this.speedCur = 1.0D;
-      }
+    public static boolean isRealOnly()
+    {
+        return com.maddox.rts.RTSConf.cur.time.bRealOnly;
     }
-    else this.speedCur = 1.0D;
 
-    RTSConf.cur.queueRealTimeNextTick.moveFromNextTick(RTSConf.cur.queueRealTime, true);
-    while (true) {
-      if (this.bPause)
-      {
-        localMessage1 = RTSConf.cur.queueRealTime.get(this.endRealTime);
-        if (localMessage1 == null) {
-          this.real_time = this.endRealTime;
-          setCurrent(this.time, this.real_time);
-          break;
-        }
-        if (localMessage1._time > this.real_time) {
-          this.real_time = localMessage1._time;
-          setCurrent(this.time, this.real_time);
-        }
-        localMessage1.trySend();
+    public static int tickCounter()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickCounter;
+    }
 
-        if (!this.bPause) {
-          this.endTime = ()((this.endRealTime - this.real_time) * this.speed * this.speedCur + 0.5D + this.beginTime);
-          this.base_time = this.beginTime;
-          this.base_real_time = this.real_time;
-        }
+    public static long tick()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tick;
+    }
 
-        continue;
-      }Message localMessage1 = null;
-      synchronized (RTSConf.cur.queueRealTime) { synchronized (RTSConf.cur.queue)
+    public static long tickNext()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickNext;
+    }
+
+    public static int tickLen()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickLen;
+    }
+
+    public static float tickLenFms()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickLenFms;
+    }
+
+    public static float tickLenFs()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickLenFs;
+    }
+
+    public static float tickOffset()
+    {
+        return com.maddox.rts.RTSConf.cur.time._tickOffset();
+    }
+
+    protected float _tickOffset()
+    {
+        return tickOffset;
+    }
+
+    public static float tickOffset(long l)
+    {
+        return com.maddox.rts.RTSConf.cur.time._tickOffset(l);
+    }
+
+    protected float _tickOffset(long l)
+    {
+        if(l <= tick)
+            return 0.0F;
+        if(l >= tickNext)
+            return 1.0F;
+        else
+            return (float)(l - tick) / tickLenFms;
+    }
+
+    public static long current()
+    {
+        if(com.maddox.rts.RTSConf.cur == null)
+            return 0L;
+        else
+            return com.maddox.rts.RTSConf.cur.time.time;
+    }
+
+    public static long currentReal()
+    {
+        return com.maddox.rts.RTSConf.cur.time.real_time;
+    }
+
+    public static long end()
+    {
+        return com.maddox.rts.RTSConf.cur.time._end();
+    }
+
+    protected long _end()
+    {
+        return bPause ? time : endTime;
+    }
+
+    public static long endReal()
+    {
+        return com.maddox.rts.RTSConf.cur.time._endReal();
+    }
+
+    protected long _endReal()
+    {
+        return endRealTime;
+    }
+
+    public static int tickConstLen()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickConstLen;
+    }
+
+    public static float tickConstLenFms()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickConstLenFms;
+    }
+
+    public static float tickConstLenFs()
+    {
+        return com.maddox.rts.RTSConf.cur.time.tickConstLenFs;
+    }
+
+    public void loopMessages()
+    {
+        if(bChangeSpeed)
         {
-          localMessage1 = RTSConf.cur.queue.peek(this.endTime);
-          Message localMessage2 = RTSConf.cur.queueRealTime.peek(this.endRealTime);
-
-          if ((localMessage1 == null) && (localMessage2 == null)) {
-            if (!_setCurrent(this.endTime, this.endRealTime))
-              break;
-          }
-          else {
-            long l2 = 0L;
-            int j;
-            if (localMessage2 != null) {
-              l2 = _fromReal(localMessage2._time);
-              if (l2 >= this.endTime)
-                l2 = this.endTime - 1L;
-              if (localMessage1 != null) {
-                if ((localMessage1._time < l2) || ((localMessage1._time == l2) && (localMessage1._tickPos < localMessage2._tickPos)))
+            _resetSpeed(newChangedSpeed);
+            bChangeSpeed = false;
+        }
+        endRealTime = com.maddox.rts.Time.real();
+        if(endRealTime == real_time)
+            return;
+        bInLoop = true;
+        beginRealTime = real_time;
+        beginTime = time;
+        if(endRealTime - base_real_time > 0xffffffL)
+        {
+            base_time = beginTime;
+            base_real_time = beginRealTime;
+        }
+        endTime = (long)((double)(endRealTime - base_real_time) * speed + 0.5D + (double)base_time);
+        boolean flag = false;
+        if(bEnableChangeTickLen)
+        {
+            if((endTime - beginTime) / (long)tickLen0 > (long)maxTimerTicksInRealTick)
+            {
+                _newTickLen = (int)((endTime - beginTime) / (long)maxTimerTicksInRealTick + 1L);
+                if(_newTickLen > 300)
                 {
-                  j = 0;
+                    _newTickLen = 300;
+                    flag = true;
                 }
-                else j = 1;
-              }
-              else
-                j = 1;
+                if(!bPause && _typedTickCounter + 20 < tickCounter)
+                {
+                    if(bShowDiag)
+                        java.lang.System.err.println("Time overflow (" + tickCounter + "): tickLen " + _newTickLen);
+                    _typedTickCounter = tickCounter;
+                }
+            } else
+            {
+                _newTickLen = (tickLen0 + 2 * tickLen) / 3;
             }
-            else {
-              j = 0;
+        } else
+        {
+            _newTickLen = tickLen0;
+            flag = true;
+        }
+        if(bEnableChangeSpeed && flag)
+        {
+            if((endTime - beginTime) / (long)tickLen > (long)maxTimerTicksInRealTick)
+            {
+                long l = endRealTime - beginRealTime;
+                speedCur = (double)(tickLen * maxTimerTicksInRealTick) / ((double)l * speed);
+                if(speedCur >= 1.0D)
+                {
+                    speedCur = 1.0D;
+                } else
+                {
+                    if(speed * speedCur < 0.050000000000000003D)
+                        speedCur = 0.050000000000000003D / speed;
+                    endTime = (long)((double)l * speed * speedCur + 0.5D + (double)beginTime);
+                    base_time = beginTime;
+                    base_real_time = beginRealTime;
+                    if(!bPause && bShowDiag)
+                        java.lang.System.err.println("Time overflow (" + tickCounter + "): speed " + (float)speedCur);
+                }
+            } else
+            {
+                speedCur = 1.0D;
             }
-
-            if (j != 0) {
-              if (l2 > this.time) {
-                if (!_setCurrent(l2, localMessage2._time))
-                  localMessage1 = RTSConf.cur.queueRealTime.get(this.endRealTime);
+        } else
+        {
+            speedCur = 1.0D;
+        }
+        com.maddox.rts.RTSConf.cur.queueRealTimeNextTick.moveFromNextTick(com.maddox.rts.RTSConf.cur.queueRealTime, true);
+_L3:
+        com.maddox.rts.Message message1;
+        com.maddox.rts.Message message2;
+label0:
+        {
+            if(bPause)
+            {
+                com.maddox.rts.Message message = com.maddox.rts.RTSConf.cur.queueRealTime.get(endRealTime);
+                if(message == null)
+                {
+                    real_time = endRealTime;
+                    com.maddox.rts.Time.setCurrent(time, real_time);
+                    break; /* Loop/switch isn't completed */
+                }
+                if(message._time > real_time)
+                {
+                    real_time = message._time;
+                    com.maddox.rts.Time.setCurrent(time, real_time);
+                }
+                message.trySend();
+                if(!bPause)
+                {
+                    endTime = (long)((double)(endRealTime - real_time) * speed * speedCur + 0.5D + (double)beginTime);
+                    base_time = beginTime;
+                    base_real_time = real_time;
+                }
+                continue; /* Loop/switch isn't completed */
+            }
+            message1 = null;
+            synchronized(com.maddox.rts.RTSConf.cur.queueRealTime)
+            {
+                synchronized(com.maddox.rts.RTSConf.cur.queue)
+                {
+                    message1 = com.maddox.rts.RTSConf.cur.queue.peek(endTime);
+                    message2 = com.maddox.rts.RTSConf.cur.queueRealTime.peek(endRealTime);
+                    if(message1 != null || message2 != null)
+                        break label0;
+                    if(_setCurrent(endTime, endRealTime))
+                        break MISSING_BLOCK_LABEL_1088;
+                }
+            }
+            break; /* Loop/switch isn't completed */
+        }
+        long l1 = 0L;
+        boolean flag1;
+        if(message2 != null)
+        {
+            l1 = _fromReal(message2._time);
+            if(l1 >= endTime)
+                l1 = endTime - 1L;
+            if(message1 != null)
+            {
+                if(message1._time < l1 || message1._time == l1 && message1._tickPos < message2._tickPos)
+                    flag1 = false;
                 else
-                  localMessage1 = null;
-              } else {
-                if (localMessage2._time > this.real_time) {
-                  this.real_time = localMessage2._time;
-                  setCurrent(this.time, this.real_time);
-                }
-                localMessage1 = RTSConf.cur.queueRealTime.get(this.endRealTime);
-              }
-            } else {
-              long l3 = _toReal(localMessage1._time);
-              if (l3 >= this.endRealTime)
-                l3 = this.endRealTime - 1L;
-              if (localMessage1._time > this.time) {
-                if (!_setCurrent(localMessage1._time, l3))
-                  localMessage1 = RTSConf.cur.queue.get(this.endTime);
-                else
-                  localMessage1 = null;
-              } else {
-                if (l3 > this.real_time) {
-                  this.real_time = localMessage2._time;
-                  setCurrent(this.time, this.real_time);
-                }
-                localMessage1 = RTSConf.cur.queue.get(this.endTime);
-              }
+                    flag1 = true;
+            } else
+            {
+                flag1 = true;
             }
-          }
-        } }
-      if (localMessage1 != null) {
-        localMessage1.trySend();
-      }
+        } else
+        {
+            flag1 = false;
+        }
+        if(flag1)
+        {
+            if(l1 > time)
+            {
+                if(!_setCurrent(l1, message2._time))
+                    message1 = com.maddox.rts.RTSConf.cur.queueRealTime.get(endRealTime);
+                else
+                    message1 = null;
+            } else
+            {
+                if(message2._time > real_time)
+                {
+                    real_time = message2._time;
+                    com.maddox.rts.Time.setCurrent(time, real_time);
+                }
+                message1 = com.maddox.rts.RTSConf.cur.queueRealTime.get(endRealTime);
+            }
+        } else
+        {
+            long l2 = _toReal(message1._time);
+            if(l2 >= endRealTime)
+                l2 = endRealTime - 1L;
+            if(message1._time > time)
+            {
+                if(!_setCurrent(message1._time, l2))
+                    message1 = com.maddox.rts.RTSConf.cur.queue.get(endTime);
+                else
+                    message1 = null;
+            } else
+            {
+                if(l2 > real_time)
+                {
+                    real_time = message2._time;
+                    com.maddox.rts.Time.setCurrent(time, real_time);
+                }
+                message1 = com.maddox.rts.RTSConf.cur.queue.get(endTime);
+            }
+        }
+        messagequeue1;
+        JVM INSTR monitorexit ;
+        messagequeue;
+        JVM INSTR monitorexit ;
+          goto _L1
+        exception1;
+        throw exception1;
+_L1:
+        if(message1 != null)
+            message1.trySend();
+        if(true) goto _L3; else goto _L2
+_L2:
+        bInLoop = false;
+        return;
     }
-    this.bInLoop = false;
-  }
 
-  private boolean _setCurrent(long paramLong1, long paramLong2)
-  {
-    int i = 0;
-    this.time = paramLong1;
-    if (this.time >= this.tickNext) {
-      this.time = (this.tick = this.tickNext);
-      if (this.tickLen != this._newTickLen) {
-        this.tickLen = this._newTickLen;
-        this.tickNext += this.tickLen;
-        this.tickLenFms = this.tickLen;
-        this.tickLenFs = (this.tickLenFms / 1000.0F);
-      } else {
-        this.tickNext += this.tickLen;
-      }
-      RTSConf.cur.queueNextTick.moveFromNextTick(RTSConf.cur.queue, false);
-      this.tickCounter += 1;
-      paramLong2 = ()((this.time - this.base_time) / (this.speed * this.speedCur) + 0.5D + this.base_real_time);
-      if (paramLong2 >= this.endRealTime)
-        paramLong2 = this.endRealTime - 1L;
-      i = 1;
+    private boolean _setCurrent(long l, long l1)
+    {
+        boolean flag = false;
+        time = l;
+        if(time >= tickNext)
+        {
+            time = tick = tickNext;
+            if(tickLen != _newTickLen)
+            {
+                tickLen = _newTickLen;
+                tickNext += tickLen;
+                tickLenFms = tickLen;
+                tickLenFs = tickLenFms / 1000F;
+            } else
+            {
+                tickNext += tickLen;
+            }
+            com.maddox.rts.RTSConf.cur.queueNextTick.moveFromNextTick(com.maddox.rts.RTSConf.cur.queue, false);
+            tickCounter++;
+            l1 = (long)((double)(time - base_time) / (speed * speedCur) + 0.5D + (double)base_real_time);
+            if(l1 >= endRealTime)
+                l1 = endRealTime - 1L;
+            flag = true;
+        }
+        if(l1 > real_time)
+            real_time = l1;
+        com.maddox.rts.Time.setCurrent(time, real_time);
+        tickOffset = _tickOffset(time);
+        return flag;
     }
-    if (paramLong2 > this.real_time)
-      this.real_time = paramLong2;
-    setCurrent(this.time, this.real_time);
-    this.tickOffset = _tickOffset(this.time);
-    return i;
-  }
 
-  private void _resetSpeed(double paramDouble)
-  {
-    this.speed = paramDouble;
-    this.base_time = this.time;
-    this.base_real_time = this.real_time;
-  }
-
-  protected void resetGameClear() {
-    this.tickCounter = 0;
-    this.tick = 0L;
-    this.tickLen = this.tickLen0;
-    this.tickNext = this.tickLen;
-    this.tickLenFms = this.tickLen;
-    this.tickLenFs = (this.tickLenFms / 1000.0F);
-    this.time = 0L;
-    this.tickOffset = 0.0F;
-    this.base_time = 0L;
-    this.real_time = (this.base_real_time = real());
-    setCurrent(this.time, this.real_time);
-    this.bPause = true;
-  }
-
-  protected void resetGameCreate()
-  {
-  }
-
-  public final void setCurrent(long paramLong)
-  {
-    if (!this.bPause) return;
-    this.base_time = (this.time = paramLong);
-    this.tickCounter = (int)(this.time / this.tickLen0);
-    this.tick = (this.tickCounter * this.tickLen0);
-    this.tickNext = (this.tick + this.tickLen0);
-    this.tickOffset = _tickOffset(this.time);
-    setCurrent(this.time, this.real_time);
-  }
-
-  public static final void setPause(boolean paramBoolean)
-  {
-    RTSConf.cur.time._setPause(paramBoolean);
-  }
-
-  protected final void _setPause(boolean paramBoolean) {
-    if (this.bPause == paramBoolean) return;
-    this.bPause = paramBoolean;
-    if ((!this.bInLoop) && (!this.bPause)) {
-      this.base_time = this.time;
-      this.base_real_time = this.real_time;
+    private void _resetSpeed(double d)
+    {
+        speed = d;
+        base_time = time;
+        base_real_time = real_time;
     }
-  }
 
-  public static final void setRealOnly(boolean paramBoolean)
-  {
-    RTSConf.cur.time._setRealOnly(paramBoolean);
-  }
-
-  protected final void _setRealOnly(boolean paramBoolean) {
-    if (this.bRealOnly == paramBoolean) return;
-    this.bRealOnly = paramBoolean;
-    if ((this.bRealOnly) && (!this.bPause))
-      _setPause(true);
-  }
-
-  public static void setSpeed(float paramFloat)
-  {
-    RTSConf.cur.time._setSpeed(paramFloat);
-  }
-
-  protected void _setSpeed(double paramDouble) {
-    if (this.bInLoop) {
-      if (this.bPause) {
-        this.speed = paramDouble;
-      } else {
-        this.bChangeSpeed = true;
-        this.newChangedSpeed = paramDouble;
-      }
-    } else {
-      this.bChangeSpeed = false;
-      _resetSpeed(paramDouble);
+    protected void resetGameClear()
+    {
+        tickCounter = 0;
+        tick = 0L;
+        tickLen = tickLen0;
+        tickNext = tickLen;
+        tickLenFms = tickLen;
+        tickLenFs = tickLenFms / 1000F;
+        time = 0L;
+        tickOffset = 0.0F;
+        base_time = 0L;
+        real_time = base_real_time = com.maddox.rts.Time.real();
+        com.maddox.rts.Time.setCurrent(time, real_time);
+        bPause = true;
     }
-  }
 
-  public static float speed()
-  {
-    return (float)RTSConf.cur.time.speed;
-  }
-  public static float nextSpeed() {
-    return RTSConf.cur.time._nextSpeed();
-  }
+    protected void resetGameCreate()
+    {
+    }
 
-  protected float _nextSpeed() {
-    if (this.bChangeSpeed) return (float)this.newChangedSpeed;
-    return (float)this.speed;
-  }
+    public final void setCurrent(long l)
+    {
+        if(!bPause)
+        {
+            return;
+        } else
+        {
+            base_time = time = l;
+            tickCounter = (int)(time / (long)tickLen0);
+            tick = tickCounter * tickLen0;
+            tickNext = tick + (long)tickLen0;
+            tickOffset = _tickOffset(time);
+            com.maddox.rts.Time.setCurrent(time, real_time);
+            return;
+        }
+    }
 
-  public static long fromReal(long paramLong)
-  {
-    return RTSConf.cur.time._fromReal(paramLong);
-  }
+    public static final void setPause(boolean flag)
+    {
+        com.maddox.rts.RTSConf.cur.time._setPause(flag);
+    }
 
-  protected long _fromReal(long paramLong)
-  {
-    if (this.bPause)
-      return this.time;
-    long l = paramLong - this.base_real_time;
-    if ((this.speed == 1.0D) && (this.speedCur == 1.0D)) return l + this.base_time;
-    return ()(l * this.speed * this.speedCur + 0.5D + this.base_time);
-  }
+    protected final void _setPause(boolean flag)
+    {
+        if(bPause == flag)
+            return;
+        bPause = flag;
+        if(!bInLoop && !bPause)
+        {
+            base_time = time;
+            base_real_time = real_time;
+        }
+    }
 
-  public static long toReal(long paramLong)
-  {
-    return RTSConf.cur.time._toReal(paramLong);
-  }
+    public static final void setRealOnly(boolean flag)
+    {
+        com.maddox.rts.RTSConf.cur.time._setRealOnly(flag);
+    }
 
-  protected long _toReal(long paramLong)
-  {
-    if (this.bPause)
-      return this.real_time;
-    long l = paramLong - this.base_time;
-    if ((this.speed == 1.0D) && (this.speedCur == 1.0D)) return l + this.base_real_time;
-    return ()(l / (this.speed * this.speedCur) + 0.5D + this.base_real_time);
-  }
+    protected final void _setRealOnly(boolean flag)
+    {
+        if(bRealOnly == flag)
+            return;
+        bRealOnly = flag;
+        if(bRealOnly && !bPause)
+            _setPause(true);
+    }
 
-  public static long fromRaw(int paramInt)
-  {
-    return RTSConf.cur.time._fromReal(realFromRaw(paramInt));
-  }
+    public static void setSpeed(float f)
+    {
+        com.maddox.rts.RTSConf.cur.time._setSpeed(f);
+    }
 
-  public static long realFromRawClamp(int paramInt)
-  {
-    long l = realFromRaw(paramInt);
-    if (l < RTSConf.cur.time.real_time) l = RTSConf.cur.time.real_time;
-    if (l > RTSConf.cur.time.endRealTime) l = RTSConf.cur.time.endRealTime;
-    return l;
-  }
+    protected void _setSpeed(double d)
+    {
+        if(bInLoop)
+        {
+            if(bPause)
+            {
+                speed = d;
+            } else
+            {
+                bChangeSpeed = true;
+                newChangedSpeed = d;
+            }
+        } else
+        {
+            bChangeSpeed = false;
+            _resetSpeed(d);
+        }
+    }
 
-  public static native long realFromRaw(int paramInt);
+    public static float speed()
+    {
+        return (float)com.maddox.rts.RTSConf.cur.time.speed;
+    }
 
-  public static native void setSpeedReal(float paramFloat);
+    public static float nextSpeed()
+    {
+        return com.maddox.rts.RTSConf.cur.time._nextSpeed();
+    }
 
-  public static native float speedReal();
+    protected float _nextSpeed()
+    {
+        if(bChangeSpeed)
+            return (float)newChangedSpeed;
+        else
+            return (float)speed;
+    }
 
-  public static native long real();
+    public static long fromReal(long l)
+    {
+        return com.maddox.rts.RTSConf.cur.time._fromReal(l);
+    }
 
-  public static native int raw();
+    protected long _fromReal(long l)
+    {
+        if(bPause)
+            return time;
+        long l1 = l - base_real_time;
+        if(speed == 1.0D && speedCur == 1.0D)
+            return l1 + base_time;
+        else
+            return (long)((double)l1 * speed * speedCur + 0.5D + (double)base_time);
+    }
 
-  private static native void setCurrent(long paramLong1, long paramLong2);
+    public static long toReal(long l)
+    {
+        return com.maddox.rts.RTSConf.cur.time._toReal(l);
+    }
 
-  public static boolean isEnableChangePause()
-  {
-    Time localTime = RTSConf.cur.time;
-    return (localTime.bEnableChangePause0) && (localTime.bEnableChangePause1);
-  }
-  public boolean isEnableChangePause0() {
-    return this.bEnableChangePause0;
-  }
-  public boolean isEnableChangePause1() {
-    return this.bEnableChangePause1;
-  }
-  public static boolean isEnableChangeTickLen() {
-    return RTSConf.cur.time.bEnableChangeTickLen;
-  }
-  public static boolean isEnableChangeSpeed() {
-    return RTSConf.cur.time.bEnableChangeSpeed;
-  }
-  public void setEnableChangePause0(boolean paramBoolean) {
-    this.bEnableChangePause0 = paramBoolean;
-  }
-  public void setEnableChangePause1(boolean paramBoolean) {
-    this.bEnableChangePause1 = paramBoolean;
-  }
-  public void setEnableChangeTickLen(boolean paramBoolean) {
-    this.bEnableChangeTickLen = paramBoolean;
-  }
-  public void setEnableChangeSpeed(boolean paramBoolean) {
-    this.bEnableChangeSpeed = paramBoolean;
-  }
+    protected long _toReal(long l)
+    {
+        if(bPause)
+            return real_time;
+        long l1 = l - base_time;
+        if(speed == 1.0D && speedCur == 1.0D)
+            return l1 + base_real_time;
+        else
+            return (long)((double)l1 / (speed * speedCur) + 0.5D + (double)base_real_time);
+    }
 
-  protected Time(int paramInt1, int paramInt2) {
-    if (paramInt1 > 300)
-      paramInt1 = 300;
-    this.tickLen0 = paramInt1;
-    this.tickLen = paramInt1;
-    this.tickConstLen = paramInt1;
-    this.tickNext = (this.tick + paramInt1);
-    this.tickLenFms = paramInt1;
-    this.tickConstLenFms = paramInt1;
-    this.tickLenFs = (this.tickLenFms / 1000.0F);
-    this.tickConstLenFs = (this.tickLenFms / 1000.0F);
-    if (paramInt2 <= 0) paramInt2 = 1;
-    this.maxTimerTicksInRealTick = paramInt2;
-    this.real_time = real();
-    this.base_real_time = this.real_time;
-    this.beginRealTime = this.real_time;
-    this.endRealTime = this.real_time;
-    setCurrent(this.time, this.real_time);
-  }
+    public static long fromRaw(int i)
+    {
+        return com.maddox.rts.RTSConf.cur.time._fromReal(com.maddox.rts.Time.realFromRaw(i));
+    }
 
-  protected void setMaxTimerTicksInRealTick(int paramInt) {
-    if (paramInt <= 0) paramInt = 1;
-    this.maxTimerTicksInRealTick = paramInt;
-  }
+    public static long realFromRawClamp(int i)
+    {
+        long l = com.maddox.rts.Time.realFromRaw(i);
+        if(l < com.maddox.rts.RTSConf.cur.time.real_time)
+            l = com.maddox.rts.RTSConf.cur.time.real_time;
+        if(l > com.maddox.rts.RTSConf.cur.time.endRealTime)
+            l = com.maddox.rts.RTSConf.cur.time.endRealTime;
+        return l;
+    }
 
-  static
-  {
-    RTS.loadNative();
-  }
+    public static native long realFromRaw(int i);
+
+    public static native void setSpeedReal(float f);
+
+    public static native float speedReal();
+
+    public static native long real();
+
+    public static native int raw();
+
+    private static native void setCurrent(long l, long l1);
+
+    public static boolean isEnableChangePause()
+    {
+        com.maddox.rts.Time time1 = com.maddox.rts.RTSConf.cur.time;
+        return time1.bEnableChangePause0 && time1.bEnableChangePause1;
+    }
+
+    public boolean isEnableChangePause0()
+    {
+        return bEnableChangePause0;
+    }
+
+    public boolean isEnableChangePause1()
+    {
+        return bEnableChangePause1;
+    }
+
+    public static boolean isEnableChangeTickLen()
+    {
+        return com.maddox.rts.RTSConf.cur.time.bEnableChangeTickLen;
+    }
+
+    public static boolean isEnableChangeSpeed()
+    {
+        return com.maddox.rts.RTSConf.cur.time.bEnableChangeSpeed;
+    }
+
+    public void setEnableChangePause0(boolean flag)
+    {
+        bEnableChangePause0 = flag;
+    }
+
+    public void setEnableChangePause1(boolean flag)
+    {
+        bEnableChangePause1 = flag;
+    }
+
+    public void setEnableChangeTickLen(boolean flag)
+    {
+        bEnableChangeTickLen = flag;
+    }
+
+    public void setEnableChangeSpeed(boolean flag)
+    {
+        bEnableChangeSpeed = flag;
+    }
+
+    protected Time(int i, int j)
+    {
+        _typedTickCounter = 0;
+        bInLoop = false;
+        bChangeSpeed = false;
+        newChangedSpeed = 1.0D;
+        tickCounter = 0;
+        tick = 0L;
+        tickLen0 = 30;
+        tickLen = tickLen0;
+        tickConstLen = tickLen0;
+        tickNext = tick + (long)tickLen;
+        tickLenFms = 30F;
+        tickLenFs = 0.03F;
+        tickConstLenFms = 30F;
+        tickConstLenFs = 0.03F;
+        maxTimerTicksInRealTick = 5;
+        tickOffset = 0.0F;
+        bEnableChangePause0 = true;
+        bEnableChangePause1 = true;
+        bEnableChangeTickLen = true;
+        bEnableChangeSpeed = false;
+        time = 0L;
+        base_time = 0L;
+        speed = 1.0D;
+        speedCur = 1.0D;
+        beginRealTime = 0L;
+        beginTime = 0L;
+        endRealTime = 0L;
+        endTime = 0L;
+        bPause = true;
+        bRealOnly = false;
+        if(i > 300)
+            i = 300;
+        tickLen0 = i;
+        tickLen = i;
+        tickConstLen = i;
+        tickNext = tick + (long)i;
+        tickLenFms = i;
+        tickConstLenFms = i;
+        tickLenFs = tickLenFms / 1000F;
+        tickConstLenFs = tickLenFms / 1000F;
+        if(j <= 0)
+            j = 1;
+        maxTimerTicksInRealTick = j;
+        real_time = com.maddox.rts.Time.real();
+        base_real_time = real_time;
+        beginRealTime = real_time;
+        endRealTime = real_time;
+        com.maddox.rts.Time.setCurrent(time, real_time);
+    }
+
+    protected void setMaxTimerTicksInRealTick(int i)
+    {
+        if(i <= 0)
+            i = 1;
+        maxTimerTicksInRealTick = i;
+    }
+
+    public static boolean bShowDiag = true;
+    private static final long MAX_NATIVE_DELTA = 0xffffffL;
+    private static final int MAX_TICK_LEN = 300;
+    private int _typedTickCounter;
+    private int _newTickLen;
+    private boolean bInLoop;
+    private boolean bChangeSpeed;
+    private double newChangedSpeed;
+    private int tickCounter;
+    private long tick;
+    protected int tickLen0;
+    protected int tickLen;
+    protected int tickConstLen;
+    private long tickNext;
+    protected float tickLenFms;
+    protected float tickLenFs;
+    protected float tickConstLenFms;
+    protected float tickConstLenFs;
+    protected int maxTimerTicksInRealTick;
+    private float tickOffset;
+    private boolean bEnableChangePause0;
+    private boolean bEnableChangePause1;
+    private boolean bEnableChangeTickLen;
+    private boolean bEnableChangeSpeed;
+    private long real_time;
+    private long time;
+    private long base_real_time;
+    private long base_time;
+    protected double speed;
+    private double speedCur;
+    private long beginRealTime;
+    private long beginTime;
+    private long endRealTime;
+    private long endTime;
+    private boolean bPause;
+    private boolean bRealOnly;
+
+    static 
+    {
+        com.maddox.rts.RTS.loadNative();
+    }
 }

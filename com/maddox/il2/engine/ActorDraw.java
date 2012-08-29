@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorDraw.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -7,188 +12,226 @@ import com.maddox.rts.ObjState;
 import com.maddox.sound.SoundFX;
 import com.maddox.sound.SoundList;
 import com.maddox.util.HashMapExt;
-import java.util.Map.Entry;
+import java.util.Map;
+
+// Referenced classes of package com.maddox.il2.engine:
+//            LightPointActor, LightPointWorld, LightPoint, Loc, 
+//            Config, Actor, Orient
 
 public abstract class ActorDraw
-  implements Destroy
+    implements com.maddox.rts.Destroy
 {
-  public static final int INVISIBLE = 0;
-  public static final int SOLID = 1;
-  public static final int TRANSPARENT = 2;
-  public static final int SHADOW = 4;
-  public float uniformMaxDist = 0.0F;
 
-  private static Point3d absPos = new Point3d();
-  private static Loc absLocate = new Loc();
-  private static Loc relLocate = new Loc();
+    public int preRender(com.maddox.il2.engine.Actor actor)
+    {
+        return 0;
+    }
 
-  protected HashMapExt lightMap = null;
+    public void render(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  private static Vector3d vspeed = new Vector3d();
-  private static Vector3d ahead = new Vector3d();
-  private static Vector3d up = new Vector3d();
+    public void renderShadowProjective(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected SoundList sounds = null;
+    public void renderShadowVolume(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  public int preRender(Actor paramActor)
-  {
-    return 0;
-  }
-  public void render(Actor paramActor) {
-  }
-  public void renderShadowProjective(Actor paramActor) {
-  }
-  public void renderShadowVolume(Actor paramActor) {
-  }
-  public void renderShadowVolumeHQ(Actor paramActor) {
-  }
+    public void renderShadowVolumeHQ(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  public void lightUpdate(Loc paramLoc, boolean paramBoolean) {
-    if (this.lightMap != null) {
-      Map.Entry localEntry = this.lightMap.nextEntry(null);
-      LightPointActor localLightPointActor;
-      Object localObject;
-      if (paramBoolean)
-      {
-        while (localEntry != null) {
-          localLightPointActor = (LightPointActor)localEntry.getValue();
-          if ((localLightPointActor.light instanceof LightPointWorld)) {
-            localObject = (LightPointWorld)localLightPointActor.light;
-            if ((((LightPointWorld)localObject).I > 0.0F) && (((LightPointWorld)localObject).R > 0.0F)) {
-              computeAbsPos(paramLoc, localLightPointActor.relPos);
-              ((LightPointWorld)localObject).setPos(absPos);
+    public void lightUpdate(com.maddox.il2.engine.Loc loc, boolean flag)
+    {
+        if(lightMap != null)
+        {
+            java.util.Map.Entry entry = lightMap.nextEntry(null);
+            if(flag)
+                for(; entry != null; entry = lightMap.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.LightPointActor lightpointactor = (com.maddox.il2.engine.LightPointActor)entry.getValue();
+                    if(lightpointactor.light instanceof com.maddox.il2.engine.LightPointWorld)
+                    {
+                        com.maddox.il2.engine.LightPointWorld lightpointworld = (com.maddox.il2.engine.LightPointWorld)lightpointactor.light;
+                        if(lightpointworld.I > 0.0F && lightpointworld.R > 0.0F)
+                        {
+                            computeAbsPos(loc, lightpointactor.relPos);
+                            lightpointworld.setPos(absPos);
+                        }
+                    }
+                }
+
+            else
+                for(; entry != null; entry = lightMap.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.LightPointActor lightpointactor1 = (com.maddox.il2.engine.LightPointActor)entry.getValue();
+                    if((lightpointactor1.light instanceof com.maddox.il2.engine.LightPoint) && !(lightpointactor1.light instanceof com.maddox.il2.engine.LightPointWorld))
+                    {
+                        com.maddox.il2.engine.LightPoint lightpoint = lightpointactor1.light;
+                        if(lightpoint.I > 0.0F && lightpoint.R > 0.0F)
+                        {
+                            computeAbsPos(loc, lightpointactor1.relPos);
+                            lightpoint.setPos(absPos);
+                            lightpoint.addToRender();
+                        }
+                    }
+                }
+
+        }
+    }
+
+    private void computeAbsPos(com.maddox.il2.engine.Loc loc, com.maddox.JGP.Point3d point3d)
+    {
+        relLocate.set(point3d);
+        absLocate.add(relLocate, loc);
+        absLocate.get(absPos);
+    }
+
+    public com.maddox.util.HashMapExt lightMap()
+    {
+        if(lightMap == null)
+            lightMap = new HashMapExt();
+        return lightMap;
+    }
+
+    public void soundUpdate(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc)
+    {
+        if(sounds != null && com.maddox.il2.engine.Config.cur.isSoundUse())
+        {
+            for(com.maddox.sound.SoundFX soundfx = sounds.get(); soundfx != null;)
+            {
+                int i = soundfx.getCaps();
+                if(i == -1)
+                {
+                    com.maddox.sound.SoundFX soundfx1 = soundfx.next();
+                    soundfx.destroy();
+                    soundfx = soundfx1;
+                } else
+                {
+                    if((i & 1) != 0)
+                        if(actor == null || (i & 2) == 0)
+                        {
+                            if((i & 4) != 0)
+                            {
+                                if((i & 8) != 0)
+                                    computeAheadUp(loc.getOrient());
+                                else
+                                    computeAhead(loc.getOrient());
+                                soundfx.setPosition(loc.getPoint());
+                                soundfx.setOrientation((float)ahead.x, (float)ahead.y, (float)ahead.z);
+                                if((i & 8) != 0)
+                                    soundfx.setTop((float)up.x, (float)up.y, (float)up.z);
+                            } else
+                            {
+                                soundfx.setPosition(loc.getPoint());
+                            }
+                        } else
+                        {
+                            actor.getSpeed(vspeed);
+                            if((i & 4) != 0)
+                            {
+                                if((i & 8) != 0)
+                                    computeAheadUp(loc.getOrient());
+                                else
+                                    computeAhead(loc.getOrient());
+                                soundfx.setPosition(loc.getPoint());
+                                soundfx.setVelocity((float)vspeed.x, (float)vspeed.y, (float)vspeed.z);
+                                soundfx.setOrientation((float)ahead.x, (float)ahead.y, (float)ahead.z);
+                                if((i & 8) != 0)
+                                    soundfx.setTop((float)up.x, (float)up.y, (float)up.z);
+                            } else
+                            {
+                                soundfx.setPosition(loc.getPoint());
+                                soundfx.setVelocity((float)vspeed.x, (float)vspeed.y, (float)vspeed.z);
+                            }
+                        }
+                    soundfx = soundfx.next();
+                }
             }
-          }
-          localEntry = this.lightMap.nextEntry(localEntry);
-        }
-      }
 
-      while (localEntry != null) {
-        localLightPointActor = (LightPointActor)localEntry.getValue();
-        if (((localLightPointActor.light instanceof LightPoint)) && (!(localLightPointActor.light instanceof LightPointWorld))) {
-          localObject = localLightPointActor.light;
-          if ((((LightPoint)localObject).I > 0.0F) && (((LightPoint)localObject).R > 0.0F)) {
-            computeAbsPos(paramLoc, localLightPointActor.relPos);
-            ((LightPoint)localObject).setPos(absPos);
-            ((LightPoint)localObject).addToRender();
-          }
         }
-        localEntry = this.lightMap.nextEntry(localEntry);
-      }
     }
-  }
 
-  private void computeAbsPos(Loc paramLoc, Point3d paramPoint3d)
-  {
-    relLocate.set(paramPoint3d);
-    absLocate.add(relLocate, paramLoc);
-    absLocate.get(absPos);
-  }
+    private void computeAhead(com.maddox.il2.engine.Orient orient)
+    {
+        ahead.set(1.0D, 0.0D, 0.0D);
+        orient.transform(ahead);
+    }
 
-  public HashMapExt lightMap()
-  {
-    if (this.lightMap == null)
-      this.lightMap = new HashMapExt();
-    return this.lightMap;
-  }
+    private void computeAheadUp(com.maddox.il2.engine.Orient orient)
+    {
+        ahead.set(1.0D, 0.0D, 0.0D);
+        up.set(0.0D, 0.0D, 1.0D);
+        orient.transform(ahead);
+        orient.transform(up);
+    }
 
-  public void soundUpdate(Actor paramActor, Loc paramLoc)
-  {
-    if ((this.sounds != null) && (Config.cur.isSoundUse())) {
-      Object localObject = this.sounds.get();
-      while (localObject != null) {
-        int i = ((SoundFX)localObject).getCaps();
-        if (i == -1) {
-          SoundFX localSoundFX = ((SoundFX)localObject).next();
-          ((SoundFX)localObject).destroy();
-          localObject = localSoundFX;
-        } else {
-          if ((i & 0x1) != 0) {
-            if ((paramActor == null) || ((i & 0x2) == 0)) {
-              if ((i & 0x4) != 0) {
-                if ((i & 0x8) != 0) computeAheadUp(paramLoc.getOrient()); else
-                  computeAhead(paramLoc.getOrient());
-                ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-                ((SoundFX)localObject).setOrientation((float)ahead.x, (float)ahead.y, (float)ahead.z);
-                if ((i & 0x8) != 0)
-                  ((SoundFX)localObject).setTop((float)up.x, (float)up.y, (float)up.z);
-              }
-              else {
-                ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-              }
-            } else {
-              paramActor.getSpeed(vspeed);
-              if ((i & 0x4) != 0) {
-                if ((i & 0x8) != 0) computeAheadUp(paramLoc.getOrient()); else
-                  computeAhead(paramLoc.getOrient());
-                ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-                ((SoundFX)localObject).setVelocity((float)vspeed.x, (float)vspeed.y, (float)vspeed.z);
-                ((SoundFX)localObject).setOrientation((float)ahead.x, (float)ahead.y, (float)ahead.z);
-                if ((i & 0x8) != 0)
-                  ((SoundFX)localObject).setTop((float)up.x, (float)up.y, (float)up.z);
-              }
-              else {
-                ((SoundFX)localObject).setPosition(paramLoc.getPoint());
-                ((SoundFX)localObject).setVelocity((float)vspeed.x, (float)vspeed.y, (float)vspeed.z);
-              }
+    public com.maddox.sound.SoundList sounds()
+    {
+        if(sounds == null)
+            sounds = new SoundList();
+        return sounds;
+    }
+
+    public boolean isDestroyed()
+    {
+        return lightMap == null && sounds == null;
+    }
+
+    public void destroy()
+    {
+        if(lightMap != null)
+        {
+            for(java.util.Map.Entry entry = lightMap.nextEntry(null); entry != null; entry = lightMap.nextEntry(entry))
+            {
+                com.maddox.il2.engine.LightPointActor lightpointactor = (com.maddox.il2.engine.LightPointActor)entry.getValue();
+                com.maddox.rts.ObjState.destroy(lightpointactor);
             }
-          }
-          localObject = ((SoundFX)localObject).next();
+
+            lightMap.clear();
+            lightMap = null;
         }
-      }
+        if(sounds != null)
+        {
+            sounds.destroy();
+            sounds = null;
+        }
     }
-  }
 
-  private void computeAhead(Orient paramOrient)
-  {
-    ahead.set(1.0D, 0.0D, 0.0D);
-    paramOrient.transform(ahead);
-  }
-
-  private void computeAheadUp(Orient paramOrient)
-  {
-    ahead.set(1.0D, 0.0D, 0.0D);
-    up.set(0.0D, 0.0D, 1.0D);
-    paramOrient.transform(ahead);
-    paramOrient.transform(up);
-  }
-
-  public SoundList sounds()
-  {
-    if (this.sounds == null) this.sounds = new SoundList();
-    return this.sounds;
-  }
-
-  public boolean isDestroyed() {
-    return (this.lightMap == null) && (this.sounds == null);
-  }
-
-  public void destroy() {
-    if (this.lightMap != null) {
-      Map.Entry localEntry = this.lightMap.nextEntry(null);
-      while (localEntry != null) {
-        LightPointActor localLightPointActor = (LightPointActor)localEntry.getValue();
-        ObjState.destroy(localLightPointActor);
-        localEntry = this.lightMap.nextEntry(localEntry);
-      }
-      this.lightMap.clear();
-      this.lightMap = null;
+    public ActorDraw(com.maddox.il2.engine.ActorDraw actordraw)
+    {
+        uniformMaxDist = 0.0F;
+        lightMap = null;
+        sounds = null;
+        if(actordraw != null)
+        {
+            lightMap = actordraw.lightMap;
+            sounds = actordraw.sounds;
+            uniformMaxDist = actordraw.uniformMaxDist;
+        }
     }
-    if (this.sounds != null) {
-      this.sounds.destroy();
-      this.sounds = null;
-    }
-  }
 
-  public ActorDraw(ActorDraw paramActorDraw) {
-    if (paramActorDraw != null) {
-      this.lightMap = paramActorDraw.lightMap;
-      this.sounds = paramActorDraw.sounds;
-      this.uniformMaxDist = paramActorDraw.uniformMaxDist;
+    public ActorDraw()
+    {
+        uniformMaxDist = 0.0F;
+        lightMap = null;
+        sounds = null;
     }
-  }
 
-  public ActorDraw()
-  {
-  }
+    public static final int INVISIBLE = 0;
+    public static final int SOLID = 1;
+    public static final int TRANSPARENT = 2;
+    public static final int SHADOW = 4;
+    public float uniformMaxDist;
+    private static com.maddox.JGP.Point3d absPos = new Point3d();
+    private static com.maddox.il2.engine.Loc absLocate = new Loc();
+    private static com.maddox.il2.engine.Loc relLocate = new Loc();
+    protected com.maddox.util.HashMapExt lightMap;
+    private static com.maddox.JGP.Vector3d vspeed = new Vector3d();
+    private static com.maddox.JGP.Vector3d ahead = new Vector3d();
+    private static com.maddox.JGP.Vector3d up = new Vector3d();
+    protected com.maddox.sound.SoundList sounds;
+
 }

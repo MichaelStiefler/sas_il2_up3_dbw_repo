@@ -1,76 +1,84 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Vector3d.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
-public class Vector3d extends Tuple3d
-  implements Serializable, Cloneable
+// Referenced classes of package com.maddox.JGP:
+//            Tuple3d, Tuple3f
+
+public class Vector3d extends com.maddox.JGP.Tuple3d
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Vector3d(double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    super(paramDouble1, paramDouble2, paramDouble3);
-  }
 
-  public Vector3d(double[] paramArrayOfDouble)
-  {
-    super(paramArrayOfDouble);
-  }
+    public Vector3d(double d, double d1, double d2)
+    {
+        super(d, d1, d2);
+    }
 
-  public Vector3d(Tuple3d paramTuple3d)
-  {
-    super(paramTuple3d);
-  }
+    public Vector3d(double ad[])
+    {
+        super(ad);
+    }
 
-  public Vector3d(Tuple3f paramTuple3f)
-  {
-    super(paramTuple3f);
-  }
+    public Vector3d(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        super(tuple3d);
+    }
 
-  public Vector3d()
-  {
-  }
+    public Vector3d(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        super(tuple3f);
+    }
 
-  public final void cross(Tuple3d paramTuple3d1, Tuple3d paramTuple3d2)
-  {
-    set(paramTuple3d1.y * paramTuple3d2.z - paramTuple3d1.z * paramTuple3d2.y, paramTuple3d1.z * paramTuple3d2.x - paramTuple3d1.x * paramTuple3d2.z, paramTuple3d1.x * paramTuple3d2.y - paramTuple3d1.y * paramTuple3d2.x);
-  }
+    public Vector3d()
+    {
+    }
 
-  public final double normalize(Tuple3d paramTuple3d)
-  {
-    set(paramTuple3d);
-    return normalize();
-  }
+    public final void cross(com.maddox.JGP.Tuple3d tuple3d, com.maddox.JGP.Tuple3d tuple3d1)
+    {
+        set(tuple3d.y * tuple3d1.z - tuple3d.z * tuple3d1.y, tuple3d.z * tuple3d1.x - tuple3d.x * tuple3d1.z, tuple3d.x * tuple3d1.y - tuple3d.y * tuple3d1.x);
+    }
 
-  public final double normalize()
-  {
-    double d = Math.max(length(), 1.0E-075D);
-    this.x /= d;
-    this.y /= d;
-    this.z /= d;
-    return d;
-  }
+    public final double normalize(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        set(tuple3d);
+        return normalize();
+    }
 
-  public final double dot(Tuple3d paramTuple3d)
-  {
-    return this.x * paramTuple3d.x + this.y * paramTuple3d.y + this.z * paramTuple3d.z;
-  }
+    public final double normalize()
+    {
+        double d = java.lang.Math.max(length(), 9.9999999999999996E-076D);
+        x /= d;
+        y /= d;
+        z /= d;
+        return d;
+    }
 
-  public final double lengthSquared()
-  {
-    return this.x * this.x + this.y * this.y + this.z * this.z;
-  }
+    public final double dot(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        return x * tuple3d.x + y * tuple3d.y + z * tuple3d.z;
+    }
 
-  public final double length()
-  {
-    return Math.sqrt(lengthSquared());
-  }
+    public final double lengthSquared()
+    {
+        return x * x + y * y + z * z;
+    }
 
-  public final double angle(Vector3d paramVector3d)
-  {
-    double d1 = this.y * paramVector3d.z - this.z * paramVector3d.y;
-    double d2 = this.z * paramVector3d.x - this.x * paramVector3d.z;
-    double d3 = this.x * paramVector3d.y - this.y * paramVector3d.x;
-    double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
+    public final double length()
+    {
+        return java.lang.Math.sqrt(lengthSquared());
+    }
 
-    return Math.abs(Math.atan2(d4, dot(paramVector3d)));
-  }
+    public final double angle(com.maddox.JGP.Vector3d vector3d)
+    {
+        double d = y * vector3d.z - z * vector3d.y;
+        double d1 = z * vector3d.x - x * vector3d.z;
+        double d2 = x * vector3d.y - y * vector3d.x;
+        double d3 = java.lang.Math.sqrt(d * d + d1 * d1 + d2 * d2);
+        return java.lang.Math.abs(java.lang.Math.atan2(d3, dot(vector3d)));
+    }
 }

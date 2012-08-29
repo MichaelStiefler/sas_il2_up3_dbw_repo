@@ -1,33 +1,54 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgCollisionRequest.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Message;
 
-public class MsgCollisionRequest extends Message
+// Referenced classes of package com.maddox.il2.engine:
+//            MsgCollisionRequestListener, Actor
+
+public class MsgCollisionRequest extends com.maddox.rts.Message
 {
-  private static MsgCollisionRequest msg = new MsgCollisionRequest();
-  private static boolean[] res = new boolean[1];
 
-  protected static boolean on(Actor paramActor1, Actor paramActor2)
-  {
-    msg._sender = paramActor2;
-    res[0] = true;
-    msg.send(paramActor1);
-    msg._sender = null;
-    if (res[0] == 0)
-      return false;
-    msg._sender = paramActor1;
-    res[0] = true;
-    msg.send(paramActor2);
-    msg._sender = null;
-    return res[0];
-  }
-
-  public boolean invokeListener(Object paramObject)
-  {
-    if ((paramObject instanceof MsgCollisionRequestListener)) {
-      ((MsgCollisionRequestListener)paramObject).msgCollisionRequest((Actor)this._sender, res);
-      return true;
+    public MsgCollisionRequest()
+    {
     }
-    return false;
-  }
+
+    protected static boolean on(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        msg._sender = actor1;
+        res[0] = true;
+        msg.send(actor);
+        msg._sender = null;
+        if(!res[0])
+        {
+            return false;
+        } else
+        {
+            msg._sender = actor;
+            res[0] = true;
+            msg.send(actor1);
+            msg._sender = null;
+            return res[0];
+        }
+    }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        if(obj instanceof com.maddox.il2.engine.MsgCollisionRequestListener)
+        {
+            ((com.maddox.il2.engine.MsgCollisionRequestListener)obj).msgCollisionRequest((com.maddox.il2.engine.Actor)_sender, res);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    private static com.maddox.il2.engine.MsgCollisionRequest msg = new MsgCollisionRequest();
+    private static boolean res[] = new boolean[1];
+
 }

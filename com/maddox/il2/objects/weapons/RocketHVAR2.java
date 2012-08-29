@@ -1,33 +1,50 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketHVAR2.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.rts.Property;
 
-public class RocketHVAR2 extends Rocket
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Rocket
+
+public class RocketHVAR2 extends com.maddox.il2.objects.weapons.Rocket
 {
-  static
-  {
-    Class localClass = RocketHVAR2.class;
-    Property.set(localClass, "mesh", "3DO/Arms/HVAR-2inch/mono.sim");
 
-    Property.set(localClass, "sprite", "3DO/Effects/Rocket/firesprite.eff");
-    Property.set(localClass, "flame", "3DO/Effects/Rocket/mono.sim");
-    Property.set(localClass, "smoke", "3DO/Effects/Rocket/rocketsmokewhite.eff");
-    Property.set(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
-    Property.set(localClass, "emitLen", 25.0F);
-    Property.set(localClass, "emitMax", 1.0F);
+    public RocketHVAR2()
+    {
+    }
 
-    Property.set(localClass, "sound", "weapon.rocket_82");
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "radius", 20.0F);
-    Property.set(localClass, "timeLife", 999.99902F);
-    Property.set(localClass, "timeFire", 4.0F);
-    Property.set(localClass, "force", 800.0F);
-
-    Property.set(localClass, "power", 9.6F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.06985F);
-    Property.set(localClass, "massa", 11.0F);
-    Property.set(localClass, "massaEnd", 6.0F);
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketHVAR2.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/HVAR-2inch/mono.sim");
+        com.maddox.rts.Property.set(class1, "sprite", "3DO/Effects/Rocket/firesprite.eff");
+        com.maddox.rts.Property.set(class1, "flame", "3DO/Effects/Rocket/mono.sim");
+        com.maddox.rts.Property.set(class1, "smoke", "3DO/Effects/Rocket/rocketsmokewhite.eff");
+        com.maddox.rts.Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
+        com.maddox.rts.Property.set(class1, "emitLen", 25F);
+        com.maddox.rts.Property.set(class1, "emitMax", 1.0F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.rocket_82");
+        com.maddox.rts.Property.set(class1, "radius", 20F);
+        com.maddox.rts.Property.set(class1, "timeLife", 999.999F);
+        com.maddox.rts.Property.set(class1, "timeFire", 4F);
+        com.maddox.rts.Property.set(class1, "force", 800F);
+        com.maddox.rts.Property.set(class1, "power", 9.6F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.06985F);
+        com.maddox.rts.Property.set(class1, "massa", 11F);
+        com.maddox.rts.Property.set(class1, "massaEnd", 6F);
+    }
 }

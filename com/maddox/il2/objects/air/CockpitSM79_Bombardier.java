@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitSM79_Bombardier.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -16,7 +21,6 @@ import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.LightPoint;
 import com.maddox.il2.engine.LightPointActor;
 import com.maddox.il2.engine.Loc;
-import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.engine.hotkey.HookPilot;
@@ -24,829 +28,741 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Pitot;
+import com.maddox.il2.fm.Turret;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.HotKeyEnv;
 import com.maddox.rts.Time;
 import com.maddox.util.HashMapExt;
 import java.io.PrintStream;
 
-public class CockpitSM79_Bombardier extends CockpitPilot
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitPilot, SM79, Aircraft, Cockpit
+
+public class CockpitSM79_Bombardier extends com.maddox.il2.objects.air.CockpitPilot
 {
-  private static final float[] speedometerScale = { 0.0F, 10.0F, 20.0F, 30.0F, 50.0F, 68.0F, 88.0F, 109.0F, 126.0F, 142.0F, 159.0F, 176.0F, 190.0F, 206.0F, 220.0F, 238.0F, 253.0F, 270.0F, 285.0F, 300.0F, 312.0F, 325.0F, 337.0F, 350.0F, 360.0F };
-
-  private boolean firstEnter = true;
-  private boolean bTurrVisible;
-  private float saveFov;
-  private float aAim;
-  private float tAim;
-  private Point3d cameraPoint = new Point3d();
-  private float kAim;
-  private boolean bEntered = false;
-  private int bombToDrop = 0;
-  private float dropTime = 0.0F;
-
-  private Variables setOld = new Variables(null);
-  private Variables setNew = new Variables(null);
-  private Variables setTmp;
-  public Vector3f w = new Vector3f();
-  private float pictAiler = 0.0F;
-  private float pictElev = 0.0F;
-  private Point3d tmpP = new Point3d();
-  private Vector3d tmpV = new Vector3d();
-  private LightPointActor light1;
-  private boolean bNeedSetUp;
-  private Hook hook1;
-
-  protected boolean doFocusEnter()
-  {
-    if (super.doFocusEnter())
+    private class Variables
     {
-      HookPilot localHookPilot = HookPilot.current;
-      localHookPilot.doAim(false);
 
-      ((SM79)this.fm.actor).bPitUnfocused = false;
+        float altimeter;
+        float rudderTrim;
+        com.maddox.il2.ai.AnglesFork azimuth;
 
-      aircraft().hierMesh().chunkVisible("Pilot1_D0", false);
-      aircraft().hierMesh().chunkVisible("Pilot1_D1", false);
-      aircraft().hierMesh().chunkVisible("Pilot2_D0", false);
-      aircraft().hierMesh().chunkVisible("Pilot2_D1", false);
-      aircraft().hierMesh().chunkVisible("Pilot3_D0", false);
-      aircraft().hierMesh().chunkVisible("Pilot3_D1", false);
-      aircraft().hierMesh().chunkVisible("Pilot4_D0", false);
-      aircraft().hierMesh().chunkVisible("Pilot4_D1", false);
-      aircraft().hierMesh().chunkVisible("Pilot5_D0", false);
-      aircraft().hierMesh().chunkVisible("Pilot5_D1", false);
-
-      aircraft().hierMesh().chunkVisible("Gambali_D0", false);
-
-      if ((aircraft().thisWeaponsName.startsWith("12")) || (aircraft().thisWeaponsName.startsWith("6")))
-      {
-        for (i = 1; i <= 12; i++)
+        private Variables()
         {
-          this.mesh.chunkVisible("BombRack" + i, true);
-          aircraft().hierMesh().chunkVisible("BombRack" + i + "_D0", false);
+            azimuth = new AnglesFork();
         }
-      }
-      if (aircraft().thisWeaponsName.startsWith("5"))
-      {
-        for (i = 1; i <= 5; i++)
-        {
-          this.mesh.chunkVisible("BombRack250_" + i, true);
-          aircraft().hierMesh().chunkVisible("BombRack250_" + i + "_D0", false);
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("2"))
-      {
-        this.mesh.chunkVisible("BombRack500_1", true);
-        this.mesh.chunkVisible("BombRack500_2", true);
 
-        aircraft().hierMesh().chunkVisible("BombRack500_1_D0", false);
-        aircraft().hierMesh().chunkVisible("BombRack500_2_D0", false);
-      }
-
-      if (this.firstEnter)
-      {
-        if (aircraft().thisWeaponsName.startsWith("1x"))
-        {
-          this.mesh.chunkVisible("Stand", false);
-          this.mesh.chunkVisible("Cylinder", false);
-          this.mesh.chunkVisible("Support", false);
-          this.mesh.chunkVisible("Reticle1", false);
-          this.mesh.chunkVisible("Reticle2", false);
-          this.mesh.chunkVisible("ZCursor1", false);
-          this.mesh.chunkVisible("ZCursor2", false);
-        }
-        this.firstEnter = false;
-      }
-
-      this.mesh.chunkVisible("Tur2_DoorR_Int_D0", aircraft().hierMesh().isChunkVisible("Tur2_DoorR_D0"));
-      this.mesh.chunkVisible("Tur2_DoorR_open_Int_D0", !aircraft().hierMesh().isChunkVisible("Tur2_DoorR_D0"));
-      this.mesh.chunkVisible("Tur2_DoorL_Int_D0", aircraft().hierMesh().isChunkVisible("Tur2_DoorR_D0"));
-
-      this.mesh.chunkVisible("Tur2_Door1_Int_D0", true);
-      this.mesh.chunkVisible("Tur2_Door2_Int_D0", true);
-      this.mesh.chunkVisible("Tur2_Door3_Int_D0", true);
-
-      aircraft().hierMesh().chunkVisible("Interior2_D0", false);
-      aircraft().hierMesh().chunkVisible("Interior1_D0", false);
-
-      aircraft().hierMesh().chunkVisible("Tur2_DoorL_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur2_DoorR_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur2_DoorL_open_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur2_DoorR_open_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur2_Door1_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur2_Door2_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur2_Door3_D0", false);
-
-      aircraft().hierMesh().chunkVisible("Tur1_DoorL_D0", false);
-      aircraft().hierMesh().chunkVisible("Tur1_DoorR_D0", false);
-      aircraft().hierMesh().chunkVisible("Turret1B_D0", false);
-      aircraft().hierMesh().chunkVisible("Turret2B_D0", false);
-      aircraft().hierMesh().chunkVisible("Turret3B_D0", false);
-      aircraft().hierMesh().chunkVisible("Turret4B_D0", false);
-
-      aircraft().hierMesh().chunkVisible("Gambali_D0", false);
-
-      for (int i = 1; i <= 12; i++) {
-        aircraft().hierMesh().chunkVisible("Bomb100Kg" + i + "_D0", false);
-      }
-      for (i = 1; i <= 12; i++) {
-        aircraft().hierMesh().chunkVisible("Bomb50Kg" + i + "_D0", false);
-      }
-      for (i = 1; i <= 5; i++) {
-        aircraft().hierMesh().chunkVisible("Bomb250Kg" + i + "_D0", false);
-      }
-      aircraft().hierMesh().chunkVisible("Bomb500Kg2_D0", false);
-
-      return true;
     }
-    return false;
-  }
 
-  protected void doFocusLeave()
-  {
-    if (isFocused())
+    class Interpolater extends com.maddox.il2.engine.InterpolateRef
     {
-      ((SM79)this.fm.actor).bPitUnfocused = true;
 
-      boolean bool = aircraft().isChunkAnyDamageVisible("Tail1_D");
-
-      aircraft().hierMesh().chunkVisible("Interior2_D0", bool);
-      aircraft().hierMesh().chunkVisible("Interior1_D0", true);
-
-      if (!this.fm.AS.isPilotParatrooper(0))
-      {
-        aircraft().hierMesh().chunkVisible("Pilot1_D0", !((SM79)this.fm.actor).bPilot1Killed);
-        aircraft().hierMesh().chunkVisible("Pilot1_D1", ((SM79)this.fm.actor).bPilot1Killed);
-      }
-
-      if (!this.fm.AS.isPilotParatrooper(1))
-      {
-        aircraft().hierMesh().chunkVisible("Pilot2_D0", !((SM79)this.fm.actor).bPilot2Killed);
-        aircraft().hierMesh().chunkVisible("Pilot2_D1", ((SM79)this.fm.actor).bPilot2Killed);
-      }
-
-      if (!this.fm.AS.isPilotParatrooper(2))
-      {
-        aircraft().hierMesh().chunkVisible("Pilot3_D0", !((SM79)this.fm.actor).bPilot3Killed);
-        aircraft().hierMesh().chunkVisible("Pilot3_D1", ((SM79)this.fm.actor).bPilot3Killed);
-      }
-
-      if (bool)
-      {
-        if (!this.fm.AS.isPilotParatrooper(3))
+        public boolean tick()
         {
-          aircraft().hierMesh().chunkVisible("Pilot4_D0", !((SM79)this.fm.actor).bPilot4Killed);
-          aircraft().hierMesh().chunkVisible("Pilot4_D1", ((SM79)this.fm.actor).bPilot4Killed);
+            if(fm != null)
+            {
+                setTmp = setOld;
+                setOld = setNew;
+                setNew = setTmp;
+                setNew.altimeter = fm.getAltitude();
+                setNew.rudderTrim = fm.CT.getTrimRudderControl();
+                setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), 90F + fm.Or.azimut());
+            }
+            float f = ((com.maddox.il2.objects.air.SM79)aircraft()).fSightCurForwardAngle;
+            float f1 = 0.0F;
+            if(bEntered)
+            {
+                com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+                hookpilot.setSimpleAimOrient(aAim + f1, tAim + f, 0.0F);
+            }
+            return true;
         }
 
-        if (!this.fm.AS.isPilotParatrooper(4))
+        Interpolater()
         {
-          aircraft().hierMesh().chunkVisible("Pilot5_D0", !((SM79)this.fm.actor).bPilot5Killed);
-          aircraft().hierMesh().chunkVisible("Pilot5_D1", ((SM79)this.fm.actor).bPilot5Killed);
         }
-
-      }
-
-      float f = this.fm.CT.getCockpitDoor();
-      if (f > 0.99D)
-      {
-        aircraft().hierMesh().chunkVisible("Tur1_DoorL_open_D0", bool);
-        aircraft().hierMesh().chunkVisible("Tur1_DoorR_open_D0", bool);
-      }
-      else
-      {
-        aircraft().hierMesh().chunkVisible("Tur1_DoorL_D0", bool);
-        aircraft().hierMesh().chunkVisible("Tur1_DoorR_D0", bool);
-      }
-
-      aircraft().hierMesh().chunkVisible("Turret1B_D0", true);
-      aircraft().hierMesh().chunkVisible("Turret2B_D0", bool);
-      aircraft().hierMesh().chunkVisible("Turret3B_D0", bool);
-      aircraft().hierMesh().chunkVisible("Turret4B_D0", bool);
-
-      aircraft().hierMesh().chunkVisible("Gambali_D0", bool);
-
-      aircraft().hierMesh().chunkVisible("Tur2_DoorL_D0", !this.mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
-
-      aircraft().hierMesh().chunkVisible("Tur2_DoorL_open_D0", this.mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
-
-      aircraft().hierMesh().chunkVisible("Tur2_DoorR_D0", !this.mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
-
-      aircraft().hierMesh().chunkVisible("Tur2_DoorR_open_D0", this.mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
-
-      aircraft().hierMesh().chunkVisible("Tur2_Door1_D0", true);
-      aircraft().hierMesh().chunkVisible("Tur2_Door2_D0", true);
-      aircraft().hierMesh().chunkVisible("Tur2_Door3_D0", true);
-
-      this.mesh.chunkVisible("Tur2_DoorR_open_Int_D0", false);
-      int i;
-      if ((aircraft().thisWeaponsName.startsWith("12")) || (aircraft().thisWeaponsName.startsWith("6")))
-      {
-        for (i = 1; i <= 12; i++)
-        {
-          this.mesh.chunkVisible("BombRack" + i, false);
-          aircraft().hierMesh().chunkVisible("BombRack" + i + "_D0", true);
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("5"))
-      {
-        for (i = 1; i <= 5; i++)
-        {
-          this.mesh.chunkVisible("BombRack250_" + i, false);
-          aircraft().hierMesh().chunkVisible("BombRack250_" + i + "_D0", true);
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("2"))
-      {
-        this.mesh.chunkVisible("BombRack500_1", false);
-        this.mesh.chunkVisible("BombRack500_2", false);
-
-        aircraft().hierMesh().chunkVisible("BombRack500_1_D0", true);
-        aircraft().hierMesh().chunkVisible("BombRack500_2_D0", true);
-      }
-
-      leave();
-      super.doFocusLeave();
     }
-  }
 
-  private void enter() {
-    this.saveFov = Main3D.FOVX;
 
-    HookPilot localHookPilot = HookPilot.current;
-    if (localHookPilot.isPadlock())
-      localHookPilot.stopPadlock();
-    localHookPilot.doAim(true);
-    localHookPilot.setSimpleUse(true);
-    localHookPilot.setSimpleAimOrient(this.aAim, this.tAim, 0.0F);
-    HotKeyEnv.enable("PanView", false);
-    HotKeyEnv.enable("SnapView", false);
-    this.bEntered = true;
-    this.bombToDrop = 0;
-    this.dropTime = 0.0F;
-  }
-
-  private void leave() {
-    if (this.bEntered)
+    protected boolean doFocusEnter()
     {
-      HookPilot localHookPilot = HookPilot.current;
-      localHookPilot.doAim(false);
-      localHookPilot.setSimpleAimOrient(0.0F, 0.0F, 0.0F);
-      localHookPilot.setSimpleUse(false);
-      boolean bool = HotKeyEnv.isEnabled("aircraftView");
-      HotKeyEnv.enable("PanView", bool);
-      HotKeyEnv.enable("SnapView", bool);
-      this.bEntered = false;
-    }
-  }
+        if(super.doFocusEnter())
+        {
+            com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+            hookpilot.doAim(false);
+            ((com.maddox.il2.objects.air.SM79)fm.actor).bPitUnfocused = false;
+            aircraft().hierMesh().chunkVisible("Pilot1_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot1_D1", false);
+            aircraft().hierMesh().chunkVisible("Pilot2_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot2_D1", false);
+            aircraft().hierMesh().chunkVisible("Pilot3_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot3_D1", false);
+            aircraft().hierMesh().chunkVisible("Pilot4_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot4_D1", false);
+            aircraft().hierMesh().chunkVisible("Pilot5_D0", false);
+            aircraft().hierMesh().chunkVisible("Pilot5_D1", false);
+            aircraft().hierMesh().chunkVisible("Gambali_D0", false);
+            if(aircraft().thisWeaponsName.startsWith("12") || aircraft().thisWeaponsName.startsWith("6"))
+            {
+                for(int i = 1; i <= 12; i++)
+                {
+                    mesh.chunkVisible("BombRack" + i, true);
+                    aircraft().hierMesh().chunkVisible("BombRack" + i + "_D0", false);
+                }
 
-  protected void drawBombsInt()
-  {
-    if (aircraft().thisWeaponsName.endsWith("drop"))
+            }
+            if(aircraft().thisWeaponsName.startsWith("5"))
+            {
+                for(int j = 1; j <= 5; j++)
+                {
+                    mesh.chunkVisible("BombRack250_" + j, true);
+                    aircraft().hierMesh().chunkVisible("BombRack250_" + j + "_D0", false);
+                }
+
+            }
+            if(aircraft().thisWeaponsName.startsWith("2"))
+            {
+                mesh.chunkVisible("BombRack500_1", true);
+                mesh.chunkVisible("BombRack500_2", true);
+                aircraft().hierMesh().chunkVisible("BombRack500_1_D0", false);
+                aircraft().hierMesh().chunkVisible("BombRack500_2_D0", false);
+            }
+            if(firstEnter)
+            {
+                if(aircraft().thisWeaponsName.startsWith("1x"))
+                {
+                    mesh.chunkVisible("Stand", false);
+                    mesh.chunkVisible("Cylinder", false);
+                    mesh.chunkVisible("Support", false);
+                    mesh.chunkVisible("Reticle1", false);
+                    mesh.chunkVisible("Reticle2", false);
+                    mesh.chunkVisible("ZCursor1", false);
+                    mesh.chunkVisible("ZCursor2", false);
+                }
+                firstEnter = false;
+            }
+            mesh.chunkVisible("Tur2_DoorR_Int_D0", aircraft().hierMesh().isChunkVisible("Tur2_DoorR_D0"));
+            mesh.chunkVisible("Tur2_DoorR_open_Int_D0", !aircraft().hierMesh().isChunkVisible("Tur2_DoorR_D0"));
+            mesh.chunkVisible("Tur2_DoorL_Int_D0", aircraft().hierMesh().isChunkVisible("Tur2_DoorR_D0"));
+            mesh.chunkVisible("Tur2_Door1_Int_D0", true);
+            mesh.chunkVisible("Tur2_Door2_Int_D0", true);
+            mesh.chunkVisible("Tur2_Door3_Int_D0", true);
+            aircraft().hierMesh().chunkVisible("Interior2_D0", false);
+            aircraft().hierMesh().chunkVisible("Interior1_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_DoorL_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_DoorR_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_DoorL_open_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_DoorR_open_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_Door1_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_Door2_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur2_Door3_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur1_DoorL_D0", false);
+            aircraft().hierMesh().chunkVisible("Tur1_DoorR_D0", false);
+            aircraft().hierMesh().chunkVisible("Turret1B_D0", false);
+            aircraft().hierMesh().chunkVisible("Turret2B_D0", false);
+            aircraft().hierMesh().chunkVisible("Turret3B_D0", false);
+            aircraft().hierMesh().chunkVisible("Turret4B_D0", false);
+            aircraft().hierMesh().chunkVisible("Gambali_D0", false);
+            for(int k = 1; k <= 12; k++)
+                aircraft().hierMesh().chunkVisible("Bomb100Kg" + k + "_D0", false);
+
+            for(int l = 1; l <= 12; l++)
+                aircraft().hierMesh().chunkVisible("Bomb50Kg" + l + "_D0", false);
+
+            for(int i1 = 1; i1 <= 5; i1++)
+                aircraft().hierMesh().chunkVisible("Bomb250Kg" + i1 + "_D0", false);
+
+            aircraft().hierMesh().chunkVisible("Bomb500Kg2_D0", false);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave()
     {
-      int i = 0;
-
-      if (this.fm.CT.Weapons[3] != null)
-      {
-        for (int j = 0; j < this.fm.CT.Weapons[3].length; j++)
+        if(isFocused())
         {
-          if (this.fm.CT.Weapons[3][j] != null) {
-            i += this.fm.CT.Weapons[3][j].countBullets();
-          }
-        }
-        if (i < ((SM79)this.fm.actor).numBombsOld)
-        {
-          mydebugcockpit("BOMB DROPPED!!! ");
-          ((SM79)this.fm.actor).numBombsOld = i;
-          this.bombToDrop = (i + 1);
-          this.dropTime = 0.0F;
+            ((com.maddox.il2.objects.air.SM79)fm.actor).bPitUnfocused = true;
+            boolean flag = aircraft().isChunkAnyDamageVisible("Tail1_D");
+            aircraft().hierMesh().chunkVisible("Interior2_D0", flag);
+            aircraft().hierMesh().chunkVisible("Interior1_D0", true);
+            if(!fm.AS.isPilotParatrooper(0))
+            {
+                aircraft().hierMesh().chunkVisible("Pilot1_D0", !((com.maddox.il2.objects.air.SM79)fm.actor).bPilot1Killed);
+                aircraft().hierMesh().chunkVisible("Pilot1_D1", ((com.maddox.il2.objects.air.SM79)fm.actor).bPilot1Killed);
+            }
+            if(!fm.AS.isPilotParatrooper(1))
+            {
+                aircraft().hierMesh().chunkVisible("Pilot2_D0", !((com.maddox.il2.objects.air.SM79)fm.actor).bPilot2Killed);
+                aircraft().hierMesh().chunkVisible("Pilot2_D1", ((com.maddox.il2.objects.air.SM79)fm.actor).bPilot2Killed);
+            }
+            if(!fm.AS.isPilotParatrooper(2))
+            {
+                aircraft().hierMesh().chunkVisible("Pilot3_D0", !((com.maddox.il2.objects.air.SM79)fm.actor).bPilot3Killed);
+                aircraft().hierMesh().chunkVisible("Pilot3_D1", ((com.maddox.il2.objects.air.SM79)fm.actor).bPilot3Killed);
+            }
+            if(flag)
+            {
+                if(!fm.AS.isPilotParatrooper(3))
+                {
+                    aircraft().hierMesh().chunkVisible("Pilot4_D0", !((com.maddox.il2.objects.air.SM79)fm.actor).bPilot4Killed);
+                    aircraft().hierMesh().chunkVisible("Pilot4_D1", ((com.maddox.il2.objects.air.SM79)fm.actor).bPilot4Killed);
+                }
+                if(!fm.AS.isPilotParatrooper(4))
+                {
+                    aircraft().hierMesh().chunkVisible("Pilot5_D0", !((com.maddox.il2.objects.air.SM79)fm.actor).bPilot5Killed);
+                    aircraft().hierMesh().chunkVisible("Pilot5_D1", ((com.maddox.il2.objects.air.SM79)fm.actor).bPilot5Killed);
+                }
+            }
+            float f = fm.CT.getCockpitDoor();
+            if((double)f > 0.98999999999999999D)
+            {
+                aircraft().hierMesh().chunkVisible("Tur1_DoorL_open_D0", flag);
+                aircraft().hierMesh().chunkVisible("Tur1_DoorR_open_D0", flag);
+            } else
+            {
+                aircraft().hierMesh().chunkVisible("Tur1_DoorL_D0", flag);
+                aircraft().hierMesh().chunkVisible("Tur1_DoorR_D0", flag);
+            }
+            aircraft().hierMesh().chunkVisible("Turret1B_D0", true);
+            aircraft().hierMesh().chunkVisible("Turret2B_D0", flag);
+            aircraft().hierMesh().chunkVisible("Turret3B_D0", flag);
+            aircraft().hierMesh().chunkVisible("Turret4B_D0", flag);
+            aircraft().hierMesh().chunkVisible("Gambali_D0", flag);
+            aircraft().hierMesh().chunkVisible("Tur2_DoorL_D0", !mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
+            aircraft().hierMesh().chunkVisible("Tur2_DoorL_open_D0", mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
+            aircraft().hierMesh().chunkVisible("Tur2_DoorR_D0", !mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
+            aircraft().hierMesh().chunkVisible("Tur2_DoorR_open_D0", mesh.isChunkVisible("Tur2_DoorR_open_Int_D0"));
+            aircraft().hierMesh().chunkVisible("Tur2_Door1_D0", true);
+            aircraft().hierMesh().chunkVisible("Tur2_Door2_D0", true);
+            aircraft().hierMesh().chunkVisible("Tur2_Door3_D0", true);
+            mesh.chunkVisible("Tur2_DoorR_open_Int_D0", false);
+            if(aircraft().thisWeaponsName.startsWith("12") || aircraft().thisWeaponsName.startsWith("6"))
+            {
+                for(int i = 1; i <= 12; i++)
+                {
+                    mesh.chunkVisible("BombRack" + i, false);
+                    aircraft().hierMesh().chunkVisible("BombRack" + i + "_D0", true);
+                }
 
-          mydebugcockpit("Bomb to drop: " + this.bombToDrop);
-        }
+            }
+            if(aircraft().thisWeaponsName.startsWith("5"))
+            {
+                for(int j = 1; j <= 5; j++)
+                {
+                    mesh.chunkVisible("BombRack250_" + j, false);
+                    aircraft().hierMesh().chunkVisible("BombRack250_" + j + "_D0", true);
+                }
 
-        if (aircraft().thisWeaponsName.startsWith("12x1"))
-        {
-          for (j = 1; j < i + 1; j++)
-          {
-            this.mesh.chunkVisible("Bomb100Kg" + j, true);
-          }
-          for (j = i + 1; j <= 12; j++)
-          {
-            this.mesh.chunkVisible("Bomb100Kg" + j, false);
-          }
+            }
+            if(aircraft().thisWeaponsName.startsWith("2"))
+            {
+                mesh.chunkVisible("BombRack500_1", false);
+                mesh.chunkVisible("BombRack500_2", false);
+                aircraft().hierMesh().chunkVisible("BombRack500_1_D0", true);
+                aircraft().hierMesh().chunkVisible("BombRack500_2_D0", true);
+            }
+            leave();
+            super.doFocusLeave();
         }
-
-        if (aircraft().thisWeaponsName.startsWith("12x5"))
-        {
-          for (j = 1; j < i + 1; j++)
-          {
-            this.mesh.chunkVisible("Bomb50Kg" + j, true);
-          }
-          for (j = i + 1; j <= 12; j++)
-          {
-            this.mesh.chunkVisible("Bomb50Kg" + j, false);
-          }
-        }
-
-        if (aircraft().thisWeaponsName.startsWith("6"))
-        {
-          for (j = 1; j < i + 1; j++)
-          {
-            this.mesh.chunkVisible("Bomb100Kg" + j, true);
-          }
-          for (j = i + 1; j <= 6; j++)
-          {
-            this.mesh.chunkVisible("Bomb100Kg" + j, false);
-          }
-        }
-
-        if (aircraft().thisWeaponsName.startsWith("5"))
-        {
-          for (j = 1; j < i + 1; j++)
-          {
-            this.mesh.chunkVisible("Bomb250Kg" + j, true);
-          }
-
-          for (j = i + 1; j <= 5; j++)
-          {
-            this.mesh.chunkVisible("Bomb250Kg" + j, false);
-          }
-        }
-
-        if (aircraft().thisWeaponsName.startsWith("2"))
-        {
-          if (i == 2)
-          {
-            this.mesh.chunkVisible("Bomb500Kg1", true);
-            this.mesh.chunkVisible("Bomb500Kg2", true);
-          }
-          if (i == 1)
-          {
-            this.mesh.chunkVisible("Bomb500Kg1", true);
-            this.mesh.chunkVisible("Bomb500Kg2", false);
-          }
-          if (i == 0)
-          {
-            this.mesh.chunkVisible("Bomb500Kg1", false);
-            this.mesh.chunkVisible("Bomb500Kg2", false);
-          }
-        }
-      }
     }
-  }
 
-  protected void drawFallingBomb(float paramFloat)
-  {
-    if (this.bombToDrop != 0)
+    private void enter()
     {
-      mydebugcockpit("drawFallingBomb Drop time = " + this.dropTime);
-
-      this.dropTime += 0.03F;
-
-      if (aircraft().thisWeaponsName.startsWith("12x1"))
-      {
-        this.mesh.chunkVisible("Bomb100Kg" + this.bombToDrop, true);
-        resetYPRmodifier();
-        Cockpit.xyz[2] = (-this.dropTime);
-        this.mesh.chunkSetLocate("Bomb100Kg" + this.bombToDrop, Cockpit.xyz, Cockpit.ypr);
-        if (this.dropTime >= 0.4F)
-        {
-          this.bombToDrop = 0;
-          this.dropTime = 0.0F;
-        }
-      }
-
-      if (aircraft().thisWeaponsName.startsWith("12x5"))
-      {
-        this.mesh.chunkVisible("Bomb50Kg" + this.bombToDrop, true);
-        resetYPRmodifier();
-        Cockpit.xyz[2] = (-this.dropTime);
-        this.mesh.chunkSetLocate("Bomb50Kg" + this.bombToDrop, Cockpit.xyz, Cockpit.ypr);
-        if (this.dropTime >= 0.4F)
-        {
-          this.bombToDrop = 0;
-          this.dropTime = 0.0F;
-        }
-      }
-
-      if (aircraft().thisWeaponsName.startsWith("6"))
-      {
-        this.mesh.chunkVisible("Bomb100Kg" + this.bombToDrop, true);
-        resetYPRmodifier();
-        Cockpit.xyz[2] = (-this.dropTime);
-        this.mesh.chunkSetLocate("Bomb100Kg" + this.bombToDrop, Cockpit.xyz, Cockpit.ypr);
-        if (this.dropTime >= 0.4F)
-        {
-          this.bombToDrop = 0;
-          this.dropTime = 0.0F;
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("5"))
-      {
-        this.mesh.chunkVisible("Bomb250Kg" + this.bombToDrop, true);
-        resetYPRmodifier();
-        Cockpit.xyz[2] = (-this.dropTime);
-        this.mesh.chunkSetLocate("Bomb250Kg" + this.bombToDrop, Cockpit.xyz, Cockpit.ypr);
-        if (this.dropTime >= 0.5F)
-        {
-          this.bombToDrop = 0;
-          this.dropTime = 0.0F;
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("2"))
-      {
-        this.mesh.chunkVisible("Bomb500Kg" + this.bombToDrop, true);
-
-        resetYPRmodifier();
-        Cockpit.xyz[2] = (-this.dropTime);
-        this.mesh.chunkSetLocate("Bomb500Kg" + this.bombToDrop, Cockpit.xyz, Cockpit.ypr);
-        if (this.dropTime >= 0.5F)
-        {
-          this.bombToDrop = 0;
-          this.dropTime = 0.0F;
-        }
-      }
+        saveFov = com.maddox.il2.game.Main3D.FOVX;
+        com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+        if(hookpilot.isPadlock())
+            hookpilot.stopPadlock();
+        hookpilot.doAim(true);
+        hookpilot.setSimpleUse(true);
+        hookpilot.setSimpleAimOrient(aAim, tAim, 0.0F);
+        com.maddox.rts.HotKeyEnv.enable("PanView", false);
+        com.maddox.rts.HotKeyEnv.enable("SnapView", false);
+        bEntered = true;
+        bombToDrop = 0;
+        dropTime = 0.0F;
     }
-  }
 
-  public void destroy() {
-    super.destroy();
-    leave();
-  }
+    private void leave()
+    {
+        if(bEntered)
+        {
+            com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+            hookpilot.doAim(false);
+            hookpilot.setSimpleUse(false);
+            boolean flag = com.maddox.rts.HotKeyEnv.isEnabled("aircraftView");
+            com.maddox.rts.HotKeyEnv.enable("PanView", flag);
+            com.maddox.rts.HotKeyEnv.enable("SnapView", flag);
+            bEntered = false;
+        }
+    }
 
-  public void doToggleAim(boolean paramBoolean)
-  {
-    if ((isFocused()) && (isToggleAim() != paramBoolean))
-      if (paramBoolean)
-        enter();
-      else
+    protected void drawBombsInt()
+    {
+        if(aircraft().thisWeaponsName.endsWith("drop"))
+        {
+            int i = 0;
+            if(fm.CT.Weapons[3] != null)
+            {
+                for(int j = 0; j < fm.CT.Weapons[3].length; j++)
+                    if(fm.CT.Weapons[3][j] != null)
+                        i += fm.CT.Weapons[3][j].countBullets();
+
+                if(i < ((com.maddox.il2.objects.air.SM79)fm.actor).numBombsOld)
+                {
+                    mydebugcockpit("BOMB DROPPED!!! ");
+                    ((com.maddox.il2.objects.air.SM79)fm.actor).numBombsOld = i;
+                    bombToDrop = i + 1;
+                    dropTime = 0.0F;
+                    mydebugcockpit("Bomb to drop: " + bombToDrop);
+                }
+                if(aircraft().thisWeaponsName.startsWith("12x1"))
+                {
+                    for(int k = 1; k < i + 1; k++)
+                        mesh.chunkVisible("Bomb100Kg" + k, true);
+
+                    for(int k1 = i + 1; k1 <= 12; k1++)
+                        mesh.chunkVisible("Bomb100Kg" + k1, false);
+
+                }
+                if(aircraft().thisWeaponsName.startsWith("12x5"))
+                {
+                    for(int l = 1; l < i + 1; l++)
+                        mesh.chunkVisible("Bomb50Kg" + l, true);
+
+                    for(int l1 = i + 1; l1 <= 12; l1++)
+                        mesh.chunkVisible("Bomb50Kg" + l1, false);
+
+                }
+                if(aircraft().thisWeaponsName.startsWith("6"))
+                {
+                    for(int i1 = 1; i1 < i + 1; i1++)
+                        mesh.chunkVisible("Bomb100Kg" + i1, true);
+
+                    for(int i2 = i + 1; i2 <= 6; i2++)
+                        mesh.chunkVisible("Bomb100Kg" + i2, false);
+
+                }
+                if(aircraft().thisWeaponsName.startsWith("5"))
+                {
+                    for(int j1 = 1; j1 < i + 1; j1++)
+                        mesh.chunkVisible("Bomb250Kg" + j1, true);
+
+                    for(int j2 = i + 1; j2 <= 5; j2++)
+                        mesh.chunkVisible("Bomb250Kg" + j2, false);
+
+                }
+                if(aircraft().thisWeaponsName.startsWith("2"))
+                {
+                    if(i == 2)
+                    {
+                        mesh.chunkVisible("Bomb500Kg1", true);
+                        mesh.chunkVisible("Bomb500Kg2", true);
+                    }
+                    if(i == 1)
+                    {
+                        mesh.chunkVisible("Bomb500Kg1", true);
+                        mesh.chunkVisible("Bomb500Kg2", false);
+                    }
+                    if(i == 0)
+                    {
+                        mesh.chunkVisible("Bomb500Kg1", false);
+                        mesh.chunkVisible("Bomb500Kg2", false);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void drawFallingBomb(float f)
+    {
+        if(bombToDrop != 0)
+        {
+            mydebugcockpit("drawFallingBomb Drop time = " + dropTime);
+            dropTime += 0.03F;
+            if(aircraft().thisWeaponsName.startsWith("12x1"))
+            {
+                mesh.chunkVisible("Bomb100Kg" + bombToDrop, true);
+                resetYPRmodifier();
+                com.maddox.il2.objects.air.Cockpit.xyz[2] = -dropTime;
+                mesh.chunkSetLocate("Bomb100Kg" + bombToDrop, com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+                if(dropTime >= 0.4F)
+                {
+                    bombToDrop = 0;
+                    dropTime = 0.0F;
+                }
+            }
+            if(aircraft().thisWeaponsName.startsWith("12x5"))
+            {
+                mesh.chunkVisible("Bomb50Kg" + bombToDrop, true);
+                resetYPRmodifier();
+                com.maddox.il2.objects.air.Cockpit.xyz[2] = -dropTime;
+                mesh.chunkSetLocate("Bomb50Kg" + bombToDrop, com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+                if(dropTime >= 0.4F)
+                {
+                    bombToDrop = 0;
+                    dropTime = 0.0F;
+                }
+            }
+            if(aircraft().thisWeaponsName.startsWith("6"))
+            {
+                mesh.chunkVisible("Bomb100Kg" + bombToDrop, true);
+                resetYPRmodifier();
+                com.maddox.il2.objects.air.Cockpit.xyz[2] = -dropTime;
+                mesh.chunkSetLocate("Bomb100Kg" + bombToDrop, com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+                if(dropTime >= 0.4F)
+                {
+                    bombToDrop = 0;
+                    dropTime = 0.0F;
+                }
+            }
+            if(aircraft().thisWeaponsName.startsWith("5"))
+            {
+                mesh.chunkVisible("Bomb250Kg" + bombToDrop, true);
+                resetYPRmodifier();
+                com.maddox.il2.objects.air.Cockpit.xyz[2] = -dropTime;
+                mesh.chunkSetLocate("Bomb250Kg" + bombToDrop, com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+                if(dropTime >= 0.5F)
+                {
+                    bombToDrop = 0;
+                    dropTime = 0.0F;
+                }
+            }
+            if(aircraft().thisWeaponsName.startsWith("2"))
+            {
+                mesh.chunkVisible("Bomb500Kg" + bombToDrop, true);
+                resetYPRmodifier();
+                com.maddox.il2.objects.air.Cockpit.xyz[2] = -dropTime;
+                mesh.chunkSetLocate("Bomb500Kg" + bombToDrop, com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+                if(dropTime >= 0.5F)
+                {
+                    bombToDrop = 0;
+                    dropTime = 0.0F;
+                }
+            }
+        }
+    }
+
+    public void destroy()
+    {
+        super.destroy();
         leave();
-  }
-
-  public CockpitSM79_Bombardier()
-  {
-    super("3DO/Cockpit/SM79Bombardier/hier.him", "he111");
-    try {
-      Loc localLoc = new Loc();
-      localObject = new HookNamed(this.mesh, "CAMERAAIM");
-      ((HookNamed)localObject).computePos(this, this.pos.getAbs(), localLoc);
-      this.aAim = localLoc.getOrient().getAzimut();
-      this.tAim = localLoc.getOrient().getTangage();
-      this.kAim = localLoc.getOrient().getKren();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
     }
 
-    HookNamed localHookNamed = new HookNamed(this.mesh, "LAMPHOOK1");
-    Object localObject = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-    localHookNamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), (Loc)localObject);
-
-    this.light1 = new LightPointActor(new LightPoint(), ((Loc)localObject).getPoint());
-    this.light1.light.setColor(109.0F, 99.0F, 90.0F);
-    this.light1.light.setEmit(0.0F, 0.0F);
-    this.pos.base().draw.lightMap().put("LAMPHOOK1", this.light1);
-
-    this.cockpitNightMats = new String[] { "Panel", "Needles" };
-
-    setNightMats(false);
-    interpPut(new Interpolater(), null, Time.current(), null);
-  }
-
-  public void toggleLight()
-  {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl)
+    public void doToggleAim(boolean flag)
     {
-      this.light1.light.setEmit(0.0032F, 7.2F);
-      setNightMats(true);
-    }
-    else
-    {
-      this.light1.light.setEmit(0.0F, 0.0F);
-      setNightMats(false);
-    }
-  }
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    if (this.bNeedSetUp)
-    {
-      reflectPlaneMats();
-      this.bNeedSetUp = false;
-    }
-    reflectPlaneToModel();
-    resetYPRmodifier();
-
-    aircraft().hierMesh().chunkVisible("Tur2_DoorL_D0", false);
-    aircraft().hierMesh().chunkVisible("Tur2_DoorR_D0", false);
-    aircraft().hierMesh().chunkVisible("Tur2_DoorL_open_D0", false);
-    aircraft().hierMesh().chunkVisible("Tur2_DoorR_open_D0", false);
-
-    float f1 = this.fm.CT.getCockpitDoor();
-    if (f1 < 0.99F)
-    {
-      if (!this.mesh.isChunkVisible("Tur2_DoorR_Int_D0"))
-      {
-        this.mesh.chunkVisible("Tur2_DoorR_Int_D0", true);
-        this.mesh.chunkVisible("Tur2_DoorR_open_Int_D0", false);
-        this.mesh.chunkVisible("Tur2_DoorL_Int_D0", true);
-      }
-
-      f2 = 13.8F * f1;
-      this.mesh.chunkSetAngles("Tur2_Door1_Int_D0", 0.0F, -f2, 0.0F);
-      f2 = 8.8F * f1;
-      this.mesh.chunkSetAngles("Tur2_Door2_Int_D0", 0.0F, -f2, 0.0F);
-      f2 = 3.1F * f1;
-      this.mesh.chunkSetAngles("Tur2_Door3_Int_D0", 0.0F, -f2, 0.0F);
-      f2 = 10.0F * f1;
-      this.mesh.chunkSetAngles("Tur2_DoorL_Int_D0", 0.0F, -f2, 0.0F);
-      this.mesh.chunkSetAngles("Tur2_DoorR_Int_D0", 0.0F, f2, 0.0F);
-    }
-    else
-    {
-      this.mesh.chunkVisible("Tur2_DoorR_Int_D0", false);
-      this.mesh.chunkVisible("Tur2_DoorR_open_Int_D0", true);
-      this.mesh.chunkVisible("Tur2_DoorL_Int_D0", false);
-
-      this.mesh.chunkSetAngles("Tur2_Door1_Int_D0", 0.0F, -13.8F, 0.0F);
-      this.mesh.chunkSetAngles("Tur2_Door2_Int_D0", 0.0F, -8.8F, 0.0F);
-      this.mesh.chunkSetAngles("Tur2_Door3_Int_D0", 0.0F, -3.1F, 0.0F);
+        if(isFocused() && isToggleAim() != flag)
+            if(flag)
+                enter();
+            else
+                leave();
     }
 
-    float f2 = interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat) * 0.072F;
-    this.mesh.chunkSetAngles("Z_Altimeter", 0.0F, f2, 0.0F);
-
-    this.mesh.chunkSetAngles("Z_Speedometer", 0.0F, floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 460.0F, 0.0F, 23.0F), speedometerScale), 0.0F);
-
-    this.mesh.chunkSetAngles("z_Hour", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("z_Minute", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("z_Second", 0.0F, cvt(World.getTimeofDay() % 1.0F * 60.0F % 1.0F, 0.0F, 1.0F, 0.0F, 360.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("Zturret3A", 0.0F, -this.fm.turret[2].tu[0], 0.0F);
-    this.mesh.chunkSetAngles("Zturret3B", 0.0F, this.fm.turret[2].tu[1], 0.0F);
-
-    this.mesh.chunkSetAngles("Zturret2A", 0.0F, -this.fm.turret[1].tu[0], 0.0F);
-    this.mesh.chunkSetAngles("Zturret2B", 0.0F, this.fm.turret[1].tu[1], 0.0F);
-
-    this.mesh.chunkSetAngles("Zturret4A", 0.0F, -this.fm.turret[3].tu[0], 0.0F);
-    this.mesh.chunkSetAngles("Zturret4B", 0.0F, this.fm.turret[3].tu[1], 0.0F);
-
-    this.mesh.chunkSetAngles("TurretA", 0.0F, -this.fm.turret[0].tu[0], 0.0F);
-    this.mesh.chunkSetAngles("TurretB", 0.0F, this.fm.turret[0].tu[1], 0.0F);
-
-    this.mesh.chunkSetAngles("Z_Compass1", 0.0F, -this.setNew.azimuth.getDeg(paramFloat), 0.0F);
-
-    this.mesh.chunkSetAngles("Z_TurnBank2", 0.0F, cvt(getBall(8.0D), -8.0F, 8.0F, -28.0F, 28.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("ZRudderTrim", 0.0F, interp(this.setNew.rudderTrim, this.setOld.rudderTrim, paramFloat) * 360.0F, 0.0F);
-
-    float f3 = this.fm.CT.getCockpitDoor();
-    aircraft().hierMesh().chunkVisible("Tur1_DoorL_D0", false);
-    aircraft().hierMesh().chunkVisible("Tur1_DoorR_D0", false);
-
-    float f4 = -28.0F * f3;
-    float f5 = cvt(f3, 0.0F, 1.0F, 0.0F, -20.0F);
-    float f6 = cvt(f3, 0.5F, 1.0F, 0.0F, -15.0F);
-
-    this.mesh.chunkSetAngles("Tur1_DoorL_Int_D0", -f5, -f4, -f6);
-    this.mesh.chunkSetAngles("Tur1_DoorR_Int_D0", f5, f4, -f6);
-
-    if (!aircraft().thisWeaponsName.startsWith("1x"))
+    public CockpitSM79_Bombardier()
     {
-      resetYPRmodifier();
-      f7 = this.fm.Or.getPitch();
-      if (f7 > 360.0F) {
-        f7 -= 360.0F;
-      }
-
-      f7 *= 0.00872664F;
-
-      float f8 = ((SM79)aircraft()).fSightSetForwardAngle - (float)Math.toRadians(f7);
-      float f9 = (float)(0.1691599935293198D * Math.tan(f8));
-
-      if (f9 < 0.032F)
-        f9 = 0.032F;
-      else if (f9 > 0.21F) {
-        f9 = 0.21F;
-      }
-      f9 *= 0.85F;
-      float f10 = f9 * 0.667F;
-
-      Cockpit.xyz[0] = f9;
-      this.mesh.chunkSetLocate("ZCursor1", Cockpit.xyz, Cockpit.ypr);
-
-      Cockpit.xyz[0] = f10;
-      this.mesh.chunkSetLocate("ZCursor2", Cockpit.xyz, Cockpit.ypr);
-
-      this.mesh.chunkSetAngles("Cylinder", 0.0F, ((SM79)aircraft()).fSightCurSideslip, 0.0F);
-    }
-
-    drawBombsInt();
-
-    drawFallingBomb(paramFloat);
-
-    float f7 = ((SM79)this.fm.actor).bayDoorAngle;
-
-    if (aircraft().thisWeaponsName.startsWith("12"))
-    {
-      this.mesh.chunkSetAngles("TypewriterLever01", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever04", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever05", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever06", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever07", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever08", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever09", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever10", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever11", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever12", 0.0F, 55.0F * f7, 0.0F);
-    }
-
-    if (aircraft().thisWeaponsName.startsWith("6"))
-    {
-      this.mesh.chunkSetAngles("TypewriterLever01", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever04", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever05", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever06", 0.0F, 55.0F * f7, 0.0F);
-    }
-
-    if (aircraft().thisWeaponsName.startsWith("5"))
-    {
-      this.mesh.chunkSetAngles("TypewriterLever01", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever04", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever05", 0.0F, 55.0F * f7, 0.0F);
-    }
-
-    if (aircraft().thisWeaponsName.startsWith("2"))
-    {
-      this.mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever06", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkSetAngles("TypewriterLever07", 0.0F, 55.0F * f7, 0.0F);
-      this.mesh.chunkVisible("Bridge1", true);
-      this.mesh.chunkVisible("Bridge2", true);
-    }
-
-    if (aircraft().thisWeaponsName.endsWith("drop"))
-    {
-      int i = 0;
-      int j;
-      if (this.fm.CT.Weapons[3] != null)
-      {
-        for (j = 0; j < this.fm.CT.Weapons[3].length; j++)
+        super("3DO/Cockpit/SM79Bombardier/hier.him", "he111");
+        firstEnter = true;
+        bEntered = false;
+        bombToDrop = 0;
+        dropTime = 0.0F;
+        setOld = new Variables();
+        setNew = new Variables();
+        w = new Vector3f();
+        pictAiler = 0.0F;
+        pictElev = 0.0F;
+        tmpP = new Point3d();
+        tmpV = new Vector3d();
+        try
         {
-          if (this.fm.CT.Weapons[3][j] != null) {
-            i += this.fm.CT.Weapons[3][j].countBullets();
-          }
+            com.maddox.il2.engine.Loc loc = new Loc();
+            com.maddox.il2.engine.HookNamed hooknamed1 = new HookNamed(mesh, "CAMERAAIM");
+            hooknamed1.computePos(this, pos.getAbs(), loc);
+            aAim = loc.getOrient().getAzimut();
+            tAim = loc.getOrient().getTangage();
+            kAim = loc.getOrient().getKren();
         }
-      }
-      if (aircraft().thisWeaponsName.startsWith("12"))
-      {
-        for (j = 1; j <= 12 - i; j++) {
-          if (j < 10)
-            this.mesh.chunkSetAngles("Typewriter_Key0" + j, 0.0F, 25.0F, 0.0F);
-          else
-            this.mesh.chunkSetAngles("Typewriter_Key" + j, 0.0F, 25.0F, 0.0F);
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("6"))
-      {
-        for (j = 1; j <= 6 - i; j++) {
-          this.mesh.chunkSetAngles("Typewriter_Key" + j, 0.0F, 25.0F, 0.0F);
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("5"))
-      {
-        for (j = 1; j <= 5 - i; j++) {
-          this.mesh.chunkSetAngles("Typewriter_Key0" + j, 0.0F, 25.0F, 0.0F);
-        }
-      }
-      if (aircraft().thisWeaponsName.startsWith("2"))
-      {
-        if (i == 0)
+        catch(java.lang.Exception exception)
         {
-          this.mesh.chunkSetAngles("Typewriter_Key02", 0.0F, 25.0F, 0.0F);
-          this.mesh.chunkSetAngles("Typewriter_Key03", 0.0F, 25.0F, 0.0F);
-          this.mesh.chunkSetAngles("Typewriter_Key06", 0.0F, 25.0F, 0.0F);
-          this.mesh.chunkSetAngles("Typewriter_Key07", 0.0F, 25.0F, 0.0F);
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
-        if (i == 1)
+        com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(mesh, "LAMPHOOK1");
+        com.maddox.il2.engine.Loc loc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        hooknamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), loc1);
+        light1 = new LightPointActor(new LightPoint(), loc1.getPoint());
+        light1.light.setColor(109F, 99F, 90F);
+        light1.light.setEmit(0.0F, 0.0F);
+        pos.base().draw.lightMap().put("LAMPHOOK1", light1);
+        cockpitNightMats = (new java.lang.String[] {
+            "Panel", "Needles"
+        });
+        setNightMats(false);
+        interpPut(new Interpolater(), null, com.maddox.rts.Time.current(), null);
+    }
+
+    public void toggleLight()
+    {
+        cockpitLightControl = !cockpitLightControl;
+        if(cockpitLightControl)
         {
-          this.mesh.chunkSetAngles("Typewriter_Key02", 0.0F, 25.0F, 0.0F);
-          this.mesh.chunkSetAngles("Typewriter_Key03", 0.0F, 25.0F, 0.0F);
+            light1.light.setEmit(0.0032F, 7.2F);
+            setNightMats(true);
+        } else
+        {
+            light1.light.setEmit(0.0F, 0.0F);
+            setNightMats(false);
         }
-      }
     }
-  }
 
-  protected void mydebugcockpit(String paramString)
-  {
-    System.out.println(paramString);
-  }
-
-  public void reflectCockpitState()
-  {
-    if (this.fm.AS.astateCockpitState != 0)
+    public void reflectWorldToInstruments(float f)
     {
-      if ((this.fm.AS.astateCockpitState & 0x10) != 0)
-        this.mesh.chunkVisible("XGlassHoles3", true);
-      if ((this.fm.AS.astateCockpitState & 0x20) != 0)
-        this.mesh.chunkVisible("XGlassHoles3", true);
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            bNeedSetUp = false;
+        }
+        reflectPlaneToModel();
+        resetYPRmodifier();
+        aircraft().hierMesh().chunkVisible("Tur2_DoorL_D0", false);
+        aircraft().hierMesh().chunkVisible("Tur2_DoorR_D0", false);
+        aircraft().hierMesh().chunkVisible("Tur2_DoorL_open_D0", false);
+        aircraft().hierMesh().chunkVisible("Tur2_DoorR_open_D0", false);
+        float f1 = fm.CT.getCockpitDoor();
+        if(f1 < 0.99F)
+        {
+            if(!mesh.isChunkVisible("Tur2_DoorR_Int_D0"))
+            {
+                mesh.chunkVisible("Tur2_DoorR_Int_D0", true);
+                mesh.chunkVisible("Tur2_DoorR_open_Int_D0", false);
+                mesh.chunkVisible("Tur2_DoorL_Int_D0", true);
+            }
+            float f2 = 13.8F * f1;
+            mesh.chunkSetAngles("Tur2_Door1_Int_D0", 0.0F, -f2, 0.0F);
+            f2 = 8.8F * f1;
+            mesh.chunkSetAngles("Tur2_Door2_Int_D0", 0.0F, -f2, 0.0F);
+            f2 = 3.1F * f1;
+            mesh.chunkSetAngles("Tur2_Door3_Int_D0", 0.0F, -f2, 0.0F);
+            f2 = 10F * f1;
+            mesh.chunkSetAngles("Tur2_DoorL_Int_D0", 0.0F, -f2, 0.0F);
+            mesh.chunkSetAngles("Tur2_DoorR_Int_D0", 0.0F, f2, 0.0F);
+        } else
+        {
+            mesh.chunkVisible("Tur2_DoorR_Int_D0", false);
+            mesh.chunkVisible("Tur2_DoorR_open_Int_D0", true);
+            mesh.chunkVisible("Tur2_DoorL_Int_D0", false);
+            mesh.chunkSetAngles("Tur2_Door1_Int_D0", 0.0F, -13.8F, 0.0F);
+            mesh.chunkSetAngles("Tur2_Door2_Int_D0", 0.0F, -8.8F, 0.0F);
+            mesh.chunkSetAngles("Tur2_Door3_Int_D0", 0.0F, -3.1F, 0.0F);
+        }
+        float f3 = interp(setNew.altimeter, setOld.altimeter, f) * 0.072F;
+        mesh.chunkSetAngles("Z_Altimeter", 0.0F, f3, 0.0F);
+        mesh.chunkSetAngles("Z_Speedometer", 0.0F, floatindex(cvt(com.maddox.il2.fm.Pitot.Indicator((float)fm.Loc.z, fm.getSpeedKMH()), 0.0F, 460F, 0.0F, 23F), speedometerScale), 0.0F);
+        mesh.chunkSetAngles("z_Hour", 0.0F, cvt(com.maddox.il2.ai.World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F);
+        mesh.chunkSetAngles("z_Minute", 0.0F, cvt(com.maddox.il2.ai.World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
+        mesh.chunkSetAngles("z_Second", 0.0F, cvt(((com.maddox.il2.ai.World.getTimeofDay() % 1.0F) * 60F) % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F);
+        mesh.chunkSetAngles("Zturret3A", 0.0F, -fm.turret[2].tu[0], 0.0F);
+        mesh.chunkSetAngles("Zturret3B", 0.0F, fm.turret[2].tu[1], 0.0F);
+        mesh.chunkSetAngles("Zturret2A", 0.0F, -fm.turret[1].tu[0], 0.0F);
+        mesh.chunkSetAngles("Zturret2B", 0.0F, fm.turret[1].tu[1], 0.0F);
+        mesh.chunkSetAngles("Zturret4A", 0.0F, -fm.turret[3].tu[0], 0.0F);
+        mesh.chunkSetAngles("Zturret4B", 0.0F, fm.turret[3].tu[1], 0.0F);
+        mesh.chunkSetAngles("TurretA", 0.0F, -fm.turret[0].tu[0], 0.0F);
+        mesh.chunkSetAngles("TurretB", 0.0F, fm.turret[0].tu[1], 0.0F);
+        mesh.chunkSetAngles("Z_Compass1", 0.0F, -setNew.azimuth.getDeg(f), 0.0F);
+        mesh.chunkSetAngles("Z_TurnBank2", 0.0F, cvt(getBall(8D), -8F, 8F, -28F, 28F), 0.0F);
+        mesh.chunkSetAngles("ZRudderTrim", 0.0F, interp(setNew.rudderTrim, setOld.rudderTrim, f) * 360F, 0.0F);
+        float f4 = fm.CT.getCockpitDoor();
+        aircraft().hierMesh().chunkVisible("Tur1_DoorL_D0", false);
+        aircraft().hierMesh().chunkVisible("Tur1_DoorR_D0", false);
+        float f5 = -28F * f4;
+        float f6 = cvt(f4, 0.0F, 1.0F, 0.0F, -20F);
+        float f7 = cvt(f4, 0.5F, 1.0F, 0.0F, -15F);
+        mesh.chunkSetAngles("Tur1_DoorL_Int_D0", -f6, -f5, -f7);
+        mesh.chunkSetAngles("Tur1_DoorR_Int_D0", f6, f5, -f7);
+        if(!aircraft().thisWeaponsName.startsWith("1x"))
+        {
+            resetYPRmodifier();
+            float f8 = fm.Or.getPitch();
+            if(f8 > 360F)
+                f8 -= 360F;
+            f8 *= 0.00872664F;
+            float f10 = ((com.maddox.il2.objects.air.SM79)aircraft()).fSightSetForwardAngle - (float)java.lang.Math.toRadians(f8);
+            float f11 = (float)(0.16915999352931976D * java.lang.Math.tan(f10));
+            if(f11 < 0.032F)
+                f11 = 0.032F;
+            else
+            if(f11 > 0.21F)
+                f11 = 0.21F;
+            float f12 = f11 * 0.667F;
+            com.maddox.il2.objects.air.Cockpit.xyz[0] = f11;
+            mesh.chunkSetLocate("ZCursor1", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+            com.maddox.il2.objects.air.Cockpit.xyz[0] = f12;
+            mesh.chunkSetLocate("ZCursor2", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+            mesh.chunkSetAngles("Cylinder", 0.0F, ((com.maddox.il2.objects.air.SM79)aircraft()).fSightCurSideslip, 0.0F);
+        }
+        drawBombsInt();
+        drawFallingBomb(f);
+        float f9 = ((com.maddox.il2.objects.air.SM79)fm.actor).bayDoorAngle;
+        if(aircraft().thisWeaponsName.startsWith("12"))
+        {
+            mesh.chunkSetAngles("TypewriterLever01", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever04", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever05", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever06", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever07", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever08", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever09", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever10", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever11", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever12", 0.0F, 55F * f9, 0.0F);
+        }
+        if(aircraft().thisWeaponsName.startsWith("6"))
+        {
+            mesh.chunkSetAngles("TypewriterLever01", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever04", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever05", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever06", 0.0F, 55F * f9, 0.0F);
+        }
+        if(aircraft().thisWeaponsName.startsWith("5"))
+        {
+            mesh.chunkSetAngles("TypewriterLever01", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever04", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever05", 0.0F, 55F * f9, 0.0F);
+        }
+        if(aircraft().thisWeaponsName.startsWith("2"))
+        {
+            mesh.chunkSetAngles("TypewriterLever02", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever03", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever06", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkSetAngles("TypewriterLever07", 0.0F, 55F * f9, 0.0F);
+            mesh.chunkVisible("Bridge1", true);
+            mesh.chunkVisible("Bridge2", true);
+        }
+        if(aircraft().thisWeaponsName.endsWith("drop"))
+        {
+            int i = 0;
+            if(fm.CT.Weapons[3] != null)
+            {
+                for(int j = 0; j < fm.CT.Weapons[3].length; j++)
+                    if(fm.CT.Weapons[3][j] != null)
+                        i += fm.CT.Weapons[3][j].countBullets();
+
+            }
+            if(aircraft().thisWeaponsName.startsWith("12"))
+            {
+                for(int k = 1; k <= 12 - i; k++)
+                    if(k < 10)
+                        mesh.chunkSetAngles("Typewriter_Key0" + k, 0.0F, 25F, 0.0F);
+                    else
+                        mesh.chunkSetAngles("Typewriter_Key" + k, 0.0F, 25F, 0.0F);
+
+            }
+            if(aircraft().thisWeaponsName.startsWith("6"))
+            {
+                for(int l = 1; l <= 6 - i; l++)
+                    mesh.chunkSetAngles("Typewriter_Key" + l, 0.0F, 25F, 0.0F);
+
+            }
+            if(aircraft().thisWeaponsName.startsWith("5"))
+            {
+                for(int i1 = 1; i1 <= 5 - i; i1++)
+                    mesh.chunkSetAngles("Typewriter_Key0" + i1, 0.0F, 25F, 0.0F);
+
+            }
+            if(aircraft().thisWeaponsName.startsWith("2"))
+            {
+                if(i == 0)
+                {
+                    mesh.chunkSetAngles("Typewriter_Key02", 0.0F, 25F, 0.0F);
+                    mesh.chunkSetAngles("Typewriter_Key03", 0.0F, 25F, 0.0F);
+                    mesh.chunkSetAngles("Typewriter_Key06", 0.0F, 25F, 0.0F);
+                    mesh.chunkSetAngles("Typewriter_Key07", 0.0F, 25F, 0.0F);
+                }
+                if(i == 1)
+                {
+                    mesh.chunkSetAngles("Typewriter_Key02", 0.0F, 25F, 0.0F);
+                    mesh.chunkSetAngles("Typewriter_Key03", 0.0F, 25F, 0.0F);
+                }
+            }
+        }
     }
-  }
 
-  protected void reflectPlaneMats()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    Mat localMat = localHierMesh.material(localHierMesh.materialFind("Glass2"));
-    this.mesh.materialReplace("Glass2", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D0o"));
-    this.mesh.materialReplace("Gloss2D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Pilot1"));
-    this.mesh.materialReplace("Pilot1", localMat);
-  }
-
-  protected void reflectPlaneToModel()
-  {
-  }
-
-  private class Variables
-  {
-    float altimeter;
-    float rudderTrim;
-    AnglesFork azimuth;
-    private final CockpitSM79_Bombardier this$0;
-
-    private Variables()
+    protected void mydebugcockpit(java.lang.String s)
     {
-      this.this$0 = this$1;
-
-      this.azimuth = new AnglesFork();
     }
 
-    Variables(CockpitSM79_Bombardier.1 arg2)
+    public void reflectCockpitState()
     {
-      this();
+        if(fm.AS.astateCockpitState != 0)
+        {
+            if((fm.AS.astateCockpitState & 0x10) != 0)
+                mesh.chunkVisible("XGlassHoles3", true);
+            if((fm.AS.astateCockpitState & 0x20) != 0)
+                mesh.chunkVisible("XGlassHoles3", true);
+        }
     }
-  }
 
-  class Interpolater extends InterpolateRef
-  {
-    private double sinSideSlip;
-    private double cosSideSlip;
-    private double sin35 = 0.57572D;
-    private double cos35 = 0.81765D;
-    private double sideSlipRad;
+    protected void reflectPlaneMats()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Glass2"));
+        mesh.materialReplace("Glass2", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        mesh.materialReplace("Gloss1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D0o"));
+        mesh.materialReplace("Gloss2D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Matt1D0o"));
+        mesh.materialReplace("Matt1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Pilot1"));
+        mesh.materialReplace("Pilot1", mat);
+    }
 
-    Interpolater()
+    protected void reflectPlaneToModel()
     {
     }
 
-    public boolean tick()
-    {
-      if (CockpitSM79_Bombardier.this.fm != null)
-      {
-        CockpitSM79_Bombardier.access$102(CockpitSM79_Bombardier.this, CockpitSM79_Bombardier.this.setOld);
-        CockpitSM79_Bombardier.access$202(CockpitSM79_Bombardier.this, CockpitSM79_Bombardier.this.setNew);
-        CockpitSM79_Bombardier.access$302(CockpitSM79_Bombardier.this, CockpitSM79_Bombardier.this.setTmp);
-        CockpitSM79_Bombardier.this.setNew.altimeter = CockpitSM79_Bombardier.this.fm.getAltitude();
-        CockpitSM79_Bombardier.this.setNew.rudderTrim = CockpitSM79_Bombardier.this.fm.CT.getTrimRudderControl();
-        CockpitSM79_Bombardier.this.setNew.azimuth.setDeg(CockpitSM79_Bombardier.this.setOld.azimuth.getDeg(1.0F), 90.0F + CockpitSM79_Bombardier.this.fm.Or.azimut());
-      }
-      float f1 = ((SM79)CockpitSM79_Bombardier.this.aircraft()).fSightCurForwardAngle;
-      float f2 = ((SM79)CockpitSM79_Bombardier.this.aircraft()).fSightCurSideslip;
+    private static final float speedometerScale[] = {
+        0.0F, 10F, 20F, 30F, 50F, 68F, 88F, 109F, 126F, 142F, 
+        159F, 176F, 190F, 206F, 220F, 238F, 253F, 270F, 285F, 300F, 
+        312F, 325F, 337F, 350F, 360F
+    };
+    private boolean firstEnter;
+    private boolean bTurrVisible;
+    private float saveFov;
+    private float aAim;
+    private float tAim;
+    private float kAim;
+    private boolean bEntered;
+    private int bombToDrop;
+    private float dropTime;
+    private com.maddox.il2.objects.air.Variables setOld;
+    private com.maddox.il2.objects.air.Variables setNew;
+    private com.maddox.il2.objects.air.Variables setTmp;
+    public com.maddox.JGP.Vector3f w;
+    private float pictAiler;
+    private float pictElev;
+    private com.maddox.JGP.Point3d tmpP;
+    private com.maddox.JGP.Vector3d tmpV;
+    private com.maddox.il2.engine.LightPointActor light1;
+    static java.lang.Class class$com$maddox$il2$objects$air$CockpitSM79_Bombardier;
+    private boolean bNeedSetUp;
+    private com.maddox.il2.engine.Hook hook1;
 
-      if (CockpitSM79_Bombardier.this.bEntered)
-      {
-        HookPilot localHookPilot = HookPilot.current;
-        localHookPilot.setSimpleAimOrient(CockpitSM79_Bombardier.this.aAim + f2, CockpitSM79_Bombardier.this.tAim + f1, 0.0F);
 
-        this.sideSlipRad = Math.toRadians(f2);
 
-        this.sinSideSlip = Math.sin(this.sideSlipRad);
-        this.cosSideSlip = Math.cos(this.sideSlipRad);
 
-        CockpitSM79_Bombardier.this.cameraPoint.x = (-3.8827D - 0.17085D * (this.sinSideSlip * this.cos35 + (1.0D - this.cosSideSlip) * this.sin35));
-        CockpitSM79_Bombardier.this.cameraPoint.y = (-0.345D + 0.17085D * (this.sinSideSlip * this.sin35 + (1.0D - this.cosSideSlip) * this.cos35));
 
-        CockpitSM79_Bombardier.this.cameraPoint.z = -0.4693D;
 
-        localHookPilot.setAim(CockpitSM79_Bombardier.this.cameraPoint);
-      }
-      return true;
-    }
-  }
+
+
+
+
 }

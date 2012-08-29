@@ -1,42 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetEnv.java
+
 package com.maddox.rts;
 
 import java.io.PrintStream;
 
-class NetSocketListener extends Thread
+// Referenced classes of package com.maddox.rts:
+//            NetPacket, NetSocket, Time, RTSConf, 
+//            NetEnv
+
+class NetSocketListener extends java.lang.Thread
 {
-  public NetSocket socket;
-  public NetPacket packet;
-  public boolean bDoRun = true;
 
-  public void run() {
-    while (this.bDoRun)
-      try {
-        this.packet.time = 0L;
-        if (this.socket.receive(this.packet)) {
-          int i = this.packet.getLength();
-          if (i > 1) {
-            byte[] arrayOfByte = new byte[this.packet.getLength()];
-            System.arraycopy(this.packet.getData(), this.packet.getOffset(), arrayOfByte, 0, this.packet.getLength());
-
-            NetPacket localNetPacket = new NetPacket(arrayOfByte, 0, arrayOfByte.length, this.packet.getAddress(), this.packet.getPort());
-
-            localNetPacket.time = this.packet.time;
-            if (localNetPacket.time == 0L) {
-              localNetPacket.time = Time.real();
+    public void run()
+    {
+        while(bDoRun) 
+            try
+            {
+                packet.time = 0L;
+                if(socket.receive(packet))
+                {
+                    int i = packet.getLength();
+                    if(i > 1)
+                    {
+                        byte abyte0[] = new byte[packet.getLength()];
+                        java.lang.System.arraycopy(packet.getData(), packet.getOffset(), abyte0, 0, packet.getLength());
+                        com.maddox.rts.NetPacket netpacket = new NetPacket(abyte0, 0, abyte0.length, packet.getAddress(), packet.getPort());
+                        netpacket.time = packet.time;
+                        if(netpacket.time == 0L)
+                            netpacket.time = com.maddox.rts.Time.real();
+                        com.maddox.rts.RTSConf.cur.netEnv.listenerReceivedPacket(socket, netpacket);
+                    }
+                }
             }
-            RTSConf.cur.netEnv.listenerReceivedPacket(this.socket, localNetPacket);
-          }
-        }
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-  }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+    }
 
-  public NetSocketListener(NetSocket paramNetSocket)
-  {
-    this.socket = paramNetSocket;
-    paramNetSocket.setSoTimeout(0);
-    this.packet = new NetPacket(new byte[paramNetSocket.getMaxDataSize()], 0);
-  }
+    public NetSocketListener(com.maddox.rts.NetSocket netsocket)
+    {
+        bDoRun = true;
+        socket = netsocket;
+        netsocket.setSoTimeout(0);
+        packet = new NetPacket(new byte[netsocket.getMaxDataSize()], 0);
+    }
+
+    public com.maddox.rts.NetSocket socket;
+    public com.maddox.rts.NetPacket packet;
+    public boolean bDoRun;
 }

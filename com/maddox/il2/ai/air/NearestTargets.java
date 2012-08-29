@@ -1,22 +1,18 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NearestTargets.java
+
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ground.Prey;
-import com.maddox.il2.ai.ground.TgtFlak;
-import com.maddox.il2.ai.ground.TgtShip;
-import com.maddox.il2.ai.ground.TgtTank;
-import com.maddox.il2.ai.ground.TgtTrain;
-import com.maddox.il2.ai.ground.TgtVehicle;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.objects.Statics;
-import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.TypeBomber;
-import com.maddox.il2.objects.air.TypeFighter;
-import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.bridges.LongBridge;
 import java.util.ArrayList;
@@ -24,144 +20,164 @@ import java.util.List;
 
 public class NearestTargets
 {
-  private static final int MAX_OBJECTS = 32;
-  private static Actor[] nearAct = new Actor[32];
-  private static double[] nearDSq = new double[32];
 
-  public static Actor getEnemy(int paramInt1, int paramInt2, Point3d paramPoint3d, double paramDouble, int paramInt3)
-  {
-    Class localClass1 = null;
-    Class localClass2 = null;
-
-    switch (paramInt1) {
-    case 0:
-    default:
-      localClass1 = Actor.class;
-      localClass2 = Actor.class;
-      break;
-    case 1:
-      localClass1 = TgtTank.class;
-      localClass2 = TgtTank.class;
-      break;
-    case 2:
-      localClass1 = TgtFlak.class;
-      localClass2 = TgtFlak.class;
-      break;
-    case 3:
-      localClass1 = TgtVehicle.class;
-      localClass2 = TgtVehicle.class;
-      break;
-    case 4:
-      localClass1 = TgtTrain.class;
-      localClass2 = TgtTrain.class;
-      break;
-    case 5:
-      return getBridge(paramInt2, paramPoint3d, paramDouble);
-    case 6:
-      localClass1 = TgtShip.class;
-      localClass2 = TgtShip.class;
-      break;
-    case 7:
-      localClass1 = TypeFighter.class;
-      localClass2 = TypeFighter.class;
-      break;
-    case 8:
-      localClass1 = TypeBomber.class;
-      localClass2 = TypeStormovik.class;
-      break;
-    case 9:
-      localClass1 = Aircraft.class;
-      localClass2 = Aircraft.class;
+    public NearestTargets()
+    {
     }
 
-    List localList = Engine.targets();
-    int i = localList.size();
-    double d1 = paramDouble * paramDouble;
-    int j = 0;
-    for (int k = 0; k < i; k++) {
-      Actor localActor2 = (Actor)localList.get(k);
+    public static com.maddox.il2.engine.Actor getEnemy(int i, int j, com.maddox.JGP.Point3d point3d, double d, int k)
+    {
+        java.lang.Class class1 = null;
+        java.lang.Class class2 = null;
+        switch(i)
+        {
+        case 0: // '\0'
+        default:
+            class1 = com.maddox.il2.engine.Actor.class;
+            class2 = com.maddox.il2.engine.Actor.class;
+            break;
 
-      int n = localActor2.getArmy();
-      if ((n == 0) || (n == paramInt3)) {
-        continue;
-      }
-      if ((!localClass1.isInstance(localActor2)) && (!localClass2.isInstance(localActor2))) {
-        continue;
-      }
-      if ((paramInt1 == 0) && ((localActor2 instanceof BridgeSegment))) {
-        continue;
-      }
-      if ((((Prey)localActor2).HitbyMask() & paramInt2) == 0) {
-        continue;
-      }
-      Point3d localPoint3d = localActor2.pos.getAbsPoint();
-      double d2 = (localPoint3d.x - paramPoint3d.x) * (localPoint3d.x - paramPoint3d.x) + (localPoint3d.y - paramPoint3d.y) * (localPoint3d.y - paramPoint3d.y) + (localPoint3d.z - paramPoint3d.z) * (localPoint3d.z - paramPoint3d.z);
+        case 1: // '\001'
+            class1 = com.maddox.il2.ai.ground.TgtTank.class;
+            class2 = com.maddox.il2.ai.ground.TgtTank.class;
+            break;
 
-      if (d2 > d1)
-      {
-        continue;
-      }
-      for (int i1 = 0; (i1 < j) && 
-        (d2 >= nearDSq[i1]); i1++);
-      if (i1 >= j) {
-        if (j < 32) {
-          nearAct[j] = localActor2;
-          nearDSq[j] = d2;
-          j++;
+        case 2: // '\002'
+            class1 = com.maddox.il2.ai.ground.TgtFlak.class;
+            class2 = com.maddox.il2.ai.ground.TgtFlak.class;
+            break;
+
+        case 3: // '\003'
+            class1 = com.maddox.il2.ai.ground.TgtVehicle.class;
+            class2 = com.maddox.il2.ai.ground.TgtVehicle.class;
+            break;
+
+        case 4: // '\004'
+            class1 = com.maddox.il2.ai.ground.TgtTrain.class;
+            class2 = com.maddox.il2.ai.ground.TgtTrain.class;
+            break;
+
+        case 5: // '\005'
+            return com.maddox.il2.ai.air.NearestTargets.getBridge(j, point3d, d);
+
+        case 6: // '\006'
+            class1 = com.maddox.il2.ai.ground.TgtShip.class;
+            class2 = com.maddox.il2.ai.ground.TgtShip.class;
+            break;
+
+        case 7: // '\007'
+            class1 = com.maddox.il2.objects.air.TypeFighter.class;
+            class2 = com.maddox.il2.objects.air.TypeFighter.class;
+            break;
+
+        case 8: // '\b'
+            class1 = com.maddox.il2.objects.air.TypeBomber.class;
+            class2 = com.maddox.il2.objects.air.TypeStormovik.class;
+            break;
+
+        case 9: // '\t'
+            class1 = com.maddox.il2.objects.air.Aircraft.class;
+            class2 = com.maddox.il2.objects.air.Aircraft.class;
+            break;
         }
-      }
-      else
-      {
-        int i2;
-        if (j < 32) {
-          i2 = j - 1;
-          j++;
-        } else {
-          i2 = j - 2;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int l = list.size();
+        double d1 = d * d;
+        int i1 = 0;
+        for(int j1 = 0; j1 < l; j1++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(j1);
+            int k1 = actor.getArmy();
+            if(k1 != 0 && k1 != k && (class1.isInstance(actor) || class2.isInstance(actor)) && (i != 0 || !(actor instanceof com.maddox.il2.objects.bridges.BridgeSegment)) && (((com.maddox.il2.ai.ground.Prey)actor).HitbyMask() & j) != 0)
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                double d2 = (point3d1.x - point3d.x) * (point3d1.x - point3d.x) + (point3d1.y - point3d.y) * (point3d1.y - point3d.y) + (point3d1.z - point3d.z) * (point3d1.z - point3d.z);
+                if(d2 <= d1)
+                {
+                    int i2;
+                    for(i2 = 0; i2 < i1; i2++)
+                        if(d2 < nearDSq[i2])
+                            break;
+
+                    if(i2 >= i1)
+                    {
+                        if(i1 < 32)
+                        {
+                            nearAct[i1] = actor;
+                            nearDSq[i1] = d2;
+                            i1++;
+                        }
+                    } else
+                    {
+                        int j2;
+                        if(i1 < 32)
+                        {
+                            j2 = i1 - 1;
+                            i1++;
+                        } else
+                        {
+                            j2 = i1 - 2;
+                        }
+                        for(; j2 >= i2; j2--)
+                        {
+                            nearAct[j2 + 1] = nearAct[j2];
+                            nearDSq[j2 + 1] = nearDSq[j2];
+                        }
+
+                        nearAct[i2] = actor;
+                        nearDSq[i2] = d2;
+                    }
+                }
+            }
         }
-        for (; i2 >= i1; i2--) {
-          nearAct[(i2 + 1)] = nearAct[i2];
-          nearDSq[(i2 + 1)] = nearDSq[i2];
+
+        if(i1 == 0)
+            if(i == 0)
+                return com.maddox.il2.ai.air.NearestTargets.getBridge(j, point3d, d);
+            else
+                return null;
+        com.maddox.il2.engine.Actor actor1 = nearAct[i1 != 1 ? com.maddox.il2.ai.World.Rnd().nextInt(i1) : 0];
+        for(int l1 = 0; l1 < i1; l1++)
+            nearAct[l1] = null;
+
+        return actor1;
+    }
+
+    public static com.maddox.il2.engine.Actor getBridge(int i, com.maddox.JGP.Point3d point3d, double d)
+    {
+        if((0x18 & i) == 0)
+            return null;
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().statics.bridges;
+        int j = arraylist.size();
+        double d1 = d * d;
+        com.maddox.il2.objects.bridges.LongBridge longbridge = null;
+        for(int l = 0; l < j; l++)
+        {
+            com.maddox.il2.objects.bridges.LongBridge longbridge1 = (com.maddox.il2.objects.bridges.LongBridge)arraylist.get(l);
+            if(longbridge1.isAlive())
+            {
+                com.maddox.JGP.Point3d point3d1 = longbridge1.pos.getAbsPoint();
+                double d2 = (point3d1.x - point3d.x) * (point3d1.x - point3d.x) + (point3d1.y - point3d.y) * (point3d1.y - point3d.y) + (point3d1.z - point3d.z) * (point3d1.z - point3d.z);
+                if(d2 <= d1)
+                {
+                    longbridge = longbridge1;
+                    d1 = d2;
+                }
+            }
         }
-        nearAct[i1] = localActor2;
-        nearDSq[i1] = d2;
-      }
-    }
 
-    if (j == 0) {
-      if (paramInt1 == 0) return getBridge(paramInt2, paramPoint3d, paramDouble);
-      return null;
-    }
-    Actor localActor1 = nearAct[World.Rnd().nextInt(j)];
-    for (int m = 0; m < j; m++) nearAct[m] = null;
-    return localActor1;
-  }
-
-  public static Actor getBridge(int paramInt, Point3d paramPoint3d, double paramDouble)
-  {
-    if ((0x18 & paramInt) == 0)
-      return null;
-    ArrayList localArrayList = World.cur().statics.bridges;
-    int i = localArrayList.size();
-    double d1 = paramDouble * paramDouble;
-    Object localObject = null;
-
-    for (int j = 0; j < i; j++) {
-      LongBridge localLongBridge = (LongBridge)localArrayList.get(j);
-      if (localLongBridge.isAlive()) {
-        Point3d localPoint3d = localLongBridge.pos.getAbsPoint();
-        double d2 = (localPoint3d.x - paramPoint3d.x) * (localPoint3d.x - paramPoint3d.x) + (localPoint3d.y - paramPoint3d.y) * (localPoint3d.y - paramPoint3d.y) + (localPoint3d.z - paramPoint3d.z) * (localPoint3d.z - paramPoint3d.z);
-
-        if (d2 <= d1) {
-          localObject = localLongBridge;
-          d1 = d2;
+        if(longbridge == null)
+        {
+            return null;
+        } else
+        {
+            int k = longbridge.NumStateBits() / 2;
+            return com.maddox.il2.objects.bridges.BridgeSegment.getByIdx(longbridge.bridgeIdx(), com.maddox.il2.ai.World.Rnd().nextInt(k));
         }
-      }
     }
-    if (localObject == null) {
-      return null;
-    }
-    i = localObject.NumStateBits() / 2;
-    return BridgeSegment.getByIdx(localObject.bridgeIdx(), World.Rnd().nextInt(i));
-  }
+
+    private static final int MAX_OBJECTS = 32;
+    private static com.maddox.il2.engine.Actor nearAct[] = new com.maddox.il2.engine.Actor[32];
+    private static double nearDSq[] = new double[32];
+
 }

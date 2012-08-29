@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIDGenRoster.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
@@ -6,7 +11,7 @@ import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Mat;
@@ -31,497 +36,634 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class GUIDGenRoster extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDGenDocs, GUIDialogClient, GUISeparate
+
+public class GUIDGenRoster extends com.maddox.il2.game.GameState
 {
-  public ArrayList pilots = new ArrayList();
-  public ArrayList gones = new ArrayList();
-  public Pilot pilotPlayer = null;
-  public Pilot pilotCur = null;
-  private Regiment regiment;
-  private GTexture texRegiment;
-  private int sorties;
-  private int kills;
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public Table wTable;
-  public Gone wGone;
-  public GUIButton bBack;
-  public GUIButton bDocs;
-  public GUIButton bProfile;
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
+    {
 
-  public void enterPush(GameState paramGameState)
-  {
-    loadPilotList();
-    loadGoneList();
-    loadRegiment();
-    this.pilotCur = null;
-    this.wTable.setSelect(-1, -1);
-    this.wGone.setSelect(-1, -1);
-    this.bProfile.hideWindow();
-    if (GUIDGenDocs.isExist())
-      this.bDocs.showWindow();
-    else
-      this.bDocs.hideWindow();
-    this.client.activateWindow();
-    this.wTable.resized();
-    this.wGone.resized();
-  }
-  public void enterPop(GameState paramGameState) {
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public void loadPilotList() {
-    TreeMap localTreeMap = new TreeMap(new PilotComparator());
-    ResourceBundle localResourceBundle = null;
-    this.pilotPlayer = null;
-    try {
-      localResourceBundle = ResourceBundle.getBundle("missions/campaign/" + Main.cur().campaign.branch() + "/" + "rank", RTSConf.cur.locale); } catch (Exception localException1) {
-    }
-    try {
-      Campaign localCampaign = Main.cur().campaign;
-      this.pilots.clear();
-      this.sorties = 0;
-      this.kills = 0;
-      Pilot localPilot = null;
-      String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/squadron.dat";
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
-      while ((localPilot = loadPilot(localBufferedReader)) != null) {
-        if (this.pilotPlayer == null) {
-          localPilot.bPlayer = true;
-          this.pilotPlayer = localPilot;
-        } else {
-          localTreeMap.put(localPilot, localPilot);
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bBack)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            }
+            if(gwindow == bDocs)
+            {
+                com.maddox.il2.game.Main.stateStack().push(70);
+                return true;
+            }
+            if(gwindow == bProfile)
+            {
+                int k = wTable.selectRow;
+                if(k >= 0)
+                {
+                    pilotCur = (com.maddox.il2.gui.Pilot)pilots.get(k);
+                } else
+                {
+                    int l = wGone.selectRow;
+                    if(l < 0)
+                        return true;
+                    pilotCur = (com.maddox.il2.gui.Pilot)gones.get(l);
+                }
+                com.maddox.il2.game.Main.stateStack().push(66);
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-        if (localResourceBundle != null)
-          localPilot.sRank = localResourceBundle.getString("" + localPilot.rank);
+
+        public void render()
+        {
+            super.render();
+            setCanvasColorWHITE();
+            draw(x1024(80F), y1024(32F), x1024(64F), y1024(64F), texRegiment);
+            setCanvasFont(1);
+            draw(x1024(160F), y1024(48F), x1024(786F), y1024(32F), 0, com.maddox.il2.game.I18N.regimentInfo(regiment.info()));
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(112F), y1024(354F), x1024(512F), y1024(32F), 0, i18n("dgenroster.Gone"));
+            draw(x1024(176F), y1024(560F), x1024(384F), y1024(32F), 2, i18n("dgenroster.Flight"));
+            draw(x1024(176F), y1024(592F), x1024(384F), y1024(32F), 2, i18n("dgenroster.Kills"));
+            draw(x1024(576F), y1024(560F), x1024(208F), y1024(32F), 0, "" + sorties);
+            draw(x1024(576F), y1024(592F), x1024(208F), y1024(32F), 0, "" + kills);
+            draw(x1024(96F), y1024(656F), x1024(320F), y1024(48F), 0, i18n("camps.Back"));
+            if(bDocs.isVisible())
+                draw(x1024(560F), y1024(656F), x1024(320F), y1024(48F), 0, i18n("camps.Docs"));
+            if(bProfile.isVisible())
+                draw(x1024(432F), y1024(656F), x1024(498F), y1024(48F), 2, i18n("dgenroster.PilotProfile"));
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(640F), x1024(962F), 2.0F);
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 32F, 1024F, 736F);
+            bBack.setPosC(x1024(56F), y1024(680F));
+            bDocs.setPosC(x1024(512F), y1024(680F));
+            bProfile.setPosC(x1024(968F), y1024(680F));
+            wTable.set1024PosSize(96F, 112F, 832F, 240F);
+            wGone.set1024PosSize(96F, 384F, 832F, 160F);
+        }
+
+        public DialogClient()
+        {
+        }
+    }
+
+    public class Gone extends com.maddox.gwindow.GWindowTable
+    {
+
+        public int countRows()
+        {
+            return playerList == null ? 0 : gones.size();
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            com.maddox.il2.gui.Pilot pilot = (com.maddox.il2.gui.Pilot)gones.get(i);
+            java.lang.String s = null;
+            int k = 0;
+            switch(j)
+            {
+            case 0: // '\0'
+                s = pilot.sRank;
+                k = 0;
+                break;
+
+            case 1: // '\001'
+                s = pilot.lastName;
+                k = 0;
+                break;
+
+            case 2: // '\002'
+                s = "";
+                if(pilot.events.size() > 0)
+                    s = (java.lang.String)pilot.events.get(pilot.events.size() - 1);
+                k = 0;
+                break;
+            }
+            if(flag)
+            {
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            }
+        }
+
+        public void setSelect(int i, int j)
+        {
+            super.setSelect(i, j);
+            if(i >= 0)
+            {
+                wTable.setSelect(-1, -1);
+                bProfile.showWindow();
+            }
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelectRow = true;
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.Rank"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.Name"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.To"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(17F);
+            getColumn(1).setRelativeDx(17F);
+            getColumn(2).setRelativeDx(46F);
+            alignColumns();
+            bNotify = true;
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public java.util.ArrayList playerList;
+
+        public Gone(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            playerList = gones;
+        }
+    }
+
+    public class Table extends com.maddox.gwindow.GWindowTable
+    {
+
+        public int countRows()
+        {
+            return playerList == null ? 0 : pilots.size();
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            com.maddox.il2.gui.Pilot pilot = (com.maddox.il2.gui.Pilot)pilots.get(i);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            } else
+            if(pilot == pilotPlayer)
+            {
+                setCanvasColor(playerColor);
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            java.lang.String s = null;
+            int k = 0;
+            switch(j)
+            {
+            case 0: // '\0'
+                s = pilot.sRank;
+                k = 0;
+                break;
+
+            case 1: // '\001'
+                s = pilot.lastName;
+                k = 0;
+                break;
+
+            case 2: // '\002'
+                s = "" + pilot.sorties;
+                k = 1;
+                break;
+
+            case 3: // '\003'
+                s = "" + pilot.kills;
+                k = 1;
+                break;
+            }
+            if(flag)
+            {
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            }
+        }
+
+        public void setSelect(int i, int j)
+        {
+            super.setSelect(i, j);
+            if(i >= 0)
+            {
+                wGone.setSelect(-1, -1);
+                bProfile.showWindow();
+            }
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelectRow = true;
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.Rank"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.Name"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.Sorties"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgenroster.Kills"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(17F);
+            getColumn(1).setRelativeDx(17F);
+            getColumn(2).setRelativeDx(23F);
+            getColumn(3).setRelativeDx(23F);
+            alignColumns();
+            bNotify = true;
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public java.util.ArrayList playerList;
+        com.maddox.gwindow.GColor playerColor;
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            playerList = pilots;
+            playerColor = new GColor(35, 117, 137);
+        }
+    }
+
+    static class PilotComparator
+        implements java.util.Comparator
+    {
+
+        public int compare(java.lang.Object obj, java.lang.Object obj1)
+        {
+            com.maddox.il2.gui.Pilot pilot = (com.maddox.il2.gui.Pilot)obj;
+            com.maddox.il2.gui.Pilot pilot1 = (com.maddox.il2.gui.Pilot)obj1;
+            int i = pilot1.rank - pilot.rank;
+            if(i == 0)
+                i = pilot.lastName.compareToIgnoreCase(pilot1.lastName);
+            return i;
+        }
+
+        PilotComparator()
+        {
+        }
+    }
+
+    public static class Pilot
+    {
+
+        public boolean bPlayer;
+        public java.lang.String firstName;
+        public java.lang.String lastName;
+        public java.lang.String dateBirth;
+        public java.lang.String placeBirth;
+        public java.lang.String photo;
+        public int rank;
+        public java.lang.String sRank;
+        public int sorties;
+        public int kills;
+        public int ground;
+        public int nmedals;
+        public int medals[];
+        public java.util.ArrayList events;
+
+        public Pilot()
+        {
+            events = new ArrayList();
+        }
+    }
+
+
+    public void enterPush(com.maddox.il2.game.GameState gamestate)
+    {
+        loadPilotList();
+        loadGoneList();
+        loadRegiment();
+        pilotCur = null;
+        wTable.setSelect(-1, -1);
+        wGone.setSelect(-1, -1);
+        bProfile.hideWindow();
+        if(com.maddox.il2.gui.GUIDGenDocs.isExist())
+            bDocs.showWindow();
         else
-          localPilot.sRank = "";
-        this.sorties += localPilot.sorties;
-        this.kills += localPilot.kills;
-      }
-      localBufferedReader.close();
-    } catch (Exception localException2) {
-      System.out.println("Squadron file load failed: " + localException2.getMessage());
-      localException2.printStackTrace();
-      Main.stateStack().pop();
+            bDocs.hideWindow();
+        client.activateWindow();
+        wTable.resized();
+        wGone.resized();
     }
-    if (this.pilotPlayer == null) {
-      return;
-    }
-    localTreeMap.put(this.pilotPlayer, this.pilotPlayer);
-    Iterator localIterator = localTreeMap.keySet().iterator();
-    while (localIterator.hasNext())
-      this.pilots.add(localIterator.next()); 
-  }
 
-  private void loadGoneList() {
-    ResourceBundle localResourceBundle = null;
-    try {
-      localResourceBundle = ResourceBundle.getBundle("missions/campaign/" + Main.cur().campaign.branch() + "/" + "rank", RTSConf.cur.locale); } catch (Exception localException1) {
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        client.activateWindow();
     }
-    try {
-      Campaign localCampaign = Main.cur().campaign;
-      this.gones.clear();
-      String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/archive.dat";
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
-      Pilot localPilot = null;
-      while ((localPilot = loadPilot(localBufferedReader)) != null) {
-        this.gones.add(localPilot);
-        if (localResourceBundle != null)
-          localPilot.sRank = localResourceBundle.getString("" + localPilot.rank);
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    public void loadPilotList()
+    {
+        java.util.TreeMap treemap = new TreeMap(new PilotComparator());
+        java.util.ResourceBundle resourcebundle = null;
+        pilotPlayer = null;
+        try
+        {
+            resourcebundle = java.util.ResourceBundle.getBundle("missions/campaign/" + com.maddox.il2.game.Main.cur().campaign.branch() + "/" + "rank", com.maddox.rts.RTSConf.cur.locale);
+        }
+        catch(java.lang.Exception exception) { }
+        try
+        {
+            com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+            pilots.clear();
+            sorties = 0;
+            kills = 0;
+            com.maddox.il2.gui.Pilot pilot = null;
+            java.lang.String s = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/squadron.dat";
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            while((pilot = loadPilot(bufferedreader)) != null) 
+            {
+                if(pilotPlayer == null)
+                {
+                    pilot.bPlayer = true;
+                    pilotPlayer = pilot;
+                } else
+                {
+                    treemap.put(pilot, pilot);
+                }
+                if(resourcebundle != null)
+                    pilot.sRank = resourcebundle.getString("" + pilot.rank);
+                else
+                    pilot.sRank = "";
+                sorties += pilot.sorties;
+                kills += pilot.kills;
+            }
+            bufferedreader.close();
+        }
+        catch(java.lang.Exception exception1)
+        {
+            java.lang.System.out.println("Squadron file load failed: " + exception1.getMessage());
+            exception1.printStackTrace();
+            com.maddox.il2.game.Main.stateStack().pop();
+        }
+        if(pilotPlayer == null)
+            return;
+        treemap.put(pilotPlayer, pilotPlayer);
+        for(java.util.Iterator iterator = treemap.keySet().iterator(); iterator.hasNext(); pilots.add(iterator.next()));
+    }
+
+    private void loadGoneList()
+    {
+        java.util.ResourceBundle resourcebundle = null;
+        try
+        {
+            resourcebundle = java.util.ResourceBundle.getBundle("missions/campaign/" + com.maddox.il2.game.Main.cur().campaign.branch() + "/" + "rank", com.maddox.rts.RTSConf.cur.locale);
+        }
+        catch(java.lang.Exception exception) { }
+        try
+        {
+            com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+            gones.clear();
+            java.lang.String s = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/archive.dat";
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            for(com.maddox.il2.gui.Pilot pilot = null; (pilot = loadPilot(bufferedreader)) != null;)
+            {
+                gones.add(pilot);
+                if(resourcebundle != null)
+                    pilot.sRank = resourcebundle.getString("" + pilot.rank);
+                else
+                    pilot.sRank = "";
+                sorties += pilot.sorties;
+                kills += pilot.kills;
+            }
+
+            bufferedreader.close();
+        }
+        catch(java.lang.Exception exception1) { }
+    }
+
+    public com.maddox.il2.gui.Pilot loadPilot(java.io.BufferedReader bufferedreader)
+        throws java.io.IOException
+    {
+        com.maddox.il2.gui.Pilot pilot = new Pilot();
+        boolean flag;
+label0:
+        do
+        {
+            java.lang.String s;
+            int i;
+            do
+            {
+                if(!bufferedreader.ready())
+                    break label0;
+                s = bufferedreader.readLine();
+                if(s == null)
+                    break label0;
+                i = s.length();
+            } while(i == 0);
+            flag = false;
+            if(s.startsWith("--------"))
+                flag = true;
+            else
+            if(s.startsWith("FIRST NAME:"))
+                pilot.firstName = readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false));
+            else
+            if(s.startsWith("LAST NAME:"))
+                pilot.lastName = readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false));
+            else
+            if(s.startsWith("DATE OF BIRTH:"))
+                pilot.dateBirth = readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false));
+            else
+            if(s.startsWith("PLACE OF BIRTH:"))
+                pilot.placeBirth = readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false));
+            else
+            if(s.startsWith("PHOTO:"))
+                pilot.photo = readArgStr(s);
+            else
+            if(s.startsWith("RANK:"))
+                pilot.rank = readArgInt(s, 0);
+            else
+            if(s.startsWith("SORTIES:"))
+                pilot.sorties = readArgInt(s, 0);
+            else
+            if(s.startsWith("KILLS:"))
+                pilot.kills = readArgInt(s, 0);
+            else
+            if(s.startsWith("GROUND:"))
+                pilot.ground = readArgInt(s, 0);
+            else
+            if(s.startsWith("NMEDALS:"))
+                pilot.nmedals = readArgInt(s, 0);
+            else
+            if(s.startsWith("MEDALS:"))
+            {
+                com.maddox.util.SharedTokenizer.set(s);
+                int j = com.maddox.il2.game.Main.cur().campaign._awards.count(0xf4240) - 1;
+                int k = com.maddox.util.SharedTokenizer.countTokens() - 1;
+                if(k > 0)
+                {
+                    pilot.medals = new int[k];
+                    com.maddox.util.SharedTokenizer.next();
+                    for(int l = 0; l < k; l++)
+                        pilot.medals[l] = com.maddox.util.SharedTokenizer.next(0, 0, j);
+
+                }
+            } else
+            if(s.startsWith("EVENT:"))
+                pilot.events.add(readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false)));
+        } while(!flag);
+        if(pilot.firstName == null || pilot.lastName == null)
+            return null;
         else
-          localPilot.sRank = "";
-        this.sorties += localPilot.sorties;
-        this.kills += localPilot.kills;
-      }
-      localBufferedReader.close(); } catch (Exception localException2) {
+            return pilot;
     }
-  }
 
-  public Pilot loadPilot(BufferedReader paramBufferedReader) throws IOException {
-    Pilot localPilot = new Pilot();
-
-    while (paramBufferedReader.ready())
+    public int readArgInt(java.lang.String s, int i)
     {
-      String str = paramBufferedReader.readLine();
-      if (str == null)
-        break;
-      int i = str.length();
-      if (i == 0)
-        continue;
-      int j = 0;
+        java.lang.String s1;
+        s1 = readArgStr(s);
+        if("".equals(s1))
+            return i;
+        return java.lang.Integer.parseInt(s1);
+        java.lang.Exception exception;
+        exception;
+        return i;
+    }
 
-      if (str.startsWith("--------")) { j = 1;
-      } else if (str.startsWith("FIRST NAME:")) { localPilot.firstName = readArgStr(UnicodeTo8bit.load(str, false));
-      } else if (str.startsWith("LAST NAME:")) { localPilot.lastName = readArgStr(UnicodeTo8bit.load(str, false));
-      } else if (str.startsWith("DATE OF BIRTH:")) { localPilot.dateBirth = readArgStr(UnicodeTo8bit.load(str, false));
-      } else if (str.startsWith("PLACE OF BIRTH:")) { localPilot.placeBirth = readArgStr(UnicodeTo8bit.load(str, false));
-      } else if (str.startsWith("PHOTO:")) { localPilot.photo = readArgStr(str);
-      } else if (str.startsWith("RANK:")) { localPilot.rank = readArgInt(str, 0);
-      } else if (str.startsWith("SORTIES:")) { localPilot.sorties = readArgInt(str, 0);
-      } else if (str.startsWith("KILLS:")) { localPilot.kills = readArgInt(str, 0);
-      } else if (str.startsWith("GROUND:")) { localPilot.ground = readArgInt(str, 0);
-      } else if (str.startsWith("NMEDALS:")) { localPilot.nmedals = readArgInt(str, 0);
-      } else if (str.startsWith("MEDALS:")) {
-        SharedTokenizer.set(str);
-        int k = Main.cur().campaign._awards.count(1000000) - 1;
-        int m = SharedTokenizer.countTokens() - 1;
-        if (m > 0) {
-          localPilot.medals = new int[m];
-          SharedTokenizer.next();
-          for (int n = 0; n < m; n++) {
-            localPilot.medals[n] = SharedTokenizer.next(0, 0, k);
-          }
+    public java.lang.String readArgStr(java.lang.String s)
+    {
+        int i = s.indexOf(":") + 1;
+        int j;
+        for(j = s.length(); i < j; i++)
+            if(s.charAt(i) > ' ')
+                break;
+
+        if(i >= j)
+            return "";
+        for(; i < j; j--)
+            if(s.charAt(j - 1) > ' ')
+                break;
+
+        if(i == j)
+        {
+            return "";
+        } else
+        {
+            java.lang.String s1 = s.substring(i, j);
+            return s1;
         }
-
-      }
-      else if (str.startsWith("EVENT:")) { localPilot.events.add(readArgStr(UnicodeTo8bit.load(str, false)));
-      }
-
-      if (j != 0)
-        break;
-    }
-    if ((localPilot.firstName == null) || (localPilot.lastName == null))
-    {
-      return null;
-    }return localPilot;
-  }
-  public int readArgInt(String paramString, int paramInt) {
-    String str = readArgStr(paramString);
-    if ("".equals(str)) return paramInt; try
-    {
-      return Integer.parseInt(str); } catch (Exception localException) {
-    }
-    return paramInt;
-  }
-
-  public String readArgStr(String paramString) {
-    int i = paramString.indexOf(":") + 1;
-    int j = paramString.length();
-    while ((i < j) && 
-      (paramString.charAt(i) <= ' ')) i++;
-
-    if (i >= j)
-      return "";
-    while ((i < j) && 
-      (paramString.charAt(j - 1) <= ' ')) j--;
-
-    if (i == j)
-      return "";
-    String str = paramString.substring(i, j);
-    return str;
-  }
-
-  private void loadRegiment() {
-    try {
-      Campaign localCampaign = Main.cur().campaign;
-      String str1 = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/conf.dat";
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str1, RTSConf.charEncoding));
-      localBufferedReader.readLine();
-      String str2 = localBufferedReader.readLine();
-      str2 = str2.trim();
-      localBufferedReader.close();
-      this.regiment = ((Regiment)Actor.getByName(str2));
-      Mat localMat = PaintScheme.makeMat(this.regiment.name(), this.regiment.fileNameTga(), 1.0F, 1.0F, 1.0F);
-      this.texRegiment = GTexture.New(localMat.Name());
-    } catch (Exception localException) {
-      System.out.println("Conf file load failed: " + localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public GUIDGenRoster(GWindowRoot paramGWindowRoot)
-  {
-    super(65);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("dgenroster.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wTable = new Table(this.dialogClient);
-    this.wGone = new Gone(this.dialogClient);
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-    this.bBack = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bDocs = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bProfile = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
     }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
+    private void loadRegiment()
     {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIDGenRoster.this.bBack) {
-        Main.stateStack().pop();
-        return true;
-      }
-      if (paramGWindow == GUIDGenRoster.this.bDocs) {
-        Main.stateStack().push(70);
-        return true;
-      }
-      if (paramGWindow == GUIDGenRoster.this.bProfile) {
-        int i = GUIDGenRoster.this.wTable.selectRow;
-        if (i >= 0) {
-          GUIDGenRoster.this.pilotCur = ((GUIDGenRoster.Pilot)GUIDGenRoster.this.pilots.get(i));
-        } else {
-          i = GUIDGenRoster.this.wGone.selectRow;
-          if (i < 0)
-            return true;
-          GUIDGenRoster.this.pilotCur = ((GUIDGenRoster.Pilot)GUIDGenRoster.this.gones.get(i));
+        try
+        {
+            com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+            java.lang.String s = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/conf.dat";
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            bufferedreader.readLine();
+            java.lang.String s1 = bufferedreader.readLine();
+            s1 = s1.trim();
+            bufferedreader.close();
+            regiment = (com.maddox.il2.ai.Regiment)com.maddox.il2.engine.Actor.getByName(s1);
+            com.maddox.il2.engine.Mat mat = com.maddox.il2.objects.air.PaintScheme.makeMat(regiment.name(), regiment.fileNameTga(), 1.0F, 1.0F, 1.0F);
+            texRegiment = com.maddox.gwindow.GTexture.New(mat.Name());
         }
-        Main.stateStack().push(66);
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("Conf file load failed: " + exception.getMessage());
+            exception.printStackTrace();
+        }
     }
 
-    public void render() {
-      super.render();
-      setCanvasColorWHITE();
-      draw(x1024(80.0F), y1024(32.0F), x1024(64.0F), y1024(64.0F), GUIDGenRoster.this.texRegiment);
-      setCanvasFont(1);
-      draw(x1024(160.0F), y1024(48.0F), x1024(786.0F), y1024(32.0F), 0, I18N.regimentInfo(GUIDGenRoster.this.regiment.info()));
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-
-      draw(x1024(112.0F), y1024(354.0F), x1024(512.0F), y1024(32.0F), 0, GUIDGenRoster.this.i18n("dgenroster.Gone"));
-
-      draw(x1024(176.0F), y1024(560.0F), x1024(384.0F), y1024(32.0F), 2, GUIDGenRoster.this.i18n("dgenroster.Flight"));
-      draw(x1024(176.0F), y1024(592.0F), x1024(384.0F), y1024(32.0F), 2, GUIDGenRoster.this.i18n("dgenroster.Kills"));
-
-      draw(x1024(576.0F), y1024(560.0F), x1024(208.0F), y1024(32.0F), 0, "" + GUIDGenRoster.this.sorties);
-      draw(x1024(576.0F), y1024(592.0F), x1024(208.0F), y1024(32.0F), 0, "" + GUIDGenRoster.this.kills);
-
-      draw(x1024(96.0F), y1024(656.0F), x1024(320.0F), y1024(48.0F), 0, GUIDGenRoster.this.i18n("camps.Back"));
-      if (GUIDGenRoster.this.bDocs.isVisible())
-        draw(x1024(560.0F), y1024(656.0F), x1024(320.0F), y1024(48.0F), 0, GUIDGenRoster.this.i18n("camps.Docs"));
-      if (GUIDGenRoster.this.bProfile.isVisible()) {
-        draw(x1024(432.0F), y1024(656.0F), x1024(498.0F), y1024(48.0F), 2, GUIDGenRoster.this.i18n("dgenroster.PilotProfile"));
-      }
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(640.0F), x1024(962.0F), 2.0F);
-    }
-
-    public void setPosSize() {
-      set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUIDGenRoster.this.bBack.setPosC(x1024(56.0F), y1024(680.0F));
-      GUIDGenRoster.this.bDocs.setPosC(x1024(512.0F), y1024(680.0F));
-      GUIDGenRoster.this.bProfile.setPosC(x1024(968.0F), y1024(680.0F));
-      GUIDGenRoster.this.wTable.set1024PosSize(96.0F, 112.0F, 832.0F, 240.0F);
-      GUIDGenRoster.this.wGone.set1024PosSize(96.0F, 384.0F, 832.0F, 160.0F);
-    }
-  }
-
-  public class Gone extends GWindowTable
-  {
-    public ArrayList playerList = GUIDGenRoster.this.gones;
-
-    public int countRows() { return this.playerList != null ? GUIDGenRoster.this.gones.size() : 0; }
-
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2)
+    public GUIDGenRoster(com.maddox.gwindow.GWindowRoot gwindowroot)
     {
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      GUIDGenRoster.Pilot localPilot = (GUIDGenRoster.Pilot)GUIDGenRoster.this.gones.get(paramInt1);
-      String str = null;
-      int i = 0;
-      switch (paramInt2) { case 0:
-        str = localPilot.sRank;
-        i = 0;
-        break;
-      case 1:
-        str = localPilot.lastName;
-        i = 0;
-        break;
-      case 2:
-        str = "";
-        if (localPilot.events.size() > 0)
-          str = (String)localPilot.events.get(localPilot.events.size() - 1);
-        i = 0;
-      }
-
-      if (paramBoolean) {
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      } else {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      }
+        super(65);
+        pilots = new ArrayList();
+        gones = new ArrayList();
+        pilotPlayer = null;
+        pilotCur = null;
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("dgenroster.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wTable = new Table(dialogClient);
+        wGone = new Gone(dialogClient);
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bBack = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bDocs = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bProfile = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
     }
 
-    public void setSelect(int paramInt1, int paramInt2) {
-      super.setSelect(paramInt1, paramInt2);
-      if (paramInt1 >= 0) {
-        GUIDGenRoster.this.wTable.setSelect(-1, -1);
-        GUIDGenRoster.this.bProfile.showWindow();
-      }
-    }
+    public java.util.ArrayList pilots;
+    public java.util.ArrayList gones;
+    public com.maddox.il2.gui.Pilot pilotPlayer;
+    public com.maddox.il2.gui.Pilot pilotCur;
+    private com.maddox.il2.ai.Regiment regiment;
+    private com.maddox.gwindow.GTexture texRegiment;
+    private int sorties;
+    private int kills;
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.Gone wGone;
+    public com.maddox.il2.gui.GUIButton bBack;
+    public com.maddox.il2.gui.GUIButton bDocs;
+    public com.maddox.il2.gui.GUIButton bProfile;
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelectRow = true;
-      addColumn(I18N.gui("dgenroster.Rank"), null);
-      addColumn(I18N.gui("dgenroster.Name"), null);
-      addColumn(I18N.gui("dgenroster.To"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(17.0F);
-      getColumn(1).setRelativeDx(17.0F);
-      getColumn(2).setRelativeDx(46.0F);
-      alignColumns();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-      resized();
-    }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public Gone(GWindow arg2) {
-      super();
-    }
-  }
 
-  public class Table extends GWindowTable
-  {
-    public ArrayList playerList = GUIDGenRoster.this.pilots;
 
-    GColor playerColor = new GColor(35, 117, 137);
 
-    public int countRows() { return this.playerList != null ? GUIDGenRoster.this.pilots.size() : 0; }
-
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      setCanvasFont(0);
-      GUIDGenRoster.Pilot localPilot = (GUIDGenRoster.Pilot)GUIDGenRoster.this.pilots.get(paramInt1);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      } else if (localPilot == GUIDGenRoster.this.pilotPlayer) {
-        setCanvasColor(this.playerColor);
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      String str = null;
-      int i = 0;
-      switch (paramInt2) { case 0:
-        str = localPilot.sRank;
-        i = 0;
-        break;
-      case 1:
-        str = localPilot.lastName;
-        i = 0;
-        break;
-      case 2:
-        str = "" + localPilot.sorties;
-        i = 1;
-        break;
-      case 3:
-        str = "" + localPilot.kills;
-        i = 1;
-      }
-
-      if (paramBoolean) {
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      } else {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      }
-    }
-
-    public void setSelect(int paramInt1, int paramInt2) {
-      super.setSelect(paramInt1, paramInt2);
-      if (paramInt1 >= 0) {
-        GUIDGenRoster.this.wGone.setSelect(-1, -1);
-        GUIDGenRoster.this.bProfile.showWindow();
-      }
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelectRow = true;
-      addColumn(I18N.gui("dgenroster.Rank"), null);
-      addColumn(I18N.gui("dgenroster.Name"), null);
-      addColumn(I18N.gui("dgenroster.Sorties"), null);
-      addColumn(I18N.gui("dgenroster.Kills"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(17.0F);
-      getColumn(1).setRelativeDx(17.0F);
-      getColumn(2).setRelativeDx(23.0F);
-      getColumn(3).setRelativeDx(23.0F);
-      alignColumns();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-      resized();
-    }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public Table(GWindow arg2) {
-      super();
-    }
-  }
-
-  static class PilotComparator
-    implements Comparator
-  {
-    public int compare(Object paramObject1, Object paramObject2)
-    {
-      GUIDGenRoster.Pilot localPilot1 = (GUIDGenRoster.Pilot)paramObject1;
-      GUIDGenRoster.Pilot localPilot2 = (GUIDGenRoster.Pilot)paramObject2;
-      int i = localPilot2.rank - localPilot1.rank;
-      if (i == 0)
-        i = localPilot1.lastName.compareToIgnoreCase(localPilot2.lastName);
-      return i;
-    }
-  }
-
-  public static class Pilot
-  {
-    public boolean bPlayer;
-    public String firstName;
-    public String lastName;
-    public String dateBirth;
-    public String placeBirth;
-    public String photo;
-    public int rank;
-    public String sRank;
-    public int sorties;
-    public int kills;
-    public int ground;
-    public int nmedals;
-    public int[] medals;
-    public ArrayList events = new ArrayList();
-  }
 }

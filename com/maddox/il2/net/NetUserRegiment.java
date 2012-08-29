@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetUserRegiment.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.ai.Regiment;
@@ -6,117 +11,156 @@ import com.maddox.il2.game.Main;
 import com.maddox.rts.net.NetFileRequest;
 import com.maddox.util.HashMapExt;
 
-public class NetUserRegiment extends Regiment
+// Referenced classes of package com.maddox.il2.net:
+//            NetFileServerReg
+
+public class NetUserRegiment extends com.maddox.il2.ai.Regiment
 {
-  protected NetFileRequest netFileRequest;
-  protected String ownerFileNameBmp = "";
-  protected String localFileNameBmp;
-  protected String fileNameTga = "";
 
-  public String name() {
-    if (this.fileNameTga.length() > 0) {
-      return "UserRegiment" + this.fileNameTga;
+    public java.lang.String name()
+    {
+        if(fileNameTga.length() > 0)
+            return "UserRegiment" + fileNameTga;
+        else
+            return "UserRegiment";
     }
-    return "UserRegiment";
-  }
-  public String fileName() {
-    return null; } 
-  public boolean isUserDefined() { return true; }
 
-  private void setBranch(String paramString) {
-    this.branch = paramString.toLowerCase().intern();
-    if (branchMap.containsKey(this.branch))
-      this.country = ((String)branchMap.get(this.branch));
-    else
-      this.country = this.branch;
-  }
-
-  public String fileNameTga()
-  {
-    if (this.fileNameTga.length() == 0)
-      return "";
-    return "../Cache/" + this.fileNameTga;
-  }
-  public String ownerFileNameBmp() { return this.ownerFileNameBmp; } 
-  public boolean isEmpty() {
-    return "".equals(this.fileNameTga);
-  }
-  public void setId(char[] paramArrayOfChar) {
-    this.id = paramArrayOfChar;
-    this.sid = new String(this.id);
-  }
-
-  public void setGruppeNumber(int paramInt) {
-    this.gruppeNumber = paramInt;
-  }
-
-  public boolean equals(String paramString1, String paramString2, char[] paramArrayOfChar, int paramInt)
-  {
-    if (!paramString1.equals(this.branch)) return false;
-    if (!paramString2.equals(this.ownerFileNameBmp)) return false;
-    if ((paramArrayOfChar[0] != this.id[0]) || (paramArrayOfChar[1] != this.id[1])) return false;
-    return paramInt == this.gruppeNumber;
-  }
-
-  public void setLocalFileNameBmp(String paramString)
-  {
-    this.localFileNameBmp = paramString;
-
-    if ((paramString == null) || ("".equals(paramString))) {
-      this.fileNameTga = "";
-      return;
+    public java.lang.String fileName()
+    {
+        return null;
     }
-    paramString = paramString.toLowerCase();
-    int i = paramString.lastIndexOf('/');
-    int j = paramString.lastIndexOf('\\');
-    if (i >= 0) {
-      if ((j > 0) && (j < i))
-        i = j;
+
+    public boolean isUserDefined()
+    {
+        return true;
     }
-    else i = j;
 
-    if (i >= 0)
-      this.fileNameTga = paramString.substring(i + 1);
-    else
-      this.fileNameTga = paramString;
-    i = this.fileNameTga.lastIndexOf(".bmp");
-    if (i >= 0)
-      this.fileNameTga = this.fileNameTga.substring(0, i);
-    this.fileNameTga += ".tga";
-    String str = null;
-    NetFileServerReg localNetFileServerReg = Main.cur().netFileServerReg;
-    if (this.ownerFileNameBmp.equalsIgnoreCase(this.localFileNameBmp))
-      str = localNetFileServerReg.primaryPath() + "/" + this.localFileNameBmp;
-    else
-      str = localNetFileServerReg.alternativePath() + "/" + this.localFileNameBmp;
-    if (!BmpUtils.bmp8PalToTGA4(str, "PaintSchemes/Cache/" + this.fileNameTga))
-      this.fileNameTga = "";
-  }
-
-  public void set(String paramString1, String paramString2, char[] paramArrayOfChar, int paramInt)
-  {
-    if (paramString2 == null)
-      paramString2 = "";
-    if (equals(paramString1, paramString2, paramArrayOfChar, paramInt))
-      return;
-    setBranch(paramString1);
-    this.ownerFileNameBmp = paramString2;
-    this.localFileNameBmp = null;
-    setId(paramArrayOfChar);
-    setGruppeNumber(paramInt);
-  }
-
-  public void destroy() {
-    if (this.netFileRequest != null) {
-      this.netFileRequest.doCancel();
-      this.netFileRequest = null;
+    private void setBranch(java.lang.String s)
+    {
+        branch = s.toLowerCase().intern();
+        if(com.maddox.il2.ai.Regiment.branchMap.containsKey(branch))
+            country = (java.lang.String)com.maddox.il2.ai.Regiment.branchMap.get(branch);
+        else
+            country = branch;
     }
-    super.destroy();
-  }
 
-  public NetUserRegiment()
-  {
-    this.flags |= 16384;
-    set("ru", "", new char[] { '0', '0' }, 1);
-  }
+    public java.lang.String fileNameTga()
+    {
+        if(fileNameTga.length() == 0)
+            return "";
+        else
+            return "../Cache/" + fileNameTga;
+    }
+
+    public java.lang.String ownerFileNameBmp()
+    {
+        return ownerFileNameBmp;
+    }
+
+    public boolean isEmpty()
+    {
+        return "".equals(fileNameTga);
+    }
+
+    public void setId(char ac[])
+    {
+        id = ac;
+        sid = new String(id);
+    }
+
+    public void setGruppeNumber(int i)
+    {
+        gruppeNumber = i;
+    }
+
+    public boolean equals(java.lang.String s, java.lang.String s1, char ac[], int i)
+    {
+        if(!s.equals(branch))
+            return false;
+        if(!s1.equals(ownerFileNameBmp))
+            return false;
+        if(ac[0] != id[0] || ac[1] != id[1])
+            return false;
+        return i == gruppeNumber;
+    }
+
+    public void setLocalFileNameBmp(java.lang.String s)
+    {
+        localFileNameBmp = s;
+        if(s == null || "".equals(s))
+        {
+            fileNameTga = "";
+            return;
+        }
+        s = s.toLowerCase();
+        int i = s.lastIndexOf('/');
+        int j = s.lastIndexOf('\\');
+        if(i >= 0)
+        {
+            if(j > 0 && j < i)
+                i = j;
+        } else
+        {
+            i = j;
+        }
+        if(i >= 0)
+            fileNameTga = s.substring(i + 1);
+        else
+            fileNameTga = s;
+        i = fileNameTga.lastIndexOf(".bmp");
+        if(i >= 0)
+            fileNameTga = fileNameTga.substring(0, i);
+        fileNameTga = fileNameTga + ".tga";
+        java.lang.String s1 = null;
+        com.maddox.il2.net.NetFileServerReg netfileserverreg = com.maddox.il2.game.Main.cur().netFileServerReg;
+        if(ownerFileNameBmp.equalsIgnoreCase(localFileNameBmp))
+            s1 = netfileserverreg.primaryPath() + "/" + localFileNameBmp;
+        else
+            s1 = netfileserverreg.alternativePath() + "/" + localFileNameBmp;
+        if(!com.maddox.il2.engine.BmpUtils.bmp8PalToTGA4(s1, "PaintSchemes/Cache/" + fileNameTga))
+            fileNameTga = "";
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, char ac[], int i)
+    {
+        if(s1 == null)
+            s1 = "";
+        if(equals(s, s1, ac, i))
+        {
+            return;
+        } else
+        {
+            setBranch(s);
+            ownerFileNameBmp = s1;
+            localFileNameBmp = null;
+            setId(ac);
+            setGruppeNumber(i);
+            return;
+        }
+    }
+
+    public void destroy()
+    {
+        if(netFileRequest != null)
+        {
+            netFileRequest.doCancel();
+            netFileRequest = null;
+        }
+        super.destroy();
+    }
+
+    public NetUserRegiment()
+    {
+        ownerFileNameBmp = "";
+        fileNameTga = "";
+        flags |= 0x4000;
+        set("ru", "", new char[] {
+            '0', '0'
+        }, 1);
+    }
+
+    protected com.maddox.rts.net.NetFileRequest netFileRequest;
+    protected java.lang.String ownerFileNameBmp;
+    protected java.lang.String localFileNameBmp;
+    protected java.lang.String fileNameTga;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIComboCfgInt.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GWindow;
@@ -5,85 +10,97 @@ import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.il2.game.I18N;
 import com.maddox.rts.CfgInt;
 
-public class GUIComboCfgInt extends GWindowComboControl
+public class GUIComboCfgInt extends com.maddox.gwindow.GWindowComboControl
 {
-  public CfgInt cfg;
-  public boolean bUpdate;
-  public boolean bChanged;
-  public String i18nPref;
 
-  public GUIComboCfgInt(GWindow paramGWindow, CfgInt paramCfgInt, boolean paramBoolean)
-  {
-    this(paramGWindow, paramCfgInt, paramBoolean, null);
-  }
-
-  public GUIComboCfgInt(GWindow paramGWindow, CfgInt paramCfgInt, boolean paramBoolean, String paramString) {
-    super(paramGWindow, 0.0F, 0.0F, 1.0F);
-
-    this.i18nPref = paramString;
-    setEditable(false);
-    this.bUpdate = paramBoolean;
-    this.bChanged = false;
-    this.cfg = paramCfgInt;
-    refresh(true);
-    int i = paramCfgInt.firstState();
-    setSelected(paramCfgInt.get() - i, true, false);
-  }
-
-  public void created() {
-    super.created();
-    this.metricWin = null;
-  }
-
-  public void update() {
-    refresh(false);
-  }
-
-  public void refresh(boolean paramBoolean) {
-    this.cfg.reset();
-    int i = this.cfg.countStates();
-    int j = this.cfg.firstState();
-    if (this.posEnable == null)
-      this.posEnable = new boolean[i];
-    for (int k = 0; k < i; k++) {
-      if (paramBoolean) {
-        if (this.i18nPref == null) {
-          add(this.cfg.nameState(k + j));
-        } else {
-          String str1 = this.cfg.nameState(k + j);
-          String str2 = this.i18nPref + str1;
-          if (I18N.isGuiExist(str2))
-            add(I18N.gui(str2));
-          else
-            add(str1);
-        }
-      }
-      this.posEnable[k] = this.cfg.isEnabledState(k + j);
+    public GUIComboCfgInt(com.maddox.gwindow.GWindow gwindow, com.maddox.rts.CfgInt cfgint, boolean flag)
+    {
+        this(gwindow, cfgint, flag, null);
     }
-    setEnable(this.cfg.isEnabled());
-  }
 
-  public void resolutionChanged() {
-    super.resolutionChanged();
-    refresh(false);
-  }
-  public boolean notify(int paramInt1, int paramInt2) {
-    if (paramInt1 == 2) {
-      int i = this.cfg.get() - this.cfg.firstState();
-      if (i != getSelected()) {
-        if (this.bUpdate) {
-          this.cfg.set(getSelected() + this.cfg.firstState());
-          int j = this.cfg.apply();
-          this.cfg.reset();
-          this.cfg.applyExtends(j);
-          int k = this.cfg.get() - this.cfg.firstState();
-          if (k != getSelected())
-            setSelected(k, true, false);
-        } else {
-          this.bChanged = true;
-        }
-      }
+    public GUIComboCfgInt(com.maddox.gwindow.GWindow gwindow, com.maddox.rts.CfgInt cfgint, boolean flag, java.lang.String s)
+    {
+        super(gwindow, 0.0F, 0.0F, 1.0F);
+        i18nPref = s;
+        setEditable(false);
+        bUpdate = flag;
+        bChanged = false;
+        cfg = cfgint;
+        refresh(true);
+        int i = cfgint.firstState();
+        setSelected(cfgint.get() - i, true, false);
     }
-    return super.notify(paramInt1, paramInt2);
-  }
+
+    public void created()
+    {
+        super.created();
+        metricWin = null;
+    }
+
+    public void update()
+    {
+        refresh(false);
+    }
+
+    public void refresh(boolean flag)
+    {
+        cfg.reset();
+        int i = cfg.countStates();
+        int j = cfg.firstState();
+        if(posEnable == null)
+            posEnable = new boolean[i];
+        for(int k = 0; k < i; k++)
+        {
+            if(flag)
+                if(i18nPref == null)
+                {
+                    add(cfg.nameState(k + j));
+                } else
+                {
+                    java.lang.String s = cfg.nameState(k + j);
+                    java.lang.String s1 = i18nPref + s;
+                    if(com.maddox.il2.game.I18N.isGuiExist(s1))
+                        add(com.maddox.il2.game.I18N.gui(s1));
+                    else
+                        add(s);
+                }
+            posEnable[k] = cfg.isEnabledState(k + j);
+        }
+
+        setEnable(cfg.isEnabled());
+    }
+
+    public void resolutionChanged()
+    {
+        super.resolutionChanged();
+        refresh(false);
+    }
+
+    public boolean notify(int i, int j)
+    {
+        if(i == 2)
+        {
+            int k = cfg.get() - cfg.firstState();
+            if(k != getSelected())
+                if(bUpdate)
+                {
+                    cfg.set(getSelected() + cfg.firstState());
+                    int l = cfg.apply();
+                    cfg.reset();
+                    cfg.applyExtends(l);
+                    int i1 = cfg.get() - cfg.firstState();
+                    if(i1 != getSelected())
+                        setSelected(i1, true, false);
+                } else
+                {
+                    bChanged = true;
+                }
+        }
+        return super.notify(i, j);
+    }
+
+    public com.maddox.rts.CfgInt cfg;
+    public boolean bUpdate;
+    public boolean bChanged;
+    public java.lang.String i18nPref;
 }

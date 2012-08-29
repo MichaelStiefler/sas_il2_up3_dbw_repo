@@ -1,13 +1,18 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIDGenPilotDetail.java
+
 package com.maddox.il2.gui;
 
+import com.maddox.gwindow.GCanvas;
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GFont;
 import com.maddox.gwindow.GRegion;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.I18N;
@@ -23,287 +28,363 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class GUIDGenPilotDetail extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIDGenRoster, GUIClient, GUIInfoMenu, GUIInfoName, 
+//            GUILookAndFeel, GUIButton, GUIDialogClient, GUISeparate
+
+public class GUIDGenPilotDetail extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public Table wTable;
-  public GUIButton bBack;
-  private ArrayList events = new ArrayList();
-  private GUIDGenRoster roster;
-
-  public void _enter()
-  {
-    loadEvents();
-    this.client.activateWindow();
-    this.wTable.resized();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  private void loadEvents() {
-    try {
-      this.roster = ((GUIDGenRoster)GameState.get(65));
-      Campaign localCampaign = Main.cur().campaign;
-      String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/logbook.dat";
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
-      this.events.clear();
-      Event localEvent = null;
-      while ((localEvent = loadEvent(localBufferedReader)) != null)
-        this.events.add(localEvent);
-      localBufferedReader.close();
-    } catch (Exception localException) {
-      System.out.println("Squadron file load failed: " + localException.getMessage());
-      localException.printStackTrace();
-      Main.stateStack().pop();
-    }
-  }
-
-  private Event loadEvent(BufferedReader paramBufferedReader) throws IOException {
-    Event localEvent = new Event(null);
-
-    while (paramBufferedReader.ready())
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-      String str1 = paramBufferedReader.readLine();
-      if (str1 == null)
-        break;
-      int i = str1.length();
-      if (i == 0)
-        continue;
-      int j = 0;
 
-      if (str1.startsWith("DATE:")) { localEvent.date = this.roster.readArgStr(UnicodeTo8bit.load(str1, false));
-      } else if (str1.startsWith("PLANE:")) { localEvent.plane = this.roster.readArgStr(str1);
-        try {
-          Class localClass = ObjIO.classForName("air." + localEvent.plane);
-          String str2 = Property.stringValue(localClass, "keyName", null);
-          if (str2 != null)
-            localEvent.plane = I18N.plane(str2);
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bBack)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-        catch (Throwable localThrowable) {
+
+        public void render()
+        {
+            super.render();
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(96F), y1024(658F), x1024(288F), y1024(48F), 0, i18n("camps.Back"));
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(960F), 2.0F);
         }
-      } else if (str1.startsWith("MISSION:")) { localEvent.mission = this.roster.readArgStr(UnicodeTo8bit.load(str1, false));
-      } else if (str1.startsWith("EVENT:")) { localEvent.actions.add(this.roster.readArgStr(UnicodeTo8bit.load(str1, false)));
-      } else if (str1.startsWith("FLIGHT TIME:")) { localEvent.flightTime = this.roster.readArgStr(str1); j = 1;
-      }
 
-      if (j != 0)
-        break;
-    }
-    if ((localEvent.date == null) || (localEvent.plane == null) || (localEvent.mission == null))
-    {
-      return null;
-    }return localEvent;
-  }
-
-  public GUIDGenPilotDetail(GWindowRoot paramGWindowRoot)
-  {
-    super(67);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("dgendetail.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wTable = new Table(this.dialogClient);
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-    this.bBack = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIDGenPilotDetail.this.bBack) {
-        Main.stateStack().pop();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void render() {
-      super.render();
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-
-      draw(x1024(96.0F), y1024(658.0F), x1024(288.0F), y1024(48.0F), 0, GUIDGenPilotDetail.this.i18n("camps.Back"));
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(960.0F), 2.0F);
-    }
-
-    public void setPosSize() {
-      set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUIDGenPilotDetail.this.bBack.setPosC(x1024(56.0F), y1024(682.0F));
-      GUIDGenPilotDetail.this.wTable.set1024PosSize(32.0F, 32.0F, 960.0F, 560.0F);
-    }
-  }
-
-  public class Table extends GWindowTable
-  {
-    private ArrayList _events = GUIDGenPilotDetail.this.events;
-    private int[] c = new int[5];
-    private GFont fnt;
-    private GColor myBrass = new GColor(99, 89, 74);
-
-    private void computeHeight(int paramInt)
-    {
-      GUIDGenPilotDetail.Event localEvent = (GUIDGenPilotDetail.Event)GUIDGenPilotDetail.this.events.get(paramInt);
-      localEvent.h = (int)(this.fnt.height * 1.2F);
-      float f = this.fnt.height - this.fnt.descender;
-      int i = (int)(computeLines(localEvent.mission, 0, localEvent.mission.length(), this.c[2]) * f);
-      if (localEvent.h < i)
-        localEvent.h = i;
-      i = 0;
-      for (int j = 0; j < localEvent.actions.size(); j++) {
-        String str = (String)localEvent.actions.get(j);
-        i += (int)(computeLines(str, 0, str.length(), this.c[4]) * f);
-      }
-      if (localEvent.h < i)
-        localEvent.h = i;
-    }
-
-    private void computeHeights() {
-      this.root.C.font = this.fnt;
-      for (int i = 0; i < 5; i++)
-        this.c[i] = (int)((GWindowTable.Column)this.columns.get(i)).win.dx;
-      i = GUIDGenPilotDetail.this.events.size();
-      for (int j = 0; j < i; j++)
-        computeHeight(j); 
-    }
-
-    public float rowHeight(int paramInt) {
-      if (this._events == null) return super.rowHeight(paramInt);
-      if (paramInt >= GUIDGenPilotDetail.this.events.size()) return 0.0F;
-      if (GUIDGenPilotDetail.this.events.size() == 0) return 0.0F;
-      int i = 0;
-      for (int j = 0; j < 5; j++)
-        if (this.c[j] != ((GWindowTable.Column)this.columns.get(j)).win.dx)
-          i = 1;
-      if (((GUIDGenPilotDetail.Event)GUIDGenPilotDetail.this.events.get(paramInt)).h == 0)
-        i = 1;
-      if (i != 0)
-        computeHeights();
-      return ((GUIDGenPilotDetail.Event)GUIDGenPilotDetail.this.events.get(paramInt)).h + 2;
-    }
-    public float fullClientHeight() {
-      if (this._events == null) return super.fullClientHeight();
-      int i = 0;
-      int j = countRows();
-      for (int k = 0; k < j; k++)
-        i = (int)(i + rowHeight(k));
-      return i;
-    }
-    public int countRows() {
-      if (this._events == null) return 0;
-      return GUIDGenPilotDetail.this.events.size();
-    }
-
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      if (paramInt1 > 0)
-        GUISeparate.draw(this, this.myBrass, 0.0F, 0.0F, paramFloat1, 1.0F);
-      setCanvasColorBLACK();
-      this.root.C.font = this.fnt;
-      GUIDGenPilotDetail.Event localEvent = (GUIDGenPilotDetail.Event)GUIDGenPilotDetail.this.events.get(paramInt1);
-      String str = null;
-      int i = 0;
-      float f = this.fnt.height - this.fnt.descender;
-      switch (paramInt2) { case 0:
-        str = localEvent.date;
-        i = 0;
-        break;
-      case 1:
-        str = localEvent.plane;
-        i = 0;
-        break;
-      case 2:
-        str = localEvent.mission;
-        drawLines(0.0F, 2.0F, str, 0, str.length(), this.c[2], f);
-        return;
-      case 3:
-        if (localEvent.flightTime == null) str = ""; else
-          str = localEvent.flightTime;
-        i = 1;
-        break;
-      case 4:
-        if (localEvent.actions.size() > 0) {
-          int j = 2;
-          for (int m = 0; m < localEvent.actions.size(); m++) {
-            str = (String)localEvent.actions.get(m);
-            int k;
-            j += (int)(drawLines(0.0F, j, str, 0, str.length(), this.c[4], f) * f);
-          }
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 32F, 1024F, 736F);
+            bBack.setPosC(x1024(56F), y1024(682F));
+            wTable.set1024PosSize(32F, 32F, 960F, 560F);
         }
-        return;
-      }
-      setCanvasColorBLACK();
-      draw(0.0F, 2.0F, paramFloat1, (int)(this.fnt.height * 1.2F) - 2, i, str);
-    }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      this.fnt = GFont.New("courSmall");
-      this.bColumnsSizable = true;
-      this.bSelecting = false;
-      this.bSelectRow = false;
-      addColumn(I18N.gui("dgendetail.Date"), null);
-      addColumn(I18N.gui("dgendetail.Plane"), null);
-      addColumn(I18N.gui("dgendetail.Mission"), null);
-      addColumn(I18N.gui("dgendetail.FlightTime"), null);
-      addColumn(I18N.gui("dgendetail.Notes"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(10.0F);
-      getColumn(1).setRelativeDx(10.0F);
-      getColumn(2).setRelativeDx(20.0F);
-      getColumn(3).setRelativeDx(10.0F);
-      getColumn(4).setRelativeDx(20.0F);
-      alignColumns();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-      resized();
-    }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public Table(GWindow arg2) {
-      super();
-    }
-  }
 
-  private static class Event
-  {
-    public String date;
-    public String plane;
-    public String flightTime;
-    public String mission;
-    public ArrayList actions = new ArrayList();
-    public int h;
+        public DialogClient()
+        {
+        }
+    }
 
-    private Event()
+    public class Table extends com.maddox.gwindow.GWindowTable
     {
+
+        private void computeHeight(int i)
+        {
+            com.maddox.il2.gui.Event event = (com.maddox.il2.gui.Event)events.get(i);
+            event.h = (int)(fnt.height * 1.2F);
+            float f = fnt.height - fnt.descender;
+            int j = (int)((float)computeLines(event.mission, 0, event.mission.length(), c[2]) * f);
+            if(event.h < j)
+                event.h = j;
+            j = 0;
+            for(int k = 0; k < event.actions.size(); k++)
+            {
+                java.lang.String s = (java.lang.String)event.actions.get(k);
+                j += (int)((float)computeLines(s, 0, s.length(), c[4]) * f);
+            }
+
+            if(event.h < j)
+                event.h = j;
+        }
+
+        private void computeHeights()
+        {
+            root.C.font = fnt;
+            for(int i = 0; i < 5; i++)
+                c[i] = (int)((com.maddox.gwindow.GWindowTable.Column)columns.get(i)).win.dx;
+
+            int j = events.size();
+            for(int k = 0; k < j; k++)
+                computeHeight(k);
+
+        }
+
+        public float rowHeight(int i)
+        {
+            if(_events == null)
+                return super.rowHeight(i);
+            if(i >= events.size())
+                return 0.0F;
+            if(events.size() == 0)
+                return 0.0F;
+            boolean flag = false;
+            for(int j = 0; j < 5; j++)
+                if((float)c[j] != ((com.maddox.gwindow.GWindowTable.Column)columns.get(j)).win.dx)
+                    flag = true;
+
+            if(((com.maddox.il2.gui.Event)events.get(i)).h == 0)
+                flag = true;
+            if(flag)
+                computeHeights();
+            return (float)(((com.maddox.il2.gui.Event)events.get(i)).h + 2);
+        }
+
+        public float fullClientHeight()
+        {
+            if(_events == null)
+                return super.fullClientHeight();
+            int i = 0;
+            int j = countRows();
+            for(int k = 0; k < j; k++)
+                i = (int)((float)i + rowHeight(k));
+
+            return (float)i;
+        }
+
+        public int countRows()
+        {
+            if(_events == null)
+                return 0;
+            else
+                return events.size();
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            if(i > 0)
+                com.maddox.il2.gui.GUISeparate.draw(this, myBrass, 0.0F, 0.0F, f, 1.0F);
+            setCanvasColorBLACK();
+            root.C.font = fnt;
+            com.maddox.il2.gui.Event event = (com.maddox.il2.gui.Event)events.get(i);
+            java.lang.String s = null;
+            int k = 0;
+            float f2 = fnt.height - fnt.descender;
+            switch(j)
+            {
+            default:
+                break;
+
+            case 0: // '\0'
+                s = event.date;
+                k = 0;
+                break;
+
+            case 1: // '\001'
+                s = event.plane;
+                k = 0;
+                break;
+
+            case 2: // '\002'
+                s = event.mission;
+                drawLines(0.0F, 2.0F, s, 0, s.length(), c[2], f2);
+                return;
+
+            case 3: // '\003'
+                if(event.flightTime == null)
+                    s = "";
+                else
+                    s = event.flightTime;
+                k = 1;
+                break;
+
+            case 4: // '\004'
+                if(event.actions.size() > 0)
+                {
+                    int l = 2;
+                    for(int i1 = 0; i1 < event.actions.size(); i1++)
+                    {
+                        s = (java.lang.String)event.actions.get(i1);
+                        l += (int)((float)drawLines(0.0F, l, s, 0, s.length(), c[4], f2) * f2);
+                    }
+
+                }
+                return;
+            }
+            setCanvasColorBLACK();
+            draw(0.0F, 2.0F, f, (int)(fnt.height * 1.2F) - 2, k, s);
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            fnt = com.maddox.gwindow.GFont.New("courSmall");
+            bColumnsSizable = true;
+            bSelecting = false;
+            bSelectRow = false;
+            addColumn(com.maddox.il2.game.I18N.gui("dgendetail.Date"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgendetail.Plane"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgendetail.Mission"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgendetail.FlightTime"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgendetail.Notes"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(10F);
+            getColumn(1).setRelativeDx(10F);
+            getColumn(2).setRelativeDx(20F);
+            getColumn(3).setRelativeDx(10F);
+            getColumn(4).setRelativeDx(20F);
+            alignColumns();
+            bNotify = true;
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        private java.util.ArrayList _events;
+        private int c[];
+        private com.maddox.gwindow.GFont fnt;
+        private com.maddox.gwindow.GColor myBrass;
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            _events = events;
+            c = new int[5];
+            myBrass = new GColor(99, 89, 74);
+        }
     }
 
-    Event(GUIDGenPilotDetail.1 param1)
+    private static class Event
     {
-      this();
+
+        public java.lang.String date;
+        public java.lang.String plane;
+        public java.lang.String flightTime;
+        public java.lang.String mission;
+        public java.util.ArrayList actions;
+        public int h;
+
+        private Event()
+        {
+            actions = new ArrayList();
+        }
+
     }
-  }
+
+
+    public void _enter()
+    {
+        loadEvents();
+        client.activateWindow();
+        wTable.resized();
+    }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    private void loadEvents()
+    {
+        try
+        {
+            roster = (com.maddox.il2.gui.GUIDGenRoster)com.maddox.il2.game.GameState.get(65);
+            com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+            java.lang.String s = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/logbook.dat";
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            events.clear();
+            for(com.maddox.il2.gui.Event event = null; (event = loadEvent(bufferedreader)) != null;)
+                events.add(event);
+
+            bufferedreader.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("Squadron file load failed: " + exception.getMessage());
+            exception.printStackTrace();
+            com.maddox.il2.game.Main.stateStack().pop();
+        }
+    }
+
+    private com.maddox.il2.gui.Event loadEvent(java.io.BufferedReader bufferedreader)
+        throws java.io.IOException
+    {
+        com.maddox.il2.gui.Event event = new Event();
+        boolean flag;
+label0:
+        do
+        {
+            java.lang.String s;
+            int i;
+            do
+            {
+                if(!bufferedreader.ready())
+                    break label0;
+                s = bufferedreader.readLine();
+                if(s == null)
+                    break label0;
+                i = s.length();
+            } while(i == 0);
+            flag = false;
+            if(s.startsWith("DATE:"))
+                event.date = roster.readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false));
+            else
+            if(s.startsWith("PLANE:"))
+            {
+                event.plane = roster.readArgStr(s);
+                try
+                {
+                    java.lang.Class class1 = com.maddox.rts.ObjIO.classForName("air." + event.plane);
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "keyName", null);
+                    if(s1 != null)
+                        event.plane = com.maddox.il2.game.I18N.plane(s1);
+                }
+                catch(java.lang.Throwable throwable) { }
+            } else
+            if(s.startsWith("MISSION:"))
+                event.mission = roster.readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false));
+            else
+            if(s.startsWith("EVENT:"))
+                event.actions.add(roster.readArgStr(com.maddox.util.UnicodeTo8bit.load(s, false)));
+            else
+            if(s.startsWith("FLIGHT TIME:"))
+            {
+                event.flightTime = roster.readArgStr(s);
+                flag = true;
+            }
+        } while(!flag);
+        if(event.date == null || event.plane == null || event.mission == null)
+            return null;
+        else
+            return event;
+    }
+
+    public GUIDGenPilotDetail(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(67);
+        events = new ArrayList();
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("dgendetail.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wTable = new Table(dialogClient);
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bBack = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.GUIButton bBack;
+    private java.util.ArrayList events;
+    private com.maddox.il2.gui.GUIDGenRoster roster;
+
 }

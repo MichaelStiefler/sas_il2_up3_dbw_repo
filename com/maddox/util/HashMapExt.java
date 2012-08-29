@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HashMapExt.java
+
 package com.maddox.util;
 
 import java.io.IOException;
@@ -11,651 +16,707 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class HashMapExt extends AbstractMap
-  implements Map, Cloneable, Serializable
+public class HashMapExt extends java.util.AbstractMap
+    implements java.util.Map, java.lang.Cloneable, java.io.Serializable
 {
-  private transient Entry[] table;
-  private transient int count;
-  private int threshold;
-  private float loadFactor;
-  private transient int modCount = 0;
-
-  private static int _entryHash = 0;
-  private transient Entry head;
-  private transient Entry tail;
-  private transient int nextEntryLock;
-  private transient Set keySet = null;
-  private transient Set entrySet = null;
-  private transient Collection values = null;
-
-  private Entry freeEntryList = null;
-  private static final int KEYS = 0;
-  private static final int VALUES = 1;
-  private static final int ENTRIES = 2;
-
-  public HashMapExt(int paramInt, float paramFloat)
-  {
-    if (paramInt < 0) {
-      throw new IllegalArgumentException("Illegal Initial Capacity: " + paramInt);
-    }
-    if (paramFloat <= 0.0F) {
-      throw new IllegalArgumentException("Illegal Load factor: " + paramFloat);
-    }
-    if (paramInt == 0)
-      paramInt = 1;
-    this.loadFactor = paramFloat;
-    this.table = new Entry[paramInt];
-    this.threshold = (int)(paramInt * paramFloat);
-    this.head = allocEntry(_entryHash++, null, null, null);
-    this.tail = allocEntry(0, null, null, null);
-    this.head.lNext = this.tail;
-    this.tail.lPrev = this.head;
-  }
-
-  public HashMapExt(int paramInt)
-  {
-    this(paramInt, 0.75F);
-  }
-
-  public HashMapExt()
-  {
-    this(101, 0.75F);
-  }
-
-  public HashMapExt(Map paramMap)
-  {
-    this(Math.max(2 * paramMap.size(), 11), 0.75F);
-    putAll(paramMap);
-  }
-
-  public int size()
-  {
-    return this.count;
-  }
-
-  public boolean isEmpty()
-  {
-    return this.count == 0;
-  }
-
-  public int hashCode()
-  {
-    return this.head.hashCode();
-  }
-
-  public boolean equals(Object paramObject)
-  {
-    return this == paramObject;
-  }
-
-  public Map.Entry nextEntry(Map.Entry paramEntry)
-  {
-    if (this.count == 0)
-      return null;
-    Entry localEntry = (Entry)paramEntry;
-    if (localEntry == null) {
-      this.nextEntryLock = this.modCount;
-      localEntry = this.head.lNext;
-    } else {
-      if (this.modCount != this.nextEntryLock)
-        throw new ConcurrentModificationException();
-      localEntry = localEntry.lNext;
-    }
-    if (localEntry == this.tail) return null;
-    return localEntry;
-  }
-
-  public Map.Entry getEntry(Object paramObject)
-  {
-    Object localObject;
-    if (paramObject != null) {
-      localObject = this.table;
-      int i = paramObject.hashCode();
-      int j = (i & 0x7FFFFFFF) % localObject.length;
-      for (Entry localEntry = localObject[j]; localEntry != null; localEntry = localEntry.next)
-        if ((localEntry.hash == i) && (paramObject.equals(localEntry.key)))
-          return localEntry;
-    } else {
-      localObject = this.head.lNext;
-      while (localObject != this.tail) {
-        if (((Entry)localObject).key == null)
-          return localObject;
-        localObject = ((Entry)localObject).lNext;
-      }
-    }
-
-    return (Map.Entry)null;
-  }
-
-  public boolean containsValue(Object paramObject)
-  {
-    Entry localEntry = this.head.lNext;
-
-    if (paramObject == null) {
-      while (localEntry != this.tail) {
-        if (localEntry.value == null)
-          return true;
-        localEntry = localEntry.lNext;
-      }
-    }
-    while (localEntry != this.tail) {
-      if (paramObject.equals(localEntry.value))
-        return true;
-      localEntry = localEntry.lNext;
-    }
-
-    return false;
-  }
-
-  public boolean containsKey(Object paramObject)
-  {
-    Object localObject;
-    if (paramObject != null) {
-      localObject = this.table;
-      int i = paramObject.hashCode();
-      int j = (i & 0x7FFFFFFF) % localObject.length;
-      for (Entry localEntry = localObject[j]; localEntry != null; localEntry = localEntry.next)
-        if ((localEntry.hash == i) && (paramObject.equals(localEntry.key)))
-          return true;
-    } else {
-      localObject = this.head.lNext;
-      while (localObject != this.tail) {
-        if (((Entry)localObject).key == null)
-          return true;
-        localObject = ((Entry)localObject).lNext;
-      }
-    }
-
-    return false;
-  }
-
-  public Object get(Object paramObject)
-  {
-    Object localObject;
-    if (paramObject != null) {
-      localObject = this.table;
-      int i = paramObject.hashCode();
-      int j = (i & 0x7FFFFFFF) % localObject.length;
-      for (Entry localEntry = localObject[j]; localEntry != null; localEntry = localEntry.next)
-        if ((localEntry.hash == i) && (paramObject.equals(localEntry.key)))
-          return localEntry.value;
-    } else {
-      localObject = this.head.lNext;
-      while (localObject != this.tail) {
-        if (((Entry)localObject).key == null)
-          return ((Entry)localObject).value;
-        localObject = ((Entry)localObject).lNext;
-      }
-    }
-
-    return null;
-  }
-
-  private void rehash()
-  {
-    int i = this.table.length * 2 + 1;
-    Entry[] arrayOfEntry = new Entry[i];
-
-    this.modCount += 1;
-    this.threshold = (int)(i * this.loadFactor);
-    this.table = arrayOfEntry;
-
-    Entry localEntry = this.head.lNext;
-    while (localEntry != this.tail) {
-      int j = (localEntry.hash & 0x7FFFFFFF) % i;
-      localEntry.next = arrayOfEntry[j];
-      arrayOfEntry[j] = localEntry;
-
-      localEntry = localEntry.lNext;
-    }
-  }
-
-  public Object put(Object paramObject1, Object paramObject2)
-  {
-    Entry[] arrayOfEntry = this.table;
-    int i = 0;
-    int j = 0;
-    Object localObject;
-    if (paramObject1 != null) {
-      i = paramObject1.hashCode();
-      j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-      for (localEntry = arrayOfEntry[j]; localEntry != null; localEntry = localEntry.next)
-        if ((localEntry.hash == i) && (paramObject1.equals(localEntry.key))) {
-          localObject = localEntry.value;
-          localEntry.value = paramObject2;
-          return localObject;
-        }
-    }
-    else {
-      localEntry = this.head.lNext;
-      while (localEntry != this.tail) {
-        if (localEntry.key == null) {
-          localObject = localEntry.value;
-          localEntry.value = paramObject2;
-          return localObject;
-        }
-        localEntry = localEntry.lNext;
-      }
-    }
-
-    this.modCount += 1;
-    if (this.count >= this.threshold)
+    private class HashIterator
+        implements java.util.Iterator
     {
-      rehash();
 
-      arrayOfEntry = this.table;
-      j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-    }
-
-    Entry localEntry = allocEntry(i, paramObject1, paramObject2, arrayOfEntry[j]);
-    localEntry.lPrev = this.head; localEntry.lNext = this.head.lNext;
-    localEntry.lNext.lPrev = localEntry; this.head.lNext = localEntry;
-    arrayOfEntry[j] = localEntry;
-    this.count += 1;
-    return null;
-  }
-
-  public Object remove(Object paramObject)
-  {
-    Entry[] arrayOfEntry = this.table;
-    int i;
-    int j;
-    Object localObject1;
-    Object localObject2;
-    Entry localEntry1;
-    Entry localEntry2;
-    if (paramObject != null) {
-      i = paramObject.hashCode();
-      j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-
-      localObject1 = arrayOfEntry[j]; for (localObject2 = null; localObject1 != null; )
-      {
-        if ((((Entry)localObject1).hash == i) && (paramObject.equals(((Entry)localObject1).key))) {
-          this.modCount += 1;
-          if (localObject2 != null)
-            localObject2.next = ((Entry)localObject1).next;
-          else {
-            arrayOfEntry[j] = ((Entry)localObject1).next;
-          }
-          this.count -= 1;
-          Object localObject3 = ((Entry)localObject1).value;
-          freeEntry((Entry)localObject1);
-          return localObject3;
-        }
-        localObject2 = localObject1; localObject1 = ((Entry)localObject1).next;
-      }
-
-    }
-    else
-    {
-      localEntry1 = arrayOfEntry[0]; for (localEntry2 = null; localEntry1 != null; )
-      {
-        if (localEntry1.key == null) {
-          this.modCount += 1;
-          if (localEntry2 != null)
-            localEntry2.next = localEntry1.next;
-          else {
-            arrayOfEntry[0] = localEntry1.next;
-          }
-          this.count -= 1;
-          localObject1 = localEntry1.value;
-          freeEntry(localEntry1);
-          return localObject1;
-        }
-        localEntry2 = localEntry1; localEntry1 = localEntry1.next;
-      }
-
-    }
-
-    return null;
-  }
-
-  public void putAll(Map paramMap)
-  {
-    Iterator localIterator = paramMap.entrySet().iterator();
-    while (localIterator.hasNext()) {
-      Map.Entry localEntry = (Map.Entry)localIterator.next();
-      put(localEntry.getKey(), localEntry.getValue());
-    }
-  }
-
-  public void clear()
-  {
-    if (this.count == 0)
-      return;
-    this.modCount += 1;
-    Entry localEntry = this.head.lNext;
-    while (localEntry != this.tail) {
-      localObject = localEntry;
-      localEntry = ((Entry)localObject).lNext;
-      freeEntry((Entry)localObject);
-    }
-
-    Object localObject = this.table;
-    int i = localObject.length;
-    while (true) { i--; if (i < 0) break;
-      localObject[i] = null; }
-    this.count = 0;
-  }
-
-  public Object clone()
-  {
-    try
-    {
-      HashMapExt localHashMapExt = (HashMapExt)super.clone();
-      localHashMapExt.table = new Entry[this.table.length];
-      for (int i = this.table.length; i-- > 0; ) {
-        Entry localEntry = localHashMapExt.table[i] =  = this.table[i] != null ? (Entry)this.table[i].clone() : null;
-
-        while (localEntry != null) {
-          localEntry.lPrev = localHashMapExt.head; localEntry.lNext = localHashMapExt.head.lNext;
-          localEntry.lNext.lPrev = localEntry; localHashMapExt.head.lNext = localEntry;
-          localEntry = localEntry.next;
-        }
-      }
-      localHashMapExt.keySet = null;
-      localHashMapExt.entrySet = null;
-      localHashMapExt.values = null;
-      localHashMapExt.modCount = 0;
-      return localHashMapExt;
-    } catch (CloneNotSupportedException localCloneNotSupportedException) {
-    }
-    throw new InternalError();
-  }
-
-  public Set keySet()
-  {
-    if (this.keySet == null)
-      this.keySet = new AbstractSet() {
-        public Iterator iterator() {
-          return new HashMapExt.HashIterator(HashMapExt.this, 0);
-        }
-        public int size() {
-          return HashMapExt.this.count;
-        }
-        public boolean contains(Object paramObject) {
-          return HashMapExt.this.containsKey(paramObject);
-        }
-        public boolean remove(Object paramObject) {
-          return HashMapExt.this.remove(paramObject) != null;
-        }
-        public void clear() {
-          HashMapExt.this.clear();
-        }
-      };
-    return this.keySet;
-  }
-
-  public Collection values()
-  {
-    if (this.values == null)
-      this.values = new AbstractCollection() {
-        public Iterator iterator() {
-          return new HashMapExt.HashIterator(HashMapExt.this, 1);
-        }
-        public int size() {
-          return HashMapExt.this.count;
-        }
-        public boolean contains(Object paramObject) {
-          return HashMapExt.this.containsValue(paramObject);
-        }
-        public void clear() {
-          HashMapExt.this.clear();
-        }
-      };
-    return this.values;
-  }
-
-  public Set entrySet()
-  {
-    if (this.entrySet == null) {
-      this.entrySet = new AbstractSet() {
-        public Iterator iterator() {
-          return new HashMapExt.HashIterator(HashMapExt.this, 2);
+        public boolean hasNext()
+        {
+            return entry.lNext != tail;
         }
 
-        public boolean contains(Object paramObject) {
-          if (!(paramObject instanceof Map.Entry))
-            return false;
-          Map.Entry localEntry = (Map.Entry)paramObject;
-          Object localObject = localEntry.getKey();
-          HashMapExt.Entry[] arrayOfEntry = HashMapExt.this.table;
-          int i = localObject == null ? 0 : localObject.hashCode();
-          int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-
-          for (HashMapExt.Entry localEntry1 = arrayOfEntry[j]; localEntry1 != null; localEntry1 = localEntry1.next)
-            if ((localEntry1.hash == i) && (localEntry1.equals(localEntry)))
-              return true;
-          return false;
-        }
-
-        public boolean remove(Object paramObject) {
-          if (!(paramObject instanceof Map.Entry))
-            return false;
-          Map.Entry localEntry = (Map.Entry)paramObject;
-          Object localObject = localEntry.getKey();
-          HashMapExt.Entry[] arrayOfEntry = HashMapExt.this.table;
-          int i = localObject == null ? 0 : localObject.hashCode();
-          int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-
-          HashMapExt.Entry localEntry1 = arrayOfEntry[j]; for (HashMapExt.Entry localEntry2 = null; localEntry1 != null; )
-          {
-            if ((localEntry1.hash == i) && (localEntry1.equals(localEntry))) {
-              HashMapExt.access$208(HashMapExt.this);
-              if (localEntry2 != null)
-                localEntry2.next = localEntry1.next;
-              else {
-                arrayOfEntry[j] = localEntry1.next;
-              }
-              HashMapExt.access$010(HashMapExt.this);
-              HashMapExt.this.freeEntry(localEntry1);
-              return true;
+        public java.lang.Object next()
+        {
+            if(modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            if(entry.lNext == tail)
+            {
+                throw new NoSuchElementException();
+            } else
+            {
+                lastReturned = entry = entry.lNext;
+                return type != 0 ? type != 1 ? ((java.lang.Object) (entry)) : entry.value : entry.key;
             }
-            localEntry2 = localEntry1; localEntry1 = localEntry1.next;
-          }
-
-          return false;
         }
 
-        public int size() {
-          return HashMapExt.this.count;
+        public void remove()
+        {
+            if(lastReturned == null)
+                throw new IllegalStateException();
+            if(modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            com.maddox.util.HashMapExt.Entry aentry[] = table;
+            int i = (lastReturned.hash & 0x7fffffff) % aentry.length;
+            com.maddox.util.HashMapExt.Entry entry1 = aentry[i];
+            com.maddox.util.HashMapExt.Entry entry2 = null;
+            for(; entry1 != null; entry1 = entry1.next)
+            {
+                if(entry1 == lastReturned)
+                {
+                    modCount++;
+                    expectedModCount++;
+                    if(entry2 == null)
+                        aentry[i] = entry1.next;
+                    else
+                        entry2.next = entry1.next;
+                    count--;
+                    lastReturned = null;
+                    entry = entry1.lPrev;
+                    freeEntry(entry1);
+                    return;
+                }
+                entry2 = entry1;
+            }
+
+            throw new ConcurrentModificationException();
         }
 
-        public void clear() {
-          HashMapExt.this.clear();
+        com.maddox.util.HashMapExt.Entry entry;
+        com.maddox.util.HashMapExt.Entry lastReturned;
+        int type;
+        private int expectedModCount;
+
+        HashIterator(int i)
+        {
+            entry = head;
+            lastReturned = null;
+            expectedModCount = modCount;
+            type = i;
         }
-      };
     }
-    return this.entrySet;
-  }
 
-  private Entry allocEntry(int paramInt, Object paramObject1, Object paramObject2, Entry paramEntry)
-  {
-    if (this.freeEntryList == null)
-      return new Entry(paramInt, paramObject1, paramObject2, paramEntry);
-    Entry localEntry = this.freeEntryList;
-    this.freeEntryList = this.freeEntryList.next;
-    localEntry.hash = paramInt;
-    localEntry.key = paramObject1;
-    localEntry.value = paramObject2;
-    localEntry.next = paramEntry;
-    return localEntry;
-  }
-
-  private void freeEntry(Entry paramEntry) {
-    paramEntry.key = null;
-    paramEntry.value = null;
-    paramEntry.next = this.freeEntryList;
-    this.freeEntryList = paramEntry;
-    paramEntry.lPrev.lNext = paramEntry.lNext;
-    paramEntry.lNext.lPrev = paramEntry.lPrev;
-    paramEntry.lPrev = null;
-    paramEntry.lNext = null;
-  }
-
-  public void freeCachedMem() {
-    this.freeEntryList = null;
-  }
-
-  private void writeObject(ObjectOutputStream paramObjectOutputStream)
-    throws IOException
-  {
-    paramObjectOutputStream.defaultWriteObject();
-
-    paramObjectOutputStream.writeInt(this.table.length);
-
-    paramObjectOutputStream.writeInt(this.count);
-
-    for (int i = this.table.length - 1; i >= 0; i--) {
-      Entry localEntry = this.table[i];
-
-      while (localEntry != null) {
-        paramObjectOutputStream.writeObject(localEntry.key);
-        paramObjectOutputStream.writeObject(localEntry.value);
-        localEntry = localEntry.next;
-      }
-    }
-  }
-
-  private void readObject(ObjectInputStream paramObjectInputStream)
-    throws IOException, ClassNotFoundException
-  {
-    paramObjectInputStream.defaultReadObject();
-
-    int i = paramObjectInputStream.readInt();
-    this.table = new Entry[i];
-
-    int j = paramObjectInputStream.readInt();
-
-    for (int k = 0; k < j; k++) {
-      Object localObject1 = paramObjectInputStream.readObject();
-      Object localObject2 = paramObjectInputStream.readObject();
-      put(localObject1, localObject2);
-    }
-  }
-
-  public int capacity() {
-    return this.table.length;
-  }
-
-  public float loadFactor() {
-    return this.loadFactor;
-  }
-
-  private class HashIterator
-    implements Iterator
-  {
-    HashMapExt.Entry entry = HashMapExt.this.head;
-    HashMapExt.Entry lastReturned = null;
-    int type;
-    private int expectedModCount = HashMapExt.this.modCount;
-
-    HashIterator(int arg2)
+    private static class Entry
+        implements java.util.Map.Entry
     {
-      int i;
-      this.type = i;
-    }
 
-    public boolean hasNext() {
-      return this.entry.lNext != HashMapExt.this.tail;
-    }
-
-    public Object next() {
-      if (HashMapExt.this.modCount != this.expectedModCount)
-        throw new ConcurrentModificationException();
-      if (this.entry.lNext == HashMapExt.this.tail)
-        throw new NoSuchElementException();
-      this.lastReturned = (this.entry = this.entry.lNext);
-      return this.type == 1 ? this.entry.value : this.type == 0 ? this.entry.key : this.entry;
-    }
-
-    public void remove() {
-      if (this.lastReturned == null)
-        throw new IllegalStateException();
-      if (HashMapExt.this.modCount != this.expectedModCount) {
-        throw new ConcurrentModificationException();
-      }
-      HashMapExt.Entry[] arrayOfEntry = HashMapExt.this.table;
-      int i = (this.lastReturned.hash & 0x7FFFFFFF) % arrayOfEntry.length;
-
-      HashMapExt.Entry localEntry1 = arrayOfEntry[i]; for (HashMapExt.Entry localEntry2 = null; localEntry1 != null; )
-      {
-        if (localEntry1 == this.lastReturned) {
-          HashMapExt.access$208(HashMapExt.this);
-          this.expectedModCount += 1;
-          if (localEntry2 == null)
-            arrayOfEntry[i] = localEntry1.next;
-          else
-            localEntry2.next = localEntry1.next;
-          HashMapExt.access$010(HashMapExt.this);
-          this.lastReturned = null;
-          this.entry = localEntry1.lPrev;
-          HashMapExt.this.freeEntry(localEntry1);
-          return;
+        protected java.lang.Object clone()
+        {
+            return new Entry(hash, key, value, next != null ? (com.maddox.util.Entry)next.clone() : null);
         }
-        localEntry2 = localEntry1; localEntry1 = localEntry1.next;
-      }
 
-      throw new ConcurrentModificationException();
+        public java.lang.Object getKey()
+        {
+            return key;
+        }
+
+        public java.lang.Object getValue()
+        {
+            return value;
+        }
+
+        public java.lang.Object setValue(java.lang.Object obj)
+        {
+            java.lang.Object obj1 = value;
+            value = obj;
+            return obj1;
+        }
+
+        public boolean equals(java.lang.Object obj)
+        {
+            if(!(obj instanceof java.util.Map.Entry))
+            {
+                return false;
+            } else
+            {
+                java.util.Map.Entry entry = (java.util.Map.Entry)obj;
+                return (key != null ? key.equals(entry.getKey()) : entry.getKey() == null) && (value != null ? value.equals(entry.getValue()) : entry.getValue() == null);
+            }
+        }
+
+        public int hashCode()
+        {
+            return hash ^ (value != null ? value.hashCode() : 0);
+        }
+
+        public java.lang.String toString()
+        {
+            return key.toString() + "=" + value.toString();
+        }
+
+        int hash;
+        java.lang.Object key;
+        java.lang.Object value;
+        com.maddox.util.Entry next;
+        com.maddox.util.Entry lNext;
+        com.maddox.util.Entry lPrev;
+
+        Entry(int i, java.lang.Object obj, java.lang.Object obj1, com.maddox.util.Entry entry)
+        {
+            hash = i;
+            key = obj;
+            value = obj1;
+            next = entry;
+        }
     }
-  }
 
-  private static class Entry
-    implements Map.Entry
-  {
-    int hash;
-    Object key;
-    Object value;
-    Entry next;
-    Entry lNext;
-    Entry lPrev;
 
-    Entry(int paramInt, Object paramObject1, Object paramObject2, Entry paramEntry)
+    public HashMapExt(int i, float f)
     {
-      this.hash = paramInt;
-      this.key = paramObject1;
-      this.value = paramObject2;
-      this.next = paramEntry;
+        modCount = 0;
+        keySet = null;
+        entrySet = null;
+        values = null;
+        freeEntryList = null;
+        if(i < 0)
+            throw new IllegalArgumentException("Illegal Initial Capacity: " + i);
+        if(f <= 0.0F)
+            throw new IllegalArgumentException("Illegal Load factor: " + f);
+        if(i == 0)
+            i = 1;
+        loadFactor = f;
+        table = new com.maddox.util.Entry[i];
+        threshold = (int)((float)i * f);
+        head = allocEntry(_entryHash++, null, null, null);
+        tail = allocEntry(0, null, null, null);
+        head.lNext = tail;
+        tail.lPrev = head;
     }
 
-    protected Object clone() {
-      return new Entry(this.hash, this.key, this.value, this.next == null ? null : (Entry)this.next.clone());
-    }
-
-    public Object getKey()
+    public HashMapExt(int i)
     {
-      return this.key;
+        this(i, 0.75F);
     }
 
-    public Object getValue() {
-      return this.value;
+    public HashMapExt()
+    {
+        this(101, 0.75F);
     }
 
-    public Object setValue(Object paramObject) {
-      Object localObject = this.value;
-      this.value = paramObject;
-      return localObject;
+    public HashMapExt(java.util.Map map)
+    {
+        this(java.lang.Math.max(2 * map.size(), 11), 0.75F);
+        putAll(map);
     }
 
-    public boolean equals(Object paramObject) {
-      if (!(paramObject instanceof Map.Entry))
-        return false;
-      Map.Entry localEntry = (Map.Entry)paramObject;
+    public int size()
+    {
+        return count;
+    }
 
-      return (this.key == null ? localEntry.getKey() == null : this.key.equals(localEntry.getKey())) && (this.value == null ? localEntry.getValue() == null : this.value.equals(localEntry.getValue()));
+    public boolean isEmpty()
+    {
+        return count == 0;
     }
 
     public int hashCode()
     {
-      return this.hash ^ (this.value == null ? 0 : this.value.hashCode());
+        return head.hashCode();
     }
 
-    public String toString() {
-      return this.key.toString() + "=" + this.value.toString();
+    public boolean equals(java.lang.Object obj)
+    {
+        return this == obj;
     }
-  }
+
+    public java.util.Map.Entry nextEntry(java.util.Map.Entry entry)
+    {
+        if(count == 0)
+            return null;
+        com.maddox.util.Entry entry1 = (com.maddox.util.Entry)entry;
+        if(entry1 == null)
+        {
+            nextEntryLock = modCount;
+            entry1 = head.lNext;
+        } else
+        {
+            if(modCount != nextEntryLock)
+                throw new ConcurrentModificationException();
+            entry1 = entry1.lNext;
+        }
+        if(entry1 == tail)
+            return null;
+        else
+            return entry1;
+    }
+
+    public java.util.Map.Entry getEntry(java.lang.Object obj)
+    {
+        if(obj != null)
+        {
+            com.maddox.util.Entry aentry[] = table;
+            int i = obj.hashCode();
+            int j = (i & 0x7fffffff) % aentry.length;
+            for(com.maddox.util.Entry entry1 = aentry[j]; entry1 != null; entry1 = entry1.next)
+                if(entry1.hash == i && obj.equals(entry1.key))
+                    return entry1;
+
+        } else
+        {
+            for(com.maddox.util.Entry entry = head.lNext; entry != tail; entry = entry.lNext)
+                if(entry.key == null)
+                    return entry;
+
+        }
+        return null;
+    }
+
+    public boolean containsValue(java.lang.Object obj)
+    {
+        com.maddox.util.Entry entry = head.lNext;
+        if(obj == null)
+            for(; entry != tail; entry = entry.lNext)
+                if(entry.value == null)
+                    return true;
+
+        else
+            for(; entry != tail; entry = entry.lNext)
+                if(obj.equals(entry.value))
+                    return true;
+
+        return false;
+    }
+
+    public boolean containsKey(java.lang.Object obj)
+    {
+        if(obj != null)
+        {
+            com.maddox.util.Entry aentry[] = table;
+            int i = obj.hashCode();
+            int j = (i & 0x7fffffff) % aentry.length;
+            for(com.maddox.util.Entry entry1 = aentry[j]; entry1 != null; entry1 = entry1.next)
+                if(entry1.hash == i && obj.equals(entry1.key))
+                    return true;
+
+        } else
+        {
+            for(com.maddox.util.Entry entry = head.lNext; entry != tail; entry = entry.lNext)
+                if(entry.key == null)
+                    return true;
+
+        }
+        return false;
+    }
+
+    public java.lang.Object get(java.lang.Object obj)
+    {
+        if(obj != null)
+        {
+            com.maddox.util.Entry aentry[] = table;
+            int i = obj.hashCode();
+            int j = (i & 0x7fffffff) % aentry.length;
+            for(com.maddox.util.Entry entry1 = aentry[j]; entry1 != null; entry1 = entry1.next)
+                if(entry1.hash == i && obj.equals(entry1.key))
+                    return entry1.value;
+
+        } else
+        {
+            for(com.maddox.util.Entry entry = head.lNext; entry != tail; entry = entry.lNext)
+                if(entry.key == null)
+                    return entry.value;
+
+        }
+        return null;
+    }
+
+    private void rehash()
+    {
+        int i = table.length * 2 + 1;
+        com.maddox.util.Entry aentry[] = new com.maddox.util.Entry[i];
+        modCount++;
+        threshold = (int)((float)i * loadFactor);
+        table = aentry;
+        for(com.maddox.util.Entry entry = head.lNext; entry != tail; entry = entry.lNext)
+        {
+            int j = (entry.hash & 0x7fffffff) % i;
+            entry.next = aentry[j];
+            aentry[j] = entry;
+        }
+
+    }
+
+    public java.lang.Object put(java.lang.Object obj, java.lang.Object obj1)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        int i = 0;
+        int j = 0;
+        if(obj != null)
+        {
+            i = obj.hashCode();
+            j = (i & 0x7fffffff) % aentry.length;
+            for(com.maddox.util.Entry entry = aentry[j]; entry != null; entry = entry.next)
+                if(entry.hash == i && obj.equals(entry.key))
+                {
+                    java.lang.Object obj2 = entry.value;
+                    entry.value = obj1;
+                    return obj2;
+                }
+
+        } else
+        {
+            for(com.maddox.util.Entry entry1 = head.lNext; entry1 != tail; entry1 = entry1.lNext)
+                if(entry1.key == null)
+                {
+                    java.lang.Object obj3 = entry1.value;
+                    entry1.value = obj1;
+                    return obj3;
+                }
+
+        }
+        modCount++;
+        if(count >= threshold)
+        {
+            rehash();
+            aentry = table;
+            j = (i & 0x7fffffff) % aentry.length;
+        }
+        com.maddox.util.Entry entry2 = allocEntry(i, obj, obj1, aentry[j]);
+        entry2.lPrev = head;
+        entry2.lNext = head.lNext;
+        entry2.lNext.lPrev = entry2;
+        head.lNext = entry2;
+        aentry[j] = entry2;
+        count++;
+        return null;
+    }
+
+    public java.lang.Object remove(java.lang.Object obj)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        if(obj != null)
+        {
+            int i = obj.hashCode();
+            int j = (i & 0x7fffffff) % aentry.length;
+            com.maddox.util.Entry entry2 = aentry[j];
+            com.maddox.util.Entry entry3 = null;
+            for(; entry2 != null; entry2 = entry2.next)
+            {
+                if(entry2.hash == i && obj.equals(entry2.key))
+                {
+                    modCount++;
+                    if(entry3 != null)
+                        entry3.next = entry2.next;
+                    else
+                        aentry[j] = entry2.next;
+                    count--;
+                    java.lang.Object obj2 = entry2.value;
+                    freeEntry(entry2);
+                    return obj2;
+                }
+                entry3 = entry2;
+            }
+
+        } else
+        {
+            com.maddox.util.Entry entry = aentry[0];
+            com.maddox.util.Entry entry1 = null;
+            for(; entry != null; entry = entry.next)
+            {
+                if(entry.key == null)
+                {
+                    modCount++;
+                    if(entry1 != null)
+                        entry1.next = entry.next;
+                    else
+                        aentry[0] = entry.next;
+                    count--;
+                    java.lang.Object obj1 = entry.value;
+                    freeEntry(entry);
+                    return obj1;
+                }
+                entry1 = entry;
+            }
+
+        }
+        return null;
+    }
+
+    public void putAll(java.util.Map map)
+    {
+        java.util.Map.Entry entry;
+        for(java.util.Iterator iterator = map.entrySet().iterator(); iterator.hasNext(); put(entry.getKey(), entry.getValue()))
+            entry = (java.util.Map.Entry)iterator.next();
+
+    }
+
+    public void clear()
+    {
+        if(count == 0)
+            return;
+        modCount++;
+        for(com.maddox.util.Entry entry = head.lNext; entry != tail;)
+        {
+            com.maddox.util.Entry entry1 = entry;
+            entry = entry1.lNext;
+            freeEntry(entry1);
+        }
+
+        com.maddox.util.Entry aentry[] = table;
+        for(int i = aentry.length; --i >= 0;)
+            aentry[i] = null;
+
+        count = 0;
+    }
+
+    public java.lang.Object clone()
+    {
+        com.maddox.util.HashMapExt hashmapext;
+        hashmapext = (com.maddox.util.HashMapExt)super.clone();
+        hashmapext.table = new com.maddox.util.Entry[table.length];
+        for(int i = table.length; i-- > 0;)
+        {
+            for(com.maddox.util.Entry entry = hashmapext.table[i] = table[i] == null ? null : (com.maddox.util.Entry)table[i].clone(); entry != null; entry = entry.next)
+            {
+                entry.lPrev = hashmapext.head;
+                entry.lNext = hashmapext.head.lNext;
+                entry.lNext.lPrev = entry;
+                hashmapext.head.lNext = entry;
+            }
+
+        }
+
+        hashmapext.keySet = null;
+        hashmapext.entrySet = null;
+        hashmapext.values = null;
+        hashmapext.modCount = 0;
+        return hashmapext;
+        java.lang.CloneNotSupportedException clonenotsupportedexception;
+        clonenotsupportedexception;
+        throw new InternalError();
+    }
+
+    public java.util.Set keySet()
+    {
+        if(keySet == null)
+            keySet = new java.util.AbstractSet() {
+
+                public java.util.Iterator iterator()
+                {
+                    return new HashIterator(0);
+                }
+
+                public int size()
+                {
+                    return count;
+                }
+
+                public boolean contains(java.lang.Object obj)
+                {
+                    return containsKey(obj);
+                }
+
+                public boolean remove(java.lang.Object obj)
+                {
+                    return com.maddox.util.HashMapExt.this.remove(obj) != null;
+                }
+
+                public void clear()
+                {
+                    com.maddox.util.HashMapExt.this.clear();
+                }
+
+            }
+;
+        return keySet;
+    }
+
+    public java.util.Collection values()
+    {
+        if(values == null)
+            values = new java.util.AbstractCollection() {
+
+                public java.util.Iterator iterator()
+                {
+                    return new HashIterator(1);
+                }
+
+                public int size()
+                {
+                    return count;
+                }
+
+                public boolean contains(java.lang.Object obj)
+                {
+                    return containsValue(obj);
+                }
+
+                public void clear()
+                {
+                    com.maddox.util.HashMapExt.this.clear();
+                }
+
+            }
+;
+        return values;
+    }
+
+    public java.util.Set entrySet()
+    {
+        if(entrySet == null)
+            entrySet = new java.util.AbstractSet() {
+
+                public java.util.Iterator iterator()
+                {
+                    return new HashIterator(2);
+                }
+
+                public boolean contains(java.lang.Object obj)
+                {
+                    if(!(obj instanceof java.util.Map.Entry))
+                        return false;
+                    java.util.Map.Entry entry = (java.util.Map.Entry)obj;
+                    java.lang.Object obj1 = entry.getKey();
+                    com.maddox.util.HashMapExt.Entry aentry[] = table;
+                    int i = obj1 != null ? obj1.hashCode() : 0;
+                    int j = (i & 0x7fffffff) % aentry.length;
+                    for(com.maddox.util.HashMapExt.Entry entry1 = aentry[j]; entry1 != null; entry1 = entry1.next)
+                        if(entry1.hash == i && entry1.equals(entry))
+                            return true;
+
+                    return false;
+                }
+
+                public boolean remove(java.lang.Object obj)
+                {
+                    if(!(obj instanceof java.util.Map.Entry))
+                        return false;
+                    java.util.Map.Entry entry = (java.util.Map.Entry)obj;
+                    java.lang.Object obj1 = entry.getKey();
+                    com.maddox.util.HashMapExt.Entry aentry[] = table;
+                    int i = obj1 != null ? obj1.hashCode() : 0;
+                    int j = (i & 0x7fffffff) % aentry.length;
+                    com.maddox.util.HashMapExt.Entry entry1 = aentry[j];
+                    com.maddox.util.HashMapExt.Entry entry2 = null;
+                    for(; entry1 != null; entry1 = entry1.next)
+                    {
+                        if(entry1.hash == i && entry1.equals(entry))
+                        {
+                            modCount++;
+                            if(entry2 != null)
+                                entry2.next = entry1.next;
+                            else
+                                aentry[j] = entry1.next;
+                            count--;
+                            freeEntry(entry1);
+                            return true;
+                        }
+                        entry2 = entry1;
+                    }
+
+                    return false;
+                }
+
+                public int size()
+                {
+                    return count;
+                }
+
+                public void clear()
+                {
+                    com.maddox.util.HashMapExt.this.clear();
+                }
+
+            }
+;
+        return entrySet;
+    }
+
+    private com.maddox.util.Entry allocEntry(int i, java.lang.Object obj, java.lang.Object obj1, com.maddox.util.Entry entry)
+    {
+        if(freeEntryList == null)
+        {
+            return new Entry(i, obj, obj1, entry);
+        } else
+        {
+            com.maddox.util.Entry entry1 = freeEntryList;
+            freeEntryList = freeEntryList.next;
+            entry1.hash = i;
+            entry1.key = obj;
+            entry1.value = obj1;
+            entry1.next = entry;
+            return entry1;
+        }
+    }
+
+    private void freeEntry(com.maddox.util.Entry entry)
+    {
+        entry.key = null;
+        entry.value = null;
+        entry.next = freeEntryList;
+        freeEntryList = entry;
+        entry.lPrev.lNext = entry.lNext;
+        entry.lNext.lPrev = entry.lPrev;
+        entry.lPrev = null;
+        entry.lNext = null;
+    }
+
+    public void freeCachedMem()
+    {
+        freeEntryList = null;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream objectoutputstream)
+        throws java.io.IOException
+    {
+        objectoutputstream.defaultWriteObject();
+        objectoutputstream.writeInt(table.length);
+        objectoutputstream.writeInt(count);
+        for(int i = table.length - 1; i >= 0; i--)
+        {
+            for(com.maddox.util.Entry entry = table[i]; entry != null; entry = entry.next)
+            {
+                objectoutputstream.writeObject(entry.key);
+                objectoutputstream.writeObject(entry.value);
+            }
+
+        }
+
+    }
+
+    private void readObject(java.io.ObjectInputStream objectinputstream)
+        throws java.io.IOException, java.lang.ClassNotFoundException
+    {
+        objectinputstream.defaultReadObject();
+        int i = objectinputstream.readInt();
+        table = new com.maddox.util.Entry[i];
+        int j = objectinputstream.readInt();
+        for(int k = 0; k < j; k++)
+        {
+            java.lang.Object obj = objectinputstream.readObject();
+            java.lang.Object obj1 = objectinputstream.readObject();
+            put(obj, obj1);
+        }
+
+    }
+
+    public int capacity()
+    {
+        return table.length;
+    }
+
+    public float loadFactor()
+    {
+        return loadFactor;
+    }
+
+    private transient com.maddox.util.Entry table[];
+    private transient int count;
+    private int threshold;
+    private float loadFactor;
+    private transient int modCount;
+    private static int _entryHash = 0;
+    private transient com.maddox.util.Entry head;
+    private transient com.maddox.util.Entry tail;
+    private transient int nextEntryLock;
+    private transient java.util.Set keySet;
+    private transient java.util.Set entrySet;
+    private transient java.util.Collection values;
+    private com.maddox.util.Entry freeEntryList;
+    private static final int KEYS = 0;
+    private static final int VALUES = 1;
+    private static final int ENTRIES = 2;
+
+
+
+
+
+
+
+
+
 }

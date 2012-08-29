@@ -1,295 +1,312 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BitStream.java
+
 package com.maddox.netphone;
 
 import java.util.Iterator;
 import java.util.Vector;
 
-public class BitStream extends MixBase
+// Referenced classes of package com.maddox.netphone:
+//            MixBase, BsData
+
+public class BitStream extends com.maddox.netphone.MixBase
 {
-  public static final int BSERR_OK = 0;
-  public static final int BSERR_NODATA = 2;
-  protected int rp = 0;
-  protected BsData bdt = null;
-  protected int err = 0;
 
-  public BitStream(int paramInt)
-  {
-    if (paramInt <= 0) {
-      error("Invalid argument");
-      return;
+    public BitStream(int i)
+    {
+        rp = 0;
+        bdt = null;
+        err = 0;
+        if(i <= 0)
+        {
+            error("Invalid argument");
+            return;
+        }
+        int j;
+        for(j = 1; j < i; j *= 2);
+        i = j;
+        bdt = new BsData(i);
+        rp = bdt.wp;
+        bdt.links.add(this);
     }
 
-    int i = 1;
-    while (i < paramInt) i *= 2;
-    paramInt = i;
-
-    this.bdt = new BsData(paramInt);
-    this.rp = this.bdt.wp;
-    this.bdt.links.add(this);
-  }
-
-  public BitStream(BitStream paramBitStream)
-  {
-    if (paramBitStream == null) {
-      error("Invalid parameter");
-      return;
+    public BitStream(com.maddox.netphone.BitStream bitstream)
+    {
+        rp = 0;
+        bdt = null;
+        err = 0;
+        if(bitstream == null)
+        {
+            error("Invalid parameter");
+            return;
+        } else
+        {
+            bdt = bitstream.bdt;
+            rp = bdt.wp;
+            bdt.links.add(this);
+            return;
+        }
     }
 
-    this.bdt = paramBitStream.bdt;
-    this.rp = this.bdt.wp;
-    this.bdt.links.add(this);
-  }
+    public void clear()
+    {
+        if(bdt != null)
+        {
+            bdt.wp = 0;
+            bdt.maxlen = 0;
+            bdt.rdflag = false;
+            for(java.util.Iterator iterator = bdt.links.iterator(); iterator.hasNext();)
+            {
+                com.maddox.netphone.BitStream bitstream = (com.maddox.netphone.BitStream)iterator.next();
+                bitstream.rp = bdt.wp;
+            }
 
-  public void clear()
-  {
-    if (this.bdt != null) {
-      this.bdt.wp = 0;
-      this.bdt.maxlen = 0;
-      this.bdt.rdflag = false;
-
-      Iterator localIterator = this.bdt.links.iterator();
-      while (localIterator.hasNext()) {
-        BitStream localBitStream = (BitStream)localIterator.next();
-        localBitStream.rp = this.bdt.wp;
-      }
-    } else {
-      this.rp = 0;
-    }
-  }
-
-  public void destroy() {
-    if (this.bdt != null) {
-      this.bdt.links.remove(this);
-      this.bdt = null;
-    }
-  }
-
-  public int bitlen()
-  {
-    return this.bdt.wp - this.rp & this.bdt.size - 1;
-  }
-
-  public void reset()
-  {
-    this.rp = this.bdt.wp;
-  }
-
-  public int len(int paramInt)
-  {
-    return bitlen() / paramInt;
-  }
-
-  public int size()
-  {
-    return (bitlen() + 7) / 8;
-  }
-
-  protected int bitspace()
-  {
-    if (this.bdt.rdflag) {
-      int j = 0;
-      Iterator localIterator = this.bdt.links.iterator();
-      while (localIterator.hasNext()) {
-        BitStream localBitStream = (BitStream)localIterator.next();
-        int i = localBitStream.bitlen();
-        if (i > j) j = i;
-      }
-      this.bdt.maxlen = j;
-      this.bdt.rdflag = false;
-    }
-    return this.bdt.size - this.bdt.maxlen - 1;
-  }
-
-  public int space(int paramInt)
-  {
-    return bitspace() / paramInt;
-  }
-
-  public int alignSpace()
-  {
-    int i = bitspace() / 8;
-    return i > 1 ? i - 1 : 0;
-  }
-
-  public int put(int paramInt1, int paramInt2)
-  {
-    if (paramInt2 <= 0) {
-      return 0;
-    }
-    int i = bitspace();
-    if (i < paramInt2) {
-      error("No space - put");
-      return 0;
+        } else
+        {
+            rp = 0;
+        }
     }
 
-    for (int j = 0; j < paramInt2; j++) {
-      if ((paramInt1 & 1 << j) != 0)
-      {
-        int tmp58_57 = (this.bdt.wp >>> 3);
-        byte[] tmp58_46 = this.bdt.data; tmp58_46[tmp58_57] = (byte)(tmp58_46[tmp58_57] | 1 << (this.bdt.wp & 0x7));
-      }
-      else
-      {
-        int tmp94_93 = (this.bdt.wp >>> 3);
-        byte[] tmp94_82 = this.bdt.data; tmp94_82[tmp94_93] = (byte)(tmp94_82[tmp94_93] & (1 << (this.bdt.wp & 0x7) ^ 0xFFFFFFFF));
-      }
-      this.bdt.wp = (this.bdt.wp + 1 & this.bdt.size - 1);
+    public void destroy()
+    {
+        if(bdt != null)
+        {
+            bdt.links.remove(this);
+            bdt = null;
+        }
     }
 
-    this.bdt.maxlen += paramInt2;
-
-    return paramInt2;
-  }
-
-  public int putBegin(int paramInt1, int paramInt2)
-  {
-    if (paramInt2 <= 0) {
-      return 0;
-    }
-    if (bitspace() < paramInt2) {
-      this.err = 1;
-      error("No space - putBegin");
-      return 0;
+    public int bitlen()
+    {
+        return bdt.wp - rp & bdt.size - 1;
     }
 
-    for (int i = paramInt2 - 1; i >= 0; i--) {
-      this.rp = (this.rp - 1 & this.bdt.size - 1);
-      if ((paramInt1 & 1 << i) != 0)
-      {
-        int tmp76_75 = (this.rp >>> 3);
-        byte[] tmp76_67 = this.bdt.data; tmp76_67[tmp76_75] = (byte)(tmp76_67[tmp76_75] | 1 << (this.rp & 0x7));
-      }
-      else
-      {
-        int tmp106_105 = (this.rp >>> 3);
-        byte[] tmp106_97 = this.bdt.data; tmp106_97[tmp106_105] = (byte)(tmp106_97[tmp106_105] & (1 << (this.rp & 0x7) ^ 0xFFFFFFFF));
-      }
-    }
-    this.bdt.maxlen += paramInt2;
-    this.bdt.rdflag = true;
-
-    return paramInt2;
-  }
-
-  public int get(int paramInt)
-  {
-    int i = 0;
-
-    if (bitlen() < paramInt) {
-      this.err = 2;
-      error("No data - get");
-    }
-    if (this.err != 0) return 0;
-
-    for (int j = 0; j < paramInt; j++) {
-      if ((this.bdt.data[(this.rp >>> 3)] & 1 << (this.rp & 0x7)) != 0) i |= 1 << j;
-      this.rp = (this.rp + 1 & this.bdt.size - 1);
-    }
-    this.bdt.rdflag = true;
-
-    return i;
-  }
-
-  public int probe(int paramInt1, int paramInt2)
-  {
-    if (bitlen() < paramInt1) {
-      this.err = 2;
-      error("No data - probe");
-      return 0;
-    }
-    if (this.err != 0) return 0;
-
-    int i = 0; int j = this.rp + paramInt2 & this.bdt.size - 1;
-
-    for (int k = 0; k < paramInt1; k++) {
-      if ((this.bdt.data[(j >>> 3)] & 1 << (j & 0x7)) != 0) i |= 1 << k;
-      j = j + 1 & this.bdt.size + 1;
+    public void reset()
+    {
+        rp = bdt.wp;
     }
 
-    return i;
-  }
-
-  public int putBytes(byte[] paramArrayOfByte, int paramInt)
-  {
-    if (space(8) < paramInt) {
-      paramInt = space(8);
-    }
-    for (int i = 0; i < paramInt; i++) put(paramArrayOfByte[i], 8);
-
-    return paramInt;
-  }
-
-  public int getBytes(byte[] paramArrayOfByte, int paramInt)
-  {
-    if (len(8) < paramInt) {
-      paramInt = len(8);
-    }
-    for (int i = 0; i < paramInt; i++) paramArrayOfByte[i] = (byte)get(8);
-
-    return paramInt;
-  }
-
-  public void skip(int paramInt)
-  {
-    if (bitlen() >= paramInt) this.rp = (this.rp + paramInt & this.bdt.size - 1); else
-      error("No data - skip");
-  }
-
-  public int getAligned(byte[] paramArrayOfByte, int paramInt)
-  {
-    if ((paramArrayOfByte == null) || (paramInt <= 0)) return 0;
-
-    int i = paramInt * 8;
-    int j = bitlen() + 3;
-
-    if (j > i) {
-      putBegin(0, 3);
-    } else {
-      int k = j % 8;
-      paramInt = j / 8;
-      if (k > 0) {
-        k = 8 - k;
-        paramInt++;
-      }
-      putBegin(k, 3);
-      put(0, k);
-    }
-    return getBytes(paramArrayOfByte, paramInt);
-  }
-
-  public int putAligned(byte[] paramArrayOfByte, int paramInt)
-  {
-    if ((paramArrayOfByte == null) || (paramInt <= 0)) return 0;
-
-    int i = paramArrayOfByte[0];
-    int j = i & 0x7;
-    int k = paramInt * 8 - j - 3;
-    int m = k > 5 ? 5 : k;
-
-    if (bitspace() < k) {
-      return 0;
+    public int len(int i)
+    {
+        return bitlen() / i;
     }
 
-    put(i >>> 3, m);
-    k -= m;
-
-    for (int n = 1; k > 0; n++) {
-      m = k > 8 ? 8 : k;
-      put(paramArrayOfByte[n], m);
-      k -= m;
+    public int size()
+    {
+        return (bitlen() + 7) / 8;
     }
 
-    return paramInt;
-  }
+    protected int bitspace()
+    {
+        if(bdt.rdflag)
+        {
+            int j = 0;
+            for(java.util.Iterator iterator = bdt.links.iterator(); iterator.hasNext();)
+            {
+                com.maddox.netphone.BitStream bitstream = (com.maddox.netphone.BitStream)iterator.next();
+                int i = bitstream.bitlen();
+                if(i > j)
+                    j = i;
+            }
 
-  public int getError()
-  {
-    int i = this.err;
-    this.err = 0;
-    return i;
-  }
+            bdt.maxlen = j;
+            bdt.rdflag = false;
+        }
+        return bdt.size - bdt.maxlen - 1;
+    }
 
-  public void errClear()
-  {
-    this.err = 0;
-  }
+    public int space(int i)
+    {
+        return bitspace() / i;
+    }
+
+    public int alignSpace()
+    {
+        int i = bitspace() / 8;
+        return i <= 1 ? 0 : i - 1;
+    }
+
+    public int put(int i, int j)
+    {
+        if(j <= 0)
+            return 0;
+        int k = bitspace();
+        if(k < j)
+        {
+            error("No space - put");
+            return 0;
+        }
+        for(int l = 0; l < j; l++)
+        {
+            if((i & 1 << l) != 0)
+                bdt.data[bdt.wp >>> 3] |= 1 << (bdt.wp & 7);
+            else
+                bdt.data[bdt.wp >>> 3] &= ~(1 << (bdt.wp & 7));
+            bdt.wp = bdt.wp + 1 & bdt.size - 1;
+        }
+
+        bdt.maxlen += j;
+        return j;
+    }
+
+    public int putBegin(int i, int j)
+    {
+        if(j <= 0)
+            return 0;
+        if(bitspace() < j)
+        {
+            err = 1;
+            error("No space - putBegin");
+            return 0;
+        }
+        for(int k = j - 1; k >= 0; k--)
+        {
+            rp = rp - 1 & bdt.size - 1;
+            if((i & 1 << k) != 0)
+                bdt.data[rp >>> 3] |= 1 << (rp & 7);
+            else
+                bdt.data[rp >>> 3] &= ~(1 << (rp & 7));
+        }
+
+        bdt.maxlen += j;
+        bdt.rdflag = true;
+        return j;
+    }
+
+    public int get(int i)
+    {
+        int j = 0;
+        if(bitlen() < i)
+        {
+            err = 2;
+            error("No data - get");
+        }
+        if(err != 0)
+            return 0;
+        for(int k = 0; k < i; k++)
+        {
+            if((bdt.data[rp >>> 3] & 1 << (rp & 7)) != 0)
+                j |= 1 << k;
+            rp = rp + 1 & bdt.size - 1;
+        }
+
+        bdt.rdflag = true;
+        return j;
+    }
+
+    public int probe(int i, int j)
+    {
+        if(bitlen() < i)
+        {
+            err = 2;
+            error("No data - probe");
+            return 0;
+        }
+        if(err != 0)
+            return 0;
+        int k = 0;
+        int l = rp + j & bdt.size - 1;
+        for(int i1 = 0; i1 < i; i1++)
+        {
+            if((bdt.data[l >>> 3] & 1 << (l & 7)) != 0)
+                k |= 1 << i1;
+            l = l + 1 & bdt.size + 1;
+        }
+
+        return k;
+    }
+
+    public int putBytes(byte abyte0[], int i)
+    {
+        if(space(8) < i)
+            i = space(8);
+        for(int j = 0; j < i; j++)
+            put(abyte0[j], 8);
+
+        return i;
+    }
+
+    public int getBytes(byte abyte0[], int i)
+    {
+        if(len(8) < i)
+            i = len(8);
+        for(int j = 0; j < i; j++)
+            abyte0[j] = (byte)get(8);
+
+        return i;
+    }
+
+    public void skip(int i)
+    {
+        if(bitlen() >= i)
+            rp = rp + i & bdt.size - 1;
+        else
+            error("No data - skip");
+    }
+
+    public int getAligned(byte abyte0[], int i)
+    {
+        if(abyte0 == null || i <= 0)
+            return 0;
+        int j = i * 8;
+        int k = bitlen() + 3;
+        if(k > j)
+        {
+            putBegin(0, 3);
+        } else
+        {
+            int l = k % 8;
+            i = k / 8;
+            if(l > 0)
+            {
+                l = 8 - l;
+                i++;
+            }
+            putBegin(l, 3);
+            put(0, l);
+        }
+        return getBytes(abyte0, i);
+    }
+
+    public int putAligned(byte abyte0[], int i)
+    {
+        if(abyte0 == null || i <= 0)
+            return 0;
+        byte byte0 = abyte0[0];
+        int j = byte0 & 7;
+        int k = i * 8 - j - 3;
+        int l = k <= 5 ? k : 5;
+        if(bitspace() < k)
+            return 0;
+        put(byte0 >>> 3, l);
+        k -= l;
+        for(int j1 = 1; k > 0; j1++)
+        {
+            int i1 = k <= 8 ? k : 8;
+            put(abyte0[j1], i1);
+            k -= i1;
+        }
+
+        return i;
+    }
+
+    public int getError()
+    {
+        int i = err;
+        err = 0;
+        return i;
+    }
+
+    public void errClear()
+    {
+        err = 0;
+    }
+
+    public static final int BSERR_OK = 0;
+    public static final int BSERR_NODATA = 2;
+    protected int rp;
+    protected com.maddox.netphone.BsData bdt;
+    protected int err;
 }

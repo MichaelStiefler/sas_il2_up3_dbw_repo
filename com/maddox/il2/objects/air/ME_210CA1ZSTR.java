@@ -1,33 +1,57 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ME_210CA1ZSTR.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class ME_210CA1ZSTR extends ME_210
-  implements TypeFighter, TypeBNZFighter, TypeStormovik, TypeStormovikArmored
+// Referenced classes of package com.maddox.il2.objects.air:
+//            ME_210, PaintSchemeFMPar05, TypeFighter, TypeBNZFighter, 
+//            TypeStormovik, TypeStormovikArmored, NetAircraft, Aircraft
+
+public class ME_210CA1ZSTR extends com.maddox.il2.objects.air.ME_210
+    implements com.maddox.il2.objects.air.TypeFighter, com.maddox.il2.objects.air.TypeBNZFighter, com.maddox.il2.objects.air.TypeStormovik, com.maddox.il2.objects.air.TypeStormovikArmored
 {
-  protected void moveBayDoor(float paramFloat)
-  {
-  }
 
-  static
-  {
-    Class localClass = ME_210CA1ZSTR.class;
-    new NetAircraft.SPAWN(localClass);
+    public ME_210CA1ZSTR()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Me-210");
-    Property.set(localClass, "meshName", "3DO/Plane/Me-210Ca-1Zerstorer/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar05());
+    protected void moveBayDoor(float f)
+    {
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Me-210Ca-1.fmd");
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 10, 10, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_CANNON03" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "MGunBofors40 29" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.ME_210CA1ZSTR.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Me-210");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Me-210Ca-1Zerstorer/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Me-210Ca-1.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 10, 10, 1
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_CANNON03"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "MGunPaK40 42"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null
+        });
+    }
 }

@@ -1,8 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetServerNGenProp.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GFont;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowCellEdit;
 import com.maddox.gwindow.GWindowComboControl;
@@ -11,8 +15,7 @@ import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Client;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
@@ -36,494 +39,587 @@ import com.maddox.rts.SectFile;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class GUINetServerNGenProp extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUISwitchBox3, 
+//            GUILookAndFeel, GUIButton, GUINetServerNGenSelect, GUIDialogClient, 
+//            GUISeparate, GUINetAircraft
+
+public class GUINetServerNGenProp extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GWindowEditControl wNote;
-  public Menu wMenu;
-  public GUIButton bList;
-  public GUIButton bDiff;
-  public GUIButton bLast;
-  public GUIButton bNew;
-  public GWindowComboControl wTimeHour;
-  public GWindowComboControl wTimeMins;
-  public GUISwitchBox3 sLand;
-  private GWindowMessageBox loadMessageBox;
-
-  private void doLoadMission()
-  {
-    int i = this.wTimeHour.getSelected();
-    int j = this.wTimeMins.getSelected() * 15;
-    long l = i * 60L * 60L * 1000L + j * 60L * 1000L;
-    Main.cur().netServerParams.timeoutNGEN = l;
-    Main.cur().netServerParams.bLandedNGEN = this.sLand.isChecked();
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F)
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-      public void result(int paramInt)
-      {
-        if (paramInt == 1)
-          BackgroundTask.cancel(I18N.gui("miss.UserCancel"));
-      }
-    };
-    new MsgAction(72, 0.0D) {
-      public void doAction() { if (Mission.cur() != null) Mission.cur().destroy(); try
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
         {
-          new GUINetServerNGenProp.MissionListener(GUINetServerNGenProp.this);
-          Mission.loadFromSect(Main.cur().currentMissionFile, true);
-        } catch (Exception localException) {
-          System.out.println(localException.getMessage());
-          localException.printStackTrace();
-          GUINetServerNGenProp.this.missionBad(I18N.gui("miss.LoadBad"));
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bList)
+            {
+                getChanges();
+                com.maddox.il2.game.Main.stateStack().change(68);
+                return true;
+            }
+            if(gwindow == bDiff)
+            {
+                com.maddox.il2.game.Main.stateStack().push(41);
+                return true;
+            }
+            if(gwindow == bLast)
+            {
+                com.maddox.rts.SectFile sectfile = new SectFile(com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName, 4, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+                java.lang.String s1 = sectfile.line(sectfile.sectionIndex("$missions"), com.maddox.il2.gui.GUINetServerNGenSelect.cur.missions - 1);
+                java.lang.String s3 = com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName;
+                int l = s3.lastIndexOf("conf.dat");
+                if(l >= 0)
+                    s3 = s3.substring(0, l);
+                com.maddox.il2.game.Main.cur().currentMissionFile = new SectFile(s3 + s1, 0);
+                doLoadMission();
+                return true;
+            }
+            if(gwindow == bNew)
+            {
+                getChanges();
+                java.lang.String s = "NGen.exe";
+                try
+                {
+                    java.lang.String s2 = com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName;
+                    java.lang.Runtime runtime = java.lang.Runtime.getRuntime();
+                    java.lang.Process process = runtime.exec(s + " " + s2);
+                    process.waitFor();
+                }
+                catch(java.lang.Throwable throwable)
+                {
+                    java.lang.System.out.println(throwable.getMessage());
+                    throwable.printStackTrace();
+                    return true;
+                }
+                com.maddox.rts.SectFile sectfile1 = new SectFile(com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName, 4, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+                int k = sectfile1.sectionIndex("$missions");
+                if(k < 0)
+                    return true;
+                com.maddox.il2.gui.GUINetServerNGenSelect.cur.missions = sectfile1.vars(k);
+                java.lang.String s4 = sectfile1.line(k, com.maddox.il2.gui.GUINetServerNGenSelect.cur.missions - 1);
+                java.lang.String s5 = com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName;
+                int i1 = s5.lastIndexOf("conf.dat");
+                if(i1 >= 0)
+                    s5 = s5.substring(0, i1);
+                com.maddox.il2.game.Main.cur().currentMissionFile = new SectFile(s5 + s4, 0);
+                doLoadMission();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-      }
-    };
-  }
 
-  public void missionLoaded()
-  {
-    new MsgAction(72, 0.0D) {
-      public void doAction() { GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-        if (GUINetServerNGenProp.this.loadMessageBox != null) {
-          GUINetServerNGenProp.this.loadMessageBox.close(false);
-          GUINetServerNGenProp.access$102(GUINetServerNGenProp.this, null);
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(432F), x1024(672F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(672F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(32F), y1024(32F), x1024(672F), y1024(32F), 1, com.maddox.il2.gui.GUINetServerNGenSelect.cur.name);
+            draw(x1024(32F), y1024(80F), x1024(320F), y1024(32F), 0, i18n("ngenp.note"));
+            draw(x1024(32F), y1024(160F), x1024(320F), y1024(32F), 0, i18n("ngenp.properties"));
+            draw(x1024(96F), y1024(656F), x1024(96F), y1024(48F), 0, i18n("ngenp.list"));
+            draw(x1024(176F), y1024(656F), x1024(112F), y1024(48F), 2, i18n("ngenp.difficulty"));
+            if(com.maddox.il2.gui.GUINetServerNGenSelect.cur.missions > 0 && (loadMessageBox == null || com.maddox.il2.gui.GUINetServerNGenSelect.cur.missions > 1))
+                draw(x1024(352F), y1024(656F), x1024(112F), y1024(48F), 2, i18n("ngenp.last"));
+            draw(x1024(528F), y1024(656F), x1024(112F), y1024(48F), 2, i18n("ngenp.new"));
+            draw(x1024(32F), y1024(448F), x1024(672F), y1024(32F), 0, i18n("ngenp.end_mission"));
+            draw(x1024(384F), y1024(496F), x1024(226F), y1024(32F), 0, i18n("ngenp.timeout"));
+            draw(x1024(264F), y1024(544F), x1024(346F), y1024(48F), 0, i18n("ngenp.landed"));
         }
-        ((NetUser)NetEnv.host()).resetAllPlaces();
-        CmdEnv.top().exec("mission BEGIN");
-        int i = GUINetAircraft.serverPlace();
-        if (i != -1)
-          ((NetUser)NetEnv.host()).requestPlace(i);
-        Main.stateStack().change(45); } } ;
-  }
 
-  private void missionBad(String paramString) {
-    this.loadMessageBox.close(false);
-    this.loadMessageBox = null;
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.Error"), paramString, 3, 0.0F) {
-      public void result(int paramInt) {
-      }
-    };
-  }
-
-  public void enter(GameState paramGameState) {
-    if ((paramGameState != null) && (paramGameState.id() == 51)) {
-      localObject = "NGen.exe";
-      try {
-        String str = GUINetServerNGenSelect.cur.fileName;
-        Runtime localRuntime = Runtime.getRuntime();
-
-        Process localProcess = localRuntime.exec((String)localObject + " -ended " + str);
-
-        localProcess.waitFor();
-      }
-      catch (Throwable localThrowable) {
-        System.out.println(localThrowable.getMessage());
-        localThrowable.printStackTrace();
-      }
-    }
-    Object localObject = new SectFile(GUINetServerNGenSelect.cur.fileName, 4, true, null, RTSConf.charEncoding, true);
-    int i = ((SectFile)localObject).get("$select", "difficulty", -1);
-    if (i == -1)
-      i = World.cur().userCfg.netDifficulty;
-    else
-      World.cur().userCfg.netDifficulty = i;
-    World.cur().diffCur.set(i);
-    Main.cur().netServerParams.setDifficulty(World.cur().diffCur.get());
-
-    NetEnv.cur().connect.bindEnable(true);
-
-    Main.cur().netServerParams.USGSupdate();
-    _enter();
-  }
-
-  public void enterPop(GameState paramGameState) {
-    if (paramGameState.id() == 41) {
-      World.cur().userCfg.netDifficulty = World.cur().diffCur.get();
-      World.cur().userCfg.saveConf();
-      Main.cur().netServerParams.setDifficulty(World.cur().diffCur.get());
-      SectFile localSectFile = new SectFile(GUINetServerNGenSelect.cur.fileName, 5, true, null, RTSConf.charEncoding, true);
-      localSectFile.set("$select", "difficulty", World.cur().userCfg.netDifficulty);
-      localSectFile.saveFile();
-    }
-    this.client.activateWindow();
-  }
-
-  public void _enter() {
-    fillNote();
-    fillMenu();
-    this.wMenu.resized();
-    this.client.activateWindow();
-    if (GUINetServerNGenSelect.cur.missions > 0)
-      this.bLast.showWindow();
-    else
-      this.bLast.hideWindow(); 
-  }
-
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  private void fillNote()
-  {
-    if (GUINetServerNGenSelect.cur != null)
-      this.wNote.setValue(GUINetServerNGenSelect.cur.note, false);
-    else
-      this.wNote.setValue("", false);
-  }
-
-  private void fillMenu() {
-    this.wMenu.lst.clear();
-    if (GUINetServerNGenSelect.cur == null)
-      return;
-    SectFile localSectFile = new SectFile(GUINetServerNGenSelect.cur.fileName, 4, true, null, RTSConf.charEncoding, true);
-    int i = localSectFile.sections();
-    for (int j = 0; j < i; j++) {
-      String str1 = localSectFile.sectionName(j);
-      if (str1.startsWith("$"))
-        continue;
-      int k = localSectFile.vars(j);
-      if (k == 0)
-        continue;
-      MenuItem localMenuItem = new MenuItem();
-      localMenuItem.key = str1;
-      localMenuItem.name = localSectFile.get("$locale", str1, str1);
-      for (int m = 0; m < k; m++) {
-        String str3 = localSectFile.var(j, m);
-        String str4 = localSectFile.value(j, m);
-        localMenuItem.keys.add(str3);
-        localMenuItem.names.add(str4);
-      }
-      String str2 = localSectFile.get("$select", str1, (String)null);
-      if (str2 != null)
-        localMenuItem.select(str2);
-      this.wMenu.lst.add(localMenuItem);
-    }
-    if (this.wMenu.lst.size() > 0)
-      this.wMenu.setSelect(0, 0);
-  }
-
-  private void getChanges() {
-    if (GUINetServerNGenSelect.cur == null)
-      return;
-    SectFile localSectFile = new SectFile(GUINetServerNGenSelect.cur.fileName, 5, true, null, RTSConf.charEncoding, true);
-    int i = 0;
-    String str1 = this.wNote.getValue();
-    if (!str1.equals(GUINetServerNGenSelect.cur.note)) {
-      GUINetServerNGenSelect.cur.note = str1;
-      localSectFile.set("$locale", "note", str1);
-      i = 1;
-    }
-    for (int j = 0; j < this.wMenu.lst.size(); j++) {
-      MenuItem localMenuItem = (MenuItem)this.wMenu.lst.get(j);
-      String str2 = (String)localMenuItem.keys.get(localMenuItem.select);
-      if (!str2.equals(localSectFile.get("$select", localMenuItem.key, (String)null))) {
-        localSectFile.set("$select", localMenuItem.key, str2);
-        i = 1;
-      }
-    }
-    if (i != 0)
-      localSectFile.saveFile();
-  }
-
-  public GUINetServerNGenProp(GWindowRoot paramGWindowRoot)
-  {
-    super(69);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("ngenp.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wNote = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wMenu = new Menu(this.dialogClient);
-
-    this.wTimeHour = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 2.0F, 2.0F, 20.0F + paramGWindowRoot.lookAndFeel().getHScrollBarW() / paramGWindowRoot.lookAndFeel().metric())));
-
-    this.wTimeMins = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 2.0F, 2.0F, 20.0F + paramGWindowRoot.lookAndFeel().getHScrollBarW() / paramGWindowRoot.lookAndFeel().metric())));
-
-    this.wTimeHour.add("00");
-    this.wTimeHour.add("01");
-    this.wTimeHour.add("02");
-    this.wTimeHour.add("03");
-    this.wTimeHour.add("04");
-    this.wTimeHour.add("05");
-    this.wTimeHour.add("06");
-    this.wTimeHour.add("07");
-    this.wTimeHour.add("08");
-    this.wTimeHour.add("09");
-    this.wTimeHour.add("10");
-    this.wTimeHour.add("11");
-    this.wTimeHour.add("12");
-    this.wTimeHour.add("13");
-    this.wTimeHour.add("14");
-    this.wTimeHour.add("15");
-    this.wTimeHour.add("16");
-    this.wTimeHour.add("17");
-    this.wTimeHour.add("18");
-    this.wTimeHour.add("19");
-    this.wTimeHour.add("20");
-    this.wTimeHour.add("21");
-    this.wTimeHour.add("22");
-    this.wTimeHour.add("23");
-    this.wTimeHour.setEditable(false);
-    this.wTimeHour.setSelected(0, true, false);
-
-    this.wTimeMins.add("00");
-    this.wTimeMins.add("15");
-    this.wTimeMins.add("30");
-    this.wTimeMins.add("45");
-    this.wTimeMins.setEditable(false);
-    this.wTimeMins.setSelected(0, true, false);
-
-    this.sLand = ((GUISwitchBox3)this.dialogClient.addControl(new GUISwitchBox3(this.dialogClient)));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bList = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bDiff = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bLast = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bNew = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) {
-        return super.notify(paramGWindow, paramInt1, paramInt2);
-      }
-      if (paramGWindow == GUINetServerNGenProp.this.bList) {
-        GUINetServerNGenProp.this.getChanges();
-        Main.stateStack().change(68);
-        return true;
-      }if (paramGWindow == GUINetServerNGenProp.this.bDiff) {
-        Main.stateStack().push(41);
-        return true;
-      }
-      Object localObject1;
-      String str1;
-      Object localObject2;
-      if (paramGWindow == GUINetServerNGenProp.this.bLast) {
-        localObject1 = new SectFile(GUINetServerNGenSelect.cur.fileName, 4, true, null, RTSConf.charEncoding, true);
-        str1 = ((SectFile)localObject1).line(((SectFile)localObject1).sectionIndex("$missions"), GUINetServerNGenSelect.cur.missions - 1);
-        localObject2 = GUINetServerNGenSelect.cur.fileName;
-        int j = ((String)localObject2).lastIndexOf("conf.dat");
-        if (j >= 0)
-          localObject2 = ((String)localObject2).substring(0, j);
-        Main.cur().currentMissionFile = new SectFile((String)localObject2 + str1, 0);
-        GUINetServerNGenProp.this.doLoadMission();
-        return true;
-      }if (paramGWindow == GUINetServerNGenProp.this.bNew) {
-        GUINetServerNGenProp.this.getChanges();
-        localObject1 = "NGen.exe";
-        try {
-          str1 = GUINetServerNGenSelect.cur.fileName;
-          localObject2 = Runtime.getRuntime();
-
-          localObject3 = ((Runtime)localObject2).exec((String)localObject1 + " " + str1);
-
-          ((Process)localObject3).waitFor();
+        public void setPosSize()
+        {
+            set1024PosSize(144F, 32F, 736F, 736F);
+            wNote.set1024PosSize(48F, 112F, 640F, 32F);
+            wMenu.set1024PosSize(48F, 192F, 640F, 224F);
+            wTimeHour.set1024PosSize(176F, 496F, 80F, 32F);
+            wTimeMins.set1024PosSize(272F, 496F, 80F, 32F);
+            sLand.setPosC(x1024(216F), y1024(568F));
+            bList.setPosC(x1024(56F), y1024(680F));
+            bDiff.setPosC(x1024(328F), y1024(680F));
+            bLast.setPosC(x1024(504F), y1024(680F));
+            bNew.setPosC(x1024(680F), y1024(680F));
         }
-        catch (Throwable localThrowable) {
-          System.out.println(localThrowable.getMessage());
-          localThrowable.printStackTrace();
-          return true;
+
+        public DialogClient()
+        {
         }
-        SectFile localSectFile = new SectFile(GUINetServerNGenSelect.cur.fileName, 4, true, null, RTSConf.charEncoding, true);
-        int i = localSectFile.sectionIndex("$missions");
-        if (i < 0)
-          return true;
-        GUINetServerNGenSelect.cur.missions = localSectFile.vars(i);
-        Object localObject3 = localSectFile.line(i, GUINetServerNGenSelect.cur.missions - 1);
-        String str2 = GUINetServerNGenSelect.cur.fileName;
-        int k = str2.lastIndexOf("conf.dat");
-        if (k >= 0)
-          str2 = str2.substring(0, k);
-        Main.cur().currentMissionFile = new SectFile(str2 + (String)localObject3, 0);
-        GUINetServerNGenProp.this.doLoadMission();
-        return true;
-      }
-
-      return super.notify(paramGWindow, paramInt1, paramInt2);
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(432.0F), x1024(672.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(672.0F), 2.0F);
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-
-      draw(x1024(32.0F), y1024(32.0F), x1024(672.0F), y1024(32.0F), 1, GUINetServerNGenSelect.cur.name);
-      draw(x1024(32.0F), y1024(80.0F), x1024(320.0F), y1024(32.0F), 0, GUINetServerNGenProp.this.i18n("ngenp.note"));
-      draw(x1024(32.0F), y1024(160.0F), x1024(320.0F), y1024(32.0F), 0, GUINetServerNGenProp.this.i18n("ngenp.properties"));
-      draw(x1024(96.0F), y1024(656.0F), x1024(96.0F), y1024(48.0F), 0, GUINetServerNGenProp.this.i18n("ngenp.list"));
-      draw(x1024(176.0F), y1024(656.0F), x1024(112.0F), y1024(48.0F), 2, GUINetServerNGenProp.this.i18n("ngenp.difficulty"));
-      if ((GUINetServerNGenSelect.cur.missions > 0) && (
-        (GUINetServerNGenProp.this.loadMessageBox == null) || (GUINetServerNGenSelect.cur.missions > 1))) {
-        draw(x1024(352.0F), y1024(656.0F), x1024(112.0F), y1024(48.0F), 2, GUINetServerNGenProp.this.i18n("ngenp.last"));
-      }
-      draw(x1024(528.0F), y1024(656.0F), x1024(112.0F), y1024(48.0F), 2, GUINetServerNGenProp.this.i18n("ngenp.new"));
-
-      draw(x1024(32.0F), y1024(448.0F), x1024(672.0F), y1024(32.0F), 0, GUINetServerNGenProp.this.i18n("ngenp.end_mission"));
-      draw(x1024(384.0F), y1024(496.0F), x1024(226.0F), y1024(32.0F), 0, GUINetServerNGenProp.this.i18n("ngenp.timeout"));
-      draw(x1024(264.0F), y1024(544.0F), x1024(346.0F), y1024(48.0F), 0, GUINetServerNGenProp.this.i18n("ngenp.landed"));
-    }
-
-    public void setPosSize() {
-      set1024PosSize(144.0F, 32.0F, 736.0F, 736.0F);
-      GUINetServerNGenProp.this.wNote.set1024PosSize(48.0F, 112.0F, 640.0F, 32.0F);
-      GUINetServerNGenProp.this.wMenu.set1024PosSize(48.0F, 192.0F, 640.0F, 224.0F);
-      GUINetServerNGenProp.this.wTimeHour.set1024PosSize(176.0F, 496.0F, 80.0F, 32.0F);
-      GUINetServerNGenProp.this.wTimeMins.set1024PosSize(272.0F, 496.0F, 80.0F, 32.0F);
-      GUINetServerNGenProp.this.sLand.setPosC(x1024(216.0F), y1024(568.0F));
-      GUINetServerNGenProp.this.bList.setPosC(x1024(56.0F), y1024(680.0F));
-      GUINetServerNGenProp.this.bDiff.setPosC(x1024(328.0F), y1024(680.0F));
-      GUINetServerNGenProp.this.bLast.setPosC(x1024(504.0F), y1024(680.0F));
-      GUINetServerNGenProp.this.bNew.setPosC(x1024(680.0F), y1024(680.0F));
-    }
-  }
-
-  public class Menu extends GWindowTable
-  {
-    public ArrayList lst = new ArrayList();
-    int indxMenu;
-
-    public int countRows()
+    public class Menu extends com.maddox.gwindow.GWindowTable
     {
-      return this.lst != null ? this.lst.size() : 0;
-    }
-    public boolean isCellEditable(int paramInt1, int paramInt2) {
-      return paramInt2 == 1;
-    }
-    public float rowHeight(int paramInt) { return (int)(this.root.textFonts[0].height * 1.6F); }
 
-    public GWindowCellEdit getCellEdit(int paramInt1, int paramInt2) {
-      if (!isCellEditable(paramInt1, paramInt2)) return null;
-
-      this.indxMenu = paramInt1;
-      1 local1;
-      GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.wClient.create(local1 = new GWindowComboControl() {
-        GUINetServerNGenProp.MenuItem item = (GUINetServerNGenProp.MenuItem)GUINetServerNGenProp.Menu.this.lst.get(GUINetServerNGenProp.Menu.this.indxMenu);
-
-        public boolean notify(int paramInt1, int paramInt2) { boolean bool = super.notify(paramInt1, paramInt2);
-          if (paramInt1 == 2)
-            this.item.select = paramInt2;
-          return bool;
+        public int countRows()
+        {
+            return lst == null ? 0 : lst.size();
         }
-      });
-      local1.setEditable(false);
-      GUINetServerNGenProp.MenuItem localMenuItem = (GUINetServerNGenProp.MenuItem)this.lst.get(this.indxMenu);
-      for (int i = 0; i < localMenuItem.keys.size(); i++)
-        local1.add((String)localMenuItem.names.get(i));
-      local1.setSelected(localMenuItem.select, true, false);
-      return localGWindowCellEdit;
+
+        public boolean isCellEditable(int i, int j)
+        {
+            return j == 1;
+        }
+
+        public float rowHeight(int i)
+        {
+            return (float)(int)(root.textFonts[0].height * 1.6F);
+        }
+
+        public com.maddox.gwindow.GWindowCellEdit getCellEdit(int i, int j)
+        {
+            if(!isCellEditable(i, j))
+                return null;
+            indxMenu = i;
+            com.maddox.gwindow.GWindowComboControl gwindowcombocontrol;
+            com.maddox.gwindow.GWindowCellEdit gwindowcelledit = (com.maddox.gwindow.GWindowCellEdit)wClient.create(gwindowcombocontrol = new com.maddox.gwindow.GWindowComboControl() {
+
+                public boolean notify(int l, int i1)
+                {
+                    boolean flag = super.notify(l, i1);
+                    if(l == 2)
+                        item.select = i1;
+                    return flag;
+                }
+
+                com.maddox.il2.gui.MenuItem item;
+
+                
+                {
+                    item = (com.maddox.il2.gui.MenuItem)lst.get(indxMenu);
+                }
+            }
+);
+            gwindowcombocontrol.setEditable(false);
+            com.maddox.il2.gui.MenuItem menuitem = (com.maddox.il2.gui.MenuItem)lst.get(indxMenu);
+            for(int k = 0; k < menuitem.keys.size(); k++)
+                gwindowcombocontrol.add((java.lang.String)menuitem.names.get(k));
+
+            gwindowcombocontrol.setSelected(menuitem.select, true, false);
+            return gwindowcelledit;
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            com.maddox.il2.gui.MenuItem menuitem = (com.maddox.il2.gui.MenuItem)lst.get(i);
+            java.lang.String s = null;
+            int k = 0;
+            switch(j)
+            {
+            case 0: // '\0'
+                s = menuitem.name;
+                k = 0;
+                break;
+
+            case 1: // '\001'
+                s = (java.lang.String)menuitem.names.get(menuitem.select);
+                k = 0;
+                break;
+            }
+            if(flag)
+            {
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            }
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelectRow = true;
+            addColumn(com.maddox.il2.game.I18N.gui("ngenp.name"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("ngenp.state"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(10F);
+            getColumn(1).setRelativeDx(12F);
+            alignColumns();
+            bNotify = true;
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public java.util.ArrayList lst;
+        int indxMenu;
+
+        public Menu(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            lst = new ArrayList();
+        }
     }
 
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      GUINetServerNGenProp.MenuItem localMenuItem = (GUINetServerNGenProp.MenuItem)this.lst.get(paramInt1);
-      String str = null;
-      int i = 0;
-      switch (paramInt2) { case 0:
-        str = localMenuItem.name;
-        i = 0;
-        break;
-      case 1:
-        str = (String)localMenuItem.names.get(localMenuItem.select);
-        i = 0;
-      }
-
-      if (paramBoolean) {
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      } else {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      }
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelectRow = true;
-      addColumn(I18N.gui("ngenp.name"), null);
-      addColumn(I18N.gui("ngenp.state"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(10.0F);
-      getColumn(1).setRelativeDx(12.0F);
-      alignColumns();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-      resized();
-    }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public Menu(GWindow arg2) {
-      super();
-    }
-  }
-
-  static class MenuItem
-  {
-    String key;
-    String name;
-    ArrayList keys = new ArrayList();
-    ArrayList names = new ArrayList();
-    int select = 0;
-
-    public void select(String paramString) {
-      this.select = 0;
-      for (; this.select < this.keys.size(); this.select += 1)
-        if (paramString.equals(this.keys.get(this.select)))
-          return;
-      this.select = 0;
-    }
-  }
-
-  class MissionListener
-    implements MsgBackgroundTaskListener
-  {
-    public void msgBackgroundTaskStarted(BackgroundTask paramBackgroundTask)
+    static class MenuItem
     {
+
+        public void select(java.lang.String s)
+        {
+            for(select = 0; select < keys.size(); select++)
+                if(s.equals(keys.get(select)))
+                    return;
+
+            select = 0;
+        }
+
+        java.lang.String key;
+        java.lang.String name;
+        java.util.ArrayList keys;
+        java.util.ArrayList names;
+        int select;
+
+        MenuItem()
+        {
+            keys = new ArrayList();
+            names = new ArrayList();
+            select = 0;
+        }
     }
 
-    public void msgBackgroundTaskStep(BackgroundTask paramBackgroundTask)
+    class MissionListener
+        implements com.maddox.rts.MsgBackgroundTaskListener
     {
-      GUINetServerNGenProp.this.loadMessageBox.message = ((int)paramBackgroundTask.percentComplete() + "% " + I18N.gui(paramBackgroundTask.messageComplete()));
+
+        public void msgBackgroundTaskStarted(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+        }
+
+        public void msgBackgroundTaskStep(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+            loadMessageBox.message = (int)backgroundtask.percentComplete() + "% " + com.maddox.il2.game.I18N.gui(backgroundtask.messageComplete());
+        }
+
+        public void msgBackgroundTaskStoped(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+            com.maddox.rts.BackgroundTask.removeListener(this);
+            if(backgroundtask.isComplete())
+                missionLoaded();
+            else
+                missionBad(com.maddox.il2.game.I18N.gui("miss.LoadBad") + " " + backgroundtask.messageCancel());
+        }
+
+        public MissionListener()
+        {
+            com.maddox.rts.BackgroundTask.addListener(this);
+        }
     }
 
-    public void msgBackgroundTaskStoped(BackgroundTask paramBackgroundTask)
+
+    private void doLoadMission()
     {
-      BackgroundTask.removeListener(this);
-      if (paramBackgroundTask.isComplete())
-        GUINetServerNGenProp.this.missionLoaded();
-      else
-        GUINetServerNGenProp.this.missionBad(I18N.gui("miss.LoadBad") + " " + paramBackgroundTask.messageCancel());
+        int i = wTimeHour.getSelected();
+        int j = wTimeMins.getSelected() * 15;
+        long l = (long)i * 60L * 60L * 1000L + (long)j * 60L * 1000L;
+        com.maddox.il2.game.Main.cur().netServerParams.timeoutNGEN = l;
+        com.maddox.il2.game.Main.cur().netServerParams.bLandedNGEN = sLand.isChecked();
+        loadMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F) {
+
+            public void result(int k)
+            {
+                if(k == 1)
+                    com.maddox.rts.BackgroundTask.cancel(com.maddox.il2.game.I18N.gui("miss.UserCancel"));
+            }
+
+        }
+;
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                if(com.maddox.il2.game.Mission.cur() != null)
+                    com.maddox.il2.game.Mission.cur().destroy();
+                try
+                {
+                    new MissionListener();
+                    com.maddox.il2.game.Mission.loadFromSect(com.maddox.il2.game.Main.cur().currentMissionFile, true);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                    missionBad(com.maddox.il2.game.I18N.gui("miss.LoadBad"));
+                }
+            }
+
+        }
+;
     }
 
-    public MissionListener() {
-      BackgroundTask.addListener(this);
+    public void missionLoaded()
+    {
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+                if(loadMessageBox != null)
+                {
+                    loadMessageBox.close(false);
+                    loadMessageBox = null;
+                }
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).resetAllPlaces();
+                com.maddox.rts.CmdEnv.top().exec("mission BEGIN");
+                int i = com.maddox.il2.gui.GUINetAircraft.serverPlace();
+                if(i != -1)
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).requestPlace(i);
+                com.maddox.il2.game.Main.stateStack().change(45);
+            }
+
+        }
+;
     }
-  }
+
+    private void missionBad(java.lang.String s)
+    {
+        loadMessageBox.close(false);
+        loadMessageBox = null;
+        new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("netsms.Error"), s, 3, 0.0F) {
+
+            public void result(int i)
+            {
+            }
+
+        }
+;
+    }
+
+    public void enter(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate != null && gamestate.id() == 51)
+        {
+            java.lang.String s = "NGen.exe";
+            try
+            {
+                java.lang.String s1 = com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName;
+                java.lang.Runtime runtime = java.lang.Runtime.getRuntime();
+                java.lang.Process process = runtime.exec(s + " -ended " + s1);
+                process.waitFor();
+            }
+            catch(java.lang.Throwable throwable)
+            {
+                java.lang.System.out.println(throwable.getMessage());
+                throwable.printStackTrace();
+            }
+        }
+        com.maddox.rts.SectFile sectfile = new SectFile(com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName, 4, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+        int i = sectfile.get("$select", "difficulty", -1);
+        if(i == -1)
+            i = com.maddox.il2.ai.World.cur().userCfg.netDifficulty;
+        else
+            com.maddox.il2.ai.World.cur().userCfg.netDifficulty = i;
+        com.maddox.il2.ai.World.cur().diffCur.set(i);
+        com.maddox.il2.game.Main.cur().netServerParams.setDifficulty(com.maddox.il2.ai.World.cur().diffCur.get());
+        com.maddox.rts.NetEnv.cur().connect.bindEnable(true);
+        com.maddox.il2.game.Main.cur().netServerParams.USGSupdate();
+        _enter();
+    }
+
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate.id() == 41)
+        {
+            com.maddox.il2.ai.World.cur().userCfg.netDifficulty = com.maddox.il2.ai.World.cur().diffCur.get();
+            com.maddox.il2.ai.World.cur().userCfg.saveConf();
+            com.maddox.il2.game.Main.cur().netServerParams.setDifficulty(com.maddox.il2.ai.World.cur().diffCur.get());
+            com.maddox.rts.SectFile sectfile = new SectFile(com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName, 5, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+            sectfile.set("$select", "difficulty", com.maddox.il2.ai.World.cur().userCfg.netDifficulty);
+            sectfile.saveFile();
+        }
+        client.activateWindow();
+    }
+
+    public void _enter()
+    {
+        fillNote();
+        fillMenu();
+        wMenu.resized();
+        client.activateWindow();
+        if(com.maddox.il2.gui.GUINetServerNGenSelect.cur.missions > 0)
+            bLast.showWindow();
+        else
+            bLast.hideWindow();
+    }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    private void fillNote()
+    {
+        if(com.maddox.il2.gui.GUINetServerNGenSelect.cur != null)
+            wNote.setValue(com.maddox.il2.gui.GUINetServerNGenSelect.cur.note, false);
+        else
+            wNote.setValue("", false);
+    }
+
+    private void fillMenu()
+    {
+        wMenu.lst.clear();
+        if(com.maddox.il2.gui.GUINetServerNGenSelect.cur == null)
+            return;
+        com.maddox.rts.SectFile sectfile = new SectFile(com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName, 4, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = sectfile.sectionName(j);
+            if(!s.startsWith("$"))
+            {
+                int k = sectfile.vars(j);
+                if(k != 0)
+                {
+                    com.maddox.il2.gui.MenuItem menuitem = new MenuItem();
+                    menuitem.key = s;
+                    menuitem.name = sectfile.get("$locale", s, s);
+                    for(int l = 0; l < k; l++)
+                    {
+                        java.lang.String s1 = sectfile.var(j, l);
+                        java.lang.String s3 = sectfile.value(j, l);
+                        menuitem.keys.add(s1);
+                        menuitem.names.add(s3);
+                    }
+
+                    java.lang.String s2 = sectfile.get("$select", s, (java.lang.String)null);
+                    if(s2 != null)
+                        menuitem.select(s2);
+                    wMenu.lst.add(menuitem);
+                }
+            }
+        }
+
+        if(wMenu.lst.size() > 0)
+            wMenu.setSelect(0, 0);
+    }
+
+    private void getChanges()
+    {
+        if(com.maddox.il2.gui.GUINetServerNGenSelect.cur == null)
+            return;
+        com.maddox.rts.SectFile sectfile = new SectFile(com.maddox.il2.gui.GUINetServerNGenSelect.cur.fileName, 5, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+        boolean flag = false;
+        java.lang.String s = wNote.getValue();
+        if(!s.equals(com.maddox.il2.gui.GUINetServerNGenSelect.cur.note))
+        {
+            com.maddox.il2.gui.GUINetServerNGenSelect.cur.note = s;
+            sectfile.set("$locale", "note", s);
+            flag = true;
+        }
+        for(int i = 0; i < wMenu.lst.size(); i++)
+        {
+            com.maddox.il2.gui.MenuItem menuitem = (com.maddox.il2.gui.MenuItem)wMenu.lst.get(i);
+            java.lang.String s1 = (java.lang.String)menuitem.keys.get(menuitem.select);
+            if(!s1.equals(sectfile.get("$select", menuitem.key, (java.lang.String)null)))
+            {
+                sectfile.set("$select", menuitem.key, s1);
+                flag = true;
+            }
+        }
+
+        if(flag)
+            sectfile.saveFile();
+    }
+
+    public GUINetServerNGenProp(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(69);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("ngenp.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wNote = (com.maddox.gwindow.GWindowEditControl)dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
+        wMenu = new Menu(dialogClient);
+        wTimeHour = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 2.0F, 2.0F, 20F + gwindowroot.lookAndFeel().getHScrollBarW() / gwindowroot.lookAndFeel().metric()));
+        wTimeMins = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 2.0F, 2.0F, 20F + gwindowroot.lookAndFeel().getHScrollBarW() / gwindowroot.lookAndFeel().metric()));
+        wTimeHour.add("00");
+        wTimeHour.add("01");
+        wTimeHour.add("02");
+        wTimeHour.add("03");
+        wTimeHour.add("04");
+        wTimeHour.add("05");
+        wTimeHour.add("06");
+        wTimeHour.add("07");
+        wTimeHour.add("08");
+        wTimeHour.add("09");
+        wTimeHour.add("10");
+        wTimeHour.add("11");
+        wTimeHour.add("12");
+        wTimeHour.add("13");
+        wTimeHour.add("14");
+        wTimeHour.add("15");
+        wTimeHour.add("16");
+        wTimeHour.add("17");
+        wTimeHour.add("18");
+        wTimeHour.add("19");
+        wTimeHour.add("20");
+        wTimeHour.add("21");
+        wTimeHour.add("22");
+        wTimeHour.add("23");
+        wTimeHour.setEditable(false);
+        wTimeHour.setSelected(0, true, false);
+        wTimeMins.add("00");
+        wTimeMins.add("15");
+        wTimeMins.add("30");
+        wTimeMins.add("45");
+        wTimeMins.setEditable(false);
+        wTimeMins.setSelected(0, true, false);
+        sLand = (com.maddox.il2.gui.GUISwitchBox3)dialogClient.addControl(new GUISwitchBox3(dialogClient));
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bList = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bDiff = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bLast = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bNew = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.gwindow.GWindowEditControl wNote;
+    public com.maddox.il2.gui.Menu wMenu;
+    public com.maddox.il2.gui.GUIButton bList;
+    public com.maddox.il2.gui.GUIButton bDiff;
+    public com.maddox.il2.gui.GUIButton bLast;
+    public com.maddox.il2.gui.GUIButton bNew;
+    public com.maddox.gwindow.GWindowComboControl wTimeHour;
+    public com.maddox.gwindow.GWindowComboControl wTimeMins;
+    public com.maddox.il2.gui.GUISwitchBox3 sLand;
+    private com.maddox.gwindow.GWindowMessageBox loadMessageBox;
+
+
+
+
+
 }

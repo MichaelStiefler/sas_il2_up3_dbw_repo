@@ -1,84 +1,104 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitIL_10_TGunner.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.HookNamed;
-import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orient;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 
-public class CockpitIL_10_TGunner extends CockpitGunner
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitGunner, Aircraft
+
+public class CockpitIL_10_TGunner extends com.maddox.il2.objects.air.CockpitGunner
 {
-  private boolean bNeedSetUp = true;
 
-  private Hook hook1 = null;
-
-  public void moveGun(Orient paramOrient)
-  {
-    super.moveGun(paramOrient);
-    this.mesh.chunkSetAngles("TurrelA", 0.0F, paramOrient.getYaw(), 0.0F);
-    this.mesh.chunkSetAngles("TurrelB", 0.0F, paramOrient.getTangage(), 0.0F);
-  }
-
-  public void clipAnglesGun(Orient paramOrient) {
-    if (!isRealMode()) return;
-    if (!aiTurret().bIsOperable) {
-      paramOrient.setYPR(0.0F, 0.0F, 0.0F);
-      return;
-    }
-    float f1 = paramOrient.getYaw();
-
-    float f2 = paramOrient.getTangage();
-    if (f1 < -43.0F) f1 = -43.0F;
-    if (f1 > 43.0F) f1 = 43.0F;
-    if (f2 > 56.0F) f2 = 56.0F;
-    if (f2 < -2.0F) f2 = -2.0F;
-    paramOrient.setYPR(f1, f2, 0.0F);
-    paramOrient.wrap();
-  }
-
-  protected void interpTick() {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void moveGun(com.maddox.il2.engine.Orient orient)
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-    if (this.bGunFire) {
-      if (this.hook1 == null) {
-        this.hook1 = new HookNamed(aircraft(), "_MGUN03");
-      }
-      doHitMasterAircraft(aircraft(), this.hook1, "_MGUN03");
+        super.moveGun(orient);
+        mesh.chunkSetAngles("TurrelA", 0.0F, orient.getYaw(), 0.0F);
+        mesh.chunkSetAngles("TurrelB", 0.0F, orient.getTangage(), 0.0F);
     }
-  }
 
-  public void doGunFire(boolean paramBoolean)
-  {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void clipAnglesGun(com.maddox.il2.engine.Orient orient)
     {
-      this.bGunFire = false;
+        if(!isRealMode())
+            return;
+        if(!aiTurret().bIsOperable)
+        {
+            orient.setYPR(0.0F, 0.0F, 0.0F);
+            return;
+        }
+        float f = orient.getYaw();
+        float f1 = orient.getTangage();
+        if(f < -43F)
+            f = -43F;
+        if(f > 43F)
+            f = 43F;
+        if(f1 > 56F)
+            f1 = 56F;
+        if(f1 < -2F)
+            f1 = -2F;
+        orient.setYPR(f, f1, 0.0F);
+        orient.wrap();
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-  }
 
-  public CockpitIL_10_TGunner() {
-    super("3DO/Cockpit/Il-10-TGun/hier.him", "bf109");
-  }
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    if (this.bNeedSetUp) {
-      reflectPlaneMats();
-      this.bNeedSetUp = false;
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+        if(bGunFire)
+        {
+            if(hook1 == null)
+                hook1 = new HookNamed(aircraft(), "_MGUN03");
+            doHitMasterAircraft(aircraft(), hook1, "_MGUN03");
+        }
     }
-  }
 
-  protected void reflectPlaneMats()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
-  }
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        else
+            bGunFire = flag;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    public CockpitIL_10_TGunner()
+    {
+        super("3DO/Cockpit/Il-10-TGun/hier.him", "bf109");
+        bNeedSetUp = true;
+        hook1 = null;
+    }
+
+    public void reflectWorldToInstruments(float f)
+    {
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            bNeedSetUp = false;
+        }
+    }
+
+    protected void reflectPlaneMats()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        mesh.materialReplace("Gloss1D0o", mat);
+    }
+
+    private boolean bNeedSetUp;
+    private com.maddox.il2.engine.Hook hook1;
 }

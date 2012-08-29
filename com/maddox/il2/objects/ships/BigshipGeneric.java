@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BigshipGeneric.java
+
 package com.maddox.il2.objects.ships;
 
 import com.maddox.JGP.Geom;
@@ -6,7 +11,6 @@ import com.maddox.JGP.Matrix4d;
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.Aimer;
@@ -23,10 +27,7 @@ import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.StrengthProperties;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.air.Airdrome;
 import com.maddox.il2.ai.air.CellAirField;
-import com.maddox.il2.ai.air.CellObject;
-import com.maddox.il2.ai.air.Point_Stay;
 import com.maddox.il2.ai.ground.Aim;
 import com.maddox.il2.ai.ground.HunterInterface;
 import com.maddox.il2.ai.ground.NearestEnemies;
@@ -48,7 +49,6 @@ import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.InterpolateAdapter;
@@ -62,13 +62,8 @@ import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.VisibilityLong;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiStayPoint;
-import com.maddox.il2.game.ZutiSupportMethods;
-import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetServerParams;
-import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
@@ -79,12 +74,10 @@ import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetChannelInStream;
-import com.maddox.rts.NetEnv;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
-import com.maddox.rts.ObjIO;
+import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -92,4682 +85,3897 @@ import com.maddox.rts.Time;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
-public class BigshipGeneric extends ActorHMesh
-  implements MsgCollisionRequestListener, MsgCollisionListener, MsgExplosionListener, MsgShotListener, Predator, ActorAlign, HunterInterface, VisibilityLong
+// Referenced classes of package com.maddox.il2.objects.ships:
+//            WeakBody, ShipGeneric
+
+public class BigshipGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.engine.MsgCollisionListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Predator, com.maddox.il2.objects.ActorAlign, com.maddox.il2.ai.ground.HunterInterface, com.maddox.il2.engine.VisibilityLong
 {
-  private static final int MAX_PARTS = 255;
-  private static final int MAX_GUNS = 255;
-  private static final int MAX_USER_ADDITIONAL_COLLISION_CHUNKS = 4;
-  public float CURRSPEED = 1.0F;
-
-  public boolean isTurning = false;
-  public boolean isTurningBackward = false;
-  public boolean mustRecomputePath = false;
-  public boolean mustSendSpeedToNet = false;
-
-  private final int REQUEST_LOC = 93;
-
-  private ShipProperties prop = null;
-  private static final int NETSEND_MIN_DELAY_MS_PARTSSTATE = 650;
-  private static final int NETSEND_MAX_DELAY_MS_PARTSSTATE = 1100;
-  private long netsendPartsState_lasttimeMS = 0L;
-  private boolean netsendPartsState_needtosend = false;
-
-  private static float netsendDrown_pitch = 0.0F;
-  private static float netsendDrown_roll = 0.0F;
-  private static float netsendDrown_depth = 0.0F;
-  private static float netsendDrown_timeS = 0.0F;
-  private static int netsendDrown_nparts = 0;
-  private static final int NETSEND_MIN_DELAY_MS_FIRE = 40;
-  private static final int NETSEND_MAX_DELAY_MS_FIRE = 85;
-  private static final long NETSEND_MIN_BYTECODEDDELTATIME_MS_FIRE = -2000L;
-  private static final long NETSEND_MAX_BYTECODEDDELTATIME_MS_FIRE = 5000L;
-  private static final int NETSEND_ABSLIMIT_NUMITEMS_FIRE = 31;
-  private static final int NETSEND_MAX_NUMITEMS_FIRE = 15;
-  private long netsendFire_lasttimeMS = 0L;
-  private int netsendFire_armindex = 0;
-
-  private static TmpTrackOrFireInfo[] netsendFire_tmpbuff = new TmpTrackOrFireInfo[31];
-
-  private FiringDevice[] arms = null;
-  private static final int STPART_LIVE = 0;
-  private static final int STPART_BLACK = 1;
-  private static final int STPART_DEAD = 2;
-  private Part[] parts = null;
-
-  private int[] shotpoints = null;
-  int numshotpoints;
-  private static final int NETSEND_MIN_DELAY_MS_DMG = 65;
-  private static final int NETSEND_MAX_DELAY_MS_DMG = 115;
-  private static final int NETSEND_ABSLIMIT_NUMITEMS_DMG = 256;
-  private static final int NETSEND_MAX_NUMITEMS_DMG = 14;
-  private long netsendDmg_lasttimeMS = 0L;
-  private int netsendDmg_partindex = 0;
-  private ArrayList path;
-  private int cachedSeg = 0;
-  private float bodyDepth;
-  private float bodyPitch;
-  private float bodyRoll;
-  private float shipYaw;
-  private long tmInterpoStart;
-  private long tmInterpoEnd;
-  private float bodyDepth0;
-  private float bodyPitch0;
-  private float bodyRoll0;
-  private float bodyDepth1;
-  private float bodyPitch1;
-  private float bodyRoll1;
-  private long timeOfDeath = 0L;
-  private long sink2timeWhenStop;
-  private float sink2Depth;
-  private float sink2Pitch;
-  private float sink2Roll;
-  public int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_SINK1 = 1;
-  static final int DYING_SINK2 = 2;
-  static final int DYING_DEAD = 3;
-  private long respawnDelay = 0L;
-
-  private long wakeupTmr = 0L;
-  public float DELAY_WAKEUP = 0.0F;
-
-  public int SKILL_IDX = 2;
-
-  public float SLOWFIRE_K = 1.0F;
-
-  private Pipe[] pipes = null;
-
-  private Pipe[] dsmoks = null;
-
-  private Eff3DActor[] wake = { null, null, null };
-
-  private Eff3DActor noseW = null;
-  private Eff3DActor nose = null;
-  private Eff3DActor tail = null;
-  private static ShipProperties constr_arg1;
-  private static ActorSpawnArg constr_arg2;
-  private static Point3d p;
-  private static Point3d p1;
-  private static Point3d p2;
-  private Orient o = new Orient();
-  private static Vector3f tmpvf;
-  private static Vector3d tmpvd;
-  private static float[] tmpYPR;
-  private static float[] tmpf6;
-  private static Loc tmpL;
-  private static byte[] tmpBitsState;
-  private float rollAmp = 0.7F * Mission.curCloudsType();
-  private int rollPeriod = 12345;
-  private double rollWAmp = this.rollAmp * 19739.208802178713D / (180 * this.rollPeriod);
-  private float pitchAmp = 0.1F * Mission.curCloudsType();
-  private int pitchPeriod = 23456;
-  private double pitchWAmp = this.pitchAmp * 19739.208802178713D / (180 * this.pitchPeriod);
-  private Vector3d W = new Vector3d(0.0D, 0.0D, 0.0D);
-  private Vector3d N = new Vector3d(0.0D, 0.0D, 1.0D);
-  private Vector3d tmpV = new Vector3d();
-  public Orient initOr = new Orient();
-  public Loc initLoc = new Loc();
-
-  private AirportCarrier airport = null;
-  private CellAirField cellTO;
-  private CellAirField cellLDG;
-  public Aircraft towAircraft;
-  public int towPortNum = -1;
-  public HookNamed towHook;
-  private static Vector3d tmpDir;
-  public static String[] ZUTI_RADAR_SHIPS;
-  public static String[] ZUTI_RADAR_SHIPS_SMALL;
-  public static String[] ZUTI_CARRIER_STRING;
-  public static String[] ZUTI_CARRIER_SUBCLASS_STRING;
-  public BornPlace zutiBornPlace = null;
-  private boolean zutiIsClassBussy = false;
-
-  private boolean zutiIsShipChief = false;
-  private Point3d zutiPosition = null;
-
-  public ShipProperties getShipProp()
-  {
-    return this.prop;
-  }
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-  public static final int Rnd(int paramInt1, int paramInt2) {
-    return World.Rnd().nextInt(paramInt1, paramInt2);
-  }
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  public static final float KmHourToMSec(float paramFloat) {
-    return paramFloat / 3.6F;
-  }
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  protected final boolean Head360(FiringDevice paramFiringDevice)
-  {
-    return this.parts[paramFiringDevice.part_idx].pro.HEAD_YAW_RANGE.fullcircle();
-  }
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    if ((paramActor instanceof BridgeSegment)) {
-      if (this.dying != 0) {
-        paramArrayOfBoolean[0] = false;
-      }
-      return;
-    }
-
-    if ((this.path == null) && ((paramActor instanceof ActorMesh)) && (((ActorMesh)paramActor).isStaticPos()))
+    private static class TowStringMeshDraw extends com.maddox.il2.engine.ActorMeshDraw
     {
-      paramArrayOfBoolean[0] = false;
-      return;
-    }
-  }
 
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (isNetMirror()) {
-      return;
-    }
-
-    if ((paramActor instanceof WeakBody)) {
-      return;
-    }
-
-    if (((paramActor instanceof ShipGeneric)) || ((paramActor instanceof BigshipGeneric)) || ((paramActor instanceof BridgeSegment)))
-    {
-      Die(null, -1L, true, true);
-    }
-  }
-
-  private int findNotDeadPartByShotChunk(String paramString)
-  {
-    if ((paramString == null) || (paramString == "")) {
-      return -2;
-    }
-
-    int i = hierMesh().chunkFindCheck(paramString);
-    if (i < 0) {
-      return -2;
-    }
-
-    for (int j = 0; j < this.parts.length; j++) {
-      if (this.parts[j].state == 2) {
-        continue;
-      }
-      if (i == this.parts[j].pro.baseChunkIdx) {
-        return j;
-      }
-      for (int k = 0; k < this.parts[j].pro.additCollisChunkIdx.length; k++) {
-        if (i == this.parts[j].pro.additCollisChunkIdx[k]) {
-          return j;
-        }
-      }
-    }
-
-    return -1;
-  }
-
-  private void computeNewPath()
-  {
-    if ((this.path == null) || (this.dying != 0) || (Mission.isDogfight())) {
-      return;
-    }
-
-    Object localObject1 = (Segment)this.path.get(this.cachedSeg);
-
-    long l1 = 0L;
-
-    long l2 = Time.tickNext();
-    if ((Mission.isCoop()) || (Mission.isDogfight()))
-      l2 = NetServerParams.getServerTime();
-    Object localObject2;
-    if (((((Segment)localObject1).timeIn > l2) || (!this.isTurning)) && ((((Segment)localObject1).speedIn > this.CURRSPEED) || (((Segment)localObject1).speedOut > this.CURRSPEED)))
-    {
-      if (Mission.isCoop()) {
-        this.mustSendSpeedToNet = true;
-      }
-
-      float f1 = 0.0F;
-      if (l2 >= ((Segment)localObject1).timeIn)
-      {
-        long l3 = ((Segment)localObject1).timeOut - ((Segment)localObject1).timeIn;
-        long l5 = l2 - ((Segment)localObject1).timeIn;
-
-        float f2 = ((Segment)localObject1).speedOut - ((Segment)localObject1).speedIn;
-
-        f1 = ((Segment)localObject1).speedIn + f2 * (float)(l5 / l3);
-      }
-
-      if (f1 > this.CURRSPEED)
-        ((Segment)localObject1).speedIn = this.CURRSPEED;
-      else {
-        ((Segment)localObject1).speedIn = f1;
-      }
-      if (((Segment)localObject1).speedOut > this.CURRSPEED) {
-        ((Segment)localObject1).speedOut = this.CURRSPEED;
-      }
-
-      localObject2 = new Point3d();
-      ((Point3d)localObject2).x = this.initLoc.getX();
-      ((Point3d)localObject2).y = this.initLoc.getY();
-      ((Point3d)localObject2).z = this.initLoc.getZ();
-
-      ((Segment)localObject1).posIn.set((Tuple3d)localObject2);
-
-      if (((Segment)localObject1).timeIn < l2) {
-        ((Segment)localObject1).timeIn = l2;
-      }
-
-      double d = ((Segment)localObject1).posIn.distance(((Segment)localObject1).posOut);
-
-      l1 = ((Segment)localObject1).timeOut;
-
-      ((Segment)localObject1).timeOut = (((Segment)localObject1).timeIn + ()(1000.0D * (2.0D * d / Math.abs(((Segment)localObject1).speedOut + ((Segment)localObject1).speedIn))));
-
-      ((Segment)localObject1).length = (float)d;
-      ((Segment)localObject1).slidersOn = false;
-    }
-    else
-    {
-      l1 = ((Segment)localObject1).timeOut;
-    }
-
-    if ((this.isTurningBackward) && ((((Segment)localObject1).speedIn > this.CURRSPEED) || (((Segment)localObject1).speedOut > this.CURRSPEED)))
-    {
-      this.mustRecomputePath = true;
-    }
-
-    int i = this.cachedSeg;
-
-    i++;
-
-    while (i <= this.path.size() - 1)
-    {
-      localObject2 = (Segment)this.path.get(i);
-      long l4 = ((Segment)localObject2).timeIn - l1;
-      ((Segment)localObject2).timeIn = (((Segment)localObject1).timeOut + l4);
-      ((Segment)localObject2).posIn = ((Segment)localObject1).posOut;
-
-      if (((Segment)localObject2).speedIn > this.CURRSPEED)
-      {
-        if (Mission.isCoop()) {
-          this.mustSendSpeedToNet = true;
-        }
-
-        ((Segment)localObject2).speedIn = this.CURRSPEED;
-      }
-      if (((Segment)localObject2).speedOut > this.CURRSPEED)
-      {
-        if (Mission.isCoop()) {
-          this.mustSendSpeedToNet = true;
-        }
-
-        ((Segment)localObject2).speedOut = this.CURRSPEED;
-      }
-      l1 = ((Segment)localObject2).timeOut;
-      ((Segment)localObject2).timeOut = (((Segment)localObject2).timeIn + ()(1000.0D * (2.0D * ((Segment)localObject2).length / Math.abs(((Segment)localObject2).speedOut + ((Segment)localObject2).speedIn))));
-
-      localObject1 = localObject2;
-      i++;
-    }
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramShot.isMirage())) {
-      return;
-    }
-
-    if (this.wakeupTmr < 0L) {
-      this.wakeupTmr = SecsToTicks(Rnd(this.DELAY_WAKEUP, this.DELAY_WAKEUP * 1.2F));
-    }
-
-    int i = findNotDeadPartByShotChunk(paramShot.chunkName);
-    if (i < 0)
-      return;
-    float f1;
-    float f2;
-    if (paramShot.powerType == 1)
-    {
-      f1 = this.parts[i].pro.stre.EXPLHIT_MAX_TNT;
-      f2 = this.parts[i].pro.stre.EXPLHIT_MAX_TNT;
-    } else {
-      f1 = this.parts[i].pro.stre.SHOT_MIN_ENERGY;
-      f2 = this.parts[i].pro.stre.SHOT_MAX_ENERGY;
-    }
-
-    float f3 = paramShot.power * Rnd(1.0F, 1.1F);
-    if (f3 < f1)
-    {
-      return;
-    }
-
-    tmpvd.set(paramShot.v);
-    this.pos.getAbs().transformInv(tmpvd);
-    Part.access$202(this.parts[i], tmpvd.y > 0.0D);
-
-    float f4 = f3 / f2;
-    Part.access$316(this.parts[i], f4);
-
-    if ((isNetMirror()) && (paramShot.initiator != null)) {
-      Part.access$402(this.parts[i], paramShot.initiator);
-    }
-    InjurePart(i, paramShot.initiator, true);
-
-    if ((!Mission.isDogfight()) && (this.path != null) && (this.parts[i].pro.isItLifeKeeper()) && (this.parts[i].damage > 0.2F))
-    {
-      computeSpeedReduction(this.parts[i].damage);
-
-      computeNewPath();
-    }
-  }
-
-  private void computeSpeedReduction(float paramFloat)
-  {
-    int i = (int)(paramFloat * 128.0F);
-    i--;
-    if (i < 0)
-    {
-      i = 0;
-    } else if (i > 127)
-    {
-      i = 127;
-    }
-
-    paramFloat = i / 128.0F;
-
-    float f = 0.4F * this.prop.SPEED + (1.0F - paramFloat) * 2.0F * this.prop.SPEED;
-
-    int j = Math.round(f);
-    f = j;
-
-    if (f < this.CURRSPEED)
-      this.CURRSPEED = f;
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramExplosion.isMirage())) {
-      return;
-    }
-
-    if (this.wakeupTmr < 0L) {
-      this.wakeupTmr = SecsToTicks(Rnd(this.DELAY_WAKEUP, this.DELAY_WAKEUP * 1.2F));
-    }
-
-    float f1 = paramExplosion.power;
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null)) {
-      f1 *= 0.45F;
-    }
-
-    int i = -1;
-
-    if (paramExplosion.chunkName != null) {
-      int j = findNotDeadPartByShotChunk(paramExplosion.chunkName);
-      if (j >= 0) {
-        float f2 = f1;
-
-        f2 *= Rnd(1.0F, 1.1F) * Mission.BigShipHpDiv();
-
-        if (f2 >= this.parts[j].pro.stre.EXPLHIT_MIN_TNT)
+        public void render(com.maddox.il2.engine.Actor actor)
         {
-          i = j;
-
-          p1.set(paramExplosion.p);
-          this.pos.getAbs().transformInv(p1);
-          Part.access$202(this.parts[j], p1.y < 0.0D);
-
-          float f3 = f2 / this.parts[j].pro.stre.EXPLHIT_MAX_TNT;
-          Part.access$316(this.parts[j], f3);
-
-          if ((isNetMirror()) && (paramExplosion.initiator != null)) {
-            Part.access$402(this.parts[j], paramExplosion.initiator);
-          }
-          InjurePart(j, paramExplosion.initiator, true);
-
-          if ((!Mission.isDogfight()) && (this.path != null) && (this.parts[j].pro.isItLifeKeeper()) && (this.parts[j].damage > 0.2F))
-          {
-            computeSpeedReduction(this.parts[j].damage);
-
-            computeNewPath();
-          }
-
-        }
-
-      }
-
-    }
-
-    Loc localLoc = this.pos.getAbs();
-
-    p1.set(paramExplosion.p);
-    this.pos.getAbs().transformInv(p1);
-    boolean bool = p1.y < 0.0D;
-
-    for (int k = 0; k < this.parts.length; k++) {
-      if (k == i)
-      {
-        continue;
-      }
-      if (this.parts[k].state == 2)
-      {
-        continue;
-      }
-      p1.set(this.parts[k].pro.partOffs);
-      localLoc.transform(p1);
-      float f4 = this.parts[k].pro.partR;
-
-      float f5 = (float)(p1.distance(paramExplosion.p) - f4);
-
-      float f6 = paramExplosion.receivedTNT_1meter(p1, f4);
-
-      f6 *= Rnd(1.0F, 1.1F) * Mission.BigShipHpDiv();
-
-      if (f6 < this.parts[k].pro.stre.EXPLNEAR_MIN_TNT)
-      {
-        continue;
-      }
-
-      Part.access$202(this.parts[k], bool);
-
-      float f7 = f6 / this.parts[k].pro.stre.EXPLNEAR_MAX_TNT;
-      Part.access$316(this.parts[k], f7);
-      if ((isNetMirror()) && (paramExplosion.initiator != null)) {
-        Part.access$402(this.parts[k], paramExplosion.initiator);
-      }
-      InjurePart(k, paramExplosion.initiator, true);
-
-      if ((Mission.isDogfight()) || (this.path == null) || (!this.parts[k].pro.isItLifeKeeper()) || (this.parts[k].damage <= 0.2F)) {
-        continue;
-      }
-      computeSpeedReduction(this.parts[k].damage);
-
-      computeNewPath();
-    }
-  }
-
-  private void recomputeShotpoints()
-  {
-    if ((this.shotpoints == null) || (this.shotpoints.length < 1 + this.parts.length)) {
-      this.shotpoints = new int[1 + this.parts.length];
-    }
-
-    this.numshotpoints = 0;
-    if (this.dying != 0) {
-      return;
-    }
-
-    this.numshotpoints = 1;
-    this.shotpoints[0] = 0;
-
-    for (int i = 0; i < this.parts.length; i++) {
-      if (this.parts[i].state == 2)
-        continue;
-      int j;
-      if (this.parts[i].pro.isItLifeKeeper()) {
-        j = this.parts[i].pro.baseChunkIdx; } else {
-        if (!this.parts[i].pro.haveGun())
-          continue;
-        j = this.parts[i].pro.gunChunkIdx;
-      }
-
-      this.shotpoints[this.numshotpoints] = (i + 1);
-
-      hierMesh().setCurChunk(j);
-      hierMesh().getChunkLocObj(tmpL);
-      this.parts[i].shotpointOffs.set(tmpL.getPoint());
-
-      this.numshotpoints += 1;
-    }
-  }
-
-  private boolean visualsInjurePart(int paramInt, boolean paramBoolean)
-  {
-    if (!paramBoolean) {
-      if (this.parts[paramInt].state == 2)
-      {
-        Part.access$302(this.parts[paramInt], 1.0F);
-        return false;
-      }
-
-      if (this.parts[paramInt].damage < this.parts[paramInt].pro.BLACK_DAMAGE)
-      {
-        return false;
-      }
-
-      netsendDrown_nparts = 0;
-      netsendDrown_depth = 0.0F;
-      netsendDrown_pitch = 0.0F;
-      netsendDrown_roll = 0.0F;
-      netsendDrown_timeS = 0.0F;
-
-      if (this.parts[paramInt].damage < 1.0F)
-      {
-        if (this.parts[paramInt].state == 1)
-        {
-          return false;
-        }
-        Part.access$102(this.parts[paramInt], 1);
-      }
-      else {
-        Part.access$302(this.parts[paramInt], 1.0F);
-        Part.access$102(this.parts[paramInt], 2);
-      }
-
-      if (this.parts[paramInt].pro.isItLifeKeeper()) {
-        netsendDrown_nparts += 1;
-        netsendDrown_depth += Rnd(0.8F, 1.0F) * this.parts[paramInt].pro.dmgDepth;
-        netsendDrown_pitch += Rnd(0.8F, 1.0F) * this.parts[paramInt].pro.dmgPitch;
-        netsendDrown_roll = (float)(netsendDrown_roll + Rnd(0.8F, 1.0F) * this.parts[paramInt].pro.dmgRoll * (this.parts[paramInt].damageIsFromRight ? -1.0D : 1.0D));
-
-        netsendDrown_timeS += Rnd(0.7F, 1.3F) * this.parts[paramInt].pro.dmgTime;
-      }
-
-    }
-
-    if (this.parts[paramInt].pro.haveGun()) {
-      this.arms[this.parts[paramInt].pro.gun_idx].aime.forgetAiming();
-      FiringDevice.access$702(this.arms[this.parts[paramInt].pro.gun_idx], null);
-    }
-
-    int[] arrayOfInt = hierMesh().getSubTreesSpec(this.parts[paramInt].pro.baseChunkName);
-    int m;
-    for (int i = 0; i < arrayOfInt.length; i++)
-    {
-      hierMesh().setCurChunk(arrayOfInt[i]);
-
-      if (!hierMesh().isChunkVisible())
-      {
-        continue;
-      }
-      for (int j = 0; j < this.parts.length; j++) {
-        if (j == paramInt) {
-          continue;
-        }
-        if (this.parts[j].state == 2) {
-          continue;
-        }
-        if (arrayOfInt[i] != this.parts[j].pro.baseChunkIdx)
-        {
-          continue;
-        }
-
-        if ((!paramBoolean) && (this.parts[j].state == 0) && (this.parts[j].pro.isItLifeKeeper())) {
-          netsendDrown_nparts += 1;
-          netsendDrown_depth += Rnd(0.8F, 1.0F) * this.parts[j].pro.dmgDepth;
-          netsendDrown_pitch += Rnd(0.8F, 1.0F) * this.parts[j].pro.dmgPitch;
-          netsendDrown_roll = (float)(netsendDrown_roll + Rnd(0.8F, 1.0F) * this.parts[j].pro.dmgRoll * (this.parts[j].damageIsFromRight ? -1.0D : 1.0D));
-
-          netsendDrown_timeS += Rnd(0.7F, 1.3F) * this.parts[j].pro.dmgTime;
-        }
-
-        Part.access$302(this.parts[j], paramBoolean ? 0.0F : 1.0F);
-        Part.access$402(this.parts[j], null);
-        Part.access$102(this.parts[j], 2);
-
-        if (this.parts[j].pro.haveGun()) {
-          this.arms[this.parts[j].pro.gun_idx].aime.forgetAiming();
-          FiringDevice.access$702(this.arms[this.parts[j].pro.gun_idx], null);
-        }
-
-      }
-
-      if ((hierMesh().chunkName().endsWith("_x")) || (hierMesh().chunkName().endsWith("_X")))
-      {
-        hierMesh().chunkVisible(false);
-      } else {
-        String str1 = hierMesh().chunkName() + "_dmg";
-        m = hierMesh().chunkFindCheck(str1);
-        if (m >= 0) {
-          hierMesh().chunkVisible(false);
-          hierMesh().chunkVisible(str1, true);
-        }
-      }
-    }
-    int k;
-    if (this.pipes != null) {
-      i = 0;
-
-      for (k = 0; k < this.pipes.length; k++) {
-        if (this.pipes[k] == null) {
-          continue;
-        }
-        if (this.pipes[k].pipe == null) {
-          this.pipes[k] = null;
-        }
-        else {
-          m = this.pipes[k].part_idx;
-          if (this.parts[m].state == 0) {
-            i = 1;
-          }
-          else {
-            this.pipes[k].pipe._finish();
-            Pipe.access$802(this.pipes[k], null);
-            this.pipes[k] = null;
-          }
-        }
-      }
-      if (i == 0) {
-        for (k = 0; k < this.pipes.length; k++) {
-          if (this.pipes[k] != null) {
-            this.pipes[k] = null;
-          }
-        }
-        this.pipes = null;
-      }
-
-    }
-
-    if (this.dsmoks != null) {
-      for (i = 0; i < this.dsmoks.length; i++) {
-        if (this.dsmoks[i] == null) {
-          continue;
-        }
-        if (this.dsmoks[i].pipe != null) {
-          continue;
-        }
-        k = this.dsmoks[i].part_idx;
-        if (this.parts[k].state == 0) {
-          continue;
-        }
-        String str2 = this.parts[k].pro.baseChunkName;
-
-        Loc localLoc = new Loc();
-        hierMesh().setCurChunk(str2);
-        hierMesh().getChunkLocObj(localLoc);
-        float f = this.parts[k].pro.stre.EXPLNEAR_MIN_TNT;
-        String str3 = "Effects/Smokes/Smoke";
-        if (this.parts[k].pro.haveGun()) {
-          str3 = str3 + "Gun";
-          if (f < 4.0F)
-            str3 = str3 + "Tiny";
-          else if (f < 24.0F)
-            str3 = str3 + "Small";
-          else if (f < 32.0F)
-            str3 = str3 + "Medium";
-          else if (f < 45.0F)
-            str3 = str3 + "Large";
-          else {
-            str3 = str3 + "Huge";
-          }
-          Pipe.access$802(this.dsmoks[i], Eff3DActor.New(this, null, localLoc, 1.0F, str3 + ".eff", 600.0F));
-          Eff3DActor.New(this, null, localLoc, 1.0F, str3 + "Fire.eff", 120.0F);
-        } else {
-          str3 = str3 + "Ship";
-          if (f < 24.0F)
-            str3 = str3 + "Tiny";
-          else if (f < 49.0F)
-            str3 = str3 + "Small";
-          else if (f < 70.0F)
-            str3 = str3 + "Medium";
-          else if (f == 70.0F)
-            str3 = str3 + "Large";
-          else if (f < 130.0F)
-            str3 = str3 + "Huge";
-          else if (f < 3260.0F)
-            str3 = str3 + "Enormous";
-          else {
-            str3 = str3 + "Invulnerable";
-          }
-          Pipe.access$802(this.dsmoks[i], Eff3DActor.New(this, null, localLoc, 1.1F, str3 + ".eff", -1.0F));
-        }
-      }
-
-    }
-
-    recomputeShotpoints();
-
-    return true;
-  }
-
-  void master_sendDrown(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
-  {
-    if (!this.net.isMirrored()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(100);
-
-      float f = paramFloat1 / 1000.0F;
-      if (f <= 0.0F) f = 0.0F;
-      if (f >= 1.0F) f = 1.0F;
-      int i = (int)(f * 32767.0F);
-      if (i > 32767) i = 32767;
-      if (i < 0) i = 0;
-      localNetMsgGuaranted.writeShort(i);
-
-      f = paramFloat2 / 90.0F;
-      if (f <= -1.0F) f = -1.0F;
-      if (f >= 1.0F) f = 1.0F;
-      i = (int)(f * 32767.0F);
-      if (i > 32767) i = 32767;
-      if (i < -32767) i = -32767;
-      localNetMsgGuaranted.writeShort(i);
-
-      f = paramFloat3 / 90.0F;
-      if (f <= -1.0F) f = -1.0F;
-      if (f >= 1.0F) f = 1.0F;
-      i = (int)(f * 32767.0F);
-      if (i > 32767) i = 32767;
-      if (i < -32767) i = -32767;
-      localNetMsgGuaranted.writeShort(i);
-
-      f = paramFloat4 / 1200.0F;
-      if (f <= 0.0F) f = 0.0F;
-      if (f >= 1.0F) f = 1.0F;
-      i = (int)(f * 32767.0F);
-      if (i > 32767) i = 32767;
-      if (i < 0) i = 0;
-
-      localNetMsgGuaranted.writeShort(i);
-
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void InjurePart(int paramInt, Actor paramActor, boolean paramBoolean)
-  {
-    if (isNetMirror())
-    {
-      return;
-    }
-
-    if (!visualsInjurePart(paramInt, false))
-    {
-      return;
-    }
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    int i = 0;
-    for (int j = 0; j < this.parts.length; j++) {
-      if (!this.parts[j].pro.isItLifeKeeper()) {
-        continue;
-      }
-      if (this.parts[j].state == 2) {
-        i = 1;
-        break;
-      }
-
-    }
-
-    this.netsendPartsState_needtosend = true;
-
-    if (netsendDrown_nparts > 0) {
-      netsendDrown_depth += this.bodyDepth1;
-      netsendDrown_pitch += this.bodyPitch1;
-      netsendDrown_roll += this.bodyRoll1;
-      netsendDrown_timeS /= netsendDrown_nparts;
-
-      if (netsendDrown_timeS >= 1200.0F) {
-        netsendDrown_timeS = 1200.0F;
-      }
-
-      this.tmInterpoStart = NetServerParams.getServerTime();
-      this.tmInterpoEnd = (this.tmInterpoStart + ()(netsendDrown_timeS * 1000.0F));
-      this.bodyDepth0 = this.bodyDepth;
-      this.bodyPitch0 = this.bodyPitch;
-      this.bodyRoll0 = this.bodyRoll;
-      this.bodyDepth1 = netsendDrown_depth;
-      this.bodyPitch1 = netsendDrown_pitch;
-      this.bodyRoll1 = netsendDrown_roll;
-
-      master_sendDrown(netsendDrown_depth, netsendDrown_pitch, netsendDrown_roll, netsendDrown_timeS);
-    }
-
-    if (i == 0) {
-      return;
-    }
-
-    Die(paramActor, -1L, paramBoolean, true);
-  }
-
-  private float computeSeaDepth(Point3d paramPoint3d)
-  {
-    for (float f1 = 5.0F; f1 <= 355.0F; f1 += 10.0F) {
-      for (float f2 = 0.0F; f2 < 360.0F; f2 += 30.0F) {
-        float f3 = f1 * Geom.cosDeg(f2);
-        float f4 = f1 * Geom.sinDeg(f2);
-        f3 += (float)paramPoint3d.x;
-        f4 += (float)paramPoint3d.y;
-        if (!World.land().isWater(f3, f4)) {
-          return 150.0F * (f1 / 355.0F);
-        }
-      }
-    }
-    return 1000.0F;
-  }
-
-  private void computeSinkingParams(long paramLong)
-  {
-    if (this.path != null)
-      setMovablePosition(paramLong);
-    else {
-      setPosition();
-    }
-    this.pos.reset();
-
-    float f1 = computeSeaDepth(this.pos.getAbsPoint()) * Rnd(1.0F, 1.25F);
-
-    if (f1 >= 400.0F) {
-      f1 = 400.0F;
-    }
-
-    float f2 = Rnd(0.2F, 0.25F);
-    float f3;
-    float f4;
-    float f5;
-    float f6;
-    if (f1 >= 200.0F) {
-      f3 = Rnd(90.0F, 110.0F);
-      f4 = f3 * f2;
-      f5 = 50.0F - Rnd(0.0F, 20.0F);
-      f6 = Rnd(15.0F, 32.0F);
-      f2 *= 1.6F;
-    } else {
-      f3 = Rnd(30.0F, 40.0F);
-      f4 = f3 * f2;
-      f5 = 4.5F - Rnd(0.0F, 2.5F);
-      f6 = Rnd(6.0F, 13.0F);
-    }
-
-    float f7 = (f1 - f4) / f2;
-    if (f7 < 1.0F) {
-      f7 = 1.0F;
-    }
-    float f8 = f7 * f2;
-
-    computeInterpolatedDPR(paramLong);
-
-    this.bodyDepth0 = this.bodyDepth;
-    this.bodyPitch0 = this.bodyPitch;
-    this.bodyRoll0 = this.bodyRoll;
-
-    this.bodyDepth1 += f4;
-    this.bodyPitch1 += (this.bodyPitch1 > 0.0D ? 1.0F : -1.0F) * f5;
-    this.bodyRoll1 += (this.bodyRoll1 > 0.0D ? 1.0F : -1.0F) * f6;
-
-    if (this.bodyPitch1 > 80.0F) {
-      this.bodyPitch1 = 80.0F;
-    }
-    if (this.bodyPitch1 < -80.0F) {
-      this.bodyPitch1 = -80.0F;
-    }
-    if (this.bodyRoll1 > 80.0F) {
-      this.bodyRoll1 = 80.0F;
-    }
-    if (this.bodyRoll1 < -80.0F) {
-      this.bodyRoll1 = -80.0F;
-    }
-
-    this.tmInterpoStart = paramLong;
-    this.tmInterpoEnd = (this.tmInterpoStart + ()(f3 * 1000.0F) * 10L);
-
-    this.sink2Depth = (this.bodyDepth1 + f8);
-    this.sink2Pitch = this.bodyPitch1;
-    this.sink2Roll = this.bodyRoll1;
-    this.sink2timeWhenStop = (this.tmInterpoEnd + ()(f7 * 1000.0F));
-  }
-
-  private void showExplode()
-  {
-    Explosions.Antiaircraft_Explode(this.pos.getAbsPoint());
-  }
-
-  private void Die(Actor paramActor, long paramLong, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramLong < 0L) {
-      if (isNetMirror())
-      {
-        return;
-      }
-
-      paramLong = NetServerParams.getServerTime();
-    }
-
-    this.dying = 1;
-    World.onActorDied(this, paramActor);
-    recomputeShotpoints();
-
-    forgetAllAiming();
-
-    SetEffectsIntens(-1.0F);
-
-    if (paramBoolean2)
-    {
-      computeSinkingParams(paramLong);
-    }
-
-    computeInterpolatedDPR(paramLong);
-
-    if (this.path != null)
-      setMovablePosition(paramLong);
-    else {
-      setPosition();
-    }
-    this.pos.reset();
-
-    this.timeOfDeath = paramLong;
-
-    if (paramBoolean1) {
-      showExplode();
-    }
-
-    if ((paramBoolean1) && (isNetMaster())) {
-      send_DeathCommand(paramActor, null);
-    }
-
-    if (this.airport != null)
-      this.airport.disableBornPlace();
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed()) {
-      return;
-    }
-    eraseGuns();
-    if (this.parts != null) {
-      for (int i = 0; i < this.parts.length; i++) {
-        Part.access$402(this.parts[i], null);
-        this.parts[i] = null;
-      }
-      this.parts = null;
-    }
-    super.destroy();
-  }
-
-  private boolean isAnyEnemyNear()
-  {
-    NearestEnemies.set(WeaponsMask());
-    Actor localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), 2000.0D, getArmy());
-
-    return localActor != null;
-  }
-
-  private final FiringDevice GetFiringDevice(Aim paramAim)
-  {
-    for (int i = 0; i < this.prop.nGuns; i++) {
-      if ((this.arms[i] != null) && (this.arms[i].aime == paramAim)) {
-        return this.arms[i];
-      }
-    }
-    System.out.println("Internal error 1: Can't find ship gun.");
-    return null;
-  }
-
-  private final ShipPartProperties GetGunProperties(Aim paramAim)
-  {
-    for (int i = 0; i < this.prop.nGuns; i++) {
-      if (this.arms[i].aime == paramAim) {
-        return this.parts[this.arms[i].part_idx].pro;
-      }
-    }
-    System.out.println("Internal error 2: Can't find ship gun.");
-    return null;
-  }
-
-  private void setGunAngles(FiringDevice paramFiringDevice, float paramFloat1, float paramFloat2) {
-    FiringDevice.access$1002(paramFiringDevice, paramFloat1);
-    FiringDevice.access$1102(paramFiringDevice, paramFloat2);
-
-    ShipPartProperties localShipPartProperties = this.parts[paramFiringDevice.part_idx].pro;
-
-    tmpYPR[1] = 0.0F;
-    tmpYPR[2] = 0.0F;
-
-    hierMesh().setCurChunk(localShipPartProperties.headChunkIdx);
-    tmpYPR[0] = FiringDevice.access$1000(paramFiringDevice);
-    hierMesh().chunkSetAngles(tmpYPR);
-
-    hierMesh().setCurChunk(localShipPartProperties.gunChunkIdx);
-    tmpYPR[0] = (-(FiringDevice.access$1100(paramFiringDevice) - localShipPartProperties.GUN_STD_PITCH));
-    hierMesh().chunkSetAngles(tmpYPR);
-  }
-
-  private void eraseGuns() {
-    if (this.arms != null) {
-      for (int i = 0; i < this.prop.nGuns; i++) {
-        if (this.arms[i] != null) {
-          if (this.arms[i].aime != null) {
-            this.arms[i].aime.forgetAll();
-            FiringDevice.access$602(this.arms[i], null);
-          }
-          if (this.arms[i].gun != null) {
-            destroy(this.arms[i].gun);
-            FiringDevice.access$1202(this.arms[i], null);
-          }
-          FiringDevice.access$702(this.arms[i], null);
-          this.arms[i] = null;
-        }
-      }
-      this.arms = null;
-    }
-  }
-
-  private void forgetAllAiming() {
-    if (this.arms != null)
-      for (int i = 0; i < this.prop.nGuns; i++)
-        if ((this.arms[i] != null) && (this.arms[i].aime != null)) {
-          this.arms[i].aime.forgetAiming();
-          FiringDevice.access$702(this.arms[i], null);
-        }
-  }
-
-  private void CreateGuns()
-  {
-    this.arms = new FiringDevice[this.prop.nGuns];
-
-    for (int i = 0; i < this.parts.length; i++) {
-      if (!this.parts[i].pro.haveGun())
-      {
-        continue;
-      }
-      ShipPartProperties localShipPartProperties = this.parts[i].pro;
-      int j = localShipPartProperties.gun_idx;
-
-      this.arms[j] = new FiringDevice();
-
-      FiringDevice.access$1302(this.arms[j], j);
-      FiringDevice.access$002(this.arms[j], i);
-
-      FiringDevice.access$1202(this.arms[j], null);
-      try {
-        FiringDevice.access$1202(this.arms[j], (Gun)localShipPartProperties.gunClass.newInstance());
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("BigShip: Can't create gun '" + localShipPartProperties.gunClass.getName() + "'");
-      }
-
-      this.arms[j].gun.set(this, localShipPartProperties.gunShellStartHookName);
-      this.arms[j].gun.loadBullets(-1);
-
-      FiringDevice.access$602(this.arms[j], new Aim(this, isNetMirror(), this.SLOWFIRE_K * localShipPartProperties.DELAY_AFTER_SHOOT));
-
-      FiringDevice.access$702(this.arms[j], null);
-    }
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  private void initMeshBasedProperties() {
-    for (int i = 0; i < this.prop.propparts.length; i++) {
-      ShipPartProperties localShipPartProperties = this.prop.propparts[i];
-
-      if (localShipPartProperties.baseChunkIdx >= 0)
-      {
-        continue;
-      }
-
-      localShipPartProperties.baseChunkIdx = hierMesh().chunkFind(localShipPartProperties.baseChunkName);
-
-      hierMesh().setCurChunk(localShipPartProperties.baseChunkIdx);
-
-      hierMesh().getChunkLocObj(tmpL);
-      tmpL.get(p1);
-      localShipPartProperties.partOffs = new Point3f();
-      localShipPartProperties.partOffs.set(p1);
-
-      localShipPartProperties.partR = hierMesh().getChunkVisibilityR();
-
-      int j = localShipPartProperties.additCollisChunkName.length;
-
-      for (int k = 0; k < localShipPartProperties.additCollisChunkName.length; k++) {
-        if (hierMesh().chunkFindCheck(localShipPartProperties.additCollisChunkName[k] + "_dmg") >= 0) {
-          j++;
-        }
-      }
-
-      if (hierMesh().chunkFindCheck(localShipPartProperties.baseChunkName + "_dmg") >= 0) {
-        j++;
-      }
-
-      localShipPartProperties.additCollisChunkIdx = new int[j];
-
-      j = 0;
-
-      for (k = 0; k < localShipPartProperties.additCollisChunkName.length; k++) {
-        localShipPartProperties.additCollisChunkIdx[(j++)] = hierMesh().chunkFind(localShipPartProperties.additCollisChunkName[k]);
-
-        int m = hierMesh().chunkFindCheck(localShipPartProperties.additCollisChunkName[k] + "_dmg");
-
-        if (m >= 0) {
-          localShipPartProperties.additCollisChunkIdx[(j++)] = m;
-        }
-      }
-
-      k = hierMesh().chunkFindCheck(localShipPartProperties.baseChunkName + "_dmg");
-      if (k >= 0) {
-        localShipPartProperties.additCollisChunkIdx[(j++)] = k;
-      }
-
-      if (j != localShipPartProperties.additCollisChunkIdx.length) {
-        System.out.println("*** bigship: collis internal error");
-      }
-
-      if (localShipPartProperties.haveGun()) {
-        localShipPartProperties.headChunkIdx = hierMesh().chunkFind(localShipPartProperties.headChunkName);
-        localShipPartProperties.gunChunkIdx = hierMesh().chunkFind(localShipPartProperties.gunChunkName);
-
-        hierMesh().setCurChunk(localShipPartProperties.headChunkIdx);
-        hierMesh().getChunkLocObj(tmpL);
-
-        localShipPartProperties.fireOffset = new Point3d();
-        tmpL.get(localShipPartProperties.fireOffset);
-
-        localShipPartProperties.fireOrient = new Orient();
-        tmpL.get(localShipPartProperties.fireOrient);
-
-        Vector3d localVector3d1 = new Vector3d();
-        Vector3d localVector3d2 = new Vector3d();
-        localVector3d1.set(1.0D, 0.0D, 0.0D);
-        localVector3d2.set(1.0D, 0.0D, 0.0D);
-
-        tmpL.transform(localVector3d1);
-
-        hierMesh().setCurChunk(localShipPartProperties.gunChunkIdx);
-        hierMesh().getChunkLocObj(tmpL);
-
-        tmpL.transform(localVector3d2);
-
-        localShipPartProperties.GUN_STD_PITCH = Geom.RAD2DEG((float)localVector3d1.angle(localVector3d2));
-      }
-    }
-    initMeshMats();
-  }
-
-  private void initMeshMats() {
-    if (Config.cur.b3dgunners) return;
-    hierMesh().materialReplaceToNull("Sailor");
-    hierMesh().materialReplaceToNull("Sailor1o");
-    hierMesh().materialReplaceToNull("Sailor2p");
-  }
-
-  private void makeLive() {
-    this.dying = 0;
-
-    for (int i = 0; i < this.parts.length; i++) {
-      Part.access$302(this.parts[i], 0.0F);
-      Part.access$102(this.parts[i], 0);
-      this.parts[i].pro = this.prop.propparts[i];
-    }
-
-    for (i = 0; i < hierMesh().chunks(); i++) {
-      hierMesh().setCurChunk(i);
-      if (hierMesh().chunkName().equals("Red"))
-        continue;
-      boolean bool = !hierMesh().chunkName().endsWith("_dmg");
-      if (hierMesh().chunkName().startsWith("ShdwRcv")) {
-        bool = false;
-      }
-      hierMesh().chunkVisible(bool);
-    }
-
-    recomputeShotpoints();
-  }
-
-  private void setDefaultLivePose()
-  {
-    int i = hierMesh().hookFind("Ground_Level");
-    if (i != -1) {
-      Matrix4d localMatrix4d = new Matrix4d();
-      hierMesh().hookMatrix(i, localMatrix4d);
-    }
-
-    for (int j = 0; j < this.arms.length; j++) {
-      int k = this.arms[j].part_idx;
-      setGunAngles(this.arms[j], this.parts[k].pro.HEAD_STD_YAW, this.parts[k].pro.GUN_STD_PITCH);
-    }
-
-    this.bodyDepth = 0.0F;
-    align();
-  }
-
-  protected BigshipGeneric()
-  {
-    this(constr_arg1, constr_arg2);
-  }
-
-  private BigshipGeneric(ShipProperties paramShipProperties, ActorSpawnArg paramActorSpawnArg)
-  {
-    super(paramShipProperties.meshName);
-    this.prop = paramShipProperties;
-
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      hideTransparentRunwayRed();
-    }
-
-    this.CURRSPEED = this.prop.SPEED;
-    initMeshBasedProperties();
-
-    paramActorSpawnArg.setStationary(this);
-
-    this.path = null;
-
-    collide(true);
-    drawing(true);
-
-    this.tmInterpoStart = (this.tmInterpoEnd = 0L);
-    this.bodyDepth = (this.bodyPitch = this.bodyRoll = 0.0F);
-    this.bodyDepth0 = (this.bodyPitch0 = this.bodyRoll0 = 0.0F);
-    this.bodyDepth1 = (this.bodyPitch1 = this.bodyRoll1 = 0.0F);
-
-    this.shipYaw = paramActorSpawnArg.orient.getYaw();
-
-    setPosition();
-    this.pos.reset();
-
-    this.parts = new Part[this.prop.propparts.length];
-    for (int i = 0; i < this.parts.length; i++) {
-      this.parts[i] = new Part();
-    }
-    makeLive();
-
-    createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-
-    this.SKILL_IDX = Chief.new_SKILL_IDX;
-    this.SLOWFIRE_K = Chief.new_SLOWFIRE_K;
-    this.DELAY_WAKEUP = Chief.new_DELAY_WAKEUP;
-    this.wakeupTmr = 0L;
-    CreateGuns();
-
-    i = 0;
-    for (int j = 0; j < this.parts.length; j++) {
-      if ((this.parts[j].pro.isItLifeKeeper()) || (this.parts[j].pro.haveGun())) {
-        i++;
-      }
-
-    }
-
-    if (i <= 0) {
-      this.dsmoks = null;
-    } else {
-      this.dsmoks = new Pipe[i];
-      i = 0;
-      for (j = 0; j < this.parts.length; j++) {
-        if ((!this.parts[j].pro.isItLifeKeeper()) && (!this.parts[j].pro.haveGun())) {
-          continue;
-        }
-        this.dsmoks[i] = new Pipe();
-        Pipe.access$902(this.dsmoks[i], j);
-        Pipe.access$802(this.dsmoks[i], null);
-        i++;
-      }
-
-    }
-
-    setDefaultLivePose();
-
-    if ((!isNetMirror()) && (this.prop.nGuns > 0) && (this.DELAY_WAKEUP > 0.0F))
-    {
-      this.wakeupTmr = (-SecsToTicks(Rnd(2.0F, 7.0F)));
-    }
-
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      if (Engine.land().isWater(this.pos.getAbs().getX(), this.pos.getAbs().getY())) {
-        hierMesh().chunkVisible("Hull1", false);
-      }
-    }
-
-    createAirport();
-
-    if (!interpEnd("move")) {
-      interpPut(new Move(), "move", Time.current(), null);
-      InterpolateAdapter.forceListener(this);
-    }
-  }
-
-  public BigshipGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-  {
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      hideTransparentRunwayRed();
-    }
-
-    this.zutiIsShipChief = true;
-    try
-    {
-      int i = paramSectFile1.sectionIndex(paramString2);
-      String str = paramSectFile1.var(i, 0);
-
-      Object localObject2 = Spawn.get(str);
-      if (localObject2 == null) {
-        throw new ActorException("Ship: Unknown class of ship (" + str + ")");
-      }
-
-      this.prop = ((SPAWN)localObject2).proper;
-      try
-      {
-        setMesh(this.prop.meshName);
-      } catch (RuntimeException localRuntimeException) {
-        super.destroy();
-        throw localRuntimeException;
-      }
-      initMeshBasedProperties();
-      if (this.prop.soundName != null) newSound(this.prop.soundName, true);
-
-      setName(paramString1);
-      setArmy(paramInt);
-
-      LoadPath(paramSectFile2, paramString3);
-
-      this.cachedSeg = 0;
-      this.tmInterpoStart = (this.tmInterpoEnd = 0L);
-      this.bodyDepth = (this.bodyPitch = this.bodyRoll = 0.0F);
-      this.bodyDepth0 = (this.bodyPitch0 = this.bodyRoll0 = 0.0F);
-      this.bodyDepth1 = (this.bodyPitch1 = this.bodyRoll1 = 0.0F);
-
-      this.CURRSPEED = (2.0F * this.prop.SPEED);
-
-      setMovablePosition(NetServerParams.getServerTime());
-      this.pos.reset();
-
-      collide(true);
-      drawing(true);
-
-      this.parts = new Part[this.prop.propparts.length];
-      for (int j = 0; j < this.parts.length; j++) {
-        this.parts[j] = new Part();
-      }
-      makeLive();
-
-      int k = 0;
-
-      for (int m = 0; m <= 10; m++) {
-        localObject3 = "Vapor";
-        if (m > 0) {
-          localObject3 = (String)localObject3 + (m - 1);
-        }
-        if (mesh().hookFind((String)localObject3) >= 0)
-          k++;
-      }
-      Object localObject1;
-      if (k <= 0) {
-        this.pipes = null;
-      } else {
-        this.pipes = new Pipe[k];
-
-        k = 0;
-
-        for (m = 0; m <= 10; m++) {
-          localObject3 = "Vapor";
-          if (m > 0) {
-            localObject3 = (String)localObject3 + (m - 1);
-          }
-          if (mesh().hookFind((String)localObject3) < 0)
-          {
-            continue;
-          }
-          this.pipes[k] = new Pipe();
-
-          int i2 = hierMesh().hookParentChunk((String)localObject3);
-          if (i2 < 0) {
-            System.out.println(" *** Bigship: unexpected error in vapor hook " + (String)localObject3);
-
-            this.pipes = null;
-            break;
-          }
-
-          for (int i3 = 0; (i3 < this.parts.length) && 
-            (this.parts[i3].pro.baseChunkIdx != i2); i3++);
-          if (i3 >= this.parts.length) {
-            System.out.println(" *** Bigship: vapor hook '" + (String)localObject3 + "' MUST be linked to baseChunk");
-
-            this.pipes = null;
-            break;
-          }
-
-          Pipe.access$902(this.pipes[k], i3);
-
-          localObject1 = new HookNamed(this, (String)localObject3);
-          Pipe.access$802(this.pipes[k], Eff3DActor.New(this, (Hook)localObject1, null, 1.0F, "Effects/Smokes/SmokePipeShip.eff", -1.0F));
-
-          k++;
-        }
-      }
-       tmp1062_1061 = (this.wake[0] =  = null); this.wake[1] = tmp1062_1061; this.wake[2] = tmp1062_1061;
-      this.tail = null;
-      this.noseW = null;
-      this.nose = null;
-
-      k = this.prop.SLIDER_DIST / 2.5F < 90.0F ? 1 : 0;
-
-      if (mesh().hookFind("_Prop") >= 0) {
-        localObject1 = new HookNamedZ0(this, "_Prop");
-        this.tail = Eff3DActor.New(this, (Hook)localObject1, null, 1.0F, k != 0 ? "3DO/Effects/Tracers/ShipTrail/PropWakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/PropWake.eff", -1.0F);
-      }
-
-      if (mesh().hookFind("_Centre") >= 0)
-      {
-        Loc localLoc1 = new Loc();
-        Loc localLoc2 = new Loc();
-        HookNamed localHookNamed = new HookNamed(this, "_Left");
-        localHookNamed.computePos(this, new Loc(), localLoc1);
-        localObject3 = new HookNamed(this, "_Right");
-        ((HookNamed)localObject3).computePos(this, new Loc(), localLoc2);
-        float f1 = (float)localLoc1.getPoint().distance(localLoc2.getPoint());
-        localObject1 = new HookNamedZ0(this, "_Centre");
-        if (mesh().hookFind("_Prop") >= 0) {
-          HookNamedZ0 localHookNamedZ0 = new HookNamedZ0(this, "_Prop");
-
-          Loc localLoc3 = new Loc(); ((HookNamed)localObject1).computePos(this, new Loc(), localLoc3);
-          Loc localLoc4 = new Loc(); localHookNamedZ0.computePos(this, new Loc(), localLoc4);
-          float f2 = (float)localLoc3.getPoint().distance(localLoc4.getPoint());
-
-          this.wake[0] = Eff3DActor.New(this, localHookNamedZ0, new Loc(-f2 * 0.33D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, k != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1.0F);
-
-          this.wake[1] = Eff3DActor.New(this, (Hook)localObject1, new Loc(f2 * 0.15D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, k != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1.0F);
-
-          this.wake[2] = Eff3DActor.New(this, (Hook)localObject1, new Loc(-f2 * 0.15D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, k != 0 ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1.0F);
-        }
-        else
-        {
-          this.wake[0] = Eff3DActor.New(this, (Hook)localObject1, new Loc(-f1 * 0.3D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), f1, this.prop.SLIDER_DIST / 2.5D < 50.0D ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1.0F);
-        }
-
-      }
-
-      if (mesh().hookFind("_Nose") >= 0) {
-        localObject1 = new HookNamedZ0(this, "_Nose");
-        this.noseW = Eff3DActor.New(this, (Hook)localObject1, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), 1.0F, "3DO/Effects/Tracers/ShipTrail/SideWave.eff", -1.0F);
-
-        this.nose = Eff3DActor.New(this, (Hook)localObject1, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 30.0F, 0.0F), 1.0F, k != 0 ? "3DO/Effects/Tracers/ShipTrail/FrontPuffBoat.eff" : "3DO/Effects/Tracers/ShipTrail/FrontPuff.eff", -1.0F);
-      }
-
-      SetEffectsIntens(0.0F);
-
-      int n = Mission.cur().getUnitNetIdRemote(this);
-      Object localObject3 = Mission.cur().getNetMasterChannel();
-      if (localObject3 == null)
-        this.net = new Master(this);
-      else if (n != 0) {
-        this.net = new Mirror(this, (NetChannel)localObject3, n);
-      }
-
-      this.SKILL_IDX = Chief.new_SKILL_IDX;
-      this.SLOWFIRE_K = Chief.new_SLOWFIRE_K;
-      this.DELAY_WAKEUP = Chief.new_DELAY_WAKEUP;
-      this.wakeupTmr = 0L;
-      CreateGuns();
-
-      n = 0;
-      for (int i1 = 0; i1 < this.parts.length; i1++) {
-        if ((this.parts[i1].pro.isItLifeKeeper()) || (this.parts[i1].pro.haveGun())) {
-          n++;
-        }
-
-      }
-
-      if (n <= 0) {
-        this.dsmoks = null;
-      } else {
-        this.dsmoks = new Pipe[n];
-        n = 0;
-        for (i1 = 0; i1 < this.parts.length; i1++) {
-          if ((!this.parts[i1].pro.isItLifeKeeper()) && (!this.parts[i1].pro.haveGun())) {
-            continue;
-          }
-          this.dsmoks[n] = new Pipe();
-          Pipe.access$902(this.dsmoks[n], i1);
-          Pipe.access$802(this.dsmoks[n], null);
-          n++;
-        }
-
-      }
-
-      setDefaultLivePose();
-
-      if ((!isNetMirror()) && (this.prop.nGuns > 0) && (this.DELAY_WAKEUP > 0.0F))
-      {
-        this.wakeupTmr = (-SecsToTicks(Rnd(2.0F, 7.0F)));
-      }
-
-      createAirport();
-
-      if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-      {
-        if (Engine.land().isWater(this.pos.getAbs().getX(), this.pos.getAbs().getY())) {
-          hierMesh().chunkVisible("Hull1", false);
-        }
-
-      }
-
-      if (!interpEnd("move")) {
-        interpPut(new Move(), "move", Time.current(), null);
-        InterpolateAdapter.forceListener(this);
-      }
-    }
-    catch (Exception localException) {
-      System.out.println("Ship creation failure:");
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      throw new ActorException();
-    }
-  }
-
-  private void SetEffectsIntens(float paramFloat)
-  {
-    if (this.dying != 0) {
-      paramFloat = -1.0F;
-    }
-
-    if (this.pipes != null) {
-      i = 0;
-
-      for (int j = 0; j < this.pipes.length; j++) {
-        if (this.pipes[j] == null) {
-          continue;
-        }
-        if (this.pipes[j].pipe == null) {
-          this.pipes[j] = null;
-        }
-        else if (paramFloat >= 0.0F) {
-          this.pipes[j].pipe._setIntesity(paramFloat);
-          i = 1;
-        } else {
-          this.pipes[j].pipe._finish();
-          Pipe.access$802(this.pipes[j], null);
-          this.pipes[j] = null;
-        }
-      }
-
-      if (i == 0) {
-        for (j = 0; j < this.pipes.length; j++) {
-          if (this.pipes[j] != null) {
-            this.pipes[j] = null;
-          }
-        }
-        this.pipes = null;
-      }
-    }
-
-    for (int i = 0; i < 3; i++) {
-      if (this.wake[i] != null) {
-        if (paramFloat >= 0.0F) {
-          this.wake[i]._setIntesity(paramFloat);
-        }
-        else {
-          this.wake[i]._finish();
-          this.wake[i] = null;
-        }
-      }
-    }
-
-    if (this.noseW != null) {
-      if (paramFloat >= 0.0F) {
-        this.noseW._setIntesity(paramFloat);
-      } else {
-        this.noseW._finish();
-        this.noseW = null;
-      }
-    }
-
-    if (this.nose != null) {
-      if (paramFloat >= 0.0F) {
-        this.nose._setIntesity(paramFloat);
-      } else {
-        this.nose._finish();
-        this.nose = null;
-      }
-    }
-
-    if (this.tail != null)
-      if (paramFloat >= 0.0F) {
-        this.tail._setIntesity(paramFloat);
-      } else {
-        this.tail._finish();
-        this.tail = null;
-      }
-  }
-
-  private void LoadPath(SectFile paramSectFile, String paramString)
-  {
-    int i = paramSectFile.sectionIndex(paramString);
-    if (i < 0) {
-      throw new ActorException("Ship path: Section [" + paramString + "] not found");
-    }
-    int j = paramSectFile.vars(i);
-    if (j < 1) {
-      throw new ActorException("Ship path must contain at least 2 nodes");
-    }
-
-    this.path = new ArrayList();
-    Object localObject;
-    float f5;
-    for (int k = 0; k < j; k++) {
-      localObject = new StringTokenizer(paramSectFile.line(i, k));
-      float f2 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      float f3 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-      f5 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-
-      double d = 0.0D;
-
-      float f8 = 0.0F;
-
-      if (((StringTokenizer)localObject).hasMoreTokens()) {
-        d = Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-        if (((StringTokenizer)localObject).hasMoreTokens()) {
-          Double.valueOf(((StringTokenizer)localObject).nextToken()).doubleValue();
-          if (((StringTokenizer)localObject).hasMoreTokens()) {
-            f8 = Float.valueOf(((StringTokenizer)localObject).nextToken()).floatValue();
-            if (f8 <= 0.0F) {
-              f8 = this.prop.SPEED;
-            }
-          }
-        }
-      }
-      if ((f8 <= 0.0F) && ((k == 0) || (k == j - 1))) {
-        f8 = this.prop.SPEED;
-      }
-      if (k >= j - 1) d = -1.0D;
-
-      Segment localSegment9 = new Segment(null);
-      localSegment9.posIn = new Point3d(f2, f3, 0.0D);
-
-      if (Math.abs(d) < 0.1D)
-      {
-        localSegment9.timeIn = 0L;
-      }
-      else {
-        localSegment9.timeIn = ()(d * 60.0D * 1000.0D + (d > 0.0D ? 0.5D : -0.5D));
-        if (k == 0)
-        {
-          if (localSegment9.timeIn < 0L) {
-            localSegment9.timeIn = (-localSegment9.timeIn);
-          }
-        }
-      }
-
-      localSegment9.speedIn = f8;
-      localSegment9.slidersOn = true;
-      this.path.add(localSegment9);
-    }
-
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localObject = (Segment)this.path.get(k);
-      Segment localSegment3 = (Segment)this.path.get(k + 1);
-      ((Segment)localObject).length = (float)((Segment)localObject).posIn.distance(localSegment3.posIn);
-    }
-
-    k = 0;
-    float f1 = ((Segment)this.path.get(k)).length;
-    float f10;
-    while (k < this.path.size() - 1) {
-      int n = k + 1;
-      while (true) {
-        Segment localSegment5 = (Segment)this.path.get(n);
-        if (localSegment5.speedIn > 0.0F) {
-          break;
-        }
-        f1 += localSegment5.length;
-        n++;
-      }
-
-      if (n - k > 1) {
-        float f4 = ((Segment)this.path.get(k)).length;
-        f5 = ((Segment)this.path.get(k)).speedIn;
-        float f6 = ((Segment)this.path.get(n)).speedIn;
-        for (int i2 = k + 1; i2 < n; i2++) {
-          Segment localSegment8 = (Segment)this.path.get(i2);
-          f10 = f4 / f1;
-          localSegment8.speedIn = (f5 * (1.0F - f10) + f6 * f10);
-          f1 += localSegment8.length;
-        }
-      }
-
-      k = n;
-    }
-    Segment localSegment2;
-    Segment localSegment4;
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localSegment2 = (Segment)this.path.get(k);
-      localSegment4 = (Segment)this.path.get(k + 1);
-
-      if ((localSegment2.timeIn > 0L) && (localSegment4.timeIn > 0L)) {
-        Segment localSegment6 = new Segment(null);
-        localSegment6.posIn = new Point3d(localSegment2.posIn);
-        localSegment6.posIn.add(localSegment4.posIn);
-        localSegment6.posIn.scale(0.5D);
-        localSegment6.timeIn = 0L;
-        localSegment6.speedIn = ((localSegment2.speedIn + localSegment4.speedIn) * 0.5F);
-        this.path.add(k + 1, localSegment6);
-      }
-
-    }
-
-    for (k = 0; k < this.path.size() - 1; k++) {
-      localSegment2 = (Segment)this.path.get(k);
-      localSegment4 = (Segment)this.path.get(k + 1);
-      localSegment2.length = (float)localSegment2.posIn.distance(localSegment4.posIn);
-    }
-
-    Segment localSegment1 = (Segment)this.path.get(0);
-    int m = localSegment1.timeIn != 0L ? 1 : 0;
-    long l1 = localSegment1.timeIn;
-
-    for (int i1 = 0; i1 < this.path.size() - 1; i1++) {
-      localSegment1 = (Segment)this.path.get(i1);
-      Segment localSegment7 = (Segment)this.path.get(i1 + 1);
-
-      localSegment1.posOut = new Point3d(localSegment7.posIn);
-      localSegment7.posIn = localSegment1.posOut;
-
-      float f7 = localSegment1.speedIn;
-      float f9 = localSegment7.speedIn;
-      f10 = (f7 + f9) * 0.5F;
-      float f11;
-      if (m != 0)
-      {
-        localSegment1.speedIn = 0.0F;
-        localSegment1.speedOut = f9;
-        f11 = 2.0F * localSegment1.length / f9 * 1000.0F + 0.5F;
-        localSegment1.timeIn = l1;
-        localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-        l1 = localSegment1.timeOut;
-        m = 0;
-      }
-      else if (localSegment7.timeIn == 0L)
-      {
-        localSegment1.speedIn = f7;
-        localSegment1.speedOut = f9;
-        f11 = localSegment1.length / f10 * 1000.0F + 0.5F;
-        localSegment1.timeIn = l1;
-        localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-        l1 = localSegment1.timeOut;
-        m = 0;
-      }
-      else
-      {
-        if (localSegment7.timeIn > 0L)
-        {
-          f11 = localSegment1.length / f10 * 1000.0F + 0.5F;
-          long l2 = l1 + (int)f11;
-
-          if (l2 >= localSegment7.timeIn)
-          {
-            localSegment7.timeIn = 0L;
-          }
-          else {
-            localSegment1.speedIn = f7;
-            localSegment1.speedOut = 0.0F;
-            f11 = 2.0F * localSegment1.length / f7 * 1000.0F + 0.5F;
-            localSegment1.timeIn = l1;
-            localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-            l1 = localSegment7.timeIn;
-            m = 1;
-            continue;
-          }
-
-        }
-
-        if (localSegment7.timeIn == 0L)
-        {
-          localSegment1.speedIn = f7;
-          localSegment1.speedOut = f9;
-          f11 = localSegment1.length / f10 * 1000.0F + 0.5F;
-          localSegment1.timeIn = l1;
-          localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-          l1 = localSegment1.timeOut;
-          m = 0;
-        }
-        else
-        {
-          localSegment1.speedIn = f7;
-          localSegment1.speedOut = 0.0F;
-          f11 = 2.0F * localSegment1.length / f7 * 1000.0F + 0.5F;
-          localSegment1.timeIn = l1;
-          localSegment1.timeOut = (localSegment1.timeIn + (int)f11);
-          l1 = localSegment1.timeOut + -localSegment7.timeIn;
-          m = 1;
-        }
-      }
-
-    }
-
-    this.path.remove(this.path.size() - 1);
-  }
-
-  private void printPath(String paramString) {
-    System.out.println("------------ Path: " + paramString + "  #:" + this.path.size());
-    for (int i = 0; i < this.path.size(); i++) {
-      Segment localSegment = (Segment)this.path.get(i);
-      System.out.println(" " + i + ":  len=" + localSegment.length + " spdIn=" + localSegment.speedIn + " spdOut=" + localSegment.speedOut + " tmIn=" + localSegment.timeIn + " tmOut=" + localSegment.timeOut);
-      System.out.println("posIn=" + localSegment.posIn + " posOut=" + localSegment.posOut);
-    }
-    System.out.println("------------");
-  }
-
-  public void align()
-  {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) - this.bodyDepth);
-    this.pos.setAbs(p);
-  }
-
-  private boolean computeInterpolatedDPR(long paramLong) {
-    if ((this.tmInterpoStart >= this.tmInterpoEnd) || (paramLong >= this.tmInterpoEnd))
-    {
-      this.bodyDepth = this.bodyDepth1;
-      this.bodyPitch = this.bodyPitch1;
-      this.bodyRoll = this.bodyRoll1;
-      return false;
-    }if (paramLong <= this.tmInterpoStart) {
-      this.bodyDepth = this.bodyDepth0;
-      this.bodyPitch = this.bodyPitch0;
-      this.bodyRoll = this.bodyRoll0;
-      return true;
-    }
-    float f = (float)(paramLong - this.tmInterpoStart) / (float)(this.tmInterpoEnd - this.tmInterpoStart);
-
-    this.bodyDepth = (this.bodyDepth0 + (this.bodyDepth1 - this.bodyDepth0) * f);
-    this.bodyPitch = (this.bodyPitch0 + (this.bodyPitch1 - this.bodyPitch0) * f);
-    this.bodyRoll = (this.bodyRoll0 + (this.bodyRoll1 - this.bodyRoll0) * f);
-    return true;
-  }
-
-  private void setMovablePosition(long paramLong)
-  {
-    if (this.cachedSeg < 0)
-      this.cachedSeg = 0;
-    else if (this.cachedSeg >= this.path.size()) {
-      this.cachedSeg = (this.path.size() - 1);
-    }
-    Segment localSegment = (Segment)this.path.get(this.cachedSeg);
-
-    if ((localSegment.timeIn <= paramLong) && (paramLong <= localSegment.timeOut))
-    {
-      SetEffectsIntens(1.0F);
-      setMovablePosition((float)(paramLong - localSegment.timeIn) / (float)(localSegment.timeOut - localSegment.timeIn));
-      return;
-    }
-
-    if (paramLong > localSegment.timeOut) {
-      while (this.cachedSeg + 1 < this.path.size()) {
-        localSegment = (Segment)this.path.get(++this.cachedSeg);
-        if (paramLong <= localSegment.timeIn) {
-          SetEffectsIntens(0.0F);
-          setMovablePosition(0.0F);
-          return;
-        }
-        if (paramLong <= localSegment.timeOut) {
-          SetEffectsIntens(1.0F);
-          setMovablePosition((float)(paramLong - localSegment.timeIn) / (float)(localSegment.timeOut - localSegment.timeIn));
-          return;
-        }
-      }
-
-      SetEffectsIntens(-1.0F);
-      setMovablePosition(1.0F);
-      return;
-    }
-
-    while (this.cachedSeg > 0) {
-      localSegment = (Segment)this.path.get(--this.cachedSeg);
-      if (paramLong >= localSegment.timeOut) {
-        SetEffectsIntens(0.0F);
-        setMovablePosition(1.0F);
-        return;
-      }
-      if (paramLong >= localSegment.timeIn) {
-        SetEffectsIntens(1.0F);
-        setMovablePosition((float)(paramLong - localSegment.timeIn) / (float)(localSegment.timeOut - localSegment.timeIn));
-        return;
-      }
-    }
-
-    SetEffectsIntens(0.0F);
-    setMovablePosition(0.0F);
-  }
-
-  private void setMovablePosition(float paramFloat)
-  {
-    Segment localSegment = (Segment)this.path.get(this.cachedSeg);
-
-    float f1 = (float)(localSegment.timeOut - localSegment.timeIn) * 0.001F;
-    float f2 = localSegment.speedIn;
-    float f3 = localSegment.speedOut;
-    float f4 = (f3 - f2) / f1;
-
-    paramFloat *= f1;
-    float f5 = f2 * paramFloat + f4 * paramFloat * paramFloat * 0.5F;
-
-    this.isTurning = false;
-    this.isTurningBackward = false;
-
-    int i = this.cachedSeg;
-    float f6 = this.prop.SLIDER_DIST - (localSegment.length - f5);
-    if (f6 <= 0.0F) {
-      p1.interpolate(localSegment.posIn, localSegment.posOut, (f5 + this.prop.SLIDER_DIST) / localSegment.length);
-    }
-    else
-    {
-      this.isTurning = true;
-      while (true)
-      {
-        if (i + 1 >= this.path.size()) {
-          p1.interpolate(localSegment.posIn, localSegment.posOut, 1.0F + f6 / localSegment.length);
-          break;
-        }
-        i++; localSegment = (Segment)this.path.get(i);
-        if (f6 <= localSegment.length) {
-          p1.interpolate(localSegment.posIn, localSegment.posOut, f6 / localSegment.length);
-          break;
-        }
-        f6 -= localSegment.length;
-      }
-
-    }
-
-    i = this.cachedSeg;
-    localSegment = (Segment)this.path.get(i);
-    f6 = this.prop.SLIDER_DIST - f5;
-    if ((f6 <= 0.0F) || (!localSegment.slidersOn)) {
-      p2.interpolate(localSegment.posIn, localSegment.posOut, (f5 - this.prop.SLIDER_DIST) / localSegment.length);
-    }
-    else
-    {
-      this.isTurning = true;
-      this.isTurningBackward = true;
-      while (true)
-      {
-        if (i <= 0) {
-          p2.interpolate(localSegment.posIn, localSegment.posOut, 0.0F - f6 / localSegment.length);
-          break;
-        }
-        i--; localSegment = (Segment)this.path.get(i);
-        if (f6 <= localSegment.length) {
-          p2.interpolate(localSegment.posIn, localSegment.posOut, 1.0F - f6 / localSegment.length);
-          break;
-        }
-        f6 -= localSegment.length;
-      }
-
-    }
-
-    if ((!Mission.isDogfight()) && (!this.isTurning) && (this.mustRecomputePath) && (f6 < -1.5D * this.prop.SLIDER_DIST))
-    {
-      computeNewPath();
-      this.mustRecomputePath = false;
-    }
-
-    p.interpolate(p1, p2, 0.5F);
-
-    tmpvd.sub(p1, p2);
-    if (tmpvd.lengthSquared() < 0.001000000047497451D) {
-      localSegment = (Segment)this.path.get(this.cachedSeg);
-      tmpvd.sub(localSegment.posOut, localSegment.posIn);
-    }
-    float f7 = (float)(Math.atan2(tmpvd.y, tmpvd.x) * 57.295779513082323D);
-
-    setPosition(p, f7);
-  }
-
-  public void addRockingSpeed(Vector3d paramVector3d1, Vector3d paramVector3d2, Point3d paramPoint3d)
-  {
-    this.tmpV.sub(paramPoint3d, this.pos.getAbsPoint());
-    this.o.transformInv(this.tmpV);
-    this.tmpV.cross(this.W, this.tmpV);
-    this.o.transform(this.tmpV);
-    paramVector3d1.add(this.tmpV);
-    paramVector3d2.set(this.N);
-  }
-
-  private void setPosition(Point3d paramPoint3d, float paramFloat)
-  {
-    this.shipYaw = paramFloat;
-
-    float f1 = (float)(NetServerParams.getServerTime() % this.rollPeriod) / this.rollPeriod;
-    float f2 = 0.05F * (20.0F - Math.abs(this.bodyPitch));
-    if (f2 < 0.0F) f2 = 0.0F;
-    float f3 = this.rollAmp * f2 * (float)Math.sin(f1 * 2.0F * 3.141592653589793D);
-    this.W.x = (-this.rollWAmp * f2 * Math.cos(f1 * 2.0F * 3.141592653589793D));
-    f1 = (float)(NetServerParams.getServerTime() % this.pitchPeriod) / this.pitchPeriod;
-    float f4 = this.pitchAmp * f2 * (float)Math.sin(f1 * 2.0F * 3.141592653589793D);
-    this.W.y = (-this.pitchWAmp * f2 * Math.cos(f1 * 2.0F * 3.141592653589793D));
-
-    this.o.setYPR(this.shipYaw, this.bodyPitch + f4, this.bodyRoll + f3);
-    this.N.set(0.0D, 0.0D, 1.0D);
-    this.o.transform(this.N);
-    this.initOr.setYPR(this.shipYaw, this.bodyPitch, this.bodyRoll);
-
-    paramPoint3d.z = (-this.bodyDepth);
-    this.pos.setAbs(paramPoint3d, this.o);
-    this.initLoc.set(paramPoint3d, this.initOr);
-  }
-
-  private void setPosition()
-  {
-    this.o.setYPR(this.shipYaw, this.bodyPitch, this.bodyRoll);
-    this.N.set(0.0D, 0.0D, 1.0D);
-    this.o.transform(this.N);
-    this.pos.setAbs(this.o);
-
-    align();
-    this.initLoc.set(this.pos.getAbs());
-  }
-
-  public int WeaponsMask()
-  {
-    return this.prop.WEAPONS_MASK;
-  }
-
-  public int HitbyMask() {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 0)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 0)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (this.numshotpoints <= 0) {
-      return -1;
-    }
-
-    return this.shotpoints[Rnd(0, this.numshotpoints - 1)];
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (this.numshotpoints <= 0) {
-      return false;
-    }
-
-    if (paramInt == 0) {
-      if (paramPoint3d != null) {
-        paramPoint3d.set(0.0D, 0.0D, 0.0D);
-      }
-      return true;
-    }
-
-    int i = paramInt - 1;
-    if ((i >= this.parts.length) || (i < 0)) {
-      return false;
-    }
-
-    if (this.parts[i].state == 2) {
-      return false;
-    }
-
-    if ((!this.parts[i].pro.isItLifeKeeper()) && (!this.parts[i].pro.haveGun())) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(this.parts[i].shotpointOffs);
-    }
-    return true;
-  }
-
-  public float AttackMaxDistance()
-  {
-    return this.prop.ATTACK_MAX_DISTANCE;
-  }
-
-  private void send_DeathCommand(Actor paramActor, NetChannel paramNetChannel)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    if (paramNetChannel == null) {
-      if (Mission.isDeathmatch()) {
-        float f = Mission.respawnTime("Bigship");
-        this.respawnDelay = SecsToTicks(Rnd(f, f * 1.2F));
-      } else {
-        this.respawnDelay = 0L;
-      }
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(68);
-
-      localNetMsgGuaranted.writeLong(this.timeOfDeath);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-
-      long l1 = Time.tickNext();
-      long l2 = 0L;
-      int i = this.dying == 1 ? 1 : 0;
-
-      double d = (i != 0 ? this.bodyDepth1 : this.bodyDepth0) / 1000.0D;
-      if (d <= 0.0D) d = 0.0D;
-      if (d >= 1.0D) d = 1.0D;
-      int j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < 0) j = 0;
-      localNetMsgGuaranted.writeShort(j);
-
-      d = (i != 0 ? this.bodyPitch1 : this.bodyPitch0) / 90.0D;
-      if (d <= -1.0D) d = -1.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < -32767) j = -32767;
-      localNetMsgGuaranted.writeShort(j);
-
-      d = (i != 0 ? this.bodyRoll1 : this.bodyRoll0) / 90.0D;
-      if (d <= -1.0D) d = -1.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < -32767) j = -32767;
-      localNetMsgGuaranted.writeShort(j);
-
-      d = (this.tmInterpoEnd - this.tmInterpoStart) / 1000.0D / 1200.0D;
-      if (i != 0)
-        l2 = l1 - this.tmInterpoStart;
-      else {
-        d = 0.0D;
-      }
-      if (d <= 0.0D) d = 0.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < 0) j = 0;
-
-      localNetMsgGuaranted.writeShort(j);
-
-      d = this.sink2Depth / 1000.0D;
-      if (d <= 0.0D) d = 0.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < 0) j = 0;
-      localNetMsgGuaranted.writeShort(j);
-
-      d = this.sink2Pitch / 90.0D;
-      if (d <= -1.0D) d = -1.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < -32767) j = -32767;
-      localNetMsgGuaranted.writeShort(j);
-
-      d = this.sink2Roll / 90.0D;
-      if (d <= -1.0D) d = -1.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < -32767) j = -32767;
-      localNetMsgGuaranted.writeShort(j);
-
-      d = (this.sink2timeWhenStop - this.tmInterpoEnd) / 1000.0D / 1200.0D;
-      if (i == 0) {
-        d = (this.tmInterpoEnd - this.tmInterpoStart) / 1000.0D / 1200.0D;
-        l2 = l1 - this.tmInterpoStart;
-      }
-      if (d <= 0.0D) d = 0.0D;
-      if (d >= 1.0D) d = 1.0D;
-      j = (int)(d * 32767.0D);
-      if (j > 32767) j = 32767;
-      if (j < 0) j = 0;
-
-      localNetMsgGuaranted.writeShort(j);
-
-      if (paramNetChannel != null) {
-        localNetMsgGuaranted.writeLong(l2);
-      }
-
-      if (paramNetChannel == null)
-        this.net.post(localNetMsgGuaranted);
-      else
-        this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-    }
-    catch (Exception localException)
-    {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_RespawnCommand()
-  {
-    if ((!isNetMaster()) || (!Mission.isDeathmatch())) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-
-    this.netsendPartsState_needtosend = false;
-  }
-
-  private void send_bufferized_FireCommand()
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    long l1 = NetServerParams.getServerTime();
-
-    long l2 = Rnd(40, 85);
-    if (Math.abs(l1 - this.netsendFire_lasttimeMS) < l2)
-    {
-      return;
-    }
-
-    this.netsendFire_lasttimeMS = l1;
-
-    if (!this.net.isMirrored())
-    {
-      for (i = 0; i < this.arms.length; i++) {
-        FiringDevice.access$702(this.arms[i], null);
-      }
-      this.netsendFire_armindex = 0;
-      return;
-    }
-
-    int i = 0;
-    int j = 0;
-
-    for (int k = 0; k < this.arms.length; k++) {
-      int m = this.netsendFire_armindex + k;
-      if (m >= this.arms.length) {
-        m -= this.arms.length;
-      }
-
-      if (this.arms[m].enemy == null)
-      {
-        continue;
-      }
-      if (this.parts[FiringDevice.access$000(this.arms[m])].state != 0) {
-        System.out.println("*** BigShip internal error #0");
-        FiringDevice.access$702(this.arms[m], null);
-      }
-      else if ((!Actor.isValid(this.arms[m].enemy)) || (!this.arms[m].enemy.isNet())) {
-        FiringDevice.access$702(this.arms[m], null);
-      }
-      else
-      {
-        if (i >= 15)
-        {
-          break;
-        }
-        TmpTrackOrFireInfo.access$5502(netsendFire_tmpbuff[i], m);
-        TmpTrackOrFireInfo.access$5602(netsendFire_tmpbuff[i], this.arms[m].enemy);
-        TmpTrackOrFireInfo.access$5702(netsendFire_tmpbuff[i], this.arms[m].timeWhenFireS);
-        TmpTrackOrFireInfo.access$5902(netsendFire_tmpbuff[i], this.arms[m].shotpointIdx);
-
-        FiringDevice.access$702(this.arms[m], null);
-
-        if (this.arms[m].timeWhenFireS < 0.0D) {
-          j++;
-        }
-        i++;
-      }
-    }
-    this.netsendFire_armindex += k;
-    while (this.netsendFire_armindex >= this.arms.length) {
-      this.netsendFire_armindex -= this.arms.length;
-    }
-
-    if (i <= 0)
-    {
-      return;
-    }
-
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(224 + j);
-      double d1;
-      for (k = 0; k < i; k++) {
-        d1 = netsendFire_tmpbuff[k].timeWhenFireS;
-        if (d1 >= 0.0D)
-        {
-          continue;
-        }
-        localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].gun_idx);
-        localNetMsgFiltered.writeNetObj(netsendFire_tmpbuff[k].enemy.net);
-        localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].shotpointIdx);
-        j--;
-      }
-
-      if (j != 0) {
-        System.out.println("*** BigShip internal error #5");
-        return;
-      }
-
-      for (k = 0; k < i; k++) {
-        d1 = netsendFire_tmpbuff[k].timeWhenFireS;
-        if (d1 < 0.0D)
-        {
-          continue;
-        }
-        double d2 = l1 * 0.001D;
-        double d3 = (d1 - d2) * 1000.0D;
-
-        if (d3 <= -2000.0D) {
-          d3 = -2000.0D;
-        }
-        if (d3 >= 5000.0D) {
-          d3 = 5000.0D;
-        }
-
-        d3 = (d3 - -2000.0D) / 7000.0D;
-
-        int n = (int)(d3 * 255.0D);
-        if (n < 0) {
-          n = 0;
-        }
-        if (n > 255) {
-          n = 255;
-        }
-
-        localNetMsgFiltered.writeByte(n);
-        localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].gun_idx);
-        localNetMsgFiltered.writeNetObj(netsendFire_tmpbuff[k].enemy.net);
-        localNetMsgFiltered.writeByte(netsendFire_tmpbuff[k].shotpointIdx);
-        TmpTrackOrFireInfo.access$5602(netsendFire_tmpbuff[k], null);
-      }
-
-      localNetMsgFiltered.setIncludeTime(true);
-
-      this.net.post(l1, localNetMsgFiltered);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_bufferized_PartsState()
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    if (!this.netsendPartsState_needtosend) {
-      return;
-    }
-
-    long l1 = NetServerParams.getServerTime();
-
-    long l2 = Rnd(650, 1100);
-    if (Math.abs(l1 - this.netsendPartsState_lasttimeMS) < l2)
-    {
-      return;
-    }
-
-    this.netsendPartsState_lasttimeMS = l1;
-
-    this.netsendPartsState_needtosend = false;
-
-    if (!this.net.isMirrored()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(83);
-
-      if (!Mission.isDogfight())
-      {
-        i = 127;
-        if ((this.path != null) && (this.CURRSPEED < this.prop.SPEED))
-        {
-          i = Math.round(this.CURRSPEED);
-          if (i < 0) i = 0;
-          if (i > 126) i = 126;
-        }
-
-        localNetMsgGuaranted.writeByte(i);
-      }
-      int i = (this.parts.length + 3) / 4;
-
-      int j = 0;
-      for (int k = 0; k < i; k++) {
-        int m = 0;
-        for (int n = 0; n < 4; n++) {
-          if (j < this.parts.length) {
-            int i1 = this.parts[j].state;
-            m |= i1 << n * 2;
-          }
-          j++;
-        }
-        localNetMsgGuaranted.writeByte(m);
-      }
-
-      this.net.post(localNetMsgGuaranted);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void bufferize_FireCommand(int paramInt1, Actor paramActor, int paramInt2, float paramFloat)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-    if (!this.net.isMirrored()) {
-      return;
-    }
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
-      return;
-    }
-
-    if ((this.arms[paramInt1].enemy != null) && (this.arms[paramInt1].timeWhenFireS >= 0.0D))
-    {
-      return;
-    }
-
-    paramInt2 &= 255;
-
-    FiringDevice.access$702(this.arms[paramInt1], paramActor);
-    FiringDevice.access$6002(this.arms[paramInt1], paramInt2);
-
-    if (paramFloat < 0.0F)
-      FiringDevice.access$5802(this.arms[paramInt1], -1.0D);
-    else
-      FiringDevice.access$5802(this.arms[paramInt1], paramFloat + NetServerParams.getServerTime() * 0.001D);
-  }
-
-  private void mirror_send_speed()
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
-      return;
-    }
-
-    if (!Mission.isCoop()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(86);
-
-      int i = 127;
-      if ((this.path != null) && (this.CURRSPEED < this.prop.SPEED))
-      {
-        i = Math.round(this.CURRSPEED);
-        if (i < 0) i = 0;
-        if (i > 126) i = 126;
-      }
-      localNetMsgGuaranted.writeByte(i);
-
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void mirror_send_bufferized_Damage()
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
-      return;
-    }
-
-    long l1 = NetServerParams.getServerTime();
-
-    long l2 = Rnd(65, 115);
-    if (Math.abs(l1 - this.netsendDmg_lasttimeMS) < l2)
-    {
-      return;
-    }
-
-    this.netsendDmg_lasttimeMS = l1;
-    try
-    {
-      int i = 0;
-      NetMsgFiltered localNetMsgFiltered = null;
-
-      for (int j = 0; j < this.parts.length; j++) {
-        int k = this.netsendDmg_partindex + j;
-        if (k >= this.parts.length) {
-          k -= this.parts.length;
-        }
-
-        if (this.parts[k].state == 2)
-        {
-          continue;
-        }
-        if (this.parts[k].damage < 0.0078125D)
-        {
-          continue;
-        }
-
-        int m = (int)(this.parts[k].damage * 128.0F);
-        m--;
-        if (m < 0)
-          m = 0;
-        else if (m > 127) {
-          m = 127;
-        }
-
-        if (this.parts[k].damageIsFromRight) {
-          m |= 128;
-        }
-
-        if (i <= 0)
-        {
-          localNetMsgFiltered = new NetMsgFiltered();
-          localNetMsgFiltered.writeByte(80);
-        }
-
-        Actor localActor = this.parts[k].mirror_initiator;
-        if ((!Actor.isValid(localActor)) || (!localActor.isNet())) {
-          localActor = null;
-        }
-        Part.access$402(this.parts[k], null);
-        Part.access$302(this.parts[k], 0.0F);
-
-        localNetMsgFiltered.writeByte(k);
-        localNetMsgFiltered.writeByte(m);
-        localNetMsgFiltered.writeNetObj(localActor == null ? null : localActor.net);
-
-        i++;
-
-        if (i >= 14)
-        {
-          break;
-        }
-      }
-      this.netsendDmg_partindex += j;
-      while (this.netsendDmg_partindex >= this.parts.length) {
-        this.netsendDmg_partindex -= this.parts.length;
-      }
-
-      if (i > 0) {
-        localNetMsgFiltered.setIncludeTime(false);
-        this.net.postTo(l1, this.net.masterChannel(), localNetMsgFiltered);
-      }
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-    }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void requestLocationOnCarrierDeck(NetUser paramNetUser, String paramString)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-    try
-    {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(93);
-      localNetMsgGuaranted.writeNetObj(paramNetUser);
-      localNetMsgGuaranted.writeUTF(paramString);
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void handleLocationRequest(NetUser paramNetUser, String paramString)
-  {
-    try
-    {
-      Class localClass = ObjIO.classForName(paramString);
-      Object localObject = localClass.newInstance();
-      Aircraft localAircraft = (Aircraft)localObject;
-
-      String str = Property.stringValue(localAircraft.getClass(), "FlightModel", null);
-      localAircraft.FM = new FlightModel(str);
-      localAircraft.FM.Gears.set(localAircraft.hierMesh());
-      Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), 1.0F);
-      localAircraft.FM.Gears.computePlaneLandPose(localAircraft.FM);
-      Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), 0.0F);
-
-      if (this.airport != null)
-      {
-        Loc localLoc = this.airport.requestCell(localAircraft);
-        postLocationToMirror(paramNetUser, localLoc);
-      }
-      localAircraft.FM = null;
-      localAircraft.destroy();
-      localAircraft = null;
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
-
-  private void postLocationToMirror(NetUser paramNetUser, Loc paramLoc)
-  {
-    try
-    {
-      NetChannel localNetChannel = null;
-      List localList = NetEnv.channels();
-      for (int i = 0; i < localList.size(); i++)
-      {
-        localNetChannel = (NetChannel)localList.get(i);
-        NetObj localNetObj = localNetChannel.getMirror(paramNetUser.idRemote());
-        if (paramNetUser == localNetObj)
-        {
-          break;
-        }
-        localNetChannel = null;
-      }
-
-      if (localNetChannel == null)
-        return;
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(93);
-      localNetMsgGuaranted.writeDouble(paramLoc.getX());
-      localNetMsgGuaranted.writeDouble(paramLoc.getY());
-      localNetMsgGuaranted.writeDouble(paramLoc.getZ());
-      localNetMsgGuaranted.writeFloat(paramLoc.getAzimut());
-      localNetMsgGuaranted.writeFloat(paramLoc.getTangage());
-      localNetMsgGuaranted.writeFloat(paramLoc.getKren());
-      this.net.postTo(localNetChannel, localNetMsgGuaranted);
-    }
-    catch (IOException localIOException)
-    {
-      localIOException.printStackTrace();
-    }
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel) throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(73);
-
-    localNetMsgGuaranted.writeLong(-1L);
-
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-
-    if (this.dying == 0)
-    {
-      master_sendDrown(this.bodyDepth1, this.bodyPitch1, this.bodyRoll1, (float)(this.tmInterpoEnd - NetServerParams.getServerTime()) * 1000.0F);
-    }
-    else
-    {
-      send_DeathCommand(null, paramNetChannel);
-    }
-
-    this.netsendPartsState_needtosend = true;
-  }
-
-  public float getReloadingTime(Aim paramAim)
-  {
-    return this.SLOWFIRE_K * GetGunProperties(paramAim).DELAY_AFTER_SHOOT;
-  }
-
-  public float chainFireTime(Aim paramAim)
-  {
-    float f = GetGunProperties(paramAim).CHAINFIRE_TIME;
-    return f <= 0.0F ? 0.0F : f * Rnd(0.75F, 1.25F);
-  }
-
-  public float probabKeepSameEnemy(Actor paramActor)
-  {
-    return 0.75F;
-  }
-
-  public float minTimeRelaxAfterFight()
-  {
-    return 0.1F;
-  }
-
-  public void gunStartParking(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    ShipPartProperties localShipPartProperties = this.parts[localFiringDevice.part_idx].pro;
-    paramAim.setRotationForParking(localFiringDevice.headYaw, localFiringDevice.gunPitch, localShipPartProperties.HEAD_STD_YAW, localShipPartProperties.GUN_STD_PITCH, localShipPartProperties.HEAD_YAW_RANGE, localShipPartProperties.HEAD_MAX_YAW_SPEED, localShipPartProperties.GUN_MAX_PITCH_SPEED);
-  }
-
-  public void gunInMove(boolean paramBoolean, Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    float f1 = paramAim.t();
-    float f2 = paramAim.anglesYaw.getDeg(f1);
-    float f3 = paramAim.anglesPitch.getDeg(f1);
-
-    setGunAngles(localFiringDevice, f2, f3);
-
-    this.pos.inValidate(false);
-  }
-
-  public Actor findEnemy(Aim paramAim)
-  {
-    if (isNetMirror()) {
-      return null;
-    }
-
-    ShipPartProperties localShipPartProperties = GetGunProperties(paramAim);
-
-    Actor localActor = null;
-
-    switch (localShipPartProperties.ATTACK_FAST_TARGETS) {
-    case 0:
-      NearestEnemies.set(localShipPartProperties.WEAPONS_MASK, -9999.9004F, KmHourToMSec(100.0F));
-      break;
-    case 1:
-      NearestEnemies.set(localShipPartProperties.WEAPONS_MASK);
-      break;
-    default:
-      NearestEnemies.set(localShipPartProperties.WEAPONS_MASK, KmHourToMSec(100.0F), 9999.9004F);
-    }
-
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), localShipPartProperties.ATTACK_MAX_RADIUS, getArmy());
-
-    if (localActor == null) {
-      return null;
-    }
-
-    if (!(localActor instanceof Prey)) {
-      System.out.println("bigship: nearest enemies: non-Prey");
-      return null;
-    }
-
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    BulletProperties localBulletProperties = null;
-
-    if (localFiringDevice.gun.prop != null) {
-      i = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
-
-      if (i < 0)
-      {
-        return null;
-      }
-
-      localBulletProperties = localFiringDevice.gun.prop.bullet[i];
-    }
-
-    int i = ((Prey)localActor).chooseShotpoint(localBulletProperties);
-
-    if (i < 0) {
-      return null;
-    }
-
-    paramAim.shotpoint_idx = i;
-
-    return localActor;
-  }
-
-  public boolean enterToFireMode(int paramInt, Actor paramActor, float paramFloat, Aim paramAim)
-  {
-    if (!isNetMirror()) {
-      FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-      bufferize_FireCommand(localFiringDevice.gun_idx, paramActor, paramAim.shotpoint_idx, paramInt == 0 ? -1.0F : paramFloat);
-    }
-
-    return true;
-  }
-
-  private void Track_Mirror(int paramInt1, Actor paramActor, int paramInt2)
-  {
-    if (paramActor == null) {
-      return;
-    }
-
-    if ((this.arms == null) || (paramInt1 < 0) || (paramInt1 >= this.arms.length) || (this.arms[paramInt1].aime == null))
-    {
-      return;
-    }
-
-    if (this.parts[FiringDevice.access$000(this.arms[paramInt1])].state != 0)
-    {
-      return;
-    }
-
-    this.arms[paramInt1].aime.passive_StartFiring(0, paramActor, paramInt2, 0.0F);
-  }
-
-  private void Fire_Mirror(int paramInt1, Actor paramActor, int paramInt2, float paramFloat)
-  {
-    if (paramActor == null) {
-      return;
-    }
-
-    if ((this.arms == null) || (paramInt1 < 0) || (paramInt1 >= this.arms.length) || (this.arms[paramInt1].aime == null))
-    {
-      return;
-    }
-
-    if (this.parts[FiringDevice.access$000(this.arms[paramInt1])].state != 0)
-    {
-      return;
-    }
-
-    if (paramFloat <= 0.15F) {
-      paramFloat = 0.15F;
-    }
-
-    if (paramFloat >= 7.0F) {
-      paramFloat = 7.0F;
-    }
-
-    this.arms[paramInt1].aime.passive_StartFiring(1, paramActor, paramInt2, paramFloat);
-  }
-
-  public int targetGun(Aim paramAim, Actor paramActor, float paramFloat, boolean paramBoolean)
-  {
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isAlive()) || (paramActor.getArmy() == 0)) {
-      return 0;
-    }
-
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    if ((localFiringDevice.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
-      if (i < 0) {
-        return 0;
-      }
-      ((CannonMidrangeGeneric)localFiringDevice.gun).setBulletType(i);
-    }
-
-    boolean bool = ((Prey)paramActor).getShotpointOffset(paramAim.shotpoint_idx, p1);
-    if (!bool) {
-      return 0;
-    }
-
-    ShipPartProperties localShipPartProperties = this.parts[localFiringDevice.part_idx].pro;
-
-    float f1 = paramFloat * Rnd(0.8F, 1.2F);
-
-    if (!Aimer.Aim((BulletAimer)localFiringDevice.gun, paramActor, this, f1, p1, localShipPartProperties.fireOffset)) {
-      return 0;
-    }
-
-    Point3d localPoint3d1 = new Point3d();
-    Aimer.GetPredictedTargetPosition(localPoint3d1);
-
-    Point3d localPoint3d2 = Aimer.GetHunterFirePoint();
-
-    float f2 = 0.05F;
-
-    double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
-
-    localPoint3d1.sub(localPoint3d2);
-    localPoint3d1.scale(Rnd(0.995D, 1.005D));
-    localPoint3d1.add(localPoint3d2);
-
-    if (f1 > 0.001F) {
-      Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
-
-      tmpvd.sub(localPoint3d1, localPoint3d3);
-      double d3 = tmpvd.length();
-
-      if (d3 > 0.001D) {
-        float f7 = (float)d3 / f1;
-        if (f7 > 200.0F) {
-          f7 = 200.0F;
-        }
-        float f8 = f7 * 0.01F;
-
-        localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
-
-        if (d4 > 0.01D) {
-          float f9 = (float)tmpvd.dot(localPoint3d3);
-          f9 /= (float)(d3 * Math.sqrt(d4));
-
-          f9 = (float)Math.sqrt(1.0F - f9 * f9);
-
-          f8 *= (0.4F + 0.6F * f9);
-        }
-        f8 *= 1.3F;
-        f8 *= Aim.AngleErrorKoefForSkill[this.SKILL_IDX];
-
-        int k = Mission.curCloudsType();
-        if (k > 2) {
-          float f10 = k > 4 ? 400.0F : 800.0F;
-          float f11 = (float)(d1 / f10);
-          if (f11 > 1.0F) {
-            if (f11 > 10.0F) {
-              return 0;
-            }
-            f11 = (f11 - 1.0F) / 9.0F;
-            f8 *= (f11 + 1.0F);
-          }
-        }
-
-        if ((k >= 3) && (d2 > Mission.curCloudsHeight())) {
-          f8 *= 1.25F;
-        }
-
-        f2 += f8;
-      }
-
-    }
-
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
-      if (f5 >= 1.0F) {
-        f5 = 1.0F;
-      }
-
-      if (((paramActor instanceof Aircraft)) && (NetServerParams.getServerTime() - ((Aircraft)paramActor).tmSearchlighted < 1000L))
-      {
-        f5 = 0.0F;
-      }
-      f2 += 10.0F * f5;
-    }
-
-    float f5 = (float)paramActor.getSpeed(null) - 10.0F;
-    if (f5 > 0.0F) {
-      float f6 = 83.333336F;
-      f5 = f5 >= f6 ? 1.0F : f5 / f6;
-      f2 += f5 * localShipPartProperties.FAST_TARGETS_ANGLE_ERROR;
-    }
-
-    Vector3d localVector3d = new Vector3d();
-    if (!((BulletAimer)localFiringDevice.gun).FireDirection(localPoint3d2, localPoint3d1, localVector3d))
-    {
-      return 0;
-    }
-    float f3;
-    float f4;
-    if (paramBoolean) {
-      f3 = 99999.0F;
-      f4 = 99999.0F;
-    } else {
-      f3 = localShipPartProperties.HEAD_MAX_YAW_SPEED;
-      f4 = localShipPartProperties.GUN_MAX_PITCH_SPEED;
-    }
-
-    this.o.add(localShipPartProperties.fireOrient, this.pos.getAbs().getOrient());
-    int j = paramAim.setRotationForTargeting(this, this.o, localPoint3d2, localFiringDevice.headYaw, localFiringDevice.gunPitch, localVector3d, f2, f1, localShipPartProperties.HEAD_YAW_RANGE, localShipPartProperties.GUN_MIN_PITCH, localShipPartProperties.GUN_MAX_PITCH, f3, f4, 0.0F);
-
-    return j;
-  }
-
-  public void singleShot(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!this.parts[localFiringDevice.part_idx].pro.TRACKING_ONLY)
-      localFiringDevice.gun.shots(1);
-  }
-
-  public void startFire(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!this.parts[localFiringDevice.part_idx].pro.TRACKING_ONLY)
-      localFiringDevice.gun.shots(-1);
-  }
-
-  public void continueFire(Aim paramAim)
-  {
-  }
-
-  public void stopFire(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!this.parts[localFiringDevice.part_idx].pro.TRACKING_ONLY)
-      localFiringDevice.gun.shots(0);
-  }
-
-  public boolean isVisibilityLong()
-  {
-    return true;
-  }
-
-  private void createAirport()
-  {
-    if (this.prop.propAirport != null) {
-      this.prop.propAirport.firstInit(this);
-      this.draw = new TowStringMeshDraw(this.draw);
-      if (this.prop.propAirport.cellTO != null)
-        this.cellTO = ((CellAirField)this.prop.propAirport.cellTO.getClone());
-      if (this.prop.propAirport.cellLDG != null)
-        this.cellLDG = ((CellAirField)this.prop.propAirport.cellLDG.getClone());
-      this.airport = new AirportCarrier(this, this.prop.propAirport.rwy);
-    }
-  }
-
-  public AirportCarrier getAirport() {
-    return this.airport; } 
-  public CellAirField getCellTO() { return this.cellTO; } 
-  public CellAirField getCellLDR() { return this.cellLDG;
-  }
-
-  private void validateTowAircraft()
-  {
-    if (this.towPortNum < 0) {
-      return;
-    }
-    if (!Actor.isValid(this.towAircraft)) {
-      requestDetowAircraft(this.towAircraft);
-      return;
-    }
-    if (this.pos.getAbsPoint().distance(this.towAircraft.pos.getAbsPoint()) > hierMesh().visibilityR()) {
-      requestDetowAircraft(this.towAircraft);
-      return;
-    }
-    if (!this.towAircraft.FM.CT.bHasArrestorControl) {
-      requestDetowAircraft(this.towAircraft);
-      return;
-    }
-  }
-
-  public void forceTowAircraft(Aircraft paramAircraft, int paramInt) {
-    if (this.towPortNum >= 0) {
-      return;
-    }
-    this.towPortNum = paramInt;
-    this.towAircraft = paramAircraft;
-    this.towHook = new HookNamed(paramAircraft, "_ClipAGear");
-  }
-
-  public void requestTowAircraft(Aircraft paramAircraft) {
-    if ((this.towPortNum >= 0) || (this.prop.propAirport.towPRel == null))
-    {
-      return;
-    }
-
-    HookNamed localHookNamed = new HookNamed(paramAircraft, "_ClipAGear");
-    Point3d[] arrayOfPoint3d = this.prop.propAirport.towPRel;
-    Point3d localPoint3d1 = new Point3d();
-    Point3d localPoint3d2 = new Point3d();
-    Point3d localPoint3d3 = new Point3d();
-    Point3d localPoint3d4 = new Point3d();
-    Loc localLoc1 = new Loc();
-    Loc localLoc2 = new Loc();
-
-    for (int i = 0; i < arrayOfPoint3d.length / 2; i++)
-    {
-      this.pos.getCurrent(localLoc1);
-      localPoint3d3.set(arrayOfPoint3d[(i + i)]);
-      localLoc1.transform(localPoint3d3);
-
-      localPoint3d4.set(arrayOfPoint3d[(i + i + 1)]);
-      localLoc1.transform(localPoint3d4);
-
-      paramAircraft.pos.getCurrent(localLoc2);
-      localLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      localHookNamed.computePos(paramAircraft, localLoc2, localLoc1);
-      localPoint3d1.set(localLoc1.getPoint());
-
-      paramAircraft.pos.getPrev(localLoc2);
-      localLoc1.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      localHookNamed.computePos(paramAircraft, localLoc2, localLoc1);
-      localPoint3d2.set(localLoc1.getPoint());
-
-      if (localPoint3d2.z >= localPoint3d3.z + 0.5D * (localPoint3d4.z - localPoint3d3.z) + 0.2D)
-        continue;
-      Line2d localLine2d1 = new Line2d(new Point2d(localPoint3d3.x, localPoint3d3.y), new Point2d(localPoint3d4.x, localPoint3d4.y));
-      Line2d localLine2d2 = new Line2d(new Point2d(localPoint3d1.x, localPoint3d1.y), new Point2d(localPoint3d2.x, localPoint3d2.y));
-      try
-      {
-        Point2d localPoint2d = localLine2d1.crossPRE(localLine2d2);
-        double d1 = Math.min(localPoint3d3.x, localPoint3d4.x);
-        double d2 = Math.max(localPoint3d3.x, localPoint3d4.x);
-        double d3 = Math.min(localPoint3d3.y, localPoint3d4.y);
-        double d4 = Math.max(localPoint3d3.y, localPoint3d4.y);
-
-        if ((localPoint2d.x > d1) && (localPoint2d.x < d2) && (localPoint2d.y > d3) && (localPoint2d.y < d4)) {
-          d1 = Math.min(localPoint3d1.x, localPoint3d2.x);
-          d2 = Math.max(localPoint3d1.x, localPoint3d2.x);
-          d3 = Math.min(localPoint3d1.y, localPoint3d2.y);
-          d4 = Math.max(localPoint3d1.y, localPoint3d2.y);
-          if ((localPoint2d.x > d1) && (localPoint2d.x < d2) && (localPoint2d.y > d3) && (localPoint2d.y < d4))
-          {
-            this.towPortNum = i;
-            this.towAircraft = paramAircraft;
-            this.towHook = new HookNamed(paramAircraft, "_ClipAGear");
-            return;
-          }
-        }
-      }
-      catch (Exception localException)
-      {
-      }
-    }
-  }
-
-  public void requestDetowAircraft(Aircraft paramAircraft)
-  {
-    if (paramAircraft == this.towAircraft) {
-      this.towAircraft = null;
-      this.towPortNum = -1;
-    }
-  }
-
-  public boolean isTowAircraft(Aircraft paramAircraft) {
-    return this.towAircraft == paramAircraft;
-  }
-
-  public double getSpeed(Vector3d paramVector3d)
-  {
-    if (this.path == null)
-    {
-      return super.getSpeed(paramVector3d);
-    }
-
-    long l = NetServerParams.getServerTime();
-
-    if (l > Time.tickLen() * 4) {
-      return super.getSpeed(paramVector3d);
-    }
-
-    Segment localSegment = (Segment)this.path.get(0);
-
-    tmpDir.sub(localSegment.posOut, localSegment.posIn);
-    tmpDir.normalize();
-    tmpDir.scale(localSegment.speedIn);
-
-    if (paramVector3d != null) {
-      paramVector3d.set(tmpDir);
-    }
-    return tmpDir.length();
-  }
-
-  private void zutiRefreshBornPlace()
-  {
-    if ((this.zutiBornPlace == null) || (this.zutiIsClassBussy)) {
-      return;
-    }
-    this.zutiIsClassBussy = true;
-
-    if (this.dying == 0)
-    {
-      Point3d localPoint3d = this.pos.getAbsPoint();
-      this.zutiBornPlace.place.set(localPoint3d.x, localPoint3d.y);
-
-      if (this.zutiBornPlace.zutiBpStayPoints != null)
-      {
-        for (int i = 0; i < this.zutiBornPlace.zutiBpStayPoints.size(); i++)
-        {
-          ZutiStayPoint localZutiStayPoint = (ZutiStayPoint)this.zutiBornPlace.zutiBpStayPoints.get(i);
-          localZutiStayPoint.PsVsShipRefresh(localPoint3d.x, localPoint3d.y, this.initOr.getYaw());
-        }
-      }
-
-    }
-    else if (this.dying > 0)
-    {
-      ZutiSupportMethods.removeBornPlace(this.zutiBornPlace);
-      this.zutiBornPlace = null;
-    }
-
-    this.zutiIsClassBussy = false;
-  }
-
-  private void zutiAssignStayPointsToBp()
-  {
-    if (this.zutiBornPlace == null) {
-      return;
-    }
-    double d1 = this.pos.getAbsPoint().x;
-    double d2 = this.pos.getAbsPoint().y;
-
-    this.zutiBornPlace.zutiBpStayPoints = new ArrayList();
-
-    double d3 = 22500.0D;
-    Point_Stay[][] arrayOfPoint_Stay = World.cur().airdrome.stay;
-
-    ArrayList localArrayList = new ArrayList();
-
-    for (int i = 0; i < arrayOfPoint_Stay.length; i++)
-    {
-      if (arrayOfPoint_Stay[i] == null)
-        continue;
-      localObject1 = arrayOfPoint_Stay[i][(arrayOfPoint_Stay[i].length - 1)];
-      double d4 = (((Point_Stay)localObject1).x - d1) * (((Point_Stay)localObject1).x - d1) + (((Point_Stay)localObject1).y - d2) * (((Point_Stay)localObject1).y - d2);
-      if (d4 > d3) {
-        continue;
-      }
-      localArrayList.add(localObject1);
-    }
-
-    i = localArrayList.size();
-    Object localObject1 = toString();
-
-    if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[0]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[1]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[2]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_CV2;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[3]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[4]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_CV9;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[5]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[6]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[18]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_CVE;
-    else if (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[7]) > 0)
-      i -= Mission.cur().zutiCarrierSpawnPoints_CVL;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[8]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[9]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[13]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[14]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_HMS;
-    else if ((((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[10]) > 0) || (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[15]) > 0))
-      i -= Mission.cur().zutiCarrierSpawnPoints_Akagi;
-    else if (((String)localObject1).indexOf(ZUTI_CARRIER_SUBCLASS_STRING[11]) > 0)
-      i -= Mission.cur().zutiCarrierSpawnPoints_IJN;
-    Object localObject2;
-    for (int j = 0; j < i; j++)
-    {
-      localObject2 = (Point_Stay)localArrayList.get(j);
-      ((Point_Stay)localObject2).set(-1000000.0F, -1000000.0F);
-    }
-
-    if (i < 0) {
-      return;
-    }
-
-    for (j = i; j < localArrayList.size(); j++)
-    {
-      try
-      {
-        localObject2 = new ZutiStayPoint();
-        ((ZutiStayPoint)localObject2).pointStay = ((Point_Stay)localArrayList.get(j));
-        ((ZutiStayPoint)localObject2).PsVsShip(d1, d2, this.initOr.getYaw(), j, (String)localObject1);
-
-        if (this.zutiBornPlace == null) {
-          return;
-        }
-        this.zutiBornPlace.zutiBpStayPoints.add(localObject2);
-      } catch (Exception localException) {
-        System.out.println("BigshipGeneric zutiAssignStayPointsToBp error: " + localException.toString()); localException.printStackTrace();
-      }
-    }
-
-    this.zutiBornPlace.zutiSetBornPlaceStayPointsNumber(localArrayList.size() - i);
-  }
-
-  public void zutiAssignBornPlace()
-  {
-    double d1 = this.pos.getAbsPoint().x;
-    double d2 = this.pos.getAbsPoint().y;
-    double d3 = 1000000.0D;
-
-    Object localObject = null;
-
-    ArrayList localArrayList = World.cur().bornPlaces;
-    for (int i = 0; i < localArrayList.size(); i++)
-    {
-      BornPlace localBornPlace = (BornPlace)localArrayList.get(i);
-      if (localBornPlace.zutiAlreadyAssigned) {
-        continue;
-      }
-      double d4 = Math.sqrt(Math.pow(localBornPlace.place.x - d1, 2.0D) + Math.pow(localBornPlace.place.y - d2, 2.0D));
-
-      if ((d4 >= d3) || (localBornPlace.army != getArmy()))
-        continue;
-      d3 = d4;
-      localObject = localBornPlace;
-    }
-
-    if (d3 < 1000.0D)
-    {
-      this.zutiBornPlace = localObject;
-      localObject.zutiAlreadyAssigned = true;
-      zutiAssignStayPointsToBp();
-    }
-  }
-
-  public int zutiGetDying()
-  {
-    return this.dying;
-  }
-
-  public boolean zutiIsStatic()
-  {
-    return (this.path == null) || (this.path.size() <= 0);
-  }
-
-  public void showTransparentRunwayRed()
-  {
-    hierMesh().chunkVisible("Red", true);
-  }
-
-  public void hideTransparentRunwayRed() {
-    hierMesh().chunkVisible("Red", false);
-  }
-
-  static
-  {
-    for (int i = 0; i < netsendFire_tmpbuff.length; i++) {
-      netsendFire_tmpbuff[i] = new TmpTrackOrFireInfo();
-    }
-
-    constr_arg1 = null;
-    constr_arg2 = null;
-
-    p = new Point3d();
-    p1 = new Point3d();
-    p2 = new Point3d();
-
-    tmpvf = new Vector3f();
-    tmpvd = new Vector3d();
-
-    tmpYPR = new float[3];
-    tmpf6 = new float[6];
-    tmpL = new Loc();
-    tmpBitsState = new byte[32];
-
-    tmpDir = new Vector3d();
-
-    ZUTI_RADAR_SHIPS = new String[] { "CV", "Marat", "Kirov", "BB", "Niobe", "Illmarinen", "Vainamoinen", "Tirpitz", "Aurora", "Carrier0", "Carrier1" };
-
-    ZUTI_RADAR_SHIPS_SMALL = new String[] { "Destroyer", "DD", "USSMcKean", "Italia0", "Italia1" };
-
-    ZUTI_CARRIER_STRING = new String[] { "CV", "Carrier" };
-
-    ZUTI_CARRIER_SUBCLASS_STRING = new String[] { "USSCVGeneric", "CV3", "CV2", "CV9", "CV11", "CVE", "Carrier1", "CVL", "HMS", "Carrier0", "Akagi", "IJN", "Generic", "Formidable", "Indomitable", "Hiryu", "Kaga", "Soryu", "IJNCVLGeneric" };
-  }
-
-  private static class TowStringMeshDraw extends ActorMeshDraw
-  {
-    private static Loc lRender = new Loc();
-    private static Loc l = new Loc();
-    private static Vector3d tmpVector = new Vector3d();
-    private static Point3d p0 = new Point3d();
-    private static Point3d p1 = new Point3d();
-
-    public void render(Actor paramActor)
-    {
-      super.render(paramActor);
-      BigshipGeneric localBigshipGeneric = (BigshipGeneric)paramActor;
-      if (localBigshipGeneric.prop.propAirport == null) return;
-      Point3d[] arrayOfPoint3d = localBigshipGeneric.prop.propAirport.towPRel;
-      if (arrayOfPoint3d == null) return;
-      paramActor.pos.getRender(lRender);
-      int i = arrayOfPoint3d.length / 2;
-      for (int j = 0; j < i; j++)
-        if (j != localBigshipGeneric.towPortNum) {
-          lRender.transform(arrayOfPoint3d[(j * 2)], p0);
-          lRender.transform(arrayOfPoint3d[(j * 2 + 1)], p1);
-          renderTow(localBigshipGeneric.prop.propAirport.towString);
-        } else if (Actor.isValid(localBigshipGeneric.towAircraft)) {
-          lRender.transform(arrayOfPoint3d[(j * 2)], p0);
-          l.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-          localBigshipGeneric.towHook.computePos(localBigshipGeneric.towAircraft, localBigshipGeneric.towAircraft.pos.getRender(), l);
-          p1.set(l.getPoint());
-          renderTow(localBigshipGeneric.prop.propAirport.towString);
-          lRender.transform(arrayOfPoint3d[(j * 2 + 1)], p0);
-          l.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-          localBigshipGeneric.towHook.computePos(localBigshipGeneric.towAircraft, localBigshipGeneric.towAircraft.pos.getRender(), l);
-          p1.set(l.getPoint());
-          renderTow(localBigshipGeneric.prop.propAirport.towString);
-        }
-    }
-
-    private void renderTow(Mesh paramMesh) {
-      tmpVector.sub(p1, p0);
-      paramMesh.setScaleXYZ((float)tmpVector.length(), 1.0F, 1.0F);
-      tmpVector.normalize();
-      Orient localOrient = l.getOrient();
-      localOrient.setAT0(tmpVector);
-      l.set(p0);
-      paramMesh.setPos(l);
-      paramMesh.render();
-    }
-
-    public TowStringMeshDraw(ActorDraw paramActorDraw)
-    {
-      super();
-    }
-  }
-
-  public static class AirportProperties
-  {
-    public Loc[] rwy = { new Loc(), new Loc() };
-    public Mesh towString;
-    public Point3d[] towPRel;
-    public CellAirField cellTO;
-    public CellAirField cellLDG;
-    private boolean bInited = false;
-
-    private static Loc loc = new Loc();
-    private static Point3d p = new Point3d();
-    private static Orient o = new Orient();
-    private static Matrix4d m1 = new Matrix4d();
-    private static double[] tmp = new double[3];
-
-    public void firstInit(BigshipGeneric paramBigshipGeneric)
-    {
-      if (this.bInited) return;
-      this.bInited = true;
-      HierMesh localHierMesh = paramBigshipGeneric.hierMesh();
-      findHook(localHierMesh, "_RWY_TO", this.rwy[0]);
-      findHook(localHierMesh, "_RWY_LDG", this.rwy[1]);
-      this.towString = new Mesh("3DO/Arms/ArrestorCable/mono.sim");
-
-      ArrayList localArrayList = new ArrayList();
-      int i = 0;
-      while (true) {
-        String str = "0" + i;
-        if (!findHook(localHierMesh, "_TOW" + str + "A", loc))
-          break;
-        localArrayList.add(new Point3d(loc.getPoint()));
-        findHook(localHierMesh, "_TOW" + str + "B", loc);
-        localArrayList.add(new Point3d(loc.getPoint()));
-        i++;
-      }
-      if (i > 0) {
-        i *= 2;
-        this.towPRel = new Point3d[i];
-        for (int j = 0; j < i; j++) {
-          this.towPRel[j] = ((Point3d)localArrayList.get(j));
-        }
-      }
-
-      fillParks(paramBigshipGeneric, localHierMesh, "_Park", localArrayList);
-      if (localArrayList.size() > 0)
-        this.cellTO = new CellAirField(new CellObject[1][1], localArrayList, 1.0D);
-      fillParks(paramBigshipGeneric, localHierMesh, "_LPark", localArrayList);
-      if (localArrayList.size() > 0)
-        this.cellLDG = new CellAirField(new CellObject[1][1], localArrayList, 1.0D); 
-    }
-
-    private void fillParks(BigshipGeneric paramBigshipGeneric, HierMesh paramHierMesh, String paramString, ArrayList paramArrayList) {
-      paramArrayList.clear();
-      int i = 0;
-      while (true) {
-        String str = paramString + (i > 9 ? "" + i : new StringBuffer().append("0").append(i).toString());
-        if (!findHook(paramHierMesh, str, loc))
-          break;
-        paramArrayList.add(new Point3d(-p.y, p.x, p.z));
-
-        i++;
-      }
-    }
-
-    private boolean findHook(HierMesh paramHierMesh, String paramString, Loc paramLoc)
-    {
-      int i = paramHierMesh.hookFind(paramString);
-      if (i == -1) return false;
-      paramHierMesh.hookMatrix(i, m1);
-      m1.getEulers(tmp);
-      o.setYPR(Geom.RAD2DEG((float)tmp[0]), 360.0F - Geom.RAD2DEG((float)tmp[1]), 360.0F - Geom.RAD2DEG((float)tmp[2]));
-      p.set(m1.m03, m1.m13, m1.m23);
-      paramLoc.set(p, o);
-      return true;
-    }
-
-    public AirportProperties(Class paramClass)
-    {
-      Property.set(paramClass, "IsAirport", "true");
-    }
-  }
-
-  public static class SPAWN
-    implements ActorSpawn
-  {
-    public Class cls;
-    public BigshipGeneric.ShipProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2)
-    {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Ship: Value of [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
-        }
-        else {
-          System.out.println("Ship: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
-        }
-
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Ship: Value of [" + paramString1 + "]:<" + paramString2 + "> not found");
-        throw new RuntimeException("Can't set property");
-      }
-      return new String(str);
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        return paramString3;
-      }
-      return new String(str);
-    }
-
-    private static void tryToReadGunProperties(SectFile paramSectFile, String paramString, BigshipGeneric.ShipPartProperties paramShipPartProperties)
-    {
-      if (paramSectFile.exist(paramString, "Gun")) {
-        String str = "com.maddox.il2.objects.weapons." + getS(paramSectFile, paramString, "Gun");
-        try
-        {
-          paramShipPartProperties.gunClass = Class.forName(str);
-        } catch (Exception localException) {
-          System.out.println("BigShip: Can't find gun class '" + str + "'");
-
-          throw new RuntimeException("Can't register Ship object");
-        }
-      }
-
-      if (paramSectFile.exist(paramString, "AttackMaxDistance")) {
-        paramShipPartProperties.ATTACK_MAX_DISTANCE = getF(paramSectFile, paramString, "AttackMaxDistance", 6.0F, 50000.0F);
-      }
-      if (paramSectFile.exist(paramString, "AttackMaxRadius")) {
-        paramShipPartProperties.ATTACK_MAX_RADIUS = getF(paramSectFile, paramString, "AttackMaxRadius", 6.0F, 50000.0F);
-      }
-      if (paramSectFile.exist(paramString, "AttackMaxHeight")) {
-        paramShipPartProperties.ATTACK_MAX_HEIGHT = getF(paramSectFile, paramString, "AttackMaxHeight", 6.0F, 15000.0F);
-      }
-
-      if (paramSectFile.exist(paramString, "TrackingOnly"))
-        paramShipPartProperties.TRACKING_ONLY = true;
-      float f;
-      if (paramSectFile.exist(paramString, "FireFastTargets")) {
-        f = getF(paramSectFile, paramString, "FireFastTargets", 0.0F, 2.0F);
-        paramShipPartProperties.ATTACK_FAST_TARGETS = (int)(f + 0.5F);
-        if (paramShipPartProperties.ATTACK_FAST_TARGETS > 2) {
-          paramShipPartProperties.ATTACK_FAST_TARGETS = 2;
-        }
-      }
-
-      if (paramSectFile.exist(paramString, "FastTargetsAngleError")) {
-        f = getF(paramSectFile, paramString, "FastTargetsAngleError", 0.0F, 45.0F);
-        paramShipPartProperties.FAST_TARGETS_ANGLE_ERROR = f;
-      }
-
-      if (paramSectFile.exist(paramString, "HeadMinYaw")) {
-        paramShipPartProperties._HEAD_MIN_YAW = getF(paramSectFile, paramString, "HeadMinYaw", -360.0F, 360.0F);
-      }
-      if (paramSectFile.exist(paramString, "HeadMaxYaw")) {
-        paramShipPartProperties._HEAD_MAX_YAW = getF(paramSectFile, paramString, "HeadMaxYaw", -360.0F, 360.0F);
-      }
-
-      if (paramSectFile.exist(paramString, "GunMinPitch")) {
-        paramShipPartProperties.GUN_MIN_PITCH = getF(paramSectFile, paramString, "GunMinPitch", -15.0F, 85.0F);
-      }
-      if (paramSectFile.exist(paramString, "GunMaxPitch")) {
-        paramShipPartProperties.GUN_MAX_PITCH = getF(paramSectFile, paramString, "GunMaxPitch", 0.0F, 89.900002F);
-      }
-
-      if (paramSectFile.exist(paramString, "HeadMaxYawSpeed")) {
-        paramShipPartProperties.HEAD_MAX_YAW_SPEED = getF(paramSectFile, paramString, "HeadMaxYawSpeed", 0.1F, 999.0F);
-      }
-      if (paramSectFile.exist(paramString, "GunMaxPitchSpeed")) {
-        paramShipPartProperties.GUN_MAX_PITCH_SPEED = getF(paramSectFile, paramString, "GunMaxPitchSpeed", 0.1F, 999.0F);
-      }
-      if (paramSectFile.exist(paramString, "DelayAfterShoot")) {
-        paramShipPartProperties.DELAY_AFTER_SHOOT = getF(paramSectFile, paramString, "DelayAfterShoot", 0.0F, 999.0F);
-      }
-      if (paramSectFile.exist(paramString, "ChainfireTime")) {
-        paramShipPartProperties.CHAINFIRE_TIME = getF(paramSectFile, paramString, "ChainfireTime", 0.0F, 600.0F);
-      }
-
-      if (paramSectFile.exist(paramString, "GunHeadChunk")) {
-        paramShipPartProperties.headChunkName = getS(paramSectFile, paramString, "GunHeadChunk");
-      }
-      if (paramSectFile.exist(paramString, "GunBarrelChunk")) {
-        paramShipPartProperties.gunChunkName = getS(paramSectFile, paramString, "GunBarrelChunk");
-      }
-      if (paramSectFile.exist(paramString, "GunShellStartHook"))
-        paramShipPartProperties.gunShellStartHookName = getS(paramSectFile, paramString, "GunShellStartHook");
-    }
-
-    private static BigshipGeneric.ShipProperties LoadShipProperties(SectFile paramSectFile, String paramString, Class paramClass)
-    {
-      BigshipGeneric.ShipProperties localShipProperties = new BigshipGeneric.ShipProperties();
-
-      localShipProperties.meshName = getS(paramSectFile, paramString, "Mesh");
-      localShipProperties.soundName = getS(paramSectFile, paramString, "SoundMove");
-      if (localShipProperties.soundName.equalsIgnoreCase("none")) localShipProperties.soundName = null;
-
-      localShipProperties.SLIDER_DIST = getF(paramSectFile, paramString, "SliderDistance", 5.0F, 1000.0F);
-
-      localShipProperties.SPEED = BigshipGeneric.KmHourToMSec(getF(paramSectFile, paramString, "Speed", 0.5F, 200.0F));
-
-      localShipProperties.DELAY_RESPAWN_MIN = 15.0F;
-      localShipProperties.DELAY_RESPAWN_MAX = 30.0F;
-
-      Property.set(paramClass, "iconName", "icons/" + getS(paramSectFile, paramString, "Icon") + ".mat");
-      Property.set(paramClass, "meshName", localShipProperties.meshName);
-      Property.set(paramClass, "speed", localShipProperties.SPEED);
-
-      int i = 0;
-      while (paramSectFile.sectionIndex(paramString + ":Part" + i) >= 0) {
-        i++;
-      }
-
-      if (i <= 0) {
-        System.out.println("BigShip: No part sections for '" + paramString + "'");
-
-        throw new RuntimeException("Can't register BigShip object");
-      }
-      if (i >= 255) {
-        System.out.println("BigShip: Too many parts in " + paramString + ".");
-
-        throw new RuntimeException("Can't register BigShip object");
-      }
-
-      localShipProperties.propparts = new BigshipGeneric.ShipPartProperties[i];
-
-      localShipProperties.nGuns = 0;
-
-      for (int j = 0; j < i; j++) {
-        String str1 = paramString + ":Part" + j;
-
-        BigshipGeneric.ShipPartProperties localShipPartProperties = new BigshipGeneric.ShipPartProperties();
-        localShipProperties.propparts[j] = localShipPartProperties;
-
-        localShipPartProperties.baseChunkName = getS(paramSectFile, str1, "BaseChunk");
-
-        int k = 0;
-        while (paramSectFile.exist(str1, "AdditionalCollisionChunk" + k)) {
-          k++;
-        }
-        if (k > 4) {
-          System.out.println("BigShip: Too many addcollischunks in '" + str1 + "'");
-
-          throw new RuntimeException("Can't register BigShip object");
-        }
-        localShipPartProperties.additCollisChunkName = new String[k];
-        for (int m = 0; m < k; m++) {
-          localShipPartProperties.additCollisChunkName[m] = getS(paramSectFile, str1, "AdditionalCollisionChunk" + m);
-        }
-
-        String str2 = null;
-        if (paramSectFile.exist(str1, "strengthBasedOnThisSection")) {
-          str2 = getS(paramSectFile, str1, "strengthBasedOnThisSection");
-        }
-        if (!localShipPartProperties.stre.read("Bigship", paramSectFile, str2, str1)) {
-          throw new RuntimeException("Can't register Bigship object");
-        }
-
-        if (paramSectFile.exist(str1, "Vital")) {
-          localShipPartProperties.dmgDepth = getF(paramSectFile, str1, "damageDepth", 0.0F, 99.0F);
-          localShipPartProperties.dmgPitch = getF(paramSectFile, str1, "damagePitch", -89.0F, 89.0F);
-          localShipPartProperties.dmgRoll = getF(paramSectFile, str1, "damageRoll", 0.0F, 89.0F);
-          localShipPartProperties.dmgTime = getF(paramSectFile, str1, "damageTime", 1.0F, 1200.0F);
-          localShipPartProperties.BLACK_DAMAGE = 0.6666667F;
-        } else {
-          localShipPartProperties.dmgDepth = -1.0F;
-          localShipPartProperties.BLACK_DAMAGE = 1.0F;
-        }
-
-        if ((!paramSectFile.exist(str1, "Gun")) && (!paramSectFile.exist(str1, "gunBasedOnThisSection"))) {
-          localShipPartProperties.gun_idx = -1;
-        }
-        else if (localShipPartProperties.isItLifeKeeper()) {
-          System.out.println("*** ERROR: bigship: vital with gun");
-          localShipPartProperties.gun_idx = -1;
-        }
-        else
-        {
-          localShipPartProperties.gun_idx = (localShipProperties.nGuns++);
-
-          if (localShipProperties.nGuns > 256) {
-            System.out.println("BigShip: Too many guns in " + paramString + ".");
-
-            throw new RuntimeException("Can't register BigShip object");
-          }
-
-          localShipPartProperties.gunClass = null;
-
-          localShipPartProperties.ATTACK_MAX_DISTANCE = -1000.0F;
-          localShipPartProperties.ATTACK_MAX_RADIUS = -1000.0F;
-          localShipPartProperties.ATTACK_MAX_HEIGHT = -1000.0F;
-
-          localShipPartProperties.TRACKING_ONLY = false;
-
-          localShipPartProperties.ATTACK_FAST_TARGETS = 1;
-          localShipPartProperties.FAST_TARGETS_ANGLE_ERROR = 0.0F;
-
-          localShipPartProperties._HEAD_MIN_YAW = -1000.0F;
-          localShipPartProperties._HEAD_MAX_YAW = -1000.0F;
-
-          localShipPartProperties.GUN_MIN_PITCH = -1000.0F;
-          localShipPartProperties.GUN_STD_PITCH = -1000.0F;
-          localShipPartProperties.GUN_MAX_PITCH = -1000.0F;
-
-          localShipPartProperties.HEAD_MAX_YAW_SPEED = -1000.0F;
-          localShipPartProperties.GUN_MAX_PITCH_SPEED = -1000.0F;
-          localShipPartProperties.DELAY_AFTER_SHOOT = -1000.0F;
-          localShipPartProperties.CHAINFIRE_TIME = -1000.0F;
-
-          localShipPartProperties.headChunkName = null;
-          localShipPartProperties.gunChunkName = null;
-          localShipPartProperties.gunShellStartHookName = null;
-
-          if (paramSectFile.exist(str1, "gunBasedOnThisSection")) {
-            str2 = getS(paramSectFile, str1, "gunBasedOnThisSection");
-            tryToReadGunProperties(paramSectFile, str2, localShipPartProperties);
-          }
-          tryToReadGunProperties(paramSectFile, str1, localShipPartProperties);
-
-          if ((localShipPartProperties.gunClass == null) || (localShipPartProperties.ATTACK_MAX_DISTANCE <= -1000.0F) || (localShipPartProperties.ATTACK_MAX_RADIUS <= -1000.0F) || (localShipPartProperties.ATTACK_MAX_HEIGHT <= -1000.0F) || (localShipPartProperties._HEAD_MIN_YAW <= -1000.0F) || (localShipPartProperties._HEAD_MAX_YAW <= -1000.0F) || (localShipPartProperties.GUN_MIN_PITCH <= -1000.0F) || (localShipPartProperties.GUN_MAX_PITCH <= -1000.0F) || (localShipPartProperties.HEAD_MAX_YAW_SPEED <= -1000.0F) || (localShipPartProperties.GUN_MAX_PITCH_SPEED <= -1000.0F) || (localShipPartProperties.DELAY_AFTER_SHOOT <= -1000.0F) || (localShipPartProperties.CHAINFIRE_TIME <= -1000.0F) || (localShipPartProperties.headChunkName == null) || (localShipPartProperties.gunChunkName == null) || (localShipPartProperties.gunShellStartHookName == null))
-          {
-            System.out.println("BigShip: Not enough 'gun' data  in '" + str1 + "'");
-
-            throw new RuntimeException("Can't register BigShip object");
-          }
-
-          localShipPartProperties.WEAPONS_MASK = Gun.getProperties(localShipPartProperties.gunClass).weaponType;
-          if (localShipPartProperties.WEAPONS_MASK == 0) {
-            System.out.println("BigShip: Undefined weapon type in gun class '" + localShipPartProperties.gunClass.getName() + "'");
-
-            throw new RuntimeException("Can't register BigShip object");
-          }
-
-          if (localShipPartProperties._HEAD_MIN_YAW > localShipPartProperties._HEAD_MAX_YAW) {
-            System.out.println("BigShip: Wrong yaw angles in gun " + str1 + ".");
-
-            throw new RuntimeException("Can't register BigShip object");
-          }
-
-          localShipPartProperties.HEAD_STD_YAW = 0.0F;
-
-          localShipPartProperties.HEAD_YAW_RANGE.set(localShipPartProperties._HEAD_MIN_YAW, localShipPartProperties._HEAD_MAX_YAW);
-        }
-      }
-
-      localShipProperties.WEAPONS_MASK = 0;
-      localShipProperties.ATTACK_MAX_DISTANCE = 1.0F;
-
-      for (j = 0; j < localShipProperties.propparts.length; j++) {
-        if (!localShipProperties.propparts[j].haveGun())
-        {
-          continue;
-        }
-        localShipProperties.WEAPONS_MASK |= localShipProperties.propparts[j].WEAPONS_MASK;
-
-        if (localShipProperties.ATTACK_MAX_DISTANCE < localShipProperties.propparts[j].ATTACK_MAX_DISTANCE) {
-          localShipProperties.ATTACK_MAX_DISTANCE = localShipProperties.propparts[j].ATTACK_MAX_DISTANCE;
-        }
-
-      }
-
-      if (paramSectFile.get(paramString, "IsAirport", false)) {
-        localShipProperties.propAirport = new BigshipGeneric.AirportProperties(paramClass);
-      }
-
-      return localShipProperties;
-    }
-
-    public SPAWN(Class paramClass)
-    {
-      try
-      {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j) {
-          i = j;
-        }
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadShipProperties(Statics.getShipsFile(), str2, paramClass);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in spawn: " + paramClass.getName());
-      }
-
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
-
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg)
-    {
-      BigshipGeneric localBigshipGeneric = null;
-      try
-      {
-        BigshipGeneric.access$6902(this.proper);
-        BigshipGeneric.access$7002(paramActorSpawnArg);
-        localBigshipGeneric = (BigshipGeneric)this.cls.newInstance();
-        BigshipGeneric.access$6902(null);
-        BigshipGeneric.access$7002(null);
-      } catch (Exception localException) {
-        BigshipGeneric.access$6902(null);
-        BigshipGeneric.access$7002(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create Ship object [class:" + this.cls.getName() + "]");
-
-        return null;
-      }
-      return localBigshipGeneric;
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput)
-      throws IOException
-    {
-      int m;
-      int i3;
-      int i11;
-      int i2;
-      if (paramNetMsgInput.isGuaranted())
-      {
-        m = paramNetMsgInput.readUnsignedByte();
-        NetMsgGuaranted localNetMsgGuaranted1;
-        switch (m)
-        {
-        case 93:
-          double d1 = paramNetMsgInput.readDouble();
-          double d2 = paramNetMsgInput.readDouble();
-          double d3 = paramNetMsgInput.readDouble();
-          float f2 = paramNetMsgInput.readFloat();
-          float f3 = paramNetMsgInput.readFloat();
-          float f4 = paramNetMsgInput.readFloat();
-          Loc localLoc = new Loc(d1, d2, d3, f2, f3, f4);
-          if (BigshipGeneric.this.airport != null)
-            BigshipGeneric.this.airport.setClientLoc(localLoc);
-          return true;
-        case 73:
-          if (isMirrored()) {
-            localNetMsgGuaranted1 = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted1);
-          }
-          BigshipGeneric.access$5402(BigshipGeneric.this, paramNetMsgInput.readLong());
-          if (BigshipGeneric.this.timeOfDeath < 0L)
-          {
-            if (BigshipGeneric.this.dying == 0) {
-              BigshipGeneric.this.makeLive();
-              BigshipGeneric.this.setDefaultLivePose();
-              BigshipGeneric.this.forgetAllAiming();
-            }
-          }
-          else if (BigshipGeneric.this.dying == 0) {
-            BigshipGeneric.this.Die(null, BigshipGeneric.this.timeOfDeath, false, true);
-          }
-
-          return true;
-        case 82:
-          if (isMirrored()) {
-            localNetMsgGuaranted1 = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted1);
-          }
-          BigshipGeneric.this.makeLive();
-          BigshipGeneric.this.setDefaultLivePose();
-          BigshipGeneric.this.forgetAllAiming();
-          BigshipGeneric.this.setDiedFlag(false);
-
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, 0L));
-          BigshipGeneric.access$3902(BigshipGeneric.this, BigshipGeneric.access$4002(BigshipGeneric.this, BigshipGeneric.access$4102(BigshipGeneric.this, 0.0F)));
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4402(BigshipGeneric.this, 0.0F)));
-          BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.access$4702(BigshipGeneric.this, 0.0F)));
-          BigshipGeneric.this.setPosition();
-          BigshipGeneric.this.pos.reset();
-          return true;
-        case 83:
-          if (isMirrored()) {
-            localNetMsgGuaranted1 = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted1);
-          }
-
-          int n = paramNetMsgInput.available();
-
-          if (n > 0)
-          {
-            if (!Mission.isDogfight())
-            {
-              i3 = paramNetMsgInput.readUnsignedByte();
-              float f1 = i3;
-
-              if ((BigshipGeneric.this.path != null) && (i3 != 127) && (f1 < BigshipGeneric.this.CURRSPEED))
-              {
-                BigshipGeneric.this.CURRSPEED = f1;
-                BigshipGeneric.this.computeNewPath();
-              }
-              n--;
-            }
-          }
-          i3 = (BigshipGeneric.this.parts.length + 3) / 4;
-          if (n != i3) {
-            System.out.println("*** net bigship S");
-            return true;
-          }
-          if (i3 <= 0) {
-            System.out.println("*** net bigship S0");
-            return true;
-          }
-
-          int i4 = 0;
-          for (int i6 = 0; i6 < n; i6++) {
-            int i8 = paramNetMsgInput.readUnsignedByte();
-            for (int i10 = 0; (i10 < 4) && 
-              (i4 < BigshipGeneric.this.parts.length); i10++)
-            {
-              i11 = i8 >>> i10 * 2 & 0x3;
-
-              if (i11 <= BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[i4])) {
-                i4++;
-              }
-              else
-              {
-                if (i11 == 2)
+            super.render(actor);
+            com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric = (com.maddox.il2.objects.ships.BigshipGeneric)actor;
+            if(bigshipgeneric.prop.propAirport == null)
+                return;
+            com.maddox.JGP.Point3d apoint3d[] = bigshipgeneric.prop.propAirport.towPRel;
+            if(apoint3d == null)
+                return;
+            actor.pos.getRender(lRender);
+            int i = apoint3d.length / 2;
+            for(int j = 0; j < i; j++)
+                if(j != bigshipgeneric.towPortNum)
                 {
-                  BigshipGeneric.Part.access$302(BigshipGeneric.this.parts[i4], 0.0F);
-                  BigshipGeneric.Part.access$402(BigshipGeneric.this.parts[i4], null);
+                    lRender.transform(apoint3d[j * 2], p0);
+                    lRender.transform(apoint3d[j * 2 + 1], p1);
+                    renderTow(bigshipgeneric.prop.propAirport.towString);
+                } else
+                if(com.maddox.il2.engine.Actor.isValid(bigshipgeneric.towAircraft))
+                {
+                    lRender.transform(apoint3d[j * 2], p0);
+                    l.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    bigshipgeneric.towHook.computePos(bigshipgeneric.towAircraft, bigshipgeneric.towAircraft.pos.getRender(), l);
+                    p1.set(l.getPoint());
+                    renderTow(bigshipgeneric.prop.propAirport.towString);
+                    lRender.transform(apoint3d[j * 2 + 1], p0);
+                    l.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                    bigshipgeneric.towHook.computePos(bigshipgeneric.towAircraft, bigshipgeneric.towAircraft.pos.getRender(), l);
+                    p1.set(l.getPoint());
+                    renderTow(bigshipgeneric.prop.propAirport.towString);
                 }
 
-                BigshipGeneric.Part.access$102(BigshipGeneric.this.parts[i4], i11);
-                BigshipGeneric.this.visualsInjurePart(i4, true);
-                i4++;
-              }
-            }
-          }
-          return true;
-        case 100:
-          if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted2);
-          }
-
-          int i1 = paramNetMsgInput.available();
-          if (i1 != 8) {
-            System.out.println("*** net bigship d");
-            return true;
-          }
-
-          if (BigshipGeneric.this.dying != 0)
-          {
-            return true;
-          }
-
-          BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
-
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyDepth);
-          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyPitch);
-          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.bodyRoll);
-
-          BigshipGeneric.access$4502(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
-          BigshipGeneric.access$4602(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$4702(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, NetServerParams.getServerTime()));
-          BigshipGeneric.access$3814(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
-
-          BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
-
-          return true;
-        case 68:
-          if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted3 = new NetMsgGuaranted(paramNetMsgInput, 1);
-            post(localNetMsgGuaranted3);
-          }
-
-          i3 = paramNetMsgInput.available();
-          if (i3 == 8 + NetMsgInput.netObjReferenceLen() + 8 + 8) {
-            i2 = 0;
-          } else if (i3 == 8 + NetMsgInput.netObjReferenceLen() + 8 + 8 + 8) {
-            i2 = 1;
-          } else {
-            System.out.println("*** net bigship D");
-            return true;
-          }
-
-          if (BigshipGeneric.this.dying != 0)
-          {
-            return true;
-          }
-
-          BigshipGeneric.access$5402(BigshipGeneric.this, paramNetMsgInput.readLong());
-
-          if (Mission.isDeathmatch()) {
-            BigshipGeneric.access$5402(BigshipGeneric.this, NetServerParams.getServerTime());
-          }
-
-          if (BigshipGeneric.this.timeOfDeath < 0L) {
-            System.out.println("*** net bigship D tm");
-            return true;
-          }
-
-          NetObj localNetObj1 = paramNetMsgInput.readNetObj();
-          Actor localActor1 = localNetObj1 == null ? null : ((ActorNet)localNetObj1).actor();
-
-          BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
-
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyDepth);
-          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyPitch);
-          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.bodyRoll);
-
-          BigshipGeneric.access$4502(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
-          BigshipGeneric.access$4602(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$4702(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, NetServerParams.getServerTime()));
-          BigshipGeneric.access$3814(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
-
-          BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
-
-          BigshipGeneric.access$4902(BigshipGeneric.this, (float)(1000.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D)));
-          BigshipGeneric.access$5002(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$5102(BigshipGeneric.this, (float)(90.0D * (paramNetMsgInput.readShort() / 32767.0D)));
-          BigshipGeneric.access$5202(BigshipGeneric.this, BigshipGeneric.this.tmInterpoEnd);
-          BigshipGeneric.access$5214(BigshipGeneric.this, ()(1000.0D * (1200.0D * ((paramNetMsgInput.readUnsignedShort() & 0x7FFF) / 32767.0D))));
-
-          if (i2 != 0) {
-            long l = paramNetMsgInput.readLong();
-            if (l > 0L) {
-              BigshipGeneric.access$3722(BigshipGeneric.this, l);
-              BigshipGeneric.access$3822(BigshipGeneric.this, l);
-              BigshipGeneric.access$5222(BigshipGeneric.this, l);
-              BigshipGeneric.this.computeInterpolatedDPR(NetServerParams.getServerTime());
-            }
-          }
-
-          BigshipGeneric.this.Die(localActor1, BigshipGeneric.this.timeOfDeath, true, false);
-
-          return true;
         }
 
-        System.out.println("**net bigship unknown cmd " + m);
-        return false;
-      }
-
-      int i = paramNetMsgInput.readUnsignedByte();
-      int j;
-      int k;
-      if ((i & 0xE0) == 224) {
-        j = 1 + NetMsgInput.netObjReferenceLen() + 1;
-        k = 2 + NetMsgInput.netObjReferenceLen() + 1;
-        m = paramNetMsgInput.available();
-        i2 = i & 0x1F;
-        i3 = m - i2 * j;
-        int i5 = i3 / k;
-        if ((i5 < 0) || (i5 > 31) || (i2 > 31) || (i3 % k != 0))
+        private void renderTow(com.maddox.il2.engine.Mesh mesh)
         {
-          System.out.println("*** net big0 code:" + i + " szT:" + j + " szF:" + k + " len:" + m + " nT:" + i2 + " lenF:" + i3 + " nF:" + i5);
-
-          return true;
+            tmpVector.sub(p1, p0);
+            mesh.setScaleXYZ((float)tmpVector.length(), 1.0F, 1.0F);
+            tmpVector.normalize();
+            com.maddox.il2.engine.Orient orient = l.getOrient();
+            orient.setAT0(tmpVector);
+            l.set(p0);
+            mesh.setPos(l);
+            mesh.render();
         }
 
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, i2 + i5);
-          this.out.setIncludeTime(true);
-          postReal(Message.currentRealTime(), this.out); } int i7;
-        Object localObject;
-        while (true) { i2--; if (i2 < 0) break;
-          i7 = paramNetMsgInput.readUnsignedByte();
+        private static com.maddox.il2.engine.Loc lRender = new Loc();
+        private static com.maddox.il2.engine.Loc l = new Loc();
+        private static com.maddox.JGP.Vector3d tmpVector = new Vector3d();
+        private static com.maddox.JGP.Point3d p0 = new Point3d();
+        private static com.maddox.JGP.Point3d p1 = new Point3d();
 
-          NetObj localNetObj2 = paramNetMsgInput.readNetObj();
-          localObject = localNetObj2 == null ? null : ((ActorNet)localNetObj2).actor();
 
-          i11 = paramNetMsgInput.readUnsignedByte();
-
-          BigshipGeneric.this.Track_Mirror(i7, (Actor)localObject, i11);
-        }
-        while (true)
+        public TowStringMeshDraw(com.maddox.il2.engine.ActorDraw actordraw)
         {
-          i5--; if (i5 < 0) break;
-          i7 = paramNetMsgInput.readUnsignedByte();
-          int i9 = paramNetMsgInput.readUnsignedByte();
-
-          localObject = paramNetMsgInput.readNetObj();
-          Actor localActor2 = localObject == null ? null : ((ActorNet)localObject).actor();
-
-          double d4 = -2.0D + i7 / 255.0D * 7000.0D / 1000.0D;
-
-          double d5 = 0.001D * (Message.currentGameTime() - NetServerParams.getServerTime()) + d4;
-
-          int i12 = paramNetMsgInput.readUnsignedByte();
-
-          BigshipGeneric.this.Fire_Mirror(i9, localActor2, i12, (float)d5);
+            super(actordraw);
         }
-        return true;
-      }
-
-      if (i == 80)
-      {
-        j = 2 + NetMsgInput.netObjReferenceLen();
-        k = paramNetMsgInput.available();
-        m = k / j;
-
-        if ((m <= 0) || (m > 256) || (k % j != 0))
-        {
-          System.out.println("*** net bigship2 n:" + m);
-          return true;
-        }
-
-        this.out.unLockAndSet(paramNetMsgInput, m);
-        this.out.setIncludeTime(false);
-        postRealTo(Message.currentRealTime(), masterChannel(), this.out);
-        return true;
-      }
-
-      System.out.println("**net bigship unknown ng cmd " + i);
-
-      return true;
     }
 
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
+    public static class AirportProperties
     {
-      super();
-    }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput)
-      throws IOException
-    {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        i = paramNetMsgInput.readUnsignedByte();
-
-        if (i == 93)
+        public void firstInit(com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric)
         {
-          NetUser localNetUser = (NetUser)paramNetMsgInput.readNetObj();
-          String str = paramNetMsgInput.readUTF();
-          BigshipGeneric.this.handleLocationRequest(localNetUser, str);
-          return true;
-        }
-        if (i != 86)
-        {
-          return false;
-        }
-        i = paramNetMsgInput.readUnsignedByte();
-        float f = i;
-
-        if ((BigshipGeneric.this.path != null) && (i != 127) && (f < BigshipGeneric.this.CURRSPEED))
-        {
-          BigshipGeneric.this.CURRSPEED = f;
-          if (Mission.isCoop())
-          {
-            BigshipGeneric.this.computeNewPath();
-
-            BigshipGeneric.access$2902(BigshipGeneric.this, true);
-          }
-        }
-        return true;
-      }
-
-      if (paramNetMsgInput.readUnsignedByte() != 80) {
-        return false;
-      }
-      if (BigshipGeneric.this.dying != 0) {
-        return true;
-      }
-      int i = 2 + NetMsgInput.netObjReferenceLen();
-      int j = paramNetMsgInput.available();
-      int k = j / i;
-      if ((k <= 0) || (k > 256) || (j % i != 0))
-      {
-        System.out.println("*** net bigship1 len:" + j);
-        return true;
-      }
-      while (true)
-      {
-        k--; if (k < 0) break;
-        int m = paramNetMsgInput.readUnsignedByte();
-        if ((m < 0) || (m >= BigshipGeneric.this.parts.length))
-        {
-          return true;
-        }
-
-        int n = paramNetMsgInput.readUnsignedByte();
-
-        NetObj localNetObj = paramNetMsgInput.readNetObj();
-        Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-
-        if (BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[m]) != 2)
-        {
-          BigshipGeneric.Part.access$316(BigshipGeneric.this.parts[m], ((n & 0x7F) + 1) / 128.0F);
-          BigshipGeneric.Part.access$202(BigshipGeneric.this.parts[m], (n & 0x80) != 0);
-          BigshipGeneric.this.InjurePart(m, localActor, true);
-        }
-
-      }
-
-      return true;
-    }
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      BigshipGeneric.this.validateTowAircraft();
-      int i;
-      if (BigshipGeneric.this.dying == 0)
-      {
-        l = Time.tickNext();
-        if ((Mission.isCoop()) || (Mission.isDogfight())) {
-          l = NetServerParams.getServerTime() + Time.tickLen();
-        }
-        if (BigshipGeneric.this.path != null) {
-          BigshipGeneric.this.computeInterpolatedDPR(l);
-          BigshipGeneric.this.setMovablePosition(l);
-        }
-        else if (BigshipGeneric.this.computeInterpolatedDPR(l)) {
-          BigshipGeneric.this.setPosition();
-        }
-
-        i = 0;
-        int j;
-        if (BigshipGeneric.this.wakeupTmr == 0L)
-        {
-          for (j = 0; j < BigshipGeneric.this.prop.nGuns; j++)
-            if (BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[BigshipGeneric.FiringDevice.access$000(BigshipGeneric.this.arms[j])]) == 0) {
-              BigshipGeneric.FiringDevice.access$600(BigshipGeneric.this.arms[j]).tick_();
-              i = 1;
-            }
-        }
-        else {
-          for (j = 0; j < BigshipGeneric.this.prop.nGuns; j++) {
-            if (BigshipGeneric.Part.access$100(BigshipGeneric.this.parts[BigshipGeneric.FiringDevice.access$000(BigshipGeneric.this.arms[j])]) == 0) {
-              i = 1;
-              break;
-            }
-          }
-          if (BigshipGeneric.this.wakeupTmr > 0L) {
-            BigshipGeneric.access$2010(BigshipGeneric.this);
-          }
-          else if (BigshipGeneric.access$2004(BigshipGeneric.this) == 0L) {
-            if (BigshipGeneric.this.isAnyEnemyNear())
+            if(bInited)
+                return;
+            bInited = true;
+            com.maddox.il2.engine.HierMesh hiermesh = bigshipgeneric.hierMesh();
+            findHook(hiermesh, "_RWY_TO", rwy[0]);
+            findHook(hiermesh, "_RWY_LDG", rwy[1]);
+            towString = new Mesh("3DO/Arms/ArrestorCable/mono.sim");
+            java.util.ArrayList arraylist = new ArrayList();
+            int i = 0;
+            do
             {
-              BigshipGeneric.access$2002(BigshipGeneric.this, BigshipGeneric.access$2500(BigshipGeneric.Rnd(BigshipGeneric.this.DELAY_WAKEUP, BigshipGeneric.this.DELAY_WAKEUP * 1.2F)));
+                java.lang.String s = i <= 9 ? "0" + i : "" + i;
+                if(!findHook(hiermesh, "_TOW" + s + "A", loc))
+                    break;
+                arraylist.add(new Point3d(loc.getPoint()));
+                findHook(hiermesh, "_TOW" + s + "B", loc);
+                arraylist.add(new Point3d(loc.getPoint()));
+                i++;
+            } while(true);
+            if(i > 0)
+            {
+                i *= 2;
+                towPRel = new com.maddox.JGP.Point3d[i];
+                for(int j = 0; j < i; j++)
+                    towPRel[j] = (com.maddox.JGP.Point3d)arraylist.get(j);
+
             }
-            else {
-              BigshipGeneric.access$2002(BigshipGeneric.this, -BigshipGeneric.access$2500(BigshipGeneric.Rnd(4.0F, 7.0F)));
-            }
-          }
-
+            fillParks(bigshipgeneric, hiermesh, "_Park", arraylist);
+            if(arraylist.size() > 0)
+                cellTO = new CellAirField(new com.maddox.il2.ai.air.CellObject[1][1], arraylist, 1.0D);
+            fillParks(bigshipgeneric, hiermesh, "_LPark", arraylist);
+            if(arraylist.size() > 0)
+                cellLDG = new CellAirField(new com.maddox.il2.ai.air.CellObject[1][1], arraylist, 1.0D);
         }
 
-        if (i != 0) {
-          BigshipGeneric.this.send_bufferized_FireCommand();
-        }
-
-        if (BigshipGeneric.this.isNetMirror()) {
-          BigshipGeneric.this.mirror_send_bufferized_Damage();
-
-          if ((Mission.isCoop()) && (BigshipGeneric.this.mustSendSpeedToNet == true))
-          {
-            BigshipGeneric.this.mirror_send_speed();
-
-            BigshipGeneric.this.mustSendSpeedToNet = false;
-          }
-        }
-        else if (BigshipGeneric.this.netsendPartsState_needtosend) {
-          BigshipGeneric.this.send_bufferized_PartsState();
-        }
-
-        BigshipGeneric.this.zutiRefreshBornPlace();
-        return true;
-      }
-
-      if (BigshipGeneric.this.dying == 3)
-      {
-        BigshipGeneric.this.zutiRefreshBornPlace();
-
-        if ((BigshipGeneric.this.path != null) || (!Mission.isDeathmatch()))
+        private void fillParks(com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric, com.maddox.il2.engine.HierMesh hiermesh, java.lang.String s, java.util.ArrayList arraylist)
         {
-          BigshipGeneric.this.eraseGuns();
-          return false;
+            arraylist.clear();
+            int i = 0;
+            do
+            {
+                java.lang.String s1 = s + (i <= 9 ? "0" + i : "" + i);
+                if(findHook(hiermesh, s1, loc))
+                {
+                    arraylist.add(new Point3d(-p.y, p.x, p.z));
+                    i++;
+                } else
+                {
+                    return;
+                }
+            } while(true);
         }
 
-        if (BigshipGeneric.access$3310(BigshipGeneric.this) > 0L) {
-          return true;
+        private boolean findHook(com.maddox.il2.engine.HierMesh hiermesh, java.lang.String s, com.maddox.il2.engine.Loc loc1)
+        {
+            int i = hiermesh.hookFind(s);
+            if(i == -1)
+            {
+                return false;
+            } else
+            {
+                hiermesh.hookMatrix(i, m1);
+                m1.getEulers(tmp);
+                o.setYPR(com.maddox.JGP.Geom.RAD2DEG((float)tmp[0]), 360F - com.maddox.JGP.Geom.RAD2DEG((float)tmp[1]), 360F - com.maddox.JGP.Geom.RAD2DEG((float)tmp[2]));
+                p.set(m1.m03, m1.m13, m1.m23);
+                loc1.set(p, o);
+                return true;
+            }
         }
 
-        if (!BigshipGeneric.this.isNetMaster()) {
-          BigshipGeneric.access$3302(BigshipGeneric.this, 10000L);
-          return true;
+        public com.maddox.il2.engine.Loc rwy[] = {
+            new Loc(), new Loc()
+        };
+        public com.maddox.il2.engine.Mesh towString;
+        public com.maddox.JGP.Point3d towPRel[];
+        public com.maddox.il2.ai.air.CellAirField cellTO;
+        public com.maddox.il2.ai.air.CellAirField cellLDG;
+        private boolean bInited;
+        private static com.maddox.il2.engine.Loc loc = new Loc();
+        private static com.maddox.JGP.Point3d p = new Point3d();
+        private static com.maddox.il2.engine.Orient o = new Orient();
+        private static com.maddox.JGP.Matrix4d m1 = new Matrix4d();
+        private static double tmp[] = new double[3];
+
+
+        public AirportProperties(java.lang.Class class1)
+        {
+            bInited = false;
+            com.maddox.rts.Property.set(class1, "IsAirport", "true");
+        }
+    }
+
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
+    {
+
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
+        {
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Ship: Value of [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Ship: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
+            }
         }
 
-        BigshipGeneric.access$2002(BigshipGeneric.this, 0L);
-        BigshipGeneric.this.makeLive();
-        BigshipGeneric.this.forgetAllAiming();
-        BigshipGeneric.this.setDefaultLivePose();
-        BigshipGeneric.this.setDiedFlag(false);
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Ship: Value of [" + s + "]:<" + s1 + "> not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return new String(s2);
+            }
+        }
 
-        BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, 0L));
-        BigshipGeneric.access$3902(BigshipGeneric.this, BigshipGeneric.access$4002(BigshipGeneric.this, BigshipGeneric.access$4102(BigshipGeneric.this, 0.0F)));
-        BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4402(BigshipGeneric.this, 0.0F)));
-        BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.access$4702(BigshipGeneric.this, 0.0F)));
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return new String(s3);
+        }
 
-        BigshipGeneric.this.setPosition();
-        BigshipGeneric.this.pos.reset();
+        private static void tryToReadGunProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, com.maddox.il2.objects.ships.ShipPartProperties shippartproperties)
+        {
+            if(sectfile.exist(s, "Gun"))
+            {
+                java.lang.String s1 = "com.maddox.il2.objects.weapons." + com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "Gun");
+                try
+                {
+                    shippartproperties.gunClass = java.lang.Class.forName(s1);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println("BigShip: Can't find gun class '" + s1 + "'");
+                    throw new RuntimeException("Can't register Ship object");
+                }
+            }
+            if(sectfile.exist(s, "AttackMaxDistance"))
+                shippartproperties.ATTACK_MAX_DISTANCE = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "AttackMaxDistance", 6F, 50000F);
+            if(sectfile.exist(s, "AttackMaxRadius"))
+                shippartproperties.ATTACK_MAX_RADIUS = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "AttackMaxRadius", 6F, 50000F);
+            if(sectfile.exist(s, "AttackMaxHeight"))
+                shippartproperties.ATTACK_MAX_HEIGHT = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "AttackMaxHeight", 6F, 15000F);
+            if(sectfile.exist(s, "TrackingOnly"))
+                shippartproperties.TRACKING_ONLY = true;
+            if(sectfile.exist(s, "FireFastTargets"))
+            {
+                float f = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "FireFastTargets", 0.0F, 2.0F);
+                shippartproperties.ATTACK_FAST_TARGETS = (int)(f + 0.5F);
+                if(shippartproperties.ATTACK_FAST_TARGETS > 2)
+                    shippartproperties.ATTACK_FAST_TARGETS = 2;
+            }
+            if(sectfile.exist(s, "FastTargetsAngleError"))
+            {
+                float f1 = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "FastTargetsAngleError", 0.0F, 45F);
+                shippartproperties.FAST_TARGETS_ANGLE_ERROR = f1;
+            }
+            if(sectfile.exist(s, "HeadMinYaw"))
+                shippartproperties._HEAD_MIN_YAW = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "HeadMinYaw", -360F, 360F);
+            if(sectfile.exist(s, "HeadMaxYaw"))
+                shippartproperties._HEAD_MAX_YAW = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "HeadMaxYaw", -360F, 360F);
+            if(sectfile.exist(s, "GunMinPitch"))
+                shippartproperties.GUN_MIN_PITCH = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "GunMinPitch", -15F, 85F);
+            if(sectfile.exist(s, "GunMaxPitch"))
+                shippartproperties.GUN_MAX_PITCH = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "GunMaxPitch", 0.0F, 89.9F);
+            if(sectfile.exist(s, "HeadMaxYawSpeed"))
+                shippartproperties.HEAD_MAX_YAW_SPEED = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "HeadMaxYawSpeed", 0.1F, 999F);
+            if(sectfile.exist(s, "GunMaxPitchSpeed"))
+                shippartproperties.GUN_MAX_PITCH_SPEED = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "GunMaxPitchSpeed", 0.1F, 999F);
+            if(sectfile.exist(s, "DelayAfterShoot"))
+                shippartproperties.DELAY_AFTER_SHOOT = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "DelayAfterShoot", 0.0F, 999F);
+            if(sectfile.exist(s, "ChainfireTime"))
+                shippartproperties.CHAINFIRE_TIME = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "ChainfireTime", 0.0F, 600F);
+            if(sectfile.exist(s, "GunHeadChunk"))
+                shippartproperties.headChunkName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "GunHeadChunk");
+            if(sectfile.exist(s, "GunBarrelChunk"))
+                shippartproperties.gunChunkName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "GunBarrelChunk");
+            if(sectfile.exist(s, "GunShellStartHook"))
+                shippartproperties.gunShellStartHookName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "GunShellStartHook");
+        }
 
-        BigshipGeneric.this.send_RespawnCommand();
+        private static com.maddox.il2.objects.ships.ShipProperties LoadShipProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.ships.ShipProperties shipproperties = new ShipProperties();
+            shipproperties.meshName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "Mesh");
+            shipproperties.soundName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "SoundMove");
+            if(shipproperties.soundName.equalsIgnoreCase("none"))
+                shipproperties.soundName = null;
+            shipproperties.SLIDER_DIST = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "SliderDistance", 5F, 1000F);
+            shipproperties.SPEED = com.maddox.il2.objects.ships.BigshipGeneric.KmHourToMSec(com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s, "Speed", 0.5F, 200F));
+            shipproperties.DELAY_RESPAWN_MIN = 15F;
+            shipproperties.DELAY_RESPAWN_MAX = 30F;
+            com.maddox.rts.Property.set(class1, "iconName", "icons/" + com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s, "Icon") + ".mat");
+            com.maddox.rts.Property.set(class1, "meshName", shipproperties.meshName);
+            com.maddox.rts.Property.set(class1, "speed", shipproperties.SPEED);
+            int i;
+            for(i = 0; sectfile.sectionIndex(s + ":Part" + i) >= 0; i++);
+            if(i <= 0)
+            {
+                java.lang.System.out.println("BigShip: No part sections for '" + s + "'");
+                throw new RuntimeException("Can't register BigShip object");
+            }
+            if(i >= 255)
+            {
+                java.lang.System.out.println("BigShip: Too many parts in " + s + ".");
+                throw new RuntimeException("Can't register BigShip object");
+            }
+            shipproperties.propparts = new com.maddox.il2.objects.ships.ShipPartProperties[i];
+            shipproperties.nGuns = 0;
+            for(int j = 0; j < i; j++)
+            {
+                java.lang.String s1 = s + ":Part" + j;
+                com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = new ShipPartProperties();
+                shipproperties.propparts[j] = shippartproperties;
+                shippartproperties.baseChunkName = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s1, "BaseChunk");
+                int l;
+                for(l = 0; sectfile.exist(s1, "AdditionalCollisionChunk" + l); l++);
+                if(l > 4)
+                {
+                    java.lang.System.out.println("BigShip: Too many addcollischunks in '" + s1 + "'");
+                    throw new RuntimeException("Can't register BigShip object");
+                }
+                shippartproperties.additCollisChunkName = new java.lang.String[l];
+                for(int i1 = 0; i1 < l; i1++)
+                    shippartproperties.additCollisChunkName[i1] = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s1, "AdditionalCollisionChunk" + i1);
+
+                java.lang.String s2 = null;
+                if(sectfile.exist(s1, "strengthBasedOnThisSection"))
+                    s2 = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s1, "strengthBasedOnThisSection");
+                if(!shippartproperties.stre.read("Bigship", sectfile, s2, s1))
+                    throw new RuntimeException("Can't register Bigship object");
+                if(sectfile.exist(s1, "Vital"))
+                {
+                    shippartproperties.dmgDepth = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "damageDepth", 0.0F, 99F);
+                    shippartproperties.dmgPitch = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "damagePitch", -89F, 89F);
+                    shippartproperties.dmgRoll = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "damageRoll", 0.0F, 89F);
+                    shippartproperties.dmgTime = com.maddox.il2.objects.ships.SPAWN.getF(sectfile, s1, "damageTime", 1.0F, 1200F);
+                    shippartproperties.BLACK_DAMAGE = 0.6666667F;
+                } else
+                {
+                    shippartproperties.dmgDepth = -1F;
+                    shippartproperties.BLACK_DAMAGE = 1.0F;
+                }
+                if(!sectfile.exist(s1, "Gun") && !sectfile.exist(s1, "gunBasedOnThisSection"))
+                    shippartproperties.gun_idx = -1;
+                else
+                if(shippartproperties.isItLifeKeeper())
+                {
+                    java.lang.System.out.println("*** ERROR: bigship: vital with gun");
+                    shippartproperties.gun_idx = -1;
+                } else
+                {
+                    shippartproperties.gun_idx = shipproperties.nGuns++;
+                    if(shipproperties.nGuns > 256)
+                    {
+                        java.lang.System.out.println("BigShip: Too many guns in " + s + ".");
+                        throw new RuntimeException("Can't register BigShip object");
+                    }
+                    shippartproperties.gunClass = null;
+                    shippartproperties.ATTACK_MAX_DISTANCE = -1000F;
+                    shippartproperties.ATTACK_MAX_RADIUS = -1000F;
+                    shippartproperties.ATTACK_MAX_HEIGHT = -1000F;
+                    shippartproperties.TRACKING_ONLY = false;
+                    shippartproperties.ATTACK_FAST_TARGETS = 1;
+                    shippartproperties.FAST_TARGETS_ANGLE_ERROR = 0.0F;
+                    shippartproperties._HEAD_MIN_YAW = -1000F;
+                    shippartproperties._HEAD_MAX_YAW = -1000F;
+                    shippartproperties.GUN_MIN_PITCH = -1000F;
+                    shippartproperties.GUN_STD_PITCH = -1000F;
+                    shippartproperties.GUN_MAX_PITCH = -1000F;
+                    shippartproperties.HEAD_MAX_YAW_SPEED = -1000F;
+                    shippartproperties.GUN_MAX_PITCH_SPEED = -1000F;
+                    shippartproperties.DELAY_AFTER_SHOOT = -1000F;
+                    shippartproperties.CHAINFIRE_TIME = -1000F;
+                    shippartproperties.headChunkName = null;
+                    shippartproperties.gunChunkName = null;
+                    shippartproperties.gunShellStartHookName = null;
+                    if(sectfile.exist(s1, "gunBasedOnThisSection"))
+                    {
+                        java.lang.String s3 = com.maddox.il2.objects.ships.SPAWN.getS(sectfile, s1, "gunBasedOnThisSection");
+                        com.maddox.il2.objects.ships.SPAWN.tryToReadGunProperties(sectfile, s3, shippartproperties);
+                    }
+                    com.maddox.il2.objects.ships.SPAWN.tryToReadGunProperties(sectfile, s1, shippartproperties);
+                    if(shippartproperties.gunClass == null || shippartproperties.ATTACK_MAX_DISTANCE <= -1000F || shippartproperties.ATTACK_MAX_RADIUS <= -1000F || shippartproperties.ATTACK_MAX_HEIGHT <= -1000F || shippartproperties._HEAD_MIN_YAW <= -1000F || shippartproperties._HEAD_MAX_YAW <= -1000F || shippartproperties.GUN_MIN_PITCH <= -1000F || shippartproperties.GUN_MAX_PITCH <= -1000F || shippartproperties.HEAD_MAX_YAW_SPEED <= -1000F || shippartproperties.GUN_MAX_PITCH_SPEED <= -1000F || shippartproperties.DELAY_AFTER_SHOOT <= -1000F || shippartproperties.CHAINFIRE_TIME <= -1000F || shippartproperties.headChunkName == null || shippartproperties.gunChunkName == null || shippartproperties.gunShellStartHookName == null)
+                    {
+                        java.lang.System.out.println("BigShip: Not enough 'gun' data  in '" + s1 + "'");
+                        throw new RuntimeException("Can't register BigShip object");
+                    }
+                    shippartproperties.WEAPONS_MASK = com.maddox.il2.objects.weapons.Gun.getProperties(shippartproperties.gunClass).weaponType;
+                    if(shippartproperties.WEAPONS_MASK == 0)
+                    {
+                        java.lang.System.out.println("BigShip: Undefined weapon type in gun class '" + shippartproperties.gunClass.getName() + "'");
+                        throw new RuntimeException("Can't register BigShip object");
+                    }
+                    if(shippartproperties._HEAD_MIN_YAW > shippartproperties._HEAD_MAX_YAW)
+                    {
+                        java.lang.System.out.println("BigShip: Wrong yaw angles in gun " + s1 + ".");
+                        throw new RuntimeException("Can't register BigShip object");
+                    }
+                    shippartproperties.HEAD_STD_YAW = 0.0F;
+                    shippartproperties.HEAD_YAW_RANGE.set(shippartproperties._HEAD_MIN_YAW, shippartproperties._HEAD_MAX_YAW);
+                }
+            }
+
+            shipproperties.WEAPONS_MASK = 0;
+            shipproperties.ATTACK_MAX_DISTANCE = 1.0F;
+            for(int k = 0; k < shipproperties.propparts.length; k++)
+                if(shipproperties.propparts[k].haveGun())
+                {
+                    shipproperties.WEAPONS_MASK |= shipproperties.propparts[k].WEAPONS_MASK;
+                    if(shipproperties.ATTACK_MAX_DISTANCE < shipproperties.propparts[k].ATTACK_MAX_DISTANCE)
+                        shipproperties.ATTACK_MAX_DISTANCE = shipproperties.propparts[k].ATTACK_MAX_DISTANCE;
+                }
+
+            if(sectfile.get(s, "IsAirport", false))
+                shipproperties.propAirport = new AirportProperties(class1);
+            return shipproperties;
+        }
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric = null;
+            try
+            {
+                com.maddox.il2.objects.ships.BigshipGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.ships.BigshipGeneric.constr_arg2 = actorspawnarg;
+                bigshipgeneric = (com.maddox.il2.objects.ships.BigshipGeneric)cls.newInstance();
+                com.maddox.il2.objects.ships.BigshipGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.ships.BigshipGeneric.constr_arg2 = null;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.ships.BigshipGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.ships.BigshipGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create Ship object [class:" + cls.getName() + "]");
+                return null;
+            }
+            return bigshipgeneric;
+        }
+
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.ships.ShipProperties proper;
+
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.ships.SPAWN.LoadShipProperties(com.maddox.il2.objects.Statics.getShipsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
+    }
+
+    class Mirror extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                switch(netmsginput.readUnsignedByte())
+                {
+                case 73: // 'I'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted);
+                    }
+                    timeOfDeath = netmsginput.readLong();
+                    if(timeOfDeath < 0L)
+                    {
+                        if(dying == 0)
+                        {
+                            makeLive();
+                            setDefaultLivePose();
+                            forgetAllAiming();
+                        }
+                    } else
+                    if(dying == 0)
+                        Die(null, timeOfDeath, false, true);
+                    return true;
+
+                case 82: // 'R'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted1);
+                    }
+                    makeLive();
+                    setDefaultLivePose();
+                    forgetAllAiming();
+                    setDiedFlag(false);
+                    tmInterpoStart = tmInterpoEnd = 0L;
+                    bodyDepth = bodyPitch = bodyRoll = 0.0F;
+                    bodyDepth0 = bodyPitch0 = bodyRoll0 = 0.0F;
+                    bodyDepth1 = bodyPitch1 = bodyRoll1 = 0.0F;
+                    setPosition();
+                    pos.reset();
+                    return true;
+
+                case 83: // 'S'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted2 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted2);
+                    }
+                    int j1 = netmsginput.available();
+                    int j2 = (parts.length + 3) / 4;
+                    if(j1 != j2)
+                    {
+                        java.lang.System.out.println("*** net bigship S");
+                        return true;
+                    }
+                    if(j2 <= 0)
+                    {
+                        java.lang.System.out.println("*** net bigship S0");
+                        return true;
+                    }
+                    int i3 = 0;
+                    for(int k3 = 0; k3 < j1; k3++)
+                    {
+                        int i4 = netmsginput.readUnsignedByte();
+                        for(int i5 = 0; i5 < 4; i5++)
+                        {
+                            if(i3 >= parts.length)
+                                break;
+                            int k5 = i4 >>> i5 * 2 & 3;
+                            if(k5 <= parts[i3].state)
+                            {
+                                i3++;
+                            } else
+                            {
+                                if(k5 == 2)
+                                {
+                                    parts[i3].damage = 0.0F;
+                                    parts[i3].mirror_initiator = null;
+                                }
+                                parts[i3].state = k5;
+                                visualsInjurePart(i3, true);
+                                i3++;
+                            }
+                        }
+
+                    }
+
+                    return true;
+
+                case 100: // 'd'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted3 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted3);
+                    }
+                    int k1 = netmsginput.available();
+                    if(k1 != 8)
+                    {
+                        java.lang.System.out.println("*** net bigship d");
+                        return true;
+                    }
+                    if(dying != 0)
+                    {
+                        return true;
+                    } else
+                    {
+                        computeInterpolatedDPR(com.maddox.il2.net.NetServerParams.getServerTime());
+                        bodyDepth0 = bodyDepth;
+                        bodyPitch0 = bodyPitch;
+                        bodyRoll0 = bodyRoll;
+                        bodyDepth1 = (float)(1000D * ((double)(netmsginput.readUnsignedShort() & 0x7fff) / 32767D));
+                        bodyPitch1 = (float)(90D * ((double)netmsginput.readShort() / 32767D));
+                        bodyRoll1 = (float)(90D * ((double)netmsginput.readShort() / 32767D));
+                        tmInterpoStart = tmInterpoEnd = com.maddox.il2.net.NetServerParams.getServerTime();
+                        tmInterpoEnd+= = (long)(1000D * (1200D * ((double)(netmsginput.readUnsignedShort() & 0x7fff) / 32767D)));
+                        computeInterpolatedDPR(com.maddox.il2.net.NetServerParams.getServerTime());
+                        return true;
+                    }
+
+                case 68: // 'D'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted4 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted4);
+                    }
+                    int k2 = netmsginput.available();
+                    boolean flag;
+                    if(k2 == 8 + netmsginput.netObjReferenceLen() + 8 + 8)
+                        flag = false;
+                    else
+                    if(k2 == 8 + netmsginput.netObjReferenceLen() + 8 + 8 + 8)
+                    {
+                        flag = true;
+                    } else
+                    {
+                        java.lang.System.out.println("*** net bigship D");
+                        return true;
+                    }
+                    if(dying != 0)
+                        return true;
+                    timeOfDeath = netmsginput.readLong();
+                    if(com.maddox.il2.game.Mission.isDeathmatch())
+                        timeOfDeath = com.maddox.il2.net.NetServerParams.getServerTime();
+                    if(timeOfDeath < 0L)
+                    {
+                        java.lang.System.out.println("*** net bigship D tm");
+                        return true;
+                    }
+                    com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                    computeInterpolatedDPR(com.maddox.il2.net.NetServerParams.getServerTime());
+                    bodyDepth0 = bodyDepth;
+                    bodyPitch0 = bodyPitch;
+                    bodyRoll0 = bodyRoll;
+                    bodyDepth1 = (float)(1000D * ((double)(netmsginput.readUnsignedShort() & 0x7fff) / 32767D));
+                    bodyPitch1 = (float)(90D * ((double)netmsginput.readShort() / 32767D));
+                    bodyRoll1 = (float)(90D * ((double)netmsginput.readShort() / 32767D));
+                    tmInterpoStart = tmInterpoEnd = com.maddox.il2.net.NetServerParams.getServerTime();
+                    tmInterpoEnd+= = (long)(1000D * (1200D * ((double)(netmsginput.readUnsignedShort() & 0x7fff) / 32767D)));
+                    computeInterpolatedDPR(com.maddox.il2.net.NetServerParams.getServerTime());
+                    sink2Depth = (float)(1000D * ((double)(netmsginput.readUnsignedShort() & 0x7fff) / 32767D));
+                    sink2Pitch = (float)(90D * ((double)netmsginput.readShort() / 32767D));
+                    sink2Roll = (float)(90D * ((double)netmsginput.readShort() / 32767D));
+                    sink2timeWhenStop = tmInterpoEnd;
+                    sink2timeWhenStop+= = (long)(1000D * (1200D * ((double)(netmsginput.readUnsignedShort() & 0x7fff) / 32767D)));
+                    if(flag)
+                    {
+                        long l4 = netmsginput.readLong();
+                        if(l4 > 0L)
+                        {
+                            tmInterpoStart-= = l4;
+                            tmInterpoEnd-= = l4;
+                            sink2timeWhenStop-= = l4;
+                            computeInterpolatedDPR(com.maddox.il2.net.NetServerParams.getServerTime());
+                        }
+                    }
+                    Die(actor, timeOfDeath, true, false);
+                    return true;
+                }
+                java.lang.System.out.println("**net bigship unknown cmd");
+                return false;
+            }
+            int i = netmsginput.readUnsignedByte();
+            if((i & 0xe0) == 224)
+            {
+                int j = 1 + netmsginput.netObjReferenceLen() + 1;
+                int l = 2 + netmsginput.netObjReferenceLen() + 1;
+                int l1 = netmsginput.available();
+                int l2 = i & 0x1f;
+                int j3 = l1 - l2 * j;
+                int l3 = j3 / l;
+                if(l3 < 0 || l3 > 31 || l2 > 31 || j3 % l != 0)
+                {
+                    java.lang.System.out.println("*** net big0 code:" + i + " szT:" + j + " szF:" + l + " len:" + l1 + " nT:" + l2 + " lenF:" + j3 + " nF:" + l3);
+                    return true;
+                }
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, l2 + l3);
+                    out.setIncludeTime(true);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                while(--l2 >= 0) 
+                {
+                    int j4 = netmsginput.readUnsignedByte();
+                    com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor1 = netobj1 != null ? ((com.maddox.il2.engine.ActorNet)netobj1).actor() : null;
+                    int l5 = netmsginput.readUnsignedByte();
+                    Track_Mirror(j4, actor1, l5);
+                }
+                while(--l3 >= 0) 
+                {
+                    int k4 = netmsginput.readUnsignedByte();
+                    int j5 = netmsginput.readUnsignedByte();
+                    com.maddox.rts.NetObj netobj2 = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor2 = netobj2 != null ? ((com.maddox.il2.engine.ActorNet)netobj2).actor() : null;
+                    double d = -2D + (((double)k4 / 255D) * 7000D) / 1000D;
+                    double d1 = 0.001D * (double)(com.maddox.rts.Message.currentGameTime() - com.maddox.il2.net.NetServerParams.getServerTime()) + d;
+                    int i6 = netmsginput.readUnsignedByte();
+                    Fire_Mirror(j5, actor2, i6, (float)d1);
+                }
+                return true;
+            }
+            if(i == 80)
+            {
+                int k = 2 + netmsginput.netObjReferenceLen();
+                int i1 = netmsginput.available();
+                int i2 = i1 / k;
+                if(i2 <= 0 || i2 > 256 || i1 % k != 0)
+                {
+                    java.lang.System.out.println("*** net bigship2 n:" + i2);
+                    return true;
+                } else
+                {
+                    out.unLockAndSet(netmsginput, i2);
+                    out.setIncludeTime(false);
+                    postRealTo(com.maddox.rts.Message.currentRealTime(), masterChannel(), out);
+                    return true;
+                }
+            } else
+            {
+                java.lang.System.out.println("**net bigship unknown ng cmd");
+                return true;
+            }
+        }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return true;
+            if(netmsginput.readUnsignedByte() != 80)
+                return false;
+            if(dying != 0)
+                return true;
+            int i = 2 + netmsginput.netObjReferenceLen();
+            int j = netmsginput.available();
+            int k = j / i;
+            if(k <= 0 || k > 256 || j % i != 0)
+            {
+                java.lang.System.out.println("*** net bigship1 len:" + j);
+                return true;
+            }
+            while(--k >= 0) 
+            {
+                int l = netmsginput.readUnsignedByte();
+                if(l < 0 || l >= parts.length)
+                    return true;
+                int i1 = netmsginput.readUnsignedByte();
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                if(parts[l].state != 2)
+                {
+                    parts[l].damage+= = (float)((i1 & 0x7f) + 1) / 128F;
+                    parts[l].damageIsFromRight = (i1 & 0x80) != 0;
+                    InjurePart(l, actor, true);
+                }
+            }
+            return true;
+        }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+    class Move extends com.maddox.il2.engine.Interpolate
+    {
+
+        public boolean tick()
+        {
+            validateTowAircraft();
+            if(dying == 0)
+            {
+                long l = com.maddox.rts.Time.tickNext();
+                if(com.maddox.il2.game.Mission.isCoop())
+                    l = com.maddox.il2.net.NetServerParams.getServerTime() + (long)com.maddox.rts.Time.tickLen();
+                if(path != null)
+                {
+                    computeInterpolatedDPR(l);
+                    setMovablePosition(l);
+                } else
+                if(computeInterpolatedDPR(l))
+                    setPosition();
+                boolean flag = false;
+                if(wakeupTmr == 0L)
+                {
+                    for(int j = 0; j < prop.nGuns; j++)
+                        if(parts[arms[j].part_idx].state == 0)
+                        {
+                            arms[j].aime.tick_();
+                            flag = true;
+                        }
+
+                } else
+                {
+                    for(int k = 0; k < prop.nGuns; k++)
+                    {
+                        if(parts[arms[k].part_idx].state != 0)
+                            continue;
+                        flag = true;
+                        break;
+                    }
+
+                    if(wakeupTmr > 0L)
+                        wakeupTmr--;
+                    else
+                    if(++wakeupTmr == 0L)
+                        if(isAnyEnemyNear())
+                            wakeupTmr = com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
+                        else
+                            wakeupTmr = -com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(4F, 7F));
+                }
+                if(flag)
+                    send_bufferized_FireCommand();
+                if(isNetMirror())
+                    mirror_send_bufferized_Damage();
+                else
+                if(netsendPartsState_needtosend)
+                    send_bufferized_PartsState();
+                return true;
+            }
+            if(dying == 3)
+            {
+                if(path != null || !com.maddox.il2.game.Mission.isDeathmatch())
+                {
+                    eraseGuns();
+                    return false;
+                }
+                if(respawnDelay-- > 0L)
+                    return true;
+                if(!isNetMaster())
+                {
+                    respawnDelay = 10000L;
+                    return true;
+                } else
+                {
+                    wakeupTmr = 0L;
+                    makeLive();
+                    forgetAllAiming();
+                    setDefaultLivePose();
+                    setDiedFlag(false);
+                    tmInterpoStart = tmInterpoEnd = 0L;
+                    bodyDepth = bodyPitch = bodyRoll = 0.0F;
+                    bodyDepth0 = bodyPitch0 = bodyRoll0 = 0.0F;
+                    bodyDepth1 = bodyPitch1 = bodyRoll1 = 0.0F;
+                    setPosition();
+                    pos.reset();
+                    send_RespawnCommand();
+                    return true;
+                }
+            }
+            if(netsendPartsState_needtosend)
+                send_bufferized_PartsState();
+            long l1 = com.maddox.rts.Time.tickNext();
+            if(dying == 1)
+            {
+                if(l1 >= tmInterpoEnd)
+                {
+                    bodyDepth0 = bodyDepth1;
+                    bodyPitch0 = bodyPitch1;
+                    bodyRoll0 = bodyRoll1;
+                    bodyDepth1 = sink2Depth;
+                    bodyPitch1 = sink2Pitch;
+                    bodyRoll1 = sink2Roll;
+                    tmInterpoStart = tmInterpoEnd;
+                    tmInterpoEnd = sink2timeWhenStop;
+                    dying = 2;
+                }
+            } else
+            if(l1 >= tmInterpoEnd)
+            {
+                bodyDepth0 = bodyDepth1 = sink2Depth;
+                bodyPitch0 = bodyPitch1 = sink2Pitch;
+                bodyRoll0 = bodyRoll1 = sink2Roll;
+                tmInterpoStart = tmInterpoEnd = 0L;
+                dying = 3;
+            }
+            if((com.maddox.rts.Time.tickCounter() & 0x63) == 0 && dsmoks != null)
+            {
+                for(int i = 0; i < dsmoks.length; i++)
+                    if(dsmoks[i] != null && dsmoks[i].pipe != null && dsmoks[i].pipe.pos.getAbsPoint().z < -4.891D)
+                    {
+                        com.maddox.il2.engine.Eff3DActor.finish(dsmoks[i].pipe);
+                        dsmoks[i].pipe = null;
+                    }
+
+            }
+            computeInterpolatedDPR(l1);
+            if(path != null)
+                setMovablePosition(timeOfDeath);
+            else
+                setPosition();
+            return true;
+        }
+
+        Move()
+        {
+        }
+    }
+
+    static class HookNamedZ0 extends com.maddox.il2.engine.HookNamed
+    {
+
+        public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+        {
+            super.computePos(actor, loc, loc1);
+            loc1.getPoint().z = 0.25D;
+        }
+
+        public HookNamedZ0(com.maddox.il2.engine.ActorMesh actormesh, java.lang.String s)
+        {
+            super(actormesh, s);
+        }
+
+        public HookNamedZ0(com.maddox.il2.engine.Mesh mesh, java.lang.String s)
+        {
+            super(mesh, s);
+        }
+    }
+
+    public static class Pipe
+    {
+
+        private com.maddox.il2.engine.Eff3DActor pipe;
+        private int part_idx;
+
+
+
+
+
+        public Pipe()
+        {
+            pipe = null;
+            part_idx = -1;
+        }
+    }
+
+    private static class Segment
+    {
+
+        public com.maddox.JGP.Point3d posIn;
+        public com.maddox.JGP.Point3d posOut;
+        public float length;
+        public long timeIn;
+        public long timeOut;
+        public float speedIn;
+        public float speedOut;
+
+        private Segment()
+        {
+        }
+
+    }
+
+    public static class Part
+    {
+
+        private float damage;
+        private com.maddox.il2.engine.Actor mirror_initiator;
+        private com.maddox.JGP.Point3d shotpointOffs;
+        private boolean damageIsFromRight;
+        private int state;
+        com.maddox.il2.objects.ships.ShipPartProperties pro;
+
+
+
+
+
+
+
+
+
+
+
+        public Part()
+        {
+            shotpointOffs = new Point3d();
+            damageIsFromRight = false;
+        }
+    }
+
+    public static class FiringDevice
+    {
+
+        private int gun_idx;
+        private int part_idx;
+        private com.maddox.il2.objects.weapons.Gun gun;
+        private com.maddox.il2.ai.ground.Aim aime;
+        private float headYaw;
+        private float gunPitch;
+        private com.maddox.il2.engine.Actor enemy;
+        private double timeWhenFireS;
+        private int shotpointIdx;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public FiringDevice()
+        {
+        }
+    }
+
+    public static class TmpTrackOrFireInfo
+    {
+
+        private int gun_idx;
+        private com.maddox.il2.engine.Actor enemy;
+        private double timeWhenFireS;
+        private int shotpointIdx;
+
+
+
+
+
+
+
+
+
+        public TmpTrackOrFireInfo()
+        {
+        }
+    }
+
+    public static class ShipProperties
+    {
+
+        public java.lang.String meshName;
+        public java.lang.String soundName;
+        public int WEAPONS_MASK;
+        public int HITBY_MASK;
+        public float ATTACK_MAX_DISTANCE;
+        public float SLIDER_DIST;
+        public float SPEED;
+        public float DELAY_RESPAWN_MIN;
+        public float DELAY_RESPAWN_MAX;
+        public com.maddox.il2.objects.ships.ShipPartProperties propparts[];
+        public int nGuns;
+        public com.maddox.il2.objects.ships.AirportProperties propAirport;
+
+        public ShipProperties()
+        {
+            meshName = null;
+            soundName = null;
+            WEAPONS_MASK = 4;
+            HITBY_MASK = -2;
+            ATTACK_MAX_DISTANCE = 1.0F;
+            SLIDER_DIST = 1.0F;
+            SPEED = 1.0F;
+            DELAY_RESPAWN_MIN = 15F;
+            DELAY_RESPAWN_MAX = 30F;
+            propparts = null;
+            propAirport = null;
+        }
+    }
+
+    public static class ShipPartProperties
+    {
+
+        public boolean isItLifeKeeper()
+        {
+            return dmgDepth >= 0.0F;
+        }
+
+        public boolean haveGun()
+        {
+            return gun_idx >= 0;
+        }
+
+        public java.lang.String baseChunkName;
+        public int baseChunkIdx;
+        public com.maddox.JGP.Point3f partOffs;
+        public float partR;
+        public java.lang.String additCollisChunkName[];
+        public int additCollisChunkIdx[];
+        public com.maddox.il2.ai.StrengthProperties stre;
+        public float dmgDepth;
+        public float dmgPitch;
+        public float dmgRoll;
+        public float dmgTime;
+        public float BLACK_DAMAGE;
+        public int gun_idx;
+        public java.lang.Class gunClass;
+        public int WEAPONS_MASK;
+        public boolean TRACKING_ONLY;
+        public float ATTACK_MAX_DISTANCE;
+        public float ATTACK_MAX_RADIUS;
+        public float ATTACK_MAX_HEIGHT;
+        public int ATTACK_FAST_TARGETS;
+        public float FAST_TARGETS_ANGLE_ERROR;
+        public com.maddox.il2.ai.AnglesRange HEAD_YAW_RANGE;
+        public float HEAD_STD_YAW;
+        public float _HEAD_MIN_YAW;
+        public float _HEAD_MAX_YAW;
+        public float GUN_MIN_PITCH;
+        public float GUN_STD_PITCH;
+        public float GUN_MAX_PITCH;
+        public float HEAD_MAX_YAW_SPEED;
+        public float GUN_MAX_PITCH_SPEED;
+        public float DELAY_AFTER_SHOOT;
+        public float CHAINFIRE_TIME;
+        public java.lang.String headChunkName;
+        public java.lang.String gunChunkName;
+        public int headChunkIdx;
+        public int gunChunkIdx;
+        public com.maddox.JGP.Point3d fireOffset;
+        public com.maddox.il2.engine.Orient fireOrient;
+        public java.lang.String gunShellStartHookName;
+
+        public ShipPartProperties()
+        {
+            baseChunkName = null;
+            baseChunkIdx = -1;
+            partOffs = null;
+            partR = 1.0F;
+            additCollisChunkName = null;
+            additCollisChunkIdx = null;
+            stre = new StrengthProperties();
+            dmgDepth = -1F;
+            dmgPitch = 0.0F;
+            dmgRoll = 0.0F;
+            dmgTime = 1.0F;
+            BLACK_DAMAGE = 0.0F;
+            gunClass = null;
+            WEAPONS_MASK = 4;
+            TRACKING_ONLY = false;
+            ATTACK_MAX_DISTANCE = 1.0F;
+            ATTACK_MAX_RADIUS = 1.0F;
+            ATTACK_MAX_HEIGHT = 1.0F;
+            ATTACK_FAST_TARGETS = 1;
+            FAST_TARGETS_ANGLE_ERROR = 0.0F;
+            HEAD_YAW_RANGE = new AnglesRange(-1F, 1.0F);
+            HEAD_STD_YAW = 0.0F;
+            _HEAD_MIN_YAW = -1F;
+            _HEAD_MAX_YAW = -1F;
+            GUN_MIN_PITCH = -20F;
+            GUN_STD_PITCH = -18F;
+            GUN_MAX_PITCH = -15F;
+            HEAD_MAX_YAW_SPEED = 720F;
+            GUN_MAX_PITCH_SPEED = 60F;
+            DELAY_AFTER_SHOOT = 1.0F;
+            CHAINFIRE_TIME = 0.0F;
+            headChunkName = null;
+            gunChunkName = null;
+            headChunkIdx = -1;
+            gunChunkIdx = -1;
+            gunShellStartHookName = null;
+        }
+    }
+
+
+    public com.maddox.il2.objects.ships.ShipProperties getShipProp()
+    {
+        return prop;
+    }
+
+    public static final double Rnd(double d, double d1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
+    }
+
+    public static final float Rnd(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    public static final int Rnd(int i, int j)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextInt(i, j);
+    }
+
+    private boolean RndB(float f)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
+    }
+
+    public static final float KmHourToMSec(float f)
+    {
+        return f / 3.6F;
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    protected final boolean Head360(com.maddox.il2.objects.ships.FiringDevice firingdevice)
+    {
+        return parts[firingdevice.part_idx].pro.HEAD_YAW_RANGE.fullcircle();
+    }
+
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
+    {
+        if(actor instanceof com.maddox.il2.objects.bridges.BridgeSegment)
+        {
+            if(dying != 0)
+                aflag[0] = false;
+            return;
+        }
+        if(path == null && (actor instanceof com.maddox.il2.engine.ActorMesh) && ((com.maddox.il2.engine.ActorMesh)actor).isStaticPos())
+        {
+            aflag[0] = false;
+            return;
+        } else
+        {
+            return;
+        }
+    }
+
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror())
+            return;
+        if(actor instanceof com.maddox.il2.objects.ships.WeakBody)
+            return;
+        if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric) || (actor instanceof com.maddox.il2.objects.bridges.BridgeSegment))
+            Die(null, -1L, true, true);
+    }
+
+    private int findNotDeadPartByShotChunk(java.lang.String s)
+    {
+        if(s == null || s == "")
+            return -2;
+        int i = hierMesh().chunkFindCheck(s);
+        if(i < 0)
+            return -2;
+        for(int j = 0; j < parts.length; j++)
+            if(parts[j].state != 2)
+            {
+                if(i == parts[j].pro.baseChunkIdx)
+                    return j;
+                for(int k = 0; k < parts[j].pro.additCollisChunkIdx.length; k++)
+                    if(i == parts[j].pro.additCollisChunkIdx[k])
+                        return j;
+
+            }
+
+        return -1;
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 2;
+        if(dying != 0)
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(isNetMirror() && shot.isMirage())
+            return;
+        if(wakeupTmr < 0L)
+            wakeupTmr = com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
+        int i = findNotDeadPartByShotChunk(shot.chunkName);
+        if(i < 0)
+            return;
+        float f;
+        float f1;
+        if(shot.powerType == 1)
+        {
+            f = parts[i].pro.stre.EXPLHIT_MAX_TNT;
+            f1 = parts[i].pro.stre.EXPLHIT_MAX_TNT;
+        } else
+        {
+            f = parts[i].pro.stre.SHOT_MIN_ENERGY;
+            f1 = parts[i].pro.stre.SHOT_MAX_ENERGY;
+        }
+        float f2 = shot.power * com.maddox.il2.objects.ships.BigshipGeneric.Rnd(1.0F, 1.1F);
+        if(f2 < f)
+            return;
+        tmpvd.set(shot.v);
+        pos.getAbs().transformInv(tmpvd);
+        parts[i].damageIsFromRight = tmpvd.y > 0.0D;
+        float f3 = f2 / f1;
+        parts[i].damage+= = f3;
+        if(isNetMirror() && shot.initiator != null)
+            parts[i].mirror_initiator = shot.initiator;
+        InjurePart(i, shot.initiator, true);
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror() && explosion.isMirage())
+            return;
+        if(wakeupTmr < 0L)
+            wakeupTmr = com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(DELAY_WAKEUP, DELAY_WAKEUP * 1.2F));
+        float f = explosion.power;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+            f *= 0.45F;
+        int i = -1;
+        if(explosion.chunkName != null)
+        {
+            int j = findNotDeadPartByShotChunk(explosion.chunkName);
+            if(j >= 0)
+            {
+                float f1 = f;
+                f1 *= com.maddox.il2.objects.ships.BigshipGeneric.Rnd(1.0F, 1.1F);
+                if(f1 >= parts[j].pro.stre.EXPLHIT_MIN_TNT)
+                {
+                    i = j;
+                    p1.set(explosion.p);
+                    pos.getAbs().transformInv(p1);
+                    parts[j].damageIsFromRight = p1.y < 0.0D;
+                    float f2 = f1 / parts[j].pro.stre.EXPLHIT_MAX_TNT;
+                    parts[j].damage+= = f2;
+                    if(isNetMirror() && explosion.initiator != null)
+                        parts[j].mirror_initiator = explosion.initiator;
+                    InjurePart(j, explosion.initiator, true);
+                }
+            }
+        }
+        com.maddox.il2.engine.Loc loc = pos.getAbs();
+        p1.set(explosion.p);
+        pos.getAbs().transformInv(p1);
+        boolean flag = p1.y < 0.0D;
+        for(int k = 0; k < parts.length; k++)
+            if(k != i && parts[k].state != 2)
+            {
+                p1.set(parts[k].pro.partOffs);
+                loc.transform(p1);
+                float f3 = parts[k].pro.partR;
+                float f4 = explosion.receivedTNT_1meter(p1, f3);
+                f4 *= com.maddox.il2.objects.ships.BigshipGeneric.Rnd(1.0F, 1.1F);
+                if(f4 >= parts[k].pro.stre.EXPLNEAR_MIN_TNT)
+                {
+                    parts[k].damageIsFromRight = flag;
+                    float f5 = f4 / parts[k].pro.stre.EXPLNEAR_MAX_TNT;
+                    parts[k].damage+= = f5;
+                    if(isNetMirror() && explosion.initiator != null)
+                        parts[k].mirror_initiator = explosion.initiator;
+                    InjurePart(k, explosion.initiator, true);
+                }
+            }
+
+    }
+
+    private void recomputeShotpoints()
+    {
+        if(shotpoints == null || shotpoints.length < 1 + parts.length)
+            shotpoints = new int[1 + parts.length];
+        numshotpoints = 0;
+        if(dying != 0)
+            return;
+        numshotpoints = 1;
+        shotpoints[0] = 0;
+        for(int i = 0; i < parts.length; i++)
+        {
+            if(parts[i].state == 2)
+                continue;
+            int j;
+            if(parts[i].pro.isItLifeKeeper())
+            {
+                j = parts[i].pro.baseChunkIdx;
+            } else
+            {
+                if(!parts[i].pro.haveGun())
+                    continue;
+                j = parts[i].pro.gunChunkIdx;
+            }
+            shotpoints[numshotpoints] = i + 1;
+            hierMesh().setCurChunk(j);
+            hierMesh().getChunkLocObj(tmpL);
+            parts[i].shotpointOffs.set(tmpL.getPoint());
+            numshotpoints++;
+        }
+
+    }
+
+    private boolean visualsInjurePart(int i, boolean flag)
+    {
+        if(!flag)
+        {
+            if(parts[i].state == 2)
+            {
+                parts[i].damage = 1.0F;
+                return false;
+            }
+            if(parts[i].damage < parts[i].pro.BLACK_DAMAGE)
+                return false;
+            netsendDrown_nparts = 0;
+            netsendDrown_depth = 0.0F;
+            netsendDrown_pitch = 0.0F;
+            netsendDrown_roll = 0.0F;
+            netsendDrown_timeS = 0.0F;
+            if(parts[i].damage < 1.0F)
+            {
+                if(parts[i].state == 1)
+                    return false;
+                parts[i].state = 1;
+            } else
+            {
+                parts[i].damage = 1.0F;
+                parts[i].state = 2;
+            }
+            if(parts[i].pro.isItLifeKeeper())
+            {
+                netsendDrown_nparts++;
+                netsendDrown_depth += com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.0F) * parts[i].pro.dmgDepth;
+                netsendDrown_pitch += com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.0F) * parts[i].pro.dmgPitch;
+                netsendDrown_roll = (float)((double)netsendDrown_roll + (double)(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.0F) * parts[i].pro.dmgRoll) * (parts[i].damageIsFromRight ? -1D : 1.0D));
+                netsendDrown_timeS += com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.7F, 1.3F) * parts[i].pro.dmgTime;
+            }
+        }
+        if(parts[i].pro.haveGun())
+        {
+            arms[parts[i].pro.gun_idx].aime.forgetAiming();
+            arms[parts[i].pro.gun_idx].enemy = null;
+        }
+        int ai[] = hierMesh().getSubTreesSpec(parts[i].pro.baseChunkName);
+        for(int j = 0; j < ai.length; j++)
+        {
+            hierMesh().setCurChunk(ai[j]);
+            if(hierMesh().isChunkVisible())
+            {
+                for(int k = 0; k < parts.length; k++)
+                    if(k != i && parts[k].state != 2 && ai[j] == parts[k].pro.baseChunkIdx)
+                    {
+                        if(!flag && parts[k].state == 0 && parts[k].pro.isItLifeKeeper())
+                        {
+                            netsendDrown_nparts++;
+                            netsendDrown_depth += com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.0F) * parts[k].pro.dmgDepth;
+                            netsendDrown_pitch += com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.0F) * parts[k].pro.dmgPitch;
+                            netsendDrown_roll = (float)((double)netsendDrown_roll + (double)(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.0F) * parts[k].pro.dmgRoll) * (parts[k].damageIsFromRight ? -1D : 1.0D));
+                            netsendDrown_timeS += com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.7F, 1.3F) * parts[k].pro.dmgTime;
+                        }
+                        parts[k].damage = flag ? 0.0F : 1.0F;
+                        parts[k].mirror_initiator = null;
+                        parts[k].state = 2;
+                        if(parts[k].pro.haveGun())
+                        {
+                            arms[parts[k].pro.gun_idx].aime.forgetAiming();
+                            arms[parts[k].pro.gun_idx].enemy = null;
+                        }
+                    }
+
+                if(hierMesh().chunkName().endsWith("_x") || hierMesh().chunkName().endsWith("_X"))
+                {
+                    hierMesh().chunkVisible(false);
+                } else
+                {
+                    java.lang.String s = hierMesh().chunkName() + "_dmg";
+                    int k1 = hierMesh().chunkFindCheck(s);
+                    if(k1 >= 0)
+                    {
+                        hierMesh().chunkVisible(false);
+                        hierMesh().chunkVisible(s, true);
+                    }
+                }
+            }
+        }
+
+        if(pipes != null)
+        {
+            boolean flag1 = false;
+            for(int i1 = 0; i1 < pipes.length; i1++)
+                if(pipes[i1] != null)
+                    if(pipes[i1].pipe == null)
+                    {
+                        pipes[i1] = null;
+                    } else
+                    {
+                        int l1 = pipes[i1].part_idx;
+                        if(parts[l1].state == 0)
+                        {
+                            flag1 = true;
+                        } else
+                        {
+                            pipes[i1].pipe._finish();
+                            pipes[i1].pipe = null;
+                            pipes[i1] = null;
+                        }
+                    }
+
+            if(!flag1)
+            {
+                for(int i2 = 0; i2 < pipes.length; i2++)
+                    if(pipes[i2] != null)
+                        pipes[i2] = null;
+
+                pipes = null;
+            }
+        }
+        if(dsmoks != null)
+        {
+            for(int l = 0; l < dsmoks.length; l++)
+                if(dsmoks[l] != null && dsmoks[l].pipe == null)
+                {
+                    int j1 = dsmoks[l].part_idx;
+                    if(parts[j1].state != 0)
+                    {
+                        java.lang.String s1 = parts[j1].pro.baseChunkName;
+                        com.maddox.il2.engine.Loc loc = new Loc();
+                        hierMesh().setCurChunk(s1);
+                        hierMesh().getChunkLocObj(loc);
+                        float f = parts[j1].pro.stre.EXPLNEAR_MIN_TNT;
+                        java.lang.String s2 = "Effects/Smokes/Smoke";
+                        if(parts[j1].pro.haveGun())
+                        {
+                            s2 = s2 + "Gun";
+                            if(f < 4F)
+                                s2 = s2 + "Tiny";
+                            else
+                            if(f < 24F)
+                                s2 = s2 + "Small";
+                            else
+                            if(f < 32F)
+                                s2 = s2 + "Medium";
+                            else
+                            if(f < 45F)
+                                s2 = s2 + "Large";
+                            else
+                                s2 = s2 + "Huge";
+                            dsmoks[l].pipe = com.maddox.il2.engine.Eff3DActor.New(this, null, loc, 1.0F, s2 + ".eff", 600F);
+                            com.maddox.il2.engine.Eff3DActor.New(this, null, loc, 1.0F, s2 + "Fire.eff", 120F);
+                        } else
+                        {
+                            s2 = s2 + "Ship";
+                            if(f < 24F)
+                                s2 = s2 + "Tiny";
+                            else
+                            if(f < 49F)
+                                s2 = s2 + "Small";
+                            else
+                            if(f < 70F)
+                                s2 = s2 + "Medium";
+                            else
+                            if(f == 70F)
+                                s2 = s2 + "Large";
+                            else
+                            if(f < 130F)
+                                s2 = s2 + "Huge";
+                            else
+                            if(f < 3260F)
+                                s2 = s2 + "Enormous";
+                            else
+                                s2 = s2 + "Invulnerable";
+                            dsmoks[l].pipe = com.maddox.il2.engine.Eff3DActor.New(this, null, loc, 1.1F, s2 + ".eff", -1F);
+                        }
+                    }
+                }
+
+        }
+        recomputeShotpoints();
         return true;
-      }
+    }
 
-      if (BigshipGeneric.this.netsendPartsState_needtosend) {
-        BigshipGeneric.this.send_bufferized_PartsState();
-      }
+    void master_sendDrown(float f, float f1, float f2, float f3)
+    {
+        if(!net.isMirrored())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(100);
+            float f4 = f / 1000F;
+            if(f4 <= 0.0F)
+                f4 = 0.0F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            int i = (int)(f4 * 32767F);
+            if(i > 32767)
+                i = 32767;
+            if(i < 0)
+                i = 0;
+            netmsgguaranted.writeShort(i);
+            f4 = f1 / 90F;
+            if(f4 <= -1F)
+                f4 = -1F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            i = (int)(f4 * 32767F);
+            if(i > 32767)
+                i = 32767;
+            if(i < -32767)
+                i = -32767;
+            netmsgguaranted.writeShort(i);
+            f4 = f2 / 90F;
+            if(f4 <= -1F)
+                f4 = -1F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            i = (int)(f4 * 32767F);
+            if(i > 32767)
+                i = 32767;
+            if(i < -32767)
+                i = -32767;
+            netmsgguaranted.writeShort(i);
+            f4 = f3 / 1200F;
+            if(f4 <= 0.0F)
+                f4 = 0.0F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            i = (int)(f4 * 32767F);
+            if(i > 32767)
+                i = 32767;
+            if(i < 0)
+                i = 0;
+            netmsgguaranted.writeShort(i);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
 
-      long l = NetServerParams.getServerTime();
-
-      if (BigshipGeneric.this.dying == 1)
-      {
-        if (l >= BigshipGeneric.this.tmInterpoEnd) {
-          BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.this.bodyDepth1);
-          BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.this.bodyPitch1);
-          BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.this.bodyRoll1);
-
-          BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.this.sink2Depth);
-          BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.this.sink2Pitch);
-          BigshipGeneric.access$4702(BigshipGeneric.this, BigshipGeneric.this.sink2Roll);
-
-          BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.this.tmInterpoEnd);
-          BigshipGeneric.access$3802(BigshipGeneric.this, BigshipGeneric.this.sink2timeWhenStop);
-
-          BigshipGeneric.this.dying = 2;
+    private void InjurePart(int i, com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(isNetMirror())
+            return;
+        if(!visualsInjurePart(i, false))
+            return;
+        if(dying != 0)
+            return;
+        boolean flag1 = false;
+        for(int j = 0; j < parts.length; j++)
+        {
+            if(!parts[j].pro.isItLifeKeeper() || parts[j].state != 2)
+                continue;
+            flag1 = true;
+            break;
         }
 
-      }
-      else if (l >= BigshipGeneric.this.tmInterpoEnd) {
-        BigshipGeneric.access$4202(BigshipGeneric.this, BigshipGeneric.access$4502(BigshipGeneric.this, BigshipGeneric.this.sink2Depth));
-        BigshipGeneric.access$4302(BigshipGeneric.this, BigshipGeneric.access$4602(BigshipGeneric.this, BigshipGeneric.this.sink2Pitch));
-        BigshipGeneric.access$4402(BigshipGeneric.this, BigshipGeneric.access$4702(BigshipGeneric.this, BigshipGeneric.this.sink2Roll));
-
-        BigshipGeneric.access$3702(BigshipGeneric.this, BigshipGeneric.access$3802(BigshipGeneric.this, 0L));
-
-        BigshipGeneric.this.dying = 3;
-      }
-
-      if (((Time.tickCounter() & 0x63) == 0) && (BigshipGeneric.this.dsmoks != null)) {
-        for (i = 0; i < BigshipGeneric.this.dsmoks.length; i++) {
-          if (BigshipGeneric.this.dsmoks[i] == null) {
-            continue;
-          }
-          if ((BigshipGeneric.Pipe.access$800(BigshipGeneric.this.dsmoks[i]) != null) && (BigshipGeneric.Pipe.access$800(BigshipGeneric.this.dsmoks[i]).pos.getAbsPoint().z < -4.891D)) {
-            Eff3DActor.finish(BigshipGeneric.Pipe.access$800(BigshipGeneric.this.dsmoks[i]));
-            BigshipGeneric.Pipe.access$802(BigshipGeneric.this.dsmoks[i], null);
-          }
+        netsendPartsState_needtosend = true;
+        if(netsendDrown_nparts > 0)
+        {
+            netsendDrown_depth += bodyDepth1;
+            netsendDrown_pitch += bodyPitch1;
+            netsendDrown_roll += bodyRoll1;
+            netsendDrown_timeS /= netsendDrown_nparts;
+            if(netsendDrown_timeS >= 1200F)
+                netsendDrown_timeS = 1200F;
+            tmInterpoStart = com.maddox.il2.net.NetServerParams.getServerTime();
+            tmInterpoEnd = tmInterpoStart + (long)(netsendDrown_timeS * 1000F);
+            bodyDepth0 = bodyDepth;
+            bodyPitch0 = bodyPitch;
+            bodyRoll0 = bodyRoll;
+            bodyDepth1 = netsendDrown_depth;
+            bodyPitch1 = netsendDrown_pitch;
+            bodyRoll1 = netsendDrown_roll;
+            master_sendDrown(netsendDrown_depth, netsendDrown_pitch, netsendDrown_roll, netsendDrown_timeS);
         }
-      }
-
-      BigshipGeneric.this.computeInterpolatedDPR(l);
-      if (BigshipGeneric.this.path != null)
-        BigshipGeneric.this.setMovablePosition(BigshipGeneric.this.timeOfDeath);
-      else {
-        BigshipGeneric.this.setPosition();
-      }
-
-      BigshipGeneric.this.zutiRefreshBornPlace();
-      return true;
+        if(!flag1)
+        {
+            return;
+        } else
+        {
+            Die(actor, -1L, flag, true);
+            return;
+        }
     }
-  }
 
-  static class HookNamedZ0 extends HookNamed
-  {
-    public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2)
+    private float computeSeaDepth(com.maddox.JGP.Point3d point3d)
     {
-      super.computePos(paramActor, paramLoc1, paramLoc2);
-      paramLoc2.getPoint().z = 0.25D;
+        for(float f = 5F; f <= 355F; f += 10F)
+        {
+            for(float f1 = 0.0F; f1 < 360F; f1 += 30F)
+            {
+                float f2 = f * com.maddox.JGP.Geom.cosDeg(f1);
+                float f3 = f * com.maddox.JGP.Geom.sinDeg(f1);
+                f2 += (float)point3d.x;
+                f3 += (float)point3d.y;
+                if(!com.maddox.il2.ai.World.land().isWater(f2, f3))
+                    return 150F * (f / 355F);
+            }
+
+        }
+
+        return 1000F;
     }
-    public HookNamedZ0(ActorMesh paramActorMesh, String paramString) { super(paramString); } 
-    public HookNamedZ0(Mesh paramMesh, String paramString) { super(paramString);
+
+    private void computeSinkingParams(long l)
+    {
+        if(path != null)
+            setMovablePosition(l);
+        else
+            setPosition();
+        pos.reset();
+        float f = computeSeaDepth(pos.getAbsPoint()) * com.maddox.il2.objects.ships.BigshipGeneric.Rnd(1.0F, 1.25F);
+        if(f >= 400F)
+            f = 400F;
+        float f1 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.2F, 0.25F);
+        float f2;
+        float f3;
+        float f4;
+        float f5;
+        if(f >= 200F)
+        {
+            f2 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(90F, 110F);
+            f3 = f2 * f1;
+            f4 = 50F - com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.0F, 20F);
+            f5 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(15F, 32F);
+            f1 *= 1.6F;
+        } else
+        {
+            f2 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(30F, 40F);
+            f3 = f2 * f1;
+            f4 = 4.5F - com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.0F, 2.5F);
+            f5 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(6F, 13F);
+        }
+        float f6 = (f - f3) / f1;
+        if(f6 < 1.0F)
+            f6 = 1.0F;
+        float f7 = f6 * f1;
+        computeInterpolatedDPR(l);
+        bodyDepth0 = bodyDepth;
+        bodyPitch0 = bodyPitch;
+        bodyRoll0 = bodyRoll;
+        bodyDepth1 += f3;
+        bodyPitch1 += ((double)bodyPitch1 <= 0.0D ? -1F : 1.0F) * f4;
+        bodyRoll1 += ((double)bodyRoll1 <= 0.0D ? -1F : 1.0F) * f5;
+        if(bodyPitch1 > 80F)
+            bodyPitch1 = 80F;
+        if(bodyPitch1 < -80F)
+            bodyPitch1 = -80F;
+        if(bodyRoll1 > 80F)
+            bodyRoll1 = 80F;
+        if(bodyRoll1 < -80F)
+            bodyRoll1 = -80F;
+        tmInterpoStart = l;
+        tmInterpoEnd = tmInterpoStart + (long)(f2 * 1000F);
+        sink2Depth = bodyDepth1 + f7;
+        sink2Pitch = bodyPitch1;
+        sink2Roll = bodyRoll1;
+        sink2timeWhenStop = tmInterpoEnd + (long)(f6 * 1000F);
     }
-  }
 
-  public static class Pipe
-  {
-    private Eff3DActor pipe = null;
-    private int part_idx = -1;
-  }
+    private void showExplode()
+    {
+        com.maddox.il2.objects.effects.Explosions.Antiaircraft_Explode(pos.getAbsPoint());
+    }
 
-  private static class Segment
-  {
-    public Point3d posIn;
-    public Point3d posOut;
-    public float length;
-    public long timeIn;
-    public long timeOut;
-    public float speedIn;
-    public float speedOut;
-    public boolean slidersOn;
+    private void Die(com.maddox.il2.engine.Actor actor, long l, boolean flag, boolean flag1)
+    {
+        if(dying != 0)
+            return;
+        if(l < 0L)
+        {
+            if(isNetMirror())
+            {
+                java.lang.System.out.println("** bigship InternalError: mirror death");
+                return;
+            }
+            l = com.maddox.il2.net.NetServerParams.getServerTime();
+        }
+        dying = 1;
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        recomputeShotpoints();
+        forgetAllAiming();
+        SetEffectsIntens(-1F);
+        if(flag1)
+            computeSinkingParams(l);
+        computeInterpolatedDPR(l);
+        if(path != null)
+            setMovablePosition(l);
+        else
+            setPosition();
+        pos.reset();
+        timeOfDeath = l;
+        if(flag)
+            showExplode();
+        if(flag && isNetMaster())
+            send_DeathCommand(actor, null);
+    }
 
-    private Segment()
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        eraseGuns();
+        if(parts != null)
+        {
+            for(int i = 0; i < parts.length; i++)
+            {
+                parts[i].mirror_initiator = null;
+                parts[i] = null;
+            }
+
+            parts = null;
+        }
+        super.destroy();
+    }
+
+    private boolean isAnyEnemyNear()
+    {
+        com.maddox.il2.ai.ground.NearestEnemies.set(WeaponsMask());
+        com.maddox.il2.engine.Actor actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), 2000D, getArmy());
+        return actor != null;
+    }
+
+    private final com.maddox.il2.objects.ships.FiringDevice GetFiringDevice(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < prop.nGuns; i++)
+            if(arms[i] != null && arms[i].aime == aim)
+                return arms[i];
+
+        java.lang.System.out.println("Internal error 1: Can't find ship gun.");
+        return null;
+    }
+
+    private final com.maddox.il2.objects.ships.ShipPartProperties GetGunProperties(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < prop.nGuns; i++)
+            if(arms[i].aime == aim)
+                return parts[arms[i].part_idx].pro;
+
+        java.lang.System.out.println("Internal error 2: Can't find ship gun.");
+        return null;
+    }
+
+    private void setGunAngles(com.maddox.il2.objects.ships.FiringDevice firingdevice, float f, float f1)
+    {
+        firingdevice.headYaw = f;
+        firingdevice.gunPitch = f1;
+        com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = parts[firingdevice.part_idx].pro;
+        tmpYPR[1] = 0.0F;
+        tmpYPR[2] = 0.0F;
+        hierMesh().setCurChunk(shippartproperties.headChunkIdx);
+        tmpYPR[0] = firingdevice.headYaw;
+        hierMesh().chunkSetAngles(tmpYPR);
+        hierMesh().setCurChunk(shippartproperties.gunChunkIdx);
+        tmpYPR[0] = -(firingdevice.gunPitch - shippartproperties.GUN_STD_PITCH);
+        hierMesh().chunkSetAngles(tmpYPR);
+    }
+
+    private void eraseGuns()
+    {
+        if(arms != null)
+        {
+            for(int i = 0; i < prop.nGuns; i++)
+                if(arms[i] != null)
+                {
+                    if(arms[i].aime != null)
+                    {
+                        arms[i].aime.forgetAll();
+                        arms[i].aime = null;
+                    }
+                    if(arms[i].gun != null)
+                    {
+                        com.maddox.rts.ObjState.destroy(arms[i].gun);
+                        arms[i].gun = null;
+                    }
+                    arms[i].enemy = null;
+                    arms[i] = null;
+                }
+
+            arms = null;
+        }
+    }
+
+    private void forgetAllAiming()
+    {
+        if(arms != null)
+        {
+            for(int i = 0; i < prop.nGuns; i++)
+                if(arms[i] != null && arms[i].aime != null)
+                {
+                    arms[i].aime.forgetAiming();
+                    arms[i].enemy = null;
+                }
+
+        }
+    }
+
+    private void CreateGuns()
+    {
+        arms = new com.maddox.il2.objects.ships.FiringDevice[prop.nGuns];
+        for(int i = 0; i < parts.length; i++)
+            if(parts[i].pro.haveGun())
+            {
+                com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = parts[i].pro;
+                int j = shippartproperties.gun_idx;
+                arms[j] = new FiringDevice();
+                arms[j].gun_idx = j;
+                arms[j].part_idx = i;
+                arms[j].gun = null;
+                try
+                {
+                    arms[j].gun = (com.maddox.il2.objects.weapons.Gun)shippartproperties.gunClass.newInstance();
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                    java.lang.System.out.println("BigShip: Can't create gun '" + shippartproperties.gunClass.getName() + "'");
+                }
+                arms[j].gun.set(this, shippartproperties.gunShellStartHookName);
+                arms[j].gun.loadBullets(-1);
+                arms[j].aime = new Aim(this, isNetMirror(), SLOWFIRE_K * shippartproperties.DELAY_AFTER_SHOOT);
+                arms[j].enemy = null;
+            }
+
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    private void initMeshBasedProperties()
+    {
+        for(int i = 0; i < prop.propparts.length; i++)
+        {
+            com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = prop.propparts[i];
+            if(shippartproperties.baseChunkIdx < 0)
+            {
+                shippartproperties.baseChunkIdx = hierMesh().chunkFind(shippartproperties.baseChunkName);
+                hierMesh().setCurChunk(shippartproperties.baseChunkIdx);
+                hierMesh().getChunkLocObj(tmpL);
+                tmpL.get(p1);
+                shippartproperties.partOffs = new Point3f();
+                shippartproperties.partOffs.set(p1);
+                shippartproperties.partR = hierMesh().getChunkVisibilityR();
+                int j = shippartproperties.additCollisChunkName.length;
+                for(int k = 0; k < shippartproperties.additCollisChunkName.length; k++)
+                    if(hierMesh().chunkFindCheck(shippartproperties.additCollisChunkName[k] + "_dmg") >= 0)
+                        j++;
+
+                if(hierMesh().chunkFindCheck(shippartproperties.baseChunkName + "_dmg") >= 0)
+                    j++;
+                shippartproperties.additCollisChunkIdx = new int[j];
+                j = 0;
+                for(int l = 0; l < shippartproperties.additCollisChunkName.length; l++)
+                {
+                    shippartproperties.additCollisChunkIdx[j++] = hierMesh().chunkFind(shippartproperties.additCollisChunkName[l]);
+                    int i1 = hierMesh().chunkFindCheck(shippartproperties.additCollisChunkName[l] + "_dmg");
+                    if(i1 >= 0)
+                        shippartproperties.additCollisChunkIdx[j++] = i1;
+                }
+
+                int j1 = hierMesh().chunkFindCheck(shippartproperties.baseChunkName + "_dmg");
+                if(j1 >= 0)
+                    shippartproperties.additCollisChunkIdx[j++] = j1;
+                if(j != shippartproperties.additCollisChunkIdx.length)
+                    java.lang.System.out.println("*** bigship: collis internal error");
+                if(shippartproperties.haveGun())
+                {
+                    shippartproperties.headChunkIdx = hierMesh().chunkFind(shippartproperties.headChunkName);
+                    shippartproperties.gunChunkIdx = hierMesh().chunkFind(shippartproperties.gunChunkName);
+                    hierMesh().setCurChunk(shippartproperties.headChunkIdx);
+                    hierMesh().getChunkLocObj(tmpL);
+                    shippartproperties.fireOffset = new Point3d();
+                    tmpL.get(shippartproperties.fireOffset);
+                    shippartproperties.fireOrient = new Orient();
+                    tmpL.get(shippartproperties.fireOrient);
+                    com.maddox.JGP.Vector3d vector3d = new Vector3d();
+                    com.maddox.JGP.Vector3d vector3d1 = new Vector3d();
+                    vector3d.set(1.0D, 0.0D, 0.0D);
+                    vector3d1.set(1.0D, 0.0D, 0.0D);
+                    tmpL.transform(vector3d);
+                    hierMesh().setCurChunk(shippartproperties.gunChunkIdx);
+                    hierMesh().getChunkLocObj(tmpL);
+                    tmpL.transform(vector3d1);
+                    shippartproperties.GUN_STD_PITCH = com.maddox.JGP.Geom.RAD2DEG((float)vector3d.angle(vector3d1));
+                }
+            }
+        }
+
+        initMeshMats();
+    }
+
+    private void initMeshMats()
+    {
+        if(com.maddox.il2.engine.Config.cur.b3dgunners)
+        {
+            return;
+        } else
+        {
+            hierMesh().materialReplaceToNull("Sailor");
+            hierMesh().materialReplaceToNull("Sailor1o");
+            hierMesh().materialReplaceToNull("Sailor2p");
+            return;
+        }
+    }
+
+    private void makeLive()
+    {
+        dying = 0;
+        for(int i = 0; i < parts.length; i++)
+        {
+            parts[i].damage = 0.0F;
+            parts[i].state = 0;
+            parts[i].pro = prop.propparts[i];
+        }
+
+        for(int j = 0; j < hierMesh().chunks(); j++)
+        {
+            hierMesh().setCurChunk(j);
+            boolean flag = !hierMesh().chunkName().endsWith("_dmg");
+            if(hierMesh().chunkName().startsWith("ShdwRcv"))
+                flag = false;
+            hierMesh().chunkVisible(flag);
+        }
+
+        recomputeShotpoints();
+    }
+
+    private void setDefaultLivePose()
+    {
+        int i = hierMesh().hookFind("Ground_Level");
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            hierMesh().hookMatrix(i, matrix4d);
+        }
+        for(int j = 0; j < arms.length; j++)
+        {
+            int k = arms[j].part_idx;
+            setGunAngles(arms[j], parts[k].pro.HEAD_STD_YAW, parts[k].pro.GUN_STD_PITCH);
+        }
+
+        bodyDepth = 0.0F;
+        align();
+    }
+
+    protected BigshipGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
+
+    private BigshipGeneric(com.maddox.il2.objects.ships.ShipProperties shipproperties, com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+    {
+        super(shipproperties.meshName);
+        prop = null;
+        netsendPartsState_lasttimeMS = 0L;
+        netsendPartsState_needtosend = false;
+        netsendFire_lasttimeMS = 0L;
+        netsendFire_armindex = 0;
+        arms = null;
+        parts = null;
+        shotpoints = null;
+        netsendDmg_lasttimeMS = 0L;
+        netsendDmg_partindex = 0;
+        cachedSeg = 0;
+        timeOfDeath = 0L;
+        dying = 0;
+        respawnDelay = 0L;
+        wakeupTmr = 0L;
+        DELAY_WAKEUP = 0.0F;
+        SKILL_IDX = 2;
+        SLOWFIRE_K = 1.0F;
+        pipes = null;
+        dsmoks = null;
+        noseW = null;
+        nose = null;
+        tail = null;
+        o = new Orient();
+        rollAmp = 0.7F * (float)com.maddox.il2.game.Mission.curCloudsType();
+        rollPeriod = 12345;
+        rollWAmp = ((double)rollAmp * 19739.208802178713D) / (double)(180 * rollPeriod);
+        pitchAmp = 0.1F * (float)com.maddox.il2.game.Mission.curCloudsType();
+        pitchPeriod = 23456;
+        pitchWAmp = ((double)pitchAmp * 19739.208802178713D) / (double)(180 * pitchPeriod);
+        W = new Vector3d(0.0D, 0.0D, 0.0D);
+        N = new Vector3d(0.0D, 0.0D, 1.0D);
+        tmpV = new Vector3d();
+        initOr = new Orient();
+        initLoc = new Loc();
+        airport = null;
+        towPortNum = -1;
+        prop = shipproperties;
+        initMeshBasedProperties();
+        actorspawnarg.setStationary(this);
+        path = null;
+        collide(true);
+        drawing(true);
+        tmInterpoStart = tmInterpoEnd = 0L;
+        bodyDepth = bodyPitch = bodyRoll = 0.0F;
+        bodyDepth0 = bodyPitch0 = bodyRoll0 = 0.0F;
+        bodyDepth1 = bodyPitch1 = bodyRoll1 = 0.0F;
+        shipYaw = actorspawnarg.orient.getYaw();
+        setPosition();
+        pos.reset();
+        parts = new com.maddox.il2.objects.ships.Part[prop.propparts.length];
+        for(int i = 0; i < parts.length; i++)
+            parts[i] = new Part();
+
+        makeLive();
+        createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+        SKILL_IDX = com.maddox.il2.ai.Chief.new_SKILL_IDX;
+        SLOWFIRE_K = com.maddox.il2.ai.Chief.new_SLOWFIRE_K;
+        DELAY_WAKEUP = com.maddox.il2.ai.Chief.new_DELAY_WAKEUP;
+        wakeupTmr = 0L;
+        CreateGuns();
+        int j = 0;
+        for(int k = 0; k < parts.length; k++)
+            if(parts[k].pro.isItLifeKeeper() || parts[k].pro.haveGun())
+                j++;
+
+        if(j <= 0)
+        {
+            dsmoks = null;
+        } else
+        {
+            dsmoks = new com.maddox.il2.objects.ships.Pipe[j];
+            j = 0;
+            for(int l = 0; l < parts.length; l++)
+                if(parts[l].pro.isItLifeKeeper() || parts[l].pro.haveGun())
+                {
+                    dsmoks[j] = new Pipe();
+                    dsmoks[j].part_idx = l;
+                    dsmoks[j].pipe = null;
+                    j++;
+                }
+
+        }
+        setDefaultLivePose();
+        if(!isNetMirror() && prop.nGuns > 0 && DELAY_WAKEUP > 0.0F)
+            wakeupTmr = -com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(2.0F, 7F));
+        createAirport();
+        if(!interpEnd("move"))
+        {
+            interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+            com.maddox.il2.engine.InterpolateAdapter.forceListener(this);
+        }
+    }
+
+    public BigshipGeneric(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+    {
+        prop = null;
+        netsendPartsState_lasttimeMS = 0L;
+        netsendPartsState_needtosend = false;
+        netsendFire_lasttimeMS = 0L;
+        netsendFire_armindex = 0;
+        arms = null;
+        parts = null;
+        shotpoints = null;
+        netsendDmg_lasttimeMS = 0L;
+        netsendDmg_partindex = 0;
+        cachedSeg = 0;
+        timeOfDeath = 0L;
+        dying = 0;
+        respawnDelay = 0L;
+        wakeupTmr = 0L;
+        DELAY_WAKEUP = 0.0F;
+        SKILL_IDX = 2;
+        SLOWFIRE_K = 1.0F;
+        pipes = null;
+        dsmoks = null;
+        noseW = null;
+        nose = null;
+        tail = null;
+        o = new Orient();
+        rollAmp = 0.7F * (float)com.maddox.il2.game.Mission.curCloudsType();
+        rollPeriod = 12345;
+        rollWAmp = ((double)rollAmp * 19739.208802178713D) / (double)(180 * rollPeriod);
+        pitchAmp = 0.1F * (float)com.maddox.il2.game.Mission.curCloudsType();
+        pitchPeriod = 23456;
+        pitchWAmp = ((double)pitchAmp * 19739.208802178713D) / (double)(180 * pitchPeriod);
+        W = new Vector3d(0.0D, 0.0D, 0.0D);
+        N = new Vector3d(0.0D, 0.0D, 1.0D);
+        tmpV = new Vector3d();
+        initOr = new Orient();
+        initLoc = new Loc();
+        airport = null;
+        towPortNum = -1;
+        try
+        {
+            int j = sectfile.sectionIndex(s1);
+            java.lang.String s3 = sectfile.var(j, 0);
+            java.lang.Object obj = com.maddox.rts.Spawn.get(s3);
+            if(obj == null)
+                throw new ActorException("Ship: Unknown class of ship (" + s3 + ")");
+            prop = ((com.maddox.il2.objects.ships.SPAWN)obj).proper;
+            try
+            {
+                setMesh(prop.meshName);
+            }
+            catch(java.lang.RuntimeException runtimeexception)
+            {
+                super.destroy();
+                throw runtimeexception;
+            }
+            initMeshBasedProperties();
+            if(prop.soundName != null)
+                newSound(prop.soundName, true);
+            setName(s);
+            setArmy(i);
+            LoadPath(sectfile1, s2);
+            cachedSeg = 0;
+            tmInterpoStart = tmInterpoEnd = 0L;
+            bodyDepth = bodyPitch = bodyRoll = 0.0F;
+            bodyDepth0 = bodyPitch0 = bodyRoll0 = 0.0F;
+            bodyDepth1 = bodyPitch1 = bodyRoll1 = 0.0F;
+            setMovablePosition(com.maddox.il2.net.NetServerParams.getServerTime());
+            pos.reset();
+            collide(true);
+            drawing(true);
+            parts = new com.maddox.il2.objects.ships.Part[prop.propparts.length];
+            for(int k = 0; k < parts.length; k++)
+                parts[k] = new Part();
+
+            makeLive();
+            int l = 0;
+            for(int i1 = 0; i1 <= 10; i1++)
+            {
+                java.lang.String s4 = "Vapor";
+                if(i1 > 0)
+                    s4 = s4 + (i1 - 1);
+                if(mesh().hookFind(s4) >= 0)
+                    l++;
+            }
+
+            if(l <= 0)
+            {
+                pipes = null;
+            } else
+            {
+                pipes = new com.maddox.il2.objects.ships.Pipe[l];
+                l = 0;
+                for(int k1 = 0; k1 <= 10; k1++)
+                {
+                    java.lang.String s5 = "Vapor";
+                    if(k1 > 0)
+                        s5 = s5 + (k1 - 1);
+                    if(mesh().hookFind(s5) < 0)
+                        continue;
+                    pipes[l] = new Pipe();
+                    int j2 = hierMesh().hookParentChunk(s5);
+                    if(j2 < 0)
+                    {
+                        java.lang.System.out.println(" *** Bigship: unexpected error in vapor hook " + s5);
+                        pipes = null;
+                        break;
+                    }
+                    int k2;
+                    for(k2 = 0; k2 < parts.length; k2++)
+                        if(parts[k2].pro.baseChunkIdx == j2)
+                            break;
+
+                    if(k2 >= parts.length)
+                    {
+                        java.lang.System.out.println(" *** Bigship: vapor hook '" + s5 + "' MUST be linked to baseChunk");
+                        pipes = null;
+                        break;
+                    }
+                    pipes[l].part_idx = k2;
+                    com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(this, s5);
+                    pipes[l].pipe = com.maddox.il2.engine.Eff3DActor.New(this, hooknamed, null, 1.0F, "Effects/Smokes/SmokePipeShip.eff", -1F);
+                    l++;
+                }
+
+            }
+            wake[2] = wake[1] = wake[0] = null;
+            tail = null;
+            noseW = null;
+            nose = null;
+            boolean flag = prop.SLIDER_DIST / 2.5F < 90F;
+            if(mesh().hookFind("_Prop") >= 0)
+            {
+                com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0 = new HookNamedZ0(this, "_Prop");
+                tail = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0, null, 1.0F, flag ? "3DO/Effects/Tracers/ShipTrail/PropWakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/PropWake.eff", -1F);
+            }
+            if(mesh().hookFind("_Centre") >= 0)
+            {
+                com.maddox.il2.engine.Loc loc = new Loc();
+                com.maddox.il2.engine.Loc loc1 = new Loc();
+                com.maddox.il2.engine.HookNamed hooknamed1 = new HookNamed(this, "_Left");
+                hooknamed1.computePos(this, new Loc(), loc);
+                com.maddox.il2.engine.HookNamed hooknamed2 = new HookNamed(this, "_Right");
+                hooknamed2.computePos(this, new Loc(), loc1);
+                float f = (float)loc.getPoint().distance(loc1.getPoint());
+                com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0_1 = new HookNamedZ0(this, "_Centre");
+                if(mesh().hookFind("_Prop") >= 0)
+                {
+                    com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0_3 = new HookNamedZ0(this, "_Prop");
+                    com.maddox.il2.engine.Loc loc2 = new Loc();
+                    hooknamedz0_1.computePos(this, new Loc(), loc2);
+                    com.maddox.il2.engine.Loc loc3 = new Loc();
+                    hooknamedz0_3.computePos(this, new Loc(), loc3);
+                    float f1 = (float)loc2.getPoint().distance(loc3.getPoint());
+                    wake[0] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_3, new Loc((double)(-f1) * 0.33000000000000002D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, flag ? "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff" : "3DO/Effects/Tracers/ShipTrail/Wake.eff", -1F);
+                    wake[1] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_1, new Loc((double)f1 * 0.14999999999999999D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, flag ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1F);
+                    wake[2] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_1, new Loc((double)(-f1) * 0.14999999999999999D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, flag ? "3DO/Effects/Tracers/ShipTrail/WakeBoatS.eff" : "3DO/Effects/Tracers/ShipTrail/WakeS.eff", -1F);
+                } else
+                {
+                    wake[0] = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_1, new Loc((double)(-f) * 0.29999999999999999D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), f, (double)prop.SLIDER_DIST / 2.5D >= 50D ? "3DO/Effects/Tracers/ShipTrail/Wake.eff" : "3DO/Effects/Tracers/ShipTrail/WakeBoat.eff", -1F);
+                }
+            }
+            if(mesh().hookFind("_Nose") >= 0)
+            {
+                com.maddox.il2.objects.ships.HookNamedZ0 hooknamedz0_2 = new HookNamedZ0(this, "_Nose");
+                noseW = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_2, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), 1.0F, "3DO/Effects/Tracers/ShipTrail/SideWave.eff", -1F);
+                nose = com.maddox.il2.engine.Eff3DActor.New(this, hooknamedz0_2, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 30F, 0.0F), 1.0F, flag ? "3DO/Effects/Tracers/ShipTrail/FrontPuffBoat.eff" : "3DO/Effects/Tracers/ShipTrail/FrontPuff.eff", -1F);
+            }
+            SetEffectsIntens(0.0F);
+            int j1 = com.maddox.il2.game.Mission.cur().getUnitNetIdRemote(this);
+            com.maddox.rts.NetChannel netchannel = com.maddox.il2.game.Mission.cur().getNetMasterChannel();
+            if(netchannel == null)
+                net = new Master(this);
+            else
+            if(j1 != 0)
+                net = new Mirror(this, netchannel, j1);
+            SKILL_IDX = com.maddox.il2.ai.Chief.new_SKILL_IDX;
+            SLOWFIRE_K = com.maddox.il2.ai.Chief.new_SLOWFIRE_K;
+            DELAY_WAKEUP = com.maddox.il2.ai.Chief.new_DELAY_WAKEUP;
+            wakeupTmr = 0L;
+            CreateGuns();
+            j1 = 0;
+            for(int l1 = 0; l1 < parts.length; l1++)
+                if(parts[l1].pro.isItLifeKeeper() || parts[l1].pro.haveGun())
+                    j1++;
+
+            if(j1 <= 0)
+            {
+                dsmoks = null;
+            } else
+            {
+                dsmoks = new com.maddox.il2.objects.ships.Pipe[j1];
+                j1 = 0;
+                for(int i2 = 0; i2 < parts.length; i2++)
+                    if(parts[i2].pro.isItLifeKeeper() || parts[i2].pro.haveGun())
+                    {
+                        dsmoks[j1] = new Pipe();
+                        dsmoks[j1].part_idx = i2;
+                        dsmoks[j1].pipe = null;
+                        j1++;
+                    }
+
+            }
+            setDefaultLivePose();
+            if(!isNetMirror() && prop.nGuns > 0 && DELAY_WAKEUP > 0.0F)
+                wakeupTmr = -com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(2.0F, 7F));
+            createAirport();
+            if(!interpEnd("move"))
+            {
+                interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+                com.maddox.il2.engine.InterpolateAdapter.forceListener(this);
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("Ship creation failure:");
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            throw new ActorException();
+        }
+    }
+
+    private void SetEffectsIntens(float f)
+    {
+        if(dying != 0)
+            f = -1F;
+        if(pipes != null)
+        {
+            boolean flag = false;
+            for(int j = 0; j < pipes.length; j++)
+                if(pipes[j] != null)
+                    if(pipes[j].pipe == null)
+                        pipes[j] = null;
+                    else
+                    if(f >= 0.0F)
+                    {
+                        pipes[j].pipe._setIntesity(f);
+                        flag = true;
+                    } else
+                    {
+                        pipes[j].pipe._finish();
+                        pipes[j].pipe = null;
+                        pipes[j] = null;
+                    }
+
+            if(!flag)
+            {
+                for(int k = 0; k < pipes.length; k++)
+                    if(pipes[k] != null)
+                        pipes[k] = null;
+
+                pipes = null;
+            }
+        }
+        for(int i = 0; i < 3; i++)
+            if(wake[i] != null)
+                if(f >= 0.0F)
+                {
+                    wake[i]._setIntesity(f);
+                } else
+                {
+                    wake[i]._finish();
+                    wake[i] = null;
+                }
+
+        if(noseW != null)
+            if(f >= 0.0F)
+            {
+                noseW._setIntesity(f);
+            } else
+            {
+                noseW._finish();
+                noseW = null;
+            }
+        if(nose != null)
+            if(f >= 0.0F)
+            {
+                nose._setIntesity(f);
+            } else
+            {
+                nose._finish();
+                nose = null;
+            }
+        if(tail != null)
+            if(f >= 0.0F)
+            {
+                tail._setIntesity(f);
+            } else
+            {
+                tail._finish();
+                tail = null;
+            }
+    }
+
+    private void LoadPath(com.maddox.rts.SectFile sectfile, java.lang.String s)
+    {
+        int i = sectfile.sectionIndex(s);
+        if(i < 0)
+            throw new ActorException("Ship path: Section [" + s + "] not found");
+        int j = sectfile.vars(i);
+        if(j < 1)
+            throw new ActorException("Ship path must contain at least 2 nodes");
+        path = new ArrayList();
+        for(int k = 0; k < j; k++)
+        {
+            java.util.StringTokenizer stringtokenizer = new StringTokenizer(sectfile.line(i, k));
+            float f = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            float f1 = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            float f3 = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+            double d = 0.0D;
+            float f6 = 0.0F;
+            if(stringtokenizer.hasMoreTokens())
+            {
+                d = java.lang.Double.valueOf(stringtokenizer.nextToken()).doubleValue();
+                if(stringtokenizer.hasMoreTokens())
+                {
+                    java.lang.Double.valueOf(stringtokenizer.nextToken()).doubleValue();
+                    if(stringtokenizer.hasMoreTokens())
+                    {
+                        f6 = java.lang.Float.valueOf(stringtokenizer.nextToken()).floatValue();
+                        if(f6 <= 0.0F)
+                            f6 = prop.SPEED;
+                    }
+                }
+            }
+            if(f6 <= 0.0F && (k == 0 || k == j - 1))
+                f6 = prop.SPEED;
+            if(k >= j - 1)
+                d = -1D;
+            com.maddox.il2.objects.ships.Segment segment10 = new Segment();
+            segment10.posIn = new Point3d(f, f1, 0.0D);
+            if(java.lang.Math.abs(d) < 0.10000000000000001D)
+            {
+                segment10.timeIn = 0L;
+            } else
+            {
+                segment10.timeIn = (long)(d * 60D * 1000D + (d <= 0.0D ? -0.5D : 0.5D));
+                if(k == 0 && segment10.timeIn < 0L)
+                    segment10.timeIn = -segment10.timeIn;
+            }
+            segment10.speedIn = f6;
+            path.add(segment10);
+        }
+
+        for(int l = 0; l < path.size() - 1; l++)
+        {
+            com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(l);
+            com.maddox.il2.objects.ships.Segment segment1 = (com.maddox.il2.objects.ships.Segment)path.get(l + 1);
+            segment.length = (float)segment.posIn.distance(segment1.posIn);
+        }
+
+        int i1 = 0;
+        float f2 = ((com.maddox.il2.objects.ships.Segment)path.get(i1)).length;
+        int l1;
+        for(; i1 < path.size() - 1; i1 = l1)
+        {
+            l1 = i1 + 1;
+            do
+            {
+                com.maddox.il2.objects.ships.Segment segment7 = (com.maddox.il2.objects.ships.Segment)path.get(l1);
+                if(segment7.speedIn > 0.0F)
+                    break;
+                f2 += segment7.length;
+                l1++;
+            } while(true);
+            if(l1 - i1 > 1)
+            {
+                float f4 = ((com.maddox.il2.objects.ships.Segment)path.get(i1)).length;
+                float f5 = ((com.maddox.il2.objects.ships.Segment)path.get(i1)).speedIn;
+                float f7 = ((com.maddox.il2.objects.ships.Segment)path.get(l1)).speedIn;
+                for(int i2 = i1 + 1; i2 < l1; i2++)
+                {
+                    com.maddox.il2.objects.ships.Segment segment11 = (com.maddox.il2.objects.ships.Segment)path.get(i2);
+                    float f8 = f4 / f2;
+                    segment11.speedIn = f5 * (1.0F - f8) + f7 * f8;
+                    f2 += segment11.length;
+                }
+
+            }
+        }
+
+        for(int j1 = 0; j1 < path.size() - 1; j1++)
+        {
+            com.maddox.il2.objects.ships.Segment segment2 = (com.maddox.il2.objects.ships.Segment)path.get(j1);
+            com.maddox.il2.objects.ships.Segment segment3 = (com.maddox.il2.objects.ships.Segment)path.get(j1 + 1);
+            if(segment2.timeIn > 0L && segment3.timeIn > 0L)
+            {
+                com.maddox.il2.objects.ships.Segment segment8 = new Segment();
+                segment8.posIn = new Point3d(segment2.posIn);
+                segment8.posIn.add(segment3.posIn);
+                segment8.posIn.scale(0.5D);
+                segment8.timeIn = 0L;
+                segment8.speedIn = (segment2.speedIn + segment3.speedIn) * 0.5F;
+                path.add(j1 + 1, segment8);
+            }
+        }
+
+        for(int k1 = 0; k1 < path.size() - 1; k1++)
+        {
+            com.maddox.il2.objects.ships.Segment segment4 = (com.maddox.il2.objects.ships.Segment)path.get(k1);
+            com.maddox.il2.objects.ships.Segment segment9 = (com.maddox.il2.objects.ships.Segment)path.get(k1 + 1);
+            segment4.length = (float)segment4.posIn.distance(segment9.posIn);
+        }
+
+        com.maddox.il2.objects.ships.Segment segment5 = (com.maddox.il2.objects.ships.Segment)path.get(0);
+        boolean flag = segment5.timeIn != 0L;
+        long l2 = segment5.timeIn;
+        for(int j2 = 0; j2 < path.size() - 1; j2++)
+        {
+            com.maddox.il2.objects.ships.Segment segment6 = (com.maddox.il2.objects.ships.Segment)path.get(j2);
+            com.maddox.il2.objects.ships.Segment segment12 = (com.maddox.il2.objects.ships.Segment)path.get(j2 + 1);
+            segment6.posOut = new Point3d(segment12.posIn);
+            segment12.posIn = segment6.posOut;
+            float f9 = segment6.speedIn;
+            float f10 = segment12.speedIn;
+            float f11 = (f9 + f10) * 0.5F;
+            if(flag)
+            {
+                segment6.speedIn = 0.0F;
+                segment6.speedOut = f10;
+                float f12 = ((2.0F * segment6.length) / f10) * 1000F + 0.5F;
+                segment6.timeIn = l2;
+                segment6.timeOut = segment6.timeIn + (long)(int)f12;
+                l2 = segment6.timeOut;
+                flag = false;
+                continue;
+            }
+            if(segment12.timeIn == 0L)
+            {
+                segment6.speedIn = f9;
+                segment6.speedOut = f10;
+                float f13 = (segment6.length / f11) * 1000F + 0.5F;
+                segment6.timeIn = l2;
+                segment6.timeOut = segment6.timeIn + (long)(int)f13;
+                l2 = segment6.timeOut;
+                flag = false;
+                continue;
+            }
+            if(segment12.timeIn > 0L)
+            {
+                float f14 = (segment6.length / f11) * 1000F + 0.5F;
+                long l3 = l2 + (long)(int)f14;
+                if(l3 >= segment12.timeIn)
+                {
+                    segment12.timeIn = 0L;
+                } else
+                {
+                    segment6.speedIn = f9;
+                    segment6.speedOut = 0.0F;
+                    float f15 = ((2.0F * segment6.length) / f9) * 1000F + 0.5F;
+                    segment6.timeIn = l2;
+                    segment6.timeOut = segment6.timeIn + (long)(int)f15;
+                    l2 = segment12.timeIn;
+                    flag = true;
+                    continue;
+                }
+            }
+            if(segment12.timeIn == 0L)
+            {
+                segment6.speedIn = f9;
+                segment6.speedOut = f10;
+                float f16 = (segment6.length / f11) * 1000F + 0.5F;
+                segment6.timeIn = l2;
+                segment6.timeOut = segment6.timeIn + (long)(int)f16;
+                l2 = segment6.timeOut;
+                flag = false;
+            } else
+            {
+                segment6.speedIn = f9;
+                segment6.speedOut = 0.0F;
+                float f17 = ((2.0F * segment6.length) / f9) * 1000F + 0.5F;
+                segment6.timeIn = l2;
+                segment6.timeOut = segment6.timeIn + (long)(int)f17;
+                l2 = segment6.timeOut + -segment12.timeIn;
+                flag = true;
+            }
+        }
+
+        path.remove(path.size() - 1);
+    }
+
+    private void printPath(java.lang.String s)
+    {
+        java.lang.System.out.println("------------ Path: " + s + "  #:" + path.size());
+        for(int i = 0; i < path.size(); i++)
+        {
+            com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(i);
+            java.lang.System.out.println(" " + i + ":  len=" + segment.length + " spdIn=" + segment.speedIn + " spdOut=" + segment.speedOut + " tmIn=" + segment.timeIn + " tmOut=" + segment.timeOut);
+        }
+
+        java.lang.System.out.println("------------");
+    }
+
+    public void align()
+    {
+        pos.getAbs(p);
+        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) - (double)bodyDepth;
+        pos.setAbs(p);
+    }
+
+    private boolean computeInterpolatedDPR(long l)
+    {
+        if(tmInterpoStart >= tmInterpoEnd || l >= tmInterpoEnd)
+        {
+            bodyDepth = bodyDepth1;
+            bodyPitch = bodyPitch1;
+            bodyRoll = bodyRoll1;
+            return false;
+        }
+        if(l <= tmInterpoStart)
+        {
+            bodyDepth = bodyDepth0;
+            bodyPitch = bodyPitch0;
+            bodyRoll = bodyRoll0;
+            return true;
+        } else
+        {
+            float f = (float)(l - tmInterpoStart) / (float)(tmInterpoEnd - tmInterpoStart);
+            bodyDepth = bodyDepth0 + (bodyDepth1 - bodyDepth0) * f;
+            bodyPitch = bodyPitch0 + (bodyPitch1 - bodyPitch0) * f;
+            bodyRoll = bodyRoll0 + (bodyRoll1 - bodyRoll0) * f;
+            return true;
+        }
+    }
+
+    private void setMovablePosition(long l)
+    {
+        if(cachedSeg < 0)
+            cachedSeg = 0;
+        else
+        if(cachedSeg >= path.size())
+            cachedSeg = path.size() - 1;
+        com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(cachedSeg);
+        if(segment.timeIn <= l && l <= segment.timeOut)
+        {
+            SetEffectsIntens(1.0F);
+            setMovablePosition((float)(l - segment.timeIn) / (float)(segment.timeOut - segment.timeIn));
+            return;
+        }
+        if(l > segment.timeOut)
+        {
+            while(cachedSeg + 1 < path.size()) 
+            {
+                com.maddox.il2.objects.ships.Segment segment1 = (com.maddox.il2.objects.ships.Segment)path.get(++cachedSeg);
+                if(l <= segment1.timeIn)
+                {
+                    SetEffectsIntens(0.0F);
+                    setMovablePosition(0.0F);
+                    return;
+                }
+                if(l <= segment1.timeOut)
+                {
+                    SetEffectsIntens(1.0F);
+                    setMovablePosition((float)(l - segment1.timeIn) / (float)(segment1.timeOut - segment1.timeIn));
+                    return;
+                }
+            }
+            SetEffectsIntens(-1F);
+            setMovablePosition(1.0F);
+            return;
+        }
+        while(cachedSeg > 0) 
+        {
+            com.maddox.il2.objects.ships.Segment segment2 = (com.maddox.il2.objects.ships.Segment)path.get(--cachedSeg);
+            if(l >= segment2.timeOut)
+            {
+                SetEffectsIntens(0.0F);
+                setMovablePosition(1.0F);
+                return;
+            }
+            if(l >= segment2.timeIn)
+            {
+                SetEffectsIntens(1.0F);
+                setMovablePosition((float)(l - segment2.timeIn) / (float)(segment2.timeOut - segment2.timeIn));
+                return;
+            }
+        }
+        SetEffectsIntens(0.0F);
+        setMovablePosition(0.0F);
+    }
+
+    private void setMovablePosition(float f)
+    {
+        com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(cachedSeg);
+        float f1 = (float)(segment.timeOut - segment.timeIn) * 0.001F;
+        float f2 = segment.speedIn;
+        float f3 = segment.speedOut;
+        float f4 = (f3 - f2) / f1;
+        f *= f1;
+        float f5 = f2 * f + f4 * f * f * 0.5F;
+        int i = cachedSeg;
+        float f6 = prop.SLIDER_DIST - (segment.length - f5);
+        if(f6 <= 0.0F)
+            p1.interpolate(segment.posIn, segment.posOut, (f5 + prop.SLIDER_DIST) / segment.length);
+        else
+            do
+            {
+                if(i + 1 >= path.size())
+                {
+                    p1.interpolate(segment.posIn, segment.posOut, 1.0F + f6 / segment.length);
+                    break;
+                }
+                segment = (com.maddox.il2.objects.ships.Segment)path.get(++i);
+                if(f6 <= segment.length)
+                {
+                    p1.interpolate(segment.posIn, segment.posOut, f6 / segment.length);
+                    break;
+                }
+                f6 -= segment.length;
+            } while(true);
+        i = cachedSeg;
+        segment = (com.maddox.il2.objects.ships.Segment)path.get(i);
+        f6 = prop.SLIDER_DIST - f5;
+        if(f6 <= 0.0F)
+            p2.interpolate(segment.posIn, segment.posOut, (f5 - prop.SLIDER_DIST) / segment.length);
+        else
+            do
+            {
+                if(i <= 0)
+                {
+                    p2.interpolate(segment.posIn, segment.posOut, 0.0F - f6 / segment.length);
+                    break;
+                }
+                segment = (com.maddox.il2.objects.ships.Segment)path.get(--i);
+                if(f6 <= segment.length)
+                {
+                    p2.interpolate(segment.posIn, segment.posOut, 1.0F - f6 / segment.length);
+                    break;
+                }
+                f6 -= segment.length;
+            } while(true);
+        p.interpolate(p1, p2, 0.5F);
+        tmpvd.sub(p1, p2);
+        if(tmpvd.lengthSquared() < 0.0010000000474974513D)
+        {
+            com.maddox.il2.objects.ships.Segment segment1 = (com.maddox.il2.objects.ships.Segment)path.get(cachedSeg);
+            tmpvd.sub(segment1.posOut, segment1.posIn);
+        }
+        float f7 = (float)(java.lang.Math.atan2(tmpvd.y, tmpvd.x) * 57.295779513082323D);
+        setPosition(p, f7);
+    }
+
+    public void addRockingSpeed(com.maddox.JGP.Vector3d vector3d, com.maddox.JGP.Vector3d vector3d1, com.maddox.JGP.Point3d point3d)
+    {
+        tmpV.sub(point3d, pos.getAbsPoint());
+        o.transformInv(tmpV);
+        tmpV.cross(W, tmpV);
+        o.transform(tmpV);
+        vector3d.add(tmpV);
+        vector3d1.set(N);
+    }
+
+    private void setPosition(com.maddox.JGP.Point3d point3d, float f)
+    {
+        shipYaw = f;
+        float f1 = (float)(com.maddox.il2.net.NetServerParams.getServerTime() % (long)rollPeriod) / (float)rollPeriod;
+        float f2 = 0.05F * (20F - java.lang.Math.abs(bodyPitch));
+        if(f2 < 0.0F)
+            f2 = 0.0F;
+        float f3 = rollAmp * f2 * (float)java.lang.Math.sin((double)(f1 * 2.0F) * 3.1415926535897931D);
+        W.x = -rollWAmp * (double)f2 * java.lang.Math.cos((double)(f1 * 2.0F) * 3.1415926535897931D);
+        f1 = (float)(com.maddox.il2.net.NetServerParams.getServerTime() % (long)pitchPeriod) / (float)pitchPeriod;
+        float f4 = pitchAmp * f2 * (float)java.lang.Math.sin((double)(f1 * 2.0F) * 3.1415926535897931D);
+        W.y = -pitchWAmp * (double)f2 * java.lang.Math.cos((double)(f1 * 2.0F) * 3.1415926535897931D);
+        o.setYPR(shipYaw, bodyPitch + f4, bodyRoll + f3);
+        N.set(0.0D, 0.0D, 1.0D);
+        o.transform(N);
+        initOr.setYPR(shipYaw, bodyPitch, bodyRoll);
+        point3d.z = -bodyDepth;
+        pos.setAbs(point3d, o);
+        initLoc.set(point3d, initOr);
+    }
+
+    private void setPosition()
+    {
+        o.setYPR(shipYaw, bodyPitch, bodyRoll);
+        N.set(0.0D, 0.0D, 1.0D);
+        o.transform(N);
+        pos.setAbs(o);
+        align();
+        initLoc.set(pos.getAbs());
+    }
+
+    public int WeaponsMask()
+    {
+        return prop.WEAPONS_MASK;
+    }
+
+    public int HitbyMask()
+    {
+        return prop.HITBY_MASK;
+    }
+
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
+    {
+        if(dying != 0)
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(abulletproperties[0].power <= 0.0F)
+            return 0;
+        if(abulletproperties[1].power <= 0.0F)
+            return 1;
+        if(abulletproperties[0].cumulativePower > 0.0F)
+            return 0;
+        if(abulletproperties[1].cumulativePower > 0.0F)
+            return 1;
+        if(abulletproperties[0].powerType == 0)
+            return 0;
+        if(abulletproperties[1].powerType == 0)
+            return 1;
+        return abulletproperties[0].powerType != 1 ? 0 : 1;
+    }
+
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
+    {
+        if(dying != 0)
+            return -1;
+        if(numshotpoints <= 0)
+            return -1;
+        else
+            return shotpoints[com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0, numshotpoints - 1)];
+    }
+
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
+    {
+        if(dying != 0)
+            return false;
+        if(numshotpoints <= 0)
+            return false;
+        if(i == 0)
+        {
+            if(point3d != null)
+                point3d.set(0.0D, 0.0D, 0.0D);
+            return true;
+        }
+        int j = i - 1;
+        if(j >= parts.length || j < 0)
+            return false;
+        if(parts[j].state == 2)
+            return false;
+        if(!parts[j].pro.isItLifeKeeper() && !parts[j].pro.haveGun())
+            return false;
+        if(point3d != null)
+            point3d.set(parts[j].shotpointOffs);
+        return true;
+    }
+
+    public float AttackMaxDistance()
+    {
+        return prop.ATTACK_MAX_DISTANCE;
+    }
+
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel)
+    {
+        if(!isNetMaster())
+            return;
+        if(netchannel == null)
+            if(com.maddox.il2.game.Mission.isDeathmatch())
+            {
+                float f = com.maddox.il2.game.Mission.respawnTime("Bigship");
+                respawnDelay = com.maddox.il2.objects.ships.BigshipGeneric.SecsToTicks(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(f, f * 1.2F));
+            } else
+            {
+                respawnDelay = 0L;
+            }
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(68);
+            netmsgguaranted.writeLong(timeOfDeath);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            long l = com.maddox.rts.Time.tickNext();
+            long l1 = 0L;
+            boolean flag = dying == 1;
+            double d = (double)(flag ? bodyDepth1 : bodyDepth0) / 1000D;
+            if(d <= 0.0D)
+                d = 0.0D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            int i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < 0)
+                i = 0;
+            netmsgguaranted.writeShort(i);
+            d = (double)(flag ? bodyPitch1 : bodyPitch0) / 90D;
+            if(d <= -1D)
+                d = -1D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < -32767)
+                i = -32767;
+            netmsgguaranted.writeShort(i);
+            d = (double)(flag ? bodyRoll1 : bodyRoll0) / 90D;
+            if(d <= -1D)
+                d = -1D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < -32767)
+                i = -32767;
+            netmsgguaranted.writeShort(i);
+            d = (double)(tmInterpoEnd - tmInterpoStart) / 1000D / 1200D;
+            if(flag)
+                l1 = l - tmInterpoStart;
+            else
+                d = 0.0D;
+            if(d <= 0.0D)
+                d = 0.0D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < 0)
+                i = 0;
+            netmsgguaranted.writeShort(i);
+            d = (double)sink2Depth / 1000D;
+            if(d <= 0.0D)
+                d = 0.0D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < 0)
+                i = 0;
+            netmsgguaranted.writeShort(i);
+            d = (double)sink2Pitch / 90D;
+            if(d <= -1D)
+                d = -1D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < -32767)
+                i = -32767;
+            netmsgguaranted.writeShort(i);
+            d = (double)sink2Roll / 90D;
+            if(d <= -1D)
+                d = -1D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < -32767)
+                i = -32767;
+            netmsgguaranted.writeShort(i);
+            d = (double)(sink2timeWhenStop - tmInterpoEnd) / 1000D / 1200D;
+            if(!flag)
+            {
+                d = (double)(tmInterpoEnd - tmInterpoStart) / 1000D / 1200D;
+                l1 = l - tmInterpoStart;
+            }
+            if(d <= 0.0D)
+                d = 0.0D;
+            if(d >= 1.0D)
+                d = 1.0D;
+            i = (int)(d * 32767D);
+            if(i > 32767)
+                i = 32767;
+            if(i < 0)
+                i = 0;
+            netmsgguaranted.writeShort(i);
+            if(netchannel != null)
+                netmsgguaranted.writeLong(l1);
+            if(netchannel == null)
+                net.post(netmsgguaranted);
+            else
+                net.postTo(netchannel, netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_RespawnCommand()
+    {
+        if(!isNetMaster() || !com.maddox.il2.game.Mission.isDeathmatch())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(82);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        netsendPartsState_needtosend = false;
+    }
+
+    private void send_bufferized_FireCommand()
+    {
+        long l;
+        int j;
+        int k;
+        if(!isNetMaster())
+            return;
+        l = com.maddox.il2.net.NetServerParams.getServerTime();
+        long l1 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(40, 85);
+        if(java.lang.Math.abs(l - netsendFire_lasttimeMS) < l1)
+            return;
+        netsendFire_lasttimeMS = l;
+        if(!net.isMirrored())
+        {
+            for(int i = 0; i < arms.length; i++)
+                arms[i].enemy = null;
+
+            netsendFire_armindex = 0;
+            return;
+        }
+        j = 0;
+        k = 0;
+        int i1;
+        for(i1 = 0; i1 < arms.length; i1++)
+        {
+            int i2 = netsendFire_armindex + i1;
+            if(i2 >= arms.length)
+                i2 -= arms.length;
+            if(arms[i2].enemy == null)
+                continue;
+            if(parts[arms[i2].part_idx].state != 0)
+            {
+                java.lang.System.out.println("*** BigShip internal error #0");
+                arms[i2].enemy = null;
+                continue;
+            }
+            if(!com.maddox.il2.engine.Actor.isValid(arms[i2].enemy) || !arms[i2].enemy.isNet())
+            {
+                arms[i2].enemy = null;
+                continue;
+            }
+            if(j >= 15)
+                break;
+            netsendFire_tmpbuff[j].gun_idx = i2;
+            netsendFire_tmpbuff[j].enemy = arms[i2].enemy;
+            netsendFire_tmpbuff[j].timeWhenFireS = arms[i2].timeWhenFireS;
+            netsendFire_tmpbuff[j].shotpointIdx = arms[i2].shotpointIdx;
+            arms[i2].enemy = null;
+            if(arms[i2].timeWhenFireS < 0.0D)
+                k++;
+            j++;
+        }
+
+        for(netsendFire_armindex += i1; netsendFire_armindex >= arms.length; netsendFire_armindex -= arms.length);
+        if(j <= 0)
+            return;
+        com.maddox.rts.NetMsgFiltered netmsgfiltered;
+        netmsgfiltered = new NetMsgFiltered();
+        netmsgfiltered.writeByte(224 + k);
+        for(int j1 = 0; j1 < j; j1++)
+        {
+            double d = netsendFire_tmpbuff[j1].timeWhenFireS;
+            if(d < 0.0D)
+            {
+                netmsgfiltered.writeByte(netsendFire_tmpbuff[j1].gun_idx);
+                netmsgfiltered.writeNetObj(netsendFire_tmpbuff[j1].enemy.net);
+                netmsgfiltered.writeByte(netsendFire_tmpbuff[j1].shotpointIdx);
+                k--;
+            }
+        }
+
+        if(k != 0)
+        {
+            java.lang.System.out.println("*** BigShip internal error #5");
+            return;
+        }
+        try
+        {
+            for(int k1 = 0; k1 < j; k1++)
+            {
+                double d1 = netsendFire_tmpbuff[k1].timeWhenFireS;
+                if(d1 >= 0.0D)
+                {
+                    double d2 = (double)l * 0.001D;
+                    double d3 = (d1 - d2) * 1000D;
+                    if(d3 <= -2000D)
+                        d3 = -2000D;
+                    if(d3 >= 5000D)
+                        d3 = 5000D;
+                    d3 = (d3 - -2000D) / 7000D;
+                    int j2 = (int)(d3 * 255D);
+                    if(j2 < 0)
+                        j2 = 0;
+                    if(j2 > 255)
+                        j2 = 255;
+                    netmsgfiltered.writeByte(j2);
+                    netmsgfiltered.writeByte(netsendFire_tmpbuff[k1].gun_idx);
+                    netmsgfiltered.writeNetObj(netsendFire_tmpbuff[k1].enemy.net);
+                    netmsgfiltered.writeByte(netsendFire_tmpbuff[k1].shotpointIdx);
+                    netsendFire_tmpbuff[k1].enemy = null;
+                }
+            }
+
+            netmsgfiltered.setIncludeTime(true);
+            net.post(l, netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        return;
+    }
+
+    private void send_bufferized_PartsState()
+    {
+        if(!isNetMaster())
+            return;
+        if(!netsendPartsState_needtosend)
+            return;
+        long l = com.maddox.il2.net.NetServerParams.getServerTime();
+        long l1 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(650, 1100);
+        if(java.lang.Math.abs(l - netsendPartsState_lasttimeMS) < l1)
+            return;
+        netsendPartsState_lasttimeMS = l;
+        netsendPartsState_needtosend = false;
+        if(!net.isMirrored())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(83);
+            int i = (parts.length + 3) / 4;
+            int j = 0;
+            for(int k = 0; k < i; k++)
+            {
+                int i1 = 0;
+                for(int j1 = 0; j1 < 4; j1++)
+                {
+                    if(j < parts.length)
+                    {
+                        int k1 = parts[j].state;
+                        i1 |= k1 << j1 * 2;
+                    }
+                    j++;
+                }
+
+                netmsgguaranted.writeByte(i1);
+            }
+
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void bufferize_FireCommand(int i, com.maddox.il2.engine.Actor actor, int j, float f)
+    {
+        if(!isNetMaster())
+            return;
+        if(!net.isMirrored())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isNet())
+            return;
+        if(arms[i].enemy != null && arms[i].timeWhenFireS >= 0.0D)
+            return;
+        j &= 0xff;
+        arms[i].enemy = actor;
+        arms[i].shotpointIdx = j;
+        if(f < 0.0F)
+            arms[i].timeWhenFireS = -1D;
+        else
+            arms[i].timeWhenFireS = (double)f + (double)com.maddox.il2.net.NetServerParams.getServerTime() * 0.001D;
+    }
+
+    private void mirror_send_bufferized_Damage()
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        long l = com.maddox.il2.net.NetServerParams.getServerTime();
+        long l1 = com.maddox.il2.objects.ships.BigshipGeneric.Rnd(65, 115);
+        if(java.lang.Math.abs(l - netsendDmg_lasttimeMS) < l1)
+            return;
+        netsendDmg_lasttimeMS = l;
+        try
+        {
+            int i = 0;
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = null;
+            int j;
+            for(j = 0; j < parts.length; j++)
+            {
+                int k = netsendDmg_partindex + j;
+                if(k >= parts.length)
+                    k -= parts.length;
+                if(parts[k].state == 2 || (double)parts[k].damage < 0.0078125D)
+                    continue;
+                int i1 = (int)(parts[k].damage * 128F);
+                if(--i1 < 0)
+                    i1 = 0;
+                else
+                if(i1 > 127)
+                    i1 = 127;
+                if(parts[k].damageIsFromRight)
+                    i1 |= 0x80;
+                if(i <= 0)
+                {
+                    netmsgfiltered = new NetMsgFiltered();
+                    netmsgfiltered.writeByte(80);
+                }
+                com.maddox.il2.engine.Actor actor = parts[k].mirror_initiator;
+                if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isNet())
+                    actor = null;
+                parts[k].mirror_initiator = null;
+                parts[k].damage = 0.0F;
+                netmsgfiltered.writeByte(k);
+                netmsgfiltered.writeByte(i1);
+                netmsgfiltered.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+                if(++i >= 14)
+                    break;
+            }
+
+            for(netsendDmg_partindex += j; netsendDmg_partindex >= parts.length; netsendDmg_partindex -= parts.length);
+            if(i > 0)
+            {
+                netmsgfiltered.setIncludeTime(false);
+                net.postTo(l, net.masterChannel(), netmsgfiltered);
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        netmsgguaranted.writeLong(-1L);
+        net.postTo(netchannel, netmsgguaranted);
+        if(dying == 0)
+            master_sendDrown(bodyDepth1, bodyPitch1, bodyRoll1, (float)(tmInterpoEnd - com.maddox.il2.net.NetServerParams.getServerTime()) * 1000F);
+        else
+            send_DeathCommand(null, netchannel);
+        netsendPartsState_needtosend = true;
+    }
+
+    public float getReloadingTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        return SLOWFIRE_K * GetGunProperties(aim).DELAY_AFTER_SHOOT;
+    }
+
+    public float chainFireTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        float f = GetGunProperties(aim).CHAINFIRE_TIME;
+        return f > 0.0F ? f * com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.75F, 1.25F) : 0.0F;
+    }
+
+    public float probabKeepSameEnemy(com.maddox.il2.engine.Actor actor)
+    {
+        return 0.75F;
+    }
+
+    public float minTimeRelaxAfterFight()
+    {
+        return 0.1F;
+    }
+
+    public void gunStartParking(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = parts[firingdevice.part_idx].pro;
+        aim.setRotationForParking(firingdevice.headYaw, firingdevice.gunPitch, shippartproperties.HEAD_STD_YAW, shippartproperties.GUN_STD_PITCH, shippartproperties.HEAD_YAW_RANGE, shippartproperties.HEAD_MAX_YAW_SPEED, shippartproperties.GUN_MAX_PITCH_SPEED);
+    }
+
+    public void gunInMove(boolean flag, com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        float f = aim.t();
+        float f1 = aim.anglesYaw.getDeg(f);
+        float f2 = aim.anglesPitch.getDeg(f);
+        setGunAngles(firingdevice, f1, f2);
+        pos.inValidate(false);
+    }
+
+    public com.maddox.il2.engine.Actor findEnemy(com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(isNetMirror())
+            return null;
+        com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = GetGunProperties(aim);
+        com.maddox.il2.engine.Actor actor = null;
+        switch(shippartproperties.ATTACK_FAST_TARGETS)
+        {
+        case 0: // '\0'
+            com.maddox.il2.ai.ground.NearestEnemies.set(shippartproperties.WEAPONS_MASK, -9999.9F, com.maddox.il2.objects.ships.BigshipGeneric.KmHourToMSec(100F));
+            break;
+
+        case 1: // '\001'
+            com.maddox.il2.ai.ground.NearestEnemies.set(shippartproperties.WEAPONS_MASK);
+            break;
+
+        default:
+            com.maddox.il2.ai.ground.NearestEnemies.set(shippartproperties.WEAPONS_MASK, com.maddox.il2.objects.ships.BigshipGeneric.KmHourToMSec(100F), 9999.9F);
+            break;
+        }
+        actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), shippartproperties.ATTACK_MAX_RADIUS, getArmy());
+        if(actor == null)
+            return null;
+        if(!(actor instanceof com.maddox.il2.ai.ground.Prey))
+        {
+            java.lang.System.out.println("bigship: nearest enemies: non-Prey");
+            return null;
+        }
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        com.maddox.il2.engine.BulletProperties bulletproperties = null;
+        if(firingdevice.gun.prop != null)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(firingdevice.gun.prop.bullet);
+            if(i < 0)
+                return null;
+            bulletproperties = firingdevice.gun.prop.bullet[i];
+        }
+        int j = ((com.maddox.il2.ai.ground.Prey)actor).chooseShotpoint(bulletproperties);
+        if(j < 0)
+        {
+            return null;
+        } else
+        {
+            aim.shotpoint_idx = j;
+            return actor;
+        }
+    }
+
+    public boolean enterToFireMode(int i, com.maddox.il2.engine.Actor actor, float f, com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(!isNetMirror())
+        {
+            com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+            bufferize_FireCommand(firingdevice.gun_idx, actor, aim.shotpoint_idx, i != 0 ? f : -1F);
+        }
+        return true;
+    }
+
+    private void Track_Mirror(int i, com.maddox.il2.engine.Actor actor, int j)
+    {
+        if(actor == null)
+            return;
+        if(arms == null || i < 0 || i >= arms.length || arms[i].aime == null)
+            return;
+        if(parts[arms[i].part_idx].state != 0)
+        {
+            return;
+        } else
+        {
+            arms[i].aime.passive_StartFiring(0, actor, j, 0.0F);
+            return;
+        }
+    }
+
+    private void Fire_Mirror(int i, com.maddox.il2.engine.Actor actor, int j, float f)
+    {
+        if(actor == null)
+            return;
+        if(arms == null || i < 0 || i >= arms.length || arms[i].aime == null)
+            return;
+        if(parts[arms[i].part_idx].state != 0)
+            return;
+        if(f <= 0.15F)
+            f = 0.15F;
+        if(f >= 7F)
+            f = 7F;
+        arms[i].aime.passive_StartFiring(1, actor, j, f);
+    }
+
+    public int targetGun(com.maddox.il2.ai.ground.Aim aim, com.maddox.il2.engine.Actor actor, float f, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isAlive() || actor.getArmy() == 0)
+            return 0;
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(firingdevice.gun instanceof com.maddox.il2.objects.weapons.CannonMidrangeGeneric)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(firingdevice.gun.prop.bullet);
+            if(i < 0)
+                return 0;
+            ((com.maddox.il2.objects.weapons.CannonMidrangeGeneric)firingdevice.gun).setBulletType(i);
+        }
+        boolean flag1 = ((com.maddox.il2.ai.ground.Prey)actor).getShotpointOffset(aim.shotpoint_idx, p1);
+        if(!flag1)
+            return 0;
+        com.maddox.il2.objects.ships.ShipPartProperties shippartproperties = parts[firingdevice.part_idx].pro;
+        float f1 = f * com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.8F, 1.2F);
+        if(!com.maddox.il2.ai.Aimer.Aim((com.maddox.il2.ai.BulletAimer)firingdevice.gun, actor, this, f1, p1, shippartproperties.fireOffset))
+            return 0;
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.il2.ai.Aimer.GetPredictedTargetPosition(point3d);
+        com.maddox.JGP.Point3d point3d1 = com.maddox.il2.ai.Aimer.GetHunterFirePoint();
+        float f2 = 0.05F;
+        double d = point3d.distance(point3d1);
+        double d1 = point3d.z;
+        point3d.sub(point3d1);
+        point3d.scale(com.maddox.il2.objects.ships.BigshipGeneric.Rnd(0.995D, 1.0049999999999999D));
+        point3d.add(point3d1);
+        if(f1 > 0.001F)
+        {
+            com.maddox.JGP.Point3d point3d2 = new Point3d();
+            actor.pos.getAbs(point3d2);
+            tmpvd.sub(point3d, point3d2);
+            double d2 = tmpvd.length();
+            if(d2 > 0.001D)
+            {
+                float f7 = (float)d2 / f1;
+                if(f7 > 200F)
+                    f7 = 200F;
+                float f8 = f7 * 0.01F;
+                point3d2.sub(point3d1);
+                double d3 = point3d2.x * point3d2.x + point3d2.y * point3d2.y + point3d2.z * point3d2.z;
+                if(d3 > 0.01D)
+                {
+                    float f9 = (float)tmpvd.dot(point3d2);
+                    f9 /= (float)(d2 * java.lang.Math.sqrt(d3));
+                    f9 = (float)java.lang.Math.sqrt(1.0F - f9 * f9);
+                    f8 *= 0.4F + 0.6F * f9;
+                }
+                f8 *= 1.3F;
+                f8 *= com.maddox.il2.ai.ground.Aim.AngleErrorKoefForSkill[SKILL_IDX];
+                int k = com.maddox.il2.game.Mission.curCloudsType();
+                if(k > 2)
+                {
+                    float f10 = k <= 4 ? 800F : 400F;
+                    float f11 = (float)(d / (double)f10);
+                    if(f11 > 1.0F)
+                    {
+                        if(f11 > 10F)
+                            return 0;
+                        f11 = (f11 - 1.0F) / 9F;
+                        f8 *= f11 + 1.0F;
+                    }
+                }
+                if(k >= 3 && d1 > (double)com.maddox.il2.game.Mission.curCloudsHeight())
+                    f8 *= 1.25F;
+                f2 += f8;
+            }
+        }
+        if(com.maddox.il2.ai.World.Sun().ToSun.z < -0.15F)
+        {
+            float f4 = (-com.maddox.il2.ai.World.Sun().ToSun.z - 0.15F) / 0.13F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && com.maddox.il2.net.NetServerParams.getServerTime() - ((com.maddox.il2.objects.air.Aircraft)actor).tmSearchlighted < 1000L)
+                f4 = 0.0F;
+            f2 += 10F * f4;
+        }
+        float f5 = (float)actor.getSpeed(null) - 10F;
+        if(f5 > 0.0F)
+        {
+            float f6 = 83.33334F;
+            f5 = f5 < f6 ? f5 / f6 : 1.0F;
+            f2 += f5 * shippartproperties.FAST_TARGETS_ANGLE_ERROR;
+        }
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        if(!((com.maddox.il2.ai.BulletAimer)firingdevice.gun).FireDirection(point3d1, point3d, vector3d))
+            return 0;
+        float f3;
+        if(flag)
+        {
+            f3 = 99999F;
+            d1 = 99999F;
+        } else
+        {
+            f3 = shippartproperties.HEAD_MAX_YAW_SPEED;
+            d1 = shippartproperties.GUN_MAX_PITCH_SPEED;
+        }
+        o.add(shippartproperties.fireOrient, pos.getAbs().getOrient());
+        int j = aim.setRotationForTargeting(this, o, point3d1, firingdevice.headYaw, firingdevice.gunPitch, vector3d, f2, f1, shippartproperties.HEAD_YAW_RANGE, shippartproperties.GUN_MIN_PITCH, shippartproperties.GUN_MAX_PITCH, f3, d1, 0.0F);
+        return j;
+    }
+
+    public void singleShot(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!parts[firingdevice.part_idx].pro.TRACKING_ONLY)
+            firingdevice.gun.shots(1);
+    }
+
+    public void startFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!parts[firingdevice.part_idx].pro.TRACKING_ONLY)
+            firingdevice.gun.shots(-1);
+    }
+
+    public void continueFire(com.maddox.il2.ai.ground.Aim aim)
     {
     }
 
-    Segment(BigshipGeneric.1 param1)
+    public void stopFire(com.maddox.il2.ai.ground.Aim aim)
     {
-      this();
-    }
-  }
-
-  public static class Part
-  {
-    private float damage;
-    private Actor mirror_initiator;
-    private Point3d shotpointOffs = new Point3d();
-
-    private boolean damageIsFromRight = false;
-    private int state;
-    BigshipGeneric.ShipPartProperties pro;
-  }
-
-  public static class FiringDevice
-  {
-    private int gun_idx;
-    private int part_idx;
-    private Gun gun;
-    private Aim aime;
-    private float headYaw;
-    private float gunPitch;
-    private Actor enemy;
-    private double timeWhenFireS;
-    private int shotpointIdx;
-  }
-
-  public static class TmpTrackOrFireInfo
-  {
-    private int gun_idx;
-    private Actor enemy;
-    private double timeWhenFireS;
-    private int shotpointIdx;
-  }
-
-  public static class ShipProperties
-  {
-    public String meshName = null;
-    public String soundName = null;
-
-    public int WEAPONS_MASK = 4;
-    public int HITBY_MASK = -2;
-    public float ATTACK_MAX_DISTANCE = 1.0F;
-
-    public float SLIDER_DIST = 1.0F;
-    public float SPEED = 1.0F;
-
-    public float DELAY_RESPAWN_MIN = 15.0F;
-    public float DELAY_RESPAWN_MAX = 30.0F;
-
-    public BigshipGeneric.ShipPartProperties[] propparts = null;
-    public int nGuns;
-    public BigshipGeneric.AirportProperties propAirport = null;
-  }
-
-  public static class ShipPartProperties
-  {
-    public String baseChunkName = null;
-    public int baseChunkIdx = -1;
-
-    public Point3f partOffs = null;
-
-    public float partR = 1.0F;
-
-    public String[] additCollisChunkName = null;
-    public int[] additCollisChunkIdx = null;
-
-    public StrengthProperties stre = new StrengthProperties();
-
-    public float dmgDepth = -1.0F;
-    public float dmgPitch = 0.0F;
-    public float dmgRoll = 0.0F;
-    public float dmgTime = 1.0F;
-
-    public float BLACK_DAMAGE = 0.0F;
-    public int gun_idx;
-    public Class gunClass = null;
-
-    public int WEAPONS_MASK = 4;
-
-    public boolean TRACKING_ONLY = false;
-
-    public float ATTACK_MAX_DISTANCE = 1.0F;
-    public float ATTACK_MAX_RADIUS = 1.0F;
-    public float ATTACK_MAX_HEIGHT = 1.0F;
-
-    public int ATTACK_FAST_TARGETS = 1;
-    public float FAST_TARGETS_ANGLE_ERROR = 0.0F;
-
-    public AnglesRange HEAD_YAW_RANGE = new AnglesRange(-1.0F, 1.0F);
-    public float HEAD_STD_YAW = 0.0F;
-    public float _HEAD_MIN_YAW = -1.0F;
-    public float _HEAD_MAX_YAW = -1.0F;
-
-    public float GUN_MIN_PITCH = -20.0F;
-    public float GUN_STD_PITCH = -18.0F;
-    public float GUN_MAX_PITCH = -15.0F;
-    public float HEAD_MAX_YAW_SPEED = 720.0F;
-    public float GUN_MAX_PITCH_SPEED = 60.0F;
-    public float DELAY_AFTER_SHOOT = 1.0F;
-    public float CHAINFIRE_TIME = 0.0F;
-
-    public String headChunkName = null;
-    public String gunChunkName = null;
-    public int headChunkIdx = -1;
-    public int gunChunkIdx = -1;
-    public Point3d fireOffset;
-    public Orient fireOrient;
-    public String gunShellStartHookName = null;
-
-    public boolean isItLifeKeeper()
-    {
-      return this.dmgDepth >= 0.0F;
+        com.maddox.il2.objects.ships.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!parts[firingdevice.part_idx].pro.TRACKING_ONLY)
+            firingdevice.gun.shots(0);
     }
 
-    public boolean haveGun()
+    public boolean isVisibilityLong()
     {
-      return this.gun_idx >= 0;
+        return true;
     }
-  }
+
+    private void createAirport()
+    {
+        if(prop.propAirport != null)
+        {
+            prop.propAirport.firstInit(this);
+            draw = new TowStringMeshDraw(draw);
+            if(prop.propAirport.cellTO != null)
+                cellTO = (com.maddox.il2.ai.air.CellAirField)prop.propAirport.cellTO.getClone();
+            if(prop.propAirport.cellLDG != null)
+                cellLDG = (com.maddox.il2.ai.air.CellAirField)prop.propAirport.cellLDG.getClone();
+            airport = new AirportCarrier(this, prop.propAirport.rwy);
+        }
+    }
+
+    public com.maddox.il2.ai.AirportCarrier getAirport()
+    {
+        return airport;
+    }
+
+    public com.maddox.il2.ai.air.CellAirField getCellTO()
+    {
+        return cellTO;
+    }
+
+    public com.maddox.il2.ai.air.CellAirField getCellLDR()
+    {
+        return cellLDG;
+    }
+
+    private void validateTowAircraft()
+    {
+        if(towPortNum < 0)
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(towAircraft))
+        {
+            requestDetowAircraft(towAircraft);
+            return;
+        }
+        if(pos.getAbsPoint().distance(towAircraft.pos.getAbsPoint()) > (double)hierMesh().visibilityR())
+        {
+            requestDetowAircraft(towAircraft);
+            return;
+        }
+        if(!towAircraft.FM.CT.bHasArrestorControl)
+        {
+            requestDetowAircraft(towAircraft);
+            return;
+        } else
+        {
+            return;
+        }
+    }
+
+    public void forceTowAircraft(com.maddox.il2.objects.air.Aircraft aircraft, int i)
+    {
+        if(towPortNum >= 0)
+        {
+            return;
+        } else
+        {
+            towPortNum = i;
+            towAircraft = aircraft;
+            towHook = new HookNamed(aircraft, "_ClipAGear");
+            return;
+        }
+    }
+
+    public void requestTowAircraft(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(towPortNum >= 0 || prop.propAirport.towPRel == null)
+            return;
+        com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(aircraft, "_ClipAGear");
+        com.maddox.JGP.Point3d apoint3d[] = prop.propAirport.towPRel;
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        com.maddox.JGP.Point3d point3d2 = new Point3d();
+        com.maddox.JGP.Point3d point3d3 = new Point3d();
+        com.maddox.il2.engine.Loc loc = new Loc();
+        com.maddox.il2.engine.Loc loc1 = new Loc();
+        for(int i = 0; i < apoint3d.length / 2; i++)
+        {
+            pos.getCurrent(loc);
+            point3d2.set(apoint3d[i + i]);
+            loc.transform(point3d2);
+            point3d3.set(apoint3d[i + i + 1]);
+            loc.transform(point3d3);
+            aircraft.pos.getCurrent(loc1);
+            loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            hooknamed.computePos(aircraft, loc1, loc);
+            point3d.set(loc.getPoint());
+            aircraft.pos.getPrev(loc1);
+            loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            hooknamed.computePos(aircraft, loc1, loc);
+            point3d1.set(loc.getPoint());
+            if(point3d1.z < point3d2.z + 0.5D * (point3d3.z - point3d2.z) + 0.20000000000000001D)
+            {
+                com.maddox.JGP.Line2d line2d = new Line2d(new Point2d(point3d2.x, point3d2.y), new Point2d(point3d3.x, point3d3.y));
+                com.maddox.JGP.Line2d line2d1 = new Line2d(new Point2d(point3d.x, point3d.y), new Point2d(point3d1.x, point3d1.y));
+                try
+                {
+                    com.maddox.JGP.Point2d point2d = line2d.crossPRE(line2d1);
+                    double d = java.lang.Math.min(point3d2.x, point3d3.x);
+                    double d2 = java.lang.Math.max(point3d2.x, point3d3.x);
+                    double d4 = java.lang.Math.min(point3d2.y, point3d3.y);
+                    double d6 = java.lang.Math.max(point3d2.y, point3d3.y);
+                    if(point2d.x > d && point2d.x < d2 && point2d.y > d4 && point2d.y < d6)
+                    {
+                        double d1 = java.lang.Math.min(point3d.x, point3d1.x);
+                        double d3 = java.lang.Math.max(point3d.x, point3d1.x);
+                        double d5 = java.lang.Math.min(point3d.y, point3d1.y);
+                        double d7 = java.lang.Math.max(point3d.y, point3d1.y);
+                        if(point2d.x > d1 && point2d.x < d3 && point2d.y > d5 && point2d.y < d7)
+                        {
+                            towPortNum = i;
+                            towAircraft = aircraft;
+                            towHook = new HookNamed(aircraft, "_ClipAGear");
+                            return;
+                        }
+                    }
+                }
+                catch(java.lang.Exception exception) { }
+            }
+        }
+
+    }
+
+    public void requestDetowAircraft(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(aircraft == towAircraft)
+        {
+            towAircraft = null;
+            towPortNum = -1;
+        }
+    }
+
+    public boolean isTowAircraft(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        return towAircraft == aircraft;
+    }
+
+    public double getSpeed(com.maddox.JGP.Vector3d vector3d)
+    {
+        if(path == null)
+            return super.getSpeed(vector3d);
+        long l = com.maddox.il2.net.NetServerParams.getServerTime();
+        if(l > (long)(com.maddox.rts.Time.tickLen() * 4))
+            return super.getSpeed(vector3d);
+        com.maddox.il2.objects.ships.Segment segment = (com.maddox.il2.objects.ships.Segment)path.get(0);
+        tmpDir.sub(segment.posOut, segment.posIn);
+        tmpDir.normalize();
+        tmpDir.scale(segment.speedIn);
+        if(vector3d != null)
+            vector3d.set(tmpDir);
+        return tmpDir.length();
+    }
+
+    private static final int MAX_PARTS = 255;
+    private static final int MAX_GUNS = 255;
+    private static final int MAX_USER_ADDITIONAL_COLLISION_CHUNKS = 4;
+    private com.maddox.il2.objects.ships.ShipProperties prop;
+    private static final int NETSEND_MIN_DELAY_MS_PARTSSTATE = 650;
+    private static final int NETSEND_MAX_DELAY_MS_PARTSSTATE = 1100;
+    private long netsendPartsState_lasttimeMS;
+    private boolean netsendPartsState_needtosend;
+    private static float netsendDrown_pitch = 0.0F;
+    private static float netsendDrown_roll = 0.0F;
+    private static float netsendDrown_depth = 0.0F;
+    private static float netsendDrown_timeS = 0.0F;
+    private static int netsendDrown_nparts = 0;
+    private static final int NETSEND_MIN_DELAY_MS_FIRE = 40;
+    private static final int NETSEND_MAX_DELAY_MS_FIRE = 85;
+    private static final long NETSEND_MIN_BYTECODEDDELTATIME_MS_FIRE = -2000L;
+    private static final long NETSEND_MAX_BYTECODEDDELTATIME_MS_FIRE = 5000L;
+    private static final int NETSEND_ABSLIMIT_NUMITEMS_FIRE = 31;
+    private static final int NETSEND_MAX_NUMITEMS_FIRE = 15;
+    private long netsendFire_lasttimeMS;
+    private int netsendFire_armindex;
+    private static com.maddox.il2.objects.ships.TmpTrackOrFireInfo netsendFire_tmpbuff[];
+    private com.maddox.il2.objects.ships.FiringDevice arms[];
+    private static final int STPART_LIVE = 0;
+    private static final int STPART_BLACK = 1;
+    private static final int STPART_DEAD = 2;
+    private com.maddox.il2.objects.ships.Part parts[];
+    private int shotpoints[];
+    int numshotpoints;
+    private static final int NETSEND_MIN_DELAY_MS_DMG = 65;
+    private static final int NETSEND_MAX_DELAY_MS_DMG = 115;
+    private static final int NETSEND_ABSLIMIT_NUMITEMS_DMG = 256;
+    private static final int NETSEND_MAX_NUMITEMS_DMG = 14;
+    private long netsendDmg_lasttimeMS;
+    private int netsendDmg_partindex;
+    private java.util.ArrayList path;
+    private int cachedSeg;
+    private float bodyDepth;
+    private float bodyPitch;
+    private float bodyRoll;
+    private float shipYaw;
+    private long tmInterpoStart;
+    private long tmInterpoEnd;
+    private float bodyDepth0;
+    private float bodyPitch0;
+    private float bodyRoll0;
+    private float bodyDepth1;
+    private float bodyPitch1;
+    private float bodyRoll1;
+    private long timeOfDeath;
+    private long sink2timeWhenStop;
+    private float sink2Depth;
+    private float sink2Pitch;
+    private float sink2Roll;
+    private int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_SINK1 = 1;
+    static final int DYING_SINK2 = 2;
+    static final int DYING_DEAD = 3;
+    private long respawnDelay;
+    private long wakeupTmr;
+    public float DELAY_WAKEUP;
+    public int SKILL_IDX;
+    public float SLOWFIRE_K;
+    private com.maddox.il2.objects.ships.Pipe pipes[];
+    private com.maddox.il2.objects.ships.Pipe dsmoks[];
+    private com.maddox.il2.engine.Eff3DActor wake[] = {
+        null, null, null
+    };
+    private com.maddox.il2.engine.Eff3DActor noseW;
+    private com.maddox.il2.engine.Eff3DActor nose;
+    private com.maddox.il2.engine.Eff3DActor tail;
+    private static com.maddox.il2.objects.ships.ShipProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.ActorSpawnArg constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.JGP.Point3d p1 = new Point3d();
+    private static com.maddox.JGP.Point3d p2 = new Point3d();
+    private com.maddox.il2.engine.Orient o;
+    private static com.maddox.JGP.Vector3f tmpvf = new Vector3f();
+    private static com.maddox.JGP.Vector3d tmpvd = new Vector3d();
+    private static float tmpYPR[] = new float[3];
+    private static float tmpf6[] = new float[6];
+    private static com.maddox.il2.engine.Loc tmpL = new Loc();
+    private static byte tmpBitsState[] = new byte[32];
+    private float rollAmp;
+    private int rollPeriod;
+    private double rollWAmp;
+    private float pitchAmp;
+    private int pitchPeriod;
+    private double pitchWAmp;
+    private com.maddox.JGP.Vector3d W;
+    private com.maddox.JGP.Vector3d N;
+    private com.maddox.JGP.Vector3d tmpV;
+    public com.maddox.il2.engine.Orient initOr;
+    public com.maddox.il2.engine.Loc initLoc;
+    private com.maddox.il2.ai.AirportCarrier airport;
+    private com.maddox.il2.ai.air.CellAirField cellTO;
+    private com.maddox.il2.ai.air.CellAirField cellLDG;
+    public com.maddox.il2.objects.air.Aircraft towAircraft;
+    public int towPortNum;
+    public com.maddox.il2.engine.HookNamed towHook;
+    private static com.maddox.JGP.Vector3d tmpDir = new Vector3d();
+
+    static 
+    {
+        netsendFire_tmpbuff = new com.maddox.il2.objects.ships.TmpTrackOrFireInfo[31];
+        for(int i = 0; i < netsendFire_tmpbuff.length; i++)
+            netsendFire_tmpbuff[i] = new TmpTrackOrFireInfo();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

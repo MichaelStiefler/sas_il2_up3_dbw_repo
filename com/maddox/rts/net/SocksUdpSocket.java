@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SocksUdpSocket.java
+
 package com.maddox.rts.net;
 
 import java.io.ByteArrayOutputStream;
@@ -10,504 +15,630 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class SocksUdpSocket extends DatagramSocket
+public class SocksUdpSocket extends java.net.DatagramSocket
 {
-  static final boolean bLog = false;
-  static final String PROMPT = "socksUdp";
-  public static final int SOCKS_PORT = 1080;
-  public static final int SOCKS_VERSION_5 = 5;
-  public static final int COMMAND_CONNECT = 1;
-  public static final int COMMAND_BIND = 2;
-  public static final int COMMAND_UDP_ASSOCIATE = 3;
-  public static final int NO_AUTHENTICATION_REQUIRED = 0;
-  public static final int GSSAPI = 1;
-  public static final int USERNAME_AND_PASSWORD = 2;
-  public static final int CHAP = 3;
-  public static final int NO_ACCEPTABLE_METHODS = 255;
-  public static final int IP_V4 = 1;
-  public static final int DOMAINNAME = 3;
-  public static final int IP_V6 = 4;
-  public static final int NULL = 0;
-  public static final int REQUEST_GRANTED = 90;
-  public static final int REQUEST_REJECTED = 91;
-  public static final int REQUEST_REJECTED_NO_IDENTD = 92;
-  public static final int REQUEST_REJECTED_DIFF_IDENTS = 93;
-  public static final int SUCCEEDED = 0;
-  public static final int FAILURE = 1;
-  public static final int NOT_ALLOWED = 2;
-  public static final int NETWORK_UNREACHABLE = 3;
-  public static final int HOST_UNREACHABLE = 4;
-  public static final int REFUSED = 5;
-  public static final int TTL_EXPIRED = 6;
-  public static final int COMMAND_NOT_SUPPORTED = 7;
-  public static final int ADDRESS_TYPE_NOT_SUPPORTED = 8;
-  public static final int INVALID_ADDRESS = 9;
-  private static String proxyHost;
-  private static int proxyPort = 1080;
-  private static String proxyUser;
-  private static String proxyPassword;
-  private static boolean proxyEnable = true;
 
-  private Socket clientSocket = null;
-
-  private InetAddress socksAddress = null;
-  private int socksPort = proxyPort;
-
-  private InetAddress address = null;
-  private int port;
-  private ByteArrayOutputStream outputBuffer;
-  private byte[] username = null;
-  private byte[] password = null;
-  private int serverBoundAddressType;
-  private InetAddress serverBoundAddress = null;
-  private int serverBoundPort = 0;
-
-  public SocksUdpSocket()
-    throws SocketException
-  {
-    this(0, null);
-  }
-
-  public SocksUdpSocket(int paramInt)
-    throws SocketException
-  {
-    this(paramInt, null);
-  }
-
-  public SocksUdpSocket(int paramInt, InetAddress paramInetAddress)
-    throws SocketException
-  {
-    super(paramInt, paramInetAddress);
-    try {
-      impl_new();
-    } catch (Exception localException) {
-      close();
-      throw new SocketException(localException.getMessage());
-    }
-  }
-
-  public void close()
-  {
-    super.close();
-    try {
-      impl_close(); } catch (IOException localIOException) {
-    }
-  }
-
-  protected void finalize() {
-    close();
-  }
-
-  public void connect(InetAddress paramInetAddress, int paramInt)
-  {
-    try
+    public SocksUdpSocket()
+        throws java.net.SocketException
     {
-      impl_connect(paramInetAddress, paramInt);
-    } catch (IOException localIOException) {
-      close();
-    }
-  }
-
-  public void disconnect()
-  {
-    impl_disconnect();
-  }
-
-  public InetAddress getInetAddress()
-  {
-    return impl_getInetAddress();
-  }
-
-  public int getPort()
-  {
-    return impl_getPort();
-  }
-
-  public void send(DatagramPacket paramDatagramPacket)
-    throws IOException
-  {
-    impl_send(paramDatagramPacket);
-  }
-
-  public void receive(DatagramPacket paramDatagramPacket)
-    throws IOException
-  {
-    impl_receive(paramDatagramPacket);
-  }
-
-  public static String getProxyHost()
-  {
-    return proxyHost; } 
-  public static int getProxyPort() { return proxyPort; } 
-  public static String getProxyUser() { return proxyUser; } 
-  public static String getProxyPassword() { return proxyPassword; } 
-  public static boolean isProxyEnable() { return (proxyEnable) && (proxyHost != null); } 
-  public static void setProxyHost(String paramString) {
-    proxyHost = paramString; } 
-  public static void setProxyPort(int paramInt) { proxyPort = paramInt; } 
-  public static void setProxyUser(String paramString) { proxyUser = paramString; } 
-  public static void setProxyPassword(String paramString) { proxyPassword = paramString; } 
-  public static void setProxyEnable(boolean paramBoolean) { proxyEnable = paramBoolean;
-  }
-
-  public InetAddress getSocksAddress()
-  {
-    return this.socksAddress;
-  }
-
-  public int getSocksPort() {
-    return this.socksPort;
-  }
-
-  private InetAddress impl_getInetAddress()
-  {
-    return this.address; } 
-  private int impl_getPort() { return this.port;
-  }
-
-  private void impl_new()
-    throws Exception
-  {
-    if (!isProxyEnable())
-      return;
-    this.socksAddress = InetAddress.getByName(proxyHost);
-    this.outputBuffer = new ByteArrayOutputStream(2048);
-    if (proxyUser != null) this.username = proxyUser.getBytes();
-    if (proxyPassword != null) this.password = proxyPassword.getBytes();
-    doSocksConnect();
-  }
-  private void impl_connect(InetAddress paramInetAddress, int paramInt) throws IOException {
-    if (this.socksAddress == null)
-      super.connect(paramInetAddress, paramInt);
-    this.address = paramInetAddress;
-    this.port = paramInt;
-  }
-  private void impl_disconnect() {
-    this.address = null;
-    this.port = 0;
-    if (this.socksAddress == null)
-      super.disconnect(); 
-  }
-
-  private void impl_close() throws IOException {
-    if (this.clientSocket != null) {
-      try {
-        this.clientSocket.close(); } catch (IOException localIOException) {
-      }
-      this.clientSocket = null;
-    }
-  }
-
-  private void impl_send(DatagramPacket paramDatagramPacket) throws IOException {
-    if (this.socksAddress == null) {
-      super.send(paramDatagramPacket);
-      return;
+        this(0, null);
     }
 
-    InetAddress localInetAddress = paramDatagramPacket.getAddress();
-    int i = paramDatagramPacket.getPort();
-    if ((this.address != null) && (localInetAddress == null)) {
-      localInetAddress = this.address;
-      i = this.port;
-    }
-    if (localInetAddress == null) {
-      throw new IllegalArgumentException("Both of remote address and packet address are null.");
-    }
-
-    this.outputBuffer.reset();
-    this.outputBuffer.write(0);
-    this.outputBuffer.write(0);
-    this.outputBuffer.write(0);
-
-    this.outputBuffer.write(1);
-    this.outputBuffer.write(getAddress(localInetAddress));
-    this.outputBuffer.write(getPort(i));
-    this.outputBuffer.write(paramDatagramPacket.getData(), paramDatagramPacket.getOffset(), paramDatagramPacket.getLength());
-
-    byte[] arrayOfByte = this.outputBuffer.toByteArray();
-    paramDatagramPacket = new DatagramPacket(arrayOfByte, arrayOfByte.length, this.serverBoundAddress, this.serverBoundPort);
-    super.send(paramDatagramPacket);
-  }
-
-  protected void impl_receive(DatagramPacket paramDatagramPacket) throws IOException {
-    super.receive(paramDatagramPacket);
-
-    if (this.socksAddress == null)
-      return;
-    if (this.serverBoundPort != paramDatagramPacket.getPort())
-      return;
-    if (!this.serverBoundAddress.equals(paramDatagramPacket.getAddress())) {
-      if (!this.serverBoundAddress.getHostAddress().equals("127.0.0.1"))
-        return;
-      if (!paramDatagramPacket.getAddress().equals(InetAddress.getLocalHost())) {
-        return;
-      }
-    }
-    byte[] arrayOfByte = paramDatagramPacket.getData();
-    int i = paramDatagramPacket.getLength();
-    int j = paramDatagramPacket.getOffset();
-    if ((i < 10) || (arrayOfByte[(j + 0)] != 0) || (arrayOfByte[(j + 1)] != 0) || (arrayOfByte[(j + 2)] != 0) || (arrayOfByte[(j + 3)] != 1))
+    public SocksUdpSocket(int i)
+        throws java.net.SocketException
     {
-      throw new IOException("Unkown socks datagram packet: " + new String(arrayOfByte));
+        this(i, null);
     }
-    InetAddress localInetAddress = getInetAddress(arrayOfByte[(j + 3)], arrayOfByte, j + 4);
-    int k = getPortValue(arrayOfByte, j + 8);
 
-    paramDatagramPacket.setData(arrayOfByte, j + 10, i - 10);
-    paramDatagramPacket.setAddress(localInetAddress);
-    paramDatagramPacket.setPort(k);
-  }
-
-  private static final byte[] getAddress(InetAddress paramInetAddress)
-  {
-    if (paramInetAddress == null) {
-      return new byte[4];
-    }
-    return paramInetAddress.getAddress();
-  }
-  private static final byte[] getPort(int paramInt) {
-    byte[] arrayOfByte = new byte[2];
-    arrayOfByte[0] = (byte)(paramInt >>> 8 & 0xFF);
-    arrayOfByte[1] = (byte)(paramInt & 0xFF);
-    return arrayOfByte;
-  }
-  private static final byte[] getPort(byte[] paramArrayOfByte, int paramInt) {
-    byte[] arrayOfByte = new byte[2];
-    arrayOfByte[0] = paramArrayOfByte[paramInt];
-    arrayOfByte[1] = paramArrayOfByte[(paramInt + 1)];
-    return arrayOfByte;
-  }
-  private static final int getPortValue(byte[] paramArrayOfByte, int paramInt) {
-    int i = paramArrayOfByte[paramInt] < 0 ? (short)paramArrayOfByte[paramInt] + 256 : paramArrayOfByte[paramInt];
-    i <<= 8;
-    paramInt++;
-    i += (paramArrayOfByte[paramInt] < 0 ? (short)paramArrayOfByte[paramInt] + 256 : paramArrayOfByte[paramInt]);
-    return i;
-  }
-
-  private static final InetAddress getInetAddress(int paramInt1, byte[] paramArrayOfByte, int paramInt2)
-    throws IOException
-  {
-    int i;
-    String str;
-    switch (paramInt1) {
-    case 1:
-      StringBuffer localStringBuffer = new StringBuffer(16);
-      for (i = paramInt2; i < paramInt2 + 4; i++) {
-        localStringBuffer.append(paramArrayOfByte[i] < 0 ? (short)(paramArrayOfByte[i] + 256) : (short)paramArrayOfByte[i]);
-        if (i < paramInt2 + 3)
-          localStringBuffer.append('.');
-      }
-      str = localStringBuffer.toString();
-      break;
-    case 3:
-      i = paramArrayOfByte[(paramInt2++)];
-      if (i < 0) i += 256;
-      str = new String(paramArrayOfByte, paramInt2, i);
-      break;
-    case 4:
-      throw new IOException("Error: IPV6 is not supported.");
-    case 2:
-    default:
-      throw new IOException("Error: Unknown IP address type.");
-    }
-    return InetAddress.getByName(str);
-  }
-
-  private synchronized void doSocksConnect() throws IOException {
-    for (int i = 0; i < 5; i++) {
-      try {
-        this.clientSocket = new Socket(this.socksAddress, this.socksPort, getLocalAddress(), 0);
-        this.clientSocket.setSoTimeout(15000);
-      }
-      catch (IOException localIOException) {
-        if (i < 4) {
-          try {
-            Thread.sleep(200L); } catch (InterruptedException localInterruptedException) {
-          }
-        } else {
-          close();
-          throw localIOException;
+    public SocksUdpSocket(int i, java.net.InetAddress inetaddress)
+        throws java.net.SocketException
+    {
+        super(i, inetaddress);
+        clientSocket = null;
+        socksAddress = null;
+        socksPort = proxyPort;
+        address = null;
+        username = null;
+        password = null;
+        serverBoundAddress = null;
+        serverBoundPort = 0;
+        try
+        {
+            impl_new();
         }
-      }
-    }
-    connectSocksV5();
-    requestSocks_COMMAND_UDP_ASSOCIATE();
-    replySocks_COMMAND_UDP_ASSOCIATE();
-    this.clientSocket.setSoTimeout(0);
-  }
-
-  private String Username_AND_Password_Authentication_of_V5() throws IOException {
-    this.outputBuffer.reset();
-    this.outputBuffer.write(1);
-    if (this.username == null) {
-      this.outputBuffer.write(0);
-    } else {
-      this.outputBuffer.write(this.username.length);
-      this.outputBuffer.write(this.username);
-    }
-    if (this.password == null) {
-      this.outputBuffer.write(0);
-    } else {
-      this.outputBuffer.write(this.password.length);
-      this.outputBuffer.write(this.password);
-    }
-
-    OutputStream localOutputStream = this.clientSocket.getOutputStream();
-    this.outputBuffer.writeTo(localOutputStream);
-    localOutputStream.flush();
-
-    String str = null;
-    byte[] arrayOfByte = new byte[2];
-    InputStream localInputStream = this.clientSocket.getInputStream();
-    int i;
-    while ((i = localInputStream.read(arrayOfByte)) >= 0) {
-      if (i == 0)
-        continue;
-      if ((i < 2) || (arrayOfByte[0] != 1)) {
-        str = "failed to parse the authentication reply from the socks server."; } else {
-        if (arrayOfByte[1] == 0) break;
-        str = "failed to through the authentication reply from the socks server.";
-      }
-    }
-
-    return str;
-  }
-
-  private void connectSocksV5() throws IOException {
-    this.outputBuffer.reset();
-    this.outputBuffer.write(5);
-
-    this.outputBuffer.write(2);
-    this.outputBuffer.write(0);
-    this.outputBuffer.write(2);
-
-    OutputStream localOutputStream = this.clientSocket.getOutputStream();
-    this.outputBuffer.writeTo(localOutputStream);
-    localOutputStream.flush();
-
-    byte[] arrayOfByte = new byte[2];
-    InputStream localInputStream = this.clientSocket.getInputStream();
-    int i;
-    while ((i = localInputStream.read(arrayOfByte)) >= 0) {
-      String str = null;
-      if (i == 0)
-        continue;
-      if ((i < 2) || (arrayOfByte[0] != 5))
-        str = "failed to parse the reply from the socks server.";
-      else {
-        switch (arrayOfByte[1]) {
-        case 0:
-          break;
-        case 1:
-          str = "GSSAPI negotiation hasn't been still complemented.";
-          break;
-        case 2:
-          str = Username_AND_Password_Authentication_of_V5();
-          break;
-        case 3:
-          str = "CHAP negotiation hasn't been still complemented.";
-          break;
-        case -1:
-          str = "No acceptable negotiation method.";
-          break;
-        default:
-          str = "The negotiation method with a METHOD number of " + arrayOfByte[1] + " hasn't been still complemented.";
+        catch(java.lang.Exception exception)
+        {
+            close();
+            throw new SocketException(exception.getMessage());
         }
-      }
-
-      if (str == null) break;
-      close();
-      throw new IOException("(" + this.socksAddress.getHostAddress() + ":" + this.socksPort + ") " + str);
     }
-  }
 
-  private void requestSocks_COMMAND_UDP_ASSOCIATE()
-    throws IOException
-  {
-    this.outputBuffer.reset();
+    public void close()
+    {
+        super.close();
+        try
+        {
+            impl_close();
+        }
+        catch(java.io.IOException ioexception) { }
+    }
 
-    this.outputBuffer.write(5);
-    this.outputBuffer.write(3);
-    this.outputBuffer.write(0);
-    this.outputBuffer.write(1);
-    this.outputBuffer.write(getAddress(getLocalAddress()));
-    this.outputBuffer.write(getPort(getLocalPort()));
-    OutputStream localOutputStream = this.clientSocket.getOutputStream();
-    this.outputBuffer.writeTo(localOutputStream);
-    localOutputStream.flush();
-  }
+    protected void finalize()
+    {
+        close();
+    }
 
-  private void replySocks_COMMAND_UDP_ASSOCIATE() throws IOException
-  {
-    byte[] arrayOfByte = new byte[64];
-    InputStream localInputStream = this.clientSocket.getInputStream();
-    int i;
-    while ((i = localInputStream.read(arrayOfByte)) >= 0) {
-      String str = null;
-      if (i == 0)
-        continue;
-      if ((i < 8) || (arrayOfByte[0] != 5))
-        str = "failed to parse the reply from the socks server.";
-      else {
-        switch (arrayOfByte[1]) {
-        case 0:
-          this.serverBoundAddressType = arrayOfByte[3];
-          int j = 4;
-          this.serverBoundAddress = getInetAddress(this.serverBoundAddressType, arrayOfByte, j);
-          if (this.serverBoundAddress.getHostAddress().equals("0.0.0.0"))
-            this.serverBoundAddress = getLocalAddress();
-          switch (this.serverBoundAddressType) {
-          case 3:
-            j += (arrayOfByte[(j + 1)] < 0 ? arrayOfByte[(j + 1)] + 256 : arrayOfByte[(j + 1)]) + 1;
+    public void connect(java.net.InetAddress inetaddress, int i)
+    {
+        try
+        {
+            impl_connect(inetaddress, i);
+        }
+        catch(java.io.IOException ioexception)
+        {
+            close();
+        }
+    }
+
+    public void disconnect()
+    {
+        impl_disconnect();
+    }
+
+    public java.net.InetAddress getInetAddress()
+    {
+        return impl_getInetAddress();
+    }
+
+    public int getPort()
+    {
+        return impl_getPort();
+    }
+
+    public void send(java.net.DatagramPacket datagrampacket)
+        throws java.io.IOException
+    {
+        impl_send(datagrampacket);
+    }
+
+    public void receive(java.net.DatagramPacket datagrampacket)
+        throws java.io.IOException
+    {
+        impl_receive(datagrampacket);
+    }
+
+    public static java.lang.String getProxyHost()
+    {
+        return proxyHost;
+    }
+
+    public static int getProxyPort()
+    {
+        return proxyPort;
+    }
+
+    public static java.lang.String getProxyUser()
+    {
+        return proxyUser;
+    }
+
+    public static java.lang.String getProxyPassword()
+    {
+        return proxyPassword;
+    }
+
+    public static boolean isProxyEnable()
+    {
+        return proxyEnable && proxyHost != null;
+    }
+
+    public static void setProxyHost(java.lang.String s)
+    {
+        proxyHost = s;
+    }
+
+    public static void setProxyPort(int i)
+    {
+        proxyPort = i;
+    }
+
+    public static void setProxyUser(java.lang.String s)
+    {
+        proxyUser = s;
+    }
+
+    public static void setProxyPassword(java.lang.String s)
+    {
+        proxyPassword = s;
+    }
+
+    public static void setProxyEnable(boolean flag)
+    {
+        proxyEnable = flag;
+    }
+
+    public java.net.InetAddress getSocksAddress()
+    {
+        return socksAddress;
+    }
+
+    public int getSocksPort()
+    {
+        return socksPort;
+    }
+
+    private java.net.InetAddress impl_getInetAddress()
+    {
+        return address;
+    }
+
+    private int impl_getPort()
+    {
+        return port;
+    }
+
+    private void impl_new()
+        throws java.lang.Exception
+    {
+        if(!com.maddox.rts.net.SocksUdpSocket.isProxyEnable())
+            return;
+        socksAddress = java.net.InetAddress.getByName(proxyHost);
+        outputBuffer = new ByteArrayOutputStream(2048);
+        if(proxyUser != null)
+            username = proxyUser.getBytes();
+        if(proxyPassword != null)
+            password = proxyPassword.getBytes();
+        doSocksConnect();
+    }
+
+    private void impl_connect(java.net.InetAddress inetaddress, int i)
+        throws java.io.IOException
+    {
+        if(socksAddress == null)
+            super.connect(inetaddress, i);
+        address = inetaddress;
+        port = i;
+    }
+
+    private void impl_disconnect()
+    {
+        address = null;
+        port = 0;
+        if(socksAddress == null)
+            super.disconnect();
+    }
+
+    private void impl_close()
+        throws java.io.IOException
+    {
+        if(clientSocket != null)
+        {
+            try
+            {
+                clientSocket.close();
+            }
+            catch(java.io.IOException ioexception) { }
+            clientSocket = null;
+        }
+    }
+
+    private void impl_send(java.net.DatagramPacket datagrampacket)
+        throws java.io.IOException
+    {
+        if(socksAddress == null)
+        {
+            super.send(datagrampacket);
+            return;
+        }
+        java.net.InetAddress inetaddress = datagrampacket.getAddress();
+        int i = datagrampacket.getPort();
+        if(address != null && inetaddress == null)
+        {
+            inetaddress = address;
+            i = port;
+        }
+        if(inetaddress == null)
+        {
+            throw new IllegalArgumentException("Both of remote address and packet address are null.");
+        } else
+        {
+            outputBuffer.reset();
+            outputBuffer.write(0);
+            outputBuffer.write(0);
+            outputBuffer.write(0);
+            outputBuffer.write(1);
+            outputBuffer.write(com.maddox.rts.net.SocksUdpSocket.getAddress(inetaddress));
+            outputBuffer.write(com.maddox.rts.net.SocksUdpSocket.getPort(i));
+            outputBuffer.write(datagrampacket.getData(), datagrampacket.getOffset(), datagrampacket.getLength());
+            byte abyte0[] = outputBuffer.toByteArray();
+            datagrampacket = new DatagramPacket(abyte0, abyte0.length, serverBoundAddress, serverBoundPort);
+            super.send(datagrampacket);
+            return;
+        }
+    }
+
+    protected void impl_receive(java.net.DatagramPacket datagrampacket)
+        throws java.io.IOException
+    {
+        super.receive(datagrampacket);
+        if(socksAddress == null)
+            return;
+        if(serverBoundPort != datagrampacket.getPort())
+            return;
+        if(!serverBoundAddress.equals(datagrampacket.getAddress()))
+        {
+            if(!serverBoundAddress.getHostAddress().equals("127.0.0.1"))
+                return;
+            if(!datagrampacket.getAddress().equals(java.net.InetAddress.getLocalHost()))
+                return;
+        }
+        byte abyte0[] = datagrampacket.getData();
+        int i = datagrampacket.getLength();
+        int j = datagrampacket.getOffset();
+        if(i < 10 || abyte0[j + 0] != 0 || abyte0[j + 1] != 0 || abyte0[j + 2] != 0 || abyte0[j + 3] != 1)
+        {
+            throw new IOException("Unkown socks datagram packet: " + new String(abyte0));
+        } else
+        {
+            java.net.InetAddress inetaddress = com.maddox.rts.net.SocksUdpSocket.getInetAddress(abyte0[j + 3], abyte0, j + 4);
+            int k = com.maddox.rts.net.SocksUdpSocket.getPortValue(abyte0, j + 8);
+            datagrampacket.setData(abyte0, j + 10, i - 10);
+            datagrampacket.setAddress(inetaddress);
+            datagrampacket.setPort(k);
+            return;
+        }
+    }
+
+    private static final byte[] getAddress(java.net.InetAddress inetaddress)
+    {
+        if(inetaddress == null)
+            return new byte[4];
+        else
+            return inetaddress.getAddress();
+    }
+
+    private static final byte[] getPort(int i)
+    {
+        byte abyte0[] = new byte[2];
+        abyte0[0] = (byte)(i >>> 8 & 0xff);
+        abyte0[1] = (byte)(i & 0xff);
+        return abyte0;
+    }
+
+    private static final byte[] getPort(byte abyte0[], int i)
+    {
+        byte abyte1[] = new byte[2];
+        abyte1[0] = abyte0[i];
+        abyte1[1] = abyte0[i + 1];
+        return abyte1;
+    }
+
+    private static final int getPortValue(byte abyte0[], int i)
+    {
+        int j = abyte0[i] >= 0 ? ((int) (abyte0[i])) : (short)abyte0[i] + 256;
+        j <<= 8;
+        i++;
+        j += abyte0[i] >= 0 ? ((int) (abyte0[i])) : (short)abyte0[i] + 256;
+        return j;
+    }
+
+    private static final java.net.InetAddress getInetAddress(int i, byte abyte0[], int j)
+        throws java.io.IOException
+    {
+        java.lang.String s;
+        switch(i)
+        {
+        case 1: // '\001'
+            java.lang.StringBuffer stringbuffer = new StringBuffer(16);
+            for(int k = j; k < j + 4; k++)
+            {
+                stringbuffer.append(abyte0[k] >= 0 ? ((int) ((short)abyte0[k])) : ((int) ((short)(abyte0[k] + 256))));
+                if(k < j + 3)
+                    stringbuffer.append('.');
+            }
+
+            s = stringbuffer.toString();
             break;
-          case 1:
-            j += 4;
+
+        case 3: // '\003'
+            int l = abyte0[j++];
+            if(l < 0)
+                l += 256;
+            s = new String(abyte0, j, l);
             break;
-          case 2:
-          case 4:
-          default:
-            j += 16;
-          }
 
-          this.serverBoundPort = getPortValue(arrayOfByte, j);
+        case 4: // '\004'
+            throw new IOException("Error: IPV6 is not supported.");
 
-          break;
-        case 1:
-          str = "general SOCKS server failure";
-          break;
-        case 2:
-          str = "connection not allowed by ruleset";
-          break;
-        case 3:
-          str = "Network unreachable";
-          break;
-        case 4:
-          str = "Host unreachable";
-          break;
-        case 5:
-          str = "Connection refused";
-          break;
-        case 6:
-          str = "TTL expired";
-          break;
-        case 7:
-          str = "Command not supported";
-          break;
-        case 8:
-          str = "Address type not supported";
-          break;
-        case 9:
-          str = "Invalid address";
-          break;
+        case 2: // '\002'
         default:
-          str = "unknown reply code (" + arrayOfByte[1] + ")";
+            throw new IOException("Error: Unknown IP address type.");
         }
-      }
-
-      if (str == null) break;
-      close();
-      throw new IOException("(" + this.socksAddress.getHostAddress() + ":" + this.socksPort + ") " + str);
+        return java.net.InetAddress.getByName(s);
     }
-  }
+
+    private synchronized void doSocksConnect()
+        throws java.io.IOException
+    {
+        for(int i = 0; i < 5;)
+            try
+            {
+                clientSocket = new Socket(socksAddress, socksPort, getLocalAddress(), 0);
+                clientSocket.setSoTimeout(15000);
+                break;
+            }
+            catch(java.io.IOException ioexception)
+            {
+                if(i < 4)
+                {
+                    try
+                    {
+                        java.lang.Thread.sleep(200L);
+                    }
+                    catch(java.lang.InterruptedException interruptedexception) { }
+                } else
+                {
+                    close();
+                    throw ioexception;
+                }
+                i++;
+            }
+
+        connectSocksV5();
+        requestSocks_COMMAND_UDP_ASSOCIATE();
+        replySocks_COMMAND_UDP_ASSOCIATE();
+        clientSocket.setSoTimeout(0);
+    }
+
+    private java.lang.String Username_AND_Password_Authentication_of_V5()
+        throws java.io.IOException
+    {
+        outputBuffer.reset();
+        outputBuffer.write(1);
+        if(username == null)
+        {
+            outputBuffer.write(0);
+        } else
+        {
+            outputBuffer.write(username.length);
+            outputBuffer.write(username);
+        }
+        if(password == null)
+        {
+            outputBuffer.write(0);
+        } else
+        {
+            outputBuffer.write(password.length);
+            outputBuffer.write(password);
+        }
+        java.io.OutputStream outputstream = clientSocket.getOutputStream();
+        outputBuffer.writeTo(outputstream);
+        outputstream.flush();
+        java.lang.String s = null;
+        byte abyte0[] = new byte[2];
+        java.io.InputStream inputstream = clientSocket.getInputStream();
+        int i;
+        while((i = inputstream.read(abyte0)) >= 0) 
+            if(i != 0)
+            {
+                if(i < 2 || abyte0[0] != 1)
+                    s = "failed to parse the authentication reply from the socks server.";
+                else
+                if(abyte0[1] != 0)
+                    s = "failed to through the authentication reply from the socks server.";
+                break;
+            }
+        return s;
+    }
+
+    private void connectSocksV5()
+        throws java.io.IOException
+    {
+        outputBuffer.reset();
+        outputBuffer.write(5);
+        outputBuffer.write(2);
+        outputBuffer.write(0);
+        outputBuffer.write(2);
+        java.io.OutputStream outputstream = clientSocket.getOutputStream();
+        outputBuffer.writeTo(outputstream);
+        outputstream.flush();
+        byte abyte0[] = new byte[2];
+        java.io.InputStream inputstream = clientSocket.getInputStream();
+        int i;
+        while((i = inputstream.read(abyte0)) >= 0) 
+        {
+            java.lang.String s = null;
+            if(i != 0)
+            {
+                if(i < 2 || abyte0[0] != 5)
+                    s = "failed to parse the reply from the socks server.";
+                else
+                    switch(abyte0[1])
+                    {
+                    case 1: // '\001'
+                        s = "GSSAPI negotiation hasn't been still complemented.";
+                        break;
+
+                    case 2: // '\002'
+                        s = Username_AND_Password_Authentication_of_V5();
+                        break;
+
+                    case 3: // '\003'
+                        s = "CHAP negotiation hasn't been still complemented.";
+                        break;
+
+                    case -1: 
+                        s = "No acceptable negotiation method.";
+                        break;
+
+                    default:
+                        s = "The negotiation method with a METHOD number of " + abyte0[1] + " hasn't been still complemented.";
+                        break;
+
+                    case 0: // '\0'
+                        break;
+                    }
+                if(s != null)
+                {
+                    close();
+                    throw new IOException("(" + socksAddress.getHostAddress() + ":" + socksPort + ") " + s);
+                }
+                break;
+            }
+        }
+    }
+
+    private void requestSocks_COMMAND_UDP_ASSOCIATE()
+        throws java.io.IOException
+    {
+        outputBuffer.reset();
+        outputBuffer.write(5);
+        outputBuffer.write(3);
+        outputBuffer.write(0);
+        outputBuffer.write(1);
+        outputBuffer.write(com.maddox.rts.net.SocksUdpSocket.getAddress(getLocalAddress()));
+        outputBuffer.write(com.maddox.rts.net.SocksUdpSocket.getPort(getLocalPort()));
+        java.io.OutputStream outputstream = clientSocket.getOutputStream();
+        outputBuffer.writeTo(outputstream);
+        outputstream.flush();
+    }
+
+    private void replySocks_COMMAND_UDP_ASSOCIATE()
+        throws java.io.IOException
+    {
+        byte abyte0[] = new byte[64];
+        java.io.InputStream inputstream = clientSocket.getInputStream();
+        int i;
+        while((i = inputstream.read(abyte0)) >= 0) 
+        {
+            java.lang.String s = null;
+            if(i != 0)
+            {
+                if(i < 8 || abyte0[0] != 5)
+                    s = "failed to parse the reply from the socks server.";
+                else
+                    switch(abyte0[1])
+                    {
+                    case 0: // '\0'
+                        serverBoundAddressType = abyte0[3];
+                        int j = 4;
+                        serverBoundAddress = com.maddox.rts.net.SocksUdpSocket.getInetAddress(serverBoundAddressType, abyte0, j);
+                        if(serverBoundAddress.getHostAddress().equals("0.0.0.0"))
+                            serverBoundAddress = getLocalAddress();
+                        switch(serverBoundAddressType)
+                        {
+                        case 3: // '\003'
+                            j += (abyte0[j + 1] >= 0 ? abyte0[j + 1] : abyte0[j + 1] + 256) + 1;
+                            break;
+
+                        case 1: // '\001'
+                            j += 4;
+                            break;
+
+                        case 2: // '\002'
+                        case 4: // '\004'
+                        default:
+                            j += 16;
+                            break;
+                        }
+                        serverBoundPort = com.maddox.rts.net.SocksUdpSocket.getPortValue(abyte0, j);
+                        break;
+
+                    case 1: // '\001'
+                        s = "general SOCKS server failure";
+                        break;
+
+                    case 2: // '\002'
+                        s = "connection not allowed by ruleset";
+                        break;
+
+                    case 3: // '\003'
+                        s = "Network unreachable";
+                        break;
+
+                    case 4: // '\004'
+                        s = "Host unreachable";
+                        break;
+
+                    case 5: // '\005'
+                        s = "Connection refused";
+                        break;
+
+                    case 6: // '\006'
+                        s = "TTL expired";
+                        break;
+
+                    case 7: // '\007'
+                        s = "Command not supported";
+                        break;
+
+                    case 8: // '\b'
+                        s = "Address type not supported";
+                        break;
+
+                    case 9: // '\t'
+                        s = "Invalid address";
+                        break;
+
+                    default:
+                        s = "unknown reply code (" + abyte0[1] + ")";
+                        break;
+                    }
+                if(s != null)
+                {
+                    close();
+                    throw new IOException("(" + socksAddress.getHostAddress() + ":" + socksPort + ") " + s);
+                }
+                break;
+            }
+        }
+    }
+
+    static final boolean bLog = false;
+    static final java.lang.String PROMPT = "socksUdp";
+    public static final int SOCKS_PORT = 1080;
+    public static final int SOCKS_VERSION_5 = 5;
+    public static final int COMMAND_CONNECT = 1;
+    public static final int COMMAND_BIND = 2;
+    public static final int COMMAND_UDP_ASSOCIATE = 3;
+    public static final int NO_AUTHENTICATION_REQUIRED = 0;
+    public static final int GSSAPI = 1;
+    public static final int USERNAME_AND_PASSWORD = 2;
+    public static final int CHAP = 3;
+    public static final int NO_ACCEPTABLE_METHODS = 255;
+    public static final int IP_V4 = 1;
+    public static final int DOMAINNAME = 3;
+    public static final int IP_V6 = 4;
+    public static final int NULL = 0;
+    public static final int REQUEST_GRANTED = 90;
+    public static final int REQUEST_REJECTED = 91;
+    public static final int REQUEST_REJECTED_NO_IDENTD = 92;
+    public static final int REQUEST_REJECTED_DIFF_IDENTS = 93;
+    public static final int SUCCEEDED = 0;
+    public static final int FAILURE = 1;
+    public static final int NOT_ALLOWED = 2;
+    public static final int NETWORK_UNREACHABLE = 3;
+    public static final int HOST_UNREACHABLE = 4;
+    public static final int REFUSED = 5;
+    public static final int TTL_EXPIRED = 6;
+    public static final int COMMAND_NOT_SUPPORTED = 7;
+    public static final int ADDRESS_TYPE_NOT_SUPPORTED = 8;
+    public static final int INVALID_ADDRESS = 9;
+    private static java.lang.String proxyHost;
+    private static int proxyPort = 1080;
+    private static java.lang.String proxyUser;
+    private static java.lang.String proxyPassword;
+    private static boolean proxyEnable = true;
+    private java.net.Socket clientSocket;
+    private java.net.InetAddress socksAddress;
+    private int socksPort;
+    private java.net.InetAddress address;
+    private int port;
+    private java.io.ByteArrayOutputStream outputBuffer;
+    private byte username[];
+    private byte password[];
+    private int serverBoundAddressType;
+    private java.net.InetAddress serverBoundAddress;
+    private int serverBoundPort;
+
 }

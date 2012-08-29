@@ -1,16 +1,37 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombGun175Napalm.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombGun175Napalm extends BombGun
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            BombGun
+
+public class BombGun175Napalm extends com.maddox.il2.objects.weapons.BombGun
 {
-  static
-  {
-    Class localClass = BombGun175Napalm.class;
-    Property.set(localClass, "bulletClass", Bomb175Napalm.class);
-    Property.set(localClass, "bullets", 1);
-    Property.set(localClass, "shotFreq", 1.0F);
-    Property.set(localClass, "external", 1);
-    Property.set(localClass, "sound", "weapon.bombgun");
-  }
+
+    public BombGun175Napalm()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombGun175Napalm.class;
+        com.maddox.rts.Property.set(class1, "bulletClass", com.maddox.il2.objects.weapons.Bomb175Napalm.class);
+        com.maddox.rts.Property.set(class1, "bullets", 1);
+        com.maddox.rts.Property.set(class1, "shotFreq", 1.0F);
+        com.maddox.rts.Property.set(class1, "external", 1);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bombgun");
+    }
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Statics.java
+
 package com.maddox.il2.objects;
 
 import com.maddox.JGP.Point3d;
@@ -8,9 +13,9 @@ import com.maddox.il2.ai.air.Point_Runaway;
 import com.maddox.il2.ai.air.Point_Stay;
 import com.maddox.il2.ai.air.Point_Taxi;
 import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.ActorDraw;
 import com.maddox.il2.engine.ActorLandMesh;
 import com.maddox.il2.engine.ActorMesh;
-import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.ActorSpawn;
 import com.maddox.il2.engine.ActorSpawnArg;
@@ -49,1126 +54,1358 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-public class Statics extends Actor
-  implements MsgDreamGlobalListener
+public class Statics extends com.maddox.il2.engine.Actor
+    implements com.maddox.il2.engine.MsgDreamGlobalListener
 {
-  private static SectFile ships = null;
-  private static SectFile technics = null;
-  private static SectFile buildings = null;
+    static class Queue
+    {
 
-  public ArrayList bridges = new ArrayList();
-  private ActorSpawn[] spawns;
-  private boolean[] spawnIsPlate;
-  private float[] uniformMaxDist;
-  private ArrayList[] cacheActors;
-  private HashMapInt allBlocks;
-  private HashMapInt allBridge0;
-  private HashMapInt allStates0;
-  private int[] _updateX = new int[1];
-  private int[] _updateY = new int[1];
-
-  private Queue wQueue = new Queue();
-  private Queue sQueue = new Queue();
-
-  private boolean bCheckPlate = true;
-
-  Loc _loc = new Loc();
-  ActorSpawnArg _spawnArg = new ActorSpawnArg();
-
-  public static SectFile getShipsFile()
-  {
-    if (ships == null) {
-      ships = new SectFile("com/maddox/il2/objects/ships.ini");
-      ships.createIndexes();
-    }
-    return ships;
-  }
-
-  public static SectFile getTechnicsFile() {
-    if (technics == null) {
-      technics = new SectFile("com/maddox/il2/objects/technics.ini");
-      technics.createIndexes();
-    }
-    return technics;
-  }
-
-  public static SectFile getBuildingsFile() {
-    if (buildings == null) {
-      buildings = new SectFile("com/maddox/il2/objects/static.ini");
-      buildings.createIndexes();
-    }
-    return buildings;
-  }
-
-  public static int[] readBridgesEndPoints(String paramString) {
-    int[] arrayOfInt = null;
-    try {
-      DataInputStream localDataInputStream = new DataInputStream(new SFSInputStream(paramString));
-
-      int i = localDataInputStream.readInt();
-
-      if (i == -65535) {
-        i = localDataInputStream.readInt();
-      }
-
-      arrayOfInt = new int[i * 4];
-      for (int j = 0; j < i; j++) {
-        int k = localDataInputStream.readInt();
-        int m = localDataInputStream.readInt();
-        int n = localDataInputStream.readInt();
-        int i1 = localDataInputStream.readInt();
-        int i2 = localDataInputStream.readInt();
-        float f = localDataInputStream.readFloat();
-
-        arrayOfInt[(j * 4 + 0)] = k;
-        arrayOfInt[(j * 4 + 1)] = m;
-        arrayOfInt[(j * 4 + 2)] = n;
-        arrayOfInt[(j * 4 + 3)] = i1;
-      }
-      localDataInputStream.close();
-    } catch (Exception localException) {
-      arrayOfInt = null;
-      String str = "Bridges data in '" + paramString + "' DAMAGED: " + localException.getMessage();
-      System.out.println(str);
-    }
-    return arrayOfInt;
-  }
-
-  public static void load(String paramString, List paramList)
-  {
-    World.cur().statics._load(paramString, paramList);
-  }
-
-  private void _load(String paramString, List paramList) {
-    try {
-      DataInputStream localDataInputStream = new DataInputStream(new SFSInputStream(paramString));
-
-      int i = localDataInputStream.readInt();
-      if (i != -65535) {
-        throw new Exception("Not supported sersion");
-      }
-
-      System.out.println("Load bridges");
-      int j = localDataInputStream.readInt();
-      int i2;
-      float f3;
-      Object localObject;
-      for (int k = 0; k < j; k++) {
-        m = localDataInputStream.readInt();
-        int n = localDataInputStream.readInt();
-        i2 = localDataInputStream.readInt();
-        int i4 = localDataInputStream.readInt();
-        int i6 = localDataInputStream.readInt();
-        f3 = localDataInputStream.readFloat();
-        localObject = new Bridge(k, i6, m, n, i2, i4, f3);
-        if (paramList != null) {
-          paramList.add(localObject);
-        }
-      }
-      System.out.println("Load static objects");
-
-      ArrayList localArrayList = new ArrayList();
-
-      j = localDataInputStream.readInt();
-      this.spawns = null;
-      if (j > 0) {
-        m = -1;
-        ActorSpawnArg localActorSpawnArg = new ActorSpawnArg();
-        this.spawns = new ActorSpawn[j];
-        for (i2 = 0; i2 < j; i2++) {
-          String str3 = localDataInputStream.readUTF();
-          if ("com.maddox.il2.objects.air.Runaway".equals(str3))
-            m = i2;
-          this.spawns[i2] = ((ActorSpawn)Spawn.get_WithSoftClass(str3));
-        }
-        j = localDataInputStream.readInt();
-        while (j-- > 0) {
-          i2 = localDataInputStream.readInt();
-          float f1 = localDataInputStream.readFloat();
-          float f2 = localDataInputStream.readFloat();
-          f3 = localDataInputStream.readFloat();
-          this._loc.set(f1, f2, 0.0D, f3, 0.0F, 0.0F);
-          if (m == i2) {
-            localObject = new Loc(this._loc);
-            localArrayList.add(localObject);
-          }
-          if ((i2 < this.spawns.length) && (this.spawns[i2] != null)) {
-            localActorSpawnArg.clear();
-            localActorSpawnArg.point = this._loc.getPoint();
-            localActorSpawnArg.orient = this._loc.getOrient();
-            try {
-              localObject = this.spawns[i2].actorSpawn(localActorSpawnArg);
-              if ((localObject instanceof ActorLandMesh)) {
-                ActorLandMesh localActorLandMesh = (ActorLandMesh)localObject;
-                localActorLandMesh.mesh().setPos(localActorLandMesh.pos.getAbs());
-                Landscape.meshAdd(localActorLandMesh);
-              }
-            } catch (Exception localException3) {
-              System.out.println(localException3.getMessage());
-              localException3.printStackTrace();
-            }
-          }
-        }
-
-      }
-
-      j = localDataInputStream.readInt();
-      this.spawns = null;
-      int m = -1;
-      int i3;
-      int i5;
-      int i8;
-      if (j > 0) {
-        this.spawns = new ActorSpawn[j];
-        this.spawnIsPlate = new boolean[j];
-        this.uniformMaxDist = new float[j];
-        this.cacheActors = new ArrayList[j];
-        this._loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-        for (int i1 = 0; i1 < j; i1++) {
-          String str2 = localDataInputStream.readUTF();
-          if (str2.indexOf("TreeLine") >= 0)
-            m = i1;
-          this.spawns[i1] = ((ActorSpawn)Spawn.get_WithSoftClass(str2));
-          this.cacheActors[i1] = new ArrayList();
-          try
-          {
-            this._spawnArg.point = this._loc.getPoint();
-            this._spawnArg.orient = this._loc.getOrient();
-            Actor localActor = this.spawns[i1].actorSpawn(this._spawnArg);
-            cachePut(i1, localActor);
-            this.spawnIsPlate[i1] = (localActor instanceof Plate);
-            if ((localActor instanceof ActorMesh)) {
-              this.uniformMaxDist[i1] = ((ActorMesh)localActor).mesh().getUniformMaxDist();
-              localActor.draw.uniformMaxDist = this.uniformMaxDist[i1];
-            } else {
-              this.uniformMaxDist[i1] = 0.0F;
-            }
-          } catch (Exception localException2) {
-            System.out.println(localException2.getMessage());
-            localException2.printStackTrace();
-          }
-        }
-
-        i1 = localDataInputStream.readInt();
-        this.allBlocks = new HashMapInt((int)(i1 / 0.75F));
-        int i9;
-        int i12;
-        while (i1-- > 0) {
-          i3 = localDataInputStream.readInt();
-          i5 = i3 & 0xFFFF;
-          int i7 = i3 >> 16 & 0xFFFF;
-          i9 = localDataInputStream.readInt();
-          Block localBlock1 = new Block();
-          localBlock1.code = new int[i9 * 2];
-          float f4 = 0.0F;
-          for (i12 = 0; i12 < i9; i12++) {
-            int i13 = localDataInputStream.readInt();
-            if ((i13 & 0x7FFF) >= this.spawns.length)
-              i13 = 0;
-            localBlock1.code[(i12 * 2 + 0)] = i13;
-            localBlock1.code[(i12 * 2 + 1)] = localDataInputStream.readInt();
-            if (this.spawnIsPlate[(i13 & 0x7FFF)] != 0)
-              localBlock1.bExistPlate = true;
-            float f5 = this.uniformMaxDist[(i13 & 0x7FFF)];
-            if (f4 < f5)
-              f4 = f5;
-          }
-          this.allBlocks.put(key(i7, i5), localBlock1);
-          Engine.drawEnv().setUniformMaxDist(i5, i7, f4);
-          if (localBlock1.bExistPlate) {
-            this.bCheckPlate = false;
-            this._updateX[0] = i5;
-            this._updateY[0] = i7;
-            _msgDreamGlobal(true, 1, 0, this._updateX, this._updateY);
-            this.bCheckPlate = true;
-          }
-        }
-        if (Config.isUSE_RENDER())
+        void clear()
         {
-          i3 = Landscape.getSizeXpix();
-          i5 = Landscape.getSizeYpix();
-          int[] arrayOfInt = new int[i3 + 31 >> 5];
-          int i10;
-          for (i9 = 0; i9 < i5; i9++) {
-            for (i10 = 0; i10 < arrayOfInt.length; i10++) arrayOfInt[i10] = 0;
-            i10 = 0;
-            for (int i11 = 0; i11 < i3; i10++) {
-              if (this.allBlocks.containsKey(key(i9, i11)))
-                arrayOfInt[(i10 >> 5)] |= 1 << (i10 & 0x1F);
-              i11++;
-            }
+            ofs = len = 0;
+        }
 
-            Landscape.MarkStaticActorsCells(0, i9, i3, 1, 200, arrayOfInt);
-          }
-
-          i3 = Landscape.getSizeXpix();
-          i5 = Landscape.getSizeYpix();
-          i8 = 0;
-          for (i9 = 0; i9 < i5; i9++) {
-            for (i10 = 0; i10 < i3; i10++) {
-              if (this.allBlocks.containsKey(key(i9, i10))) {
-                Block localBlock2 = (Block)this.allBlocks.get(key(i9, i10));
-                Landscape.MarkActorCellWithTrees(m, i10, i9, localBlock2.code, localBlock2.code.length);
-                for (i12 = 0; i12 < localBlock2.code.length; i12 += 2) {
-                  if ((localBlock2.code[i12] & 0x7FFF) == m) {
-                    i8++;
-                  }
+        void add(int i, int j)
+        {
+            if(X.length <= len)
+            {
+                int ai[] = new int[len * 2];
+                int ai1[] = new int[len * 2];
+                for(int k = ofs; k < len; k++)
+                {
+                    ai[k] = X[k];
+                    ai1[k] = Y[k];
                 }
-              }
+
+                X = ai;
+                Y = ai1;
             }
-          }
+            X[len] = i;
+            Y[len] = j;
+            len++;
         }
-      }
-      Airdrome localAirdrome = new Airdrome();
-      if (localDataInputStream.available() > 0)
-      {
-        j = localDataInputStream.readInt();
-        localAirdrome.runw = new Point_Runaway[j][];
-        for (i3 = 0; i3 < j; i3++) {
-          i5 = localDataInputStream.readInt();
-          localAirdrome.runw[i3] = new Point_Runaway[i5];
-          for (i8 = 0; i8 < i5; i8++) {
-            localAirdrome.runw[i3][i8] = new Point_Runaway(localDataInputStream.readFloat(), localDataInputStream.readFloat());
-          }
+
+        int ofs;
+        int len;
+        int X[];
+        int Y[];
+
+        Queue()
+        {
+            ofs = 0;
+            len = 0;
+            X = new int[256];
+            Y = new int[256];
         }
-        j = localDataInputStream.readInt();
-        localAirdrome.taxi = new Point_Taxi[j][];
-        for (i3 = 0; i3 < j; i3++) {
-          i5 = localDataInputStream.readInt();
-          localAirdrome.taxi[i3] = new Point_Taxi[i5];
-          for (i8 = 0; i8 < i5; i8++) {
-            localAirdrome.taxi[i3][i8] = new Point_Taxi(localDataInputStream.readFloat(), localDataInputStream.readFloat());
-          }
-        }
-        j = localDataInputStream.readInt();
-        localAirdrome.stay = new Point_Stay[j][];
-        for (i3 = 0; i3 < j; i3++) {
-          i5 = localDataInputStream.readInt();
-          localAirdrome.stay[i3] = new Point_Stay[i5];
-          for (i8 = 0; i8 < i5; i8++)
-            localAirdrome.stay[i3][i8] = new Point_Stay(localDataInputStream.readFloat(), localDataInputStream.readFloat());
-        }
-        localAirdrome.stayHold = new boolean[localAirdrome.stay.length];
-      }
-      World.cur().airdrome = localAirdrome;
-      AirportStatic.make(localArrayList, localAirdrome.runw, localAirdrome.taxi, localAirdrome.stay);
-
-      localDataInputStream.close();
-    } catch (Exception localException1) {
-      String str1 = "Actors load from '" + paramString + "' FAILED: " + localException1.getMessage();
-      System.out.println(str1);
-      localException1.printStackTrace();
-    }
-  }
-
-  public void restoreAllBridges() {
-    int i = 0;
-    while (true) {
-      LongBridge localLongBridge = LongBridge.getByIdx(i);
-      if (localLongBridge == null) break;
-      if (!localLongBridge.isAlive())
-        localLongBridge.BeLive();
-      i++;
-    }
-  }
-
-  public void saveStateBridges(SectFile paramSectFile, int paramInt) {
-    int i = 0;
-    while (true) {
-      LongBridge localLongBridge = LongBridge.getByIdx(i);
-      if (localLongBridge == null) break;
-      if (!localLongBridge.isAlive()) {
-        int j = localLongBridge.NumStateBits();
-        BitSet localBitSet = localLongBridge.GetStateOfSegments();
-        paramSectFile.lineAdd(paramInt, AsciiBitSet.save(i), AsciiBitSet.save(localBitSet, j));
-      }
-      i++;
-    }
-  }
-
-  public void loadStateBridges(SectFile paramSectFile, boolean paramBoolean) {
-    int i = paramSectFile.sectionIndex(paramBoolean ? "AddBridge" : "Bridge");
-    if (i < 0) return;
-    loadStateBridges(paramSectFile, i, paramBoolean);
-  }
-  public void loadStateBridges(SectFile paramSectFile, int paramInt, boolean paramBoolean) {
-    int i = 0;
-    if ((!paramBoolean) && (Mission.isDogfight())) {
-      i = 1;
-      this.allBridge0 = new HashMapInt();
-    }
-    int j = paramSectFile.vars(paramInt);
-    BitSet localBitSet = new BitSet();
-    for (int k = 0; k < j; k++) {
-      String str1 = paramSectFile.var(paramInt, k);
-      String str2 = paramSectFile.value(paramInt, k);
-      int m = AsciiBitSet.load(str1);
-      LongBridge localLongBridge = LongBridge.getByIdx(m);
-      if (localLongBridge != null) {
-        AsciiBitSet.load(str2, localBitSet, localLongBridge.NumStateBits());
-        if (paramBoolean)
-          localBitSet.or(localLongBridge.GetStateOfSegments());
-        localLongBridge.SetStateOfSegments(localBitSet);
-        if (i != 0)
-          this.allBridge0.put(m, localBitSet.clone()); 
-      }
-    }
-  }
-
-  public void restoreAllHouses() {
-    HashMapIntEntry localHashMapIntEntry = this.allBlocks.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      Block localBlock = (Block)localHashMapIntEntry.getValue();
-      if (localBlock.isDestructed())
-        localBlock.restoreAll();
-      localHashMapIntEntry = this.allBlocks.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  public void saveStateHouses(SectFile paramSectFile, int paramInt) {
-    HashMapIntEntry localHashMapIntEntry = this.allBlocks.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      Block localBlock = (Block)localHashMapIntEntry.getValue();
-      if (localBlock.isDestructed()) {
-        int i = localHashMapIntEntry.getKey();
-        paramSectFile.lineAdd(paramInt, AsciiBitSet.save(i), AsciiBitSet.save(localBlock.getDestruction(null), localBlock.amountObjects()));
-      }
-      localHashMapIntEntry = this.allBlocks.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  public void loadStateHouses(SectFile paramSectFile, boolean paramBoolean) {
-    int i = paramSectFile.sectionIndex(paramBoolean ? "AddHouse" : "House");
-    if (i < 0) return;
-    loadStateHouses(paramSectFile, i, paramBoolean);
-  }
-  public void loadStateHouses(SectFile paramSectFile, int paramInt, boolean paramBoolean) {
-    int i = 0;
-    if ((!paramBoolean) && (Mission.isDogfight())) {
-      i = 1;
-      this.allStates0 = new HashMapInt();
-    }
-    int j = paramSectFile.vars(paramInt);
-    byte[] arrayOfByte1 = new byte[32];
-    for (int k = 0; k < j; k++) {
-      String str1 = paramSectFile.var(paramInt, k);
-      String str2 = paramSectFile.value(paramInt, k);
-      int m = AsciiBitSet.load(str1);
-      Block localBlock = (Block)this.allBlocks.get(m);
-      if (localBlock != null) {
-        arrayOfByte1 = AsciiBitSet.load(str2, arrayOfByte1, localBlock.amountObjects());
-        if (paramBoolean) {
-          localBlock.addDestruction(arrayOfByte1);
-        } else {
-          localBlock.setDestruction(arrayOfByte1);
-          if (i != 0) {
-            int n = (localBlock.amountObjects() + 7) / 8;
-            byte[] arrayOfByte2 = new byte[n];
-            System.arraycopy(arrayOfByte1, 0, arrayOfByte2, 0, n);
-            this.allStates0.put(m, arrayOfByte2);
-          }
-        }
-      }
-    }
-  }
-
-  public void restoreAllHouses(float paramFloat1, float paramFloat2, float paramFloat3) {
-    int i = (int)((paramFloat1 - paramFloat3) / 200.0F) - 1;
-    int j = (int)((paramFloat1 + paramFloat3) / 200.0F) + 2;
-    int k = (int)((paramFloat2 - paramFloat3) / 200.0F) - 1;
-    int m = (int)((paramFloat2 + paramFloat3) / 200.0F) + 2;
-    HashMapIntEntry localHashMapIntEntry = this.allBlocks.nextEntry(null);
-    float f = paramFloat3 * paramFloat3;
-    while (localHashMapIntEntry != null) {
-      Block localBlock = (Block)localHashMapIntEntry.getValue();
-      int n = localHashMapIntEntry.getKey();
-      int i1 = key2x(n);
-      int i2 = key2y(n);
-      if ((i1 >= i) && (i1 <= j) && (i2 >= k) && (i2 <= m))
-        localBlock.restoreAll(i1 * 200.0F, i2 * 200.0F, paramFloat1, paramFloat2, f);
-      localHashMapIntEntry = this.allBlocks.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  public void netBridgeSync(NetChannel paramNetChannel)
-  {
-    int i = 0;
-    while (true) {
-      LongBridge localLongBridge = LongBridge.getByIdx(i);
-      if (localLongBridge == null) break;
-      if (!localLongBridge.isAlive()) {
-        int j = localLongBridge.NumStateBits();
-        BitSet localBitSet1 = localLongBridge.GetStateOfSegments();
-        BitSet localBitSet2 = null;
-        if (this.allBridge0 != null)
-          localBitSet2 = (BitSet)this.allBridge0.get(i);
-        if ((localBitSet2 == null) || (!localBitSet2.equals(localBitSet1)))
-          try
-          {
-            NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-            localNetMsgGuaranted.writeByte(28);
-            localNetMsgGuaranted.writeShort(i);
-            int k = (j + 7) / 8;
-            byte[] arrayOfByte = new byte[k];
-            for (int m = 0; m < j; m++) {
-              if (localBitSet1.get(m)) {
-                int n = m / 8;
-                int i1 = m % 8;
-                int tmp150_148 = n;
-                byte[] tmp150_146 = arrayOfByte; tmp150_146[tmp150_148] = (byte)(tmp150_146[tmp150_148] | 1 << i1);
-              }
-            }
-            localNetMsgGuaranted.write(arrayOfByte);
-            NetEnv.host().postTo(paramNetChannel, localNetMsgGuaranted);
-          } catch (Exception localException) {
-          }
-      }
-      i++;
-    }
-  }
-
-  public void netMsgBridgeSync(NetMsgInput paramNetMsgInput) throws IOException {
-    int i = paramNetMsgInput.readUnsignedShort();
-    LongBridge localLongBridge = LongBridge.getByIdx(i);
-    if (localLongBridge == null) return;
-    byte[] arrayOfByte = new byte[paramNetMsgInput.available()];
-    paramNetMsgInput.read(arrayOfByte);
-    int j = localLongBridge.NumStateBits();
-    BitSet localBitSet = localLongBridge.GetStateOfSegments();
-    for (int k = 0; k < j; k++) {
-      int m = k / 8;
-      int n = k % 8;
-      if ((arrayOfByte[m] & 1 << n) != 0) localBitSet.set(k); else
-        localBitSet.clear(k);
-    }
-    localLongBridge.SetStateOfSegments(localBitSet);
-  }
-
-  public boolean onBridgeDied(int paramInt1, int paramInt2, int paramInt3, Actor paramActor)
-  {
-    ActorNet localActorNet;
-    if (Mission.isServer()) {
-      try {
-        NetMsgGuaranted localNetMsgGuaranted1 = new NetMsgGuaranted();
-        localNetMsgGuaranted1.writeByte(27);
-        localNetMsgGuaranted1.writeShort(paramInt1);
-        localNetMsgGuaranted1.writeShort(paramInt2);
-        localNetMsgGuaranted1.writeByte(paramInt3);
-        localActorNet = null;
-        if (Actor.isValid(paramActor))
-          localActorNet = paramActor.net;
-        localNetMsgGuaranted1.writeNetObj(localActorNet);
-        NetEnv.host().post(localNetMsgGuaranted1); } catch (Exception localException1) {
-      }
-      return true;
-    }
-    try {
-      NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted();
-      localNetMsgGuaranted2.writeByte(26);
-      localNetMsgGuaranted2.writeShort(paramInt1);
-      localNetMsgGuaranted2.writeShort(paramInt2);
-      localNetMsgGuaranted2.writeByte(paramInt3);
-      localActorNet = null;
-      if (Actor.isValid(paramActor))
-        localActorNet = paramActor.net;
-      localNetMsgGuaranted2.writeNetObj(localActorNet);
-      NetEnv.host().postTo(Main.cur().netServerParams.masterChannel(), localNetMsgGuaranted2); } catch (Exception localException2) {
-    }
-    return false;
-  }
-
-  public void netMsgBridgeRDie(NetMsgInput paramNetMsgInput) throws IOException
-  {
-    int i = paramNetMsgInput.readUnsignedShort();
-    int j = paramNetMsgInput.readUnsignedShort();
-    int k = paramNetMsgInput.readByte();
-    Actor localActor = null;
-    NetObj localNetObj = paramNetMsgInput.readNetObj();
-    if (localNetObj != null)
-      localActor = (Actor)localNetObj.superObj();
-    if (Mission.isServer()) {
-      BridgeSegment localBridgeSegment = BridgeSegment.getByIdx(i, j);
-      localBridgeSegment.netForcePartDestroing(k, localActor);
-    } else {
-      onBridgeDied(i, j, k, localActor);
-    }
-  }
-
-  public void netMsgBridgeDie(NetObj paramNetObj, NetMsgInput paramNetMsgInput) throws IOException {
-    int i = paramNetMsgInput.readUnsignedShort();
-    int j = paramNetMsgInput.readUnsignedShort();
-    int k = paramNetMsgInput.readByte();
-    Actor localActor = null;
-    NetObj localNetObj = paramNetMsgInput.readNetObj();
-    if (localNetObj != null)
-      localActor = (Actor)localNetObj.superObj();
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(27);
-      localNetMsgGuaranted.writeShort(i);
-      localNetMsgGuaranted.writeShort(j);
-      localNetMsgGuaranted.writeByte(k);
-      ActorNet localActorNet = null;
-      if (Actor.isValid(localActor))
-        localActorNet = localActor.net;
-      localNetMsgGuaranted.writeNetObj(localActorNet);
-      paramNetObj.post(localNetMsgGuaranted); } catch (Exception localException) {
-    }
-    BridgeSegment localBridgeSegment = BridgeSegment.getByIdx(i, j);
-    localBridgeSegment.netForcePartDestroing(k, localActor);
-  }
-
-  public void netHouseSync(NetChannel paramNetChannel)
-  {
-    HashMapIntEntry localHashMapIntEntry = this.allBlocks.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      Block localBlock = (Block)localHashMapIntEntry.getValue();
-      int i = localHashMapIntEntry.getKey();
-      byte[] arrayOfByte = null;
-      if (this.allStates0 != null)
-        arrayOfByte = (byte[])(byte[])this.allStates0.get(i);
-      if (arrayOfByte == null) {
-        if (localBlock.isDestructed())
-          putMsgHouseSync(paramNetChannel, i, localBlock);
-      }
-      else if (!localBlock.isEquals(arrayOfByte)) {
-        putMsgHouseSync(paramNetChannel, i, localBlock);
-      }
-      localHashMapIntEntry = this.allBlocks.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  private void putMsgHouseSync(NetChannel paramNetChannel, int paramInt, Block paramBlock) {
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(25);
-      localNetMsgGuaranted.writeInt(paramInt);
-      localNetMsgGuaranted.write(paramBlock.getDestruction(null));
-      NetEnv.host().postTo(paramNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
-    }
-  }
-
-  public void netMsgHouseSync(NetMsgInput paramNetMsgInput) throws IOException {
-    int i = paramNetMsgInput.readInt();
-    byte[] arrayOfByte = new byte[paramNetMsgInput.available()];
-    paramNetMsgInput.read(arrayOfByte);
-    Block localBlock = (Block)this.allBlocks.get(i);
-    if (localBlock == null)
-      return;
-    localBlock.setDestruction(arrayOfByte);
-  }
-
-  public void netMsgHouseDie(NetObj paramNetObj, NetMsgInput paramNetMsgInput) throws IOException {
-    Actor localActor = null;
-    NetObj localNetObj = paramNetMsgInput.readNetObj();
-    if (localNetObj != null)
-      localActor = (Actor)localNetObj.superObj();
-    int i = paramNetMsgInput.readInt();
-    int j = paramNetMsgInput.readUnsignedShort();
-    Block localBlock = (Block)this.allBlocks.get(i);
-    if (localBlock == null)
-      return;
-    if (j >= localBlock.code.length / 2)
-      return;
-    if ((localBlock.actor != null) && (localBlock.actor[0] != null)) {
-      if ((Actor.isAlive(localBlock.actor[j])) && 
-        ((localBlock.actor[j] instanceof House))) {
-        ((House)localBlock.actor[j]).doDieShow();
-        World.onActorDied(localBlock.actor[j], localActor);
-        replicateHouseDie(paramNetObj, paramNetMsgInput.channel(), localNetObj, i, j);
-      }
-    }
-    else if ((localBlock.code[(j * 2)] & 0x8000) == 0) {
-      localBlock.code[(j * 2)] |= 32768;
-      replicateHouseDie(paramNetObj, paramNetMsgInput.channel(), localNetObj, i, j);
-    }
-  }
-
-  public void onHouseDied(House paramHouse, Actor paramActor)
-  {
-    Point3d localPoint3d = paramHouse.pos.getAbsPoint();
-    int i = (int)(localPoint3d.y / 200.0D);
-    int j = (int)(localPoint3d.x / 200.0D);
-    int k = key(i, j);
-    Block localBlock = (Block)this.allBlocks.get(k);
-    if (localBlock == null)
-      return;
-    if (localBlock.actor == null)
-      return;
-    int m = 0;
-    int n = localBlock.actor.length;
-    while ((m < n) && 
-      (localBlock.actor[m] != paramHouse)) {
-      m++;
     }
 
-    if (m >= n)
-      return;
-    ActorNet localActorNet = null;
-    if (Actor.isValid(paramActor))
-      localActorNet = paramActor.net;
-    try {
-      replicateHouseDie(NetEnv.host(), null, localActorNet, k, m);
-    } catch (Exception localException) {
-    }
-  }
-
-  private void replicateHouseDie(NetObj paramNetObj1, NetChannel paramNetChannel, NetObj paramNetObj2, int paramInt1, int paramInt2) throws IOException {
-    int i = paramNetObj1.countMirrors();
-    if (paramNetObj1.isMirror()) i++;
-    if (paramNetChannel != null) i--;
-    if (i <= 0) return;
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(24);
-    localNetMsgGuaranted.writeNetObj(paramNetObj2);
-    localNetMsgGuaranted.writeInt(paramInt1);
-    localNetMsgGuaranted.writeShort(paramInt2);
-    paramNetObj1.postExclude(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public HashMapInt allBlocks()
-  {
-    return this.allBlocks;
-  }
-  public int key(int paramInt1, int paramInt2) {
-    return paramInt2 & 0xFFFF | paramInt1 << 16;
-  }
-  public int key2x(int paramInt) {
-    return paramInt & 0xFFFF;
-  }
-  public int key2y(int paramInt) {
-    return paramInt >> 16 & 0xFFFF;
-  }
-
-  public void updateBlock(int paramInt1, int paramInt2) {
-    Block localBlock = (Block)this.allBlocks.get(key(paramInt2, paramInt1));
-    if ((localBlock != null) && 
-      (localBlock.actor != null)) {
-      this._updateX[0] = paramInt1;
-      this._updateY[0] = paramInt2;
-      _msgDreamGlobal(false, 1, 0, this._updateX, this._updateY);
-      _msgDreamGlobal(true, 1, 0, this._updateX, this._updateY);
-    }
-  }
-
-  private Actor cacheGet(int paramInt)
-  {
-    ArrayList localArrayList = this.cacheActors[paramInt];
-    int i = localArrayList.size();
-    if (i == 0) return null;
-    Actor localActor = (Actor)localArrayList.get(i - 1);
-    localArrayList.remove(i - 1);
-    return localActor;
-  }
-
-  private void cachePut(int paramInt, Actor paramActor) {
-    ArrayList localArrayList = this.cacheActors[paramInt];
-
-    localArrayList.add(paramActor);
-    paramActor.drawing(false);
-    paramActor.collide(false);
-  }
-
-  public static void trim()
-  {
-  }
-
-  public void msgDreamGlobalTick(int paramInt1, int paramInt2)
-  {
-    _msgDreamGlobalTick(false, paramInt1, paramInt2 - 1);
-    _msgDreamGlobalTick(true, paramInt1, paramInt2 - 1);
-  }
-
-  public void _msgDreamGlobalTick(boolean paramBoolean, int paramInt1, int paramInt2) {
-    Queue localQueue = paramBoolean ? this.wQueue : this.sQueue;
-    if (localQueue.ofs < localQueue.len) {
-      int i = paramInt1 - paramInt2;
-      int j = (localQueue.len * i + paramInt1 / 2) / paramInt1;
-      if (j > localQueue.len)
-        j = localQueue.len;
-      int k = j - localQueue.ofs;
-      if (k > 0) {
-        _msgDreamGlobal(paramBoolean, k, localQueue.ofs, localQueue.X, localQueue.Y);
-        localQueue.ofs = j;
-        if (localQueue.ofs == localQueue.len)
-          localQueue.clear();
-      }
-    }
-  }
-
-  public void msgDreamGlobal(boolean paramBoolean, int paramInt, int[] paramArrayOfInt1, int[] paramArrayOfInt2)
-  {
-    if (this.allBlocks == null) return;
-    _msgDreamGlobalTick(paramBoolean, 1, 0);
-    Queue localQueue = paramBoolean ? this.wQueue : this.sQueue;
-    for (int i = 0; i < paramInt; i++) {
-      int j = paramArrayOfInt1[i];
-      int k = paramArrayOfInt2[i];
-      Block localBlock = (Block)this.allBlocks.get(key(k, j));
-      if (localBlock != null)
-        localQueue.add(j, k);
-    }
-  }
-
-  private void _msgDreamGlobal(boolean paramBoolean, int paramInt1, int paramInt2, int[] paramArrayOfInt1, int[] paramArrayOfInt2)
-  {
-    if (this.allBlocks == null) return;
-    int i;
-    int j;
-    int k;
-    Block localBlock;
-    float f1;
-    float f2;
-    int m;
-    int n;
-    if (paramBoolean) {
-      for (i = 0; i < paramInt1; i++) {
-        j = paramArrayOfInt1[(i + paramInt2)];
-        k = paramArrayOfInt2[(i + paramInt2)];
-        localBlock = (Block)this.allBlocks.get(key(k, j));
-        if ((localBlock == null) || (
-          (this.bCheckPlate) && (localBlock.bExistPlate))) {
-          continue;
-        }
-        f1 = j * 200.0F;
-        f2 = k * 200.0F;
-        m = localBlock.code.length / 2;
-
-        localBlock.actor = new Actor[m];
-        for (n = 0; n < m; n++) {
-          int i1 = localBlock.code[(n * 2 + 0)];
-          int i2 = localBlock.code[(n * 2 + 1)];
-          int i3 = i1 & 0x7FFF;
-          int i4 = (short)(i1 >> 16);
-          int i5 = (short)(i2 & 0xFFFF);
-          int i6 = (short)(i2 >> 16 & 0xFFFF);
-          float f3 = i4 * 360.0F / 32000.0F;
-          float f4 = i5 * 200.0F / 32000.0F + f1;
-          float f5 = i6 * 200.0F / 32000.0F + f2;
-          this._loc.set(f4, f5, 0.0D, -f3, 0.0F, 0.0F);
-          Actor localActor2 = cacheGet(i3);
-          if (localActor2 != null) {
-            localActor2.pos.setAbs(this._loc);
-            localActor2.setDiedFlag((i1 & 0x8000) != 0);
-          } else {
-            this._spawnArg.point = this._loc.getPoint();
-            this._spawnArg.orient = this._loc.getOrient();
-            try {
-              localActor2 = this.spawns[i3].actorSpawn(this._spawnArg);
-              if ((i1 & 0x8000) != 0)
-                localActor2.setDiedFlag(true);
-              if ((localActor2 instanceof ActorMesh))
-                localActor2.draw.uniformMaxDist = this.uniformMaxDist[i3];
-            }
-            catch (Exception localException) {
-              System.out.println(localException.getMessage());
-              localException.printStackTrace();
-            }
-          }
-          localBlock.actor[n] = localActor2;
-        }
-      }
-    }
-    else
-      for (i = 0; i < paramInt1; i++) {
-        j = paramArrayOfInt1[(i + paramInt2)];
-        k = paramArrayOfInt2[(i + paramInt2)];
-        localBlock = (Block)this.allBlocks.get(key(k, j));
-
-        if ((localBlock == null) || (localBlock.actor == null) || (
-          (this.bCheckPlate) && (localBlock.bExistPlate)))
-          continue;
-        f1 = j * 200.0F;
-        f2 = k * 200.0F;
-        m = localBlock.code.length / 2;
-
-        for (n = 0; n < m; n++) {
-          Actor localActor1 = localBlock.actor[n];
-          localBlock.actor[n] = null;
-          if (localActor1 != null) {
-            if (localActor1.getDiedFlag())
-              localBlock.code[(n * 2 + 0)] |= 32768;
-            cachePut(localBlock.code[(n * 2 + 0)] & 0x7FFF, localActor1);
-          }
-        }
-        localBlock.actor = null;
-      }
-  }
-
-  public void resetGame()
-  {
-    this.wQueue.clear();
-    this.sQueue.clear();
-    if (this.allBlocks == null) return;
-    ArrayList localArrayList1 = new ArrayList();
-
-    HashMapIntEntry localHashMapIntEntry = this.allBlocks.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      Block localBlock = (Block)localHashMapIntEntry.getValue();
-      if (localBlock.actor != null) {
-        for (int j = 0; j < localBlock.actor.length; j++) {
-          localArrayList1.add(localBlock.actor[j]);
-          localBlock.actor[j] = null;
-        }
-      }
-      localHashMapIntEntry = this.allBlocks.nextEntry(localHashMapIntEntry);
-    }
-    Engine.destroyListGameActors(localArrayList1);
-
-    for (int i = 0; i < this.cacheActors.length; i++) {
-      ArrayList localArrayList2 = this.cacheActors[i];
-      Engine.destroyListGameActors(localArrayList2);
-    }
-    this.allBlocks = null;
-    this.allStates0 = null;
-    this.allBridge0 = null;
-    this.cacheActors = null;
-    this.spawns = null;
-    this.bridges.clear();
-  }
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-  public Statics() {
-    this.flags |= 16384;
-  }
-  protected void createActorHashCode() {
-    makeActorRealHashCode();
-  }
-
-  static class Queue
-  {
-    int ofs = 0;
-    int len = 0;
-    int[] X = new int[256];
-    int[] Y = new int[256];
-
-    void clear() { this.ofs = (this.len = 0); } 
-    void add(int paramInt1, int paramInt2) {
-      if (this.X.length <= this.len) {
-        int[] arrayOfInt1 = new int[this.len * 2];
-        int[] arrayOfInt2 = new int[this.len * 2];
-        for (int i = this.ofs; i < this.len; i++) {
-          arrayOfInt1[i] = this.X[i]; arrayOfInt2[i] = this.Y[i];
-        }
-        this.X = arrayOfInt1; this.Y = arrayOfInt2;
-      }
-      this.X[this.len] = paramInt1;
-      this.Y[this.len] = paramInt2;
-      this.len += 1;
-    }
-  }
-
-  public static class Block
-  {
-    boolean bExistPlate = false;
-    int[] code;
-    public Actor[] actor;
-
-    public int amountObjects()
+    public static class Block
     {
-      return this.code.length / 2;
-    }
-    public boolean isEquals(byte[] paramArrayOfByte) {
-      int i = this.code.length / 2;
-      int j;
-      int k;
-      int m;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (j = 0; j < i; j++) {
-          k = j >> 8;
-          m = 1 << (j & 0xFF);
-          if (!Actor.isAlive(this.actor[j])) {
-            if ((paramArrayOfByte[k] & m) == 0) return false;
 
-            if ((paramArrayOfByte[k] & m) != 0) return false; 
-          }
+        public int amountObjects()
+        {
+            return code.length / 2;
         }
-      else
-        for (j = 0; j < i; j++) {
-          k = j >> 8;
-          m = 1 << (j & 0xFF);
-          if ((this.code[(j * 2)] & 0x8000) != 0) {
-            if ((paramArrayOfByte[k] & m) == 0) return false;
 
-            if ((paramArrayOfByte[k] & m) != 0) return false;
-          }
+        public boolean isEquals(byte abyte0[])
+        {
+            int i = code.length / 2;
+            if(actor != null && actor[0] != null)
+            {
+                for(int j = 0; j < i; j++)
+                {
+                    int l = j >> 8;
+                    int j1 = 1 << (j & 0xff);
+                    if(!com.maddox.il2.engine.Actor.isAlive(actor[j]))
+                    {
+                        if((abyte0[l] & j1) == 0)
+                            return false;
+                        if((abyte0[l] & j1) != 0)
+                            return false;
+                    }
+                }
+
+            } else
+            {
+                for(int k = 0; k < i; k++)
+                {
+                    int i1 = k >> 8;
+                    int k1 = 1 << (k & 0xff);
+                    if((code[k * 2] & 0x8000) != 0)
+                    {
+                        if((abyte0[i1] & k1) == 0)
+                            return false;
+                        if((abyte0[i1] & k1) != 0)
+                            return false;
+                    }
+                }
+
+            }
+            return true;
         }
-      return true;
-    }
-    public byte[] getDestruction(byte[] paramArrayOfByte) {
-      int i = this.code.length / 2;
-      int j = (i + 7) / 8;
-      if ((paramArrayOfByte == null) || (paramArrayOfByte.length < j))
-        paramArrayOfByte = new byte[j];
-      int k;
-      int m;
-      int n;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (k = 0; k < i; k++) {
-          m = k >> 8;
-          n = 1 << (k & 0xFF);
-          if (!Actor.isAlive(this.actor[k]))
-          {
-            int tmp88_86 = m;
-            byte[] tmp88_85 = paramArrayOfByte; tmp88_85[tmp88_86] = (byte)(tmp88_85[tmp88_86] | n);
-          }
-          else
-          {
-            int tmp101_99 = m;
-            byte[] tmp101_98 = paramArrayOfByte; tmp101_98[tmp101_99] = (byte)(tmp101_98[tmp101_99] & (n ^ 0xFFFFFFFF));
-          }
+
+        public byte[] getDestruction(byte abyte0[])
+        {
+            int i = code.length / 2;
+            int j = (i + 7) / 8;
+            if(abyte0 == null || abyte0.length < j)
+                abyte0 = new byte[j];
+            if(actor != null && actor[0] != null)
+            {
+                for(int k = 0; k < i; k++)
+                {
+                    int i1 = k >> 8;
+                    int k1 = 1 << (k & 0xff);
+                    if(!com.maddox.il2.engine.Actor.isAlive(actor[k]))
+                        abyte0[i1] |= k1;
+                    else
+                        abyte0[i1] &= ~k1;
+                }
+
+            } else
+            {
+                for(int l = 0; l < i; l++)
+                {
+                    int j1 = l >> 8;
+                    int l1 = 1 << (l & 0xff);
+                    if((code[l * 2] & 0x8000) != 0)
+                        abyte0[j1] |= l1;
+                    else
+                        abyte0[j1] &= ~l1;
+                }
+
+            }
+            return abyte0;
         }
-      else for (k = 0; k < i; k++) {
-          m = k >> 8;
-          n = 1 << (k & 0xFF);
-          if ((this.code[(k * 2)] & 0x8000) != 0)
-          {
-            int tmp163_161 = m;
-            byte[] tmp163_160 = paramArrayOfByte; tmp163_160[tmp163_161] = (byte)(tmp163_160[tmp163_161] | n);
-          }
-          else
-          {
-            int tmp176_174 = m;
-            byte[] tmp176_173 = paramArrayOfByte; tmp176_173[tmp176_174] = (byte)(tmp176_173[tmp176_174] & (n ^ 0xFFFFFFFF));
-          }
+
+        public void setDestruction(byte abyte0[])
+        {
+            int i = code.length / 2;
+            if(actor != null && actor[0] != null)
+            {
+                for(int j = 0; j < i; j++)
+                {
+                    int l = j >> 8;
+                    int j1 = 1 << (j & 0xff);
+                    actor[j].setDiedFlag((abyte0[l] & j1) != 0);
+                }
+
+            } else
+            {
+                for(int k = 0; k < i; k++)
+                {
+                    int i1 = k >> 8;
+                    int k1 = 1 << (k & 0xff);
+                    if((abyte0[i1] & k1) != 0)
+                        code[k * 2] |= 0x8000;
+                    else
+                        code[k * 2] &= 0xffff7fff;
+                }
+
+            }
         }
-      return paramArrayOfByte;
-    }
-    public void setDestruction(byte[] paramArrayOfByte) {
-      int i = this.code.length / 2;
-      int j;
-      int k;
-      int m;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (j = 0; j < i; j++) {
-          k = j >> 8;
-          m = 1 << (j & 0xFF);
-          this.actor[j].setDiedFlag((paramArrayOfByte[k] & m) != 0);
+
+        public void addDestruction(byte abyte0[])
+        {
+            int i = code.length / 2;
+            if(actor != null && actor[0] != null)
+            {
+                for(int j = 0; j < i; j++)
+                {
+                    int l = j >> 8;
+                    int j1 = 1 << (j & 0xff);
+                    if((abyte0[l] & j1) != 0)
+                        actor[j].setDiedFlag(true);
+                }
+
+            } else
+            {
+                for(int k = 0; k < i; k++)
+                {
+                    int i1 = k >> 8;
+                    int k1 = 1 << (k & 0xff);
+                    if((abyte0[i1] & k1) != 0)
+                        code[k * 2] |= 0x8000;
+                }
+
+            }
         }
-      else
-        for (j = 0; j < i; j++) {
-          k = j >> 8;
-          m = 1 << (j & 0xFF);
-          if ((paramArrayOfByte[k] & m) != 0)
-            this.code[(j * 2)] |= 32768;
-          else
-            this.code[(j * 2)] &= -32769;
+
+        public float getDestruction()
+        {
+            int i = code.length / 2;
+            int j = 0;
+            if(actor != null && actor[0] != null)
+            {
+                for(int k = 0; k < i; k++)
+                    if(!com.maddox.il2.engine.Actor.isAlive(actor[k]))
+                        j++;
+
+            } else
+            {
+                for(int l = 0; l < i; l++)
+                    if((code[l * 2] & 0x8000) != 0)
+                        j++;
+
+            }
+            return (float)j / (float)i;
+        }
+
+        public void setDestruction(float f)
+        {
+            int i = code.length / 2;
+            int j = (int)(f * (float)i + 0.5F);
+            if(j > i)
+                j = i;
+            if(actor != null && actor[0] != null)
+            {
+                for(int k = 0; k < i; k++)
+                    if(j > 0)
+                    {
+                        if(com.maddox.il2.engine.Actor.isAlive(actor[k]))
+                            actor[k].setDiedFlag(true);
+                        j--;
+                    } else
+                    if(!com.maddox.il2.engine.Actor.isAlive(actor[k]))
+                        actor[k].setDiedFlag(false);
+
+            } else
+            {
+                for(int l = 0; l < i; l++)
+                    if(j > 0)
+                    {
+                        code[l * 2] |= 0x8000;
+                        j--;
+                    } else
+                    {
+                        code[l * 2] &= 0xffff7fff;
+                    }
+
+            }
+        }
+
+        public boolean isDestructed()
+        {
+            int i = code.length / 2;
+            if(actor != null && actor[0] != null)
+            {
+                for(int j = 0; j < i; j++)
+                    if(!actor[j].isAlive())
+                        return true;
+
+            } else
+            {
+                for(int k = 0; k < i; k++)
+                    if((code[k * 2] & 0x8000) != 0)
+                        return true;
+
+            }
+            return false;
+        }
+
+        public void restoreAll()
+        {
+            int i = code.length / 2;
+            if(actor != null && actor[0] != null)
+            {
+                for(int j = 0; j < i; j++)
+                    if(!actor[j].isAlive())
+                        actor[j].setDiedFlag(false);
+
+            } else
+            {
+                for(int k = 0; k < i; k++)
+                    code[k * 2] &= 0xffff7fff;
+
+            }
+        }
+
+        public void restoreAll(float f, float f1, float f2, float f3, float f4)
+        {
+            int i = code.length / 2;
+            if(actor != null && actor[0] != null)
+            {
+                for(int j = 0; j < i; j++)
+                    if(!actor[j].isAlive())
+                    {
+                        com.maddox.JGP.Point3d point3d = actor[j].pos.getAbsPoint();
+                        if((point3d.x - (double)f2) * (point3d.x - (double)f2) + (point3d.y - (double)f3) * (point3d.y - (double)f3) <= (double)f4)
+                            actor[j].setDiedFlag(false);
+                    }
+
+            } else
+            {
+                for(int k = 0; k < i; k++)
+                    if((code[k * 2] & 0x8000) != 0)
+                    {
+                        int l = code[k * 2 + 0];
+                        int i1 = code[k * 2 + 1];
+                        int j1 = (short)(i1 & 0xffff);
+                        int k1 = (short)(i1 >> 16 & 0xffff);
+                        float f5 = ((float)j1 * 200F) / 32000F + f;
+                        float f6 = ((float)k1 * 200F) / 32000F + f1;
+                        if((f5 - f2) * (f5 - f2) + (f6 - f3) * (f6 - f3) <= f4)
+                            code[k * 2] &= 0xffff7fff;
+                    }
+
+            }
+        }
+
+        boolean bExistPlate;
+        int code[];
+        com.maddox.il2.engine.Actor actor[];
+
+        public Block()
+        {
+            bExistPlate = false;
         }
     }
 
-    public void addDestruction(byte[] paramArrayOfByte) {
-      int i = this.code.length / 2;
-      int j;
-      int k;
-      int m;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (j = 0; j < i; j++) {
-          k = j >> 8;
-          m = 1 << (j & 0xFF);
-          if ((paramArrayOfByte[k] & m) != 0)
-            this.actor[j].setDiedFlag(true);
-        }
-      else
-        for (j = 0; j < i; j++) {
-          k = j >> 8;
-          m = 1 << (j & 0xFF);
-          if ((paramArrayOfByte[k] & m) != 0)
-            this.code[(j * 2)] |= 32768;
-        }
-    }
 
-    public float getDestruction() {
-      int i = this.code.length / 2;
-      int j = 0;
-      int k;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (k = 0; k < i; k++)
-          if (!Actor.isAlive(this.actor[k]))
-            j++;
-      else {
-        for (k = 0; k < i; k++)
-          if ((this.code[(k * 2)] & 0x8000) != 0)
-            j++;
-      }
-      return j / i;
-    }
-    public void setDestruction(float paramFloat) {
-      int i = this.code.length / 2;
-      int j = (int)(paramFloat * i + 0.5F);
-      if (j > i) j = i;
-      int k;
-      if ((this.actor != null) && (this.actor[0] != null)) {
-        for (k = 0; k < i; k++)
-          if (j > 0) {
-            if (Actor.isAlive(this.actor[k]))
-              this.actor[k].setDiedFlag(true);
-            j--;
-          }
-          else if (!Actor.isAlive(this.actor[k])) {
-            this.actor[k].setDiedFlag(false);
-          }
-      }
-      else
-        for (k = 0; k < i; k++)
-          if (j > 0) {
-            this.code[(k * 2)] |= 32768;
-            j--;
-          } else {
-            this.code[(k * 2)] &= -32769;
-          }
-    }
-
-    public boolean isDestructed()
+    public static com.maddox.rts.SectFile getShipsFile()
     {
-      int i = this.code.length / 2;
-      int j;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (j = 0; j < i; j++)
-          if (!this.actor[j].isAlive())
-            return true;
-      else {
-        for (j = 0; j < i; j++)
-          if ((this.code[(j * 2)] & 0x8000) != 0)
-            return true;
-      }
-      return false;
-    }
-    public void restoreAll() {
-      int i = this.code.length / 2;
-      int j;
-      if ((this.actor != null) && (this.actor[0] != null))
-        for (j = 0; j < i; j++)
-          if (!this.actor[j].isAlive())
-            this.actor[j].setDiedFlag(false);
-      else
-        for (j = 0; j < i; j++)
-          this.code[(j * 2)] &= -32769;
+        if(ships == null)
+        {
+            ships = new SectFile("com/maddox/il2/objects/ships.ini");
+            ships.createIndexes();
+        }
+        return ships;
     }
 
-    public void restoreAll(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5) {
-      int i = this.code.length / 2;
-      int j;
-      if ((this.actor != null) && (this.actor[0] != null)) {
-        for (j = 0; j < i; j++)
-          if (!this.actor[j].isAlive()) {
-            Point3d localPoint3d = this.actor[j].pos.getAbsPoint();
-            if ((localPoint3d.x - paramFloat3) * (localPoint3d.x - paramFloat3) + (localPoint3d.y - paramFloat4) * (localPoint3d.y - paramFloat4) <= paramFloat5)
-              this.actor[j].setDiedFlag(false);
-          }
-      }
-      else
-        for (j = 0; j < i; j++)
-          if ((this.code[(j * 2)] & 0x8000) != 0) {
-            int k = this.code[(j * 2 + 0)];
-            int m = this.code[(j * 2 + 1)];
-            int n = (short)(m & 0xFFFF);
-            int i1 = (short)(m >> 16 & 0xFFFF);
-            float f1 = n * 200.0F / 32000.0F + paramFloat1;
-            float f2 = i1 * 200.0F / 32000.0F + paramFloat2;
-            if ((f1 - paramFloat3) * (f1 - paramFloat3) + (f2 - paramFloat4) * (f2 - paramFloat4) <= paramFloat5)
-              this.code[(j * 2)] &= -32769;
-          }
+    public static com.maddox.rts.SectFile getTechnicsFile()
+    {
+        if(technics == null)
+        {
+            technics = new SectFile("com/maddox/il2/objects/technics.ini");
+            technics.createIndexes();
+        }
+        return technics;
     }
-  }
+
+    public static com.maddox.rts.SectFile getBuildingsFile()
+    {
+        if(buildings == null)
+        {
+            buildings = new SectFile("com/maddox/il2/objects/static.ini");
+            buildings.createIndexes();
+        }
+        return buildings;
+    }
+
+    public static int[] readBridgesEndPoints(java.lang.String s)
+    {
+        int ai[] = null;
+        try
+        {
+            java.io.DataInputStream datainputstream = new DataInputStream(new SFSInputStream(s));
+            int i = datainputstream.readInt();
+            if(i == -65535)
+                i = datainputstream.readInt();
+            ai = new int[i * 4];
+            for(int j = 0; j < i; j++)
+            {
+                int k = datainputstream.readInt();
+                int l = datainputstream.readInt();
+                int i1 = datainputstream.readInt();
+                int j1 = datainputstream.readInt();
+                int k1 = datainputstream.readInt();
+                float f = datainputstream.readFloat();
+                ai[j * 4 + 0] = k;
+                ai[j * 4 + 1] = l;
+                ai[j * 4 + 2] = i1;
+                ai[j * 4 + 3] = j1;
+            }
+
+            datainputstream.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            ai = null;
+            java.lang.String s1 = "Bridges data in '" + s + "' DAMAGED: " + exception.getMessage();
+            java.lang.System.out.println(s1);
+        }
+        return ai;
+    }
+
+    public static void load(java.lang.String s, java.util.List list)
+    {
+        com.maddox.il2.ai.World.cur().statics._load(s, list);
+    }
+
+    private void _load(java.lang.String s, java.util.List list)
+    {
+        try
+        {
+            java.io.DataInputStream datainputstream = new DataInputStream(new SFSInputStream(s));
+            int i = datainputstream.readInt();
+            if(i != -65535)
+                throw new Exception("Not supported sersion");
+            java.lang.System.out.println("Load bridges");
+            int j = datainputstream.readInt();
+            for(int l = 0; l < j; l++)
+            {
+                int i1 = datainputstream.readInt();
+                int j1 = datainputstream.readInt();
+                int i2 = datainputstream.readInt();
+                int k2 = datainputstream.readInt();
+                int k3 = datainputstream.readInt();
+                float f = datainputstream.readFloat();
+                com.maddox.il2.objects.bridges.Bridge bridge = new Bridge(l, k3, i1, j1, i2, k2, f);
+                if(list != null)
+                    list.add(bridge);
+            }
+
+            java.lang.System.out.println("Load static objects");
+            java.util.ArrayList arraylist = new ArrayList();
+            j = datainputstream.readInt();
+            spawns = null;
+            if(j > 0)
+            {
+                int k1 = -1;
+                com.maddox.il2.engine.ActorSpawnArg actorspawnarg = new ActorSpawnArg();
+                spawns = new com.maddox.il2.engine.ActorSpawn[j];
+                for(int l2 = 0; l2 < j; l2++)
+                {
+                    java.lang.String s3 = datainputstream.readUTF();
+                    if("com.maddox.il2.objects.air.Runaway".equals(s3))
+                        k1 = l2;
+                    spawns[l2] = (com.maddox.il2.engine.ActorSpawn)com.maddox.rts.Spawn.get_WithSoftClass(s3);
+                }
+
+                for(j = datainputstream.readInt(); j-- > 0;)
+                {
+                    int l3 = datainputstream.readInt();
+                    float f1 = datainputstream.readFloat();
+                    float f2 = datainputstream.readFloat();
+                    float f3 = datainputstream.readFloat();
+                    _loc.set(f1, f2, 0.0D, f3, 0.0F, 0.0F);
+                    if(k1 == l3)
+                    {
+                        com.maddox.il2.engine.Loc loc = new Loc(_loc);
+                        arraylist.add(loc);
+                    }
+                    if(l3 < spawns.length && spawns[l3] != null)
+                    {
+                        actorspawnarg.clear();
+                        actorspawnarg.point = _loc.getPoint();
+                        actorspawnarg.orient = _loc.getOrient();
+                        try
+                        {
+                            com.maddox.il2.engine.Actor actor1 = spawns[l3].actorSpawn(actorspawnarg);
+                            if(actor1 instanceof com.maddox.il2.engine.ActorLandMesh)
+                            {
+                                com.maddox.il2.engine.ActorLandMesh actorlandmesh = (com.maddox.il2.engine.ActorLandMesh)actor1;
+                                actorlandmesh.mesh().setPos(actorlandmesh.pos.getAbs());
+                                com.maddox.il2.engine.Landscape.meshAdd(actorlandmesh);
+                            }
+                        }
+                        catch(java.lang.Exception exception2)
+                        {
+                            java.lang.System.out.println(exception2.getMessage());
+                            exception2.printStackTrace();
+                        }
+                    }
+                }
+
+            }
+            j = datainputstream.readInt();
+            spawns = null;
+            int l1 = -1;
+            if(j > 0)
+            {
+                spawns = new com.maddox.il2.engine.ActorSpawn[j];
+                spawnIsPlate = new boolean[j];
+                uniformMaxDist = new float[j];
+                cacheActors = new java.util.ArrayList[j];
+                _loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+                for(int j2 = 0; j2 < j; j2++)
+                {
+                    java.lang.String s2 = datainputstream.readUTF();
+                    if(s2.indexOf("TreeLine") >= 0)
+                        l1 = j2;
+                    spawns[j2] = (com.maddox.il2.engine.ActorSpawn)com.maddox.rts.Spawn.get_WithSoftClass(s2);
+                    cacheActors[j2] = new ArrayList();
+                    try
+                    {
+                        _spawnArg.point = _loc.getPoint();
+                        _spawnArg.orient = _loc.getOrient();
+                        com.maddox.il2.engine.Actor actor = spawns[j2].actorSpawn(_spawnArg);
+                        cachePut(j2, actor);
+                        spawnIsPlate[j2] = actor instanceof com.maddox.il2.objects.buildings.Plate;
+                        if(actor instanceof com.maddox.il2.engine.ActorMesh)
+                        {
+                            uniformMaxDist[j2] = ((com.maddox.il2.engine.ActorMesh)actor).mesh().getUniformMaxDist();
+                            actor.draw.uniformMaxDist = uniformMaxDist[j2];
+                        } else
+                        {
+                            uniformMaxDist[j2] = 0.0F;
+                        }
+                    }
+                    catch(java.lang.Exception exception1)
+                    {
+                        java.lang.System.out.println(exception1.getMessage());
+                        exception1.printStackTrace();
+                    }
+                }
+
+                int i3 = datainputstream.readInt();
+                allBlocks = new HashMapInt((int)((float)i3 / 0.75F));
+                while(i3-- > 0) 
+                {
+                    int i4 = datainputstream.readInt();
+                    int i5 = i4 & 0xffff;
+                    int j6 = i4 >> 16 & 0xffff;
+                    int j7 = datainputstream.readInt();
+                    com.maddox.il2.objects.Block block = new Block();
+                    block.code = new int[j7 * 2];
+                    float f4 = 0.0F;
+                    for(int i9 = 0; i9 < j7; i9++)
+                    {
+                        int l9 = datainputstream.readInt();
+                        if((l9 & 0x7fff) >= spawns.length)
+                            l9 = 0;
+                        block.code[i9 * 2 + 0] = l9;
+                        block.code[i9 * 2 + 1] = datainputstream.readInt();
+                        if(spawnIsPlate[l9 & 0x7fff])
+                            block.bExistPlate = true;
+                        float f5 = uniformMaxDist[l9 & 0x7fff];
+                        if(f4 < f5)
+                            f4 = f5;
+                    }
+
+                    allBlocks.put(key(j6, i5), block);
+                    com.maddox.il2.engine.Engine.drawEnv().setUniformMaxDist(i5, j6, f4);
+                    if(block.bExistPlate)
+                    {
+                        bCheckPlate = false;
+                        _updateX[0] = i5;
+                        _updateY[0] = j6;
+                        _msgDreamGlobal(true, 1, 0, _updateX, _updateY);
+                        bCheckPlate = true;
+                    }
+                }
+                if(com.maddox.il2.engine.Config.isUSE_RENDER())
+                {
+                    int j4 = com.maddox.il2.engine.Landscape.getSizeXpix();
+                    int j5 = com.maddox.il2.engine.Landscape.getSizeYpix();
+                    int ai[] = new int[j4 + 31 >> 5];
+                    for(int k7 = 0; k7 < j5; k7++)
+                    {
+                        for(int j8 = 0; j8 < ai.length; j8++)
+                            ai[j8] = 0;
+
+                        int l8 = 0;
+                        for(int j9 = 0; j9 < j4;)
+                        {
+                            if(allBlocks.containsKey(key(k7, j9)))
+                                ai[l8 >> 5] |= 1 << (l8 & 0x1f);
+                            j9++;
+                            l8++;
+                        }
+
+                        com.maddox.il2.engine.Landscape.MarkStaticActorsCells(0, k7, j4, 1, 200, ai);
+                    }
+
+                    j4 = com.maddox.il2.engine.Landscape.getSizeXpix();
+                    j5 = com.maddox.il2.engine.Landscape.getSizeYpix();
+                    int k6 = 0;
+                    for(int l7 = 0; l7 < j5; l7++)
+                    {
+                        for(int k8 = 0; k8 < j4; k8++)
+                            if(allBlocks.containsKey(key(l7, k8)))
+                            {
+                                com.maddox.il2.objects.Block block1 = (com.maddox.il2.objects.Block)allBlocks.get(key(l7, k8));
+                                com.maddox.il2.engine.Landscape.MarkActorCellWithTrees(l1, k8, l7, block1.code, block1.code.length);
+                                for(int k9 = 0; k9 < block1.code.length; k9 += 2)
+                                    if((block1.code[k9] & 0x7fff) == l1)
+                                        k6++;
+
+                            }
+
+                    }
+
+                }
+            }
+            com.maddox.il2.ai.air.Airdrome airdrome = new Airdrome();
+            if(datainputstream.available() > 0)
+            {
+                int k = datainputstream.readInt();
+                airdrome.runw = new com.maddox.il2.ai.air.Point_Runaway[k][];
+                for(int j3 = 0; j3 < k; j3++)
+                {
+                    int k4 = datainputstream.readInt();
+                    airdrome.runw[j3] = new com.maddox.il2.ai.air.Point_Runaway[k4];
+                    for(int k5 = 0; k5 < k4; k5++)
+                        airdrome.runw[j3][k5] = new Point_Runaway(datainputstream.readFloat(), datainputstream.readFloat());
+
+                }
+
+                k = datainputstream.readInt();
+                airdrome.taxi = new com.maddox.il2.ai.air.Point_Taxi[k][];
+                for(int l4 = 0; l4 < k; l4++)
+                {
+                    int l5 = datainputstream.readInt();
+                    airdrome.taxi[l4] = new com.maddox.il2.ai.air.Point_Taxi[l5];
+                    for(int l6 = 0; l6 < l5; l6++)
+                        airdrome.taxi[l4][l6] = new Point_Taxi(datainputstream.readFloat(), datainputstream.readFloat());
+
+                }
+
+                k = datainputstream.readInt();
+                airdrome.stay = new com.maddox.il2.ai.air.Point_Stay[k][];
+                for(int i6 = 0; i6 < k; i6++)
+                {
+                    int i7 = datainputstream.readInt();
+                    airdrome.stay[i6] = new com.maddox.il2.ai.air.Point_Stay[i7];
+                    for(int i8 = 0; i8 < i7; i8++)
+                        airdrome.stay[i6][i8] = new Point_Stay(datainputstream.readFloat(), datainputstream.readFloat());
+
+                }
+
+                airdrome.stayHold = new boolean[airdrome.stay.length];
+            }
+            com.maddox.il2.ai.World.cur().airdrome = airdrome;
+            com.maddox.il2.ai.AirportStatic.make(arraylist, airdrome.runw, airdrome.taxi, airdrome.stay);
+            datainputstream.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.String s1 = "Actors load from '" + s + "' FAILED: " + exception.getMessage();
+            java.lang.System.out.println(s1);
+            exception.printStackTrace();
+        }
+    }
+
+    public void restoreAllBridges()
+    {
+        int i = 0;
+        do
+        {
+            com.maddox.il2.objects.bridges.LongBridge longbridge = com.maddox.il2.objects.bridges.LongBridge.getByIdx(i);
+            if(longbridge != null)
+            {
+                if(!longbridge.isAlive())
+                    longbridge.BeLive();
+                i++;
+            } else
+            {
+                return;
+            }
+        } while(true);
+    }
+
+    public void saveStateBridges(com.maddox.rts.SectFile sectfile, int i)
+    {
+        int j = 0;
+        do
+        {
+            com.maddox.il2.objects.bridges.LongBridge longbridge = com.maddox.il2.objects.bridges.LongBridge.getByIdx(j);
+            if(longbridge != null)
+            {
+                if(!longbridge.isAlive())
+                {
+                    int k = longbridge.NumStateBits();
+                    java.util.BitSet bitset = longbridge.GetStateOfSegments();
+                    sectfile.lineAdd(i, com.maddox.util.AsciiBitSet.save(j), com.maddox.util.AsciiBitSet.save(bitset, k));
+                }
+                j++;
+            } else
+            {
+                return;
+            }
+        } while(true);
+    }
+
+    public void loadStateBridges(com.maddox.rts.SectFile sectfile, boolean flag)
+    {
+        int i = sectfile.sectionIndex(flag ? "AddBridge" : "Bridge");
+        if(i < 0)
+        {
+            return;
+        } else
+        {
+            loadStateBridges(sectfile, i, flag);
+            return;
+        }
+    }
+
+    public void loadStateBridges(com.maddox.rts.SectFile sectfile, int i, boolean flag)
+    {
+        boolean flag1 = false;
+        if(!flag && com.maddox.il2.game.Mission.isDogfight())
+        {
+            flag1 = true;
+            allBridge0 = new HashMapInt();
+        }
+        int j = sectfile.vars(i);
+        java.util.BitSet bitset = new BitSet();
+        for(int k = 0; k < j; k++)
+        {
+            java.lang.String s = sectfile.var(i, k);
+            java.lang.String s1 = sectfile.value(i, k);
+            int l = com.maddox.util.AsciiBitSet.load(s);
+            com.maddox.il2.objects.bridges.LongBridge longbridge = com.maddox.il2.objects.bridges.LongBridge.getByIdx(l);
+            if(longbridge != null)
+            {
+                com.maddox.util.AsciiBitSet.load(s1, bitset, longbridge.NumStateBits());
+                if(flag)
+                    bitset.or(longbridge.GetStateOfSegments());
+                longbridge.SetStateOfSegments(bitset);
+                if(flag1)
+                    allBridge0.put(l, bitset.clone());
+            }
+        }
+
+    }
+
+    public void restoreAllHouses()
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = allBlocks.nextEntry(null); hashmapintentry != null; hashmapintentry = allBlocks.nextEntry(hashmapintentry))
+        {
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)hashmapintentry.getValue();
+            if(block.isDestructed())
+                block.restoreAll();
+        }
+
+    }
+
+    public void saveStateHouses(com.maddox.rts.SectFile sectfile, int i)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = allBlocks.nextEntry(null); hashmapintentry != null; hashmapintentry = allBlocks.nextEntry(hashmapintentry))
+        {
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)hashmapintentry.getValue();
+            if(block.isDestructed())
+            {
+                int j = hashmapintentry.getKey();
+                sectfile.lineAdd(i, com.maddox.util.AsciiBitSet.save(j), com.maddox.util.AsciiBitSet.save(block.getDestruction(null), block.amountObjects()));
+            }
+        }
+
+    }
+
+    public void loadStateHouses(com.maddox.rts.SectFile sectfile, boolean flag)
+    {
+        int i = sectfile.sectionIndex(flag ? "AddHouse" : "House");
+        if(i < 0)
+        {
+            return;
+        } else
+        {
+            loadStateHouses(sectfile, i, flag);
+            return;
+        }
+    }
+
+    public void loadStateHouses(com.maddox.rts.SectFile sectfile, int i, boolean flag)
+    {
+        boolean flag1 = false;
+        if(!flag && com.maddox.il2.game.Mission.isDogfight())
+        {
+            flag1 = true;
+            allStates0 = new HashMapInt();
+        }
+        int j = sectfile.vars(i);
+        byte abyte0[] = new byte[32];
+        for(int k = 0; k < j; k++)
+        {
+            java.lang.String s = sectfile.var(i, k);
+            java.lang.String s1 = sectfile.value(i, k);
+            int l = com.maddox.util.AsciiBitSet.load(s);
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(l);
+            if(block != null)
+            {
+                abyte0 = com.maddox.util.AsciiBitSet.load(s1, abyte0, block.amountObjects());
+                if(flag)
+                {
+                    block.addDestruction(abyte0);
+                } else
+                {
+                    block.setDestruction(abyte0);
+                    if(flag1)
+                    {
+                        int i1 = (block.amountObjects() + 7) / 8;
+                        byte abyte1[] = new byte[i1];
+                        java.lang.System.arraycopy(abyte0, 0, abyte1, 0, i1);
+                        allStates0.put(l, abyte1);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void restoreAllHouses(float f, float f1, float f2)
+    {
+        int i = (int)((f - f2) / 200F) - 1;
+        int j = (int)((f + f2) / 200F) + 2;
+        int k = (int)((f1 - f2) / 200F) - 1;
+        int l = (int)((f1 + f2) / 200F) + 2;
+        com.maddox.util.HashMapIntEntry hashmapintentry = allBlocks.nextEntry(null);
+        float f3 = f2 * f2;
+        for(; hashmapintentry != null; hashmapintentry = allBlocks.nextEntry(hashmapintentry))
+        {
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)hashmapintentry.getValue();
+            int i1 = hashmapintentry.getKey();
+            int j1 = key2x(i1);
+            int k1 = key2y(i1);
+            if(j1 >= i && j1 <= j && k1 >= k && k1 <= l)
+                block.restoreAll((float)j1 * 200F, (float)k1 * 200F, f, f1, f3);
+        }
+
+    }
+
+    public void netBridgeSync(com.maddox.rts.NetChannel netchannel)
+    {
+        int i = 0;
+        do
+        {
+            com.maddox.il2.objects.bridges.LongBridge longbridge = com.maddox.il2.objects.bridges.LongBridge.getByIdx(i);
+            if(longbridge != null)
+            {
+                if(!longbridge.isAlive())
+                {
+                    int j = longbridge.NumStateBits();
+                    java.util.BitSet bitset = longbridge.GetStateOfSegments();
+                    java.util.BitSet bitset1 = null;
+                    if(allBridge0 != null)
+                        bitset1 = (java.util.BitSet)allBridge0.get(i);
+                    if(bitset1 == null || !bitset1.equals(bitset))
+                        try
+                        {
+                            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                            netmsgguaranted.writeByte(28);
+                            netmsgguaranted.writeShort(i);
+                            int k = (j + 7) / 8;
+                            byte abyte0[] = new byte[k];
+                            for(int l = 0; l < j; l++)
+                                if(bitset.get(l))
+                                {
+                                    int i1 = l / 8;
+                                    int j1 = l % 8;
+                                    abyte0[i1] |= 1 << j1;
+                                }
+
+                            netmsgguaranted.write(abyte0);
+                            com.maddox.rts.NetEnv.host().postTo(netchannel, netmsgguaranted);
+                        }
+                        catch(java.lang.Exception exception) { }
+                }
+                i++;
+            } else
+            {
+                return;
+            }
+        } while(true);
+    }
+
+    public void netMsgBridgeSync(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int i = netmsginput.readUnsignedShort();
+        com.maddox.il2.objects.bridges.LongBridge longbridge = com.maddox.il2.objects.bridges.LongBridge.getByIdx(i);
+        if(longbridge == null)
+            return;
+        byte abyte0[] = new byte[netmsginput.available()];
+        netmsginput.read(abyte0);
+        int j = longbridge.NumStateBits();
+        java.util.BitSet bitset = longbridge.GetStateOfSegments();
+        for(int k = 0; k < j; k++)
+        {
+            int l = k / 8;
+            int i1 = k % 8;
+            if((abyte0[l] & 1 << i1) != 0)
+                bitset.set(k);
+            else
+                bitset.clear(k);
+        }
+
+        longbridge.SetStateOfSegments(bitset);
+    }
+
+    public boolean onBridgeDied(int i, int j, int k, com.maddox.il2.engine.Actor actor)
+    {
+        if(com.maddox.il2.game.Mission.isServer())
+        {
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(27);
+                netmsgguaranted.writeShort(i);
+                netmsgguaranted.writeShort(j);
+                netmsgguaranted.writeByte(k);
+                com.maddox.il2.engine.ActorNet actornet = null;
+                if(com.maddox.il2.engine.Actor.isValid(actor))
+                    actornet = actor.net;
+                netmsgguaranted.writeNetObj(actornet);
+                com.maddox.rts.NetEnv.host().post(netmsgguaranted);
+            }
+            catch(java.lang.Exception exception) { }
+            return true;
+        }
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted();
+            netmsgguaranted1.writeByte(26);
+            netmsgguaranted1.writeShort(i);
+            netmsgguaranted1.writeShort(j);
+            netmsgguaranted1.writeByte(k);
+            com.maddox.il2.engine.ActorNet actornet1 = null;
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+                actornet1 = actor.net;
+            netmsgguaranted1.writeNetObj(actornet1);
+            com.maddox.rts.NetEnv.host().postTo(com.maddox.il2.game.Main.cur().netServerParams.masterChannel(), netmsgguaranted1);
+        }
+        catch(java.lang.Exception exception1) { }
+        return false;
+    }
+
+    public void netMsgBridgeRDie(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int i = netmsginput.readUnsignedShort();
+        int j = netmsginput.readUnsignedShort();
+        byte byte0 = netmsginput.readByte();
+        com.maddox.il2.engine.Actor actor = null;
+        com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+        if(netobj != null)
+            actor = (com.maddox.il2.engine.Actor)netobj.superObj();
+        if(com.maddox.il2.game.Mission.isServer())
+        {
+            com.maddox.il2.objects.bridges.BridgeSegment bridgesegment = com.maddox.il2.objects.bridges.BridgeSegment.getByIdx(i, j);
+            bridgesegment.netForcePartDestroing(byte0, actor);
+        } else
+        {
+            onBridgeDied(i, j, byte0, actor);
+        }
+    }
+
+    public void netMsgBridgeDie(com.maddox.rts.NetObj netobj, com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int i = netmsginput.readUnsignedShort();
+        int j = netmsginput.readUnsignedShort();
+        byte byte0 = netmsginput.readByte();
+        com.maddox.il2.engine.Actor actor = null;
+        com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+        if(netobj1 != null)
+            actor = (com.maddox.il2.engine.Actor)netobj1.superObj();
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(27);
+            netmsgguaranted.writeShort(i);
+            netmsgguaranted.writeShort(j);
+            netmsgguaranted.writeByte(byte0);
+            com.maddox.il2.engine.ActorNet actornet = null;
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+                actornet = actor.net;
+            netmsgguaranted.writeNetObj(actornet);
+            netobj.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception) { }
+        com.maddox.il2.objects.bridges.BridgeSegment bridgesegment = com.maddox.il2.objects.bridges.BridgeSegment.getByIdx(i, j);
+        bridgesegment.netForcePartDestroing(byte0, actor);
+    }
+
+    public void netHouseSync(com.maddox.rts.NetChannel netchannel)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = allBlocks.nextEntry(null); hashmapintentry != null; hashmapintentry = allBlocks.nextEntry(hashmapintentry))
+        {
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)hashmapintentry.getValue();
+            int i = hashmapintentry.getKey();
+            byte abyte0[] = null;
+            if(allStates0 != null)
+                abyte0 = (byte[])allStates0.get(i);
+            if(abyte0 == null)
+            {
+                if(block.isDestructed())
+                    putMsgHouseSync(netchannel, i, block);
+            } else
+            if(!block.isEquals(abyte0))
+                putMsgHouseSync(netchannel, i, block);
+        }
+
+    }
+
+    private void putMsgHouseSync(com.maddox.rts.NetChannel netchannel, int i, com.maddox.il2.objects.Block block)
+    {
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(25);
+            netmsgguaranted.writeInt(i);
+            netmsgguaranted.write(block.getDestruction(null));
+            com.maddox.rts.NetEnv.host().postTo(netchannel, netmsgguaranted);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    public void netMsgHouseSync(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int i = netmsginput.readInt();
+        byte abyte0[] = new byte[netmsginput.available()];
+        netmsginput.read(abyte0);
+        com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(i);
+        if(block == null)
+        {
+            return;
+        } else
+        {
+            block.setDestruction(abyte0);
+            return;
+        }
+    }
+
+    public void netMsgHouseDie(com.maddox.rts.NetObj netobj, com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        com.maddox.il2.engine.Actor actor = null;
+        com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+        if(netobj1 != null)
+            actor = (com.maddox.il2.engine.Actor)netobj1.superObj();
+        int i = netmsginput.readInt();
+        int j = netmsginput.readUnsignedShort();
+        com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(i);
+        if(block == null)
+            return;
+        if(j >= block.code.length / 2)
+            return;
+        if(block.actor != null && block.actor[0] != null)
+        {
+            if(com.maddox.il2.engine.Actor.isAlive(block.actor[j]) && (block.actor[j] instanceof com.maddox.il2.objects.buildings.House))
+            {
+                ((com.maddox.il2.objects.buildings.House)block.actor[j]).doDieShow();
+                com.maddox.il2.ai.World.onActorDied(block.actor[j], actor);
+                replicateHouseDie(netobj, netmsginput.channel(), netobj1, i, j);
+            }
+        } else
+        if((block.code[j * 2] & 0x8000) == 0)
+        {
+            block.code[j * 2] |= 0x8000;
+            replicateHouseDie(netobj, netmsginput.channel(), netobj1, i, j);
+        }
+    }
+
+    public void onHouseDied(com.maddox.il2.objects.buildings.House house, com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.JGP.Point3d point3d = house.pos.getAbsPoint();
+        int i = (int)(point3d.y / 200D);
+        int j = (int)(point3d.x / 200D);
+        int k = key(i, j);
+        com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(k);
+        if(block == null)
+            return;
+        if(block.actor == null)
+            return;
+        int l = 0;
+        int i1;
+        for(i1 = block.actor.length; l < i1; l++)
+            if(block.actor[l] == house)
+                break;
+
+        if(l >= i1)
+            return;
+        com.maddox.il2.engine.ActorNet actornet = null;
+        if(com.maddox.il2.engine.Actor.isValid(actor))
+            actornet = actor.net;
+        try
+        {
+            replicateHouseDie(com.maddox.rts.NetEnv.host(), null, actornet, k, l);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    private void replicateHouseDie(com.maddox.rts.NetObj netobj, com.maddox.rts.NetChannel netchannel, com.maddox.rts.NetObj netobj1, int i, int j)
+        throws java.io.IOException
+    {
+        int k = netobj.countMirrors();
+        if(netobj.isMirror())
+            k++;
+        if(netchannel != null)
+            k--;
+        if(k <= 0)
+        {
+            return;
+        } else
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(24);
+            netmsgguaranted.writeNetObj(netobj1);
+            netmsgguaranted.writeInt(i);
+            netmsgguaranted.writeShort(j);
+            netobj.postExclude(netchannel, netmsgguaranted);
+            return;
+        }
+    }
+
+    public com.maddox.util.HashMapInt allBlocks()
+    {
+        return allBlocks;
+    }
+
+    public int key(int i, int j)
+    {
+        return j & 0xffff | i << 16;
+    }
+
+    public int key2x(int i)
+    {
+        return i & 0xffff;
+    }
+
+    public int key2y(int i)
+    {
+        return i >> 16 & 0xffff;
+    }
+
+    public void updateBlock(int i, int j)
+    {
+        com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(key(j, i));
+        if(block != null && block.actor != null)
+        {
+            _updateX[0] = i;
+            _updateY[0] = j;
+            _msgDreamGlobal(false, 1, 0, _updateX, _updateY);
+            _msgDreamGlobal(true, 1, 0, _updateX, _updateY);
+        }
+    }
+
+    private com.maddox.il2.engine.Actor cacheGet(int i)
+    {
+        java.util.ArrayList arraylist = cacheActors[i];
+        int j = arraylist.size();
+        if(j == 0)
+        {
+            return null;
+        } else
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)arraylist.get(j - 1);
+            arraylist.remove(j - 1);
+            return actor;
+        }
+    }
+
+    private void cachePut(int i, com.maddox.il2.engine.Actor actor)
+    {
+        java.util.ArrayList arraylist = cacheActors[i];
+        arraylist.add(actor);
+        actor.drawing(false);
+        actor.collide(false);
+    }
+
+    public static void trim()
+    {
+    }
+
+    public void msgDreamGlobalTick(int i, int j)
+    {
+        _msgDreamGlobalTick(false, i, j - 1);
+        _msgDreamGlobalTick(true, i, j - 1);
+    }
+
+    public void _msgDreamGlobalTick(boolean flag, int i, int j)
+    {
+        com.maddox.il2.objects.Queue queue = flag ? wQueue : sQueue;
+        if(queue.ofs < queue.len)
+        {
+            int k = i - j;
+            int l = (queue.len * k + i / 2) / i;
+            if(l > queue.len)
+                l = queue.len;
+            int i1 = l - queue.ofs;
+            if(i1 > 0)
+            {
+                _msgDreamGlobal(flag, i1, queue.ofs, queue.X, queue.Y);
+                queue.ofs = l;
+                if(queue.ofs == queue.len)
+                    queue.clear();
+            }
+        }
+    }
+
+    public void msgDreamGlobal(boolean flag, int i, int ai[], int ai1[])
+    {
+        if(allBlocks == null)
+            return;
+        _msgDreamGlobalTick(flag, 1, 0);
+        com.maddox.il2.objects.Queue queue = flag ? wQueue : sQueue;
+        for(int j = 0; j < i; j++)
+        {
+            int k = ai[j];
+            int l = ai1[j];
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(key(l, k));
+            if(block != null)
+                queue.add(k, l);
+        }
+
+    }
+
+    private void _msgDreamGlobal(boolean flag, int i, int j, int ai[], int ai1[])
+    {
+        if(allBlocks == null)
+            return;
+        if(flag)
+        {
+            for(int k = 0; k < i; k++)
+            {
+                int i1 = ai[k + j];
+                int k1 = ai1[k + j];
+                com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)allBlocks.get(key(k1, i1));
+                if(block != null && (!bCheckPlate || !block.bExistPlate))
+                {
+                    float f = (float)i1 * 200F;
+                    float f2 = (float)k1 * 200F;
+                    int i2 = block.code.length / 2;
+                    block.actor = new com.maddox.il2.engine.Actor[i2];
+                    for(int k2 = 0; k2 < i2; k2++)
+                    {
+                        int i3 = block.code[k2 * 2 + 0];
+                        int j3 = block.code[k2 * 2 + 1];
+                        int k3 = i3 & 0x7fff;
+                        int l3 = (short)(i3 >> 16);
+                        int i4 = (short)(j3 & 0xffff);
+                        int j4 = (short)(j3 >> 16 & 0xffff);
+                        float f4 = ((float)l3 * 360F) / 32000F;
+                        float f5 = ((float)i4 * 200F) / 32000F + f;
+                        float f6 = ((float)j4 * 200F) / 32000F + f2;
+                        _loc.set(f5, f6, 0.0D, -f4, 0.0F, 0.0F);
+                        com.maddox.il2.engine.Actor actor1 = cacheGet(k3);
+                        if(actor1 != null)
+                        {
+                            actor1.pos.setAbs(_loc);
+                            actor1.setDiedFlag((i3 & 0x8000) != 0);
+                        } else
+                        {
+                            _spawnArg.point = _loc.getPoint();
+                            _spawnArg.orient = _loc.getOrient();
+                            try
+                            {
+                                actor1 = spawns[k3].actorSpawn(_spawnArg);
+                                if((i3 & 0x8000) != 0)
+                                    actor1.setDiedFlag(true);
+                                if(actor1 instanceof com.maddox.il2.engine.ActorMesh)
+                                    actor1.draw.uniformMaxDist = uniformMaxDist[k3];
+                            }
+                            catch(java.lang.Exception exception)
+                            {
+                                java.lang.System.out.println(exception.getMessage());
+                                exception.printStackTrace();
+                            }
+                        }
+                        block.actor[k2] = actor1;
+                    }
+
+                }
+            }
+
+        } else
+        {
+            for(int l = 0; l < i; l++)
+            {
+                int j1 = ai[l + j];
+                int l1 = ai1[l + j];
+                com.maddox.il2.objects.Block block1 = (com.maddox.il2.objects.Block)allBlocks.get(key(l1, j1));
+                if(block1 != null && block1.actor != null && (!bCheckPlate || !block1.bExistPlate))
+                {
+                    float f1 = (float)j1 * 200F;
+                    float f3 = (float)l1 * 200F;
+                    int j2 = block1.code.length / 2;
+                    for(int l2 = 0; l2 < j2; l2++)
+                    {
+                        com.maddox.il2.engine.Actor actor = block1.actor[l2];
+                        block1.actor[l2] = null;
+                        if(actor != null)
+                        {
+                            if(actor.getDiedFlag())
+                                block1.code[l2 * 2 + 0] |= 0x8000;
+                            cachePut(block1.code[l2 * 2 + 0] & 0x7fff, actor);
+                        }
+                    }
+
+                    block1.actor = null;
+                }
+            }
+
+        }
+    }
+
+    public void resetGame()
+    {
+        wQueue.clear();
+        sQueue.clear();
+        if(allBlocks == null)
+            return;
+        java.util.ArrayList arraylist = new ArrayList();
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = allBlocks.nextEntry(null); hashmapintentry != null; hashmapintentry = allBlocks.nextEntry(hashmapintentry))
+        {
+            com.maddox.il2.objects.Block block = (com.maddox.il2.objects.Block)hashmapintentry.getValue();
+            if(block.actor != null)
+            {
+                for(int j = 0; j < block.actor.length; j++)
+                {
+                    arraylist.add(block.actor[j]);
+                    block.actor[j] = null;
+                }
+
+            }
+        }
+
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        for(int i = 0; i < cacheActors.length; i++)
+        {
+            java.util.ArrayList arraylist1 = cacheActors[i];
+            com.maddox.il2.engine.Engine.destroyListGameActors(arraylist1);
+        }
+
+        allBlocks = null;
+        allStates0 = null;
+        allBridge0 = null;
+        cacheActors = null;
+        spawns = null;
+        bridges.clear();
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public Statics()
+    {
+        bridges = new ArrayList();
+        _updateX = new int[1];
+        _updateY = new int[1];
+        wQueue = new Queue();
+        sQueue = new Queue();
+        bCheckPlate = true;
+        _loc = new Loc();
+        _spawnArg = new ActorSpawnArg();
+        flags |= 0x4000;
+    }
+
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
+
+    private static com.maddox.rts.SectFile ships = null;
+    private static com.maddox.rts.SectFile technics = null;
+    private static com.maddox.rts.SectFile buildings = null;
+    public java.util.ArrayList bridges;
+    private com.maddox.il2.engine.ActorSpawn spawns[];
+    private boolean spawnIsPlate[];
+    private float uniformMaxDist[];
+    private java.util.ArrayList cacheActors[];
+    private com.maddox.util.HashMapInt allBlocks;
+    private com.maddox.util.HashMapInt allBridge0;
+    private com.maddox.util.HashMapInt allStates0;
+    private int _updateX[];
+    private int _updateY[];
+    private com.maddox.il2.objects.Queue wQueue;
+    private com.maddox.il2.objects.Queue sQueue;
+    private boolean bCheckPlate;
+    com.maddox.il2.engine.Loc _loc;
+    com.maddox.il2.engine.ActorSpawnArg _spawnArg;
+
 }

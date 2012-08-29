@@ -1,268 +1,409 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BridgesGenerator.java
+
 package com.maddox.il2.tools;
 
 import com.maddox.TexImage.TexImage;
 import java.io.PrintStream;
 
+// Referenced classes of package com.maddox.il2.tools:
+//            Bridge
+
 public class BridgesGenerator
 {
-  public static final int HIGHWAY = 128;
-  public static final int RAIL = 64;
-  public static final int ROAD = 32;
-  public static final int CH_RATIO = 4;
-  public static final int CH2 = 2;
-  public static final int WATERLEV = 250;
-  private static TexImage T = new TexImage();
-  private static final int MXL = 8;
-  private static int dx;
-  private static int dy;
-  private static int len;
-  private static boolean prn = true;
-  private static final int MAXBRIDGE = 1000;
-  private static int num;
-  private static int[] coords = new int[4000];
-  private static byte[] type = new byte[1000];
 
-  static TexImage W = new TexImage();
-
-  private static int WintI(int paramInt1, int paramInt2)
-  {
-    return W.intI(paramInt1 * 4 + 2, paramInt2 * 4 + 2);
-  }
-
-  private static int WintL(int paramInt1, int paramInt2, int paramInt3, int paramInt4)
-  {
-    int j = paramInt3 > paramInt1 ? 1 : -1; if (paramInt3 == paramInt1) j = 0;
-    int k = paramInt4 > paramInt2 ? 1 : -1; if (paramInt4 == paramInt2) k = 0;
-    int i = 255;
-    paramInt1 = paramInt1 * 4 + 2; paramInt2 = paramInt2 * 4 + 2;
-    paramInt3 = paramInt3 * 4 + 2; paramInt4 = paramInt4 * 4 + 2;
-    for (; (paramInt2 != paramInt4) || (paramInt1 != paramInt3); paramInt1 += j) {
-      if (i > W.intI(paramInt1, paramInt2)) i = W.intI(paramInt1, paramInt2);
-      paramInt2 += k;
-    }
-
-    return i;
-  }
-
-  private static int getlen(int paramInt1, int paramInt2, int paramInt3)
-  {
-    for (int i = 0; (i < 50) && 
-      (paramInt1 >= 0) && (paramInt2 >= 0) && (paramInt1 < T.sx) && (paramInt2 < T.sy) && 
-      ((T.I(paramInt1, paramInt2) & paramInt3) != 0); paramInt2 += dy)
+    public BridgesGenerator()
     {
-      T.I(paramInt1, paramInt2, T.I(paramInt1, paramInt2) & (paramInt3 ^ 0xFFFFFFFF));
-
-      i++; paramInt1 += dx;
     }
 
-    paramInt1 -= dx; paramInt2 -= dy;
-    if ((i > 0) && (i < 8)) {
-      if (prn) System.out.print("" + paramInt3 + ", " + paramInt1 + "," + paramInt2 + ",");
-      if (num < coords.length) {
-        coords[(num++)] = paramInt1;
-        coords[(num++)] = paramInt2;
-      }
+    private static int WintI(int i, int j)
+    {
+        return W.intI(i * 4 + 2, j * 4 + 2);
     }
-    return i;
-  }
 
-  private static void conn8(int paramInt1, int paramInt2, int paramInt3)
-  {
-    int i = BridgesGenerator.len = 0;
-    if ((T.I(paramInt1 - 1, paramInt2 - 1) & paramInt3) != 0) i |= 1;
-    if ((T.I(paramInt1, paramInt2 - 1) & paramInt3) != 0) i |= 2;
-    if ((T.I(paramInt1 + 1, paramInt2 - 1) & paramInt3) != 0) i |= 4;
-    if ((T.I(paramInt1 + 1, paramInt2) & paramInt3) != 0) i |= 8;
-    if ((T.I(paramInt1 + 1, paramInt2 + 1) & paramInt3) != 0) i |= 16;
-    if ((T.I(paramInt1, paramInt2 + 1) & paramInt3) != 0) i |= 32;
-    if ((T.I(paramInt1 - 1, paramInt2 + 1) & paramInt3) != 0) i |= 64;
-    if ((T.I(paramInt1 - 1, paramInt2) & paramInt3) != 0) i |= 128;
+    private static int WintL(int i, int j, int k, int l)
+    {
+        byte byte0 = ((byte)(k <= i ? -1 : 1));
+        if(k == i)
+            byte0 = 0;
+        byte byte1 = ((byte)(l <= j ? -1 : 1));
+        if(l == j)
+            byte1 = 0;
+        int i1 = 255;
+        i = i * 4 + 2;
+        j = j * 4 + 2;
+        k = k * 4 + 2;
+        for(l = l * 4 + 2; j != l || i != k; i += byte0)
+        {
+            if(i1 > W.intI(i, j))
+                i1 = W.intI(i, j);
+            j += byte1;
+        }
 
-    switch (i) { default:
-      return;
-    case 1:
-      dx = -1; dy = -1; break;
-    case 2:
-      dx = 0; dy = -1; break;
-    case 4:
-      dx = 1; dy = -1; break;
-    case 8:
-      dx = 1; dy = 0; break;
-    case 16:
-      dx = 1; dy = 1; break;
-    case 32:
-      dx = 0; dy = 1; break;
-    case 64:
-      dx = -1; dy = 1; break;
-    case 128:
-      dx = -1; dy = 0;
+        return i1;
     }
-    len = getlen(paramInt1, paramInt2, paramInt3);
-  }
 
-  private static void comp(int paramInt1, int paramInt2, int paramInt3)
-  {
-    if ((T.I(paramInt1, paramInt2) & paramInt3) == 0) return;
-    conn8(paramInt1, paramInt2, paramInt3);
-    if ((len > 0) && (len < 8)) {
-      if (prn) System.out.println(" " + paramInt1 + "," + paramInt2);
-      type[(num / 4)] = (byte)paramInt3;
-      if (num < coords.length) {
-        coords[(num++)] = paramInt1;
-        coords[(num++)] = paramInt2;
-      }
+    private static int getlen(int i, int j, int k)
+    {
+        int l;
+        for(l = 0; l < 50;)
+        {
+            if(i < 0 || j < 0 || i >= T.sx || j >= T.sy || (T.I(i, j) & k) == 0)
+                break;
+            T.I(i, j, T.I(i, j) & ~k);
+            l++;
+            i += dx;
+            j += dy;
+        }
+
+        i -= dx;
+        j -= dy;
+        if(l > 0 && l < 8)
+        {
+            if(prn)
+                java.lang.System.out.print("" + k + ", " + i + "," + j + ",");
+            if(num < coords.length)
+            {
+                coords[num++] = i;
+                coords[num++] = j;
+            }
+        }
+        return l;
     }
-  }
 
-  private static void printList(TexImage paramTexImage)
-  {
-    num = 0;
-    if (T != paramTexImage) T.set(paramTexImage);
-    int i;
-    for (int j = 0; j < T.sy; j++) {
-      for (i = 0; i < T.sx; i++) {
-        if (((T.intI(i, j) & 0xE0) == 0) || ((T.intI(i, j) & 0x1C) != 28))
-          T.I(i, j, 0);
+    private static void conn8(int i, int j, int k)
+    {
+        int l = len = 0;
+        if((T.I(i - 1, j - 1) & k) != 0)
+            l |= 1;
+        if((T.I(i, j - 1) & k) != 0)
+            l |= 2;
+        if((T.I(i + 1, j - 1) & k) != 0)
+            l |= 4;
+        if((T.I(i + 1, j) & k) != 0)
+            l |= 8;
+        if((T.I(i + 1, j + 1) & k) != 0)
+            l |= 0x10;
+        if((T.I(i, j + 1) & k) != 0)
+            l |= 0x20;
+        if((T.I(i - 1, j + 1) & k) != 0)
+            l |= 0x40;
+        if((T.I(i - 1, j) & k) != 0)
+            l |= 0x80;
+        switch(l)
+        {
+        default:
+            return;
+
+        case 1: // '\001'
+            dx = -1;
+            dy = -1;
+            break;
+
+        case 2: // '\002'
+            dx = 0;
+            dy = -1;
+            break;
+
+        case 4: // '\004'
+            dx = 1;
+            dy = -1;
+            break;
+
+        case 8: // '\b'
+            dx = 1;
+            dy = 0;
+            break;
+
+        case 16: // '\020'
+            dx = 1;
+            dy = 1;
+            break;
+
+        case 32: // ' '
+            dx = 0;
+            dy = 1;
+            break;
+
+        case 64: // '@'
+            dx = -1;
+            dy = 1;
+            break;
+
+        case 128: 
+            dx = -1;
+            dy = 0;
+            break;
+        }
+        len = com.maddox.il2.tools.BridgesGenerator.getlen(i, j, k);
+    }
+
+    private static void comp(int i, int j, int k)
+    {
+        if((T.I(i, j) & k) == 0)
+            return;
+        com.maddox.il2.tools.BridgesGenerator.conn8(i, j, k);
+        if(len > 0 && len < 8)
+        {
+            if(prn)
+                java.lang.System.out.println(" " + i + "," + j);
+            type[num / 4] = (byte)k;
+            if(num < coords.length)
+            {
+                coords[num++] = i;
+                coords[num++] = j;
+            }
+        }
+    }
+
+    private static void printList(com.maddox.TexImage.TexImage teximage)
+    {
+        num = 0;
+        if(T != teximage)
+            T.set(teximage);
+        for(int k = 0; k < T.sy; k++)
+        {
+            for(int i = 0; i < T.sx; i++)
+                if((T.intI(i, k) & 0xe0) == 0 || (T.intI(i, k) & 0x1c) != 28)
+                    T.I(i, k, 0);
+                else
+                    T.I(i, k, T.intI(i, k) & 0xe0);
+
+        }
+
+        for(int l = 1; l < T.sy - 1; l++)
+        {
+            for(int j = 1; j < T.sx - 1; j++)
+            {
+                if((T.I(j, l) & 0x80) != 0)
+                    com.maddox.il2.tools.BridgesGenerator.comp(j, l, 128);
+                if((T.I(j, l) & 0x40) != 0)
+                    com.maddox.il2.tools.BridgesGenerator.comp(j, l, 64);
+                if((T.I(j, l) & 0x20) != 0)
+                    com.maddox.il2.tools.BridgesGenerator.comp(j, l, 32);
+            }
+
+        }
+
+    }
+
+    public static com.maddox.il2.tools.Bridge[] getBridgesArray(com.maddox.TexImage.TexImage teximage)
+    {
+        prn = false;
+        com.maddox.il2.tools.BridgesGenerator.printList(teximage);
+        prn = true;
+        int i = num / 4;
+        com.maddox.il2.tools.Bridge abridge[] = new com.maddox.il2.tools.Bridge[i];
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.tools.Bridge bridge = abridge[j] = new Bridge();
+            int k = j * 4;
+            bridge.x1 = coords[k];
+            bridge.y1 = coords[k + 1];
+            bridge.x2 = coords[k + 2];
+            bridge.y2 = coords[k + 3];
+            bridge.type = type[j] & 0xff;
+        }
+
+        return abridge;
+    }
+
+    public static void shorting(com.maddox.il2.tools.Bridge bridge)
+    {
+        int i = bridge.x1;
+        int j = bridge.x2;
+        int k = bridge.y1;
+        int l = bridge.y2;
+        int i1 = j - i;
+        int j1 = l - k;
+        if(i1 > 0)
+            i1 = 1;
         else
-          T.I(i, j, T.intI(i, j) & 0xE0);
-      }
+        if(i1 < 0)
+            i1 = -1;
+        if(j1 > 0)
+            j1 = 1;
+        else
+        if(j1 < 0)
+            j1 = -1;
+        int l1;
+        do
+        {
+            l1 = 0;
+            int k1 = java.lang.Math.max(java.lang.Math.abs(i - j), java.lang.Math.abs(k - l));
+            if(k1 <= 1)
+                break;
+            byte byte0 = T.I(i, k);
+            if((byte0 & 0xe0) != 0 && (byte0 & 0x1c) == 28 && com.maddox.il2.tools.BridgesGenerator.WintL(i, k, i + i1, k + j1) >= 250)
+            {
+                T.I(i, k, T.I(i, k) & 0xffffffe3);
+                i += i1;
+                k += j1;
+                l1++;
+            }
+            k1 = java.lang.Math.max(java.lang.Math.abs(i - j), java.lang.Math.abs(k - l));
+            if(k1 <= 1)
+                break;
+            byte0 = T.I(j, l);
+            if((byte0 & 0xe0) != 0 && (byte0 & 0x1c) == 28 && com.maddox.il2.tools.BridgesGenerator.WintL(j, l, j - i1, l - j1) >= 250)
+            {
+                T.I(j, l, T.I(j, l) & 0xffffffe3);
+                j -= i1;
+                l -= j1;
+                l1++;
+            }
+        } while(l1 != 0);
+        bridge.x1 = i;
+        bridge.x2 = j;
+        bridge.y1 = k;
+        bridge.y2 = l;
     }
-    for (j = 1; j < T.sy - 1; j++)
-      for (i = 1; i < T.sx - 1; i++) {
-        if ((T.I(i, j) & 0x80) != 0) comp(i, j, 128);
-        if ((T.I(i, j) & 0x40) != 0) comp(i, j, 64);
-        if ((T.I(i, j) & 0x20) == 0) continue; comp(i, j, 32);
-      }
-  }
 
-  public static Bridge[] getBridgesArray(TexImage paramTexImage)
-  {
-    prn = false;
-    printList(paramTexImage);
-    prn = true;
-
-    int i = num / 4;
-    Bridge[] arrayOfBridge = new Bridge[i];
-
-    for (int j = 0; j < i; j++) {
-      Bridge localBridge = arrayOfBridge[j] =  = new Bridge();
-      int k = j * 4;
-      localBridge.x1 = coords[k];
-      localBridge.y1 = coords[(k + 1)];
-      localBridge.x2 = coords[(k + 2)];
-      localBridge.y2 = coords[(k + 3)];
-      localBridge.type = (type[j] & 0xFF);
-    }
-    return arrayOfBridge;
-  }
-
-  public static void shorting(Bridge paramBridge)
-  {
-    int i = paramBridge.x1; int j = paramBridge.x2; int k = paramBridge.y1; int m = paramBridge.y2;
-    int n = j - i; int i1 = m - k;
-
-    if (n > 0) n = 1; else if (n < 0) n = -1;
-    if (i1 > 0) i1 = 1; else if (i1 < 0) i1 = -1; while (true)
+    public static void longing(com.maddox.il2.tools.Bridge bridge)
     {
-      int i4 = 0;
-      int i2 = Math.max(Math.abs(i - j), Math.abs(k - m));
-      if (i2 <= 1) break;
-      int i3 = T.I(i, k);
-      if (((i3 & 0xE0) != 0) && ((i3 & 0x1C) == 28) && (WintL(i, k, i + n, k + i1) >= 250)) {
-        T.I(i, k, T.I(i, k) & 0xFFFFFFE3);
-        i += n; k += i1;
-        i4++;
-      }
-      i2 = Math.max(Math.abs(i - j), Math.abs(k - m));
-      if (i2 <= 1) break;
-      i3 = T.I(j, m);
-      if (((i3 & 0xE0) != 0) && ((i3 & 0x1C) == 28) && (WintL(j, m, j - n, m - i1) >= 250)) {
-        T.I(j, m, T.I(j, m) & 0xFFFFFFE3);
-        j -= n; m -= i1;
-        i4++;
-      }
-      if (i4 != 0) continue;
+        int i = bridge.x1;
+        int j = bridge.x2;
+        int k = bridge.y1;
+        int l = bridge.y2;
+        int i1 = j - i;
+        int j1 = l - k;
+        if(i1 > 0)
+            i1 = 1;
+        else
+        if(i1 < 0)
+            i1 = -1;
+        if(j1 > 0)
+            j1 = 1;
+        else
+        if(j1 < 0)
+            j1 = -1;
+        if(com.maddox.il2.tools.BridgesGenerator.WintI(i, k) < 130)
+        {
+            i -= i1;
+            k -= j1;
+            if((T.I(i, k) & 0xe0) != 0)
+                T.I(i, k, T.I(i, k) | 0x1c);
+        }
+        if(com.maddox.il2.tools.BridgesGenerator.WintI(j, l) < 130)
+        {
+            j += i1;
+            l += j1;
+            if((T.I(j, l) & 0xe0) != 0)
+                T.I(j, l, T.I(j, l) | 0x1c);
+        }
+        bridge.x1 = i;
+        bridge.x2 = j;
+        bridge.y1 = k;
+        bridge.y2 = l;
     }
-    paramBridge.x1 = i; paramBridge.x2 = j; paramBridge.y1 = k; paramBridge.y2 = m;
-  }
 
-  public static void longing(Bridge paramBridge) {
-    int i = paramBridge.x1; int j = paramBridge.x2; int k = paramBridge.y1; int m = paramBridge.y2;
-    int n = j - i; int i1 = m - k;
-
-    if (n > 0) n = 1; else if (n < 0) n = -1;
-    if (i1 > 0) i1 = 1; else if (i1 < 0) i1 = -1;
-
-    if (WintI(i, k) < 130)
+    public static void deleting(com.maddox.il2.tools.Bridge bridge)
     {
-      i -= n; k -= i1;
-      if ((T.I(i, k) & 0xE0) != 0)
-        T.I(i, k, T.I(i, k) | 0x1C);
+        int i = bridge.x1;
+        int j = bridge.x2;
+        int k = bridge.y1;
+        int l = bridge.y2;
+        int i1 = j - i;
+        int j1 = l - k;
+        if(i1 > 0)
+            i1 = 1;
+        else
+        if(i1 < 0)
+            i1 = -1;
+        if(j1 > 0)
+            j1 = 1;
+        else
+        if(j1 < 0)
+            j1 = -1;
+        for(; k != l || i != j; i += i1)
+        {
+            T.I(i, k, T.I(i, k) & 0xffffffe3);
+            k += j1;
+        }
+
     }
-    if (WintI(j, m) < 130) {
-      j += n; m += i1;
-      if ((T.I(j, m) & 0xE0) != 0) {
-        T.I(j, m, T.I(j, m) | 0x1C);
-      }
-    }
-    paramBridge.x1 = i; paramBridge.x2 = j; paramBridge.y1 = k; paramBridge.y2 = m;
-  }
 
-  public static void deleting(Bridge paramBridge) {
-    int i = paramBridge.x1; int j = paramBridge.x2; int k = paramBridge.y1; int m = paramBridge.y2;
-    int n = j - i; int i1 = m - k;
-
-    if (n > 0) n = 1; else if (n < 0) n = -1;
-    if (i1 > 0) i1 = 1; else if (i1 < 0) i1 = -1;
-    for (; (k != m) || (i != j); i += n) {
-      T.I(i, k, T.I(i, k) & 0xFFFFFFE3);
-
-      k += i1;
-    }
-  }
-
-  public static boolean exists(Bridge paramBridge)
-  {
-    return WintL(paramBridge.x1, paramBridge.y1, paramBridge.x2, paramBridge.y2) < 180;
-  }
-
-  public static void main(String[] paramArrayOfString) throws Exception {
-    if (paramArrayOfString.length != 1) {
-      System.out.println("Usage: Bridges filename.tga");
-      return;
-    }
-    T.LoadTGA(paramArrayOfString[0]);
-    Bridge[] arrayOfBridge = getBridgesArray(T);
-    T.LoadTGA(paramArrayOfString[0]);
-    W.LoadTGA(ch_name(paramArrayOfString[0], "WaterBig.tga"));
-    for (int i = 0; i < arrayOfBridge.length; i++)
+    public static boolean exists(com.maddox.il2.tools.Bridge bridge)
     {
-      shorting(arrayOfBridge[i]);
-      longing(arrayOfBridge[i]);
-      System.out.println(arrayOfBridge[i]);
+        return com.maddox.il2.tools.BridgesGenerator.WintL(bridge.x1, bridge.y1, bridge.x2, bridge.y2) < 180;
     }
-    T.SaveTGA(paramArrayOfString[0] + "~");
-  }
 
-  private static String ch_name(String paramString1, String paramString2) {
-    int i = paramString1.lastIndexOf('\\');
-    System.out.println(paramString1.substring(0, i + 1) + paramString2);
-    return paramString1.substring(0, i + 1) + paramString2;
-  }
+    public static void main(java.lang.String args[])
+        throws java.lang.Exception
+    {
+        if(args.length != 1)
+        {
+            java.lang.System.out.println("Usage: Bridges filename.tga");
+            return;
+        }
+        T.LoadTGA(args[0]);
+        com.maddox.il2.tools.Bridge abridge[] = com.maddox.il2.tools.BridgesGenerator.getBridgesArray(T);
+        T.LoadTGA(args[0]);
+        W.LoadTGA(com.maddox.il2.tools.BridgesGenerator.ch_name(args[0], "WaterBig.tga"));
+        for(int i = 0; i < abridge.length; i++)
+        {
+            com.maddox.il2.tools.BridgesGenerator.shorting(abridge[i]);
+            com.maddox.il2.tools.BridgesGenerator.longing(abridge[i]);
+            java.lang.System.out.println(abridge[i]);
+        }
 
-  private static void wipeBridge(Bridge paramBridge)
-  {
-    int i = paramBridge.x1; int j = paramBridge.x2; int k = paramBridge.y1; int m = paramBridge.y2;
-    int n = j - i; int i1 = m - k;
-
-    if (n > 0) n = 1; else if (n < 0) n = -1;
-    if (i1 > 0) i1 = 1; else if (i1 < 0) i1 = -1;
-    i *= 4; k *= 4;
-    j *= 4; m *= 4;
-    for (; (k != m) || (i != j); i += n) {
-      W.I(i, k, 0);
-
-      k += i1;
+        T.SaveTGA(args[0] + "~");
     }
-  }
+
+    private static java.lang.String ch_name(java.lang.String s, java.lang.String s1)
+    {
+        int i = s.lastIndexOf('\\');
+        java.lang.System.out.println(s.substring(0, i + 1) + s1);
+        return s.substring(0, i + 1) + s1;
+    }
+
+    private static void wipeBridge(com.maddox.il2.tools.Bridge bridge)
+    {
+        int i = bridge.x1;
+        int j = bridge.x2;
+        int k = bridge.y1;
+        int l = bridge.y2;
+        int i1 = j - i;
+        int j1 = l - k;
+        if(i1 > 0)
+            i1 = 1;
+        else
+        if(i1 < 0)
+            i1 = -1;
+        if(j1 > 0)
+            j1 = 1;
+        else
+        if(j1 < 0)
+            j1 = -1;
+        i *= 4;
+        k *= 4;
+        j *= 4;
+        for(l *= 4; k != l || i != j; i += i1)
+        {
+            W.I(i, k, 0);
+            k += j1;
+        }
+
+    }
+
+    public static final int HIGHWAY = 128;
+    public static final int RAIL = 64;
+    public static final int ROAD = 32;
+    public static final int CH_RATIO = 4;
+    public static final int CH2 = 2;
+    public static final int WATERLEV = 250;
+    private static com.maddox.TexImage.TexImage T = new TexImage();
+    private static final int MXL = 8;
+    private static int dx;
+    private static int dy;
+    private static int len;
+    private static boolean prn = true;
+    private static final int MAXBRIDGE = 1000;
+    private static int num;
+    private static int coords[] = new int[4000];
+    private static byte type[] = new byte[1000];
+    static com.maddox.TexImage.TexImage W = new TexImage();
+
 }

@@ -1,28 +1,39 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ReverbFXRoom.java
+
 package com.maddox.sound;
 
-public class ReverbFXRoom extends BaseObject
+
+// Referenced classes of package com.maddox.sound:
+//            BaseObject, Reverb
+
+public class ReverbFXRoom extends com.maddox.sound.BaseObject
 {
-  protected float minAttn;
-  protected float attn;
-  protected float prevAttn;
 
-  public ReverbFXRoom(float paramFloat)
-  {
-    this.minAttn = paramFloat;
-    this.attn = 1.0F;
-    this.prevAttn = 1.0F;
-  }
-
-  public void set(float paramFloat)
-  {
-    this.attn = (this.minAttn + (1.0F - this.minAttn) * paramFloat);
-  }
-
-  protected void tick(Reverb paramReverb)
-  {
-    if (this.prevAttn != this.attn) {
-      paramReverb.set(100, this.attn);
-      this.prevAttn = this.attn;
+    public ReverbFXRoom(float f)
+    {
+        minAttn = f;
+        attn = 1.0F;
+        prevAttn = 1.0F;
     }
-  }
+
+    public void set(float f)
+    {
+        attn = minAttn + (1.0F - minAttn) * f;
+    }
+
+    protected void tick(com.maddox.sound.Reverb reverb)
+    {
+        if(prevAttn != attn)
+        {
+            reverb.set(100, attn);
+            prevAttn = attn;
+        }
+    }
+
+    protected float minAttn;
+    protected float attn;
+    protected float prevAttn;
 }

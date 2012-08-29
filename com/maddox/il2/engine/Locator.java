@@ -1,43 +1,59 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Locator.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
 
-public class Locator extends Loc
+// Referenced classes of package com.maddox.il2.engine:
+//            Loc, Orientation, Orient
+
+public class Locator extends com.maddox.il2.engine.Loc
 {
-  public Locator()
-  {
-    this.P = new Point3d();
-    this.O = new Orientation();
-  }
 
-  public Locator(double paramDouble1, double paramDouble2, double paramDouble3, float paramFloat1, float paramFloat2, float paramFloat3) {
-    this();
-    set(paramDouble1, paramDouble2, paramDouble3, paramFloat1, paramFloat2, paramFloat3);
-  }
+    public Locator()
+    {
+        P = new Point3d();
+        O = new Orientation();
+    }
 
-  public Locator(Loc paramLoc) {
-    this();
-    set(paramLoc);
-  }
+    public Locator(double d, double d1, double d2, float f, 
+            float f1, float f2)
+    {
+        this();
+        set(d, d1, d2, f, f1, f2);
+    }
 
-  public Locator(Tuple3d paramTuple3d, Orient paramOrient) {
-    this();
-    set(paramTuple3d, paramOrient);
-  }
+    public Locator(com.maddox.il2.engine.Loc loc)
+    {
+        this();
+        set(loc);
+    }
 
-  public Locator(Tuple3d paramTuple3d) {
-    this();
-    set(paramTuple3d);
-  }
+    public Locator(com.maddox.JGP.Tuple3d tuple3d, com.maddox.il2.engine.Orient orient)
+    {
+        this();
+        set(tuple3d, orient);
+    }
 
-  public Locator(Orient paramOrient) {
-    this();
-    set(paramOrient);
-  }
+    public Locator(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        this();
+        set(tuple3d);
+    }
 
-  public Locator(double[] paramArrayOfDouble) {
-    this();
-    set(paramArrayOfDouble);
-  }
+    public Locator(com.maddox.il2.engine.Orient orient)
+    {
+        this();
+        set(orient);
+    }
+
+    public Locator(double ad[])
+    {
+        this();
+        set(ad);
+    }
 }

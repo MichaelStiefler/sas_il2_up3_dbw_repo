@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdPreload.java
+
 package com.maddox.il2.engine.cmd;
 
 import com.maddox.il2.engine.Pre;
@@ -8,41 +13,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdPreload extends Cmd
+public class CmdPreload extends com.maddox.rts.Cmd
 {
-  public static final String SAVE = "SAVE";
-  public static final String REGISTER = "REGISTER";
-  public static final String NOREGISTER = "NOREGISTER";
-  public static final String CLEAR = "CLEAR";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (paramMap.containsKey("REGISTER")) {
-      Pre.register(true);
-    }
-    if (paramMap.containsKey("NOREGISTER")) {
-      Pre.register(false);
-    }
-    if (paramMap.containsKey("CLEAR")) {
-      Pre.clear();
-    }
-    if (paramMap.containsKey("SAVE")) {
-      Pre.save(arg(paramMap, "SAVE", 0));
-    }
-    if (paramMap.containsKey("_$$")) {
-      List localList = (List)paramMap.get("_$$");
-      for (int i = 0; i < localList.size(); i++)
-        Pre.loading((String)localList.get(i));
-    }
-    return CmdEnv.RETURN_OK;
-  }
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(map.containsKey("REGISTER"))
+            com.maddox.il2.engine.Pre.register(true);
+        if(map.containsKey("NOREGISTER"))
+            com.maddox.il2.engine.Pre.register(false);
+        if(map.containsKey("CLEAR"))
+            com.maddox.il2.engine.Pre.clear();
+        if(map.containsKey("SAVE"))
+            com.maddox.il2.engine.Pre.save(com.maddox.rts.Cmd.arg(map, "SAVE", 0));
+        if(map.containsKey("_$$"))
+        {
+            java.util.List list = (java.util.List)map.get("_$$");
+            for(int i = 0; i < list.size(); i++)
+                com.maddox.il2.engine.Pre.loading((java.lang.String)list.get(i));
 
-  public CmdPreload() {
-    this.param.put("SAVE", null);
-    this.param.put("REGISTER", null);
-    this.param.put("NOREGISTER", null);
-    this.param.put("CLEAR", null);
-    this._properties.put("NAME", "preload");
-    this._levelAccess = 0;
-  }
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
+    }
+
+    public CmdPreload()
+    {
+        param.put("SAVE", null);
+        param.put("REGISTER", null);
+        param.put("NOREGISTER", null);
+        param.put("CLEAR", null);
+        _properties.put("NAME", "preload");
+        _levelAccess = 0;
+    }
+
+    public static final java.lang.String SAVE = "SAVE";
+    public static final java.lang.String REGISTER = "REGISTER";
+    public static final java.lang.String NOREGISTER = "NOREGISTER";
+    public static final java.lang.String CLEAR = "CLEAR";
 }

@@ -1,51 +1,67 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SoundListener.java
+
 package com.maddox.sound;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 
+// Referenced classes of package com.maddox.sound:
+//            Acoustics
+
 public class SoundListener
 {
-  protected static Acoustics acc = null;
-  protected static Point3d pos = new Point3d();
 
-  public static void setAcoustics(Acoustics paramAcoustics)
-  {
-    if (acc != paramAcoustics) {
-      acc = paramAcoustics;
-      jniSetAcoustics(acc.handle);
+    public SoundListener()
+    {
     }
-  }
 
-  protected static void flush()
-  {
-    if (acc != null) {
-      double d = pos.z - Engine.land().HQ(pos.x, pos.y);
-      acc.flush((float)d);
+    public static void setAcoustics(com.maddox.sound.Acoustics acoustics)
+    {
+        if(acc != acoustics)
+        {
+            acc = acoustics;
+            com.maddox.sound.SoundListener.jniSetAcoustics(acc.handle);
+        }
     }
-  }
 
-  public static void setPosition(double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    pos.set(paramDouble1, paramDouble2, paramDouble3);
-    jniSetPosition(paramDouble1, paramDouble2, paramDouble3);
-  }
+    protected static void flush()
+    {
+        if(acc != null)
+        {
+            double d = pos.z - com.maddox.il2.engine.Engine.land().HQ(pos.x, pos.y);
+            acc.flush((float)d);
+        }
+    }
 
-  public static void setVelocity(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    jniSetVelocity(paramFloat1, paramFloat2, paramFloat3);
-  }
+    public static void setPosition(double d, double d1, double d2)
+    {
+        pos.set(d, d1, d2);
+        com.maddox.sound.SoundListener.jniSetPosition(d, d1, d2);
+    }
 
-  public static void setOrientation(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6)
-  {
-    jniSetOrientation(paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramFloat5, paramFloat6);
-  }
+    public static void setVelocity(float f, float f1, float f2)
+    {
+        com.maddox.sound.SoundListener.jniSetVelocity(f, f1, f2);
+    }
 
-  protected static native void jniSetPosition(double paramDouble1, double paramDouble2, double paramDouble3);
+    public static void setOrientation(float f, float f1, float f2, float f3, float f4, float f5)
+    {
+        com.maddox.sound.SoundListener.jniSetOrientation(f, f1, f2, f3, f4, f5);
+    }
 
-  protected static native void jniSetVelocity(float paramFloat1, float paramFloat2, float paramFloat3);
+    protected static native void jniSetPosition(double d, double d1, double d2);
 
-  protected static native void jniSetOrientation(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6);
+    protected static native void jniSetVelocity(float f, float f1, float f2);
 
-  protected static native void jniSetAcoustics(int paramInt);
+    protected static native void jniSetOrientation(float f, float f1, float f2, float f3, float f4, float f5);
+
+    protected static native void jniSetAcoustics(int i);
+
+    protected static com.maddox.sound.Acoustics acc = null;
+    protected static com.maddox.JGP.Point3d pos = new Point3d();
+
 }

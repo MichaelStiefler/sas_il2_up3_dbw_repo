@@ -1,108 +1,149 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowEditNumber.java
+
 package com.maddox.gwindow;
 
-public class GWindowEditNumber extends GWindowDialogControl
-  implements GWindowCellEdit
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GWindowEditBox, GWindowVScrollBar, GWindowCellEdit, 
+//            GWindowLookAndFeel, GWindow
+
+public class GWindowEditNumber extends com.maddox.gwindow.GWindowDialogControl
+    implements com.maddox.gwindow.GWindowCellEdit
 {
-  public Class type;
-  public Number min;
-  public Number max;
-  public double step = 1.0D;
-  public GWindowEditBox box;
-  public GWindowVScrollBar bar;
 
-  public void setRange(Number paramNumber1, Number paramNumber2, Number paramNumber3)
-  {
-    this.min = paramNumber1;
-    this.max = paramNumber2;
-    if ((paramNumber1 == null) || (paramNumber2 == null)) {
-      this.bar.hideWindow();
-    } else {
-      if (paramNumber3 != null) this.step = paramNumber3.doubleValue(); else
-        this.step = 1.0D;
-      this.bar.setRange(-1.0F, 1.0F, 0.0F, -1.0F, 0.0F);
-      this.bar.showWindow();
-    }
-    resized();
-  }
-
-  private Number getNumberValue(Object paramObject) {
-    if ((paramObject instanceof Number)) return (Number)paramObject;
-    if ((paramObject instanceof String)) {
-      if (this.type == Byte.class) return Byte.valueOf((String)paramObject);
-      if (this.type == Short.class) return Short.valueOf((String)paramObject);
-      if (this.type == Integer.class) return Integer.valueOf((String)paramObject);
-      if (this.type == Long.class) return Long.valueOf((String)paramObject);
-      if (this.type == Float.class) return Float.valueOf((String)paramObject);
-      if (this.type == Double.class) return Double.valueOf((String)paramObject);
-    }
-    return null;
-  }
-
-  public void setCellEditValue(Object paramObject) {
-    this.box.setValue(paramObject.toString(), false);
-  }
-
-  public Object getCellEditValue() {
-    return this.box.getValue();
-  }
-
-  public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-    if ((paramGWindow == this.bar) && (paramInt1 == 2)) {
-      float f = this.bar.pos();
-      Number localNumber = getNumberValue(getCellEditValue());
-      double d1 = localNumber.doubleValue();
-      if (f < 0.0F) d1 -= this.step; else
-        d1 += this.step;
-      if (this.step > 0.0D) {
-        d1 = ()(d1 / this.step);
-        d1 *= this.step;
-      }
-      double d2 = this.min.doubleValue();
-      if (d1 < d2) d1 = d2;
-      double d3 = this.max.doubleValue();
-      if (d1 > d3) d1 = d3;
-      if ((this.type == Float.class) || (this.type == Double.class)) {
-        this.box.setValue(Double.toString(d1), false);
-      } else {
-        long l = ()d1;
-        this.box.setValue(Long.toString(l), false);
-      }
-      this.bar.setPos(0.0F, false);
-      return true;
-    }
-    return false;
-  }
-
-  public void resized() {
-    super.resized();
-    lookAndFeel().setupEditNumber(this);
-  }
-
-  public void render() {
-    lookAndFeel().render(this);
-  }
-
-  public void afterCreated() {
-    super.afterCreated();
-    create(this.box = new GWindowEditBox());
-    this.bar = new GWindowVScrollBar(this);
-    if ((this.type.isAssignableFrom(Byte.class)) || (this.type.isAssignableFrom(Short.class)) || (this.type.isAssignableFrom(Integer.class)) || (this.type.isAssignableFrom(Long.class)))
+    public void setRange(java.lang.Number number, java.lang.Number number1, java.lang.Number number2)
     {
-      this.box.bNumericOnly = true;
-    }this.bar.hideWindow();
-    resized();
-  }
+        min = number;
+        max = number1;
+        if(number == null || number1 == null)
+        {
+            bar.hideWindow();
+        } else
+        {
+            if(number2 != null)
+                step = number2.doubleValue();
+            else
+                step = 1.0D;
+            bar.setRange(-1F, 1.0F, 0.0F, -1F, 0.0F);
+            bar.showWindow();
+        }
+        resized();
+    }
 
-  public GWindowEditNumber(Class paramClass)
-  {
-    this.type = paramClass;
-  }
+    private java.lang.Number getNumberValue(java.lang.Object obj)
+    {
+        if(obj instanceof java.lang.Number)
+            return (java.lang.Number)obj;
+        if(obj instanceof java.lang.String)
+        {
+            if(type == (java.lang.Byte.class))
+                return java.lang.Byte.valueOf((java.lang.String)obj);
+            if(type == (java.lang.Short.class))
+                return java.lang.Short.valueOf((java.lang.String)obj);
+            if(type == (java.lang.Integer.class))
+                return java.lang.Integer.valueOf((java.lang.String)obj);
+            if(type == (java.lang.Long.class))
+                return java.lang.Long.valueOf((java.lang.String)obj);
+            if(type == (java.lang.Float.class))
+                return java.lang.Float.valueOf((java.lang.String)obj);
+            if(type == (java.lang.Double.class))
+                return java.lang.Double.valueOf((java.lang.String)obj);
+        }
+        return null;
+    }
 
-  public GWindowEditNumber(GWindow paramGWindow, Class paramClass, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString)
-  {
-    this.toolTip = paramString;
-    this.align = 0;
-    this.type = paramClass;
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
+    public void setCellEditValue(java.lang.Object obj)
+    {
+        box.setValue(obj.toString(), false);
+    }
+
+    public java.lang.Object getCellEditValue()
+    {
+        return box.getValue();
+    }
+
+    public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+    {
+        if(gwindow == bar && i == 2)
+        {
+            float f = bar.pos();
+            java.lang.Number number = getNumberValue(getCellEditValue());
+            double d = number.doubleValue();
+            if(f < 0.0F)
+                d -= step;
+            else
+                d += step;
+            if(step > 0.0D)
+            {
+                d = (long)(d / step);
+                d *= step;
+            }
+            double d1 = min.doubleValue();
+            if(d < d1)
+                d = d1;
+            double d2 = max.doubleValue();
+            if(d > d2)
+                d = d2;
+            if(type == (java.lang.Float.class) || type == (java.lang.Double.class))
+            {
+                box.setValue(java.lang.Double.toString(d), false);
+            } else
+            {
+                long l = (long)d;
+                box.setValue(java.lang.Long.toString(l), false);
+            }
+            bar.setPos(0.0F, false);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public void resized()
+    {
+        super.resized();
+        lookAndFeel().setupEditNumber(this);
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public void afterCreated()
+    {
+        super.afterCreated();
+        create(box = new GWindowEditBox());
+        bar = new GWindowVScrollBar(this);
+        if(type.isAssignableFrom(java.lang.Byte.class) || type.isAssignableFrom(java.lang.Short.class) || type.isAssignableFrom(java.lang.Integer.class) || type.isAssignableFrom(java.lang.Long.class))
+            box.bNumericOnly = true;
+        bar.hideWindow();
+        resized();
+    }
+
+    public GWindowEditNumber(java.lang.Class class1)
+    {
+        step = 1.0D;
+        type = class1;
+    }
+
+    public GWindowEditNumber(com.maddox.gwindow.GWindow gwindow, java.lang.Class class1, float f, float f1, float f2, float f3, java.lang.String s)
+    {
+        step = 1.0D;
+        toolTip = s;
+        align = 0;
+        type = class1;
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
+
+    public java.lang.Class type;
+    public java.lang.Number min;
+    public java.lang.Number max;
+    public double step;
+    public com.maddox.gwindow.GWindowEditBox box;
+    public com.maddox.gwindow.GWindowVScrollBar bar;
 }

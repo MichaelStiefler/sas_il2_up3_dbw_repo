@@ -1,206 +1,303 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ForceFeedback.java
+
 package com.maddox.il2.objects.effects;
 
-import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.objects.weapons.BombGun;
-import com.maddox.il2.objects.weapons.RocketBombGun;
 import com.maddox.il2.objects.weapons.RocketGun;
 import com.maddox.rts.JoyFF;
-import com.maddox.rts.JoyFF.Effect;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
 
 public class ForceFeedback
 {
-  private static JoyFF.Effect[] triggerFX = new JoyFF.Effect[20];
-  private static JoyFF.Effect punch;
-  private static JoyFF.Effect shake;
-  private static JoyFF.Effect spring;
-  private static float shakeGain = 0.0F;
-  private static float springGain = 1.0F;
-  private static float springX = 0.0F;
-  private static float springY = 0.0F;
-  private static int[] triggerFXType = new int[20];
-  private static long punchPrevTime = 0L;
-  private static long shakePrevTime = 0L;
-  private static final String pathToFXDir = "ForceFeedback/";
-  private static final int FFT_NONE = 0;
-  private static final int FFT_MACHINEGUN = 1;
-  private static final int FFT_AUTOCANNON = 2;
-  private static final int FFT_MORTAR = 3;
-  private static final int FFT_ROCKET = 4;
-  private static final int FFT_BOMB = 5;
-  private static RangeRandom rnd = new RangeRandom();
-  private static boolean bEnabled = false;
 
-  public static void fxTriggerShake(int paramInt, boolean paramBoolean)
-  {
-    if (!bEnabled) return;
-    if (!JoyFF.isStarted()) return;
-
-    if (triggerFXType[paramInt] == 0) {
-      World.cur(); BulletEmitter[] arrayOfBulletEmitter = World.getPlayerFM().CT.Weapons[paramInt];
-      if (arrayOfBulletEmitter == null) return;
-      for (int i = 0; i < arrayOfBulletEmitter.length; i++) {
-        if (arrayOfBulletEmitter[i] != null) {
-          if ((arrayOfBulletEmitter[i] instanceof GunGeneric)) {
-            GunGeneric localGunGeneric = (GunGeneric)arrayOfBulletEmitter[i];
-            if (localGunGeneric.prop == null) return;
-            float f = localGunGeneric.prop.shotFreq;
-            if (f > 10.83F)
+    public static void fxTriggerShake(int i, boolean flag)
+    {
+        if(!bEnabled)
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+            return;
+        if(triggerFXType[i] == 0)
+        {
+            com.maddox.il2.ai.World.cur();
+            com.maddox.il2.ai.BulletEmitter abulletemitter[] = com.maddox.il2.ai.World.getPlayerFM().CT.Weapons[i];
+            if(abulletemitter == null)
+                return;
+            for(int j = 0; j < abulletemitter.length; j++)
             {
-              if (World.cur().isDebugFM()) System.out.println("Trigger " + paramInt + " assessed as MACHINEGUN..");
-              triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/machinegun.ffe");
-              triggerFXType[paramInt] = 1; break;
-            }if (f > 4.16F)
-            {
-              if (World.cur().isDebugFM()) System.out.println("Trigger " + paramInt + " assessed as AUTOCANNON (" + (int)(f * 60.0F) + ")..");
-              triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/autocannon.ffe");
-              triggerFX[paramInt].setSamplePeriod((int)(1.0F / f) * 1000);
-              triggerFXType[paramInt] = 2; break;
+                if(abulletemitter[j] == null)
+                    continue;
+                if(abulletemitter[j] instanceof com.maddox.il2.engine.GunGeneric)
+                {
+                    float f = ((com.maddox.il2.engine.GunGeneric)abulletemitter[j]).prop.shotFreq;
+                    if(f > 10.83F)
+                    {
+                        if(com.maddox.il2.ai.World.cur().isDebugFM())
+                            java.lang.System.out.println("Trigger " + i + " assessed as MACHINEGUN..");
+                        triggerFX[i] = new com.maddox.rts.JoyFF.Effect("ForceFeedback/machinegun.ffe");
+                        triggerFXType[i] = 1;
+                    } else
+                    if(f > 4.16F)
+                    {
+                        if(com.maddox.il2.ai.World.cur().isDebugFM())
+                            java.lang.System.out.println("Trigger " + i + " assessed as AUTOCANNON (" + (int)(f * 60F) + ")..");
+                        triggerFX[i] = new com.maddox.rts.JoyFF.Effect("ForceFeedback/autocannon.ffe");
+                        triggerFX[i].setSamplePeriod((int)(1.0F / f) * 1000);
+                        triggerFXType[i] = 2;
+                    } else
+                    {
+                        if(com.maddox.il2.ai.World.cur().isDebugFM())
+                            java.lang.System.out.println("Trigger " + i + " assessed as MORTAR..");
+                        triggerFX[i] = new com.maddox.rts.JoyFF.Effect("ForceFeedback/mortar.ffe");
+                        triggerFXType[i] = 3;
+                    }
+                    break;
+                }
+                if(abulletemitter[j] instanceof com.maddox.il2.objects.weapons.BombGun)
+                {
+                    triggerFX[i] = new com.maddox.rts.JoyFF.Effect("ForceFeedback/bomb.ffe");
+                    triggerFXType[i] = 5;
+                    break;
+                }
+                if(!(abulletemitter[j] instanceof com.maddox.il2.objects.weapons.RocketGun))
+                    continue;
+                triggerFX[i] = new com.maddox.rts.JoyFF.Effect("ForceFeedback/bomb.ffe");
+                triggerFXType[i] = 4;
+                break;
             }
 
-            if (World.cur().isDebugFM()) System.out.println("Trigger " + paramInt + " assessed as MORTAR..");
-            triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/mortar.ffe");
-            triggerFXType[paramInt] = 3;
-
-            break;
-          }
-          if ((arrayOfBulletEmitter[i] instanceof BombGun))
-          {
-            triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/bomb.ffe");
-            triggerFXType[paramInt] = 5;
-            break;
-          }
-          if ((arrayOfBulletEmitter[i] instanceof RocketGun))
-          {
-            triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/bomb.ffe");
-            triggerFXType[paramInt] = 4;
-            break;
-          }
-          if ((arrayOfBulletEmitter[i] instanceof RocketBombGun)) {
-            triggerFX[paramInt] = new JoyFF.Effect("ForceFeedback/bomb.ffe");
-            triggerFXType[paramInt] = 5;
-            break;
-          }
         }
-      }
+        if(flag)
+        {
+            if(triggerFXType[i] == 3)
+                triggerFX[i].stop();
+            triggerFX[i].start(1);
+        } else
+        {
+            triggerFX[i].stop();
+        }
     }
-    if (paramBoolean) {
-      if (triggerFXType[paramInt] == 3) triggerFX[paramInt].stop();
-      triggerFX[paramInt].start(1);
-    } else {
-      triggerFX[paramInt].stop();
+
+    public static void fxPunch(float f, float f1, float f2)
+    {
+        if(!bEnabled)
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+            return;
+        long l = com.maddox.rts.Time.real();
+        if(l - punchPrevTime < 300L)
+        {
+            return;
+        } else
+        {
+            punchPrevTime = l;
+            punch.setDirection(f, f1);
+            punch.setGain(f2);
+            punch.start(1);
+            return;
+        }
     }
-  }
 
-  public static void fxPunch(float paramFloat1, float paramFloat2, float paramFloat3) {
-    if (!bEnabled) return;
-    if (!JoyFF.isStarted()) return;
-    long l = Time.real();
-    if (l - punchPrevTime < 300L) return;
-    punchPrevTime = l;
-    punch.setDirection(paramFloat1, paramFloat2);
-    punch.setGain(paramFloat3);
-    punch.start(1);
-  }
+    public static void fxShake(float f)
+    {
+        if(!bEnabled)
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+            return;
+        long l = com.maddox.rts.Time.real();
+        if(l - shakePrevTime < 300L)
+            return;
+        shakePrevTime = l;
+        if(java.lang.Math.abs(f - shakeGain) > 0.025F)
+        {
+            shake.setGain(f);
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("Shake gain = " + f);
+            shake.setDirection(rnd.nextFloat(-0.5F, 0.5F), rnd.nextFloat(-0.5F, 0.5F));
+            if(shakeGain == 0.0F)
+                shake.start(1);
+            if(f < 0.05F)
+            {
+                shake.stop();
+                f = 0.0F;
+            }
+            shakeGain = f;
+        }
+    }
 
-  public static void fxShake(float paramFloat) {
-    if (!bEnabled) return;
-    if (!JoyFF.isStarted()) return;
-    long l = Time.real();
-    if (l - shakePrevTime < 300L) return;
-    shakePrevTime = l;
-    if (Math.abs(paramFloat - shakeGain) > 0.025F) {
-      shake.setGain(paramFloat);
-      if (World.cur().isDebugFM()) System.out.println("Shake gain = " + paramFloat);
-      shake.setDirection(rnd.nextFloat(-0.5F, 0.5F), rnd.nextFloat(-0.5F, 0.5F));
-      if (shakeGain == 0.0F) shake.start(1);
-      if (paramFloat < 0.05F) {
+    public static void fxSetSpringZero(float f, float f1)
+    {
+        if(!bEnabled)
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+            return;
+        if(java.lang.Math.abs(springX - f) > 0.1F && java.lang.Math.abs(springY - f1) > 0.1F)
+        {
+            spring.setOffset(f, f1);
+            springX = f;
+            springY = f1;
+        }
+    }
+
+    public static void fxSetSpringGain(float f)
+    {
+        if(!bEnabled)
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+            return;
+        if(java.lang.Math.abs(springGain - f) < 0.05F)
+        {
+            return;
+        } else
+        {
+            springGain = f;
+            spring.setCoefficient(f, f);
+            return;
+        }
+    }
+
+    private static void startStaticEffects()
+    {
+        if(bEnabled)
+            return;
+        com.maddox.il2.objects.effects.ForceFeedback.fxSetSpringGain(0.0F);
+        com.maddox.il2.objects.effects.ForceFeedback.fxSetSpringZero(0.0F, 0.0F);
+        spring.start(1);
+        com.maddox.il2.objects.effects.ForceFeedback.fxShake(0.0F);
+        for(int i = 0; i < triggerFXType.length; i++)
+        {
+            triggerFXType[i] = 0;
+            if(triggerFX[i] != null)
+                triggerFX[i].destroy();
+            triggerFX[i] = null;
+        }
+
+        bEnabled = true;
+    }
+
+    private static void stopAllEffects()
+    {
+        if(!bEnabled)
+            return;
         shake.stop();
-        paramFloat = 0.0F;
-      }
-      shakeGain = paramFloat;
+        punch.stop();
+        spring.stop();
+        for(int i = 0; i < triggerFXType.length; i++)
+            if(triggerFX[i] != null)
+                triggerFX[i].stop();
+
+        bEnabled = false;
     }
-  }
 
-  public static void fxSetSpringZero(float paramFloat1, float paramFloat2) {
-    if (!bEnabled) return;
-    if (!JoyFF.isStarted()) return;
-    if ((Math.abs(springX - paramFloat1) > 0.1F) && (Math.abs(springY - paramFloat2) > 0.1F)) {
-      spring.setOffset(paramFloat1, paramFloat2);
-      springX = paramFloat1;
-      springY = paramFloat2;
+    private static void loadAllEffects()
+    {
+        if(spring != null)
+        {
+            return;
+        } else
+        {
+            punch = new com.maddox.rts.JoyFF.Effect("ForceFeedback/punch.ffe");
+            shake = new com.maddox.rts.JoyFF.Effect("ForceFeedback/shake.ffe");
+            spring = new com.maddox.rts.JoyFF.Effect("ForceFeedback/spring.ffe");
+            return;
+        }
     }
-  }
 
-  public static void fxSetSpringGain(float paramFloat) {
-    if (!bEnabled) return;
-    if (!JoyFF.isStarted()) return;
-    if (Math.abs(springGain - paramFloat) < 0.05F) return;
-    springGain = paramFloat;
-    spring.setCoefficient(paramFloat, paramFloat);
-  }
-
-  private static void startStaticEffects()
-  {
-    if (bEnabled) return;
-    fxSetSpringGain(0.0F);
-    fxSetSpringZero(0.0F, 0.0F);
-    spring.start(1);
-    fxShake(0.0F);
-    for (int i = 0; i < triggerFXType.length; i++) {
-      triggerFXType[i] = 0;
-      if (triggerFX[i] != null) triggerFX[i].destroy();
-      triggerFX[i] = null;
+    public static void startMission()
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.ForceFeedback.startStaticEffects();
+            return;
+        }
     }
-    bEnabled = true;
-  }
-  private static void stopAllEffects() {
-    if (!bEnabled) return;
-    shake.stop();
-    punch.stop();
-    spring.stop();
-    for (int i = 0; i < triggerFXType.length; i++) {
-      if (triggerFX[i] == null) continue; triggerFX[i].stop();
+
+    public static void stopMission()
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.ForceFeedback.stopAllEffects();
+            return;
+        }
     }
-    bEnabled = false;
-  }
 
-  private static void loadAllEffects() {
-    if (spring != null) return;
-    punch = new JoyFF.Effect("ForceFeedback/punch.ffe");
-    shake = new JoyFF.Effect("ForceFeedback/shake.ffe");
-    spring = new JoyFF.Effect("ForceFeedback/spring.ffe");
-  }
+    public static void start()
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(com.maddox.rts.JoyFF.isStarted())
+            return;
+        if(!com.maddox.rts.JoyFF.isEnable())
+            return;
+        if(!com.maddox.rts.JoyFF.isAttached())
+        {
+            return;
+        } else
+        {
+            com.maddox.rts.JoyFF.start();
+            com.maddox.rts.JoyFF.setAutoCenter(false);
+            com.maddox.il2.objects.effects.ForceFeedback.loadAllEffects();
+            return;
+        }
+    }
 
-  public static void startMission() {
-    if (!Config.isUSE_RENDER()) return;
-    if (!JoyFF.isStarted()) return;
-    startStaticEffects();
-  }
-  public static void stopMission() {
-    if (!Config.isUSE_RENDER()) return;
-    if (!JoyFF.isStarted()) return;
-    stopAllEffects();
-  }
+    public static void stop()
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(!com.maddox.rts.JoyFF.isStarted())
+        {
+            return;
+        } else
+        {
+            com.maddox.rts.JoyFF.stop();
+            return;
+        }
+    }
 
-  public static void start() {
-    if (!Config.isUSE_RENDER()) return;
-    if (JoyFF.isStarted()) return;
-    if (!JoyFF.isEnable()) return;
-    if (!JoyFF.isAttached()) return;
-    JoyFF.start();
-    JoyFF.setAutoCenter(false);
-    loadAllEffects();
-  }
-  public static void stop() {
-    if (!Config.isUSE_RENDER()) return;
-    if (!JoyFF.isStarted()) return;
-    JoyFF.stop();
-  }
+    private ForceFeedback()
+    {
+    }
+
+    private static com.maddox.rts.JoyFF.Effect triggerFX[] = new com.maddox.rts.JoyFF.Effect[20];
+    private static com.maddox.rts.JoyFF.Effect punch;
+    private static com.maddox.rts.JoyFF.Effect shake;
+    private static com.maddox.rts.JoyFF.Effect spring;
+    private static float shakeGain = 0.0F;
+    private static float springGain = 1.0F;
+    private static float springX = 0.0F;
+    private static float springY = 0.0F;
+    private static int triggerFXType[] = new int[20];
+    private static long punchPrevTime = 0L;
+    private static long shakePrevTime = 0L;
+    private static final java.lang.String pathToFXDir = "ForceFeedback/";
+    private static final int FFT_NONE = 0;
+    private static final int FFT_MACHINEGUN = 1;
+    private static final int FFT_AUTOCANNON = 2;
+    private static final int FFT_MORTAR = 3;
+    private static final int FFT_ROCKET = 4;
+    private static final int FFT_BOMB = 5;
+    private static com.maddox.il2.ai.RangeRandom rnd = new RangeRandom();
+    private static boolean bEnabled = false;
+
 }

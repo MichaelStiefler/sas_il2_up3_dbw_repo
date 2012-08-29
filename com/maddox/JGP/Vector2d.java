@@ -1,72 +1,81 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Vector2d.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
-public class Vector2d extends Tuple2d
-  implements Serializable, Cloneable
+// Referenced classes of package com.maddox.JGP:
+//            Tuple2d, Tuple2f
+
+public class Vector2d extends com.maddox.JGP.Tuple2d
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Vector2d(double paramDouble1, double paramDouble2)
-  {
-    super(paramDouble1, paramDouble2);
-  }
 
-  public Vector2d(double[] paramArrayOfDouble)
-  {
-    super(paramArrayOfDouble);
-  }
+    public Vector2d(double d, double d1)
+    {
+        super(d, d1);
+    }
 
-  public Vector2d(Tuple2d paramTuple2d)
-  {
-    super(paramTuple2d);
-  }
+    public Vector2d(double ad[])
+    {
+        super(ad);
+    }
 
-  public Vector2d(Tuple2f paramTuple2f)
-  {
-    super(paramTuple2f);
-  }
+    public Vector2d(com.maddox.JGP.Tuple2d tuple2d)
+    {
+        super(tuple2d);
+    }
 
-  public Vector2d()
-  {
-  }
+    public Vector2d(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        super(tuple2f);
+    }
 
-  public final double dot(Tuple2d paramTuple2d)
-  {
-    return this.x * paramTuple2d.x + this.y * paramTuple2d.y;
-  }
+    public Vector2d()
+    {
+    }
 
-  public final double length()
-  {
-    return Math.sqrt(this.x * this.x + this.y * this.y);
-  }
+    public final double dot(com.maddox.JGP.Tuple2d tuple2d)
+    {
+        return x * tuple2d.x + y * tuple2d.y;
+    }
 
-  public final double lengthSquared()
-  {
-    return this.x * this.x + this.y * this.y;
-  }
+    public final double length()
+    {
+        return java.lang.Math.sqrt(x * x + y * y);
+    }
 
-  public final void normalize()
-  {
-    double d = length();
+    public final double lengthSquared()
+    {
+        return x * x + y * y;
+    }
 
-    this.x /= d;
-    this.y /= d;
-  }
+    public final void normalize()
+    {
+        double d = length();
+        x /= d;
+        y /= d;
+    }
 
-  public final void normalize(Tuple2d paramTuple2d)
-  {
-    set(paramTuple2d);
-    normalize();
-  }
+    public final void normalize(com.maddox.JGP.Tuple2d tuple2d)
+    {
+        set(tuple2d);
+        normalize();
+    }
 
-  public final double angle(Vector2d paramVector2d)
-  {
-    return Math.abs(Math.atan2(this.x * paramVector2d.y - this.y * paramVector2d.x, dot(paramVector2d)));
-  }
+    public final double angle(com.maddox.JGP.Vector2d vector2d)
+    {
+        return java.lang.Math.abs(java.lang.Math.atan2(x * vector2d.y - y * vector2d.x, dot(vector2d)));
+    }
 
-  public final double direction()
-  {
-    double d = Math.atan2(this.y, this.x);
-    if (d < 0.0D) d += 6.283185307179586D;
-    return d;
-  }
+    public final double direction()
+    {
+        double d = java.lang.Math.atan2(y, x);
+        if(d < 0.0D)
+            d += 6.2831853071795862D;
+        return d;
+    }
 }

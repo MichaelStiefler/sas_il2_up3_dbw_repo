@@ -1,28 +1,42 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombTorpFiume.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombTorpFiume extends Torpedo
-{
-  static
-  {
-    Class localClass = BombTorpFiume.class;
-    Property.set(localClass, "mesh", "3DO/Arms/fiume/mono.sim");
-    Property.set(localClass, "radius", 110.0F);
-    Property.set(localClass, "power", 214.0F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.45F);
-    Property.set(localClass, "massa", 905.0F);
-    Property.set(localClass, "sound", "weapon.torpedo");
-    Property.set(localClass, "velocity", 21.6F);
-    Property.set(localClass, "traveltime", 138.88879F);
-    Property.set(localClass, "startingspeed", 0.0F);
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            TorpedoLtfFiume
 
-    Property.set(localClass, "impactAngleMin", 24.0F);
-    Property.set(localClass, "impactAngleMax", 31.5F);
-    Property.set(localClass, "impactSpeed", 107.0F);
-    Property.set(localClass, "armingTime", 3.5F);
-    Property.set(localClass, "dropAltitude", 100.0F);
-    Property.set(localClass, "dropSpeed", 300.0F);
-  }
+public class BombTorpFiume extends com.maddox.il2.objects.weapons.TorpedoLtfFiume
+{
+
+    public BombTorpFiume()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombTorpFiume.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/fiume/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 110F);
+        com.maddox.rts.Property.set(class1, "power", 214F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.45F);
+        com.maddox.rts.Property.set(class1, "massa", 905F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.torpedo");
+        com.maddox.rts.Property.set(class1, "velocity", 21.6F);
+        com.maddox.rts.Property.set(class1, "traveltime", 138.8888F);
+        com.maddox.rts.Property.set(class1, "startingspeed", 0.0F);
+    }
 }

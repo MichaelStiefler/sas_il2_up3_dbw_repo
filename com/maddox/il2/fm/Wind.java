@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Wind.java
+
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
@@ -9,141 +14,93 @@ import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.rts.Time;
 
-public class Wind extends FMMath
+// Referenced classes of package com.maddox.il2.fm:
+//            FMMath, Atmosphere
+
+public class Wind extends com.maddox.il2.fm.FMMath
 {
-  Vector3f steady = new Vector3f();
-  float top;
-  float turbulence;
-  float gust;
-  float velocityTop;
-  float velocityTrans = 0.0F;
-  float wTransitionAlt;
-  float velocity10m;
-  float velocityH;
-  float velocityM;
-  float velocityL;
-  public boolean noWind = false;
 
-  public void set(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5)
-  {
-    float f = paramFloat2 * 3.141593F / 180.0F;
-    this.steady.set((float)(-Math.sin(f)), (float)(-Math.cos(f)), 0.0F);
-    this.top = (paramFloat1 + 300.0F);
-    this.wTransitionAlt = (this.top / 2.0F);
-    this.velocity10m = paramFloat3;
-    this.velocityH = (this.velocity10m / 18000.0F);
-    this.velocityM = (this.velocity10m / 9000.0F);
-    this.velocityL = (this.velocity10m / 3000.0F);
-    this.turbulence = paramFloat5;
-    this.gust = paramFloat4;
-    this.velocityTrans = (this.velocity10m * this.wTransitionAlt / 3000.0F + this.velocity10m);
-    this.velocityTop = (this.velocity10m * (this.top - this.wTransitionAlt) / 9000.0F + this.velocityTrans);
+    public Wind()
+    {
+        steady = new Vector3f();
+    }
 
-    this.noWind = (paramFloat3 == 0.0F);
-  }
+    public void set(int i, float f, java.lang.String s)
+    {
+        velocity = 0.25F + (float)(i * i) * 0.12F;
+        float f1 = (float)(s.charAt(0) - 64) * 3.141593F;
+        steady.set((float)java.lang.Math.sin(f1), (float)java.lang.Math.cos(f1), 0.0F);
+        top = f + 300F;
+        turbulence = i <= 2 ? 0.0F : i;
+        gust = i <= 3 ? 0.0F : (float)i * 2.0F;
+    }
 
-  public void getVector(Point3d paramPoint3d, Vector3d paramVector3d)
-  {
-    float f1 = (float)Engine.cur.land.HQ(paramPoint3d.x, paramPoint3d.y);
-    float f2 = (float)(paramPoint3d.z - f1);
-    float f3 = 1.0F - f2 / this.top;
-
-    paramVector3d.set(this.steady);
-    paramVector3d.scale(windVelocity(f2));
-    if (f2 > this.top)
-      return;
-    float f4;
-    if (this.gust > 0.0F) {
-      if (this.gust > 7.0F) {
-        f4 = (float)Math.sin(0.005F * (float)Time.current() / 6.0F);
-
-        if (f4 > 0.75F) {
-          paramVector3d.scale(0.25F + f4);
+    public void getVector(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Vector3d vector3d)
+    {
+        float f = (float)com.maddox.il2.engine.Engine.cur.land.HQ(point3d.x, point3d.y);
+        float f1 = (float)(point3d.z - (double)f);
+        float f2 = 1.0F - f1 / top;
+        if(f1 > top)
+        {
+            vector3d.set(0.0D, 0.0D, 0.0D);
+            return;
         }
-      }
-      if (this.gust > 11.0F) {
-        f4 = (float)Math.sin(0.005F * (float)Time.current() / 14.2F);
-
-        if (f4 > 0.16F) {
-          paramVector3d.scale(0.872F + f4 * 0.8F);
+        vector3d.set(steady);
+        vector3d.scale(velocity);
+        if(gust > 0.0F)
+        {
+            if(gust > 7F)
+            {
+                float f3 = (float)java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 6F);
+                if(f3 > 0.75F)
+                    vector3d.scale(0.25F + f3);
+            }
+            if(gust > 11F)
+            {
+                float f4 = (float)java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 14.2F);
+                if(f4 > 0.16F)
+                    vector3d.scale(0.872F + f4 * 0.8F);
+            }
+            if(gust > 9F)
+            {
+                float f5 = (float)java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 39.84F);
+                if(f5 > 0.86F)
+                    vector3d.scale(0.14F + f5);
+            }
+            if(gust > 9F)
+            {
+                float f6 = (float)java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 12.3341F);
+                if(f6 > 0.5F)
+                    vector3d.scale(1.0F + f6 * 0.5F);
+            }
         }
-      }
-      if (this.gust > 9.0F) {
-        f4 = (float)Math.sin(0.005F * (float)Time.current() / 39.84F);
-
-        if (f4 > 0.86F) {
-          paramVector3d.scale(0.14F + f4);
+        if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+            vector3d.z += 2.119999885559082D * (point3d.z <= 250D ? point3d.z / 250D : 1.0D) * (double)(float)java.lang.Math.cos(com.maddox.il2.ai.World.getTimeofDay() * 2.0F * 3.141593F * 0.04166666F);
+        if(com.maddox.il2.fm.Atmosphere.temperature(0.0F) > 297F)
+            vector3d.z += 1.0F * f2;
+        vector3d.scale(f2);
+        if(f1 < 1000F && f > 999F)
+        {
+            float f7 = java.lang.Math.abs(f1 - 500F) * 0.002F;
+            f7 *= (float)(java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 13.89974F) + java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 9.6F) + java.lang.Math.sin((0.005F * (float)com.maddox.rts.Time.current()) / 2.112F));
+            if(f7 > 0.0F)
+                vector3d.scale(1.0F + f7);
         }
-      }
-      if (this.gust > 9.0F) {
-        f4 = (float)Math.sin(0.005F * (float)Time.current() / 12.3341F);
-
-        if (f4 > 0.5F) {
-          paramVector3d.scale(1.0F + f4 * 0.5F);
+        if(turbulence > 2.0F && f1 < 300F)
+        {
+            float f8 = (turbulence * f1) / 300F;
+            vector3d.add(com.maddox.il2.ai.World.Rnd().nextFloat(-f8, f8), com.maddox.il2.ai.World.Rnd().nextFloat(-f8, f8), com.maddox.il2.ai.World.Rnd().nextFloat(-f8, f8));
         }
-      }
+        if(turbulence > 4F && point3d.z > (double)(top - 400F) && point3d.z < (double)top)
+        {
+            float f9 = java.lang.Math.abs(top - 200F - (float)point3d.z) * 0.0051F * turbulence;
+            vector3d.add(com.maddox.il2.ai.World.Rnd().nextFloat(-f9, f9), com.maddox.il2.ai.World.Rnd().nextFloat(-f9, f9), com.maddox.il2.ai.World.Rnd().nextFloat(-f9, f9));
+        }
     }
 
-    if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) {
-      paramVector3d.z += 2.119999885559082D * (paramPoint3d.z > 250.0D ? 1.0D : paramPoint3d.z / 250.0D) * (float)Math.cos(World.getTimeofDay() * 2.0F * 3.141593F * 0.0416667F);
-    }
-
-    if (Atmosphere.temperature(0.0F) > 297.0F) {
-      paramVector3d.z += 1.0F * f3;
-    }
-
-    paramVector3d.z *= f3;
-
-    if ((f2 < 1000.0F) && (f1 > 999.0F)) {
-      f4 = Math.abs(f2 - 500.0F) * 0.002F;
-      f4 *= (float)(Math.sin(0.005F * (float)Time.current() / 13.899745F) + Math.sin(0.005F * (float)Time.current() / 9.6F) + Math.sin(0.005F * (float)Time.current() / 2.112F));
-      if (f4 > 0.0F) {
-        paramVector3d.scale(1.0F + f4);
-      }
-    }
-
-    if ((this.turbulence > 2.0F) && (f2 < 300.0F)) {
-      f4 = this.turbulence * f2 / 300.0F;
-      paramVector3d.add(World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4, f4));
-    }
-
-    if ((this.turbulence > 4.0F) && (paramPoint3d.z > this.top - 400.0F) && (paramPoint3d.z < this.top)) {
-      f4 = Math.abs(this.top - 200.0F - (float)paramPoint3d.z) * 0.0051F * this.turbulence;
-      paramVector3d.add(World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4, f4));
-    }
-  }
-
-  public void getVectorAI(Point3d paramPoint3d, Vector3d paramVector3d)
-  {
-    float f1 = (float)Engine.cur.land.HQ(paramPoint3d.x, paramPoint3d.y);
-    float f2 = (float)(paramPoint3d.z - f1);
-
-    paramVector3d.set(this.steady);
-    paramVector3d.scale(windVelocity(f2));
-  }
-
-  public void getVectorWeapon(Point3d paramPoint3d, Vector3d paramVector3d)
-  {
-    float f1 = (float)Engine.cur.land.HQ(paramPoint3d.x, paramPoint3d.y);
-    float f2 = (float)(paramPoint3d.z - f1);
-
-    paramVector3d.set(this.steady);
-    paramVector3d.scale(windVelocity(f2));
-  }
-
-  public float windVelocity(float paramFloat)
-  {
-    float f = 0.0F;
-    if (paramFloat > this.top)
-      f = this.velocityTop + (paramFloat - this.top) * this.velocityH;
-    else if (paramFloat > this.wTransitionAlt)
-      f = this.velocityTrans + (paramFloat - this.wTransitionAlt) * this.velocityM;
-    else if (paramFloat > 10.0F) {
-      f = this.velocity10m + this.velocityL * paramFloat;
-    }
-    if (paramFloat <= 10.0F) {
-      f = this.velocity10m * (paramFloat + 5.0F) / 15.0F;
-    }
-    return f;
-  }
+    com.maddox.JGP.Vector3f steady;
+    float velocity;
+    float top;
+    float turbulence;
+    float gust;
 }

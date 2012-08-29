@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   P_51D20NA.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.game.AircraftHotKeys;
@@ -7,107 +12,145 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class P_51D20NA extends P_51
-  implements TypeFighterAceMaker
+// Referenced classes of package com.maddox.il2.objects.air:
+//            P_51, PaintSchemeFMPar05, PaintSchemeFMPar06, TypeFighterAceMaker, 
+//            NetAircraft, Aircraft
+
+public class P_51D20NA extends com.maddox.il2.objects.air.P_51
+    implements com.maddox.il2.objects.air.TypeFighterAceMaker
 {
-  public int k14Mode = 0;
-  public int k14WingspanType = 0;
-  public float k14Distance = 200.0F;
 
-  public boolean typeFighterAceMakerToggleAutomation()
-  {
-    this.k14Mode += 1;
-    if (this.k14Mode > 2) {
-      this.k14Mode = 0;
+    public P_51D20NA()
+    {
+        k14Mode = 0;
+        k14WingspanType = 0;
+        k14Distance = 200F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + this.k14Mode);
-    return true;
-  }
 
-  public void typeFighterAceMakerAdjDistanceReset() {
-  }
-
-  public void typeFighterAceMakerAdjDistancePlus() {
-    this.k14Distance += 10.0F;
-    if (this.k14Distance > 800.0F) {
-      this.k14Distance = 800.0F;
+    public boolean typeFighterAceMakerToggleAutomation()
+    {
+        k14Mode++;
+        if(k14Mode > 2)
+            k14Mode = 0;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "K14AceMakerMode" + k14Mode);
+        return true;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc");
-  }
 
-  public void typeFighterAceMakerAdjDistanceMinus() {
-    this.k14Distance -= 10.0F;
-    if (this.k14Distance < 200.0F) {
-      this.k14Distance = 200.0F;
+    public void typeFighterAceMakerAdjDistanceReset()
+    {
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec");
-  }
 
-  public void typeFighterAceMakerAdjSideslipReset() {
-  }
-
-  public void typeFighterAceMakerAdjSideslipPlus() {
-    this.k14WingspanType -= 1;
-    if (this.k14WingspanType < 0) {
-      this.k14WingspanType = 0;
+    public void typeFighterAceMakerAdjDistancePlus()
+    {
+        k14Distance += 10F;
+        if(k14Distance > 800F)
+            k14Distance = 800F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "K14AceMakerInc");
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
-  }
 
-  public void typeFighterAceMakerAdjSideslipMinus() {
-    this.k14WingspanType += 1;
-    if (this.k14WingspanType > 9) {
-      this.k14WingspanType = 9;
+    public void typeFighterAceMakerAdjDistanceMinus()
+    {
+        k14Distance -= 10F;
+        if(k14Distance < 200F)
+            k14Distance = 200F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "K14AceMakerDec");
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + this.k14WingspanType);
-  }
 
-  public void typeFighterAceMakerReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    paramNetMsgGuaranted.writeByte(this.k14Mode);
-    paramNetMsgGuaranted.writeByte(this.k14WingspanType);
-    paramNetMsgGuaranted.writeFloat(this.k14Distance);
-  }
+    public void typeFighterAceMakerAdjSideslipReset()
+    {
+    }
 
-  public void typeFighterAceMakerReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-    this.k14Mode = paramNetMsgInput.readByte();
-    this.k14WingspanType = paramNetMsgInput.readByte();
-    this.k14Distance = paramNetMsgInput.readFloat();
-  }
+    public void typeFighterAceMakerAdjSideslipPlus()
+    {
+        k14WingspanType--;
+        if(k14WingspanType < 0)
+            k14WingspanType = 0;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + k14WingspanType);
+    }
 
-  static
-  {
-    Class localClass = P_51D20NA.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeFighterAceMakerAdjSideslipMinus()
+    {
+        k14WingspanType++;
+        if(k14WingspanType > 9)
+            k14WingspanType = 9;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "K14AceMakerWing" + k14WingspanType);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "P-51");
-    Property.set(localClass, "meshNameDemo", "3DO/Plane/P-51D-20NA(USA)/hier.him");
-    Property.set(localClass, "meshName", "3DO/Plane/P-51D-20NA(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
-    Property.set(localClass, "meshName_us", "3DO/Plane/P-51D-20NA(USA)/hier.him");
-    Property.set(localClass, "PaintScheme_us", new PaintSchemeFMPar06());
+    public void typeFighterAceMakerReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        netmsgguaranted.writeByte(k14Mode);
+        netmsgguaranted.writeByte(k14WingspanType);
+        netmsgguaranted.writeFloat(k14Distance);
+    }
 
-    Property.set(localClass, "noseart", 1);
+    public void typeFighterAceMakerReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        k14Mode = netmsginput.readByte();
+        k14WingspanType = netmsginput.readByte();
+        k14Distance = netmsginput.readFloat();
+    }
 
-    Property.set(localClass, "yearService", 1944.0F);
-    Property.set(localClass, "yearExpired", 1947.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/P-51D-20.fmd");
-    Property.set(localClass, "cockpitClass", CockpitP_51D20K14.class);
-    Property.set(localClass, "LOSElevation", 1.06935F);
+    public int k14Mode;
+    public int k14WingspanType;
+    public float k14Distance;
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0, 9, 9, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", "BombGun250lbs 1", "BombGun250lbs 1", null, null });
-
-    weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", "BombGun500lbs 1", "BombGun500lbs 1", null, null });
-
-    weaponsRegister(localClass, "2x1000", new String[] { "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", "BombGun1000lbs 1", "BombGun1000lbs 1", null, null });
-
-    weaponsRegister(localClass, "2xTank", new String[] { "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", null, null, "FuelTankGun_Tank75gal2", "FuelTankGun_Tank75gal2" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.P_51D20NA.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "P-51");
+        com.maddox.rts.Property.set(class1, "meshNameDemo", "3DO/Plane/P-51D-20NA(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/P-51D-20NA(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        com.maddox.rts.Property.set(class1, "meshName_us", "3DO/Plane/P-51D-20NA(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
+        com.maddox.rts.Property.set(class1, "noseart", 1);
+        com.maddox.rts.Property.set(class1, "yearService", 1944F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1947.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/P-51D-20.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitP_51D20K14.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 1.06935F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 0, 0, 9, 9, 3, 3, 
+            9, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", 
+            "_ExternalBomb01", "_ExternalBomb02"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", null, null, null, null, 
+            null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x250", new java.lang.String[] {
+            "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", "BombGun250lbs 1", "BombGun250lbs 1", 
+            null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x500", new java.lang.String[] {
+            "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", "BombGun500lbs 1", "BombGun500lbs 1", 
+            null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x1000", new java.lang.String[] {
+            "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", "BombGun1000lbs 1", "BombGun1000lbs 1", 
+            null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2xTank", new java.lang.String[] {
+            "MGunBrowning50k 400", "MGunBrowning50k 400", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "MGunBrowning50k 270", "PylonP51PLN2", "PylonP51PLN2", null, null, 
+            "FuelTankGun_Tank75gal2", "FuelTankGun_Tank75gal2"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null
+        });
+    }
 }

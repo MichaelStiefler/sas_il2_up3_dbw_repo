@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Actor.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -20,777 +25,948 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Actor extends ObjState
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorException, Interpolators, MsgDreamGlobalListener, Orient, 
+//            Loc, Engine, MsgOwner, ActorNet, 
+//            ActorPos, Landscape, InterpolateAdapter, ActorDraw, 
+//            DreamEnv, Mat, Hook, Interpolate
+
+public abstract class Actor extends com.maddox.rts.ObjState
 {
-  public static final int DRAW = 1;
-  public static final int VISIBILITY_AS_BASE = 2;
-  public static final int COLLIDE = 16;
-  public static final int COLLIDE_AS_POINT = 32;
-  public static final int COLLIDE_ON_LAND = 64;
-  public static final int COLLIDE_ONLY_THIS = 128;
-  public static final int DREAM_FIRE = 256;
-  public static final int DREAM_LISTENER = 512;
-  public static final int MISSION_SPAWN = 4096;
-  public static final int REAL_TIME = 8192;
-  public static final int SERVICE = 16384;
-  public static final int DESTROYED = 32768;
-  public static final int _DEAD = 4;
-  public static final int _TASK_COMPLETE = 8;
-  protected int flags = 0;
-  private String name;
-  public ActorNet net;
-  private Actor owner;
-  protected List ownerAttached;
-  private static Object[] emptyArrayOwners = new Object[0];
-  public ActorPos pos;
-  public Interpolators interp;
-  public Mat icon;
-  public ActorDraw draw;
-  public Acoustics acoustics = null;
 
-  private static boolean bSpawnFromMission = false;
-
-  private static Vector3d _V1 = new Vector3d();
-  public static Point3d _tmpPoint = new Point3d();
-  public static Orient _tmpOrient = new Orient();
-  public static Loc _tmpLoc = new Loc();
-  public static double[] _d3 = new double[3];
-  public static float[] _f3 = new float[3];
-  private int _hash;
-  private static int _hashNext = 1;
-  private static int _countActors = 0;
-
-  public static boolean isValid(Actor paramActor)
-  {
-    return (paramActor != null) && (!paramActor.isDestroyed());
-  }
-
-  public static boolean isAlive(Actor paramActor)
-  {
-    return (paramActor != null) && (paramActor.isAlive());
-  }
-
-  public boolean isAlive()
-  {
-    return (this.flags & 0x8004) == 0;
-  }
-
-  public void setDiedFlag(boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      if ((this.flags & 0x4) == 0) {
-        this.flags |= 4;
-        if ((this instanceof Prey)) {
-          int i = Engine.targets().indexOf(this);
-          if (i >= 0)
-            Engine.targets().remove(i);
-        }
-        if (isValid(this.owner))
-          MsgOwner.died(this.owner, this);
-      }
-    }
-    else if ((this.flags & 0x4) != 0) {
-      this.flags &= -5;
-      if ((this instanceof Prey))
-        Engine.targets().add(this);
-    }
-  }
-
-  public boolean getDiedFlag() {
-    return (this.flags & 0x4) != 0;
-  }
-
-  public boolean isTaskComplete()
-  {
-    return (this.flags & 0x8) != 0;
-  }
-
-  public void setTaskCompleteFlag(boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      if ((this.flags & 0x8) == 0) {
-        this.flags |= 8;
-        if (isValid(this.owner))
-          MsgOwner.taskComplete(this.owner, this);
-      }
-    }
-    else this.flags &= -9;
-  }
-
-  public int getArmy()
-  {
-    return this.flags >>> 16;
-  }
-  public void setArmy(int paramInt) {
-    this.flags = (paramInt << 16 | this.flags & 0xFFFF);
-  }
-  public boolean isRealTime() {
-    return ((this.flags & 0x2000) != 0) || (Time.isRealOnly());
-  }
-  public boolean isRealTimeFlag() { return (this.flags & 0x2000) != 0; }
-
-  public boolean isNet() {
-    return this.net != null;
-  }
-  public boolean isNetMaster() {
-    return (this.net != null) && (this.net.isMaster());
-  }
-  public boolean isNetMirror() {
-    return (this.net != null) && (this.net.isMirror());
-  }
-  public boolean isSpawnFromMission() {
-    return (this.flags & 0x1000) != 0;
-  }
-
-  public void missionStarting()
-  {
-  }
-
-  public void setName(String paramString)
-  {
-    if (this.name != null) Engine.cur.name2Actor.remove(this.name);
-    this.name = paramString;
-    if (paramString != null) Engine.cur.name2Actor.put(this.name, this); 
-  }
-
-  public String name()
-  {
-    return this.name == null ? "NONAME" : this.name;
-  }
-  public boolean isNamed() {
-    return this.name != null;
-  }
-
-  public static Actor getByName(String paramString) {
-    return (Actor)Engine.cur.name2Actor.get(paramString);
-  }
-
-  public NetMsgSpawn netReplicate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    return new NetMsgSpawn(this.net);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-  }
-
-  public Actor getOwner()
-  {
-    return this.owner;
-  }
-
-  public boolean isContainOwner(Object paramObject) {
-    if (paramObject == null) return false;
-    if (this.owner == null) return false;
-    if (this.owner.equals(paramObject)) return true;
-    return this.owner.isContainOwner(paramObject);
-  }
-
-  public Object[] getOwnerAttached()
-  {
-    if (this.ownerAttached != null) return this.ownerAttached.toArray();
-    return emptyArrayOwners;
-  }
-
-  public Object[] getOwnerAttached(Object[] paramArrayOfObject)
-  {
-    if (this.ownerAttached != null) return this.ownerAttached.toArray(paramArrayOfObject);
-    return emptyArrayOwners;
-  }
-
-  public int getOwnerAttachedCount()
-  {
-    if (this.ownerAttached != null) return this.ownerAttached.size();
-    return 0;
-  }
-
-  public int getOwnerAttachedIndex(Object paramObject)
-  {
-    if (this.ownerAttached != null)
-      return this.ownerAttached.indexOf(paramObject);
-    return -1;
-  }
-
-  public Object getOwnerAttached(int paramInt)
-  {
-    return this.ownerAttached.get(paramInt);
-  }
-
-  public void setOwner(Actor paramActor, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
-  {
-    if (paramActor != this.owner) {
-      if ((isValid(this.owner)) && (this.owner.ownerAttached != null)) {
-        int i = this.owner.ownerAttached.indexOf(this);
-        if (i >= 0) {
-          this.owner.ownerAttached.remove(i);
-          if (paramBoolean2)
-            MsgOwner.detach(this.owner, this);
-        }
-      }
-      Actor localActor = this.owner;
-      if (isValid(paramActor)) {
-        this.owner = paramActor;
-        if (paramBoolean1) {
-          if (this.owner.ownerAttached == null)
-            this.owner.ownerAttached = new ArrayList();
-          this.owner.ownerAttached.add(this);
-          if (paramBoolean2)
-            MsgOwner.attach(this.owner, this);
-          if (paramBoolean3)
-            MsgOwner.change(this, paramActor, localActor);
-        }
-      } else {
-        this.owner = null;
-        if (paramActor != null)
-          throw new ActorException("new owner is destroyed");
-        if (paramBoolean3)
-          MsgOwner.change(this, paramActor, localActor);
-      }
-    }
-  }
-
-  public void setOwnerAfter(Actor paramActor1, Actor paramActor2, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3)
-  {
-    if (paramActor1 != this.owner) {
-      if ((isValid(this.owner)) && (this.owner.ownerAttached != null)) {
-        int i = this.owner.ownerAttached.indexOf(this);
-        if (i >= 0) {
-          this.owner.ownerAttached.remove(i);
-          if (paramBoolean2)
-            MsgOwner.detach(this.owner, this);
-        }
-      }
-      Actor localActor = this.owner;
-      if (isValid(paramActor1)) {
-        this.owner = paramActor1;
-        if (paramBoolean1) {
-          if (this.owner.ownerAttached == null)
-            this.owner.ownerAttached = new ArrayList();
-          if (paramActor2 == null) {
-            this.owner.ownerAttached.add(0, this);
-          } else {
-            int j = this.owner.ownerAttached.indexOf(paramActor2);
-            if (j < 0)
-              throw new ActorException("beforeChildren not found");
-            this.owner.ownerAttached.add(j + 1, this);
-          }
-          if (paramBoolean2)
-            MsgOwner.attach(this.owner, this);
-          if (paramBoolean3)
-            MsgOwner.change(this, paramActor1, localActor);
-        }
-      } else {
-        this.owner = null;
-        if (paramActor1 != null)
-          throw new ActorException("new owner is destroyed");
-        if (paramBoolean3)
-          MsgOwner.change(this, paramActor1, localActor);
-      }
-    }
-  }
-
-  public void setOwner(Actor paramActor)
-  {
-    setOwner(paramActor, true, true, false);
-  }
-
-  public void changeOwner(Actor paramActor)
-  {
-    setOwner(paramActor, true, true, true);
-  }
-
-  public Hook findHook(Object paramObject)
-  {
-    return null;
-  }
-
-  public float futurePosition(float paramFloat, Point3d paramPoint3d)
-  {
-    if (this.pos == null) return 0.0F;
-    long l = ()(paramFloat * 1000.0F + 0.5F);
-    this.pos.getTime(Time.current() + l, paramPoint3d);
-    return paramFloat;
-  }
-
-  public float futurePosition(float paramFloat, Loc paramLoc)
-  {
-    if (this.pos == null) return 0.0F;
-    long l = ()(paramFloat * 1000.0F + 0.5F);
-    this.pos.getTime(Time.current() + l, paramLoc);
-    return paramFloat;
-  }
-
-  public void alignPosToLand(double paramDouble, boolean paramBoolean)
-  {
-    if (this.pos == null) return;
-    if (Engine.land() == null) return;
-    this.pos.getAbs(_tmpPoint);
-    _tmpPoint.z = (Engine.land().HQ(_tmpPoint.x, _tmpPoint.y) + paramDouble);
-    this.pos.setAbs(_tmpPoint);
-    if (paramBoolean)
-      this.pos.reset();
-  }
-
-  protected void interpolateTick()
-  {
-    if ((this.interp != null) && (this.interp.size() > 0)) {
-      try {
-        this.interp.tick((this.flags & 0x2000) != 0 ? Time.currentReal() : Time.current());
-      } catch (Exception localException) {
-        localException.printStackTrace();
-      }
-      return;
-    }
-    InterpolateAdapter.adapter().removeListener(this);
-  }
-
-  public boolean interpIsSleep()
-  {
-    if (this.interp != null) return this.interp.isSleep();
-    return false;
-  }
-
-  public boolean interpSleep()
-  {
-    if (this.interp != null) return this.interp.sleep();
-    return false;
-  }
-
-  public boolean interpWakeup()
-  {
-    if (this.interp != null) return this.interp.wakeup();
-    return false;
-  }
-
-  public int interpSize()
-  {
-    if (this.interp != null) return this.interp.size();
-    return 0;
-  }
-
-  public Interpolate interpGet(Object paramObject)
-  {
-    if (this.interp != null) return this.interp.get(paramObject);
-    return null;
-  }
-
-  public void interpPut(Interpolate paramInterpolate, Object paramObject, long paramLong, Message paramMessage)
-  {
-    if (this.interp == null)
-      this.interp = new Interpolators();
-    this.interp.put(paramInterpolate, paramObject, paramLong, paramMessage, this);
-    if (this.interp.size() == 1)
-      InterpolateAdapter.adapter().addListener(this);
-  }
-
-  public boolean interpEnd(Object paramObject)
-  {
-    if (this.interp != null) return this.interp.end(paramObject);
-    return false;
-  }
-
-  public void interpEndAll()
-  {
-    if (this.interp != null)
-      this.interp.endAll();
-  }
-
-  public boolean interpCancel(Object paramObject)
-  {
-    if (this.interp != null) return this.interp.cancel(paramObject);
-    return false;
-  }
-
-  public void interpCancelAll()
-  {
-    if (this.interp != null)
-      this.interp.cancelAll();
-  }
-
-  public boolean isDrawing()
-  {
-    return ((this.flags & 0x1) != 0) && ((this.draw != null) || (this.icon != null));
-  }
-  public boolean isIconDrawing() { return ((this.flags & 0x1) != 0) && (this.icon != null); }
-
-  public void drawing(boolean paramBoolean)
-  {
-    if (paramBoolean != ((this.flags & 0x1) != 0)) {
-      if (paramBoolean) this.flags |= 1; else
-        this.flags &= -2;
-      if ((this.pos != null) && (this.pos.actor() == this))
-        this.pos.drawingChange(paramBoolean); 
-    }
-  }
-
-  public boolean isVisibilityAsBase() {
-    return (this.flags & 0x2) != 0;
-  }
-  public void visibilityAsBase(boolean paramBoolean) {
-    if (((this.flags & 0x2) != 0) == paramBoolean) return;
-    if (paramBoolean) this.flags |= 2; else
-      this.flags &= -3;
-    if ((this.pos != null) && ((this.flags & 0x1) != 0) && (this.pos.actor() == this))
-      this.pos.drawingChange(true);
-  }
-
-  public boolean isCollide() {
-    return (this.flags & 0x10) != 0;
-  }
-  public boolean isCollideAsPoint() {
-    return (this.flags & 0x20) != 0;
-  }
-
-  public boolean isCollideAndNotAsPoint() {
-    return (this.flags & 0x30) == 16;
-  }
-
-  public boolean isCollideOnLand() {
-    return (this.flags & 0x40) != 0;
-  }
-
-  public void collide(boolean paramBoolean) {
-    if (paramBoolean != ((this.flags & 0x10) != 0)) {
-      if (paramBoolean) this.flags |= 16; else
-        this.flags &= -17;
-      if ((this.pos != null) && ((this.flags & 0x20) == 0) && (this.pos.actor() == this))
-        this.pos.collideChange(paramBoolean);
-    }
-  }
-
-  public boolean isDreamListener() {
-    return (this.flags & 0x200) != 0;
-  }
-  public boolean isDreamFire() {
-    return (this.flags & 0x100) != 0;
-  }
-
-  public void dreamFire(boolean paramBoolean) {
-    if (paramBoolean != ((this.flags & 0x100) != 0)) {
-      if (paramBoolean) this.flags |= 256; else
-        this.flags &= -257;
-      if ((this.pos != null) && (this.pos.actor() == this))
-        this.pos.dreamFireChange(paramBoolean);
-    }
-  }
-
-  public float collisionR() {
-    return 10.0F;
-  }
-
-  public Acoustics acoustics()
-  {
-    Actor localActor = this;
-    while ((localActor != null) && 
-      (localActor.acoustics == null))
+    public static boolean isValid(com.maddox.il2.engine.Actor actor)
     {
-      if (localActor.pos != null) {
-        localActor = localActor.pos.base(); continue;
-      }
-      localActor = null;
+        return actor != null && !actor.isDestroyed();
     }
 
-    if (localActor != null) return localActor.acoustics;
-    return Engine.worldAcoustics();
-  }
-
-  public Actor actorAcoustics()
-  {
-    Actor localActor = this;
-    while ((localActor != null) && 
-      (localActor.acoustics == null))
+    public static boolean isAlive(com.maddox.il2.engine.Actor actor)
     {
-      if (localActor.pos != null) {
-        localActor = localActor.pos.base(); continue;
-      }
-      localActor = null;
+        return actor != null && actor.isAlive();
     }
 
-    return localActor;
-  }
-
-  public Acoustics findParentAcoustics()
-  {
-    Actor localActor = this;
-    while (localActor != null) {
-      if (localActor.acoustics != null) return localActor.acoustics;
-      if (localActor.pos == null) break;
-      localActor = localActor.pos.base();
-    }
-    return null;
-  }
-
-  public void setAcoustics(Acoustics paramAcoustics)
-  {
-    if (paramAcoustics == null) paramAcoustics = Engine.worldAcoustics();
-    this.acoustics = paramAcoustics;
-    if ((this.draw != null) && (this.draw.sounds != null)) {
-      SoundFX localSoundFX = this.draw.sounds.get();
-      while (localSoundFX != null) {
-        localSoundFX.setAcoustics(this.acoustics);
-        localSoundFX = localSoundFX.next();
-      }
-    }
-    if (this.ownerAttached != null)
-      for (int i = 0; i < this.ownerAttached.size(); i++) {
-        Actor localActor = (Actor)this.ownerAttached.get(i);
-        localActor.setAcoustics(paramAcoustics);
-      }
-  }
-
-  public SoundFX newSound(String paramString, boolean paramBoolean)
-  {
-    if ((this.draw == null) || (paramString == null)) return null;
-    if (paramString.equals("")) {
-      System.out.println("Empty sound in " + toString());
-      return null;
-    }
-    SoundFX localSoundFX = new SoundFX(paramString);
-    if (localSoundFX.isInitialized()) {
-      localSoundFX.setAcoustics(this.acoustics);
-      localSoundFX.insert(this.draw.sounds(), false);
-      if (paramBoolean) localSoundFX.play(); 
-    }
-    else {
-      localSoundFX = null;
-    }return localSoundFX;
-  }
-
-  public SoundFX newSound(SoundPreset paramSoundPreset, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    if ((this.draw == null) || (paramSoundPreset == null)) return null;
-    SoundFX localSoundFX = new SoundFX(paramSoundPreset);
-    if (localSoundFX.isInitialized()) {
-      localSoundFX.setAcoustics(this.acoustics);
-      localSoundFX.insert(this.draw.sounds(), paramBoolean2);
-      if (paramBoolean1) localSoundFX.play(); 
-    }
-    else {
-      localSoundFX = null;
-    }return localSoundFX;
-  }
-
-  public void playSound(String paramString, boolean paramBoolean)
-  {
-    if ((this.draw == null) || (paramString == null)) return;
-    if (paramString.equals("")) {
-      System.out.println("Empty sound in " + toString());
-      return;
-    }
-    SoundFX localSoundFX = new SoundFX(paramString);
-    if ((paramBoolean) && (localSoundFX.isInitialized())) {
-      localSoundFX.setAcoustics(this.acoustics);
-      localSoundFX.insert(this.draw.sounds(), true);
-      localSoundFX.play();
-    } else {
-      localSoundFX.play(this.pos.getAbsPoint());
-    }
-  }
-
-  public void playSound(SoundPreset paramSoundPreset, boolean paramBoolean)
-  {
-    if ((this.draw == null) || (paramSoundPreset == null)) return;
-    SoundFX localSoundFX = new SoundFX(paramSoundPreset);
-    if ((paramBoolean) && (localSoundFX.isInitialized())) {
-      localSoundFX.setAcoustics(this.acoustics);
-      localSoundFX.insert(this.draw.sounds(), true);
-      localSoundFX.play();
-    }
-    localSoundFX.play(this.pos.getAbsPoint());
-  }
-
-  public void stopSounds()
-  {
-    if ((this.draw != null) && (this.draw.sounds != null)) {
-      SoundFX localSoundFX = this.draw.sounds.get();
-      while (localSoundFX != null) {
-        localSoundFX.stop();
-        localSoundFX = localSoundFX.next();
-      }
-    }
-  }
-
-  public void breakSounds()
-  {
-    if ((this.draw != null) && (this.draw.sounds != null)) {
-      SoundFX localSoundFX = this.draw.sounds.get();
-      while (localSoundFX != null) {
-        localSoundFX.cancel();
-        localSoundFX = localSoundFX.next();
-      }
-    }
-  }
-
-  public SoundFX getRootFX()
-  {
-    return null;
-  }
-
-  public boolean hasInternalSounds()
-  {
-    return false;
-  }
-
-  public boolean isDestroyed()
-  {
-    return (this.flags & 0x8000) != 0;
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed()) return;
-    breakSounds();
-    if (this.pos != null) {
-      if (this.pos.actor() == this) {
-        this.pos.reset();
-        this.pos.destroy();
-      } else if (isValid(this.pos.base())) {
-        this.pos.base().pos.removeChildren(this);
-      }
-    }
-    if ((this instanceof MsgDreamGlobalListener)) {
-      Engine.dreamEnv().removeGlobalListener(this);
-    }
-    if (this.ownerAttached != null) {
-      while (this.ownerAttached.size() > 0) {
-        Actor localActor = (Actor)this.ownerAttached.get(0);
-        localActor.changeOwner(null);
-      }
-    }
-    setOwner(null);
-
-    destroy(this.net);
-
-    if (this.interp != null) {
-      this.interp.destroy();
-      this.interp = null;
-      InterpolateAdapter.adapter().removeListener(this);
+    public boolean isAlive()
+    {
+        return (flags & 0x8004) == 0;
     }
 
-    destroy(this.draw);
-
-    if (this.name != null)
-      Engine.cur.name2Actor.remove(this.name);
-    if ((this instanceof Prey)) {
-      int i = Engine.targets().indexOf(this);
-      if (i >= 0)
-        Engine.targets().remove(i);
-    }
-    this.flags |= 32768;
-    super.destroy();
-
-    _countActors -= 1;
-    if (Engine.cur != null)
-      Engine.cur.actorDestroyed(this);
-  }
-
-  public void postDestroy()
-  {
-    Engine.postDestroyActor(this);
-  }
-
-  public void postDestroy(long paramLong)
-  {
-    MsgDestroy.Post(paramLong, this);
-  }
-
-  public double distance(Actor paramActor)
-  {
-    return this.pos.getAbsPoint().distance(paramActor.pos.getAbsPoint());
-  }
-
-  public int target_O_Clock(Actor paramActor)
-  {
-    _V1.sub(paramActor.pos.getAbsPoint(), this.pos.getAbsPoint());
-    this.pos.getAbsOrient().transformInv(_V1);
-    float f1 = 57.324841F * (float)Math.atan2(_V1.y, -_V1.x);
-    int i = (int)f1;
-    i = ((i + 180) % 360 + 15) / 30;
-    if (i == 0) i = 12;
-    float f2 = (float)_V1.length() + 0.1F;
-    float f3 = (float)(paramActor.pos.getAbsPoint().z - this.pos.getAbsPoint().z) / f2;
-    if (f3 > 0.4F) i += 12;
-    else if (f3 < -0.4F) i += 24;
-    return i;
-  }
-
-  public double getSpeed(Vector3d paramVector3d)
-  {
-    return this.pos.speed(paramVector3d);
-  }
-  public void setSpeed(Vector3d paramVector3d) {
-  }
-
-  public static void setSpawnFromMission(boolean paramBoolean) {
-    bSpawnFromMission = paramBoolean;
-  }
-
-  public static int countAll()
-  {
-    return _countActors;
-  }
-
-  public boolean isGameActor() {
-    return this._hash > 0;
-  }
-
-  protected Actor()
-  {
-    createActorHashCode();
-
-    if (bSpawnFromMission) {
-      this.flags |= 4096;
+    public void setDiedFlag(boolean flag)
+    {
+        if(flag)
+        {
+            if((flags & 4) == 0)
+            {
+                flags |= 4;
+                if(this instanceof com.maddox.il2.ai.ground.Prey)
+                {
+                    int i = com.maddox.il2.engine.Engine.targets().indexOf(this);
+                    if(i >= 0)
+                        com.maddox.il2.engine.Engine.targets().remove(i);
+                }
+                if(com.maddox.il2.engine.Actor.isValid(owner))
+                    com.maddox.il2.engine.MsgOwner.died(owner, this);
+            }
+        } else
+        if((flags & 4) != 0)
+        {
+            flags &= -5;
+            if(this instanceof com.maddox.il2.ai.ground.Prey)
+                com.maddox.il2.engine.Engine.targets().add(this);
+        }
     }
 
-    _countActors += 1;
-    if ((this instanceof MsgDreamGlobalListener))
-      Engine.dreamEnv().addGlobalListener(this);
-    if ((this instanceof Prey))
-      Engine.targets().add(this);
-  }
+    public boolean getDiedFlag()
+    {
+        return (flags & 4) != 0;
+    }
 
-  protected void createActorHashCode() {
-    makeActorGameHashCode();
-  }
+    public boolean isTaskComplete()
+    {
+        return (flags & 8) != 0;
+    }
 
-  protected void makeActorRealHashCode() {
-    this._hash = (-Math.abs(super.hashCode()));
-  }
+    public void setTaskCompleteFlag(boolean flag)
+    {
+        if(flag)
+        {
+            if((flags & 8) == 0)
+            {
+                flags |= 8;
+                if(com.maddox.il2.engine.Actor.isValid(owner))
+                    com.maddox.il2.engine.MsgOwner.taskComplete(owner, this);
+            }
+        } else
+        {
+            flags &= -9;
+        }
+    }
 
-  protected void makeActorGameHashCode() {
-    this._hash = (_hashNext++);
-  }
+    public int getArmy()
+    {
+        return flags >>> 16;
+    }
 
-  protected static void resetActorGameHashCodes()
-  {
-    _hashNext = 1;
-  }
-  public static int _getCurHashNextCode() {
-    return _hashNext;
-  }
+    public void setArmy(int i)
+    {
+        flags = i << 16 | flags & 0xffff;
+    }
 
-  public int hashCode()
-  {
-    return this._hash;
-  }
+    public boolean isRealTime()
+    {
+        return (flags & 0x2000) != 0 || com.maddox.rts.Time.isRealOnly();
+    }
 
-  public long getCRC(long paramLong)
-  {
-    if (this.pos == null) return paramLong;
-    this.pos.getAbs(_tmpPoint, _tmpOrient);
-    _tmpPoint.get(_d3); long l = Finger.incLong(paramLong, _d3);
-    _tmpOrient.get(_f3); l = Finger.incLong(l, _f3);
-    return l;
-  }
+    public boolean isRealTimeFlag()
+    {
+        return (flags & 0x2000) != 0;
+    }
 
-  public int getCRC(int paramInt)
-  {
-    if (this.pos == null) return paramInt;
-    this.pos.getAbs(_tmpPoint, _tmpOrient);
-    _tmpPoint.get(_d3); int i = Finger.incInt(paramInt, _d3);
-    _tmpOrient.get(_f3); i = Finger.incInt(i, _f3);
-    return i;
-  }
+    public boolean isNet()
+    {
+        return net != null;
+    }
+
+    public boolean isNetMaster()
+    {
+        return net != null && net.isMaster();
+    }
+
+    public boolean isNetMirror()
+    {
+        return net != null && net.isMirror();
+    }
+
+    public boolean isSpawnFromMission()
+    {
+        return (flags & 0x1000) != 0;
+    }
+
+    public void missionStarting()
+    {
+    }
+
+    public void setName(java.lang.String s)
+    {
+        if(name != null)
+            com.maddox.il2.engine.Engine.cur.name2Actor.remove(name);
+        name = s;
+        if(s != null)
+            com.maddox.il2.engine.Engine.cur.name2Actor.put(name, this);
+    }
+
+    public java.lang.String name()
+    {
+        return name != null ? name : "NONAME";
+    }
+
+    public boolean isNamed()
+    {
+        return name != null;
+    }
+
+    public static com.maddox.il2.engine.Actor getByName(java.lang.String s)
+    {
+        return (com.maddox.il2.engine.Actor)com.maddox.il2.engine.Engine.cur.name2Actor.get(s);
+    }
+
+    public com.maddox.rts.NetMsgSpawn netReplicate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        return new NetMsgSpawn(net);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+    }
+
+    public com.maddox.il2.engine.Actor getOwner()
+    {
+        return owner;
+    }
+
+    public boolean isContainOwner(java.lang.Object obj)
+    {
+        if(obj == null)
+            return false;
+        if(owner == null)
+            return false;
+        if(owner.equals(obj))
+            return true;
+        else
+            return owner.isContainOwner(obj);
+    }
+
+    public java.lang.Object[] getOwnerAttached()
+    {
+        if(ownerAttached != null)
+            return ownerAttached.toArray();
+        else
+            return emptyArrayOwners;
+    }
+
+    public java.lang.Object[] getOwnerAttached(java.lang.Object aobj[])
+    {
+        if(ownerAttached != null)
+            return ownerAttached.toArray(aobj);
+        else
+            return emptyArrayOwners;
+    }
+
+    public int getOwnerAttachedCount()
+    {
+        if(ownerAttached != null)
+            return ownerAttached.size();
+        else
+            return 0;
+    }
+
+    public int getOwnerAttachedIndex(java.lang.Object obj)
+    {
+        if(ownerAttached != null)
+            return ownerAttached.indexOf(obj);
+        else
+            return -1;
+    }
+
+    public java.lang.Object getOwnerAttached(int i)
+    {
+        return ownerAttached.get(i);
+    }
+
+    public void setOwner(com.maddox.il2.engine.Actor actor, boolean flag, boolean flag1, boolean flag2)
+    {
+        if(actor != owner)
+        {
+            if(com.maddox.il2.engine.Actor.isValid(owner) && owner.ownerAttached != null)
+            {
+                int i = owner.ownerAttached.indexOf(this);
+                if(i >= 0)
+                {
+                    owner.ownerAttached.remove(i);
+                    if(flag1)
+                        com.maddox.il2.engine.MsgOwner.detach(owner, this);
+                }
+            }
+            com.maddox.il2.engine.Actor actor1 = owner;
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+            {
+                owner = actor;
+                if(flag)
+                {
+                    if(owner.ownerAttached == null)
+                        owner.ownerAttached = new ArrayList();
+                    owner.ownerAttached.add(this);
+                    if(flag1)
+                        com.maddox.il2.engine.MsgOwner.attach(owner, this);
+                    if(flag2)
+                        com.maddox.il2.engine.MsgOwner.change(this, actor, actor1);
+                }
+            } else
+            {
+                owner = null;
+                if(actor != null)
+                    throw new ActorException("new owner is destroyed");
+                if(flag2)
+                    com.maddox.il2.engine.MsgOwner.change(this, actor, actor1);
+            }
+        }
+    }
+
+    public void setOwnerAfter(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1, boolean flag, boolean flag1, boolean flag2)
+    {
+        if(actor != owner)
+        {
+            if(com.maddox.il2.engine.Actor.isValid(owner) && owner.ownerAttached != null)
+            {
+                int i = owner.ownerAttached.indexOf(this);
+                if(i >= 0)
+                {
+                    owner.ownerAttached.remove(i);
+                    if(flag1)
+                        com.maddox.il2.engine.MsgOwner.detach(owner, this);
+                }
+            }
+            com.maddox.il2.engine.Actor actor2 = owner;
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+            {
+                owner = actor;
+                if(flag)
+                {
+                    if(owner.ownerAttached == null)
+                        owner.ownerAttached = new ArrayList();
+                    if(actor1 == null)
+                    {
+                        owner.ownerAttached.add(0, this);
+                    } else
+                    {
+                        int j = owner.ownerAttached.indexOf(actor1);
+                        if(j < 0)
+                            throw new ActorException("beforeChildren not found");
+                        owner.ownerAttached.add(j + 1, this);
+                    }
+                    if(flag1)
+                        com.maddox.il2.engine.MsgOwner.attach(owner, this);
+                    if(flag2)
+                        com.maddox.il2.engine.MsgOwner.change(this, actor, actor2);
+                }
+            } else
+            {
+                owner = null;
+                if(actor != null)
+                    throw new ActorException("new owner is destroyed");
+                if(flag2)
+                    com.maddox.il2.engine.MsgOwner.change(this, actor, actor2);
+            }
+        }
+    }
+
+    public void setOwner(com.maddox.il2.engine.Actor actor)
+    {
+        setOwner(actor, true, true, false);
+    }
+
+    public void changeOwner(com.maddox.il2.engine.Actor actor)
+    {
+        setOwner(actor, true, true, true);
+    }
+
+    public com.maddox.il2.engine.Hook findHook(java.lang.Object obj)
+    {
+        return null;
+    }
+
+    public float futurePosition(float f, com.maddox.JGP.Point3d point3d)
+    {
+        if(pos == null)
+        {
+            return 0.0F;
+        } else
+        {
+            long l = (long)(f * 1000F + 0.5F);
+            pos.getTime(com.maddox.rts.Time.current() + l, point3d);
+            return f;
+        }
+    }
+
+    public float futurePosition(float f, com.maddox.il2.engine.Loc loc)
+    {
+        if(pos == null)
+        {
+            return 0.0F;
+        } else
+        {
+            long l = (long)(f * 1000F + 0.5F);
+            pos.getTime(com.maddox.rts.Time.current() + l, loc);
+            return f;
+        }
+    }
+
+    public void alignPosToLand(double d, boolean flag)
+    {
+        if(pos == null)
+            return;
+        if(com.maddox.il2.engine.Engine.land() == null)
+            return;
+        pos.getAbs(_tmpPoint);
+        _tmpPoint.z = com.maddox.il2.engine.Engine.land().HQ(_tmpPoint.x, _tmpPoint.y) + d;
+        pos.setAbs(_tmpPoint);
+        if(flag)
+            pos.reset();
+    }
+
+    protected void interpolateTick()
+    {
+        if(interp != null && interp.size() > 0)
+        {
+            try
+            {
+                interp.tick((flags & 0x2000) == 0 ? com.maddox.rts.Time.current() : com.maddox.rts.Time.currentReal());
+            }
+            catch(java.lang.Exception exception)
+            {
+                exception.printStackTrace();
+            }
+            return;
+        } else
+        {
+            com.maddox.il2.engine.InterpolateAdapter.adapter().removeListener(this);
+            return;
+        }
+    }
+
+    public boolean interpIsSleep()
+    {
+        if(interp != null)
+            return interp.isSleep();
+        else
+            return false;
+    }
+
+    public boolean interpSleep()
+    {
+        if(interp != null)
+            return interp.sleep();
+        else
+            return false;
+    }
+
+    public boolean interpWakeup()
+    {
+        if(interp != null)
+            return interp.wakeup();
+        else
+            return false;
+    }
+
+    public int interpSize()
+    {
+        if(interp != null)
+            return interp.size();
+        else
+            return 0;
+    }
+
+    public com.maddox.il2.engine.Interpolate interpGet(java.lang.Object obj)
+    {
+        if(interp != null)
+            return interp.get(obj);
+        else
+            return null;
+    }
+
+    public void interpPut(com.maddox.il2.engine.Interpolate interpolate, java.lang.Object obj, long l, com.maddox.rts.Message message)
+    {
+        if(interp == null)
+            interp = new Interpolators();
+        interp.put(interpolate, obj, l, message, this);
+        if(interp.size() == 1)
+            com.maddox.il2.engine.InterpolateAdapter.adapter().addListener(this);
+    }
+
+    public boolean interpEnd(java.lang.Object obj)
+    {
+        if(interp != null)
+            return interp.end(obj);
+        else
+            return false;
+    }
+
+    public void interpEndAll()
+    {
+        if(interp != null)
+            interp.endAll();
+    }
+
+    public boolean interpCancel(java.lang.Object obj)
+    {
+        if(interp != null)
+            return interp.cancel(obj);
+        else
+            return false;
+    }
+
+    public void interpCancelAll()
+    {
+        if(interp != null)
+            interp.cancelAll();
+    }
+
+    public boolean isDrawing()
+    {
+        return (flags & 1) != 0 && (draw != null || icon != null);
+    }
+
+    public boolean isIconDrawing()
+    {
+        return (flags & 1) != 0 && icon != null;
+    }
+
+    public void drawing(boolean flag)
+    {
+        if(flag != ((flags & 1) != 0))
+        {
+            if(flag)
+                flags |= 1;
+            else
+                flags &= -2;
+            if(pos != null && pos.actor() == this)
+                pos.drawingChange(flag);
+        }
+    }
+
+    public boolean isVisibilityAsBase()
+    {
+        return (flags & 2) != 0;
+    }
+
+    public void visibilityAsBase(boolean flag)
+    {
+        if(((flags & 2) != 0) == flag)
+            return;
+        if(flag)
+            flags |= 2;
+        else
+            flags &= -3;
+        if(pos != null && (flags & 1) != 0 && pos.actor() == this)
+            pos.drawingChange(true);
+    }
+
+    public boolean isCollide()
+    {
+        return (flags & 0x10) != 0;
+    }
+
+    public boolean isCollideAsPoint()
+    {
+        return (flags & 0x20) != 0;
+    }
+
+    public boolean isCollideAndNotAsPoint()
+    {
+        return (flags & 0x30) == 16;
+    }
+
+    public boolean isCollideOnLand()
+    {
+        return (flags & 0x40) != 0;
+    }
+
+    public void collide(boolean flag)
+    {
+        if(flag != ((flags & 0x10) != 0))
+        {
+            if(flag)
+                flags |= 0x10;
+            else
+                flags &= 0xffffffef;
+            if(pos != null && (flags & 0x20) == 0 && pos.actor() == this)
+                pos.collideChange(flag);
+        }
+    }
+
+    public boolean isDreamListener()
+    {
+        return (flags & 0x200) != 0;
+    }
+
+    public boolean isDreamFire()
+    {
+        return (flags & 0x100) != 0;
+    }
+
+    public void dreamFire(boolean flag)
+    {
+        if(flag != ((flags & 0x100) != 0))
+        {
+            if(flag)
+                flags |= 0x100;
+            else
+                flags &= 0xfffffeff;
+            if(pos != null && pos.actor() == this)
+                pos.dreamFireChange(flag);
+        }
+    }
+
+    public float collisionR()
+    {
+        return 10F;
+    }
+
+    public com.maddox.sound.Acoustics acoustics()
+    {
+        com.maddox.il2.engine.Actor actor;
+        for(actor = this; actor != null;)
+        {
+            if(actor.acoustics != null)
+                break;
+            if(actor.pos != null)
+                actor = actor.pos.base();
+            else
+                actor = null;
+        }
+
+        if(actor != null)
+            return actor.acoustics;
+        else
+            return com.maddox.il2.engine.Engine.worldAcoustics();
+    }
+
+    public com.maddox.il2.engine.Actor actorAcoustics()
+    {
+        com.maddox.il2.engine.Actor actor;
+        for(actor = this; actor != null;)
+        {
+            if(actor.acoustics != null)
+                break;
+            if(actor.pos != null)
+                actor = actor.pos.base();
+            else
+                actor = null;
+        }
+
+        return actor;
+    }
+
+    public com.maddox.sound.Acoustics findParentAcoustics()
+    {
+        for(com.maddox.il2.engine.Actor actor = this; actor != null; actor = actor.pos.base())
+        {
+            if(actor.acoustics != null)
+                return actor.acoustics;
+            if(actor.pos == null)
+                break;
+        }
+
+        return null;
+    }
+
+    public void setAcoustics(com.maddox.sound.Acoustics acoustics1)
+    {
+        if(acoustics1 == null)
+            acoustics1 = com.maddox.il2.engine.Engine.worldAcoustics();
+        acoustics = acoustics1;
+        if(draw != null && draw.sounds != null)
+        {
+            for(com.maddox.sound.SoundFX soundfx = draw.sounds.get(); soundfx != null; soundfx = soundfx.next())
+                soundfx.setAcoustics(acoustics);
+
+        }
+        if(ownerAttached != null)
+        {
+            for(int i = 0; i < ownerAttached.size(); i++)
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)ownerAttached.get(i);
+                actor.setAcoustics(acoustics1);
+            }
+
+        }
+    }
+
+    public com.maddox.sound.SoundFX newSound(java.lang.String s, boolean flag)
+    {
+        if(draw == null || s == null)
+            return null;
+        if(s.equals(""))
+        {
+            java.lang.System.out.println("Empty sound in " + toString());
+            return null;
+        }
+        com.maddox.sound.SoundFX soundfx = new SoundFX(s);
+        if(soundfx.isInitialized())
+        {
+            soundfx.setAcoustics(acoustics);
+            soundfx.insert(draw.sounds(), false);
+            if(flag)
+                soundfx.play();
+        } else
+        {
+            soundfx = null;
+        }
+        return soundfx;
+    }
+
+    public com.maddox.sound.SoundFX newSound(com.maddox.sound.SoundPreset soundpreset, boolean flag, boolean flag1)
+    {
+        if(draw == null || soundpreset == null)
+            return null;
+        com.maddox.sound.SoundFX soundfx = new SoundFX(soundpreset);
+        if(soundfx.isInitialized())
+        {
+            soundfx.setAcoustics(acoustics);
+            soundfx.insert(draw.sounds(), flag1);
+            if(flag)
+                soundfx.play();
+        } else
+        {
+            soundfx = null;
+        }
+        return soundfx;
+    }
+
+    public void playSound(java.lang.String s, boolean flag)
+    {
+        if(draw == null || s == null)
+            return;
+        if(s.equals(""))
+        {
+            java.lang.System.out.println("Empty sound in " + toString());
+            return;
+        }
+        com.maddox.sound.SoundFX soundfx = new SoundFX(s);
+        if(flag && soundfx.isInitialized())
+        {
+            soundfx.setAcoustics(acoustics);
+            soundfx.insert(draw.sounds(), true);
+            soundfx.play();
+        } else
+        {
+            soundfx.play(pos.getAbsPoint());
+        }
+    }
+
+    public void playSound(com.maddox.sound.SoundPreset soundpreset, boolean flag)
+    {
+        if(draw == null || soundpreset == null)
+            return;
+        com.maddox.sound.SoundFX soundfx = new SoundFX(soundpreset);
+        if(flag && soundfx.isInitialized())
+        {
+            soundfx.setAcoustics(acoustics);
+            soundfx.insert(draw.sounds(), true);
+            soundfx.play();
+        }
+        soundfx.play(pos.getAbsPoint());
+    }
+
+    public void stopSounds()
+    {
+        if(draw != null && draw.sounds != null)
+        {
+            for(com.maddox.sound.SoundFX soundfx = draw.sounds.get(); soundfx != null; soundfx = soundfx.next())
+                soundfx.stop();
+
+        }
+    }
+
+    public void breakSounds()
+    {
+        if(draw != null && draw.sounds != null)
+        {
+            for(com.maddox.sound.SoundFX soundfx = draw.sounds.get(); soundfx != null; soundfx = soundfx.next())
+                soundfx.cancel();
+
+        }
+    }
+
+    public com.maddox.sound.SoundFX getRootFX()
+    {
+        return null;
+    }
+
+    public boolean hasInternalSounds()
+    {
+        return false;
+    }
+
+    public boolean isDestroyed()
+    {
+        return (flags & 0x8000) != 0;
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        breakSounds();
+        if(pos != null)
+            if(pos.actor() == this)
+            {
+                pos.reset();
+                pos.destroy();
+            } else
+            if(com.maddox.il2.engine.Actor.isValid(pos.base()))
+                pos.base().pos.removeChildren(this);
+        if(this instanceof com.maddox.il2.engine.MsgDreamGlobalListener)
+            com.maddox.il2.engine.Engine.dreamEnv().removeGlobalListener(this);
+        if(ownerAttached != null)
+        {
+            com.maddox.il2.engine.Actor actor;
+            for(; ownerAttached.size() > 0; actor.changeOwner(null))
+                actor = (com.maddox.il2.engine.Actor)ownerAttached.get(0);
+
+        }
+        setOwner(null);
+        com.maddox.rts.ObjState.destroy(net);
+        if(interp != null)
+        {
+            interp.destroy();
+            interp = null;
+            com.maddox.il2.engine.InterpolateAdapter.adapter().removeListener(this);
+        }
+        com.maddox.rts.ObjState.destroy(draw);
+        if(name != null)
+            com.maddox.il2.engine.Engine.cur.name2Actor.remove(name);
+        if(this instanceof com.maddox.il2.ai.ground.Prey)
+        {
+            int i = com.maddox.il2.engine.Engine.targets().indexOf(this);
+            if(i >= 0)
+                com.maddox.il2.engine.Engine.targets().remove(i);
+        }
+        flags |= 0x8000;
+        super.destroy();
+        _countActors--;
+        if(com.maddox.il2.engine.Engine.cur != null)
+            com.maddox.il2.engine.Engine.cur.actorDestroyed(this);
+    }
+
+    public void postDestroy()
+    {
+        com.maddox.il2.engine.Engine.postDestroyActor(this);
+    }
+
+    public void postDestroy(long l)
+    {
+        com.maddox.rts.MsgDestroy.Post(l, this);
+    }
+
+    public double distance(com.maddox.il2.engine.Actor actor)
+    {
+        return pos.getAbsPoint().distance(actor.pos.getAbsPoint());
+    }
+
+    public int target_O_Clock(com.maddox.il2.engine.Actor actor)
+    {
+        _V1.sub(actor.pos.getAbsPoint(), pos.getAbsPoint());
+        pos.getAbsOrient().transformInv(_V1);
+        float f = 57.32484F * (float)java.lang.Math.atan2(_V1.y, -_V1.x);
+        int i = (int)f;
+        i = ((i + 180) % 360 + 15) / 30;
+        if(i == 0)
+            i = 12;
+        float f1 = (float)_V1.length() + 0.1F;
+        float f2 = (float)(actor.pos.getAbsPoint().z - pos.getAbsPoint().z) / f1;
+        if(f2 > 0.4F)
+            i += 12;
+        else
+        if(f2 < -0.4F)
+            i += 24;
+        return i;
+    }
+
+    public double getSpeed(com.maddox.JGP.Vector3d vector3d)
+    {
+        return pos.speed(vector3d);
+    }
+
+    public void setSpeed(com.maddox.JGP.Vector3d vector3d)
+    {
+    }
+
+    public static void setSpawnFromMission(boolean flag)
+    {
+        bSpawnFromMission = flag;
+    }
+
+    public static int countAll()
+    {
+        return _countActors;
+    }
+
+    public boolean isGameActor()
+    {
+        return _hash > 0;
+    }
+
+    protected Actor()
+    {
+        flags = 0;
+        acoustics = null;
+        createActorHashCode();
+        if(bSpawnFromMission)
+            flags |= 0x1000;
+        _countActors++;
+        if(this instanceof com.maddox.il2.engine.MsgDreamGlobalListener)
+            com.maddox.il2.engine.Engine.dreamEnv().addGlobalListener(this);
+        if(this instanceof com.maddox.il2.ai.ground.Prey)
+            com.maddox.il2.engine.Engine.targets().add(this);
+    }
+
+    protected void createActorHashCode()
+    {
+        makeActorGameHashCode();
+    }
+
+    protected void makeActorRealHashCode()
+    {
+        _hash = -java.lang.Math.abs(super.hashCode());
+    }
+
+    protected void makeActorGameHashCode()
+    {
+        _hash = _hashNext++;
+    }
+
+    protected static void resetActorGameHashCodes()
+    {
+        _hashNext = 1;
+    }
+
+    public static int _getCurHashNextCode()
+    {
+        return _hashNext;
+    }
+
+    public int hashCode()
+    {
+        return _hash;
+    }
+
+    public long getCRC(long l)
+    {
+        if(pos == null)
+        {
+            return l;
+        } else
+        {
+            pos.getAbs(_tmpPoint, _tmpOrient);
+            _tmpPoint.get(_d3);
+            long l1 = com.maddox.rts.Finger.incLong(l, _d3);
+            _tmpOrient.get(_f3);
+            l1 = com.maddox.rts.Finger.incLong(l1, _f3);
+            return l1;
+        }
+    }
+
+    public int getCRC(int i)
+    {
+        if(pos == null)
+        {
+            return i;
+        } else
+        {
+            pos.getAbs(_tmpPoint, _tmpOrient);
+            _tmpPoint.get(_d3);
+            int j = com.maddox.rts.Finger.incInt(i, _d3);
+            _tmpOrient.get(_f3);
+            j = com.maddox.rts.Finger.incInt(j, _f3);
+            return j;
+        }
+    }
+
+    public static final int DRAW = 1;
+    public static final int VISIBILITY_AS_BASE = 2;
+    public static final int COLLIDE = 16;
+    public static final int COLLIDE_AS_POINT = 32;
+    public static final int COLLIDE_ON_LAND = 64;
+    public static final int COLLIDE_ONLY_THIS = 128;
+    public static final int DREAM_FIRE = 256;
+    public static final int DREAM_LISTENER = 512;
+    public static final int MISSION_SPAWN = 4096;
+    public static final int REAL_TIME = 8192;
+    public static final int SERVICE = 16384;
+    public static final int DESTROYED = 32768;
+    public static final int _DEAD = 4;
+    public static final int _TASK_COMPLETE = 8;
+    protected int flags;
+    private java.lang.String name;
+    public com.maddox.il2.engine.ActorNet net;
+    private com.maddox.il2.engine.Actor owner;
+    protected java.util.List ownerAttached;
+    private static java.lang.Object emptyArrayOwners[] = new java.lang.Object[0];
+    public com.maddox.il2.engine.ActorPos pos;
+    public com.maddox.il2.engine.Interpolators interp;
+    public com.maddox.il2.engine.Mat icon;
+    public com.maddox.il2.engine.ActorDraw draw;
+    public com.maddox.sound.Acoustics acoustics;
+    private static boolean bSpawnFromMission = false;
+    private static com.maddox.JGP.Vector3d _V1 = new Vector3d();
+    public static com.maddox.JGP.Point3d _tmpPoint = new Point3d();
+    public static com.maddox.il2.engine.Orient _tmpOrient = new Orient();
+    public static com.maddox.il2.engine.Loc _tmpLoc = new Loc();
+    public static double _d3[] = new double[3];
+    public static float _f3[] = new float[3];
+    private int _hash;
+    private static int _hashNext = 1;
+    private static int _countActors = 0;
+
 }

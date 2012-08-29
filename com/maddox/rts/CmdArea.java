@@ -1,12 +1,19 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdArea.java
+
 package com.maddox.rts;
 
-public abstract interface CmdArea
+
+public interface CmdArea
 {
-  public abstract Object atom(String paramString);
 
-  public abstract boolean setAtom(String paramString, Object paramObject);
+    public abstract java.lang.Object atom(java.lang.String s);
 
-  public abstract boolean delAtom(String paramString);
+    public abstract boolean setAtom(java.lang.String s, java.lang.Object obj);
 
-  public abstract boolean existAtom(String paramString, boolean paramBoolean);
+    public abstract boolean delAtom(java.lang.String s);
+
+    public abstract boolean existAtom(java.lang.String s, boolean flag);
 }

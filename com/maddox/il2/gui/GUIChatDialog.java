@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIChatDialog.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GBevel;
@@ -37,992 +42,1223 @@ import com.maddox.util.UnicodeTo8bit;
 import java.io.PrintStream;
 import java.util.List;
 
-public class GUIChatDialog extends GWindow
+// Referenced classes of package com.maddox.il2.gui:
+//            GUILookAndFeel, GUISeparate, GUI
+
+public class GUIChatDialog extends com.maddox.gwindow.GWindow
 {
-  public static final int MODE_CHAT = 0;
-  public static final int MODE_CHAT_TO = 1;
-  public static final int MODE_RADIO = 2;
-  public static final int MODE_CONSOLE = 3;
-  public static final int EDIT_SLOTS = 10;
-  public static final int ADR_SLOTS = 10;
-  public WClient wClient;
-  public float clientHeight;
-  public WEdit wEdit;
-  public GWindow wViewChat;
-  public WDrawChat wDrawChat;
-  public GWindow wViewConsole;
-  public WDrawConsole wDrawConsole;
-  public GFont consoleFont;
-  public GTexture texIndicator;
-  public int posChat = 0;
-  public int posConsole = 0;
-
-  public boolean chatStateSend = false;
-  public int chatCurEditSlot = -1;
-  public int chatCurAdrSlot = 0;
-  public String[] chatEditSlot = new String[10];
-  public String[] chatAdrSlot = new String[10];
-  public String chatMessage;
-  public static final int RADIO_NONE = 1;
-  public static final int RADIO_COMMON = 2;
-  public static final int RADIO_ARMY = 3;
-  public static final int RADIO_PRIVATE = 4;
-  public String[] radioSlot = { "    Radio channels:", "None", "Common", "Army", "" };
-
-  public int radioCurSlot = 1;
-  static final int SIZING_NONE = 0;
-  static final int SIZING_MOVE = 1;
-  static final int SIZING_TL = 2;
-  static final int SIZING_T = 3;
-  static final int SIZING_TR = 4;
-  static final int SIZING_L = 5;
-  static final int SIZING_R = 6;
-  static final int SIZING_BL = 7;
-  static final int SIZING_B = 8;
-  static final int SIZING_BR = 9;
-  int sizingState = 0;
-
-  private static GSize _newSize = new GSize();
-
-  public GUIChatDialog THIS()
-  {
-    return this;
-  }
-  public int mode() {
-    int i = this.wEdit.getFirstChar();
-    if (i == 46)
-      return 2;
-    if (i == 62)
-      return 3;
-    return this.chatStateSend ? 1 : 0;
-  }
-
-  public boolean isTransparent() {
-    return !this.wEdit.bCanEdit;
-  }
-
-  public boolean isDownVisible() {
-    if (isTransparent()) {
-      return mode() == 3;
-    }
-
-    return true;
-  }
-
-  public float downHeight() {
-    return this.root.textFonts[0].height * 11.0F;
-  }
-
-  private void chatDrawPos(boolean paramBoolean)
-  {
-    Chat localChat = Main.cur().chat;
-    if (localChat == null) return;
-    GFont localGFont = this.root.textFonts[0];
-    float f = localGFont.height;
-    int i = localChat.buf.size();
-    if (i == 0) {
-      this.posChat = 0;
-      return;
-    }
-    int j = (int)(this.wViewChat.win.dy / f);
-    int k = j / 3;
-    if (k == 0) k = 1;
-    this.posChat = (paramBoolean ? this.posChat + k : this.posChat - k);
-    if (this.posChat + j >= i)
-      this.posChat = (i - j);
-    if (this.posChat < 0) this.posChat = 0;
-  }
-
-  private void consoleDrawPos(boolean paramBoolean)
-  {
-    if (!isDownVisible()) return;
-    if (mode() != 3) return;
-    List localList = RTSConf.cur.console.historyOut();
-    GFont localGFont = this.consoleFont;
-    float f = localGFont.height;
-    int i = localList.size();
-    if (i == 0) {
-      this.posConsole = 0;
-      return;
-    }
-    int j = (int)(this.wViewConsole.win.dy / f);
-    int k = j / 3;
-    if (k == 0) k = 1;
-    this.posConsole = (paramBoolean ? this.posConsole + k : this.posConsole - k);
-    if (this.posConsole + j >= i)
-      this.posConsole = (i - j);
-    if (this.posConsole < 0) this.posConsole = 0;
-  }
-
-  public void afterCreated()
-  {
-    for (int i = 0; i < 10; i++)
-      this.chatEditSlot[i] = UnicodeTo8bit.load(Config.cur.ini.get("chat", "msg" + i, new String()));
-    this.chatAdrSlot[0] = "ALL";
-    this.chatAdrSlot[1] = "MY_ARMY";
-    for (i = 2; i < 10; i++) {
-      this.chatAdrSlot[i] = UnicodeTo8bit.load(Config.cur.ini.get("chat", "adr" + i, new String()));
-    }
-    this.wClient = ((WClient)create(new WClient()));
-
-    this.wEdit = ((WEdit)this.wClient.addDefault(new WEdit(this.wClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wEdit.setHistory(false);
-    this.wEdit.maxLength = 80;
-    this.wEdit.setEditable(false);
-
-    this.wViewChat = this.wClient.create(new GWindow());
-    this.wViewChat.bNotify = true;
-    this.wDrawChat = ((WDrawChat)this.wViewChat.create(new WDrawChat()));
-    this.wDrawChat.bAcceptsKeyFocus = false;
-
-    this.wViewConsole = this.wClient.create(new GWindow());
-    this.wViewConsole.bNotify = true;
-    this.consoleFont = GFont.New("courSmall");
-    this.wDrawConsole = ((WDrawConsole)this.wViewConsole.create(new WDrawConsole()));
-    this.wDrawConsole.bAcceptsKeyFocus = false;
-    this.texIndicator = GTexture.New("GUI/game/indicator.mat");
-  }
-
-  public void render()
-  {
-    Object localObject;
-    if (!isTransparent()) {
-      localObject = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      setCanvasColorWHITE();
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, (GBevel)localObject, ((GUILookAndFeel)lookAndFeel()).basicelements, false);
-    } else {
-      if (Main3D.cur3D().hud.isDrawNetStat()) return;
-      localObject = Main3D.cur3D().guiManager;
-      if (((GUIWindowManager)localObject).isMouseActive()) {
-        this.root.C.alpha = 255;
-        GUISeparate.draw(this, GColor.Black, 0.0F, 0.0F, this.win.dx, 2.0F);
-        GUISeparate.draw(this, GColor.Black, 0.0F, 0.0F, 2.0F, this.win.dy);
-        GUISeparate.draw(this, GColor.Black, this.win.dx - 2.0F, 0.0F, 2.0F, this.win.dy);
-        GUISeparate.draw(this, GColor.Black, 0.0F, this.win.dy - 2.0F, this.win.dx, 2.0F);
-        this.root.C.alpha = 0;
-      }
-    }
-  }
-
-  private void drawU(int paramInt1, int paramInt2, float paramFloat1, float paramFloat2) {
-    float f1 = x1024(6.0F);
-    float f2 = y1024(9.0F);
-    float f3 = x1024(9.0F);
-    if (paramInt1 > 8) paramInt1 = 8;
-    if (paramInt1 > 0) {
-      for (int i = 0; i < paramInt1; i++) {
-        GColor localGColor1 = GColor.Green;
-        if (i >= 6)
-          localGColor1 = GColor.Yellow;
-        GUISeparate.draw(this.wEdit, localGColor1, paramFloat1 + i * f3, paramFloat2, f1, f2);
-      }
-    }
-    if (paramInt2 > 5) paramInt2 = 5;
-    if (paramInt2 > 0) {
-      float f4 = 9.0F * f3;
-      for (int j = 0; j < paramInt2; j++) {
-        GColor localGColor2 = GColor.Yellow;
-        if (j >= 1)
-          localGColor2 = GColor.Red;
-        GUISeparate.draw(this.wEdit, localGColor2, f4 + paramFloat1 + j * f3, paramFloat2, f1, f2);
-      }
-    }
-  }
-
-  public boolean isFindTestOk(GWindow paramGWindow, boolean paramBoolean) {
-    return paramGWindow.isVisible();
-  }
-  public void doRender(boolean paramBoolean) {
-    boolean bool = isTransparent();
-    int i = this.root.C.alpha;
-    if (bool) this.root.C.alpha = 0;
-    super.doRender(paramBoolean);
-    if (bool) this.root.C.alpha = i;
-
-    int j = this.root.C.alpha;
-    this.root.C.alpha = 255;
-
-    float f = 0.0F;
-    int k = AudioDevice.getRadioStatus();
-    if (getChild(this.root, GUIInfoMenu.class, false, true) != null) f = 32.0F;
-    int m;
-    int n;
-    if ((k & 0x3) >= 2) {
-      m = Math.round(AudioDevice.getRadioLevel() / 100.0F * 8.0F);
-      n = Math.round(AudioDevice.getRadioOverflow() / 100.0F * 5.0F);
-      if ((k & 0x10) == 0) {
-        if (k == 2) setCanvasColor(GColor.Blue); else
-          setCanvasColor(16777215);
-      }
-      else if (k == 2) setCanvasColor(GColor.Yellow); else {
-        setCanvasColor(GColor.Green);
-      }
-      draw(x1024(882.0F), y1024(f), x1024(16.0F), y1024(16.0F), this.texIndicator, 0.0F, 0.0F, 16.0F, 16.0F);
-      setCanvasColorWHITE();
-      drawU(m, n, x1024(900.0F), y1024(f + 2.0F));
-    }
-    if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMirror()))
+    public class WClient extends com.maddox.gwindow.GWindowDialogClient
     {
-      m = Main.cur().netServerParams.masterChannel().getCurTimeout();
-      n = Main.cur().netServerParams.masterChannel().ping();
-      int i1 = 8;
-      if (n < 50) i1 = 1;
-      else if (n < 100) i1 = 2;
-      else if (n < 150) i1 = 3;
-      else if (n < 200) i1 = 4;
-      else if (n < 250) i1 = 5;
-      else if (n < 400) i1 = 6;
-      else if (n < 600) i1 = 7;
 
-      int i2 = 5;
-      if (m < 5000) i2 = 0;
-      else if (m < 10000) i2 = 1;
-      else if (m < 15000) i2 = 2;
-      else if (m < 20000) i2 = 3;
-      else if (m < 25000) i2 = 4;
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i == 15)
+            {
+                com.maddox.il2.gui.GUI.chatActivate();
+                return true;
+            }
+            if(i == 11 && j == 27)
+            {
+                if(mode() == 0)
+                {
+                    if(chatCurEditSlot != -1)
+                    {
+                        chatCurEditSlot = -1;
+                        wEdit.clear(false);
+                    }
+                } else
+                if(mode() == 1)
+                {
+                    chatStateSend = false;
+                    wEdit.clear(false);
+                } else
+                if(mode() == 2)
+                    wEdit.setValue("", false);
+                com.maddox.il2.gui.GUI.chatUnactivate();
+                return true;
+            }
+            com.maddox.il2.net.Chat chat = com.maddox.il2.game.Main.cur().chat;
+            if(gwindow != wEdit || i != 10 || j != 10 || chat == null)
+                return super.notify(gwindow, i, j);
+            java.lang.String s = wEdit.getValue();
+            if(s == null || s.length() == 0)
+                return super.notify(gwindow, i, j);
+            java.lang.String s1 = null;
+            boolean flag = false;
+            boolean flag1 = false;
+            switch(mode())
+            {
+            case 0: // '\0'
+                if(chatCurEditSlot >= 0)
+                    com.maddox.il2.engine.Config.cur.ini.set("chat", "msg" + chatCurEditSlot, com.maddox.util.UnicodeTo8bit.save(s, true));
+                chatMessage = s;
+                wEdit.setValue(chatAdrSlot[chatCurAdrSlot], false);
+                chatCurEditSlot = -1;
+                chatStateSend = true;
+                break;
 
-      setCanvasColorWHITE();
-      draw(x1024(882.0F), y1024(f + 16.0F), x1024(16.0F), y1024(16.0F), this.texIndicator, 0.0F, 16.0F, 16.0F, 16.0F);
-      drawU(i1, i2, x1024(900.0F), y1024(f + 2.0F + 16.0F));
-    }
-    this.root.C.alpha = j;
-  }
-  public void preRender() {
-    Chat localChat = Main.cur().chat;
-    if (localChat == null)
-      hideWindow();
-    GBevel localGBevel;
-    if (isDownVisible()) {
-      if (this.wClient.win.dy == this.clientHeight + downHeight())
-        return;
-      localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      setSize(this.win.dx, this.clientHeight + downHeight() + localGBevel.T.dy + localGBevel.B.dy);
-    } else {
-      if (this.wClient.win.dy == this.clientHeight)
-        return;
-      localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      setSize(this.win.dx, this.clientHeight + localGBevel.T.dy + localGBevel.B.dy);
-    }
-  }
+            case 1: // '\001'
+                com.maddox.il2.engine.Config.cur.ini.set("chat", "adr" + chatCurAdrSlot, com.maddox.util.UnicodeTo8bit.save(s, true));
+                if(chatCurAdrSlot >= 2)
+                    s = "chat " + chatMessage + " TO " + s;
+                else
+                    s = "chat " + chatMessage + " " + s;
+                flag = true;
+                flag1 = true;
+                chatStateSend = false;
+                wEdit.clear(false);
+                break;
 
-  public void resized() {
-    GSize localGSize = getMinSize();
-    if (this.win.dx < localGSize.dx) this.win.dx = localGSize.dx;
-    if (this.win.dy < localGSize.dy) this.win.dy = localGSize.dy;
-    GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-    this.wClient.setPosSize(localGBevel.L.dx, localGBevel.T.dy, this.win.dx - localGBevel.L.dx - localGBevel.R.dx, this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
-  }
+            case 2: // '\002'
+                com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+                switch(radioCurSlot)
+                {
+                case 1: // '\001'
+                    if(!netuser.isRadioNone())
+                    {
+                        s = "radio NONE";
+                        s1 = "radioNone";
+                        flag1 = true;
+                    }
+                    break;
 
-  public void resolutionChanged() {
-    this.consoleFont.resolutionChanged();
-    loadRegion();
-  }
-  public GSize getMinSize(GSize paramGSize) {
-    float f1 = x1024(100.0F);
-    float f2 = y1024(50.0F);
-    paramGSize.set(f1, f2);
-    return paramGSize;
-  }
-  public GUIChatDialog(GWindow paramGWindow) {
-    this.bAlwaysOnTop = true;
-    paramGWindow.create(this);
-    loadRegion();
-  }
+                case 2: // '\002'
+                    if(!netuser.isRadioCommon())
+                    {
+                        s = "radio COMMON";
+                        s1 = "radioCommon";
+                        flag1 = true;
+                    }
+                    break;
 
-  private void loadRegion() {
-    GRegion localGRegion = new GRegion(0.0F, 0.2F, 0.3F, 0.2F);
-    Config.cur.ini.get("chat", "region", localGRegion);
-    this.clientHeight = (localGRegion.dy * this.root.win.dy);
-    GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-    float f = this.clientHeight + localGBevel.T.dy + localGBevel.B.dy;
-    if (isDownVisible()) f += downHeight();
-    setPosSize(localGRegion.x * this.root.win.dx, localGRegion.y * this.root.win.dy, localGRegion.dx * this.root.win.dx, f);
-  }
-  private void saveRegion() {
-    GRegion localGRegion = new GRegion();
-    localGRegion.x = (this.win.x / this.root.win.dx);
-    localGRegion.y = (this.win.y / this.root.win.dy);
-    localGRegion.dx = (this.win.dx / this.root.win.dx);
-    localGRegion.dy = (this.clientHeight / this.root.win.dy);
-    Config.cur.ini.set("chat", "region", localGRegion, false);
-  }
+                case 3: // '\003'
+                    if(netuser.getArmy() != 0 && !netuser.isRadioArmy())
+                    {
+                        s = "radio ARMY";
+                        s1 = "radioArmy";
+                        flag1 = true;
+                    }
+                    break;
 
-  int frameHitTest(float paramFloat1, float paramFloat2)
-  {
-    GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-    if ((paramFloat1 < 0.0F) || (paramFloat1 > this.win.dx) || (paramFloat2 < 0.0F) || (paramFloat2 > this.win.dy))
-    {
-      return 0;
-    }if (paramFloat1 <= localGBevel.L.dx) {
-      if (paramFloat2 <= localGBevel.T.dy) return 2;
-      if (paramFloat2 >= this.win.dy - localGBevel.T.dy - localGBevel.B.dy) return 7;
-      return 5;
-    }if (paramFloat1 >= this.win.dx - localGBevel.L.dx - localGBevel.R.dx) {
-      if (paramFloat2 <= localGBevel.T.dy) return 4;
-      if (paramFloat2 >= this.win.dy - localGBevel.T.dy - localGBevel.B.dy) return 9;
-      return 6;
-    }
-    if (paramFloat2 <= localGBevel.T.dy) return 1;
-    if (paramFloat2 >= this.win.dy - localGBevel.T.dy - localGBevel.B.dy) return 8;
+                case 4: // '\004'
+                    if(s.length() == 1)
+                    {
+                        if(!netuser.isRadioNone())
+                        {
+                            s = "radio NONE";
+                            s1 = "radioNone";
+                            flag1 = true;
+                        }
+                    } else
+                    {
+                        java.lang.String s2 = s.substring(1);
+                        if(!s2.equals(netuser.radio()))
+                        {
+                            s = "radio " + s2;
+                            s1 = "radioPrivate";
+                            flag1 = true;
+                        }
+                    }
+                    break;
+                }
+                break;
 
-    return 1;
-  }
+            case 3: // '\003'
+                s = s.substring(1);
+                flag1 = true;
+                wEdit.setValue(">", false);
+                break;
 
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    int i;
-    if (paramInt == 0) {
-      if (paramBoolean) {
-        if (isMouseCaptured())
-          return;
-        if (isTransparent()) return;
-        i = frameHitTest(paramFloat1, paramFloat2);
-        if (i == 0) return;
-        this.sizingState = i;
-        mouseCapture(true);
-      }
-      else if (isMouseCaptured()) {
-        this.sizingState = 0;
-        mouseCapture(false);
-        this.mouseCursor = 1;
-        saveRegion();
-      }
-    }
-    else if (paramInt == 1)
-      if (paramBoolean) {
-        if (isMouseCaptured())
-          return;
-        if (isTransparent()) return;
-        i = frameHitTest(paramFloat1, paramFloat2);
-        if (i == 0) return;
-        this.sizingState = 1;
-        this.mouseCursor = 3;
-        mouseCapture(true);
-      }
-      else if (isMouseCaptured()) {
-        this.sizingState = 0;
-        mouseCapture(false);
-        this.mouseCursor = 1;
-        saveRegion();
-      }
-  }
-
-  public void mouseMove(float paramFloat1, float paramFloat2)
-  {
-    super.mouseMove(paramFloat1, paramFloat2);
-    GRegion localGRegion = this.root.getClientRegion();
-    if ((this.root.mousePos.x < localGRegion.x) || (this.root.mousePos.x >= localGRegion.x + localGRegion.dx) || (this.root.mousePos.y < localGRegion.y) || (this.root.mousePos.y >= localGRegion.y + localGRegion.dy))
-    {
-      return;
-    }
-    GSize localGSize = null;
-    if ((this.sizingState != 1) && (this.sizingState != 0)) {
-      _newSize.set(this.win.dx, this.win.dy); localGSize = getMinSize(); localGSize.dy += downHeight();
-    }
-    switch (this.sizingState)
-    {
-    case 0:
-      int i = frameHitTest(paramFloat1, paramFloat2);
-      this.mouseCursor = 1;
-      if (i == 0) return;
-      switch (i) { case 2:
-        this.mouseCursor = 10; break;
-      case 3:
-        this.mouseCursor = 9; break;
-      case 4:
-        this.mouseCursor = 8; break;
-      case 5:
-        this.mouseCursor = 11; break;
-      case 6:
-        this.mouseCursor = 11; break;
-      case 7:
-        this.mouseCursor = 8; break;
-      case 8:
-        this.mouseCursor = 9; break;
-      case 9:
-        this.mouseCursor = 10; break;
-      case 1:
-        this.mouseCursor = 3;
-      }
-
-      return;
-    case 1:
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y + this.root.mouseStep.dy);
-      return;
-    case 2:
-      _newSize.add(-this.root.mouseStep.dx, -this.root.mouseStep.dy);
-      if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y + this.root.mouseStep.dy);
-      setSize();
-      return;
-    case 3:
-      _newSize.add(0.0F, -this.root.mouseStep.dy);
-      if (_newSize.dy < localGSize.dy) break;
-      setPos(this.win.x, this.win.y + this.root.mouseStep.dy);
-      setSize();
-      return;
-    case 4:
-      _newSize.add(this.root.mouseStep.dx, -this.root.mouseStep.dy);
-      if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setPos(this.win.x, this.win.y + this.root.mouseStep.dy);
-      setSize();
-      return;
-    case 5:
-      _newSize.add(-this.root.mouseStep.dx, 0.0F);
-      if (_newSize.dx < localGSize.dx) break;
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y);
-      setSize();
-      return;
-    case 6:
-      _newSize.add(this.root.mouseStep.dx, 0.0F);
-      if (_newSize.dx < localGSize.dx) break;
-      setSize();
-      return;
-    case 7:
-      _newSize.add(-this.root.mouseStep.dx, this.root.mouseStep.dy);
-      if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setPos(this.win.x + this.root.mouseStep.dx, this.win.y);
-      setSize();
-      return;
-    case 8:
-      _newSize.add(0.0F, this.root.mouseStep.dy);
-      if (_newSize.dy < localGSize.dy) break;
-      setSize();
-      return;
-    case 9:
-      _newSize.add(this.root.mouseStep.dx, this.root.mouseStep.dy);
-      if ((_newSize.dx < localGSize.dx) || (_newSize.dy < localGSize.dy)) break;
-      setSize();
-      return;
-    }
-
-    this.sizingState = 0;
-    mouseCapture(false);
-    this.mouseCursor = 1;
-  }
-
-  private void setSize() {
-    GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-    this.clientHeight = (_newSize.dy - downHeight() - localGBevel.T.dy - localGBevel.B.dy);
-    setSize(_newSize.dx, _newSize.dy);
-  }
-
-  public class WClient extends GWindowDialogClient
-  {
-    public WClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 == 15) {
-        GUI.chatActivate();
-        return true;
-      }
-      if ((paramInt1 == 11) && 
-        (paramInt2 == 27)) {
-        if (GUIChatDialog.this.mode() == 0) {
-          if (GUIChatDialog.this.chatCurEditSlot != -1) {
-            GUIChatDialog.this.chatCurEditSlot = -1;
-            GUIChatDialog.this.wEdit.clear(false);
-          }
-        } else if (GUIChatDialog.this.mode() == 1) {
-          GUIChatDialog.this.chatStateSend = false;
-          GUIChatDialog.this.wEdit.clear(false);
-        } else if (GUIChatDialog.this.mode() == 2) {
-          GUIChatDialog.this.wEdit.setValue("", false);
+            default:
+                return true;
+            }
+            if(flag1)
+            {
+                java.lang.System.out.println(com.maddox.rts.RTSConf.cur.console.getPrompt() + s);
+                com.maddox.rts.RTSConf.cur.console.getEnv().exec(s);
+                com.maddox.rts.RTSConf.cur.console.addHistoryCmd(s);
+                com.maddox.rts.RTSConf.cur.console.curHistoryCmd = -1;
+                if(s1 != null && !com.maddox.rts.Time.isPaused())
+                    com.maddox.il2.game.HUD.log(s);
+            }
+            if(flag)
+                com.maddox.il2.gui.GUI.chatUnactivate();
+            return true;
         }
-        GUI.chatUnactivate();
-        return true;
-      }
 
-      Chat localChat = Main.cur().chat;
-      if ((paramGWindow != GUIChatDialog.this.wEdit) || (paramInt1 != 10) || (paramInt2 != 10) || (localChat == null))
-      {
-        return super.notify(paramGWindow, paramInt1, paramInt2);
-      }String str1 = GUIChatDialog.this.wEdit.getValue();
-      if ((str1 == null) || (str1.length() == 0))
-        return super.notify(paramGWindow, paramInt1, paramInt2);
-      String str2 = null;
-      int i = 0;
-      int j = 0;
-      switch (GUIChatDialog.this.mode()) {
-      case 0:
-        if (GUIChatDialog.this.chatCurEditSlot >= 0)
-          Config.cur.ini.set("chat", "msg" + GUIChatDialog.this.chatCurEditSlot, UnicodeTo8bit.save(str1, true));
-        GUIChatDialog.this.chatMessage = str1;
-        GUIChatDialog.this.wEdit.setValue(GUIChatDialog.this.chatAdrSlot[GUIChatDialog.this.chatCurAdrSlot], false);
-        GUIChatDialog.this.chatCurEditSlot = -1;
-        GUIChatDialog.this.chatStateSend = true;
-        break;
-      case 1:
-        Config.cur.ini.set("chat", "adr" + GUIChatDialog.this.chatCurAdrSlot, UnicodeTo8bit.save(str1, true));
-        if (GUIChatDialog.this.chatCurAdrSlot >= 2)
-          str1 = "chat " + GUIChatDialog.this.chatMessage + " TO " + str1;
+        private void drawScroll(float f, float f1, float f2, float f3, int i, int j, int k)
+        {
+            float f4 = (float)(i - k - j) / (float)i;
+            float f5 = (float)k / (float)i;
+            float f6 = (float)j / (float)i;
+            if(f4 > 0.0F)
+                com.maddox.il2.gui.GUISeparate.draw(this, 65535, f, f1, f2, f3 * f4);
+            if(f5 > 0.0F)
+                com.maddox.il2.gui.GUISeparate.draw(this, 0, f, f1 + f3 * f4, f2, f3 * f5);
+            if(f6 > 0.0F)
+                com.maddox.il2.gui.GUISeparate.draw(this, 65535, f, f1 + f3 * (f4 + f5), f2, f3 - f3 * (f4 + f5));
+        }
+
+        public void render()
+        {
+            if(isTransparent())
+                return;
+            super.render();
+            com.maddox.il2.net.Chat chat = com.maddox.il2.game.Main.cur().chat;
+            if(chat == null)
+                return;
+            com.maddox.gwindow.GFont gfont = root.textFonts[0];
+            float f = gfont.height;
+            int i = chat.buf.size();
+            int j = (int)(wDrawChat.win.dy / f);
+            if(j > i)
+                j = i;
+            if(j > 0)
+                drawScroll(wViewChat.win.x + wViewChat.win.dx, wViewChat.win.y, win.dx - wViewChat.win.x - wViewChat.win.dx, wViewChat.win.dy, i, posChat, j);
+            if(!isDownVisible())
+                return;
+            if(mode() != 3)
+                return;
+            java.util.List list = com.maddox.rts.RTSConf.cur.console.historyOut();
+            gfont = consoleFont;
+            f = gfont.height;
+            i = list.size();
+            j = (int)(wDrawConsole.win.dy / f);
+            if(j > i)
+                j = i;
+            if(j > 0)
+                drawScroll(wViewConsole.win.x + wViewConsole.win.dx, wViewConsole.win.y, win.dx - wViewConsole.win.x - wViewConsole.win.dx, wViewConsole.win.dy, i, posConsole, j);
+        }
+
+        public void resized()
+        {
+            wEdit.setPosSize(0.0F, clientHeight - y1024(32F), win.dx, y1024(32F));
+            wViewChat.setPosSize(x1024(2.0F), y1024(2.0F), win.dx - x1024(4F), clientHeight - y1024(36F));
+            wDrawChat.setPosSize(0.0F, 0.0F, wViewChat.win.dx, wViewChat.win.dy);
+            wViewConsole.setPosSize(x1024(2.0F), y1024(2.0F) + clientHeight, win.dx - x1024(4F), win.dy - clientHeight - y1024(4F));
+            wDrawConsole.setPosSize(0.0F, 0.0F, wViewConsole.win.dx, wViewConsole.win.dy);
+            super.resized();
+        }
+
+        public WClient()
+        {
+        }
+    }
+
+    public class WDrawConsole extends com.maddox.gwindow.GWindow
+    {
+
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(!isDownVisible())
+                return;
+            if(i == 0 && !flag)
+                consoleDrawPos(f1 < win.dy / 2.0F);
+        }
+
+        public void render()
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().hud.isDrawNetStat())
+                return;
+            if(!isDownVisible())
+                return;
+            switch(mode())
+            {
+            default:
+                break;
+
+            case 3: // '\003'
+                java.util.List list = com.maddox.rts.RTSConf.cur.console.historyOut();
+                com.maddox.gwindow.GFont gfont = consoleFont;
+                float f = gfont.height;
+                int i = list.size();
+                int j = (int)(win.dy / f);
+                if(i > j)
+                    i = j;
+                if(i <= 0)
+                    return;
+                float f3 = win.dy - f;
+                int k = posConsole;
+                if(k + i >= list.size())
+                    k = list.size() - i;
+                setCanvasColor(0xffffff);
+                root.C.font = gfont;
+                if(isTransparent())
+                    root.C.alpha = 127;
+                for(int l = 0; l < i; l++)
+                {
+                    java.lang.String s = (java.lang.String)list.get(k);
+                    int i1 = s.length();
+                    for(int j1 = 0; j1 < i1; j1++)
+                    {
+                        char c = s.charAt(j1);
+                        if(c >= ' ' || c == '\t')
+                            continue;
+                        s = s.substring(0, j1);
+                        break;
+                    }
+
+                    draw(0.0F, f3, win.dx, f, 0, s);
+                    f3 -= f;
+                    k++;
+                }
+
+                if(isTransparent())
+                    root.C.alpha = 0;
+                break;
+
+            case 0: // '\0'
+                renderTable(chatEditSlot, chatCurEditSlot);
+                break;
+
+            case 1: // '\001'
+                renderTable(chatAdrSlot, chatCurAdrSlot);
+                break;
+
+            case 2: // '\002'
+                com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+                com.maddox.gwindow.GFont gfont1 = root.textFonts[0];
+                float f1 = gfont1.height;
+                float f2 = win.dy - f1 * 10F - f1 / 2.0F;
+                setCanvasColor(0xffffff);
+                draw(0.0F, f2, win.dx, f1, 0, radioSlot[0]);
+                f2 += f1;
+                renderRadioSlot(f2, gfont1, 1, netuser.isRadioNone(), null);
+                f2 += f1;
+                renderRadioSlot(f2, gfont1, 2, netuser.isRadioCommon(), " 0");
+                f2 += f1;
+                renderRadioSlot(f2, gfont1, 3, netuser.isRadioArmy(), netuser.getArmy() == 0 ? null : " " + netuser.getArmy());
+                f2 += f1;
+                renderRadioSlot(f2, gfont1, 4, netuser.isRadioPrivate(), netuser.isRadioPrivate() ? netuser.radio() : null);
+                break;
+            }
+        }
+
+        private void renderTable(java.lang.String as[], int i)
+        {
+            com.maddox.gwindow.GFont gfont = root.textFonts[0];
+            float f = gfont.height;
+            float f1 = win.dy - f * (float)as.length - f / 2.0F;
+            for(int j = 0; j < as.length; j++)
+            {
+                if(i == j)
+                    setCanvasColor(0);
+                else
+                    setCanvasColor(0xffffff);
+                draw(0.0F, f1, win.dx, f, 0, " " + j + ". " + as[j]);
+                f1 += f;
+            }
+
+        }
+
+        private void renderRadioSlot(float f, com.maddox.gwindow.GFont gfont, int i, boolean flag, java.lang.String s)
+        {
+            if(radioCurSlot == i)
+                setCanvasColor(0);
+            else
+                setCanvasColor(0xffffff);
+            int j = 0;
+            if(flag)
+                j++;
+            java.util.List list = com.maddox.rts.NetEnv.hosts();
+            for(int k = 0; k < list.size(); k++)
+            {
+                com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)list.get(k);
+                if(s == null)
+                {
+                    if(i == 1 && netuser.radio() == null)
+                        j++;
+                } else
+                if(s.equals(netuser.radio()))
+                    j++;
+            }
+
+            if(flag)
+                draw(0.0F, f, win.dx, gfont.height, 0, " " + i + ". (" + j + ")  \t *" + radioSlot[i]);
+            else
+                draw(0.0F, f, win.dx, gfont.height, 0, " " + i + ". (" + j + ")  \t  " + radioSlot[i]);
+        }
+
+        public WDrawConsole()
+        {
+        }
+    }
+
+    public class WDrawChat extends com.maddox.gwindow.GWindow
+    {
+
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(i == 0 && !flag)
+                chatDrawPos(f1 < win.dy / 2.0F);
+        }
+
+        public void render()
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().hud.isDrawNetStat())
+                return;
+            com.maddox.il2.net.Chat chat = com.maddox.il2.game.Main.cur().chat;
+            if(chat == null)
+                return;
+            com.maddox.gwindow.GFont gfont = root.textFonts[0];
+            float f = gfont.height;
+            int i = chat.buf.size();
+            int j = (int)(win.dy / f);
+            if(i > j)
+                i = j;
+            if(i <= 0)
+                return;
+            float f1 = win.dy - f;
+            int k = posChat;
+            if(k + i >= chat.buf.size())
+                k = chat.buf.size() - i;
+            setCanvasColor(0xffffff);
+            setCanvasFont(0);
+            if(isTransparent())
+                root.C.alpha = 255;
+            for(int l = 0; l < i; l++)
+            {
+                com.maddox.il2.net.ChatMessage chatmessage = (com.maddox.il2.net.ChatMessage)chat.buf.get(k);
+                if(chatmessage.from != null)
+                {
+                    java.lang.String s = chatmessage.from.shortName() + ":\t" + chatmessage.msg;
+                    setCanvasColor(0);
+                    draw(0.0F, f1 + 1.0F, win.dx, f, 0, s);
+                    draw(1.0F, f1, win.dx, f, 0, s);
+                    draw(1.0F, f1 + 1.0F, win.dx, f, 0, s);
+                    setCanvasColor(com.maddox.il2.ai.Army.color(((com.maddox.il2.net.NetUser)chatmessage.from).getArmy()));
+                    draw(0.0F, f1, win.dx, f, 0, s);
+                } else
+                {
+                    setCanvasColor(0xffffff);
+                    draw(0.0F, f1, win.dx, f, 0, "--- " + chatmessage.msg);
+                }
+                f1 -= f;
+                k++;
+            }
+
+            if(isTransparent())
+                root.C.alpha = 0;
+        }
+
+        public WDrawChat()
+        {
+        }
+    }
+
+    public class WEdit extends com.maddox.gwindow.GWindowEditControl
+    {
+
+        public boolean notify(int i, int j)
+        {
+            boolean flag = super.notify(i, j);
+            if(i == 2)
+                switch(mode())
+                {
+                case 3: // '\003'
+                default:
+                    break;
+
+                case 0: // '\0'
+                    java.lang.String s = getValue();
+                    if(chatCurEditSlot >= 0)
+                        chatEditSlot[chatCurEditSlot] = s;
+                    else
+                    if(s.length() == 1 && java.lang.Character.isDigit(s.charAt(0)))
+                    {
+                        int k = s.charAt(0) - 48;
+                        setValue(chatEditSlot[k], false);
+                        chatCurEditSlot = k;
+                        break;
+                    }
+                    if(caretOffset >= 2 && caretOffset <= s.length() && s.charAt(caretOffset - 2) == '\\' && java.lang.Character.isDigit(s.charAt(caretOffset - 1)))
+                    {
+                        int l = s.charAt(caretOffset - 1) - 48;
+                        value.deleteCharAt(caretOffset - 1);
+                        value.deleteCharAt(caretOffset - 2);
+                        value.insert(caretOffset - 2, chatEditSlot[l]);
+                        setValue(value.toString(), false);
+                    }
+                    break;
+
+                case 1: // '\001'
+                    if(chatCurAdrSlot == 0 || chatCurAdrSlot == 1)
+                    {
+                        setValue(chatAdrSlot[chatCurAdrSlot], false);
+                        break;
+                    }
+                    if(chatCurAdrSlot >= 2)
+                        chatAdrSlot[chatCurAdrSlot] = getValue();
+                    break;
+
+                case 2: // '\002'
+                    java.lang.String s1 = getValue();
+                    if(s1.length() == 1)
+                    {
+                        if(!com.maddox.sound.AudioDevice.npFlags.get(0))
+                        {
+                            setValue("", false);
+                            break;
+                        }
+                        if(((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).isRadioPrivate())
+                            radioSlot[4] = ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).radio();
+                        else
+                            radioSlot[4] = "";
+                        if(radioCurSlot == 4)
+                            setValue("." + radioSlot[4], false);
+                        break;
+                    }
+                    if(s1.length() == 2 && java.lang.Character.isDigit(s1.charAt(1)))
+                    {
+                        int i1 = s1.charAt(1) - 48;
+                        if(i1 != radioCurSlot && i1 >= 1 && i1 <= 4)
+                        {
+                            radioCurSlot = i1;
+                            if(radioCurSlot == 4)
+                                setValue("." + radioSlot[4], false);
+                            else
+                                setValue(".", false);
+                            break;
+                        }
+                    }
+                    if(radioCurSlot == 4)
+                    {
+                        for(; getValue().length() > 1 && getValue().charAt(1) == ' '; setValue("." + getValue().substring(2), false));
+                        radioSlot[radioCurSlot] = getValue().substring(1);
+                    } else
+                    {
+                        setValue(".", false);
+                    }
+                    break;
+                }
+            return flag;
+        }
+
+        public void keyboardKey(int i, boolean flag)
+        {
+            switch(i)
+            {
+            case 33: // '!'
+            case 34: // '"'
+                if(!flag)
+                    chatDrawPos(i == 33);
+                return;
+
+            case 38: // '&'
+            case 40: // '('
+                if(!flag)
+                {
+                    if(bControlDown)
+                    {
+                        consoleDrawPos(i == 38);
+                        return;
+                    }
+                    switch(mode())
+                    {
+                    default:
+                        break;
+
+                    case 3: // '\003'
+                        java.util.List list = com.maddox.rts.RTSConf.cur.console.historyCmd();
+                        int j = com.maddox.rts.RTSConf.cur.console.curHistoryCmd;
+                        if(list.size() > 0)
+                            if(i == 38)
+                            {
+                                if(j < list.size())
+                                    j++;
+                                else
+                                    j = 0;
+                            } else
+                            if(j >= 0)
+                                j--;
+                            else
+                                j = list.size() - 1;
+                        if(j >= 0 && j < list.size())
+                        {
+                            java.lang.String s = (java.lang.String)list.get(j);
+                            setValue(">" + s, false);
+                        }
+                        com.maddox.rts.RTSConf.cur.console.curHistoryCmd = j;
+                        break;
+
+                    case 0: // '\0'
+                        if(i == 40)
+                            chatCurEditSlot = (chatCurEditSlot + 1) % chatEditSlot.length;
+                        else
+                        if(chatCurEditSlot == -1)
+                            chatCurEditSlot = 9;
+                        else
+                            chatCurEditSlot = ((chatCurEditSlot - 1) + chatEditSlot.length) % chatEditSlot.length;
+                        setValue(chatEditSlot[chatCurEditSlot], false);
+                        break;
+
+                    case 1: // '\001'
+                        if(i == 40)
+                            chatCurAdrSlot = (chatCurAdrSlot + 1) % chatAdrSlot.length;
+                        else
+                            chatCurAdrSlot = ((chatCurAdrSlot - 1) + chatAdrSlot.length) % chatAdrSlot.length;
+                        setValue(chatAdrSlot[chatCurAdrSlot], false);
+                        break;
+
+                    case 2: // '\002'
+                        if(i == 40)
+                        {
+                            radioCurSlot++;
+                            if(radioCurSlot > 4)
+                                radioCurSlot = 1;
+                        } else
+                        {
+                            radioCurSlot--;
+                            if(radioCurSlot < 1)
+                                radioCurSlot = 4;
+                        }
+                        if(radioCurSlot == 4)
+                            setValue("." + radioSlot[radioCurSlot], false);
+                        else
+                            setValue(".", false);
+                        break;
+                    }
+                }
+                return;
+
+            case 35: // '#'
+            case 36: // '$'
+            case 37: // '%'
+            case 39: // '\''
+            default:
+                super.keyboardKey(i, flag);
+                return;
+            }
+        }
+
+        public void render()
+        {
+            super.render();
+        }
+
+        public void keyFocusExit()
+        {
+            super.keyFocusExit();
+            setEditable(false);
+        }
+
+        public WEdit(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3, java.lang.String s)
+        {
+            super(gwindow, f, f1, f2, f3, s);
+        }
+    }
+
+
+    public com.maddox.il2.gui.GUIChatDialog THIS()
+    {
+        return this;
+    }
+
+    public int mode()
+    {
+        int i = wEdit.getFirstChar();
+        if(i == 46)
+            return 2;
+        if(i == 62)
+            return 3;
         else
-          str1 = "chat " + GUIChatDialog.this.chatMessage + " " + str1;
-        i = 1;
-        j = 1;
-        GUIChatDialog.this.chatStateSend = false;
-        GUIChatDialog.this.wEdit.clear(false);
-        break;
-      case 2:
-        NetUser localNetUser = (NetUser)NetEnv.host();
-        switch (GUIChatDialog.this.radioCurSlot) { case 1:
-          if (localNetUser.isRadioNone()) break;
-          str1 = "radio NONE";
-          str2 = "radioNone";
-          j = 1; break;
-        case 2:
-          if (localNetUser.isRadioCommon()) break;
-          str1 = "radio COMMON";
-          str2 = "radioCommon";
-          j = 1; break;
-        case 3:
-          if ((localNetUser.getArmy() == 0) || (localNetUser.isRadioArmy())) break;
-          str1 = "radio ARMY";
-          str2 = "radioArmy";
-          j = 1; break;
-        case 4:
-          if (str1.length() == 1) {
-            if (localNetUser.isRadioNone()) break;
-            str1 = "radio NONE";
-            str2 = "radioNone";
-            j = 1;
-          }
-          else {
-            String str3 = str1.substring(1);
-            if (str3.equals(localNetUser.radio())) break;
-            str1 = "radio " + str3;
-            str2 = "radioPrivate";
-            j = 1;
-          }
+            return chatStateSend ? 1 : 0;
+    }
+
+    public boolean isTransparent()
+    {
+        return !wEdit.bCanEdit;
+    }
+
+    public boolean isDownVisible()
+    {
+        if(isTransparent())
+            return mode() == 3;
+        else
+            return true;
+    }
+
+    public float downHeight()
+    {
+        return root.textFonts[0].height * 11F;
+    }
+
+    private void chatDrawPos(boolean flag)
+    {
+        com.maddox.il2.net.Chat chat = com.maddox.il2.game.Main.cur().chat;
+        if(chat == null)
+            return;
+        com.maddox.gwindow.GFont gfont = root.textFonts[0];
+        float f = gfont.height;
+        int i = chat.buf.size();
+        if(i == 0)
+        {
+            posChat = 0;
+            return;
+        }
+        int j = (int)(wViewChat.win.dy / f);
+        int k = j / 3;
+        if(k == 0)
+            k = 1;
+        posChat = flag ? posChat + k : posChat - k;
+        if(posChat + j >= i)
+            posChat = i - j;
+        if(posChat < 0)
+            posChat = 0;
+    }
+
+    private void consoleDrawPos(boolean flag)
+    {
+        if(!isDownVisible())
+            return;
+        if(mode() != 3)
+            return;
+        java.util.List list = com.maddox.rts.RTSConf.cur.console.historyOut();
+        com.maddox.gwindow.GFont gfont = consoleFont;
+        float f = gfont.height;
+        int i = list.size();
+        if(i == 0)
+        {
+            posConsole = 0;
+            return;
+        }
+        int j = (int)(wViewConsole.win.dy / f);
+        int k = j / 3;
+        if(k == 0)
+            k = 1;
+        posConsole = flag ? posConsole + k : posConsole - k;
+        if(posConsole + j >= i)
+            posConsole = i - j;
+        if(posConsole < 0)
+            posConsole = 0;
+    }
+
+    public void afterCreated()
+    {
+        for(int i = 0; i < 10; i++)
+            chatEditSlot[i] = com.maddox.util.UnicodeTo8bit.load(com.maddox.il2.engine.Config.cur.ini.get("chat", "msg" + i, new String()));
+
+        chatAdrSlot[0] = "ALL";
+        chatAdrSlot[1] = "MY_ARMY";
+        for(int j = 2; j < 10; j++)
+            chatAdrSlot[j] = com.maddox.util.UnicodeTo8bit.load(com.maddox.il2.engine.Config.cur.ini.get("chat", "adr" + j, new String()));
+
+        wClient = (com.maddox.il2.gui.WClient)create(new WClient());
+        wEdit = (com.maddox.il2.gui.WEdit)wClient.addDefault(new WEdit(wClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
+        wEdit.setHistory(false);
+        wEdit.maxLength = 80;
+        wEdit.setEditable(false);
+        wViewChat = wClient.create(new GWindow());
+        wViewChat.bNotify = true;
+        wDrawChat = (com.maddox.il2.gui.WDrawChat)wViewChat.create(new WDrawChat());
+        wDrawChat.bAcceptsKeyFocus = false;
+        wViewConsole = wClient.create(new GWindow());
+        wViewConsole.bNotify = true;
+        consoleFont = com.maddox.gwindow.GFont.New("courSmall");
+        wDrawConsole = (com.maddox.il2.gui.WDrawConsole)wViewConsole.create(new WDrawConsole());
+        wDrawConsole.bAcceptsKeyFocus = false;
+        texIndicator = com.maddox.gwindow.GTexture.New("GUI/game/indicator.mat");
+    }
+
+    public void render()
+    {
+        if(!isTransparent())
+        {
+            com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+            setCanvasColorWHITE();
+            lookAndFeel().drawBevel(this, 0.0F, 0.0F, win.dx, win.dy, gbevel, ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).basicelements, false);
+        } else
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().hud.isDrawNetStat())
+                return;
+            com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+            if(guiwindowmanager.isMouseActive())
+            {
+                root.C.alpha = 255;
+                com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Black, 0.0F, 0.0F, win.dx, 2.0F);
+                com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Black, 0.0F, 0.0F, 2.0F, win.dy);
+                com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Black, win.dx - 2.0F, 0.0F, 2.0F, win.dy);
+                com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Black, 0.0F, win.dy - 2.0F, win.dx, 2.0F);
+                root.C.alpha = 0;
+            }
+        }
+    }
+
+    private void drawU(int i, int j, float f, float f1)
+    {
+        float f2 = x1024(6F);
+        float f3 = y1024(9F);
+        float f4 = x1024(9F);
+        if(i > 8)
+            i = 8;
+        if(i > 0)
+        {
+            for(int k = 0; k < i; k++)
+            {
+                com.maddox.gwindow.GColor gcolor = com.maddox.gwindow.GColor.Green;
+                if(k >= 6)
+                    gcolor = com.maddox.gwindow.GColor.Yellow;
+                com.maddox.il2.gui.GUISeparate.draw(wEdit, gcolor, f + (float)k * f4, f1, f2, f3);
+            }
 
         }
+        if(j > 5)
+            j = 5;
+        if(j > 0)
+        {
+            float f5 = 9F * f4;
+            for(int l = 0; l < j; l++)
+            {
+                com.maddox.gwindow.GColor gcolor1 = com.maddox.gwindow.GColor.Yellow;
+                if(l >= 1)
+                    gcolor1 = com.maddox.gwindow.GColor.Red;
+                com.maddox.il2.gui.GUISeparate.draw(wEdit, gcolor1, f5 + f + (float)l * f4, f1, f2, f3);
+            }
 
-        break;
-      case 3:
-        str1 = str1.substring(1);
-        j = 1;
-        GUIChatDialog.this.wEdit.setValue(">", false);
-        break;
-      default:
-        return true;
-      }
-      if (j != 0) {
-        System.out.println(RTSConf.cur.console.getPrompt() + str1);
-        RTSConf.cur.console.getEnv().exec(str1);
-        RTSConf.cur.console.addHistoryCmd(str1);
-        RTSConf.cur.console.curHistoryCmd = -1;
-        if ((str2 != null) && (!Time.isPaused()))
-          HUD.log(str1);
-      }
-      if (i != 0)
-        GUI.chatUnactivate();
-      return true;
+        }
     }
 
-    private void drawScroll(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, int paramInt1, int paramInt2, int paramInt3)
+    public boolean isFindTestOk(com.maddox.gwindow.GWindow gwindow, boolean flag)
     {
-      float f1 = (paramInt1 - paramInt3 - paramInt2) / paramInt1;
-      float f2 = paramInt3 / paramInt1;
-      float f3 = paramInt2 / paramInt1;
-      if (f1 > 0.0F)
-        GUISeparate.draw(this, 65535, paramFloat1, paramFloat2, paramFloat3, paramFloat4 * f1);
-      if (f2 > 0.0F)
-        GUISeparate.draw(this, 0, paramFloat1, paramFloat2 + paramFloat4 * f1, paramFloat3, paramFloat4 * f2);
-      if (f3 > 0.0F)
-        GUISeparate.draw(this, 65535, paramFloat1, paramFloat2 + paramFloat4 * (f1 + f2), paramFloat3, paramFloat4 - paramFloat4 * (f1 + f2));
+        return gwindow.isVisible();
     }
 
-    public void render() {
-      if (GUIChatDialog.this.isTransparent()) return;
-      super.render();
-      Chat localChat = Main.cur().chat;
-      if (localChat == null) return;
-      GFont localGFont = this.root.textFonts[0];
-      float f = localGFont.height;
-      int i = localChat.buf.size();
-      int j = (int)(GUIChatDialog.this.wDrawChat.win.dy / f);
-      if (j > i)
-        j = i;
-      if (j > 0) {
-        drawScroll(GUIChatDialog.this.wViewChat.win.x + GUIChatDialog.this.wViewChat.win.dx, GUIChatDialog.this.wViewChat.win.y, this.win.dx - GUIChatDialog.this.wViewChat.win.x - GUIChatDialog.this.wViewChat.win.dx, GUIChatDialog.this.wViewChat.win.dy, i, GUIChatDialog.this.posChat, j);
-      }
+    public void doRender(boolean flag)
+    {
+        boolean flag1 = isTransparent();
+        int i = root.C.alpha;
+        if(flag1)
+            root.C.alpha = 0;
+        super.doRender(flag);
+        if(flag1)
+            root.C.alpha = i;
+        int j = root.C.alpha;
+        root.C.alpha = 255;
+        float f = 0.0F;
+        int k = com.maddox.sound.AudioDevice.getRadioStatus();
+        if(getChild(root, com.maddox.il2.gui.GUIInfoMenu.class, false, true) != null)
+            f = 32F;
+        if((k & 3) >= 2)
+        {
+            int l = java.lang.Math.round(((float)com.maddox.sound.AudioDevice.getRadioLevel() / 100F) * 8F);
+            int j1 = java.lang.Math.round(((float)com.maddox.sound.AudioDevice.getRadioOverflow() / 100F) * 5F);
+            if((k & 0x10) == 0)
+            {
+                if(k == 2)
+                    setCanvasColor(com.maddox.gwindow.GColor.Blue);
+                else
+                    setCanvasColor(0xffffff);
+            } else
+            if(k == 2)
+                setCanvasColor(com.maddox.gwindow.GColor.Yellow);
+            else
+                setCanvasColor(com.maddox.gwindow.GColor.Green);
+            draw(x1024(882F), y1024(f), x1024(16F), y1024(16F), texIndicator, 0.0F, 0.0F, 16F, 16F);
+            setCanvasColorWHITE();
+            drawU(l, j1, x1024(900F), y1024(f + 2.0F));
+        }
+        if(com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isMirror())
+        {
+            int i1 = com.maddox.il2.game.Main.cur().netServerParams.masterChannel().getCurTimeout();
+            int k1 = com.maddox.il2.game.Main.cur().netServerParams.masterChannel().ping();
+            byte byte0 = 8;
+            if(k1 < 50)
+                byte0 = 1;
+            else
+            if(k1 < 100)
+                byte0 = 2;
+            else
+            if(k1 < 150)
+                byte0 = 3;
+            else
+            if(k1 < 200)
+                byte0 = 4;
+            else
+            if(k1 < 250)
+                byte0 = 5;
+            else
+            if(k1 < 400)
+                byte0 = 6;
+            else
+            if(k1 < 600)
+                byte0 = 7;
+            byte byte1 = 5;
+            if(i1 < 5000)
+                byte1 = 0;
+            else
+            if(i1 < 10000)
+                byte1 = 1;
+            else
+            if(i1 < 15000)
+                byte1 = 2;
+            else
+            if(i1 < 20000)
+                byte1 = 3;
+            else
+            if(i1 < 25000)
+                byte1 = 4;
+            setCanvasColorWHITE();
+            draw(x1024(882F), y1024(f + 16F), x1024(16F), y1024(16F), texIndicator, 0.0F, 16F, 16F, 16F);
+            drawU(byte0, byte1, x1024(900F), y1024(f + 2.0F + 16F));
+        }
+        root.C.alpha = j;
+    }
 
-      if (!GUIChatDialog.this.isDownVisible()) return;
-      if (GUIChatDialog.this.mode() != 3) return;
-      List localList = RTSConf.cur.console.historyOut();
-      localGFont = GUIChatDialog.this.consoleFont;
-      f = localGFont.height;
-      i = localList.size();
-      j = (int)(GUIChatDialog.this.wDrawConsole.win.dy / f);
-      if (j > i)
-        j = i;
-      if (j > 0)
-        drawScroll(GUIChatDialog.this.wViewConsole.win.x + GUIChatDialog.this.wViewConsole.win.dx, GUIChatDialog.this.wViewConsole.win.y, this.win.dx - GUIChatDialog.this.wViewConsole.win.x - GUIChatDialog.this.wViewConsole.win.dx, GUIChatDialog.this.wViewConsole.win.dy, i, GUIChatDialog.this.posConsole, j);
+    public void preRender()
+    {
+        com.maddox.il2.net.Chat chat = com.maddox.il2.game.Main.cur().chat;
+        if(chat == null)
+            hideWindow();
+        if(isDownVisible())
+        {
+            if(wClient.win.dy == clientHeight + downHeight())
+                return;
+            com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+            setSize(win.dx, clientHeight + downHeight() + gbevel.T.dy + gbevel.B.dy);
+        } else
+        {
+            if(wClient.win.dy == clientHeight)
+                return;
+            com.maddox.gwindow.GBevel gbevel1 = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+            setSize(win.dx, clientHeight + gbevel1.T.dy + gbevel1.B.dy);
+        }
     }
 
     public void resized()
     {
-      GUIChatDialog.this.wEdit.setPosSize(0.0F, GUIChatDialog.this.clientHeight - y1024(32.0F), this.win.dx, y1024(32.0F));
-      GUIChatDialog.this.wViewChat.setPosSize(x1024(2.0F), y1024(2.0F), this.win.dx - x1024(4.0F), GUIChatDialog.this.clientHeight - y1024(36.0F));
-      GUIChatDialog.this.wDrawChat.setPosSize(0.0F, 0.0F, GUIChatDialog.this.wViewChat.win.dx, GUIChatDialog.this.wViewChat.win.dy);
-      GUIChatDialog.this.wViewConsole.setPosSize(x1024(2.0F), y1024(2.0F) + GUIChatDialog.this.clientHeight, this.win.dx - x1024(4.0F), this.win.dy - GUIChatDialog.this.clientHeight - y1024(4.0F));
-
-      GUIChatDialog.this.wDrawConsole.setPosSize(0.0F, 0.0F, GUIChatDialog.this.wViewConsole.win.dx, GUIChatDialog.this.wViewConsole.win.dy);
-      super.resized();
+        com.maddox.gwindow.GSize gsize = getMinSize();
+        if(win.dx < gsize.dx)
+            win.dx = gsize.dx;
+        if(win.dy < gsize.dy)
+            win.dy = gsize.dy;
+        com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+        wClient.setPosSize(gbevel.L.dx, gbevel.T.dy, win.dx - gbevel.L.dx - gbevel.R.dx, win.dy - gbevel.T.dy - gbevel.B.dy);
     }
-  }
 
-  public class WDrawConsole extends GWindow
-  {
-    public WDrawConsole()
+    public void resolutionChanged()
     {
+        consoleFont.resolutionChanged();
+        loadRegion();
     }
 
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
     {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if (!GUIChatDialog.this.isDownVisible()) return;
-      if ((paramInt == 0) && (!paramBoolean))
-        GUIChatDialog.this.consoleDrawPos(paramFloat2 < this.win.dy / 2.0F);
+        float f = x1024(100F);
+        float f1 = y1024(50F);
+        gsize.set(f, f1);
+        return gsize;
     }
 
-    public void render() {
-      if (Main3D.cur3D().hud.isDrawNetStat()) return;
-      if (!GUIChatDialog.this.isDownVisible()) return;
-      Object localObject;
-      GFont localGFont;
-      float f1;
-      switch (GUIChatDialog.this.mode())
-      {
-      case 3:
-        localObject = RTSConf.cur.console.historyOut();
-        localGFont = GUIChatDialog.this.consoleFont;
-        f1 = localGFont.height;
-        int i = ((List)localObject).size();
-        int j = (int)(this.win.dy / f1);
-        if (i > j)
-          i = j;
-        if (i <= 0) return;
-        float f3 = this.win.dy - f1;
-        int k = GUIChatDialog.this.posConsole;
-        if (k + i >= ((List)localObject).size()) k = ((List)localObject).size() - i;
-        setCanvasColor(16777215);
-        this.root.C.font = localGFont;
-        if (GUIChatDialog.this.isTransparent())
-          this.root.C.alpha = 127;
-        for (int m = 0; m < i; m++) {
-          String str = (String)((List)localObject).get(k);
-          int n = str.length();
-          for (int i1 = 0; i1 < n; i1++) {
-            int i2 = str.charAt(i1);
-            if ((i2 < 32) && (i2 != 9)) {
-              str = str.substring(0, i1);
-              break;
+    public GUIChatDialog(com.maddox.gwindow.GWindow gwindow)
+    {
+        posChat = 0;
+        posConsole = 0;
+        chatStateSend = false;
+        chatCurEditSlot = -1;
+        chatCurAdrSlot = 0;
+        chatEditSlot = new java.lang.String[10];
+        chatAdrSlot = new java.lang.String[10];
+        radioCurSlot = 1;
+        sizingState = 0;
+        bAlwaysOnTop = true;
+        gwindow.create(this);
+        loadRegion();
+    }
+
+    private void loadRegion()
+    {
+        com.maddox.gwindow.GRegion gregion = new GRegion(0.0F, 0.2F, 0.3F, 0.2F);
+        com.maddox.il2.engine.Config.cur.ini.get("chat", "region", gregion);
+        clientHeight = gregion.dy * root.win.dy;
+        com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+        float f = clientHeight + gbevel.T.dy + gbevel.B.dy;
+        if(isDownVisible())
+            f += downHeight();
+        setPosSize(gregion.x * root.win.dx, gregion.y * root.win.dy, gregion.dx * root.win.dx, f);
+    }
+
+    private void saveRegion()
+    {
+        com.maddox.gwindow.GRegion gregion = new GRegion();
+        gregion.x = win.x / root.win.dx;
+        gregion.y = win.y / root.win.dy;
+        gregion.dx = win.dx / root.win.dx;
+        gregion.dy = clientHeight / root.win.dy;
+        com.maddox.il2.engine.Config.cur.ini.set("chat", "region", gregion, false);
+    }
+
+    int frameHitTest(float f, float f1)
+    {
+        com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+        if(f < 0.0F || f > win.dx || f1 < 0.0F || f1 > win.dy)
+            return 0;
+        if(f <= gbevel.L.dx)
+        {
+            if(f1 <= gbevel.T.dy)
+                return 2;
+            return f1 < win.dy - gbevel.T.dy - gbevel.B.dy ? 5 : 7;
+        }
+        if(f >= win.dx - gbevel.L.dx - gbevel.R.dx)
+        {
+            if(f1 <= gbevel.T.dy)
+                return 4;
+            return f1 < win.dy - gbevel.T.dy - gbevel.B.dy ? 6 : 9;
+        }
+        if(f1 <= gbevel.T.dy)
+            return 1;
+        return f1 < win.dy - gbevel.T.dy - gbevel.B.dy ? 1 : 8;
+    }
+
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        super.mouseButton(i, flag, f, f1);
+        if(i == 0)
+        {
+            if(flag)
+            {
+                if(isMouseCaptured())
+                    return;
+                if(isTransparent())
+                    return;
+                int j = frameHitTest(f, f1);
+                if(j == 0)
+                    return;
+                sizingState = j;
+                mouseCapture(true);
+            } else
+            if(isMouseCaptured())
+            {
+                sizingState = 0;
+                mouseCapture(false);
+                mouseCursor = 1;
+                saveRegion();
             }
-          }
-          draw(0.0F, f3, this.win.dx, f1, 0, str);
-          f3 -= f1;
-          k++;
-        }
-        if (GUIChatDialog.this.isTransparent()) {
-          this.root.C.alpha = 0;
-        }
-        break;
-      case 0:
-        renderTable(GUIChatDialog.this.chatEditSlot, GUIChatDialog.this.chatCurEditSlot);
-        break;
-      case 1:
-        renderTable(GUIChatDialog.this.chatAdrSlot, GUIChatDialog.this.chatCurAdrSlot);
-        break;
-      case 2:
-        localObject = (NetUser)NetEnv.host();
-        localGFont = this.root.textFonts[0];
-        f1 = localGFont.height;
-        float f2 = this.win.dy - f1 * 10.0F - f1 / 2.0F;
-
-        setCanvasColor(16777215);
-        draw(0.0F, f2, this.win.dx, f1, 0, GUIChatDialog.this.radioSlot[0]);
-        f2 += f1;
-
-        renderRadioSlot(f2, localGFont, 1, ((NetUser)localObject).isRadioNone(), null);
-        f2 += f1;
-        renderRadioSlot(f2, localGFont, 2, ((NetUser)localObject).isRadioCommon(), " 0");
-        f2 += f1;
-        renderRadioSlot(f2, localGFont, 3, ((NetUser)localObject).isRadioArmy(), ((NetUser)localObject).getArmy() != 0 ? " " + ((NetUser)localObject).getArmy() : null);
-
-        f2 += f1;
-        renderRadioSlot(f2, localGFont, 4, ((NetUser)localObject).isRadioPrivate(), ((NetUser)localObject).isRadioPrivate() ? ((NetUser)localObject).radio() : null);
-
-        break;
-      }
-    }
-
-    private void renderTable(String[] paramArrayOfString, int paramInt)
-    {
-      GFont localGFont = this.root.textFonts[0];
-      float f1 = localGFont.height;
-      float f2 = this.win.dy - f1 * paramArrayOfString.length - f1 / 2.0F;
-      for (int i = 0; i < paramArrayOfString.length; i++) {
-        if (paramInt == i) setCanvasColor(0); else
-          setCanvasColor(16777215);
-        draw(0.0F, f2, this.win.dx, f1, 0, " " + i + ". " + paramArrayOfString[i]);
-        f2 += f1;
-      }
-    }
-
-    private void renderRadioSlot(float paramFloat, GFont paramGFont, int paramInt, boolean paramBoolean, String paramString) {
-      if (GUIChatDialog.this.radioCurSlot == paramInt) setCanvasColor(0); else
-        setCanvasColor(16777215);
-      int i = 0;
-      if (paramBoolean) i++;
-      List localList = NetEnv.hosts();
-      for (int j = 0; j < localList.size(); j++) {
-        NetUser localNetUser = (NetUser)localList.get(j);
-        if (paramString == null) {
-          if ((paramInt == 1) && (localNetUser.radio() == null))
-            i++;
-        } else if (paramString.equals(localNetUser.radio())) {
-          i++;
-        }
-      }
-      if (paramBoolean)
-        draw(0.0F, paramFloat, this.win.dx, paramGFont.height, 0, " " + paramInt + ". (" + i + ")  \t *" + GUIChatDialog.this.radioSlot[paramInt]);
-      else
-        draw(0.0F, paramFloat, this.win.dx, paramGFont.height, 0, " " + paramInt + ". (" + i + ")  \t  " + GUIChatDialog.this.radioSlot[paramInt]);
-    }
-  }
-
-  public class WDrawChat extends GWindow
-  {
-    public WDrawChat()
-    {
-    }
-
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt == 0) && (!paramBoolean))
-        GUIChatDialog.this.chatDrawPos(paramFloat2 < this.win.dy / 2.0F);
-    }
-
-    public void render()
-    {
-      if (Main3D.cur3D().hud.isDrawNetStat()) return;
-      Chat localChat = Main.cur().chat;
-      if (localChat == null) return;
-      GFont localGFont = this.root.textFonts[0];
-      float f1 = localGFont.height;
-      int i = localChat.buf.size();
-      int j = (int)(this.win.dy / f1);
-      if (i > j)
-        i = j;
-      if (i <= 0) return;
-      float f2 = this.win.dy - f1;
-      int k = GUIChatDialog.this.posChat;
-      if (k + i >= localChat.buf.size()) k = localChat.buf.size() - i;
-      setCanvasColor(16777215);
-      setCanvasFont(0);
-      if (GUIChatDialog.this.isTransparent())
-        this.root.C.alpha = 255;
-      for (int m = 0; m < i; m++) {
-        ChatMessage localChatMessage = (ChatMessage)localChat.buf.get(k);
-        if (localChatMessage.from != null) {
-          String str = localChatMessage.from.shortName() + ":\t" + localChatMessage.msg;
-          setCanvasColor(0);
-          draw(0.0F, f2 + 1.0F, this.win.dx, f1, 0, str);
-          draw(1.0F, f2, this.win.dx, f1, 0, str);
-          draw(1.0F, f2 + 1.0F, this.win.dx, f1, 0, str);
-          setCanvasColor(Army.color(((NetUser)localChatMessage.from).getArmy()));
-          draw(0.0F, f2, this.win.dx, f1, 0, str);
-        } else {
-          setCanvasColor(16777215);
-          draw(0.0F, f2, this.win.dx, f1, 0, "--- " + localChatMessage.msg);
-        }
-        f2 -= f1;
-        k++;
-      }
-      if (GUIChatDialog.this.isTransparent())
-        this.root.C.alpha = 0;
-    }
-  }
-
-  public class WEdit extends GWindowEditControl
-  {
-    public boolean notify(int paramInt1, int paramInt2)
-    {
-      boolean bool = super.notify(paramInt1, paramInt2);
-      if (paramInt1 == 2)
-      {
-        String str;
-        int i;
-        switch (GUIChatDialog.this.mode()) {
-        case 0:
-          str = getValue();
-          if (GUIChatDialog.this.chatCurEditSlot >= 0) {
-            GUIChatDialog.this.chatEditSlot[GUIChatDialog.this.chatCurEditSlot] = str;
-          }
-          else if ((str.length() == 1) && (Character.isDigit(str.charAt(0)))) {
-            i = str.charAt(0) - '0';
-            setValue(GUIChatDialog.this.chatEditSlot[i], false);
-            GUIChatDialog.this.chatCurEditSlot = i;
-            break;
-          }
-
-          if ((this.caretOffset >= 2) && (this.caretOffset <= str.length()) && (str.charAt(this.caretOffset - 2) == '\\') && (Character.isDigit(str.charAt(this.caretOffset - 1))))
-          {
-            i = str.charAt(this.caretOffset - 1) - '0';
-            this.value.deleteCharAt(this.caretOffset - 1);
-            this.value.deleteCharAt(this.caretOffset - 2);
-            this.value.insert(this.caretOffset - 2, GUIChatDialog.this.chatEditSlot[i]);
-            setValue(this.value.toString(), false);
-          }
-
-          break;
-        case 1:
-          if ((GUIChatDialog.this.chatCurAdrSlot == 0) || (GUIChatDialog.this.chatCurAdrSlot == 1)) {
-            setValue(GUIChatDialog.this.chatAdrSlot[GUIChatDialog.this.chatCurAdrSlot], false); } else {
-            if (GUIChatDialog.this.chatCurAdrSlot < 2) break;
-            GUIChatDialog.this.chatAdrSlot[GUIChatDialog.this.chatCurAdrSlot] = getValue(); } break;
-        case 2:
-          str = getValue();
-          if (str.length() == 1) {
-            if (!AudioDevice.npFlags.get(0)) {
-              setValue("", false);
-            } else {
-              if (((NetUser)NetEnv.host()).isRadioPrivate())
-                GUIChatDialog.this.radioSlot[4] = ((NetUser)NetEnv.host()).radio();
-              else {
-                GUIChatDialog.this.radioSlot[4] = "";
-              }
-              if (GUIChatDialog.this.radioCurSlot == 4)
-                setValue("." + GUIChatDialog.this.radioSlot[4], false);
+        } else
+        if(i == 1)
+            if(flag)
+            {
+                if(isMouseCaptured())
+                    return;
+                if(isTransparent())
+                    return;
+                int k = frameHitTest(f, f1);
+                if(k == 0)
+                    return;
+                sizingState = 1;
+                mouseCursor = 3;
+                mouseCapture(true);
+            } else
+            if(isMouseCaptured())
+            {
+                sizingState = 0;
+                mouseCapture(false);
+                mouseCursor = 1;
+                saveRegion();
             }
-          } else {
-            if ((str.length() == 2) && (Character.isDigit(str.charAt(1)))) {
-              i = str.charAt(1) - '0';
-              if ((i != GUIChatDialog.this.radioCurSlot) && (i >= 1) && (i <= 4)) {
-                GUIChatDialog.this.radioCurSlot = i;
-                if (GUIChatDialog.this.radioCurSlot == 4) {
-                  setValue("." + GUIChatDialog.this.radioSlot[4], false); break;
-                }
-                setValue(".", false);
-                break;
-              }
-            }
-            if (GUIChatDialog.this.radioCurSlot == 4) {
-              while ((getValue().length() > 1) && (getValue().charAt(1) == ' '))
-                setValue("." + getValue().substring(2), false);
-              GUIChatDialog.this.radioSlot[GUIChatDialog.this.radioCurSlot] = getValue().substring(1);
-            } else {
-              setValue(".", false);
-            }
-          }
-
-          break;
-        case 3:
-        }
-
-      }
-
-      return bool;
     }
 
-    public void keyboardKey(int paramInt, boolean paramBoolean) {
-      switch (paramInt) {
-      case 33:
-      case 34:
-        if (!paramBoolean)
-          GUIChatDialog.this.chatDrawPos(paramInt == 33);
-        return;
-      case 38:
-      case 40:
-        if (!paramBoolean) {
-          if (this.bControlDown) {
-            GUIChatDialog.this.consoleDrawPos(paramInt == 38);
+    public void mouseMove(float f, float f1)
+    {
+        super.mouseMove(f, f1);
+        com.maddox.gwindow.GRegion gregion = root.getClientRegion();
+        if(root.mousePos.x < gregion.x || root.mousePos.x >= gregion.x + gregion.dx || root.mousePos.y < gregion.y || root.mousePos.y >= gregion.y + gregion.dy)
             return;
-          }
-          switch (GUIChatDialog.this.mode())
-          {
-          case 3:
-            List localList = RTSConf.cur.console.historyCmd();
-            int i = RTSConf.cur.console.curHistoryCmd;
-            if (localList.size() > 0) {
-              if (paramInt == 38) {
-                if (i < localList.size()) i++; else
-                  i = 0;
-              }
-              else if (i >= 0) i--; else {
-                i = localList.size() - 1;
-              }
-            }
-            if ((i >= 0) && (i < localList.size())) {
-              String str = (String)localList.get(i);
-              setValue(">" + str, false);
-            }
-            RTSConf.cur.console.curHistoryCmd = i;
-
-            break;
-          case 0:
-            if (paramInt == 40) {
-              GUIChatDialog.this.chatCurEditSlot = ((GUIChatDialog.this.chatCurEditSlot + 1) % GUIChatDialog.this.chatEditSlot.length);
-            }
-            else if (GUIChatDialog.this.chatCurEditSlot == -1)
-              GUIChatDialog.this.chatCurEditSlot = 9;
-            else {
-              GUIChatDialog.this.chatCurEditSlot = ((GUIChatDialog.this.chatCurEditSlot - 1 + GUIChatDialog.this.chatEditSlot.length) % GUIChatDialog.this.chatEditSlot.length);
-            }
-            setValue(GUIChatDialog.this.chatEditSlot[GUIChatDialog.this.chatCurEditSlot], false);
-            break;
-          case 1:
-            if (paramInt == 40)
-              GUIChatDialog.this.chatCurAdrSlot = ((GUIChatDialog.this.chatCurAdrSlot + 1) % GUIChatDialog.this.chatAdrSlot.length);
-            else
-              GUIChatDialog.this.chatCurAdrSlot = ((GUIChatDialog.this.chatCurAdrSlot - 1 + GUIChatDialog.this.chatAdrSlot.length) % GUIChatDialog.this.chatAdrSlot.length);
-            setValue(GUIChatDialog.this.chatAdrSlot[GUIChatDialog.this.chatCurAdrSlot], false);
-            break;
-          case 2:
-            if (paramInt == 40) {
-              GUIChatDialog.this.radioCurSlot += 1;
-              if (GUIChatDialog.this.radioCurSlot > 4)
-                GUIChatDialog.this.radioCurSlot = 1;
-            } else {
-              GUIChatDialog.this.radioCurSlot -= 1;
-              if (GUIChatDialog.this.radioCurSlot < 1)
-                GUIChatDialog.this.radioCurSlot = 4;
-            }
-            if (GUIChatDialog.this.radioCurSlot == 4)
-              setValue("." + GUIChatDialog.this.radioSlot[GUIChatDialog.this.radioCurSlot], false);
-            else
-              setValue(".", false);
-            break;
-          }
-
+        com.maddox.gwindow.GSize gsize = null;
+        if(sizingState != 1 && sizingState != 0)
+        {
+            _newSize.set(win.dx, win.dy);
+            gsize = getMinSize();
+            gsize.dy += downHeight();
         }
+        switch(sizingState)
+        {
+        default:
+            break;
 
-        return;
-      case 35:
-      case 36:
-      case 37:
-      case 39: } super.keyboardKey(paramInt, paramBoolean);
+        case 0: // '\0'
+            int i = frameHitTest(f, f1);
+            mouseCursor = 1;
+            if(i == 0)
+                return;
+            switch(i)
+            {
+            case 2: // '\002'
+                mouseCursor = 10;
+                break;
+
+            case 3: // '\003'
+                mouseCursor = 9;
+                break;
+
+            case 4: // '\004'
+                mouseCursor = 8;
+                break;
+
+            case 5: // '\005'
+                mouseCursor = 11;
+                break;
+
+            case 6: // '\006'
+                mouseCursor = 11;
+                break;
+
+            case 7: // '\007'
+                mouseCursor = 8;
+                break;
+
+            case 8: // '\b'
+                mouseCursor = 9;
+                break;
+
+            case 9: // '\t'
+                mouseCursor = 10;
+                break;
+
+            case 1: // '\001'
+                mouseCursor = 3;
+                break;
+            }
+            return;
+
+        case 1: // '\001'
+            setPos(win.x + root.mouseStep.dx, win.y + root.mouseStep.dy);
+            return;
+
+        case 2: // '\002'
+            _newSize.add(-root.mouseStep.dx, -root.mouseStep.dy);
+            if(_newSize.dx >= gsize.dx && _newSize.dy >= gsize.dy)
+            {
+                setPos(win.x + root.mouseStep.dx, win.y + root.mouseStep.dy);
+                setSize();
+                return;
+            }
+            break;
+
+        case 3: // '\003'
+            _newSize.add(0.0F, -root.mouseStep.dy);
+            if(_newSize.dy >= gsize.dy)
+            {
+                setPos(win.x, win.y + root.mouseStep.dy);
+                setSize();
+                return;
+            }
+            break;
+
+        case 4: // '\004'
+            _newSize.add(root.mouseStep.dx, -root.mouseStep.dy);
+            if(_newSize.dx >= gsize.dx && _newSize.dy >= gsize.dy)
+            {
+                setPos(win.x, win.y + root.mouseStep.dy);
+                setSize();
+                return;
+            }
+            break;
+
+        case 5: // '\005'
+            _newSize.add(-root.mouseStep.dx, 0.0F);
+            if(_newSize.dx >= gsize.dx)
+            {
+                setPos(win.x + root.mouseStep.dx, win.y);
+                setSize();
+                return;
+            }
+            break;
+
+        case 6: // '\006'
+            _newSize.add(root.mouseStep.dx, 0.0F);
+            if(_newSize.dx >= gsize.dx)
+            {
+                setSize();
+                return;
+            }
+            break;
+
+        case 7: // '\007'
+            _newSize.add(-root.mouseStep.dx, root.mouseStep.dy);
+            if(_newSize.dx >= gsize.dx && _newSize.dy >= gsize.dy)
+            {
+                setPos(win.x + root.mouseStep.dx, win.y);
+                setSize();
+                return;
+            }
+            break;
+
+        case 8: // '\b'
+            _newSize.add(0.0F, root.mouseStep.dy);
+            if(_newSize.dy >= gsize.dy)
+            {
+                setSize();
+                return;
+            }
+            break;
+
+        case 9: // '\t'
+            _newSize.add(root.mouseStep.dx, root.mouseStep.dy);
+            if(_newSize.dx >= gsize.dx && _newSize.dy >= gsize.dy)
+            {
+                setSize();
+                return;
+            }
+            break;
+        }
+        sizingState = 0;
+        mouseCapture(false);
+        mouseCursor = 1;
     }
 
-    public void render()
+    private void setSize()
     {
-      super.render();
+        com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+        clientHeight = _newSize.dy - downHeight() - gbevel.T.dy - gbevel.B.dy;
+        setSize(_newSize.dx, _newSize.dy);
     }
 
-    public void keyFocusExit()
-    {
-      super.keyFocusExit();
-      setEditable(false);
-    }
+    public static final int MODE_CHAT = 0;
+    public static final int MODE_CHAT_TO = 1;
+    public static final int MODE_RADIO = 2;
+    public static final int MODE_CONSOLE = 3;
+    public static final int EDIT_SLOTS = 10;
+    public static final int ADR_SLOTS = 10;
+    public com.maddox.il2.gui.WClient wClient;
+    public float clientHeight;
+    public com.maddox.il2.gui.WEdit wEdit;
+    public com.maddox.gwindow.GWindow wViewChat;
+    public com.maddox.il2.gui.WDrawChat wDrawChat;
+    public com.maddox.gwindow.GWindow wViewConsole;
+    public com.maddox.il2.gui.WDrawConsole wDrawConsole;
+    public com.maddox.gwindow.GFont consoleFont;
+    public com.maddox.gwindow.GTexture texIndicator;
+    public int posChat;
+    public int posConsole;
+    public boolean chatStateSend;
+    public int chatCurEditSlot;
+    public int chatCurAdrSlot;
+    public java.lang.String chatEditSlot[];
+    public java.lang.String chatAdrSlot[];
+    public java.lang.String chatMessage;
+    public static final int RADIO_NONE = 1;
+    public static final int RADIO_COMMON = 2;
+    public static final int RADIO_ARMY = 3;
+    public static final int RADIO_PRIVATE = 4;
+    public java.lang.String radioSlot[] = {
+        "    Radio channels:", "None", "Common", "Army", ""
+    };
+    public int radioCurSlot;
+    static final int SIZING_NONE = 0;
+    static final int SIZING_MOVE = 1;
+    static final int SIZING_TL = 2;
+    static final int SIZING_T = 3;
+    static final int SIZING_TR = 4;
+    static final int SIZING_L = 5;
+    static final int SIZING_R = 6;
+    static final int SIZING_BL = 7;
+    static final int SIZING_B = 8;
+    static final int SIZING_BR = 9;
+    int sizingState;
+    private static com.maddox.gwindow.GSize _newSize = new GSize();
 
-    public WEdit(GWindow paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramString, String arg7)
-    {
-      super(paramFloat2, paramFloat3, paramFloat4, paramString, str);
-    }
-  }
+
+
 }

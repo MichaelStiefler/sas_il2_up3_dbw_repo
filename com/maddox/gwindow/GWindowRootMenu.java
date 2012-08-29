@@ -1,45 +1,65 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowRootMenu.java
+
 package com.maddox.gwindow;
 
-public class GWindowRootMenu extends GWindowRoot
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowRoot, GWindowStatusBar, GWindowMenuBar, GRegion, 
+//            GSize, GWindow
+
+public class GWindowRootMenu extends com.maddox.gwindow.GWindowRoot
 {
-  public GWindowStatusBar statusBar;
-  public GWindowMenuBar menuBar;
-  public GWindow clientWindow;
 
-  public void toolTip(String paramString)
-  {
-    this.statusBar.setHelp(paramString);
-  }
+    public GWindowRootMenu()
+    {
+    }
 
-  public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    paramGRegion.x = paramFloat;
-    if (this.menuBar.isVisible()) paramGRegion.y = (this.menuBar.win.dy + paramFloat); else
-      paramGRegion.y = paramFloat;
-    paramGRegion.dx = (this.win.dx - 2.0F * paramFloat);
-    paramGRegion.dy = (this.win.dy - 2.0F * paramFloat);
-    if (this.menuBar.isVisible()) paramGRegion.dy -= this.menuBar.win.dy;
-    if (this.statusBar.isVisible()) paramGRegion.dy -= this.statusBar.win.dy;
-    return paramGRegion;
-  }
+    public void toolTip(java.lang.String s)
+    {
+        statusBar.setHelp(s);
+    }
 
-  public void resized() {
-    super.resized();
-    float f = this.menuBar.getMinSize().dy;
-    this.menuBar.setPos(0.0F, 0.0F);
-    this.menuBar.setSize(this.win.dx, f);
+    public com.maddox.gwindow.GRegion getClientRegion(com.maddox.gwindow.GRegion gregion, float f)
+    {
+        gregion.x = f;
+        if(menuBar.isVisible())
+            gregion.y = menuBar.win.dy + f;
+        else
+            gregion.y = f;
+        gregion.dx = win.dx - 2.0F * f;
+        gregion.dy = win.dy - 2.0F * f;
+        if(menuBar.isVisible())
+            gregion.dy -= menuBar.win.dy;
+        if(statusBar.isVisible())
+            gregion.dy -= statusBar.win.dy;
+        return gregion;
+    }
 
-    f = this.statusBar.getMinSize().dy;
-    this.statusBar.setPos(0.0F, this.win.dy - f);
-    this.statusBar.setSize(this.win.dx, f);
+    public void resized()
+    {
+        super.resized();
+        float f = menuBar.getMinSize().dy;
+        menuBar.setPos(0.0F, 0.0F);
+        menuBar.setSize(win.dx, f);
+        f = statusBar.getMinSize().dy;
+        statusBar.setPos(0.0F, win.dy - f);
+        statusBar.setSize(win.dx, f);
+        if(clientWindow != null)
+            clientWindow.resized();
+    }
 
-    if (this.clientWindow != null)
-      this.clientWindow.resized();
-  }
+    public void created()
+    {
+        super.created();
+        statusBar = (com.maddox.gwindow.GWindowStatusBar)create(new GWindowStatusBar());
+        menuBar = (com.maddox.gwindow.GWindowMenuBar)create(new GWindowMenuBar());
+        resized();
+    }
 
-  public void created() {
-    super.created();
-    this.statusBar = ((GWindowStatusBar)create(new GWindowStatusBar()));
-    this.menuBar = ((GWindowMenuBar)create(new GWindowMenuBar()));
-    resized();
-  }
+    public com.maddox.gwindow.GWindowStatusBar statusBar;
+    public com.maddox.gwindow.GWindowMenuBar menuBar;
+    public com.maddox.gwindow.GWindow clientWindow;
 }

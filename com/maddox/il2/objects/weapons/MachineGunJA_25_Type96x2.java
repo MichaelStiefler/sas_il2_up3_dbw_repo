@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MachineGunJA_25_Type96x2.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Vector3d;
@@ -6,52 +11,48 @@ import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.Loc;
 
-public class MachineGunJA_25_Type96x2 extends MGunAntiAirGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            MGunAntiAirGeneric, BulletAntiAirSmallUSSR, Bullet
+
+public class MachineGunJA_25_Type96x2 extends com.maddox.il2.objects.weapons.MGunAntiAirGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.aimMaxDist = 7500.0F;
-    paramGunProperties.shotFreq = 8.666667F;
-    paramGunProperties.bulletsCluster = 2;
 
-    paramGunProperties.sound = "weapon.zenitka_20";
+    public MachineGunJA_25_Type96x2()
+    {
+    }
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.aimMaxDist = 7500F;
+        gunproperties.shotFreq = 8.666667F;
+        gunproperties.bulletsCluster = 2;
+        gunproperties.sound = "weapon.zenitka_20";
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.timeLife = 6.1F;
+        bulletproperties.addExplTime = 1.5F;
+        bulletproperties.power = 0.01F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 30F;
+        bulletproperties.kalibr = 0.025F;
+        bulletproperties.massa = 0.24F;
+        bulletproperties.speed = 900F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0xb300ffff;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.timeLife = 8.3F;
+        bulletproperties.power = 0.0F;
+        bulletproperties.kalibr = 0.025F;
+        bulletproperties.massa = 0.26F;
+        bulletproperties.speed = 900F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0xb300ffff;
+        return 60F;
+    }
 
-    localBulletProperties.timeLife = 6.1F;
-    localBulletProperties.addExplTime = 1.5F;
-
-    localBulletProperties.power = 0.01F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 30.0F;
-
-    localBulletProperties.kalibr = 0.025F;
-    localBulletProperties.massa = 0.24F;
-    localBulletProperties.speed = 900.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = -1291780097;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.timeLife = 8.3F;
-
-    localBulletProperties.power = 0.0F;
-
-    localBulletProperties.kalibr = 0.025F;
-    localBulletProperties.massa = 0.26F;
-    localBulletProperties.speed = 900.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmYellow/mono.sim";
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = -1291780097;
-
-    return 60.0F;
-  }
-
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
-  {
-    return new BulletAntiAirSmallUSSR(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong, this.explAddTimeT);
-  }
+    public com.maddox.il2.objects.weapons.Bullet createNextBullet(int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d, long l)
+    {
+        return new BulletAntiAirSmallUSSR(i, gungeneric, loc, vector3d, l, explAddTimeT);
+    }
 }

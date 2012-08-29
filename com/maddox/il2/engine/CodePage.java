@@ -1,40 +1,55 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CodePage.java
+
 package com.maddox.il2.engine;
 
-public class CodePage extends FObj
+
+// Referenced classes of package com.maddox.il2.engine:
+//            FObj, GObj
+
+public class CodePage extends com.maddox.il2.engine.FObj
 {
-  public CodePage(int paramInt)
-  {
-    super(paramInt);
-  }
 
-  public int translate(int paramInt) {
-    return Translate(this.cppObj, paramInt);
-  }
+    public CodePage(int i)
+    {
+        super(i);
+    }
 
-  public int size()
-  {
-    return Size(this.cppObj);
-  }
+    public int translate(int i)
+    {
+        return Translate(cppObj, i);
+    }
 
-  public String nameCP()
-  {
-    return NameCP(this.cppObj); } 
-  public static native CodePage get(String paramString);
+    public int size()
+    {
+        return Size(cppObj);
+    }
 
-  public static native CodePage getApp();
+    public java.lang.String nameCP()
+    {
+        return NameCP(cppObj);
+    }
 
-  public static native void setApp(String paramString);
+    public static native com.maddox.il2.engine.CodePage get(java.lang.String s);
 
-  public static native CodePage getSystemAnsi();
+    public static native com.maddox.il2.engine.CodePage getApp();
 
-  public static native CodePage getSystemOem();
+    public static native void setApp(java.lang.String s);
 
-  private native int Translate(int paramInt1, int paramInt2);
+    public static native com.maddox.il2.engine.CodePage getSystemAnsi();
 
-  private native int Size(int paramInt);
+    public static native com.maddox.il2.engine.CodePage getSystemOem();
 
-  private native String NameCP(int paramInt);
+    private native int Translate(int i, int j);
 
-  static { GObj.loadNative();
-  }
+    private native int Size(int i);
+
+    private native java.lang.String NameCP(int i);
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

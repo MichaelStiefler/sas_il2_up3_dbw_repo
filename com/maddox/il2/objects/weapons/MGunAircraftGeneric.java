@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MGunAircraftGeneric.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -18,137 +23,157 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Sun;
 import com.maddox.rts.Time;
 
-public class MGunAircraftGeneric extends Gun
-  implements BulletEmitter, BulletAimer
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Gun, BulletAircraftGeneric, Bullet
+
+public class MGunAircraftGeneric extends com.maddox.il2.objects.weapons.Gun
+    implements com.maddox.il2.ai.BulletEmitter, com.maddox.il2.ai.BulletAimer
 {
-  private static final boolean DEBUG = false;
-  protected BulletAircraftGeneric guardBullet;
-  private static Bullet bullet;
-  private int _index = -1;
 
-  public String getDayProperties(String paramString)
-  {
-    if (paramString == null) return null;
-    String str = "3DO/Effects/GunFire/";
-    if (paramString.regionMatches(true, 0, str, 0, str.length())) {
-      return "3DO/Effects/GunFireDay/" + paramString.substring(str.length());
-    }
-    return paramString;
-  }
-
-  public void createdProperties()
-  {
-    if ((this.prop.fireMesh != null) && (this.prop.fireMeshDay == null)) {
-      this.prop.fireMeshDay = getDayProperties(this.prop.fireMesh);
-    }
-    if ((this.prop.fire != null) && (this.prop.fireDay == null)) {
-      this.prop.fireDay = getDayProperties(this.prop.fire);
-    }
-    if ((this.prop.sprite != null) && (this.prop.spriteDay == null)) {
-      this.prop.spriteDay = getDayProperties(this.prop.sprite);
-    }
-    super.createdProperties();
-  }
-
-  public String prop_fireMesh()
-  {
-    if (World.Sun().ToSun.z >= -0.22F) {
-      return this.prop.fireMeshDay;
-    }
-    return this.prop.fireMesh;
-  }
-  public String prop_fire() {
-    if (World.Sun().ToSun.z >= -0.22F) {
-      return this.prop.fireDay;
-    }
-    return this.prop.fire;
-  }
-  public String prop_sprite() {
-    if (World.Sun().ToSun.z >= -0.22F) {
-      return this.prop.spriteDay;
-    }
-    return this.prop.sprite;
-  }
-
-  public void setConvDistance(float paramFloat1, float paramFloat2)
-  {
-    Point3d localPoint3d = this.pos.getRelPoint();
-    Orient localOrient = new Orient();
-    localOrient.set(this.pos.getRelOrient());
-
-    float f1 = (float)Math.sqrt(localPoint3d.y * localPoint3d.y + paramFloat1 * paramFloat1);
-    float f2 = (float)Math.toDegrees(Math.atan(-localPoint3d.y / paramFloat1));
-    if (!this.prop.bUseHookAsRel) {
-      f2 = 0.0F;
-      f1 = paramFloat1;
+    public MGunAircraftGeneric()
+    {
+        _index = -1;
     }
 
-    float f3 = 0.0F; float f4 = 0.0F;
-    float f5 = this.prop.bullet[0].speed; float f6 = 0.0F;
-
-    while (f3 < f1) {
-      f5 += this.bulletKV[0] * Time.tickConstLenFs() * 1.0F * BulletAircraftGeneric.fv(f5) / f5;
-      f6 -= this.bulletAG[0] * Time.tickConstLenFs();
-      f3 += f5 * Time.tickConstLenFs();
-      f4 += f6 * Time.tickConstLenFs();
+    public java.lang.String getDayProperties(java.lang.String s)
+    {
+        if(s == null)
+            return null;
+        java.lang.String s1 = "3DO/Effects/GunFire/";
+        if(s.regionMatches(true, 0, s1, 0, s1.length()))
+            return "3DO/Effects/GunFireDay/" + s.substring(s1.length());
+        else
+            return s;
     }
-    f4 += paramFloat2;
-    f4 = (float)(f4 - localPoint3d.z);
-    float f7 = (float)Math.toDegrees(Math.atan(f4 / f1));
 
-    localOrient.setYPR(localOrient.azimut() + f2, localOrient.tangage() + f7, localOrient.kren());
-    this.pos.setRel(localOrient);
-  }
-
-  public void init() {
-    int i = this.prop.bullet.length;
-    this.bulletAG = new float[i];
-    this.bulletKV = new float[i];
-    initRealisticGunnery();
-  }
-
-  public void initRealisticGunnery(boolean paramBoolean) {
-    int i = this.prop.bullet.length;
-    for (int j = 0; j < i; j++)
-      if (paramBoolean) {
-        this.bulletAG[j] = -10.0F;
-        this.bulletKV[j] = (-(1000.0F * this.prop.bullet[j].kalibr / this.prop.bullet[j].massa));
-      } else {
-        this.bulletAG[j] = 0.0F;
-        this.bulletKV[j] = 0.0F;
-      }
-  }
-
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
-  {
-    bullet = new BulletAircraftGeneric(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
-    if ((!World.cur().diffCur.Realistic_Gunnery) && (isContainOwner(World.getPlayerAircraft())));
-    return bullet;
-  }
-
-  public void loadBullets(int paramInt)
-  {
-    super.loadBullets(paramInt);
-    resetGuard();
-  }
-  public void _loadBullets(int paramInt) {
-    super._loadBullets(paramInt);
-    resetGuard();
-  }
-  private void resetGuard() {
-    this.guardBullet = null;
-    BulletGeneric localBulletGeneric = Engine.cur.bulletList;
-    while (localBulletGeneric != null) {
-      if (((localBulletGeneric instanceof BulletAircraftGeneric)) && (localBulletGeneric.gun() == this))
-        ((BulletAircraftGeneric)localBulletGeneric).bulletss = localBulletGeneric.hashCode();
-      localBulletGeneric = localBulletGeneric.nextBullet;
+    public void createdProperties()
+    {
+        if(prop.fireMesh != null && prop.fireMeshDay == null)
+            prop.fireMeshDay = getDayProperties(prop.fireMesh);
+        if(prop.fire != null && prop.fireDay == null)
+            prop.fireDay = getDayProperties(prop.fire);
+        if(prop.sprite != null && prop.spriteDay == null)
+            prop.spriteDay = getDayProperties(prop.sprite);
+        super.createdProperties();
     }
-  }
 
-  public int nextIndexBulletType()
-  {
-    this._index += 1;
-    if (this._index == this.prop.bullet.length) this._index = 0;
-    return this._index;
-  }
+    public java.lang.String prop_fireMesh()
+    {
+        if(com.maddox.il2.ai.World.Sun().ToSun.z >= -0.22F)
+            return prop.fireMeshDay;
+        else
+            return prop.fireMesh;
+    }
+
+    public java.lang.String prop_fire()
+    {
+        if(com.maddox.il2.ai.World.Sun().ToSun.z >= -0.22F)
+            return prop.fireDay;
+        else
+            return prop.fire;
+    }
+
+    public java.lang.String prop_sprite()
+    {
+        if(com.maddox.il2.ai.World.Sun().ToSun.z >= -0.22F)
+            return prop.spriteDay;
+        else
+            return prop.sprite;
+    }
+
+    public void setConvDistance(float f, float f1)
+    {
+        com.maddox.JGP.Point3d point3d = pos.getRelPoint();
+        com.maddox.il2.engine.Orient orient = new Orient();
+        orient.set(pos.getRelOrient());
+        float f2 = (float)java.lang.Math.sqrt(point3d.y * point3d.y + (double)(f * f));
+        float f3 = (float)java.lang.Math.toDegrees(java.lang.Math.atan(-point3d.y / (double)f));
+        if(!prop.bUseHookAsRel)
+        {
+            f3 = 0.0F;
+            f2 = f;
+        }
+        float f4 = 0.0F;
+        float f5 = 0.0F;
+        float f6 = prop.bullet[0].speed;
+        float f7 = 0.0F;
+        while(f4 < f2) 
+        {
+            f6 += (bulletKV[0] * com.maddox.rts.Time.tickConstLenFs() * 1.0F * com.maddox.il2.objects.weapons.BulletAircraftGeneric.fv(f6)) / f6;
+            f7 -= bulletAG[0] * com.maddox.rts.Time.tickConstLenFs();
+            f4 += f6 * com.maddox.rts.Time.tickConstLenFs();
+            f5 += f7 * com.maddox.rts.Time.tickConstLenFs();
+        }
+        f5 += f1;
+        f5 = (float)((double)f5 - point3d.z);
+        float f8 = (float)java.lang.Math.toDegrees(java.lang.Math.atan(f5 / f2));
+        orient.setYPR(orient.azimut() + f3, orient.tangage() + f8, orient.kren());
+        pos.setRel(orient);
+    }
+
+    public void init()
+    {
+        int i = prop.bullet.length;
+        bulletAG = new float[i];
+        bulletKV = new float[i];
+        initRealisticGunnery();
+    }
+
+    public void initRealisticGunnery(boolean flag)
+    {
+        int i = prop.bullet.length;
+        for(int j = 0; j < i; j++)
+            if(flag)
+            {
+                bulletAG[j] = -10F;
+                bulletKV[j] = -((1000F * prop.bullet[j].kalibr) / prop.bullet[j].massa);
+            } else
+            {
+                bulletAG[j] = 0.0F;
+                bulletKV[j] = 0.0F;
+            }
+
+    }
+
+    public com.maddox.il2.objects.weapons.Bullet createNextBullet(int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d, long l)
+    {
+        bullet = new BulletAircraftGeneric(i, gungeneric, loc, vector3d, l);
+        if(!com.maddox.il2.ai.World.cur().diffCur.Realistic_Gunnery)
+            if(!isContainOwner(com.maddox.il2.ai.World.getPlayerAircraft()));
+        return bullet;
+    }
+
+    public void loadBullets(int i)
+    {
+        super.loadBullets(i);
+        resetGuard();
+    }
+
+    public void _loadBullets(int i)
+    {
+        super._loadBullets(i);
+        resetGuard();
+    }
+
+    private void resetGuard()
+    {
+        guardBullet = null;
+        for(com.maddox.il2.engine.BulletGeneric bulletgeneric = com.maddox.il2.engine.Engine.cur.bulletList; bulletgeneric != null; bulletgeneric = bulletgeneric.nextBullet)
+            if((bulletgeneric instanceof com.maddox.il2.objects.weapons.BulletAircraftGeneric) && bulletgeneric.gun() == this)
+                ((com.maddox.il2.objects.weapons.BulletAircraftGeneric)bulletgeneric).bulletss = bulletgeneric.hashCode();
+
+    }
+
+    public int nextIndexBulletType()
+    {
+        _index++;
+        if(_index == prop.bullet.length)
+            _index = 0;
+        return _index;
+    }
+
+    private static final boolean DEBUG = false;
+    protected com.maddox.il2.objects.weapons.BulletAircraftGeneric guardBullet;
+    private static com.maddox.il2.objects.weapons.Bullet bullet;
+    private int _index;
 }

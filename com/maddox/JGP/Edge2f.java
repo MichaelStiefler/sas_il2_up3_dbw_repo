@@ -1,73 +1,92 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Edge2f.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Line2f, JGPException, Point2f, Vector2f, 
+//            NSolvef
+
 public class Edge2f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Line2f LA = new Line2f();
 
-  public Line2f LN = new Line2f();
-
-  public Line2f LN2 = new Line2f();
-
-  public Edge2f()
-  {
-  }
-
-  public Edge2f(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    set(paramPoint2f1, paramPoint2f2);
-  }
-
-  public final void set(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    this.LA.set(paramPoint2f1, paramPoint2f2);
-
-    this.LN.N.x = (paramPoint2f2.x - paramPoint2f1.x);
-    this.LN.N.y = (paramPoint2f2.y - paramPoint2f1.y);
-    this.LN.N.normalize();
-    this.LN.C = (-this.LN.N.dot(paramPoint2f1));
-
-    this.LN2.N.x = (-this.LN.N.x);
-    this.LN2.N.y = (-this.LN.N.y);
-    this.LN2.C = (-this.LN.N.dot(paramPoint2f2));
-  }
-
-  public final float deviation(Point2f paramPoint2f)
-  {
-    return this.LA.deviation(paramPoint2f);
-  }
-
-  public final boolean Projected(Point2f paramPoint2f)
-  {
-    return (this.LN.deviation(paramPoint2f) >= 0.0F) && (this.LN2.deviation(paramPoint2f) >= 0.0F);
-  }
-
-  public final Point2f cross(Edge2f paramEdge2f) throws JGPException
-  {
-    float[] arrayOfFloat = { this.LA.N.x, this.LA.N.y, -this.LA.C, paramEdge2f.LA.N.x, paramEdge2f.LA.N.y, -paramEdge2f.LA.C };
-
-    Point2f localPoint2f = NSolvef.Solve2f(arrayOfFloat);
-    if ((Projected(localPoint2f)) && (paramEdge2f.Projected(localPoint2f))) return localPoint2f;
-    throw new JGPException("Edges not crossed");
-  }
-
-  public final Point2f cross(Line2f paramLine2f) throws JGPException
-  {
-    float[] arrayOfFloat = { this.LA.N.x, this.LA.N.y, -this.LA.C, paramLine2f.N.x, paramLine2f.N.y, -paramLine2f.C };
-
-    Point2f localPoint2f = NSolvef.Solve2f(arrayOfFloat);
-    if (Projected(localPoint2f)) return localPoint2f;
-    throw new JGPException("Edge and Line not crossed");
-  }
-
-  public String toString()
-  {
-    try
+    public Edge2f()
     {
-      return "( " + this.LN.N.x + "," + this.LN.N.y + "," + this.LA.cross(this.LN) + "," + this.LA.cross(this.LN2) + " )"; } catch (Exception localException) {
+        LA = new Line2f();
+        LN = new Line2f();
+        LN2 = new Line2f();
     }
-    return localException.toString();
-  }
+
+    public Edge2f(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        LA = new Line2f();
+        LN = new Line2f();
+        LN2 = new Line2f();
+        set(point2f, point2f1);
+    }
+
+    public final void set(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        LA.set(point2f, point2f1);
+        LN.N.x = point2f1.x - point2f.x;
+        LN.N.y = point2f1.y - point2f.y;
+        LN.N.normalize();
+        LN.C = -LN.N.dot(point2f);
+        LN2.N.x = -LN.N.x;
+        LN2.N.y = -LN.N.y;
+        LN2.C = -LN.N.dot(point2f1);
+    }
+
+    public final float deviation(com.maddox.JGP.Point2f point2f)
+    {
+        return LA.deviation(point2f);
+    }
+
+    public final boolean Projected(com.maddox.JGP.Point2f point2f)
+    {
+        return LN.deviation(point2f) >= 0.0F && LN2.deviation(point2f) >= 0.0F;
+    }
+
+    public final com.maddox.JGP.Point2f cross(com.maddox.JGP.Edge2f edge2f)
+        throws com.maddox.JGP.JGPException
+    {
+        float af[] = {
+            LA.N.x, LA.N.y, -LA.C, edge2f.LA.N.x, edge2f.LA.N.y, -edge2f.LA.C
+        };
+        com.maddox.JGP.Point2f point2f = com.maddox.JGP.NSolvef.Solve2f(af);
+        if(Projected(point2f) && edge2f.Projected(point2f))
+            return point2f;
+        else
+            throw new JGPException("Edges not crossed");
+    }
+
+    public final com.maddox.JGP.Point2f cross(com.maddox.JGP.Line2f line2f)
+        throws com.maddox.JGP.JGPException
+    {
+        float af[] = {
+            LA.N.x, LA.N.y, -LA.C, line2f.N.x, line2f.N.y, -line2f.C
+        };
+        com.maddox.JGP.Point2f point2f = com.maddox.JGP.NSolvef.Solve2f(af);
+        if(Projected(point2f))
+            return point2f;
+        else
+            throw new JGPException("Edge and Line not crossed");
+    }
+
+    public java.lang.String toString()
+    {
+        return "( " + LN.N.x + "," + LN.N.y + "," + LA.cross(LN) + "," + LA.cross(LN2) + " )";
+        java.lang.Exception exception;
+        exception;
+        return exception.toString();
+    }
+
+    public com.maddox.JGP.Line2f LA;
+    public com.maddox.JGP.Line2f LN;
+    public com.maddox.JGP.Line2f LN2;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Avia_B5xx.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -10,6 +15,7 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
@@ -17,581 +23,556 @@ import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.Property;
 
-public abstract class Avia_B5xx extends Scheme1
-  implements TypeScout, TypeFighter, TypeTNBFighter, TypeStormovik
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Scheme1, TypeScout, TypeFighter, TypeTNBFighter, 
+//            TypeStormovik, CockpitAVIA_B534, Aircraft, Cockpit, 
+//            PaintScheme
+
+public abstract class Avia_B5xx extends com.maddox.il2.objects.air.Scheme1
+    implements com.maddox.il2.objects.air.TypeScout, com.maddox.il2.objects.air.TypeFighter, com.maddox.il2.objects.air.TypeTNBFighter, com.maddox.il2.objects.air.TypeStormovik
 {
-  protected float kangle;
-  public boolean bChangedPit = true;
-  private CockpitAVIA_B534 pit = null;
-  float suspR = 0.0F;
-  float suspL = 0.0F;
 
-  protected void moveFlap(float paramFloat)
-  {
-  }
-
-  protected void moveRudder(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -20.0F * paramFloat, 0.0F);
-  }
-
-  public void registerPit(CockpitAVIA_B534 paramCockpitAVIA_B534)
-  {
-    this.pit = paramCockpitAVIA_B534;
-  }
-
-  public void missionStarting()
-  {
-    super.missionStarting();
-    if ((this.FM.CT.Weapons[0] == null) && (this.pit != null))
-      this.pit.hideAllBullets();
-    hierMesh().chunkVisible("pilotarm2_d0", true);
-    hierMesh().chunkVisible("pilotarm1_d0", true);
-  }
-
-  public void prepareCamouflage() {
-    super.prepareCamouflage();
-    hierMesh().chunkVisible("pilotarm2_d0", true);
-    hierMesh().chunkVisible("pilotarm1_d0", true);
-    if ((this.FM.CT.Weapons[0] == null) && (this.pit != null))
-      this.pit.hideAllBullets();
-  }
-
-  public void moveCockpitDoor(float paramFloat)
-  {
-    Aircraft.xyz[0] = 0.0F;
-    Aircraft.xyz[2] = 0.0F;
-    Aircraft.ypr[0] = 0.0F;
-    Aircraft.ypr[1] = 0.0F;
-    Aircraft.ypr[2] = 0.0F;
-    Aircraft.xyz[1] = (paramFloat * 0.62F);
-    hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
-
-    if (Config.isUSE_RENDER())
+    public Avia_B5xx()
     {
-      if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null))
-      {
-        Main3D.cur3D().cockpits[0].onDoorMoved(paramFloat);
-      }setDoorSnd(paramFloat);
+        bChangedPit = true;
+        pit = null;
     }
-  }
 
-  public void moveSteering(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("GearC2_D0", 0.0F, paramFloat, 0.0F);
-  }
-
-  public void moveWheelSink()
-  {
-    this.suspL = (0.9F * this.suspL + 0.1F * this.FM.Gears.gWheelSinking[0] * 23.0F);
-
-    hierMesh().chunkSetAngles("GearL2_D0", 0.0F, this.suspL * 5.0F, 0.0F);
-    hierMesh().chunkSetAngles("GearL3_D0", 0.0F, this.suspL * 3.67F, 0.0F);
-    hierMesh().chunkSetAngles("GearL4_D0", -this.suspL * 1.3F, 0.0F, 0.0F);
-
-    this.suspR = (0.9F * this.suspR + 0.1F * this.FM.Gears.gWheelSinking[1] * 23.0F);
-
-    hierMesh().chunkSetAngles("GearR2_D0", 0.0F, -this.suspR * 5.0F, 0.0F);
-    hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -this.suspR * 3.67F, 0.0F);
-    hierMesh().chunkSetAngles("GearR4_D0", this.suspR * 1.3F, 0.0F, 0.0F);
-  }
-
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    Wreckage localWreckage;
-    switch (paramInt1)
+    protected void moveFlap(float f)
     {
-    case 19:
-      this.FM.Gears.hitCentreGear();
-      break;
-    case 9:
-      if (hierMesh().chunkFindCheck("GearL3_D0") == -1)
-        break;
-      hierMesh().hideSubTrees("GearL3_D0");
-      localWreckage = new Wreckage(this, hierMesh().chunkFind("GearL3_D0"));
-      localWreckage.collide(true);
-
-      this.FM.Gears.hitLeftGear();
-      break;
-    case 10:
-      if (hierMesh().chunkFindCheck("GearR3_D0") == -1)
-        break;
-      hierMesh().hideSubTrees("GearR3_D0");
-      localWreckage = new Wreckage(this, hierMesh().chunkFind("GearR3_D0"));
-      localWreckage.collide(true);
-
-      this.FM.Gears.hitRightGear();
-      break;
-    case 3:
-      if (World.Rnd().nextInt(0, 99) < 1)
-      {
-        this.FM.AS.hitEngine(this, 0, 4);
-        hitProp(0, paramInt2, paramActor);
-        this.FM.EI.engines[0].setEngineStuck(paramActor);
-        return cut("engine1");
-      }
-
-      this.FM.AS.setEngineDies(this, 0);
-      return false;
     }
 
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
-
-  public boolean cut(String paramString)
-  {
-    boolean bool = super.cut(paramString);
-    if (paramString.equalsIgnoreCase("WingLIn"))
-      hierMesh().chunkVisible("WingLMid_CAP", true);
-    else if (paramString.equalsIgnoreCase("WingRIn"))
-      hierMesh().chunkVisible("WingRMid_CAP", true);
-    return bool;
-  }
-
-  protected void moveElevator(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 20.0F * paramFloat, 0.0F);
-    hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -20.0F * paramFloat, 0.0F);
-
-    float f = this.FM.CT.getAileron();
-    hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, cvt(f, -1.0F, 1.0F, 6.0F, -8.0F) - cvt(paramFloat, -1.0F, 1.0F, -37.0F, 35.0F));
-
-    hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f, -1.0F, 1.0F, -16.0F, 14.0F) + cvt(paramFloat, -1.0F, 0.0F, -61.0F, 0.0F) + cvt(paramFloat, 0.0F, 1.0F, 0.0F, 43.0F));
-
-    if (paramFloat < 0.0F) {
-      paramFloat /= 2.0F;
-    }
-    hierMesh().chunkSetAngles("Stick_D0", 0.0F, 15.0F * f, cvt(paramFloat, -1.0F, 1.0F, -16.0F, 16.0F));
-  }
-
-  protected void moveAileron(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -20.0F * paramFloat, 0.0F);
-    hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -20.0F * paramFloat, 0.0F);
-
-    float f = this.FM.CT.getElevator();
-    hierMesh().chunkSetAngles("pilotarm2_d0", cvt(paramFloat, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, cvt(paramFloat, -1.0F, 1.0F, 6.0F, -8.0F) - cvt(f, -1.0F, 1.0F, -37.0F, 35.0F));
-
-    hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(paramFloat, -1.0F, 1.0F, -16.0F, 14.0F) + cvt(f, -1.0F, 0.0F, -61.0F, 0.0F) + cvt(f, 0.0F, 1.0F, 0.0F, 43.0F));
-
-    if (f < 0.0F) {
-      f /= 2.0F;
-    }
-    hierMesh().chunkSetAngles("Stick_D0", 0.0F, 15.0F * paramFloat, cvt(f, -1.0F, 1.0F, -16.0F, 20.0F));
-  }
-
-  public void update(float paramFloat)
-  {
-    float f = this.FM.EI.engines[0].getControlRadiator();
-    f = (-48.0F * f - 42.0F) * f + 33.0F;
-    this.kangle = (0.95F * this.kangle + 0.05F * f);
-
-    hierMesh().chunkSetAngles("radiator1_D0", 0.0F, this.kangle, 0.0F);
-    hierMesh().chunkSetAngles("radiator2_D0", 0.0F, this.kangle, 0.0F);
-    hierMesh().chunkSetAngles("radiator3_D0", 0.0F, this.kangle, 0.0F);
-    hierMesh().chunkSetAngles("radiator4_D0", 0.0F, this.kangle, 0.0F);
-    hierMesh().chunkSetAngles("radiator5_D0", 0.0F, this.kangle, 0.0F);
-    hierMesh().chunkSetAngles("radiator6_D0", 0.0F, this.kangle, 0.0F);
-
-    super.update(paramFloat);
-  }
-
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    if (paramBoolean)
+    protected void moveRudder(float f)
     {
-      if ((this.FM.AS.astateEngineStates[0] > 3) && (World.Rnd().nextFloat() < 0.4F))
-        this.FM.EI.engines[0].setExtinguisherFire();
+        hierMesh().chunkSetAngles("Rudder1_D0", 0.0F, -20F * f, 0.0F);
     }
-  }
 
-  public void doMurderPilot(int paramInt)
-  {
-    switch (paramInt)
+    public void registerPit(com.maddox.il2.objects.air.CockpitAVIA_B534 cockpitavia_b534)
     {
-    case 0:
-      hierMesh().chunkVisible("Pilot1_D0", false);
-      hierMesh().chunkVisible("Head1_D0", false);
-      hierMesh().chunkVisible("HMask1_D0", false);
-      hierMesh().chunkVisible("Pilot1_D1", true);
-      hierMesh().chunkVisible("Head1_D1", true);
-      hierMesh().chunkVisible("pilotarm2_d0", false);
-      hierMesh().chunkVisible("pilotarm1_d0", false);
+        pit = cockpitavia_b534;
     }
-  }
 
-  public void doRemoveBodyFromPlane(int paramInt)
-  {
-    super.doRemoveBodyFromPlane(paramInt);
-    hierMesh().chunkVisible("pilotarm2_d0", false);
-    hierMesh().chunkVisible("pilotarm1_d0", false);
-  }
-
-  protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
-  {
-    if (paramString.startsWith("xx"))
+    public void missionStarting()
     {
-      if (paramString.startsWith("xxarmor"))
-      {
-        if ((paramString.endsWith("p1")) || (paramString.endsWith("p3"))) {
-          getEnergyPastArmor(9.96F / (1.0E-005F + (float)Math.abs(Aircraft.v1.x)), paramShot);
-        }
+        super.missionStarting();
+        if(FM.CT.Weapons[0] == null && pit != null)
+            pit.hideAllBullets();
+        hierMesh().chunkVisible("pilotarm2_d0", true);
+        hierMesh().chunkVisible("pilotarm1_d0", true);
+    }
 
-        return;
-      }
+    public void prepareCamouflage()
+    {
+        super.prepareCamouflage();
+        hierMesh().chunkVisible("pilotarm2_d0", true);
+        hierMesh().chunkVisible("pilotarm1_d0", true);
+        if(FM.CT.Weapons[0] == null && pit != null)
+            pit.hideAllBullets();
+    }
 
-      if (paramString.startsWith("xxcontrols"))
-      {
-        if (paramString.endsWith("8")) {
-          if (World.Rnd().nextFloat() < 0.2F)
-          {
-            this.FM.AS.setControlsDamage(paramShot.initiator, 2);
-
-            Aircraft.debugprintln(this, "*** Rudder Controls Out.. (#8)");
-          }
-        }
-        else if (paramString.endsWith("9"))
+    public void moveCockpitDoor(float f)
+    {
+        com.maddox.il2.objects.air.Aircraft.xyz[0] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[0] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[1] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[2] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.xyz[1] = f * 0.62F;
+        hierMesh().chunkSetLocate("Blister1_D0", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
         {
-          if (World.Rnd().nextFloat() < 0.2F)
-          {
-            this.FM.AS.setControlsDamage(paramShot.initiator, 1);
-
-            Aircraft.debugprintln(this, "*** Evelator Controls Out.. (#9)");
-          }
-
-          if (World.Rnd().nextFloat() < 0.2F)
-          {
-            this.FM.AS.setControlsDamage(paramShot.initiator, 0);
-
-            Aircraft.debugprintln(this, "*** Arone Controls Out.. (#9)");
-          }
+            if(com.maddox.il2.game.Main3D.cur3D().cockpits != null && com.maddox.il2.game.Main3D.cur3D().cockpits[0] != null)
+                com.maddox.il2.game.Main3D.cur3D().cockpits[0].onDoorMoved(f);
+            setDoorSnd(f);
         }
-        else if (paramString.endsWith("5")) {
-          if (World.Rnd().nextFloat() < 0.5F)
-          {
-            this.FM.AS.setControlsDamage(paramShot.initiator, 1);
+    }
 
-            Aircraft.debugprintln(this, "*** Evelator Controls Out.. (#5)");
-          }
-        }
-        else if (paramString.endsWith("6")) {
-          if (World.Rnd().nextFloat() < 0.5F)
-          {
-            this.FM.AS.setControlsDamage(paramShot.initiator, 2);
+    public void moveSteering(float f)
+    {
+        hierMesh().chunkSetAngles("GearC2_D0", 0.0F, f, 0.0F);
+    }
 
-            Aircraft.debugprintln(this, "*** Rudder Controls Out.. (#6)");
-          }
-        }
-        else if (((paramString.endsWith("2")) || (paramString.endsWith("4"))) && 
-          (World.Rnd().nextFloat() < 0.5F))
+    public void moveWheelSink()
+    {
+        float f = FM.Gears.gWheelSinking[0] * 10F;
+        hierMesh().chunkSetAngles("GearL2_D0", 0.0F, f * 5F, 0.0F);
+        hierMesh().chunkSetAngles("GearL3_D0", 0.0F, f * 3.67F, 0.0F);
+        hierMesh().chunkSetAngles("GearL4_D0", -f * 1.3F, 0.0F, 0.0F);
+        f = -FM.Gears.gWheelSinking[1] * 10F;
+        hierMesh().chunkSetAngles("GearR2_D0", 0.0F, f * 5F, 0.0F);
+        hierMesh().chunkSetAngles("GearR3_D0", 0.0F, f * 3.67F, 0.0F);
+        hierMesh().chunkSetAngles("GearR4_D0", -f * 1.3F, 0.0F, 0.0F);
+    }
+
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        switch(i)
         {
-          this.FM.AS.setControlsDamage(paramShot.initiator, 2);
+        default:
+            break;
 
-          Aircraft.debugprintln(this, "*** Arone Controls Out.. (#2/#4)");
-        }
+        case 19: // '\023'
+            FM.Gears.hitCentreGear();
+            break;
 
-        return;
-      }
-
-      if (paramString.startsWith("xxeng"))
-      {
-        Aircraft.debugprintln(this, "*** Engine Module: Hit..");
-
-        if (paramString.endsWith("prop")) {
-          Aircraft.debugprintln(this, "*** Prop hit");
-        } else if (paramString.endsWith("case"))
-        {
-          if (getEnergyPastArmor(2.1F, paramShot) > 0.0F)
-          {
-            if (World.Rnd().nextFloat() < paramShot.power / 175000.0F)
+        case 9: // '\t'
+            if(hierMesh().chunkFindCheck("GearL3_D0") != -1)
             {
-              this.FM.AS.setEngineStuck(paramShot.initiator, 0);
-              Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Crank Ball Bearing..");
+                hierMesh().hideSubTrees("GearL3_D0");
+                com.maddox.il2.objects.Wreckage wreckage = new Wreckage(this, hierMesh().chunkFind("GearL3_D0"));
+                wreckage.collide(true);
+                FM.Gears.hitLeftGear();
             }
+            break;
 
-            if (World.Rnd().nextFloat() < paramShot.power / 50000.0F)
+        case 10: // '\n'
+            if(hierMesh().chunkFindCheck("GearR3_D0") != -1)
             {
-              this.FM.AS.hitEngine(paramShot.initiator, 0, 2);
-              Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
+                hierMesh().hideSubTrees("GearR3_D0");
+                com.maddox.il2.objects.Wreckage wreckage1 = new Wreckage(this, hierMesh().chunkFind("GearR3_D0"));
+                wreckage1.collide(true);
+                FM.Gears.hitRightGear();
             }
+            break;
 
-            this.FM.EI.engines[0].setReadyness(paramShot.initiator, this.FM.EI.engines[0].getReadyness() - World.Rnd().nextFloat(0.0F, paramShot.power / 48000.0F));
-
-            Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + this.FM.EI.engines[0].getReadyness() + "..");
-          }
-
-          getEnergyPastArmor(12.7F, paramShot);
-        }
-        else if ((paramString.endsWith("cyl1")) || (paramString.endsWith("cyl2")))
-        {
-          if ((getEnergyPastArmor(World.Rnd().nextFloat(0.2F, 4.4F), paramShot) > 0.0F) && (World.Rnd().nextFloat() < this.FM.EI.engines[0].getCylindersRatio() * 1.12F))
-          {
-            this.FM.EI.engines[0].setCyliderKnockOut(paramShot.initiator, World.Rnd().nextInt(1, (int)(paramShot.power / 4800.0F)));
-
-            Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + this.FM.EI.engines[0].getCylindersOperable() + "/" + this.FM.EI.engines[0].getCylinders() + " Left..");
-
-            if (World.Rnd().nextFloat() < paramShot.power / 48000.0F)
+        case 3: // '\003'
+            if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 1)
             {
-              this.FM.AS.hitEngine(paramShot.initiator, 0, 3);
-              Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, Engine Fires..");
-            }
-
-            if (World.Rnd().nextFloat() < 0.005F)
+                FM.AS.hitEngine(this, 0, 4);
+                hitProp(0, j, actor);
+                FM.EI.engines[0].setEngineStuck(actor);
+                return cut("engine1");
+            } else
             {
-              this.FM.AS.setEngineStuck(paramShot.initiator, 0);
-              Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Piston Head..");
+                FM.AS.setEngineDies(this, 0);
+                return false;
             }
-
-            getEnergyPastArmor(22.5F, paramShot);
-          }
         }
-        else if (paramString.endsWith("oil1"))
-        {
-          this.FM.AS.hitOil(paramShot.initiator, 0);
-          Aircraft.debugprintln(this, "*** Engine Module: Oil Radiator Hit..");
-        }
-        else if (paramString.endsWith("supc"))
-        {
-          Aircraft.debugprintln(this, "*** Engine Module: Supercharger Hit..");
-          if ((getEnergyPastArmor(0.1F, paramShot) > 0.0F) && 
-            (World.Rnd().nextFloat() < 0.05F)) {
-            this.FM.AS.setEngineSpecificDamage(paramShot.initiator, 0, 0);
-
-            Aircraft.debugprintln(this, "*** Engine Module: Supercharger Disabled..");
-          }
-        }
-
-      }
-      else if (paramString.endsWith("gear"))
-      {
-        Aircraft.debugprintln(this, "*** Engine Module: Gear Hit..");
-        if ((getEnergyPastArmor(2.1F, paramShot) > 0.0F) && 
-          (World.Rnd().nextFloat() < 0.05F))
-        {
-          this.FM.AS.setEngineStuck(paramShot.initiator, 0);
-          Aircraft.debugprintln(this, "*** Engine Module: gear hit, engine stuck..");
-        }
-
-      }
-      else if (paramString.startsWith("xxtank"))
-      {
-        if ((getEnergyPastArmor(0.1F, paramShot) > 0.0F) && (World.Rnd().nextFloat() < 0.99F))
-        {
-          if (this.FM.AS.astateTankStates[0] == 0)
-          {
-            Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
-            this.FM.AS.hitTank(paramShot.initiator, 0, 2);
-          }
-
-          if ((paramShot.powerType == 3) && (World.Rnd().nextFloat() < 0.25F))
-          {
-            this.FM.AS.hitTank(paramShot.initiator, 0, 2);
-            Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
-          }
-        }
-      }
-      else if (paramString.startsWith("xxlock"))
-      {
-        Aircraft.debugprintln(this, "*** Lock Construction: Hit..");
-        if ((paramString.startsWith("xxlockr")) && (getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** Rudder Lock Shot Off..");
-          nextDMGLevels(3, 2, "Rudder1_D" + chunkDamageVisible("Rudder1"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxlockvl")) && (getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 1.2F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** VatorL Lock Shot Off..");
-          nextDMGLevels(3, 2, "VatorL_D" + chunkDamageVisible("VatorL"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxlockvr")) && (getEnergyPastArmor(1.5F * World.Rnd().nextFloat(1.0F, 1.2F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** VatorR Lock Shot Off..");
-          nextDMGLevels(3, 2, "VatorR_D" + chunkDamageVisible("VatorR"), paramShot.initiator);
-        }
-
-      }
-      else if (paramString.startsWith("xxmgun"))
-      {
-        if (paramString.endsWith("01"))
-        {
-          Aircraft.debugprintln(this, "*** Fixed Gun #1: Disabled..");
-          this.FM.AS.setJamBullets(0, 0);
-        }
-        if (paramString.endsWith("02"))
-        {
-          Aircraft.debugprintln(this, "*** Fixed Gun #2: Disabled..");
-          this.FM.AS.setJamBullets(0, 1);
-        }
-        if (paramString.endsWith("03"))
-        {
-          Aircraft.debugprintln(this, "*** Fixed Gun #3: Disabled..");
-          this.FM.AS.setJamBullets(1, 0);
-          if (this.pit != null)
-            this.pit.jamLeftGun();
-        }
-        if (paramString.endsWith("04"))
-        {
-          Aircraft.debugprintln(this, "*** Fixed Gun #4: Disabled..");
-          this.FM.AS.setJamBullets(1, 1);
-          if (this.pit != null)
-            this.pit.jamRightGun();
-        }
-        getEnergyPastArmor(World.Rnd().nextFloat(0.0F, 28.33F), paramShot);
-      }
-      else if (paramString.startsWith("xxspar"))
-      {
-        Aircraft.debugprintln(this, "*** Spar Construction: Hit..");
-
-        if ((paramString.startsWith("xxspart")) && (chunkDamageVisible("Tail1") > 2) && (getEnergyPastArmor(9.5F / (float)Math.sqrt(Aircraft.v1.y * Aircraft.v1.y + Aircraft.v1.z * Aircraft.v1.z), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** Tail1 Spars Broken in Half..");
-          nextDMGLevels(1, 2, "Tail1_D3", paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxsparli")) && (World.Rnd().nextFloat() < 0.25F) && (getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** WingLIn Spars Damaged..");
-          nextDMGLevels(1, 2, "WingLIn_D" + chunkDamageVisible("WingLIn"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxsparri")) && (World.Rnd().nextFloat() < 0.25F) && (getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** WingRIn Spars Damaged..");
-          nextDMGLevels(1, 2, "WingRIn_D" + chunkDamageVisible("WingRIn"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxsparlm")) && (World.Rnd().nextFloat() < 0.25F) && (getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** WingLMid Spars Damaged..");
-          nextDMGLevels(1, 2, "WingLMid_D" + chunkDamageVisible("WingLMid"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxsparrm")) && (World.Rnd().nextFloat() < 0.25F) && (getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** WingRMid Spars Damaged..");
-          nextDMGLevels(1, 2, "WingRMid_D" + chunkDamageVisible("WingRMid"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxsparlo")) && (World.Rnd().nextFloat() < 0.25F) && (getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** WingLOut Spars Damaged..");
-          nextDMGLevels(1, 2, "WingLOut_D" + chunkDamageVisible("WingLOut"), paramShot.initiator);
-        }
-        else if ((paramString.startsWith("xxsparro")) && (World.Rnd().nextFloat() < 0.25F) && (getEnergyPastArmor(9.5F * World.Rnd().nextFloat(1.0F, 3.0F), paramShot) > 0.0F))
-        {
-          Aircraft.debugprintln(this, "*** WingROut Spars Damaged..");
-          nextDMGLevels(1, 2, "WingROut_D" + chunkDamageVisible("WingROut"), paramShot.initiator);
-        }
-
-      }
-
-      return;
+        return super.cutFM(i, j, actor);
     }
 
-    if ((paramString.startsWith("xpilot")) || (paramString.startsWith("xhead")))
+    public boolean cut(java.lang.String s)
     {
-      int i = 0;
-      int j;
-      if (paramString.endsWith("a"))
-      {
-        i = 1;
-        j = paramString.charAt(6) - '1';
-      }
-      else if (paramString.endsWith("b"))
-      {
-        i = 2;
-        j = paramString.charAt(6) - '1';
-      }
-      else {
-        j = paramString.charAt(5) - '1';
-      }
-      Aircraft.debugprintln(this, "*** hitFlesh..");
-      hitFlesh(j, paramShot, i);
+        boolean flag = super.cut(s);
+        if(s.equalsIgnoreCase("WingLIn"))
+            hierMesh().chunkVisible("WingLMid_CAP", true);
+        else
+        if(s.equalsIgnoreCase("WingRIn"))
+            hierMesh().chunkVisible("WingRMid_CAP", true);
+        return flag;
     }
-    else if (paramString.startsWith("xcockpit"))
-    {
-      if (World.Rnd().nextFloat() < 0.2F)
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x1);
-      else if (World.Rnd().nextFloat() < 0.4F)
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x2);
-      else if (World.Rnd().nextFloat() < 0.6F)
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x4);
-      else if (World.Rnd().nextFloat() < 0.8F)
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x10);
-      else
-        this.FM.AS.setCockpitState(paramShot.initiator, this.FM.AS.astateCockpitState | 0x40);
-    }
-    else if (paramString.startsWith("xcf"))
-    {
-      if (chunkDamageVisible("CF") < 3)
-        hitChunk("CF", paramShot);
-    }
-    else if (paramString.startsWith("xeng"))
-    {
-      if (chunkDamageVisible("Engine1") < 2)
-        hitChunk("Engine1", paramShot);
-    }
-    else if (paramString.startsWith("xtail"))
-    {
-      if (chunkDamageVisible("Tail1") < 3)
-        hitChunk("Tail1", paramShot);
-    }
-    else if (paramString.startsWith("xkeel"))
-    {
-      if (chunkDamageVisible("Keel1") < 2)
-        hitChunk("Keel1", paramShot);
-    }
-    else if (paramString.startsWith("xrudder"))
-    {
-      if (chunkDamageVisible("Rudder1") < 1)
-        hitChunk("Rudder1", paramShot);
-    }
-    else if (paramString.startsWith("xstab"))
-    {
-      if ((paramString.startsWith("xstabl")) && (chunkDamageVisible("StabL") < 2)) {
-        hitChunk("StabL", paramShot);
-      }
-      if ((paramString.startsWith("xstabr")) && (chunkDamageVisible("StabR") < 2))
-        hitChunk("StabR", paramShot);
-    }
-    else if (paramString.startsWith("xvator"))
-    {
-      if ((paramString.startsWith("xvatorl")) && (chunkDamageVisible("VatorL") < 1)) {
-        hitChunk("VatorL", paramShot);
-      }
-      if ((paramString.startsWith("xvatorr")) && (chunkDamageVisible("VatorR") < 1))
-        hitChunk("VatorR", paramShot);
-    }
-    else if (paramString.startsWith("xwing"))
-    {
-      Aircraft.debugprintln(this, "*** xWing: " + paramString);
 
-      if ((paramString.startsWith("xwinglin")) && (chunkDamageVisible("WingLIn") < 3)) {
-        hitChunk("WingLIn", paramShot);
-      }
-      if ((paramString.startsWith("xwingrin")) && (chunkDamageVisible("WingRIn") < 3)) {
-        hitChunk("WingRIn", paramShot);
-      }
-      if ((paramString.startsWith("xwinglmid")) && (chunkDamageVisible("WingLMid") < 3)) {
-        hitChunk("WingLMid", paramShot);
-      }
-      if ((paramString.startsWith("xwingrmid")) && (chunkDamageVisible("WingRMid") < 3)) {
-        hitChunk("WingRMid", paramShot);
-      }
-      if ((paramString.startsWith("xwinglout")) && (chunkDamageVisible("WingLOut") < 3)) {
-        hitChunk("WingLOut", paramShot);
-      }
-      if ((paramString.startsWith("xwingrout")) && (chunkDamageVisible("WingROut") < 3))
-        hitChunk("WingROut", paramShot);
-    }
-    else if (paramString.startsWith("xarone"))
+    protected void moveElevator(float f)
     {
-      if ((paramString.startsWith("xaronel")) && (chunkDamageVisible("AroneL") < 1))
-        hitChunk("AroneL", paramShot);
-      if ((paramString.startsWith("xaroner")) && (chunkDamageVisible("AroneR") < 1))
-        hitChunk("AroneR", paramShot);
+        hierMesh().chunkSetAngles("VatorL_D0", 0.0F, 20F * f, 0.0F);
+        hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -20F * f, 0.0F);
+        float f1 = FM.CT.getAileron();
+        hierMesh().chunkSetAngles("pilotarm2_d0", com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, 6F, -8F) - com.maddox.il2.objects.air.Aircraft.cvt(f, -1F, 1.0F, -37F, 35F));
+        hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, -16F, 14F) + com.maddox.il2.objects.air.Aircraft.cvt(f, -1F, 0.0F, -61F, 0.0F) + com.maddox.il2.objects.air.Aircraft.cvt(f, 0.0F, 1.0F, 0.0F, 43F));
+        if(f < 0.0F)
+            f /= 2.0F;
+        hierMesh().chunkSetAngles("Stick_D0", 0.0F, 15F * f1, com.maddox.il2.objects.air.Aircraft.cvt(f, -1F, 1.0F, -16F, 16F));
     }
-  }
 
-  static
-  {
-    Class localClass = Avia_B5xx.class;
-    Property.set(localClass, "originCountry", PaintScheme.countrySlovakia);
-  }
+    protected void moveAileron(float f)
+    {
+        hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -20F * f, 0.0F);
+        hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -20F * f, 0.0F);
+        float f1 = FM.CT.getElevator();
+        hierMesh().chunkSetAngles("pilotarm2_d0", com.maddox.il2.objects.air.Aircraft.cvt(f, -1F, 1.0F, 14F, -16F), 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, -1F, 1.0F, 6F, -8F) - com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, -37F, 35F));
+        hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, -1F, 1.0F, -16F, 14F) + com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 0.0F, -61F, 0.0F) + com.maddox.il2.objects.air.Aircraft.cvt(f1, 0.0F, 1.0F, 0.0F, 43F));
+        if(f1 < 0.0F)
+            f1 /= 2.0F;
+        hierMesh().chunkSetAngles("Stick_D0", 0.0F, 15F * f, com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, -16F, 20F));
+    }
+
+    public void update(float f)
+    {
+        float f1 = FM.EI.engines[0].getControlRadiator();
+        f1 = (-48F * f1 - 42F) * f1 + 33F;
+        kangle = 0.95F * kangle + 0.05F * f1;
+        hierMesh().chunkSetAngles("radiator1_D0", 0.0F, kangle, 0.0F);
+        hierMesh().chunkSetAngles("radiator2_D0", 0.0F, kangle, 0.0F);
+        hierMesh().chunkSetAngles("radiator3_D0", 0.0F, kangle, 0.0F);
+        hierMesh().chunkSetAngles("radiator4_D0", 0.0F, kangle, 0.0F);
+        hierMesh().chunkSetAngles("radiator5_D0", 0.0F, kangle, 0.0F);
+        hierMesh().chunkSetAngles("radiator6_D0", 0.0F, kangle, 0.0F);
+        super.update(f);
+    }
+
+    public void rareAction(float f, boolean flag)
+    {
+        super.rareAction(f, flag);
+        if(flag && FM.AS.astateEngineStates[0] > 3 && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.4F)
+            FM.EI.engines[0].setExtinguisherFire();
+    }
+
+    public void doMurderPilot(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            hierMesh().chunkVisible("Pilot1_D0", false);
+            hierMesh().chunkVisible("Head1_D0", false);
+            hierMesh().chunkVisible("HMask1_D0", false);
+            hierMesh().chunkVisible("Pilot1_D1", true);
+            hierMesh().chunkVisible("Head1_D1", true);
+            hierMesh().chunkVisible("pilotarm2_d0", false);
+            hierMesh().chunkVisible("pilotarm1_d0", false);
+            break;
+        }
+    }
+
+    public void doRemoveBodyFromPlane(int i)
+    {
+        super.doRemoveBodyFromPlane(i);
+        hierMesh().chunkVisible("pilotarm2_d0", false);
+        hierMesh().chunkVisible("pilotarm1_d0", false);
+    }
+
+    protected void hitBone(java.lang.String s, com.maddox.il2.ai.Shot shot, com.maddox.JGP.Point3d point3d)
+    {
+        if(s.startsWith("xx"))
+        {
+            if(s.startsWith("xxarmor"))
+            {
+                if(s.endsWith("p1") || s.endsWith("p3"))
+                    getEnergyPastArmor(9.96F / (1E-005F + (float)java.lang.Math.abs(com.maddox.il2.objects.air.Aircraft.v1.x)), shot);
+                return;
+            }
+            if(s.startsWith("xxcontrols"))
+            {
+                if(s.endsWith("8"))
+                {
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.2F)
+                    {
+                        FM.AS.setControlsDamage(shot.initiator, 2);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Rudder Controls Out.. (#8)");
+                    }
+                } else
+                if(s.endsWith("9"))
+                {
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.2F)
+                    {
+                        FM.AS.setControlsDamage(shot.initiator, 1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Evelator Controls Out.. (#9)");
+                    }
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.2F)
+                    {
+                        FM.AS.setControlsDamage(shot.initiator, 0);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Arone Controls Out.. (#9)");
+                    }
+                } else
+                if(s.endsWith("5"))
+                {
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.5F)
+                    {
+                        FM.AS.setControlsDamage(shot.initiator, 1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Evelator Controls Out.. (#5)");
+                    }
+                } else
+                if(s.endsWith("6"))
+                {
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.5F)
+                    {
+                        FM.AS.setControlsDamage(shot.initiator, 2);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Rudder Controls Out.. (#6)");
+                    }
+                } else
+                if((s.endsWith("2") || s.endsWith("4")) && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.5F)
+                {
+                    FM.AS.setControlsDamage(shot.initiator, 2);
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Arone Controls Out.. (#2/#4)");
+                }
+                return;
+            }
+            if(s.startsWith("xxeng"))
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Hit..");
+                if(s.endsWith("prop"))
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Prop hit");
+                else
+                if(s.endsWith("case"))
+                {
+                    if(getEnergyPastArmor(2.1F, shot) > 0.0F)
+                    {
+                        if(com.maddox.il2.ai.World.Rnd().nextFloat() < shot.power / 175000F)
+                        {
+                            FM.AS.setEngineStuck(shot.initiator, 0);
+                            com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Crank Ball Bearing..");
+                        }
+                        if(com.maddox.il2.ai.World.Rnd().nextFloat() < shot.power / 50000F)
+                        {
+                            FM.AS.hitEngine(shot.initiator, 0, 2);
+                            com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + FM.EI.engines[0].getReadyness() + "..");
+                        }
+                        FM.EI.engines[0].setReadyness(shot.initiator, FM.EI.engines[0].getReadyness() - com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, shot.power / 48000F));
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Crank Case Hit, Readyness Reduced to " + FM.EI.engines[0].getReadyness() + "..");
+                    }
+                    getEnergyPastArmor(12.7F, shot);
+                } else
+                if(s.endsWith("cyl1") || s.endsWith("cyl2"))
+                {
+                    if(getEnergyPastArmor(com.maddox.il2.ai.World.Rnd().nextFloat(0.2F, 4.4F), shot) > 0.0F && com.maddox.il2.ai.World.Rnd().nextFloat() < FM.EI.engines[0].getCylindersRatio() * 1.12F)
+                    {
+                        FM.EI.engines[0].setCyliderKnockOut(shot.initiator, com.maddox.il2.ai.World.Rnd().nextInt(1, (int)(shot.power / 4800F)));
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, " + FM.EI.engines[0].getCylindersOperable() + "/" + FM.EI.engines[0].getCylinders() + " Left..");
+                        if(com.maddox.il2.ai.World.Rnd().nextFloat() < shot.power / 48000F)
+                        {
+                            FM.AS.hitEngine(shot.initiator, 0, 3);
+                            com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Cylinders Hit, Engine Fires..");
+                        }
+                        if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.005F)
+                        {
+                            FM.AS.setEngineStuck(shot.initiator, 0);
+                            com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Bullet Jams Piston Head..");
+                        }
+                        getEnergyPastArmor(22.5F, shot);
+                    }
+                } else
+                if(s.endsWith("oil1"))
+                {
+                    FM.AS.hitOil(shot.initiator, 0);
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Oil Radiator Hit..");
+                } else
+                if(s.endsWith("supc"))
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Supercharger Hit..");
+                    if(getEnergyPastArmor(0.1F, shot) > 0.0F && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F)
+                    {
+                        FM.AS.setEngineSpecificDamage(shot.initiator, 0, 0);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Supercharger Disabled..");
+                    }
+                }
+            } else
+            if(s.endsWith("gear"))
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: Gear Hit..");
+                if(getEnergyPastArmor(2.1F, shot) > 0.0F && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F)
+                {
+                    FM.AS.setEngineStuck(shot.initiator, 0);
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Engine Module: gear hit, engine stuck..");
+                }
+            } else
+            if(s.startsWith("xxtank"))
+            {
+                if(getEnergyPastArmor(0.1F, shot) > 0.0F && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.99F)
+                {
+                    if(FM.AS.astateTankStates[0] == 0)
+                    {
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Fuel Tank: Pierced..");
+                        FM.AS.hitTank(shot.initiator, 0, 2);
+                    }
+                    if(shot.powerType == 3 && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F)
+                    {
+                        FM.AS.hitTank(shot.initiator, 0, 2);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Fuel Tank: Hit..");
+                    }
+                }
+            } else
+            if(s.startsWith("xxlock"))
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Lock Construction: Hit..");
+                if(s.startsWith("xxlockr") && getEnergyPastArmor(1.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Rudder Lock Shot Off..");
+                    nextDMGLevels(3, 2, "Rudder1_D" + chunkDamageVisible("Rudder1"), shot.initiator);
+                } else
+                if(s.startsWith("xxlockvl") && getEnergyPastArmor(1.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** VatorL Lock Shot Off..");
+                    nextDMGLevels(3, 2, "VatorL_D" + chunkDamageVisible("VatorL"), shot.initiator);
+                } else
+                if(s.startsWith("xxlockvr") && getEnergyPastArmor(1.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 1.2F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** VatorR Lock Shot Off..");
+                    nextDMGLevels(3, 2, "VatorR_D" + chunkDamageVisible("VatorR"), shot.initiator);
+                }
+            } else
+            if(s.startsWith("xxmgun"))
+            {
+                if(s.endsWith("01"))
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Fixed Gun #1: Disabled..");
+                    FM.AS.setJamBullets(0, 0);
+                }
+                if(s.endsWith("02"))
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Fixed Gun #2: Disabled..");
+                    FM.AS.setJamBullets(0, 1);
+                }
+                if(s.endsWith("03"))
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Fixed Gun #3: Disabled..");
+                    FM.AS.setJamBullets(1, 0);
+                    if(pit != null)
+                        pit.jamLeftGun();
+                }
+                if(s.endsWith("04"))
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Fixed Gun #4: Disabled..");
+                    FM.AS.setJamBullets(1, 1);
+                    if(pit != null)
+                        pit.jamRightGun();
+                }
+                getEnergyPastArmor(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 28.33F), shot);
+            } else
+            if(s.startsWith("xxspar"))
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Spar Construction: Hit..");
+                if(s.startsWith("xxspart") && chunkDamageVisible("Tail1") > 2 && getEnergyPastArmor(9.5F / (float)java.lang.Math.sqrt(com.maddox.il2.objects.air.Aircraft.v1.y * com.maddox.il2.objects.air.Aircraft.v1.y + com.maddox.il2.objects.air.Aircraft.v1.z * com.maddox.il2.objects.air.Aircraft.v1.z), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** Tail1 Spars Broken in Half..");
+                    nextDMGLevels(1, 2, "Tail1_D3", shot.initiator);
+                } else
+                if(s.startsWith("xxsparli") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && getEnergyPastArmor(9.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** WingLIn Spars Damaged..");
+                    nextDMGLevels(1, 2, "WingLIn_D" + chunkDamageVisible("WingLIn"), shot.initiator);
+                } else
+                if(s.startsWith("xxsparri") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && getEnergyPastArmor(9.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** WingRIn Spars Damaged..");
+                    nextDMGLevels(1, 2, "WingRIn_D" + chunkDamageVisible("WingRIn"), shot.initiator);
+                } else
+                if(s.startsWith("xxsparlm") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && getEnergyPastArmor(9.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** WingLMid Spars Damaged..");
+                    nextDMGLevels(1, 2, "WingLMid_D" + chunkDamageVisible("WingLMid"), shot.initiator);
+                } else
+                if(s.startsWith("xxsparrm") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && getEnergyPastArmor(9.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** WingRMid Spars Damaged..");
+                    nextDMGLevels(1, 2, "WingRMid_D" + chunkDamageVisible("WingRMid"), shot.initiator);
+                } else
+                if(s.startsWith("xxsparlo") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && getEnergyPastArmor(9.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** WingLOut Spars Damaged..");
+                    nextDMGLevels(1, 2, "WingLOut_D" + chunkDamageVisible("WingLOut"), shot.initiator);
+                } else
+                if(s.startsWith("xxsparro") && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && getEnergyPastArmor(9.5F * com.maddox.il2.ai.World.Rnd().nextFloat(1.0F, 3F), shot) > 0.0F)
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** WingROut Spars Damaged..");
+                    nextDMGLevels(1, 2, "WingROut_D" + chunkDamageVisible("WingROut"), shot.initiator);
+                }
+            }
+            return;
+        }
+        if(s.startsWith("xpilot") || s.startsWith("xhead"))
+        {
+            byte byte0 = 0;
+            int i;
+            if(s.endsWith("a"))
+            {
+                byte0 = 1;
+                i = s.charAt(6) - 49;
+            } else
+            if(s.endsWith("b"))
+            {
+                byte0 = 2;
+                i = s.charAt(6) - 49;
+            } else
+            {
+                i = s.charAt(5) - 49;
+            }
+            com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** hitFlesh..");
+            hitFlesh(i, shot, byte0);
+        } else
+        if(s.startsWith("xcockpit"))
+        {
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.2F)
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 1);
+            else
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.4F)
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 2);
+            else
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.6F)
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 4);
+            else
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.8F)
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 0x10);
+            else
+                FM.AS.setCockpitState(shot.initiator, FM.AS.astateCockpitState | 0x40);
+        } else
+        if(s.startsWith("xcf"))
+        {
+            if(chunkDamageVisible("CF") < 3)
+                hitChunk("CF", shot);
+        } else
+        if(s.startsWith("xeng"))
+        {
+            if(chunkDamageVisible("Engine1") < 2)
+                hitChunk("Engine1", shot);
+        } else
+        if(s.startsWith("xtail"))
+        {
+            if(chunkDamageVisible("Tail1") < 3)
+                hitChunk("Tail1", shot);
+        } else
+        if(s.startsWith("xkeel"))
+        {
+            if(chunkDamageVisible("Keel1") < 2)
+                hitChunk("Keel1", shot);
+        } else
+        if(s.startsWith("xrudder"))
+        {
+            if(chunkDamageVisible("Rudder1") < 1)
+                hitChunk("Rudder1", shot);
+        } else
+        if(s.startsWith("xstab"))
+        {
+            if(s.startsWith("xstabl") && chunkDamageVisible("StabL") < 2)
+                hitChunk("StabL", shot);
+            if(s.startsWith("xstabr") && chunkDamageVisible("StabR") < 2)
+                hitChunk("StabR", shot);
+        } else
+        if(s.startsWith("xvator"))
+        {
+            if(s.startsWith("xvatorl") && chunkDamageVisible("VatorL") < 1)
+                hitChunk("VatorL", shot);
+            if(s.startsWith("xvatorr") && chunkDamageVisible("VatorR") < 1)
+                hitChunk("VatorR", shot);
+        } else
+        if(s.startsWith("xwing"))
+        {
+            com.maddox.il2.objects.air.Aircraft.debugprintln(this, "*** xWing: " + s);
+            if(s.startsWith("xwinglin") && chunkDamageVisible("WingLIn") < 3)
+                hitChunk("WingLIn", shot);
+            if(s.startsWith("xwingrin") && chunkDamageVisible("WingRIn") < 3)
+                hitChunk("WingRIn", shot);
+            if(s.startsWith("xwinglmid") && chunkDamageVisible("WingLMid") < 3)
+                hitChunk("WingLMid", shot);
+            if(s.startsWith("xwingrmid") && chunkDamageVisible("WingRMid") < 3)
+                hitChunk("WingRMid", shot);
+            if(s.startsWith("xwinglout") && chunkDamageVisible("WingLOut") < 3)
+                hitChunk("WingLOut", shot);
+            if(s.startsWith("xwingrout") && chunkDamageVisible("WingROut") < 3)
+                hitChunk("WingROut", shot);
+        } else
+        if(s.startsWith("xarone"))
+        {
+            if(s.startsWith("xaronel") && chunkDamageVisible("AroneL") < 1)
+                hitChunk("AroneL", shot);
+            if(s.startsWith("xaroner") && chunkDamageVisible("AroneR") < 1)
+                hitChunk("AroneR", shot);
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    protected float kangle;
+    public boolean bChangedPit;
+    private com.maddox.il2.objects.air.CockpitAVIA_B534 pit;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.Avia_B5xx.class;
+        com.maddox.rts.Property.set(class1, "originCountry", com.maddox.il2.objects.air.PaintScheme.countrySlovakia);
+    }
 }

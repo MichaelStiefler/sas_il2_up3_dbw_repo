@@ -1,75 +1,85 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   LDR.java
+
 package com.maddox.rts;
 
 import java.io.InputStream;
 
-public final class LDR extends ClassLoader
+// Referenced classes of package com.maddox.rts:
+//            LDRCallBack
+
+public final class LDR extends java.lang.ClassLoader
 {
-  private String rtsLib = null;
 
-  private static ClassLoader rldr = null;
-  private static LDRCallBack ldr = null;
-
-  protected static final ClassLoader resLoader()
-  {
-    return rldr;
-  }
-
-  protected synchronized Class loadClass(String paramString, boolean paramBoolean)
-    throws ClassNotFoundException
-  {
-    Class localClass = findLoadedClass(paramString);
-    if (localClass == null) {
-      if ((ldr != null) && (paramString.startsWith("com.maddox"))) {
-        byte[] arrayOfByte = ldr.load(paramString);
-        if (arrayOfByte != null)
-          localClass = defineClass(null, arrayOfByte, 0, arrayOfByte.length);
-        if (localClass == null)
-          throw new ClassNotFoundException(paramString);
-      } else {
-        localClass = super.loadClass(paramString, false);
-      }
-    }
-    if (paramBoolean)
-      resolveClass(localClass);
-    return localClass;
-  }
-
-  public InputStream getResourceAsStream(String paramString)
-  {
-    InputStream localInputStream = null;
-    if (ldr != null)
-      localInputStream = ldr.open(paramString);
-    if (localInputStream == null)
-      localInputStream = super.getResourceAsStream(paramString);
-    return localInputStream;
-  }
-
-  protected String findLibrary(String paramString)
-  {
-    if ("rts".equals(paramString)) {
-      return this.rtsLib;
-    }
-    return null;
-  }
-
-  private void link(String paramString)
-  {
-    this.rtsLib = paramString;
-  }
-
-  private void set(Object paramObject)
-  {
-    ldr = (LDRCallBack)paramObject;
-    try {
-      Class.forName("com.maddox.il2.game.Main", true, this);
-    }
-    catch (Exception localException)
+    protected static final java.lang.ClassLoader resLoader()
     {
+        return rldr;
     }
-  }
 
-  private LDR()
-  {
-    rldr = this;
-  }
+    protected synchronized java.lang.Class loadClass(java.lang.String s, boolean flag)
+        throws java.lang.ClassNotFoundException
+    {
+        java.lang.Class class1 = findLoadedClass(s);
+        if(class1 == null)
+            if(ldr != null && s.startsWith("com.maddox"))
+            {
+                byte abyte0[] = ldr.load(s);
+                if(abyte0 != null)
+                    class1 = defineClass(null, abyte0, 0, abyte0.length);
+                if(class1 == null)
+                    throw new ClassNotFoundException(s);
+            } else
+            {
+                class1 = super.loadClass(s, false);
+            }
+        if(flag)
+            resolveClass(class1);
+        return class1;
+    }
+
+    public java.io.InputStream getResourceAsStream(java.lang.String s)
+    {
+        java.io.InputStream inputstream = null;
+        if(ldr != null)
+            inputstream = ldr.open(s);
+        if(inputstream == null)
+            inputstream = super.getResourceAsStream(s);
+        return inputstream;
+    }
+
+    protected java.lang.String findLibrary(java.lang.String s)
+    {
+        if("rts".equals(s))
+            return rtsLib;
+        else
+            return null;
+    }
+
+    private void link(java.lang.String s)
+    {
+        rtsLib = s;
+    }
+
+    private void set(java.lang.Object obj)
+    {
+        ldr = (com.maddox.rts.LDRCallBack)obj;
+        try
+        {
+            java.lang.Class.forName("com.maddox.il2.game.Main", true, this);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    private LDR()
+    {
+        rtsLib = null;
+        rldr = this;
+    }
+
+    private java.lang.String rtsLib;
+    private static java.lang.ClassLoader rldr = null;
+    private static com.maddox.rts.LDRCallBack ldr = null;
+
 }

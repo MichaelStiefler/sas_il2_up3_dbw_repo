@@ -1,40 +1,70 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorLandMesh.java
+
 package com.maddox.il2.engine;
 
-public abstract class ActorLandMesh extends ActorMesh
-  implements LandPlate
-{
-  protected float cHQ(double paramDouble1, double paramDouble2)
-  {
-    return mesh().heightMapMeshGetHeight(paramDouble1, paramDouble2);
-  }
-  protected boolean cNormal(double paramDouble1, double paramDouble2, float[] paramArrayOfFloat) {
-    return mesh().heightMapMeshGetNormal(paramDouble1, paramDouble2, paramArrayOfFloat);
-  }
-  protected boolean cPlane(double paramDouble1, double paramDouble2, double[] paramArrayOfDouble) {
-    return mesh().heightMapMeshGetPlane(paramDouble1, paramDouble2, paramArrayOfDouble);
-  }
-  protected float cRayHit(double[] paramArrayOfDouble) {
-    return mesh().heightMapMeshGetRayHit(paramArrayOfDouble);
-  }
-  public boolean isStaticPos() {
-    return true;
-  }
-  protected ActorLandMesh() {
-  }
 
-  protected ActorLandMesh(Loc paramLoc) {
-    super(paramLoc);
-  }
-  protected ActorLandMesh(ActorPos paramActorPos) {
-    super(paramActorPos);
-  }
-  public ActorLandMesh(String paramString) {
-    super(paramString);
-  }
-  public ActorLandMesh(String paramString, Loc paramLoc) {
-    super(paramString, paramLoc);
-  }
-  public ActorLandMesh(String paramString, ActorPos paramActorPos) {
-    super(paramString, paramActorPos);
-  }
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorMesh, LandPlate, Mesh, Loc, 
+//            ActorPos
+
+public abstract class ActorLandMesh extends com.maddox.il2.engine.ActorMesh
+    implements com.maddox.il2.engine.LandPlate
+{
+
+    protected float cHQ(double d, double d1)
+    {
+        return mesh().heightMapMeshGetHeight(d, d1);
+    }
+
+    protected boolean cNormal(double d, double d1, float af[])
+    {
+        return mesh().heightMapMeshGetNormal(d, d1, af);
+    }
+
+    protected boolean cPlane(double d, double d1, double ad[])
+    {
+        return mesh().heightMapMeshGetPlane(d, d1, ad);
+    }
+
+    protected float cRayHit(double ad[])
+    {
+        return mesh().heightMapMeshGetRayHit(ad);
+    }
+
+    public boolean isStaticPos()
+    {
+        return true;
+    }
+
+    protected ActorLandMesh()
+    {
+    }
+
+    protected ActorLandMesh(com.maddox.il2.engine.Loc loc)
+    {
+        super(loc);
+    }
+
+    protected ActorLandMesh(com.maddox.il2.engine.ActorPos actorpos)
+    {
+        super(actorpos);
+    }
+
+    public ActorLandMesh(java.lang.String s)
+    {
+        super(s);
+    }
+
+    public ActorLandMesh(java.lang.String s, com.maddox.il2.engine.Loc loc)
+    {
+        super(s, loc);
+    }
+
+    public ActorLandMesh(java.lang.String s, com.maddox.il2.engine.ActorPos actorpos)
+    {
+        super(s, actorpos);
+    }
 }

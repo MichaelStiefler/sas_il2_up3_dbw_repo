@@ -1,73 +1,111 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SPITFIRE8CLP.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.EnginesInterface;
+import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.Property;
 
-public class SPITFIRE8CLP extends SPITFIRE
+// Referenced classes of package com.maddox.il2.objects.air:
+//            SPITFIRE, PaintSchemeFMPar04, Aircraft, NetAircraft
+
+public class SPITFIRE8CLP extends com.maddox.il2.objects.air.SPITFIRE
 {
-  private float flapps = 0.0F;
 
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(paramFloat, 0.0F, 0.6F, 0.0F, -95.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(paramFloat, 0.2F, 1.0F, 0.0F, -95.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(paramFloat, 0.01F, 0.99F, 0.0F, -75.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(paramFloat, 0.01F, 0.09F, 0.0F, -75.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(paramFloat, 0.01F, 0.09F, 0.0F, -75.0F), 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
-  public void moveSteering(float paramFloat) {
-    hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -paramFloat, 0.0F);
-  }
-  public void moveWheelSink() {
-    resetYPRmodifier();
-    xyz[2] = cvt(this.FM.Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
-    hierMesh().chunkSetLocate("GearL3_D0", xyz, ypr);
-    xyz[2] = cvt(this.FM.Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
-    hierMesh().chunkSetLocate("GearR3_D0", xyz, ypr);
-  }
-
-  public void update(float paramFloat)
-  {
-    super.update(paramFloat);
-
-    float f = this.FM.EI.engines[0].getControlRadiator();
-    if (Math.abs(this.flapps - f) > 0.01F) {
-      this.flapps = f;
-      hierMesh().chunkSetAngles("Oil1_D0", 0.0F, -20.0F * f, 0.0F);
-      hierMesh().chunkSetAngles("Oil2_D0", 0.0F, -20.0F * f, 0.0F);
+    public SPITFIRE8CLP()
+    {
+        flapps = 0.0F;
     }
-  }
 
-  static
-  {
-    Class localClass = SPITFIRE8CLP.class;
-    new NetAircraft.SPAWN(localClass);
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.0F, 0.6F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.2F, 1.0F, 0.0F, -95F), 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.01F, 0.99F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -75F), 0.0F);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Spit");
-    Property.set(localClass, "meshName", "3DO/Plane/SpitfireMkVIIICLP(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar04());
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.SPITFIRE8CLP.moveGear(hierMesh(), f);
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1946.5F);
+    public void moveSteering(float f)
+    {
+        hierMesh().chunkSetAngles("GearC3_D0", 0.0F, -f, 0.0F);
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Spitfire-LF-VIII-M66-18-CW.fmd");
-    Property.set(localClass, "cockpitClass", CockpitSpit8.class);
-    Property.set(localClass, "LOSElevation", 0.5926F);
+    public void moveWheelSink()
+    {
+        resetYPRmodifier();
+        com.maddox.il2.objects.air.Aircraft.xyz[2] = com.maddox.il2.objects.air.Aircraft.cvt(FM.Gears.gWheelSinking[0], 0.0F, 0.247F, 0.0F, -0.247F);
+        hierMesh().chunkSetLocate("GearL3_D0", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+        com.maddox.il2.objects.air.Aircraft.xyz[2] = com.maddox.il2.objects.air.Aircraft.cvt(FM.Gears.gWheelSinking[1], 0.0F, 0.247F, 0.0F, 0.247F);
+        hierMesh().chunkSetLocate("GearR3_D0", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev08" });
+    public void update(float f)
+    {
+        super.update(f);
+        float f1 = FM.EI.engines[0].getControlRadiator();
+        if(java.lang.Math.abs(flapps - f1) > 0.01F)
+        {
+            flapps = f1;
+            hierMesh().chunkSetAngles("Oil1_D0", 0.0F, -20F * f1, 0.0F);
+            hierMesh().chunkSetAngles("Oil2_D0", 0.0F, -20F * f1, 0.0F);
+        }
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", null });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponsRegister(localClass, "30gal", new String[] { "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", "FuelTankGun_TankSpit30" });
+    private float flapps;
 
-    weaponsRegister(localClass, "45gal", new String[] { "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", "FuelTankGun_TankSpit45" });
-
-    weaponsRegister(localClass, "90gal", new String[] { "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", "FuelTankGun_TankSpit90" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.SPITFIRE8CLP.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Spit");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/SpitfireMkVIIICLP(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar04());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1946.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/SpitfireVIIIclipped.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitSpit8.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.5926F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 1, 1, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02", "_ExternalDev08"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "30gal", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", "FuelTankGun_TankSpit30"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "45gal", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", "FuelTankGun_TankSpit45"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "90gal", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIk 120", "MGunHispanoMkIk 120", "FuelTankGun_TankSpit90"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null
+        });
+    }
 }

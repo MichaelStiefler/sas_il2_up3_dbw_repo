@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdLoad.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -9,118 +14,131 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdLoad extends Cmd
+public class CmdLoad extends com.maddox.rts.Cmd
 {
-  public static final String NAME = "NAME";
-  public static final String HELP = "HELP";
-  public static final String PARAM = "PARAM";
-  public static final String DELETE = "DELETE";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (!paramMap.containsKey("_$$")) {
-      ERR_HARD("Arguments is empty");
-      return null;
-    }
-    List localList = (List)paramMap.get("_$$");
-    if (localList.size() > 1) {
-      ERR_HARD("Many arguments or unknown keyword");
-      return null;
-    }
-
-    if (paramMap.containsKey("DELETE")) {
-      if (paramCmdEnv.delAtom("_$$$command", (String)localList.get(0))) return CmdEnv.RETURN_OK;
-      return null;
-    }
-
-    String str1 = (String)localList.get(0);
-    Cmd localCmd = null;
-    try {
-      Class localClass = Class.forName(str1);
-      localCmd = (Cmd)localClass.newInstance();
-    } catch (Exception localException) {
-      if (paramMap.containsKey("NAME"));
-      return null;
-    }
-
-    Object localObject1 = null;
-    String str2 = null;
-    Object localObject2;
-    if (paramMap.containsKey("PARAM")) {
-      if (localCmd.properties().containsKey("PARAMS")) {
-        localList = (List)paramMap.get("PARAM");
-        localObject2 = (Map)localCmd.properties().get("PARAMS");
-        StringBuffer localStringBuffer = null;
-        Iterator localIterator = localList.iterator();
-
-        if (localIterator.hasNext()) {
-          localObject1 = (String)localIterator.next();
-          if (!((Map)localObject2).containsKey(localObject1)) {
-            ERR_HARD("Class " + str1 + " not supported parameter " + (String)localObject1);
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(!map.containsKey("_$$"))
+        {
+            ERR_HARD("Arguments is empty");
             return null;
-          }
         }
-
-        while (localIterator.hasNext()) {
-          str2 = (String)localIterator.next();
-          if (((Map)localObject2).containsKey(str2)) {
-            ((Map)localObject2).put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
-            localObject1 = str2;
-            localStringBuffer = null; continue;
-          }
-          if (localStringBuffer == null) localStringBuffer = new StringBuffer(); else
-            localStringBuffer.append(' ');
-          localStringBuffer.append(QuoteTokenizer.toToken(str2));
+        java.util.List list = (java.util.List)map.get("_$$");
+        if(list.size() > 1)
+        {
+            ERR_HARD("Many arguments or unknown keyword");
+            return null;
         }
+        if(map.containsKey("DELETE"))
+            if(cmdenv.delAtom("_$$$command", (java.lang.String)list.get(0)))
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            else
+                return null;
+        java.lang.String s = (java.lang.String)list.get(0);
+        com.maddox.rts.Cmd cmd = null;
+        try
+        {
+            java.lang.Class class1 = java.lang.Class.forName(s);
+            cmd = (com.maddox.rts.Cmd)class1.newInstance();
+        }
+        catch(java.lang.Exception exception)
+        {
+            if(!map.containsKey("NAME"));
+            return null;
+        }
+        java.lang.String s1 = null;
+        Object obj = null;
+        if(map.containsKey("PARAM"))
+            if(cmd.properties().containsKey("PARAMS"))
+            {
+                java.util.List list1 = (java.util.List)map.get("PARAM");
+                java.util.Map map1 = (java.util.Map)cmd.properties().get("PARAMS");
+                java.lang.StringBuffer stringbuffer1 = null;
+                java.util.Iterator iterator = list1.iterator();
+                if(iterator.hasNext())
+                {
+                    s1 = (java.lang.String)iterator.next();
+                    if(!map1.containsKey(s1))
+                    {
+                        ERR_HARD("Class " + s + " not supported parameter " + s1);
+                        return null;
+                    }
+                }
+                while(iterator.hasNext()) 
+                {
+                    java.lang.String s2 = (java.lang.String)iterator.next();
+                    if(map1.containsKey(s2))
+                    {
+                        map1.put(s1, stringbuffer1 != null ? ((java.lang.Object) (stringbuffer1.toString())) : null);
+                        s1 = s2;
+                        stringbuffer1 = null;
+                    } else
+                    {
+                        if(stringbuffer1 == null)
+                            stringbuffer1 = new StringBuffer();
+                        else
+                            stringbuffer1.append(' ');
+                        stringbuffer1.append(com.maddox.util.QuoteTokenizer.toToken(s2));
+                    }
+                }
+                map1.put(s1, stringbuffer1 != null ? ((java.lang.Object) (stringbuffer1.toString())) : null);
+            } else
+            {
+                ERR_HARD("Class " + s + " not supported parameters");
+                return null;
+            }
+        if(map.containsKey("HELP"))
+        {
+            java.util.List list2 = (java.util.List)map.get("HELP");
+            if(list2.size() > 0)
+            {
+                java.lang.StringBuffer stringbuffer = new StringBuffer();
+                for(int i = 0; i < list2.size(); i++)
+                {
+                    stringbuffer.append((java.lang.String)list2.get(i));
+                    stringbuffer.append(' ');
+                }
 
-        ((Map)localObject2).put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
-      }
-      else {
-        ERR_HARD("Class " + str1 + " not supported parameters");
-        return null;
-      }
+                cmd.properties().put("HELP", stringbuffer.toString());
+            }
+        }
+        if(map.containsKey("NAME"))
+        {
+            java.util.List list3 = (java.util.List)map.get("NAME");
+            if(list3.size() != 1)
+            {
+                ERR_HARD("Bad format keyword NAME");
+                return null;
+            }
+            s1 = (java.lang.String)list3.get(0);
+            cmd.properties().put("NAME", s1);
+        } else
+        {
+            s1 = (java.lang.String)cmd.properties().get("NAME");
+            if(s1 == null)
+            {
+                ERR_HARD("Properties NAME not found");
+                return null;
+            }
+        }
+        cmdenv.setAtom("_$$$command", s1, cmd);
+        return cmd;
     }
 
-    if (paramMap.containsKey("HELP")) {
-      localList = (List)paramMap.get("HELP");
-      if (localList.size() > 0) {
-        localObject2 = new StringBuffer();
-        for (int i = 0; i < localList.size(); i++) {
-          ((StringBuffer)localObject2).append((String)localList.get(i));
-          ((StringBuffer)localObject2).append(' ');
-        }
-        localCmd.properties().put("HELP", ((StringBuffer)localObject2).toString());
-      }
+    public CmdLoad()
+    {
+        param.remove("_$$");
+        param.put("NAME", null);
+        param.put("HELP", null);
+        param.put("PARAM", null);
+        param.put("DELETE", null);
+        _properties.put("NAME", "load");
+        _levelAccess = 0;
     }
 
-    if (paramMap.containsKey("NAME")) {
-      localList = (List)paramMap.get("NAME");
-      if (localList.size() != 1) {
-        ERR_HARD("Bad format keyword NAME");
-        return null;
-      }
-      localObject1 = (String)localList.get(0);
-      localCmd.properties().put("NAME", localObject1);
-    } else {
-      localObject1 = (String)localCmd.properties().get("NAME");
-      if (localObject1 == null) {
-        ERR_HARD("Properties NAME not found");
-        return null;
-      }
-    }
-
-    paramCmdEnv.setAtom("_$$$command", (String)localObject1, localCmd);
-
-    return localCmd;
-  }
-
-  public CmdLoad() {
-    this.param.remove("_$$");
-    this.param.put("NAME", null);
-    this.param.put("HELP", null);
-    this.param.put("PARAM", null);
-    this.param.put("DELETE", null);
-    this._properties.put("NAME", "load");
-    this._levelAccess = 0;
-  }
+    public static final java.lang.String NAME = "NAME";
+    public static final java.lang.String HELP = "HELP";
+    public static final java.lang.String PARAM = "PARAM";
+    public static final java.lang.String DELETE = "DELETE";
 }

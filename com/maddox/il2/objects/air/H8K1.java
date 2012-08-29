@@ -1,170 +1,316 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   H8K1.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class H8K1 extends H8K
-  implements TypeBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            H8K, PaintSchemeBMPar04, PaintSchemeFCSPar05, TypeBomber, 
+//            NetAircraft, Aircraft
+
+public class H8K1 extends com.maddox.il2.objects.air.H8K
+    implements com.maddox.il2.objects.air.TypeBomber
 {
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
 
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
-    switch (paramInt) {
-    case 0:
-      if (f1 < -35.0F) { f1 = -35.0F; bool = false; }
-      if (f1 > 35.0F) { f1 = 35.0F; bool = false; }
-      if (f2 < -25.0F) { f2 = -25.0F; bool = false; }
-      if (f2 <= 25.0F) break; f2 = 25.0F; bool = false; break;
-    case 1:
-      if (f1 < -22.0F) { f1 = -22.0F; bool = false; }
-      if (f1 > 22.0F) { f1 = 22.0F; bool = false; }
-      if (f2 < -57.0F) { f2 = -57.0F; bool = false; }
-      if (f2 <= 33.0F) break; f2 = 33.0F; bool = false; break;
-    case 2:
-      if (f1 < -22.0F) { f1 = -22.0F; bool = false; }
-      if (f1 > 22.0F) { f1 = 22.0F; bool = false; }
-      if (f2 < -57.0F) { f2 = -57.0F; bool = false; }
-      if (f2 <= 33.0F) break; f2 = 33.0F; bool = false; break;
-    case 3:
-      if (f2 < 0.0F) { f2 = 0.0F; bool = false; }
-      if (f2 <= 50.0F) break; f2 = 50.0F; bool = false; break;
-    case 4:
-      if (f1 < -25.0F) { f1 = -25.0F; bool = false; }
-      if (f1 > 25.0F) { f1 = 25.0F; bool = false; }
-      if (f2 < -25.0F) { f2 = -25.0F; bool = false; }
-      if (f2 <= 25.0F) break; f2 = 25.0F; bool = false;
+    public H8K1()
+    {
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
-    return bool;
-  }
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        switch(i)
+        {
+        default:
+            break;
 
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
-    switch (paramInt) {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      this.FM.turret[0].setHealth(paramFloat);
-      break;
-    case 3:
-      this.FM.turret[1].setHealth(paramFloat);
-      this.FM.turret[2].setHealth(paramFloat);
-      break;
-    case 4:
-      this.FM.turret[3].setHealth(paramFloat);
-      break;
-    case 5:
-      this.FM.turret[4].setHealth(paramFloat);
-      break;
-    case 6:
-      break;
-    case 7:
-      break;
-    case 8:
-      break;
-    case 9:
+        case 0: // '\0'
+            if(f < -35F)
+            {
+                f = -35F;
+                flag = false;
+            }
+            if(f > 35F)
+            {
+                f = 35F;
+                flag = false;
+            }
+            if(f1 < -25F)
+            {
+                f1 = -25F;
+                flag = false;
+            }
+            if(f1 > 25F)
+            {
+                f1 = 25F;
+                flag = false;
+            }
+            break;
+
+        case 1: // '\001'
+            if(f < -22F)
+            {
+                f = -22F;
+                flag = false;
+            }
+            if(f > 22F)
+            {
+                f = 22F;
+                flag = false;
+            }
+            if(f1 < -57F)
+            {
+                f1 = -57F;
+                flag = false;
+            }
+            if(f1 > 33F)
+            {
+                f1 = 33F;
+                flag = false;
+            }
+            break;
+
+        case 2: // '\002'
+            if(f < -22F)
+            {
+                f = -22F;
+                flag = false;
+            }
+            if(f > 22F)
+            {
+                f = 22F;
+                flag = false;
+            }
+            if(f1 < -57F)
+            {
+                f1 = -57F;
+                flag = false;
+            }
+            if(f1 > 33F)
+            {
+                f1 = 33F;
+                flag = false;
+            }
+            break;
+
+        case 3: // '\003'
+            if(f1 < 0.0F)
+            {
+                f1 = 0.0F;
+                flag = false;
+            }
+            if(f1 > 50F)
+            {
+                f1 = 50F;
+                flag = false;
+            }
+            break;
+
+        case 4: // '\004'
+            if(f < -25F)
+            {
+                f = -25F;
+                flag = false;
+            }
+            if(f > 25F)
+            {
+                f = 25F;
+                flag = false;
+            }
+            if(f1 < -25F)
+            {
+                f1 = -25F;
+                flag = false;
+            }
+            if(f1 > 25F)
+            {
+                f1 = 25F;
+                flag = false;
+            }
+            break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
     }
-  }
 
-  public void doMurderPilot(int paramInt) {
-    if (paramInt > 5) {
-      return;
+    public void doKillPilot(int i)
+    {
+        switch(i)
+        {
+        case 2: // '\002'
+            FM.turret[0].bIsOperable = false;
+            break;
+
+        case 3: // '\003'
+            FM.turret[1].bIsOperable = false;
+            FM.turret[2].bIsOperable = false;
+            break;
+
+        case 4: // '\004'
+            FM.turret[3].bIsOperable = false;
+            break;
+
+        case 5: // '\005'
+            FM.turret[4].bIsOperable = false;
+            break;
+        }
     }
-    hierMesh().chunkVisible("Pilot" + (paramInt + 1) + "_D0", false);
-    hierMesh().chunkVisible("HMask" + (paramInt + 1) + "_D0", false);
-    hierMesh().chunkVisible("Pilot" + (paramInt + 1) + "_D1", true);
-    hierMesh().chunkVisible("Head" + (paramInt + 1) + "_D0", false);
-  }
 
-  public boolean typeBomberToggleAutomation()
-  {
-    return false;
-  }
+    public void doMurderPilot(int i)
+    {
+        if(i > 5)
+        {
+            return;
+        } else
+        {
+            hierMesh().chunkVisible("Pilot" + (i + 1) + "_D0", false);
+            hierMesh().chunkVisible("HMask" + (i + 1) + "_D0", false);
+            hierMesh().chunkVisible("Pilot" + (i + 1) + "_D1", true);
+            hierMesh().chunkVisible("Head" + (i + 1) + "_D0", false);
+            return;
+        }
+    }
 
-  public void typeBomberAdjDistanceReset()
-  {
-  }
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeBomberAdjDistancePlus()
-  {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-  public void typeBomberAdjDistanceMinus()
-  {
-  }
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-  public void typeBomberAdjSideslipReset()
-  {
-  }
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-  public void typeBomberAdjSideslipPlus() {
-  }
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-  public void typeBomberAdjSideslipMinus() {
-  }
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-  public void typeBomberAdjAltitudeReset() {
-  }
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-  public void typeBomberAdjAltitudePlus() {
-  }
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
 
-  public void typeBomberAdjAltitudeMinus() {
-  }
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
 
-  public void typeBomberAdjSpeedReset() {
-  }
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
 
-  public void typeBomberAdjSpeedPlus() {
-  }
+    public void typeBomberAdjSpeedReset()
+    {
+    }
 
-  public void typeBomberAdjSpeedMinus() {
-  }
+    public void typeBomberAdjSpeedPlus()
+    {
+    }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public void typeBomberAdjSpeedMinus()
+    {
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public void typeBomberUpdate(float f)
+    {
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-  static {
-    Class localClass = H8K1.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "H8K");
-    Property.set(localClass, "meshName", "3DO/Plane/H8K1(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar04());
-    Property.set(localClass, "meshName_ja", "3DO/Plane/H8K1(ja)/hier.him");
-    Property.set(localClass, "PaintScheme_ja", new PaintSchemeFCSPar05());
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "yearService", 1941.0F);
-    Property.set(localClass, "yearExpired", 2048.0F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/H8K1.fmd");
-
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_ExternalBomb24", "_ExternalBomb25", "_ExternalBomb26" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "16x60", new String[] { "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", null, null, null, null, null, null, null, null, null, null, "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ" });
-
-    weaponsRegister(localClass, "8x250", new String[] { "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", null, null, "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2x4512", new String[] { "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", "BombGun4512", "BombGun4512", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.H8K1.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "H8K");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/H8K1(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar04());
+        com.maddox.rts.Property.set(class1, "meshName_ja", "3DO/Plane/H8K1(ja)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ja", new PaintSchemeFCSPar05());
+        com.maddox.rts.Property.set(class1, "yearService", 1941F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 2048F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/H8K1.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            10, 11, 12, 13, 14, 3, 3, 3, 3, 3, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", 
+            "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", 
+            "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_ExternalBomb24", "_ExternalBomb25", 
+            "_ExternalBomb26"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "16x60", new java.lang.String[] {
+            "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", null, null, null, null, null, 
+            null, null, null, null, null, "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", 
+            "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", "BombGun60kgJ", 
+            "BombGun60kgJ"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "8x250", new java.lang.String[] {
+            "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", null, null, "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", 
+            "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", "BombGun250kgJ", null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x4512", new java.lang.String[] {
+            "MGunMG81t 450", "MGunMG81t 450", "MGunMG81t 450", "MGunMG15120MGt 450", "MGunMG15120MGt 600", "BombGun4512", "BombGun4512", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null
+        });
+    }
 }

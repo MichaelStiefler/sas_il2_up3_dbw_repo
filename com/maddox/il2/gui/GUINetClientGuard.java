@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetClientGuard.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GWindow;
@@ -25,221 +30,263 @@ import com.maddox.rts.NetChannel;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.Time;
 
+// Referenced classes of package com.maddox.il2.gui:
+//            GUI, GUIPad
+
 public class GUINetClientGuard
-  implements NetChannelListener, NetMissionListener
+    implements com.maddox.il2.net.NetChannelListener, com.maddox.il2.net.NetMissionListener
 {
-  public GWindowMessageBox closeConnectionMessageBox;
-  public GWindowMessageBox curMessageBox;
-  public int lastNetMissionState = -1;
-  public float lastNetMissionPercent;
-  public String lastNetMissionInfo;
-  public String lastNetMissionName;
-  private DestroyExec destroyExec;
-
-  public void netChannelCanceled(String paramString)
-  {
-  }
-
-  public void netChannelCreated(NetChannel paramNetChannel)
-  {
-  }
-
-  public void netChannelRequest(String paramString)
-  {
-  }
-
-  public void netChannelDestroying(NetChannel paramNetChannel, String paramString)
-  {
-    if (this.curMessageBox != null) {
-      this.curMessageBox.hideWindow();
-      this.curMessageBox = null;
-    }
-    if (this.closeConnectionMessageBox != null) return;
-    if ((Main.cur().netServerParams != null) && 
-      (Main.cur().netServerParams.masterChannel() != paramNetChannel)) {
-      return;
-    }
-    GUI.activate();
-    GUI.pad.leave(true);
-    RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
-
-    GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-    this.closeConnectionMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("netcg.Close"), paramString, 3, 0.0F)
+    public static class DestroyExec
     {
-      public void result(int paramInt)
-      {
-        GUINetClientGuard.this.closeConnectionMessageBox = null;
-        GUINetClientGuard.this.destroy(false);
-      }
-    };
-    if (BackgroundTask.isExecuted())
-      BackgroundTask.cancel(paramString);
-  }
 
-  public void netMissionState(int paramInt, float paramFloat, String paramString)
-  {
-    int i = this.lastNetMissionState;
-    this.lastNetMissionState = paramInt;
-    this.lastNetMissionPercent = paramFloat;
-    paramString = I18N.gui(paramString);
-    this.lastNetMissionInfo = paramString;
-
-    switch (paramInt) { case -1:
-    default:
-      break;
-    case 9:
-      return;
-    case 0:
-      this.lastNetMissionName = paramString;
-      this.lastNetMissionInfo = (I18N.gui("netcg.StartTransfer") + " " + paramString);
-      if (Main.state().id() != 51) break;
-      Main.stateStack().change(36); break;
-    case 1:
-      this.lastNetMissionInfo = I18N.gui("netcg.Transfer"); break;
-    case 2:
-      this.lastNetMissionInfo = I18N.gui("netcg.TransferObjects"); break;
-    case 3:
-      this.lastNetMissionInfo = ("" + paramFloat + "% " + paramString);
-      break;
-    case 4:
-      this.lastNetMissionInfo = (I18N.gui("netcg.ERROR") + ": " + paramString);
-      if (this.closeConnectionMessageBox != null) break;
-      GUI.activate();
-      GUI.pad.leave(true);
-      RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
-      if (this.curMessageBox != null) {
-        this.curMessageBox.hideWindow();
-        this.curMessageBox = null;
-      }
-      this.closeConnectionMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("netcg.Close"), I18N.gui("netcg.Mission_load_error") + " " + paramString, 3, 0.0F)
-      {
-        public void result(int paramInt)
+        public void destroy(com.maddox.il2.gui.GUINetClientGuard guinetclientguard)
         {
-          GUINetClientGuard.this.closeConnectionMessageBox = null;
-          GUINetClientGuard.this.destroy(false);
-        }
-      };
-      break;
-    case 5:
-      this.lastNetMissionInfo = I18N.gui("netcg.Mission_loaded");
-      break;
-    case 6:
-      this.lastNetMissionInfo = I18N.gui("netcg.Mission_started");
-      if (this.curMessageBox != null) {
-        this.curMessageBox.hideWindow();
-        this.curMessageBox = null;
-      }
-      this.destroyExec = null;
-      if (Main.cur().netServerParams.isDogfight()) {
-        Time.setPause(false);
-        ((NetUser)NetEnv.host()).setBornPlace(-1);
-        Main.cur().currentMissionFile = Mission.cur().sectFile();
-        if (Main.state().id() != 36) break;
-        Main.stateStack().change(40); } else {
-        if (!Main.cur().netServerParams.isCoop()) break;
-        ((NetUser)NetEnv.host()).requestPlace(-1);
-        Main.cur().currentMissionFile = Mission.cur().sectFile();
-        if (Main.state().id() != 36) break;
-        Main.stateStack().change(46); } break;
-    case 7:
-      this.lastNetMissionInfo = I18N.gui("netcg.Mission_stoped");
-      if ((!Main.cur().netServerParams.isCoop()) || (Main.state().id() != 50))
-        break;
-      Front.checkAllCaptured();
-      Mission.cur().doEnd();
-      ((NetUser)NetEnv.host()).sendStatInc();
-      GUI.activate();
-      GUI.pad.leave(true);
-      RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
-      Main.stateStack().change(51);
-      return;
-    case 8:
-      return;
-    }
-
-    if ((paramInt != 4) && (paramInt != 5) && (paramInt != 6) && (Main.state().id() != 36))
-    {
-      ((NetUser)NetEnv.host()).sendStatInc();
-
-      while ((Main.state().id() != 43) && (Main.state().id() != 40) && (Main.state().id() != 50) && (Main.state().id() != 48) && (Main.state().id() != 44) && (Main.state().id() != 46))
-      {
-        Main.stateStack().pop();
-      }
-      GUI.activate();
-      GUI.pad.leave(true);
-      RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
-      Main.stateStack().change(36);
-    }
-  }
-
-  public void netMissionCoopEnter() {
-    if (!(Main.cur() instanceof Main3D)) {
-      return;
-    }
-    GUI.unActivate();
-    HotKeyCmd.exec("aircraftView", "CockpitView");
-
-    Main.stateStack().change(50);
-  }
-
-  public void destroy(boolean paramBoolean) {
-    Main.cur().netChannelListener = null;
-    Main.cur().netMissionListener = null;
-    if (this.curMessageBox != null) {
-      this.curMessageBox.hideWindow();
-      this.curMessageBox = null;
-    }
-    if (paramBoolean) {
-      CmdEnv.top().exec("socket udp DESTROY LOCALPORT " + Config.cur.netLocalPort);
-    }
-    CmdEnv.top().exec("socket LISTENER 0");
-    Main.closeAllNetChannels();
-    while (Main.state().id() != 2)
-      Main.stateStack().pop();
-    GUI.pad.leave(true);
-    GUI.activate();
-    this.destroyExec = null;
-  }
-
-  public void dlgDestroy(DestroyExec paramDestroyExec)
-  {
-    if (this.closeConnectionMessageBox != null) return;
-    if (this.curMessageBox != null) {
-      this.curMessageBox.hideWindow();
-      this.curMessageBox = null;
-    }
-    this.destroyExec = paramDestroyExec;
-    this.curMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("main.ConfirmQuit"), I18N.gui("main.ReallyQuit"), 1, 0.0F)
-    {
-      public void result(int paramInt)
-      {
-        GUINetClientGuard.this.curMessageBox = null;
-        if (paramInt == 3) {
-          if (GUINetClientGuard.this.destroyExec != null)
-            GUINetClientGuard.this.destroyExec.destroy(GUINetClientGuard.this.THIS());
-          if ((GUINetClientGuard.this.destroyExec != null) && (GUINetClientGuard.this.closeConnectionMessageBox == null)) {
-            GUINetClientGuard.this.curMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, I18N.gui("main.ConfirmQuit"), I18N.gui("main.ReallyQuit"), 4, 0.0F);
-          }
-
         }
 
-        GUINetClientGuard.access$002(GUINetClientGuard.this, null);
-      } } ;
-  }
+        public DestroyExec()
+        {
+        }
+    }
 
-  private GUINetClientGuard THIS() {
-    return this;
-  }
-  public GUINetClientGuard() {
-    Main.cur().netChannelListener = this;
-    Main.cur().netMissionListener = this;
-    this.destroyExec = null;
-  }
 
-  public static class DestroyExec
-  {
-    public void destroy(GUINetClientGuard paramGUINetClientGuard)
+    public void netChannelCanceled(java.lang.String s)
     {
     }
-  }
+
+    public void netChannelCreated(com.maddox.rts.NetChannel netchannel)
+    {
+    }
+
+    public void netChannelRequest(java.lang.String s)
+    {
+    }
+
+    public void netChannelDestroying(com.maddox.rts.NetChannel netchannel, java.lang.String s)
+    {
+        if(curMessageBox != null)
+        {
+            curMessageBox.hideWindow();
+            curMessageBox = null;
+        }
+        if(closeConnectionMessageBox != null)
+            return;
+        if(com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.masterChannel() != netchannel)
+            return;
+        com.maddox.il2.gui.GUI.activate();
+        com.maddox.il2.gui.GUI.pad.leave(true);
+        com.maddox.il2.engine.RendersMain.setRenderFocus((com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"));
+        com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+        closeConnectionMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, com.maddox.il2.game.I18N.gui("netcg.Close"), s, 3, 0.0F) {
+
+            public void result(int i)
+            {
+                closeConnectionMessageBox = null;
+                destroy(false);
+            }
+
+        }
+;
+        if(com.maddox.rts.BackgroundTask.isExecuted())
+            com.maddox.rts.BackgroundTask.cancel(s);
+    }
+
+    public void netMissionState(int i, float f, java.lang.String s)
+    {
+        int j = lastNetMissionState;
+        lastNetMissionState = i;
+        lastNetMissionPercent = f;
+        s = com.maddox.il2.game.I18N.gui(s);
+        lastNetMissionInfo = s;
+        switch(i)
+        {
+        case 9: // '\t'
+            return;
+
+        case 0: // '\0'
+            lastNetMissionName = s;
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.StartTransfer") + " " + s;
+            if(com.maddox.il2.game.Main.state().id() == 51)
+                com.maddox.il2.game.Main.stateStack().change(36);
+            break;
+
+        case 1: // '\001'
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.Transfer");
+            break;
+
+        case 2: // '\002'
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.TransferObjects");
+            break;
+
+        case 3: // '\003'
+            lastNetMissionInfo = "" + f + "% " + s;
+            break;
+
+        case 4: // '\004'
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.ERROR") + ": " + s;
+            if(closeConnectionMessageBox == null)
+            {
+                com.maddox.il2.gui.GUI.activate();
+                com.maddox.il2.gui.GUI.pad.leave(true);
+                com.maddox.il2.engine.RendersMain.setRenderFocus((com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"));
+                if(curMessageBox != null)
+                {
+                    curMessageBox.hideWindow();
+                    curMessageBox = null;
+                }
+                closeConnectionMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, com.maddox.il2.game.I18N.gui("netcg.Close"), com.maddox.il2.game.I18N.gui("netcg.Mission_load_error") + " " + s, 3, 0.0F) {
+
+                    public void result(int k)
+                    {
+                        closeConnectionMessageBox = null;
+                        destroy(false);
+                    }
+
+                }
+;
+            }
+            break;
+
+        case 5: // '\005'
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.Mission_loaded");
+            break;
+
+        case 6: // '\006'
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.Mission_started");
+            if(curMessageBox != null)
+            {
+                curMessageBox.hideWindow();
+                curMessageBox = null;
+            }
+            destroyExec = null;
+            if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+            {
+                com.maddox.rts.Time.setPause(false);
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setBornPlace(-1);
+                com.maddox.il2.game.Main.cur().currentMissionFile = com.maddox.il2.game.Mission.cur().sectFile();
+                if(com.maddox.il2.game.Main.state().id() == 36)
+                    com.maddox.il2.game.Main.stateStack().change(40);
+            } else
+            if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            {
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).requestPlace(-1);
+                com.maddox.il2.game.Main.cur().currentMissionFile = com.maddox.il2.game.Mission.cur().sectFile();
+                if(com.maddox.il2.game.Main.state().id() == 36)
+                    com.maddox.il2.game.Main.stateStack().change(46);
+            }
+            break;
+
+        case 7: // '\007'
+            lastNetMissionInfo = com.maddox.il2.game.I18N.gui("netcg.Mission_stoped");
+            if(com.maddox.il2.game.Main.cur().netServerParams.isCoop() && com.maddox.il2.game.Main.state().id() == 50)
+            {
+                com.maddox.il2.ai.Front.checkAllCaptured();
+                com.maddox.il2.game.Mission.cur().doEnd();
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).sendStatInc();
+                com.maddox.il2.gui.GUI.activate();
+                com.maddox.il2.gui.GUI.pad.leave(true);
+                com.maddox.il2.engine.RendersMain.setRenderFocus((com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"));
+                com.maddox.il2.game.Main.stateStack().change(51);
+                return;
+            }
+            break;
+
+        case 8: // '\b'
+            return;
+        }
+        if(i != 4 && i != 5 && i != 6 && com.maddox.il2.game.Main.state().id() != 36)
+        {
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).sendStatInc();
+            for(; com.maddox.il2.game.Main.state().id() != 43 && com.maddox.il2.game.Main.state().id() != 40 && com.maddox.il2.game.Main.state().id() != 50 && com.maddox.il2.game.Main.state().id() != 48 && com.maddox.il2.game.Main.state().id() != 44 && com.maddox.il2.game.Main.state().id() != 46; com.maddox.il2.game.Main.stateStack().pop());
+            com.maddox.il2.gui.GUI.activate();
+            com.maddox.il2.gui.GUI.pad.leave(true);
+            com.maddox.il2.engine.RendersMain.setRenderFocus((com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"));
+            com.maddox.il2.game.Main.stateStack().change(36);
+        }
+    }
+
+    public void netMissionCoopEnter()
+    {
+        if(!(com.maddox.il2.game.Main.cur() instanceof com.maddox.il2.game.Main3D))
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.gui.GUI.unActivate();
+            com.maddox.rts.HotKeyCmd.exec("aircraftView", "CockpitView");
+            com.maddox.il2.game.Main.stateStack().change(50);
+            return;
+        }
+    }
+
+    public void destroy(boolean flag)
+    {
+        com.maddox.il2.game.Main.cur().netChannelListener = null;
+        com.maddox.il2.game.Main.cur().netMissionListener = null;
+        if(curMessageBox != null)
+        {
+            curMessageBox.hideWindow();
+            curMessageBox = null;
+        }
+        if(flag)
+            com.maddox.rts.CmdEnv.top().exec("socket udp DESTROY LOCALPORT " + com.maddox.il2.engine.Config.cur.netLocalPort);
+        com.maddox.rts.CmdEnv.top().exec("socket LISTENER 0");
+        com.maddox.il2.game.Main.closeAllNetChannels();
+        for(; com.maddox.il2.game.Main.state().id() != 2; com.maddox.il2.game.Main.stateStack().pop());
+        com.maddox.il2.gui.GUI.pad.leave(true);
+        com.maddox.il2.gui.GUI.activate();
+        destroyExec = null;
+    }
+
+    public void dlgDestroy(com.maddox.il2.gui.DestroyExec destroyexec)
+    {
+        if(closeConnectionMessageBox != null)
+            return;
+        if(curMessageBox != null)
+        {
+            curMessageBox.hideWindow();
+            curMessageBox = null;
+        }
+        destroyExec = destroyexec;
+        curMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, com.maddox.il2.game.I18N.gui("main.ConfirmQuit"), com.maddox.il2.game.I18N.gui("main.ReallyQuit"), 1, 0.0F) {
+
+            public void result(int i)
+            {
+                curMessageBox = null;
+                if(i == 3)
+                {
+                    if(destroyExec != null)
+                        destroyExec.destroy(THIS());
+                    if(destroyExec != null && closeConnectionMessageBox == null)
+                        curMessageBox = new GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, com.maddox.il2.game.I18N.gui("main.ConfirmQuit"), com.maddox.il2.game.I18N.gui("main.ReallyQuit"), 4, 0.0F);
+                }
+                destroyExec = null;
+            }
+
+        }
+;
+    }
+
+    private com.maddox.il2.gui.GUINetClientGuard THIS()
+    {
+        return this;
+    }
+
+    public GUINetClientGuard()
+    {
+        lastNetMissionState = -1;
+        com.maddox.il2.game.Main.cur().netChannelListener = this;
+        com.maddox.il2.game.Main.cur().netMissionListener = this;
+        destroyExec = null;
+    }
+
+    public com.maddox.gwindow.GWindowMessageBox closeConnectionMessageBox;
+    public com.maddox.gwindow.GWindowMessageBox curMessageBox;
+    public int lastNetMissionState;
+    public float lastNetMissionPercent;
+    public java.lang.String lastNetMissionInfo;
+    public java.lang.String lastNetMissionName;
+    private com.maddox.il2.gui.DestroyExec destroyExec;
+
+
+
 }

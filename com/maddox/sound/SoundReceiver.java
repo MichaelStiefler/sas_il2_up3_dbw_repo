@@ -1,48 +1,65 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SoundReceiver.java
+
 package com.maddox.sound;
 
 import java.io.PrintStream;
 
-public class SoundReceiver extends BaseObject
+// Referenced classes of package com.maddox.sound:
+//            BaseObject, RadioChannel, AudioDevice
+
+public class SoundReceiver extends com.maddox.sound.BaseObject
 {
-  protected int handle = 0;
 
-  protected static native int jniInit(int paramInt);
+    protected static native int jniInit(int i);
 
-  protected static native void jniDone(int paramInt);
+    protected static native void jniDone(int i);
 
-  protected static native void jniPut(int paramInt1, byte[] paramArrayOfByte, int paramInt2);
+    protected static native void jniPut(int i, byte abyte0[], int j);
 
-  protected static native void jniReset(int paramInt);
+    protected static native void jniReset(int i);
 
-  public SoundReceiver(int paramInt) { if (enabled) this.handle = jniInit(paramInt);
-  }
-
-  public void destroy()
-  {
-    if (this.handle != 0) {
-      jniDone(this.handle);
-      this.handle = 0;
-      if (RadioChannel.tstMode > 0) System.out.println("Radio : receiver destroyed.");
+    public SoundReceiver(int i)
+    {
+        handle = 0;
+        if(com.maddox.sound.BaseObject.enabled)
+            handle = com.maddox.sound.SoundReceiver.jniInit(i);
     }
-  }
 
-  protected void finalize()
-  {
-    destroy();
-  }
+    public void destroy()
+    {
+        if(handle != 0)
+        {
+            com.maddox.sound.SoundReceiver.jniDone(handle);
+            handle = 0;
+            if(com.maddox.sound.RadioChannel.tstMode > 0)
+                java.lang.System.out.println("Radio : receiver destroyed.");
+        }
+    }
 
-  public void put(byte[] paramArrayOfByte, int paramInt)
-  {
-    if (this.handle != 0) jniPut(this.handle, paramArrayOfByte, paramInt);
-  }
+    protected void finalize()
+    {
+        destroy();
+    }
 
-  public void reset()
-  {
-    if (this.handle != 0) jniReset(this.handle); 
-  }
+    public void put(byte abyte0[], int i)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundReceiver.jniPut(handle, abyte0, i);
+    }
 
-  static
-  {
-    AudioDevice.loadNative();
-  }
+    public void reset()
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundReceiver.jniReset(handle);
+    }
+
+    protected int handle;
+
+    static 
+    {
+        com.maddox.sound.AudioDevice.loadNative();
+    }
 }

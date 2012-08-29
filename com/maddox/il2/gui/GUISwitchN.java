@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUISwitchN.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GRegion;
@@ -7,141 +12,159 @@ import com.maddox.gwindow.GWindowDialogControl;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.rts.CfgInt;
 
-public class GUISwitchN extends GWindowDialogControl
+public class GUISwitchN extends com.maddox.gwindow.GWindowDialogControl
 {
-  public float texDx;
-  public float texDy;
-  public int states;
-  public int state;
-  public int[] pos;
-  public boolean[] enable;
-  public float angle0;
-  public float angleStep;
-  public CfgInt cfg;
-  public boolean bUpdate;
-  public boolean bChanged;
 
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-  {
-    if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        if(i != 0 || !flag || !bEnable)
+            return;
+        f -= win.dx / 2.0F;
+        f1 -= win.dy / 2.0F;
+        float f2 = (float)((java.lang.Math.atan2(f1, f) * 180D) / 3.1415926535897931D);
+        if(f2 < 0.0F)
+            f2 += 360F;
+        float f3 = angleStep / 2.0F;
+        for(int j = 0; j < pos.length; j++)
+            if(enable == null || enable[j])
+            {
+                int k = pos[j];
+                float f4 = angle0 + (float)k * angleStep;
+                float f5 = f4 - f3;
+                float f6 = f4 + f3;
+                if(f6 > 360F)
+                {
+                    f5 -= 360F;
+                    f6 -= 360F;
+                }
+                if(f2 >= f5 && f2 <= f6)
+                {
+                    setState(j, true);
+                    lAF().soundPlay("clickSwitch");
+                    return;
+                }
+            }
 
-    paramFloat1 -= this.win.dx / 2.0F;
-    paramFloat2 -= this.win.dy / 2.0F;
-    float f1 = (float)(Math.atan2(paramFloat2, paramFloat1) * 180.0D / 3.141592653589793D);
-    if (f1 < 0.0F) f1 += 360.0F;
-    float f2 = this.angleStep / 2.0F;
-    for (int i = 0; i < this.pos.length; i++)
-      if ((this.enable == null) || (this.enable[i] != 0)) {
-        int j = this.pos[i];
-        float f3 = this.angle0 + j * this.angleStep;
-        float f4 = f3 - f2;
-        float f5 = f3 + f2;
-        if (f5 > 360.0F) {
-          f4 -= 360.0F;
-          f5 -= 360.0F;
-        }
-        if ((f1 >= f4) && (f1 <= f5)) {
-          setState(i, true);
-          lAF().soundPlay("clickSwitch");
-          return;
-        }
-      }
-  }
-
-  public void setState(int paramInt, boolean paramBoolean)
-  {
-    if (this.state == paramInt) return;
-    this.state = paramInt;
-    if (paramBoolean)
-      notify(2, this.state); 
-  }
-
-  public int getState() {
-    return this.state;
-  }
-  public void render() {
-    setCanvasColorWHITE();
-  }
-
-  public GSize getMinSize(GSize paramGSize) {
-    paramGSize.dx = this.win.dx;
-    paramGSize.dy = this.win.dy;
-    return paramGSize;
-  }
-
-  public void setPosC(float paramFloat1, float paramFloat2) {
-    super.setPos(paramFloat1 - this.win.dx / 2.0F, paramFloat2 - this.win.dy / 2.0F);
-  }
-
-  public void resolutionChanged() {
-    this.win.dx = x1024(this.texDx);
-    this.win.dy = y1024(this.texDy);
-    if (this.cfg != null)
-      refresh();
-  }
-
-  public void created() {
-    resolutionChanged();
-  }
-
-  public GUISwitchN(GWindow paramGWindow, float paramFloat1, float paramFloat2, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean)
-  {
-    super(paramGWindow);
-    this.pos = paramArrayOfInt;
-    this.enable = paramArrayOfBoolean;
-    this.angle0 = paramFloat1;
-    this.angleStep = paramFloat2;
-    this.state = 0;
-    this.states = paramArrayOfInt.length;
-  }
-
-  public void update() {
-    refresh();
-  }
-
-  public void refresh() {
-    this.cfg.reset();
-    int i = this.cfg.countStates();
-    int j = this.cfg.firstState();
-    if (this.enable == null)
-      this.enable = new boolean[i];
-    for (int k = 0; k < i; k++) {
-      this.enable[k] = this.cfg.isEnabledState(k + j);
     }
-    setEnable(this.cfg.isEnabled());
-  }
 
-  public boolean notify(int paramInt1, int paramInt2) {
-    if (this.cfg == null) {
-      return super.notify(paramInt1, paramInt2);
+    public void setState(int i, boolean flag)
+    {
+        if(state == i)
+            return;
+        state = i;
+        if(flag)
+            notify(2, state);
     }
-    if (paramInt1 == 2) {
-      int i = this.cfg.get() - this.cfg.firstState();
-      if (i != this.state) {
-        if (this.bUpdate) {
-          this.cfg.set(this.state + this.cfg.firstState());
-          int j = this.cfg.apply();
-          this.cfg.reset();
-          this.cfg.applyExtends(j);
-          int k = this.cfg.get() - this.cfg.firstState();
-          if (k != this.state)
-            setState(k, false);
-        } else {
-          this.bChanged = true;
+
+    public int getState()
+    {
+        return state;
+    }
+
+    public void render()
+    {
+        setCanvasColorWHITE();
+    }
+
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        gsize.dx = win.dx;
+        gsize.dy = win.dy;
+        return gsize;
+    }
+
+    public void setPosC(float f, float f1)
+    {
+        super.setPos(f - win.dx / 2.0F, f1 - win.dy / 2.0F);
+    }
+
+    public void resolutionChanged()
+    {
+        win.dx = x1024(texDx);
+        win.dy = y1024(texDy);
+        if(cfg != null)
+            refresh();
+    }
+
+    public void created()
+    {
+        resolutionChanged();
+    }
+
+    public GUISwitchN(com.maddox.gwindow.GWindow gwindow, float f, float f1, int ai[], boolean aflag[])
+    {
+        super(gwindow);
+        pos = ai;
+        enable = aflag;
+        angle0 = f;
+        angleStep = f1;
+        state = 0;
+        states = ai.length;
+    }
+
+    public void update()
+    {
+        refresh();
+    }
+
+    public void refresh()
+    {
+        cfg.reset();
+        int i = cfg.countStates();
+        int j = cfg.firstState();
+        if(enable == null)
+            enable = new boolean[i];
+        for(int k = 0; k < i; k++)
+            enable[k] = cfg.isEnabledState(k + j);
+
+        setEnable(cfg.isEnabled());
+    }
+
+    public boolean notify(int i, int j)
+    {
+        if(cfg == null)
+            return super.notify(i, j);
+        if(i == 2)
+        {
+            int k = cfg.get() - cfg.firstState();
+            if(k != state)
+                if(bUpdate)
+                {
+                    cfg.set(state + cfg.firstState());
+                    int l = cfg.apply();
+                    cfg.reset();
+                    cfg.applyExtends(l);
+                    int i1 = cfg.get() - cfg.firstState();
+                    if(i1 != state)
+                        setState(i1, false);
+                } else
+                {
+                    bChanged = true;
+                }
         }
-      }
+        return super.notify(i, j);
     }
-    return super.notify(paramInt1, paramInt2);
-  }
 
-  public GUISwitchN(GWindow paramGWindow, float paramFloat1, float paramFloat2, int[] paramArrayOfInt, CfgInt paramCfgInt, boolean paramBoolean)
-  {
-    this(paramGWindow, paramFloat1, paramFloat2, paramArrayOfInt, null);
-    this.cfg = paramCfgInt;
-    this.bUpdate = paramBoolean;
-    refresh();
-    int i = paramCfgInt.firstState();
-    setState(paramCfgInt.get() - i, false);
-    setEnable(paramCfgInt.isEnabled());
-  }
+    public GUISwitchN(com.maddox.gwindow.GWindow gwindow, float f, float f1, int ai[], com.maddox.rts.CfgInt cfgint, boolean flag)
+    {
+        this(gwindow, f, f1, ai, null);
+        cfg = cfgint;
+        bUpdate = flag;
+        refresh();
+        int i = cfgint.firstState();
+        setState(cfgint.get() - i, false);
+        setEnable(cfgint.isEnabled());
+    }
+
+    public float texDx;
+    public float texDy;
+    public int states;
+    public int state;
+    public int pos[];
+    public boolean enable[];
+    public float angle0;
+    public float angleStep;
+    public com.maddox.rts.CfgInt cfg;
+    public boolean bUpdate;
+    public boolean bChanged;
 }

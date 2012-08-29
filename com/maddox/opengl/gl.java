@@ -1,1138 +1,1165 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   gl.java
+
 package com.maddox.opengl;
 
 import java.util.StringTokenizer;
 
 public final class gl
 {
-  private static boolean libLoaded = false;
 
-  public static final native void Accum(int paramInt, float paramFloat);
-
-  public static final native void AlphaFunc(int paramInt, float paramFloat);
-
-  public static final native boolean AreTexturesResident(int paramInt, int[] paramArrayOfInt, boolean[] paramArrayOfBoolean);
-
-  public static final native void ArrayElement(int paramInt);
-
-  public static final native void Begin(int paramInt);
-
-  public static final native void BindTexture(int paramInt1, int paramInt2);
-
-  public static final native void Bitmap(int paramInt1, int paramInt2, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, byte[] paramArrayOfByte);
-
-  public static final native void BlendFunc(int paramInt1, int paramInt2);
-
-  public static final native void CallList(int paramInt);
-
-  public static final native void CallLists(int paramInt1, int paramInt2, byte[] paramArrayOfByte);
-
-  public static final native void CallLists(int paramInt1, int paramInt2, short[] paramArrayOfShort);
-
-  public static final native void CallLists(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void Clear(int paramInt);
-
-  public static final native void ClearAccum(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void ClearColor(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void ClearDepth(double paramDouble);
-
-  public static final native void ClearIndex(float paramFloat);
-
-  public static final native void ClearStencil(int paramInt);
-
-  public static final native void ClipPlane(int paramInt, double[] paramArrayOfDouble);
-
-  public static final native void Color3b(byte paramByte1, byte paramByte2, byte paramByte3);
-
-  public static final native void Color3bv(byte[] paramArrayOfByte);
-
-  public static final native void Color3d(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Color(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Color3dv(double[] paramArrayOfDouble);
-
-  public static final native void Color3f(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Color(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Color3fv(float[] paramArrayOfFloat);
-
-  public static final native void Color3i(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Color3iv(int[] paramArrayOfInt);
-
-  public static final native void Color3s(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Color3sv(short[] paramArrayOfShort);
-
-  public static final native void Color3ub(byte paramByte1, byte paramByte2, byte paramByte3);
-
-  public static final native void Color(byte paramByte1, byte paramByte2, byte paramByte3);
-
-  public static final native void Color3ubv(byte[] paramArrayOfByte);
-
-  public static final native void Color3ui(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Color(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Color3uiv(int[] paramArrayOfInt);
-
-  public static final native void Color3us(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Color(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Color3usv(short[] paramArrayOfShort);
-
-  public static final native void Color4b(byte paramByte1, byte paramByte2, byte paramByte3, byte paramByte4);
-
-  public static final native void Color4bv(byte[] paramArrayOfByte);
-
-  public static final native void Color4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Color(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Color4dv(double[] paramArrayOfDouble);
-
-  public static final native void Color4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Color(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Color4fv(float[] paramArrayOfFloat);
-
-  public static final native void Color4i(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Color4iv(int[] paramArrayOfInt);
-
-  public static final native void Color4s(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Color4sv(short[] paramArrayOfShort);
-
-  public static final native void Color4ub(byte paramByte1, byte paramByte2, byte paramByte3, byte paramByte4);
-
-  public static final native void Color(byte paramByte1, byte paramByte2, byte paramByte3, byte paramByte4);
-
-  public static final native void Color4ubv(byte[] paramArrayOfByte);
-
-  public static final native void Color4ui(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Color(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Color4uiv(int[] paramArrayOfInt);
-
-  public static final native void Color4us(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Color(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Color4usv(short[] paramArrayOfShort);
-
-  public static final native void Color(byte[] paramArrayOfByte);
-
-  public static final native void Color(short[] paramArrayOfShort);
-
-  public static final native void Color(int[] paramArrayOfInt);
-
-  public static final native void Color(float[] paramArrayOfFloat);
-
-  public static final native void Color(double[] paramArrayOfDouble);
-
-  public static final native void ColorMask(boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3, boolean paramBoolean4);
-
-  public static final native void ColorMaterial(int paramInt1, int paramInt2);
-
-  public static final native void ColorPointer(int paramInt1, int paramInt2, int paramInt3, byte[] paramArrayOfByte);
-
-  public static final native void ColorPointer(int paramInt1, int paramInt2, int paramInt3, short[] paramArrayOfShort);
-
-  public static final native void ColorPointer(int paramInt1, int paramInt2, int paramInt3, int[] paramArrayOfInt);
-
-  public static final native void ColorPointer(int paramInt1, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void ColorPointer(int paramInt1, int paramInt2, int paramInt3, double[] paramArrayOfDouble);
-
-  public static final native void CopyPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5);
-
-  public static final native void CopyTexImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7);
-
-  public static final native void CopyTexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8);
-
-  public static final native void CopyTexSubImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6);
-
-  public static final native void CopyTexSubImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8);
-
-  public static final native void CullFace(int paramInt);
-
-  public static final native void DeleteLists(int paramInt1, int paramInt2);
-
-  public static final native void DeleteTextures(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void DepthFunc(int paramInt);
-
-  public static final native void DepthMask(boolean paramBoolean);
-
-  public static final native void DepthRange(double paramDouble1, double paramDouble2);
-
-  public static final native void Disable(int paramInt);
-
-  public static final native void DisableClientState(int paramInt);
-
-  public static final native void DrawArrays(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void DrawBuffer(int paramInt);
-
-  public static final native void DrawElements(int paramInt1, int paramInt2, int paramInt3, byte[] paramArrayOfByte);
-
-  public static final native void DrawElements(int paramInt1, int paramInt2, int paramInt3, short[] paramArrayOfShort);
-
-  public static final native void DrawElements(int paramInt1, int paramInt2, int paramInt3, int[] paramArrayOfInt);
-
-  public static final native void DrawPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, byte[] paramArrayOfByte);
-
-  public static final native void DrawPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, short[] paramArrayOfShort);
-
-  public static final native void DrawPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int[] paramArrayOfInt);
-
-  public static final native void DrawPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, float[] paramArrayOfFloat);
-
-  public static final native void EdgeFlag(boolean paramBoolean);
-
-  public static final native void EdgeFlagPointer(int paramInt, boolean[] paramArrayOfBoolean);
-
-  public static final native void EdgeFlagv(boolean[] paramArrayOfBoolean);
-
-  public static final native void Enable(int paramInt);
-
-  public static final native void EnableClientState(int paramInt);
-
-  public static final native void End();
-
-  public static final native void EndList();
-
-  public static final native void EvalCoord1d(double paramDouble);
-
-  public static final native void EvalCoord(double paramDouble);
-
-  public static final native void EvalCoord1dv(double[] paramArrayOfDouble);
-
-  public static final native void EvalCoord1f(float paramFloat);
-
-  public static final native void EvalCoord(float paramFloat);
-
-  public static final native void EvalCoord1fv(float[] paramArrayOfFloat);
-
-  public static final native void EvalCoord2d(double paramDouble1, double paramDouble2);
-
-  public static final native void EvalCoord(double paramDouble1, double paramDouble2);
-
-  public static final native void EvalCoord2dv(double[] paramArrayOfDouble);
-
-  public static final native void EvalCoord2f(float paramFloat1, float paramFloat2);
-
-  public static final native void EvalCoord(float paramFloat1, float paramFloat2);
-
-  public static final native void EvalCoord2fv(float[] paramArrayOfFloat);
-
-  public static final native void EvalCoord(double[] paramArrayOfDouble);
-
-  public static final native void EvalCoord(float[] paramArrayOfFloat);
-
-  public static final native void EvalMesh1(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void EvalMesh2(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5);
-
-  public static final native void EvalPoint1(int paramInt);
-
-  public static final native void EvalPoint2(int paramInt1, int paramInt2);
-
-  public static final native void FeedbackBuffer(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void Finish();
-
-  public static final native void Flush();
-
-  public static final native void Fogf(int paramInt, float paramFloat);
-
-  public static final native void Fog(int paramInt, float paramFloat);
-
-  public static final native void Fogfv(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void Fog(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void Fogi(int paramInt1, int paramInt2);
-
-  public static final native void Fog(int paramInt1, int paramInt2);
-
-  public static final native void Fogiv(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void Fog(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void FrontFace(int paramInt);
-
-  public static final native void Frustum(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6);
-
-  public static final native int GenLists(int paramInt);
-
-  public static final native void GenTextures(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void GetBooleanv(int paramInt, boolean[] paramArrayOfBoolean);
-
-  public static final native void GetClipPlane(int paramInt, double[] paramArrayOfDouble);
-
-  public static final native void GetDoublev(int paramInt, double[] paramArrayOfDouble);
-
-  public static final native int GetError();
-
-  public static final native void GetFloatv(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void GetIntegerv(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void GetLightfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetLight(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetLightiv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetLight(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetMapdv(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void GetMap(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void GetMapfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetMap(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetMapiv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetMap(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetMaterialfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetMaterial(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetMaterialiv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetMaterial(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetPixelMapfv(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void GetPixelMap(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void GetPixelMapuiv(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void GetPixelMap(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void GetPixelMapusv(int paramInt, short[] paramArrayOfShort);
-
-  public static final native void GetPixelMap(int paramInt, short[] paramArrayOfShort);
-
-  public static final native void GetPolygonStipple(byte[] paramArrayOfByte);
-
-  public static final native String GetString(int paramInt);
-
-  public static final native void GetTexEnvfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetTexEnv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetTexEnviv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetTexEnv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetTexGendv(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void GetTexGen(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void GetTexGenfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetTexGen(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetTexGeniv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetTexGen(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetTexImage(int paramInt1, int paramInt2, int paramInt3, int paramInt4, byte[] paramArrayOfByte);
-
-  public static final native void GetTexImage(int paramInt1, int paramInt2, int paramInt3, int paramInt4, short[] paramArrayOfShort);
-
-  public static final native void GetTexImage(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int[] paramArrayOfInt);
-
-  public static final native void GetTexImage(int paramInt1, int paramInt2, int paramInt3, int paramInt4, float[] paramArrayOfFloat);
-
-  public static final native void GetTexLevelParameterfv(int paramInt1, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void GetTexLevelParameter(int paramInt1, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void GetTexLevelParameteriv(int paramInt1, int paramInt2, int paramInt3, int[] paramArrayOfInt);
-
-  public static final native void GetTexLevelParameter(int paramInt1, int paramInt2, int paramInt3, int[] paramArrayOfInt);
-
-  public static final native void GetTexParameterfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetTexParameter(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void GetTexParameteriv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void GetTexParameter(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void Hint(int paramInt1, int paramInt2);
-
-  public static final native void IndexMask(int paramInt);
-
-  public static final native void IndexPointer(int paramInt1, int paramInt2, byte[] paramArrayOfByte);
-
-  public static final native void IndexPointer(int paramInt1, int paramInt2, short[] paramArrayOfShort);
-
-  public static final native void IndexPointer(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void IndexPointer(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void IndexPointer(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void Indexd(double paramDouble);
-
-  public static final native void Index(double paramDouble);
-
-  public static final native void Indexdv(double[] paramArrayOfDouble);
-
-  public static final native void Index(double[] paramArrayOfDouble);
-
-  public static final native void Indexf(float paramFloat);
-
-  public static final native void Index(float paramFloat);
-
-  public static final native void Indexfv(float[] paramArrayOfFloat);
-
-  public static final native void Index(float[] paramArrayOfFloat);
-
-  public static final native void Indexi(int paramInt);
-
-  public static final native void Index(int paramInt);
-
-  public static final native void Indexiv(int[] paramArrayOfInt);
-
-  public static final native void Index(int[] paramArrayOfInt);
-
-  public static final native void Indexs(short paramShort);
-
-  public static final native void Index(short paramShort);
-
-  public static final native void Indexsv(short[] paramArrayOfShort);
-
-  public static final native void Index(short[] paramArrayOfShort);
-
-  public static final native void Indexub(byte paramByte);
-
-  public static final native void Index(byte paramByte);
-
-  public static final native void Indexubv(byte[] paramArrayOfByte);
-
-  public static final native void Index(byte[] paramArrayOfByte);
-
-  public static final native void InitNames();
-
-  public static final native void InterleavedArrays(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native boolean IsEnabled(int paramInt);
-
-  public static final native boolean IsList(int paramInt);
-
-  public static final native boolean IsTexture(int paramInt);
-
-  public static final native void LightModelf(int paramInt, float paramFloat);
-
-  public static final native void LightMode(int paramInt, float paramFloat);
-
-  public static final native void LightModelfv(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void LightModel(int paramInt, float[] paramArrayOfFloat);
-
-  public static final native void LightModeli(int paramInt1, int paramInt2);
-
-  public static final native void LightModel(int paramInt1, int paramInt2);
-
-  public static final native void LightModeliv(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void LightModel(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void Lightf(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void Light(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void Lightfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void Light(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void Lighti(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Light(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Lightiv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void Light(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void LineStipple(int paramInt, short paramShort);
-
-  public static final native void LineWidth(float paramFloat);
-
-  public static final native void ListBase(int paramInt);
-
-  public static final native void LoadIdentity();
-
-  public static final native void LoadMatrixd(double[] paramArrayOfDouble);
-
-  public static final native void LoadMatrix(double[] paramArrayOfDouble);
-
-  public static final native void LoadMatrixf(float[] paramArrayOfFloat);
-
-  public static final native void LoadMatrix(float[] paramArrayOfFloat);
-
-  public static final native void LoadName(int paramInt);
-
-  public static final native void LogicOp(int paramInt);
-
-  public static final native void Map1d(int paramInt1, double paramDouble1, double paramDouble2, int paramInt2, int paramInt3, double[] paramArrayOfDouble);
-
-  public static final native void Map1(int paramInt1, double paramDouble1, double paramDouble2, int paramInt2, int paramInt3, double[] paramArrayOfDouble);
-
-  public static final native void Map1f(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void Map1(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void Map2d(int paramInt1, double paramDouble1, double paramDouble2, int paramInt2, int paramInt3, double paramDouble3, double paramDouble4, int paramInt4, int paramInt5, double[] paramArrayOfDouble);
-
-  public static final native void Map2(int paramInt1, double paramDouble1, double paramDouble2, int paramInt2, int paramInt3, double paramDouble3, double paramDouble4, int paramInt4, int paramInt5, double[] paramArrayOfDouble);
-
-  public static final native void Map2f(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2, int paramInt3, float paramFloat3, float paramFloat4, int paramInt4, int paramInt5, float[] paramArrayOfFloat);
-
-  public static final native void Map2(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2, int paramInt3, float paramFloat3, float paramFloat4, int paramInt4, int paramInt5, float[] paramArrayOfFloat);
-
-  public static final native void MapGrid1d(int paramInt, double paramDouble1, double paramDouble2);
-
-  public static final native void MapGrid1(int paramInt, double paramDouble1, double paramDouble2);
-
-  public static final native void MapGrid1f(int paramInt, float paramFloat1, float paramFloat2);
-
-  public static final native void MapGrid1(int paramInt, float paramFloat1, float paramFloat2);
-
-  public static final native void MapGrid2d(int paramInt1, double paramDouble1, double paramDouble2, int paramInt2, double paramDouble3, double paramDouble4);
-
-  public static final native void MapGrid2(int paramInt1, double paramDouble1, double paramDouble2, int paramInt2, double paramDouble3, double paramDouble4);
-
-  public static final native void MapGrid2f(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2, float paramFloat3, float paramFloat4);
-
-  public static final native void MapGrid2(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2, float paramFloat3, float paramFloat4);
-
-  public static final native void Materialf(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void Material(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void Materialfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void Material(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void Materiali(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Material(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Materialiv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void Material(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void MatrixMode(int paramInt);
-
-  public static final native void MultMatrixd(double[] paramArrayOfDouble);
-
-  public static final native void MultMatrix(double[] paramArrayOfDouble);
-
-  public static final native void MultMatrixf(float[] paramArrayOfFloat);
-
-  public static final native void MultMatrix(float[] paramArrayOfFloat);
-
-  public static final native void NewList(int paramInt1, int paramInt2);
-
-  public static final native void Normal3b(byte paramByte1, byte paramByte2, byte paramByte3);
-
-  public static final native void Normal3(byte paramByte1, byte paramByte2, byte paramByte3);
-
-  public static final native void Normal3bv(byte[] paramArrayOfByte);
-
-  public static final native void Normal3(byte[] paramArrayOfByte);
-
-  public static final native void Normal3d(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Normal3(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Normal3dv(double[] paramArrayOfDouble);
-
-  public static final native void Normal3(double[] paramArrayOfDouble);
-
-  public static final native void Normal3f(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Normal3(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Normal3fv(float[] paramArrayOfFloat);
-
-  public static final native void Normal3(float[] paramArrayOfFloat);
-
-  public static final native void Normal3i(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Normal3(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Normal3iv(int[] paramArrayOfInt);
-
-  public static final native void Normal3(int[] paramArrayOfInt);
-
-  public static final native void Normal3s(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Normal3(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Normal3sv(short[] paramArrayOfShort);
-
-  public static final native void Normal3(short[] paramArrayOfShort);
-
-  public static final native void NormalPointer(int paramInt1, int paramInt2, byte[] paramArrayOfByte);
-
-  public static final native void NormalPointer(int paramInt1, int paramInt2, short[] paramArrayOfShort);
-
-  public static final native void NormalPointer(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void NormalPointer(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void NormalPointer(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void Ortho(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6);
-
-  public static final native void PassThrough(float paramFloat);
-
-  public static final native void PixelMapfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void PixelMap(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void PixelMapuiv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void PixelMap(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void PixelMapusv(int paramInt1, int paramInt2, short[] paramArrayOfShort);
-
-  public static final native void PixelMap(int paramInt1, int paramInt2, short[] paramArrayOfShort);
-
-  public static final native void PixelStoref(int paramInt, float paramFloat);
-
-  public static final native void PixelStore(int paramInt, float paramFloat);
-
-  public static final native void PixelStorei(int paramInt1, int paramInt2);
-
-  public static final native void PixelStore(int paramInt1, int paramInt2);
-
-  public static final native void PixelTransferf(int paramInt, float paramFloat);
-
-  public static final native void PixelTransfer(int paramInt, float paramFloat);
-
-  public static final native void PixelTransferi(int paramInt1, int paramInt2);
-
-  public static final native void PixelTransfer(int paramInt1, int paramInt2);
-
-  public static final native void PixelZoom(float paramFloat1, float paramFloat2);
-
-  public static final native void PointSize(float paramFloat);
-
-  public static final native void PolygonMode(int paramInt1, int paramInt2);
-
-  public static final native void PolygonOffset(float paramFloat1, float paramFloat2);
-
-  public static final native void PolygonStipple(byte[] paramArrayOfByte);
-
-  public static final native void PopAttrib();
-
-  public static final native void PopClientAttrib();
-
-  public static final native void PopMatrix();
-
-  public static final native void PopName();
-
-  public static final native void PrioritizeTextures(int paramInt, int[] paramArrayOfInt, float[] paramArrayOfFloat);
-
-  public static final native void PushAttrib(int paramInt);
-
-  public static final native void PushClientAttrib(int paramInt);
-
-  public static final native void PushMatrix();
-
-  public static final native void PushName(int paramInt);
-
-  public static final native void RasterPos2d(double paramDouble1, double paramDouble2);
-
-  public static final native void RasterPos(double paramDouble1, double paramDouble2);
-
-  public static final native void RasterPos2dv(double[] paramArrayOfDouble);
-
-  public static final native void RasterPos2f(float paramFloat1, float paramFloat2);
-
-  public static final native void RasterPos(float paramFloat1, float paramFloat2);
-
-  public static final native void RasterPos2fv(float[] paramArrayOfFloat);
-
-  public static final native void RasterPos2i(int paramInt1, int paramInt2);
-
-  public static final native void RasterPos(int paramInt1, int paramInt2);
-
-  public static final native void RasterPos2iv(int[] paramArrayOfInt);
-
-  public static final native void RasterPos2s(short paramShort1, short paramShort2);
-
-  public static final native void RasterPos(short paramShort1, short paramShort2);
-
-  public static final native void RasterPos2sv(short[] paramArrayOfShort);
-
-  public static final native void RasterPos3d(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void RasterPos(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void RasterPos3dv(double[] paramArrayOfDouble);
-
-  public static final native void RasterPos3f(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void RasterPos(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void RasterPos3fv(float[] paramArrayOfFloat);
-
-  public static final native void RasterPos3i(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void RasterPos(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void RasterPos3iv(int[] paramArrayOfInt);
-
-  public static final native void RasterPos3s(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void RasterPos(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void RasterPos3sv(short[] paramArrayOfShort);
-
-  public static final native void RasterPos4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void RasterPos(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void RasterPos4dv(double[] paramArrayOfDouble);
-
-  public static final native void RasterPos4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void RasterPos(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void RasterPos4fv(float[] paramArrayOfFloat);
-
-  public static final native void RasterPos4i(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void RasterPos(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void RasterPos4iv(int[] paramArrayOfInt);
-
-  public static final native void RasterPos4s(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void RasterPos(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void RasterPos4sv(short[] paramArrayOfShort);
-
-  public static final native void RasterPos(double[] paramArrayOfDouble);
-
-  public static final native void RasterPos(float[] paramArrayOfFloat);
-
-  public static final native void RasterPos(int[] paramArrayOfInt);
-
-  public static final native void RasterPos(short[] paramArrayOfShort);
-
-  public static final native void ReadBuffer(int paramInt);
-
-  public static final native void ReadPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, byte[] paramArrayOfByte);
-
-  public static final native void ReadPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, short[] paramArrayOfShort);
-
-  public static final native void ReadPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int[] paramArrayOfInt);
-
-  public static final native void ReadPixels(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, float[] paramArrayOfFloat);
-
-  public static final native void Rectd(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Rect(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Rectdv(double[] paramArrayOfDouble1, double[] paramArrayOfDouble2);
-
-  public static final native void Rect(double[] paramArrayOfDouble1, double[] paramArrayOfDouble2);
-
-  public static final native void Rectf(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Rect(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Rectfv(float[] paramArrayOfFloat1, float[] paramArrayOfFloat2);
-
-  public static final native void Rect(float[] paramArrayOfFloat1, float[] paramArrayOfFloat2);
-
-  public static final native void Recti(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Rect(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Rectiv(int[] paramArrayOfInt1, int[] paramArrayOfInt2);
-
-  public static final native void Rect(int[] paramArrayOfInt1, int[] paramArrayOfInt2);
-
-  public static final native void Rects(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Rect(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Rectsv(short[] paramArrayOfShort1, short[] paramArrayOfShort2);
-
-  public static final native void Rect(short[] paramArrayOfShort1, short[] paramArrayOfShort2);
-
-  public static final native int RenderMode(int paramInt);
-
-  public static final native void Rotated(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Rotate(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Rotatef(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Rotate(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Scaled(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Scale(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Scalef(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Scale(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Scissor(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void SelectBuffer(int paramInt, int[] paramArrayOfInt);
-
-  public static final native void ShadeModel(int paramInt);
-
-  public static final native void StencilFunc(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void StencilMask(int paramInt);
-
-  public static final native void StencilOp(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexCoord1d(double paramDouble);
-
-  public static final native void TexCoord(double paramDouble);
-
-  public static final native void TexCoord1dv(double[] paramArrayOfDouble);
-
-  public static final native void TexCoord1f(float paramFloat);
-
-  public static final native void TexCoord(float paramFloat);
-
-  public static final native void TexCoord1fv(float[] paramArrayOfFloat);
-
-  public static final native void TexCoord1i(int paramInt);
-
-  public static final native void TexCoord(int paramInt);
-
-  public static final native void TexCoord1iv(int[] paramArrayOfInt);
-
-  public static final native void TexCoord1s(short paramShort);
-
-  public static final native void TexCoord(short paramShort);
-
-  public static final native void TexCoord1sv(short[] paramArrayOfShort);
-
-  public static final native void TexCoord2d(double paramDouble1, double paramDouble2);
-
-  public static final native void TexCoord(double paramDouble1, double paramDouble2);
-
-  public static final native void TexCoord2dv(double[] paramArrayOfDouble);
-
-  public static final native void TexCoord2f(float paramFloat1, float paramFloat2);
-
-  public static final native void TexCoord(float paramFloat1, float paramFloat2);
-
-  public static final native void TexCoord2fv(float[] paramArrayOfFloat);
-
-  public static final native void TexCoord2i(int paramInt1, int paramInt2);
-
-  public static final native void TexCoord(int paramInt1, int paramInt2);
-
-  public static final native void TexCoord2iv(int[] paramArrayOfInt);
-
-  public static final native void TexCoord2s(short paramShort1, short paramShort2);
-
-  public static final native void TexCoord(short paramShort1, short paramShort2);
-
-  public static final native void TexCoord2sv(short[] paramArrayOfShort);
-
-  public static final native void TexCoord3d(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void TexCoord(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void TexCoord3dv(double[] paramArrayOfDouble);
-
-  public static final native void TexCoord3f(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void TexCoord(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void TexCoord3fv(float[] paramArrayOfFloat);
-
-  public static final native void TexCoord3i(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexCoord(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexCoord3iv(int[] paramArrayOfInt);
-
-  public static final native void TexCoord3s(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void TexCoord(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void TexCoord3sv(short[] paramArrayOfShort);
-
-  public static final native void TexCoord4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void TexCoord(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void TexCoord4dv(double[] paramArrayOfDouble);
-
-  public static final native void TexCoord4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void TexCoord(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void TexCoord4fv(float[] paramArrayOfFloat);
-
-  public static final native void TexCoord4i(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void TexCoord(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void TexCoord4iv(int[] paramArrayOfInt);
-
-  public static final native void TexCoord4s(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void TexCoord(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void TexCoord4sv(short[] paramArrayOfShort);
-
-  public static final native void TexCoord(double[] paramArrayOfDouble);
-
-  public static final native void TexCoord(float[] paramArrayOfFloat);
-
-  public static final native void TexCoord(int[] paramArrayOfInt);
-
-  public static final native void TexCoord(short[] paramArrayOfShort);
-
-  public static final native void TexCoordPointer(int paramInt1, int paramInt2, int paramInt3, short[] paramArrayOfShort);
-
-  public static final native void TexCoordPointer(int paramInt1, int paramInt2, int paramInt3, int[] paramArrayOfInt);
-
-  public static final native void TexCoordPointer(int paramInt1, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void TexCoordPointer(int paramInt1, int paramInt2, int paramInt3, double[] paramArrayOfDouble);
-
-  public static final native void TexEnvf(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void TexEnv(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void TexEnvfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void TexEnv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void TexEnvi(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexEnv(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexEnviv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void TexEnv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void TexGend(int paramInt1, int paramInt2, double paramDouble);
-
-  public static final native void TexGen(int paramInt1, int paramInt2, double paramDouble);
-
-  public static final native void TexGendv(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void TexGen(int paramInt1, int paramInt2, double[] paramArrayOfDouble);
-
-  public static final native void TexGenf(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void TexGen(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void TexGenfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void TexGen(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void TexGeni(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexGen(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexGeniv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void TexGen(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void TexImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, byte[] paramArrayOfByte);
-
-  public static final native void TexImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, short[] paramArrayOfShort);
-
-  public static final native void TexImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int[] paramArrayOfInt);
-
-  public static final native void TexImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, float[] paramArrayOfFloat);
-
-  public static final native void TexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, byte[] paramArrayOfByte);
-
-  public static final native void TexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, short[] paramArrayOfShort);
-
-  public static final native void TexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, int[] paramArrayOfInt);
-
-  public static final native void TexImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, float[] paramArrayOfFloat);
-
-  public static final native void TexParameterf(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void TexParameter(int paramInt1, int paramInt2, float paramFloat);
-
-  public static final native void TexParameterfv(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void TexParameter(int paramInt1, int paramInt2, float[] paramArrayOfFloat);
-
-  public static final native void TexParameteri(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexParameter(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void TexParameteriv(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void TexParameter(int paramInt1, int paramInt2, int[] paramArrayOfInt);
-
-  public static final native void TexSubImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, byte[] paramArrayOfByte);
-
-  public static final native void TexSubImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, short[] paramArrayOfShort);
-
-  public static final native void TexSubImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int[] paramArrayOfInt);
-
-  public static final native void TexSubImage1D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, float[] paramArrayOfFloat);
-
-  public static final native void TexSubImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, byte[] paramArrayOfByte);
-
-  public static final native void TexSubImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, short[] paramArrayOfShort);
-
-  public static final native void TexSubImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, int[] paramArrayOfInt);
-
-  public static final native void TexSubImage2D(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, float[] paramArrayOfFloat);
-
-  public static final native void Translated(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Translate(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Translatef(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Translate(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Vertex2d(double paramDouble1, double paramDouble2);
-
-  public static final native void Vertex(double paramDouble1, double paramDouble2);
-
-  public static final native void Vertex2dv(double[] paramArrayOfDouble);
-
-  public static final native void Vertex2f(float paramFloat1, float paramFloat2);
-
-  public static final native void Vertex(float paramFloat1, float paramFloat2);
-
-  public static final native void Vertex2fv(float[] paramArrayOfFloat);
-
-  public static final native void Vertex2i(int paramInt1, int paramInt2);
-
-  public static final native void Vertex(int paramInt1, int paramInt2);
-
-  public static final native void Vertex2iv(int[] paramArrayOfInt);
-
-  public static final native void Vertex2s(short paramShort1, short paramShort2);
-
-  public static final native void Vertex(short paramShort1, short paramShort2);
-
-  public static final native void Vertex2sv(short[] paramArrayOfShort);
-
-  public static final native void Vertex3d(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Vertex(double paramDouble1, double paramDouble2, double paramDouble3);
-
-  public static final native void Vertex3dv(double[] paramArrayOfDouble);
-
-  public static final native void Vertex3f(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Vertex(float paramFloat1, float paramFloat2, float paramFloat3);
-
-  public static final native void Vertex3fv(float[] paramArrayOfFloat);
-
-  public static final native void Vertex3i(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Vertex(int paramInt1, int paramInt2, int paramInt3);
-
-  public static final native void Vertex3iv(int[] paramArrayOfInt);
-
-  public static final native void Vertex3s(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Vertex(short paramShort1, short paramShort2, short paramShort3);
-
-  public static final native void Vertex3sv(short[] paramArrayOfShort);
-
-  public static final native void Vertex4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Vertex(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
-
-  public static final native void Vertex4dv(double[] paramArrayOfDouble);
-
-  public static final native void Vertex4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Vertex(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
-
-  public static final native void Vertex4fv(float[] paramArrayOfFloat);
-
-  public static final native void Vertex4i(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Vertex(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final native void Vertex4iv(int[] paramArrayOfInt);
-
-  public static final native void Vertex4s(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Vertex(short paramShort1, short paramShort2, short paramShort3, short paramShort4);
-
-  public static final native void Vertex4sv(short[] paramArrayOfShort);
-
-  public static final native void Vertex(double[] paramArrayOfDouble);
-
-  public static final native void Vertex(float[] paramArrayOfFloat);
-
-  public static final native void Vertex(int[] paramArrayOfInt);
-
-  public static final native void Vertex(short[] paramArrayOfShort);
-
-  public static final native void VertexPointer(int paramInt1, int paramInt2, int paramInt3, short[] paramArrayOfShort);
-
-  public static final native void VertexPointer(int paramInt1, int paramInt2, int paramInt3, int[] paramArrayOfInt);
-
-  public static final native void VertexPointer(int paramInt1, int paramInt2, int paramInt3, float[] paramArrayOfFloat);
-
-  public static final native void VertexPointer(int paramInt1, int paramInt2, int paramInt3, double[] paramArrayOfDouble);
-
-  public static final native void Viewport(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
-
-  public static final boolean extExist(String paramString)
-  {
-    String str1 = GetString(7939);
-    StringTokenizer localStringTokenizer = new StringTokenizer(str1, " ");
-    while (localStringTokenizer.hasMoreTokens()) {
-      String str2 = localStringTokenizer.nextToken();
-      if (str2.equals(paramString))
-        return true;
+    public gl()
+    {
     }
-    return false;
-  }
 
-  public static final void loadNative()
-  {
-    if (!libLoaded) {
-      System.loadLibrary("jgl");
-      libLoaded = true;
+    public static final native void Accum(int i, float f);
+
+    public static final native void AlphaFunc(int i, float f);
+
+    public static final native boolean AreTexturesResident(int i, int ai[], boolean aflag[]);
+
+    public static final native void ArrayElement(int i);
+
+    public static final native void Begin(int i);
+
+    public static final native void BindTexture(int i, int j);
+
+    public static final native void Bitmap(int i, int j, float f, float f1, float f2, float f3, byte abyte0[]);
+
+    public static final native void BlendFunc(int i, int j);
+
+    public static final native void CallList(int i);
+
+    public static final native void CallLists(int i, int j, byte abyte0[]);
+
+    public static final native void CallLists(int i, int j, short aword0[]);
+
+    public static final native void CallLists(int i, int j, int ai[]);
+
+    public static final native void Clear(int i);
+
+    public static final native void ClearAccum(float f, float f1, float f2, float f3);
+
+    public static final native void ClearColor(float f, float f1, float f2, float f3);
+
+    public static final native void ClearDepth(double d);
+
+    public static final native void ClearIndex(float f);
+
+    public static final native void ClearStencil(int i);
+
+    public static final native void ClipPlane(int i, double ad[]);
+
+    public static final native void Color3b(byte byte0, byte byte1, byte byte2);
+
+    public static final native void Color3bv(byte abyte0[]);
+
+    public static final native void Color3d(double d, double d1, double d2);
+
+    public static final native void Color(double d, double d1, double d2);
+
+    public static final native void Color3dv(double ad[]);
+
+    public static final native void Color3f(float f, float f1, float f2);
+
+    public static final native void Color(float f, float f1, float f2);
+
+    public static final native void Color3fv(float af[]);
+
+    public static final native void Color3i(int i, int j, int k);
+
+    public static final native void Color3iv(int ai[]);
+
+    public static final native void Color3s(short word0, short word1, short word2);
+
+    public static final native void Color3sv(short aword0[]);
+
+    public static final native void Color3ub(byte byte0, byte byte1, byte byte2);
+
+    public static final native void Color(byte byte0, byte byte1, byte byte2);
+
+    public static final native void Color3ubv(byte abyte0[]);
+
+    public static final native void Color3ui(int i, int j, int k);
+
+    public static final native void Color(int i, int j, int k);
+
+    public static final native void Color3uiv(int ai[]);
+
+    public static final native void Color3us(short word0, short word1, short word2);
+
+    public static final native void Color(short word0, short word1, short word2);
+
+    public static final native void Color3usv(short aword0[]);
+
+    public static final native void Color4b(byte byte0, byte byte1, byte byte2, byte byte3);
+
+    public static final native void Color4bv(byte abyte0[]);
+
+    public static final native void Color4d(double d, double d1, double d2, double d3);
+
+    public static final native void Color(double d, double d1, double d2, double d3);
+
+    public static final native void Color4dv(double ad[]);
+
+    public static final native void Color4f(float f, float f1, float f2, float f3);
+
+    public static final native void Color(float f, float f1, float f2, float f3);
+
+    public static final native void Color4fv(float af[]);
+
+    public static final native void Color4i(int i, int j, int k, int l);
+
+    public static final native void Color4iv(int ai[]);
+
+    public static final native void Color4s(short word0, short word1, short word2, short word3);
+
+    public static final native void Color4sv(short aword0[]);
+
+    public static final native void Color4ub(byte byte0, byte byte1, byte byte2, byte byte3);
+
+    public static final native void Color(byte byte0, byte byte1, byte byte2, byte byte3);
+
+    public static final native void Color4ubv(byte abyte0[]);
+
+    public static final native void Color4ui(int i, int j, int k, int l);
+
+    public static final native void Color(int i, int j, int k, int l);
+
+    public static final native void Color4uiv(int ai[]);
+
+    public static final native void Color4us(short word0, short word1, short word2, short word3);
+
+    public static final native void Color(short word0, short word1, short word2, short word3);
+
+    public static final native void Color4usv(short aword0[]);
+
+    public static final native void Color(byte abyte0[]);
+
+    public static final native void Color(short aword0[]);
+
+    public static final native void Color(int ai[]);
+
+    public static final native void Color(float af[]);
+
+    public static final native void Color(double ad[]);
+
+    public static final native void ColorMask(boolean flag, boolean flag1, boolean flag2, boolean flag3);
+
+    public static final native void ColorMaterial(int i, int j);
+
+    public static final native void ColorPointer(int i, int j, int k, byte abyte0[]);
+
+    public static final native void ColorPointer(int i, int j, int k, short aword0[]);
+
+    public static final native void ColorPointer(int i, int j, int k, int ai[]);
+
+    public static final native void ColorPointer(int i, int j, int k, float af[]);
+
+    public static final native void ColorPointer(int i, int j, int k, double ad[]);
+
+    public static final native void CopyPixels(int i, int j, int k, int l, int i1);
+
+    public static final native void CopyTexImage1D(int i, int j, int k, int l, int i1, int j1, int k1);
+
+    public static final native void CopyTexImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1);
+
+    public static final native void CopyTexSubImage1D(int i, int j, int k, int l, int i1, int j1);
+
+    public static final native void CopyTexSubImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1);
+
+    public static final native void CullFace(int i);
+
+    public static final native void DeleteLists(int i, int j);
+
+    public static final native void DeleteTextures(int i, int ai[]);
+
+    public static final native void DepthFunc(int i);
+
+    public static final native void DepthMask(boolean flag);
+
+    public static final native void DepthRange(double d, double d1);
+
+    public static final native void Disable(int i);
+
+    public static final native void DisableClientState(int i);
+
+    public static final native void DrawArrays(int i, int j, int k);
+
+    public static final native void DrawBuffer(int i);
+
+    public static final native void DrawElements(int i, int j, int k, byte abyte0[]);
+
+    public static final native void DrawElements(int i, int j, int k, short aword0[]);
+
+    public static final native void DrawElements(int i, int j, int k, int ai[]);
+
+    public static final native void DrawPixels(int i, int j, int k, int l, byte abyte0[]);
+
+    public static final native void DrawPixels(int i, int j, int k, int l, short aword0[]);
+
+    public static final native void DrawPixels(int i, int j, int k, int l, int ai[]);
+
+    public static final native void DrawPixels(int i, int j, int k, int l, float af[]);
+
+    public static final native void EdgeFlag(boolean flag);
+
+    public static final native void EdgeFlagPointer(int i, boolean aflag[]);
+
+    public static final native void EdgeFlagv(boolean aflag[]);
+
+    public static final native void Enable(int i);
+
+    public static final native void EnableClientState(int i);
+
+    public static final native void End();
+
+    public static final native void EndList();
+
+    public static final native void EvalCoord1d(double d);
+
+    public static final native void EvalCoord(double d);
+
+    public static final native void EvalCoord1dv(double ad[]);
+
+    public static final native void EvalCoord1f(float f);
+
+    public static final native void EvalCoord(float f);
+
+    public static final native void EvalCoord1fv(float af[]);
+
+    public static final native void EvalCoord2d(double d, double d1);
+
+    public static final native void EvalCoord(double d, double d1);
+
+    public static final native void EvalCoord2dv(double ad[]);
+
+    public static final native void EvalCoord2f(float f, float f1);
+
+    public static final native void EvalCoord(float f, float f1);
+
+    public static final native void EvalCoord2fv(float af[]);
+
+    public static final native void EvalCoord(double ad[]);
+
+    public static final native void EvalCoord(float af[]);
+
+    public static final native void EvalMesh1(int i, int j, int k);
+
+    public static final native void EvalMesh2(int i, int j, int k, int l, int i1);
+
+    public static final native void EvalPoint1(int i);
+
+    public static final native void EvalPoint2(int i, int j);
+
+    public static final native void FeedbackBuffer(int i, int j, float af[]);
+
+    public static final native void Finish();
+
+    public static final native void Flush();
+
+    public static final native void Fogf(int i, float f);
+
+    public static final native void Fog(int i, float f);
+
+    public static final native void Fogfv(int i, float af[]);
+
+    public static final native void Fog(int i, float af[]);
+
+    public static final native void Fogi(int i, int j);
+
+    public static final native void Fog(int i, int j);
+
+    public static final native void Fogiv(int i, int ai[]);
+
+    public static final native void Fog(int i, int ai[]);
+
+    public static final native void FrontFace(int i);
+
+    public static final native void Frustum(double d, double d1, double d2, double d3, 
+            double d4, double d5);
+
+    public static final native int GenLists(int i);
+
+    public static final native void GenTextures(int i, int ai[]);
+
+    public static final native void GetBooleanv(int i, boolean aflag[]);
+
+    public static final native void GetClipPlane(int i, double ad[]);
+
+    public static final native void GetDoublev(int i, double ad[]);
+
+    public static final native int GetError();
+
+    public static final native void GetFloatv(int i, float af[]);
+
+    public static final native void GetIntegerv(int i, int ai[]);
+
+    public static final native void GetLightfv(int i, int j, float af[]);
+
+    public static final native void GetLight(int i, int j, float af[]);
+
+    public static final native void GetLightiv(int i, int j, int ai[]);
+
+    public static final native void GetLight(int i, int j, int ai[]);
+
+    public static final native void GetMapdv(int i, int j, double ad[]);
+
+    public static final native void GetMap(int i, int j, double ad[]);
+
+    public static final native void GetMapfv(int i, int j, float af[]);
+
+    public static final native void GetMap(int i, int j, float af[]);
+
+    public static final native void GetMapiv(int i, int j, int ai[]);
+
+    public static final native void GetMap(int i, int j, int ai[]);
+
+    public static final native void GetMaterialfv(int i, int j, float af[]);
+
+    public static final native void GetMaterial(int i, int j, float af[]);
+
+    public static final native void GetMaterialiv(int i, int j, int ai[]);
+
+    public static final native void GetMaterial(int i, int j, int ai[]);
+
+    public static final native void GetPixelMapfv(int i, float af[]);
+
+    public static final native void GetPixelMap(int i, float af[]);
+
+    public static final native void GetPixelMapuiv(int i, int ai[]);
+
+    public static final native void GetPixelMap(int i, int ai[]);
+
+    public static final native void GetPixelMapusv(int i, short aword0[]);
+
+    public static final native void GetPixelMap(int i, short aword0[]);
+
+    public static final native void GetPolygonStipple(byte abyte0[]);
+
+    public static final native java.lang.String GetString(int i);
+
+    public static final native void GetTexEnvfv(int i, int j, float af[]);
+
+    public static final native void GetTexEnv(int i, int j, float af[]);
+
+    public static final native void GetTexEnviv(int i, int j, int ai[]);
+
+    public static final native void GetTexEnv(int i, int j, int ai[]);
+
+    public static final native void GetTexGendv(int i, int j, double ad[]);
+
+    public static final native void GetTexGen(int i, int j, double ad[]);
+
+    public static final native void GetTexGenfv(int i, int j, float af[]);
+
+    public static final native void GetTexGen(int i, int j, float af[]);
+
+    public static final native void GetTexGeniv(int i, int j, int ai[]);
+
+    public static final native void GetTexGen(int i, int j, int ai[]);
+
+    public static final native void GetTexImage(int i, int j, int k, int l, byte abyte0[]);
+
+    public static final native void GetTexImage(int i, int j, int k, int l, short aword0[]);
+
+    public static final native void GetTexImage(int i, int j, int k, int l, int ai[]);
+
+    public static final native void GetTexImage(int i, int j, int k, int l, float af[]);
+
+    public static final native void GetTexLevelParameterfv(int i, int j, int k, float af[]);
+
+    public static final native void GetTexLevelParameter(int i, int j, int k, float af[]);
+
+    public static final native void GetTexLevelParameteriv(int i, int j, int k, int ai[]);
+
+    public static final native void GetTexLevelParameter(int i, int j, int k, int ai[]);
+
+    public static final native void GetTexParameterfv(int i, int j, float af[]);
+
+    public static final native void GetTexParameter(int i, int j, float af[]);
+
+    public static final native void GetTexParameteriv(int i, int j, int ai[]);
+
+    public static final native void GetTexParameter(int i, int j, int ai[]);
+
+    public static final native void Hint(int i, int j);
+
+    public static final native void IndexMask(int i);
+
+    public static final native void IndexPointer(int i, int j, byte abyte0[]);
+
+    public static final native void IndexPointer(int i, int j, short aword0[]);
+
+    public static final native void IndexPointer(int i, int j, int ai[]);
+
+    public static final native void IndexPointer(int i, int j, float af[]);
+
+    public static final native void IndexPointer(int i, int j, double ad[]);
+
+    public static final native void Indexd(double d);
+
+    public static final native void Index(double d);
+
+    public static final native void Indexdv(double ad[]);
+
+    public static final native void Index(double ad[]);
+
+    public static final native void Indexf(float f);
+
+    public static final native void Index(float f);
+
+    public static final native void Indexfv(float af[]);
+
+    public static final native void Index(float af[]);
+
+    public static final native void Indexi(int i);
+
+    public static final native void Index(int i);
+
+    public static final native void Indexiv(int ai[]);
+
+    public static final native void Index(int ai[]);
+
+    public static final native void Indexs(short word0);
+
+    public static final native void Index(short word0);
+
+    public static final native void Indexsv(short aword0[]);
+
+    public static final native void Index(short aword0[]);
+
+    public static final native void Indexub(byte byte0);
+
+    public static final native void Index(byte byte0);
+
+    public static final native void Indexubv(byte abyte0[]);
+
+    public static final native void Index(byte abyte0[]);
+
+    public static final native void InitNames();
+
+    public static final native void InterleavedArrays(int i, int j, float af[]);
+
+    public static final native boolean IsEnabled(int i);
+
+    public static final native boolean IsList(int i);
+
+    public static final native boolean IsTexture(int i);
+
+    public static final native void LightModelf(int i, float f);
+
+    public static final native void LightMode(int i, float f);
+
+    public static final native void LightModelfv(int i, float af[]);
+
+    public static final native void LightModel(int i, float af[]);
+
+    public static final native void LightModeli(int i, int j);
+
+    public static final native void LightModel(int i, int j);
+
+    public static final native void LightModeliv(int i, int ai[]);
+
+    public static final native void LightModel(int i, int ai[]);
+
+    public static final native void Lightf(int i, int j, float f);
+
+    public static final native void Light(int i, int j, float f);
+
+    public static final native void Lightfv(int i, int j, float af[]);
+
+    public static final native void Light(int i, int j, float af[]);
+
+    public static final native void Lighti(int i, int j, int k);
+
+    public static final native void Light(int i, int j, int k);
+
+    public static final native void Lightiv(int i, int j, int ai[]);
+
+    public static final native void Light(int i, int j, int ai[]);
+
+    public static final native void LineStipple(int i, short word0);
+
+    public static final native void LineWidth(float f);
+
+    public static final native void ListBase(int i);
+
+    public static final native void LoadIdentity();
+
+    public static final native void LoadMatrixd(double ad[]);
+
+    public static final native void LoadMatrix(double ad[]);
+
+    public static final native void LoadMatrixf(float af[]);
+
+    public static final native void LoadMatrix(float af[]);
+
+    public static final native void LoadName(int i);
+
+    public static final native void LogicOp(int i);
+
+    public static final native void Map1d(int i, double d, double d1, int j, int k, double ad[]);
+
+    public static final native void Map1(int i, double d, double d1, int j, int k, double ad[]);
+
+    public static final native void Map1f(int i, float f, float f1, int j, int k, float af[]);
+
+    public static final native void Map1(int i, float f, float f1, int j, int k, float af[]);
+
+    public static final native void Map2d(int i, double d, double d1, int j, int k, double d2, double d3, int l, int i1, double ad[]);
+
+    public static final native void Map2(int i, double d, double d1, int j, int k, double d2, double d3, int l, int i1, double ad[]);
+
+    public static final native void Map2f(int i, float f, float f1, int j, int k, float f2, float f3, int l, 
+            int i1, float af[]);
+
+    public static final native void Map2(int i, float f, float f1, int j, int k, float f2, float f3, int l, 
+            int i1, float af[]);
+
+    public static final native void MapGrid1d(int i, double d, double d1);
+
+    public static final native void MapGrid1(int i, double d, double d1);
+
+    public static final native void MapGrid1f(int i, float f, float f1);
+
+    public static final native void MapGrid1(int i, float f, float f1);
+
+    public static final native void MapGrid2d(int i, double d, double d1, int j, double d2, 
+            double d3);
+
+    public static final native void MapGrid2(int i, double d, double d1, int j, double d2, 
+            double d3);
+
+    public static final native void MapGrid2f(int i, float f, float f1, int j, float f2, float f3);
+
+    public static final native void MapGrid2(int i, float f, float f1, int j, float f2, float f3);
+
+    public static final native void Materialf(int i, int j, float f);
+
+    public static final native void Material(int i, int j, float f);
+
+    public static final native void Materialfv(int i, int j, float af[]);
+
+    public static final native void Material(int i, int j, float af[]);
+
+    public static final native void Materiali(int i, int j, int k);
+
+    public static final native void Material(int i, int j, int k);
+
+    public static final native void Materialiv(int i, int j, int ai[]);
+
+    public static final native void Material(int i, int j, int ai[]);
+
+    public static final native void MatrixMode(int i);
+
+    public static final native void MultMatrixd(double ad[]);
+
+    public static final native void MultMatrix(double ad[]);
+
+    public static final native void MultMatrixf(float af[]);
+
+    public static final native void MultMatrix(float af[]);
+
+    public static final native void NewList(int i, int j);
+
+    public static final native void Normal3b(byte byte0, byte byte1, byte byte2);
+
+    public static final native void Normal3(byte byte0, byte byte1, byte byte2);
+
+    public static final native void Normal3bv(byte abyte0[]);
+
+    public static final native void Normal3(byte abyte0[]);
+
+    public static final native void Normal3d(double d, double d1, double d2);
+
+    public static final native void Normal3(double d, double d1, double d2);
+
+    public static final native void Normal3dv(double ad[]);
+
+    public static final native void Normal3(double ad[]);
+
+    public static final native void Normal3f(float f, float f1, float f2);
+
+    public static final native void Normal3(float f, float f1, float f2);
+
+    public static final native void Normal3fv(float af[]);
+
+    public static final native void Normal3(float af[]);
+
+    public static final native void Normal3i(int i, int j, int k);
+
+    public static final native void Normal3(int i, int j, int k);
+
+    public static final native void Normal3iv(int ai[]);
+
+    public static final native void Normal3(int ai[]);
+
+    public static final native void Normal3s(short word0, short word1, short word2);
+
+    public static final native void Normal3(short word0, short word1, short word2);
+
+    public static final native void Normal3sv(short aword0[]);
+
+    public static final native void Normal3(short aword0[]);
+
+    public static final native void NormalPointer(int i, int j, byte abyte0[]);
+
+    public static final native void NormalPointer(int i, int j, short aword0[]);
+
+    public static final native void NormalPointer(int i, int j, int ai[]);
+
+    public static final native void NormalPointer(int i, int j, float af[]);
+
+    public static final native void NormalPointer(int i, int j, double ad[]);
+
+    public static final native void Ortho(double d, double d1, double d2, double d3, 
+            double d4, double d5);
+
+    public static final native void PassThrough(float f);
+
+    public static final native void PixelMapfv(int i, int j, float af[]);
+
+    public static final native void PixelMap(int i, int j, float af[]);
+
+    public static final native void PixelMapuiv(int i, int j, int ai[]);
+
+    public static final native void PixelMap(int i, int j, int ai[]);
+
+    public static final native void PixelMapusv(int i, int j, short aword0[]);
+
+    public static final native void PixelMap(int i, int j, short aword0[]);
+
+    public static final native void PixelStoref(int i, float f);
+
+    public static final native void PixelStore(int i, float f);
+
+    public static final native void PixelStorei(int i, int j);
+
+    public static final native void PixelStore(int i, int j);
+
+    public static final native void PixelTransferf(int i, float f);
+
+    public static final native void PixelTransfer(int i, float f);
+
+    public static final native void PixelTransferi(int i, int j);
+
+    public static final native void PixelTransfer(int i, int j);
+
+    public static final native void PixelZoom(float f, float f1);
+
+    public static final native void PointSize(float f);
+
+    public static final native void PolygonMode(int i, int j);
+
+    public static final native void PolygonOffset(float f, float f1);
+
+    public static final native void PolygonStipple(byte abyte0[]);
+
+    public static final native void PopAttrib();
+
+    public static final native void PopClientAttrib();
+
+    public static final native void PopMatrix();
+
+    public static final native void PopName();
+
+    public static final native void PrioritizeTextures(int i, int ai[], float af[]);
+
+    public static final native void PushAttrib(int i);
+
+    public static final native void PushClientAttrib(int i);
+
+    public static final native void PushMatrix();
+
+    public static final native void PushName(int i);
+
+    public static final native void RasterPos2d(double d, double d1);
+
+    public static final native void RasterPos(double d, double d1);
+
+    public static final native void RasterPos2dv(double ad[]);
+
+    public static final native void RasterPos2f(float f, float f1);
+
+    public static final native void RasterPos(float f, float f1);
+
+    public static final native void RasterPos2fv(float af[]);
+
+    public static final native void RasterPos2i(int i, int j);
+
+    public static final native void RasterPos(int i, int j);
+
+    public static final native void RasterPos2iv(int ai[]);
+
+    public static final native void RasterPos2s(short word0, short word1);
+
+    public static final native void RasterPos(short word0, short word1);
+
+    public static final native void RasterPos2sv(short aword0[]);
+
+    public static final native void RasterPos3d(double d, double d1, double d2);
+
+    public static final native void RasterPos(double d, double d1, double d2);
+
+    public static final native void RasterPos3dv(double ad[]);
+
+    public static final native void RasterPos3f(float f, float f1, float f2);
+
+    public static final native void RasterPos(float f, float f1, float f2);
+
+    public static final native void RasterPos3fv(float af[]);
+
+    public static final native void RasterPos3i(int i, int j, int k);
+
+    public static final native void RasterPos(int i, int j, int k);
+
+    public static final native void RasterPos3iv(int ai[]);
+
+    public static final native void RasterPos3s(short word0, short word1, short word2);
+
+    public static final native void RasterPos(short word0, short word1, short word2);
+
+    public static final native void RasterPos3sv(short aword0[]);
+
+    public static final native void RasterPos4d(double d, double d1, double d2, double d3);
+
+    public static final native void RasterPos(double d, double d1, double d2, double d3);
+
+    public static final native void RasterPos4dv(double ad[]);
+
+    public static final native void RasterPos4f(float f, float f1, float f2, float f3);
+
+    public static final native void RasterPos(float f, float f1, float f2, float f3);
+
+    public static final native void RasterPos4fv(float af[]);
+
+    public static final native void RasterPos4i(int i, int j, int k, int l);
+
+    public static final native void RasterPos(int i, int j, int k, int l);
+
+    public static final native void RasterPos4iv(int ai[]);
+
+    public static final native void RasterPos4s(short word0, short word1, short word2, short word3);
+
+    public static final native void RasterPos(short word0, short word1, short word2, short word3);
+
+    public static final native void RasterPos4sv(short aword0[]);
+
+    public static final native void RasterPos(double ad[]);
+
+    public static final native void RasterPos(float af[]);
+
+    public static final native void RasterPos(int ai[]);
+
+    public static final native void RasterPos(short aword0[]);
+
+    public static final native void ReadBuffer(int i);
+
+    public static final native void ReadPixels(int i, int j, int k, int l, int i1, int j1, byte abyte0[]);
+
+    public static final native void ReadPixels(int i, int j, int k, int l, int i1, int j1, short aword0[]);
+
+    public static final native void ReadPixels(int i, int j, int k, int l, int i1, int j1, int ai[]);
+
+    public static final native void ReadPixels(int i, int j, int k, int l, int i1, int j1, float af[]);
+
+    public static final native void Rectd(double d, double d1, double d2, double d3);
+
+    public static final native void Rect(double d, double d1, double d2, double d3);
+
+    public static final native void Rectdv(double ad[], double ad1[]);
+
+    public static final native void Rect(double ad[], double ad1[]);
+
+    public static final native void Rectf(float f, float f1, float f2, float f3);
+
+    public static final native void Rect(float f, float f1, float f2, float f3);
+
+    public static final native void Rectfv(float af[], float af1[]);
+
+    public static final native void Rect(float af[], float af1[]);
+
+    public static final native void Recti(int i, int j, int k, int l);
+
+    public static final native void Rect(int i, int j, int k, int l);
+
+    public static final native void Rectiv(int ai[], int ai1[]);
+
+    public static final native void Rect(int ai[], int ai1[]);
+
+    public static final native void Rects(short word0, short word1, short word2, short word3);
+
+    public static final native void Rect(short word0, short word1, short word2, short word3);
+
+    public static final native void Rectsv(short aword0[], short aword1[]);
+
+    public static final native void Rect(short aword0[], short aword1[]);
+
+    public static final native int RenderMode(int i);
+
+    public static final native void Rotated(double d, double d1, double d2, double d3);
+
+    public static final native void Rotate(double d, double d1, double d2, double d3);
+
+    public static final native void Rotatef(float f, float f1, float f2, float f3);
+
+    public static final native void Rotate(float f, float f1, float f2, float f3);
+
+    public static final native void Scaled(double d, double d1, double d2);
+
+    public static final native void Scale(double d, double d1, double d2);
+
+    public static final native void Scalef(float f, float f1, float f2);
+
+    public static final native void Scale(float f, float f1, float f2);
+
+    public static final native void Scissor(int i, int j, int k, int l);
+
+    public static final native void SelectBuffer(int i, int ai[]);
+
+    public static final native void ShadeModel(int i);
+
+    public static final native void StencilFunc(int i, int j, int k);
+
+    public static final native void StencilMask(int i);
+
+    public static final native void StencilOp(int i, int j, int k);
+
+    public static final native void TexCoord1d(double d);
+
+    public static final native void TexCoord(double d);
+
+    public static final native void TexCoord1dv(double ad[]);
+
+    public static final native void TexCoord1f(float f);
+
+    public static final native void TexCoord(float f);
+
+    public static final native void TexCoord1fv(float af[]);
+
+    public static final native void TexCoord1i(int i);
+
+    public static final native void TexCoord(int i);
+
+    public static final native void TexCoord1iv(int ai[]);
+
+    public static final native void TexCoord1s(short word0);
+
+    public static final native void TexCoord(short word0);
+
+    public static final native void TexCoord1sv(short aword0[]);
+
+    public static final native void TexCoord2d(double d, double d1);
+
+    public static final native void TexCoord(double d, double d1);
+
+    public static final native void TexCoord2dv(double ad[]);
+
+    public static final native void TexCoord2f(float f, float f1);
+
+    public static final native void TexCoord(float f, float f1);
+
+    public static final native void TexCoord2fv(float af[]);
+
+    public static final native void TexCoord2i(int i, int j);
+
+    public static final native void TexCoord(int i, int j);
+
+    public static final native void TexCoord2iv(int ai[]);
+
+    public static final native void TexCoord2s(short word0, short word1);
+
+    public static final native void TexCoord(short word0, short word1);
+
+    public static final native void TexCoord2sv(short aword0[]);
+
+    public static final native void TexCoord3d(double d, double d1, double d2);
+
+    public static final native void TexCoord(double d, double d1, double d2);
+
+    public static final native void TexCoord3dv(double ad[]);
+
+    public static final native void TexCoord3f(float f, float f1, float f2);
+
+    public static final native void TexCoord(float f, float f1, float f2);
+
+    public static final native void TexCoord3fv(float af[]);
+
+    public static final native void TexCoord3i(int i, int j, int k);
+
+    public static final native void TexCoord(int i, int j, int k);
+
+    public static final native void TexCoord3iv(int ai[]);
+
+    public static final native void TexCoord3s(short word0, short word1, short word2);
+
+    public static final native void TexCoord(short word0, short word1, short word2);
+
+    public static final native void TexCoord3sv(short aword0[]);
+
+    public static final native void TexCoord4d(double d, double d1, double d2, double d3);
+
+    public static final native void TexCoord(double d, double d1, double d2, double d3);
+
+    public static final native void TexCoord4dv(double ad[]);
+
+    public static final native void TexCoord4f(float f, float f1, float f2, float f3);
+
+    public static final native void TexCoord(float f, float f1, float f2, float f3);
+
+    public static final native void TexCoord4fv(float af[]);
+
+    public static final native void TexCoord4i(int i, int j, int k, int l);
+
+    public static final native void TexCoord(int i, int j, int k, int l);
+
+    public static final native void TexCoord4iv(int ai[]);
+
+    public static final native void TexCoord4s(short word0, short word1, short word2, short word3);
+
+    public static final native void TexCoord(short word0, short word1, short word2, short word3);
+
+    public static final native void TexCoord4sv(short aword0[]);
+
+    public static final native void TexCoord(double ad[]);
+
+    public static final native void TexCoord(float af[]);
+
+    public static final native void TexCoord(int ai[]);
+
+    public static final native void TexCoord(short aword0[]);
+
+    public static final native void TexCoordPointer(int i, int j, int k, short aword0[]);
+
+    public static final native void TexCoordPointer(int i, int j, int k, int ai[]);
+
+    public static final native void TexCoordPointer(int i, int j, int k, float af[]);
+
+    public static final native void TexCoordPointer(int i, int j, int k, double ad[]);
+
+    public static final native void TexEnvf(int i, int j, float f);
+
+    public static final native void TexEnv(int i, int j, float f);
+
+    public static final native void TexEnvfv(int i, int j, float af[]);
+
+    public static final native void TexEnv(int i, int j, float af[]);
+
+    public static final native void TexEnvi(int i, int j, int k);
+
+    public static final native void TexEnv(int i, int j, int k);
+
+    public static final native void TexEnviv(int i, int j, int ai[]);
+
+    public static final native void TexEnv(int i, int j, int ai[]);
+
+    public static final native void TexGend(int i, int j, double d);
+
+    public static final native void TexGen(int i, int j, double d);
+
+    public static final native void TexGendv(int i, int j, double ad[]);
+
+    public static final native void TexGen(int i, int j, double ad[]);
+
+    public static final native void TexGenf(int i, int j, float f);
+
+    public static final native void TexGen(int i, int j, float f);
+
+    public static final native void TexGenfv(int i, int j, float af[]);
+
+    public static final native void TexGen(int i, int j, float af[]);
+
+    public static final native void TexGeni(int i, int j, int k);
+
+    public static final native void TexGen(int i, int j, int k);
+
+    public static final native void TexGeniv(int i, int j, int ai[]);
+
+    public static final native void TexGen(int i, int j, int ai[]);
+
+    public static final native void TexImage1D(int i, int j, int k, int l, int i1, int j1, int k1, byte abyte0[]);
+
+    public static final native void TexImage1D(int i, int j, int k, int l, int i1, int j1, int k1, short aword0[]);
+
+    public static final native void TexImage1D(int i, int j, int k, int l, int i1, int j1, int k1, int ai[]);
+
+    public static final native void TexImage1D(int i, int j, int k, int l, int i1, int j1, int k1, float af[]);
+
+    public static final native void TexImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            byte abyte0[]);
+
+    public static final native void TexImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            short aword0[]);
+
+    public static final native void TexImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            int ai[]);
+
+    public static final native void TexImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            float af[]);
+
+    public static final native void TexParameterf(int i, int j, float f);
+
+    public static final native void TexParameter(int i, int j, float f);
+
+    public static final native void TexParameterfv(int i, int j, float af[]);
+
+    public static final native void TexParameter(int i, int j, float af[]);
+
+    public static final native void TexParameteri(int i, int j, int k);
+
+    public static final native void TexParameter(int i, int j, int k);
+
+    public static final native void TexParameteriv(int i, int j, int ai[]);
+
+    public static final native void TexParameter(int i, int j, int ai[]);
+
+    public static final native void TexSubImage1D(int i, int j, int k, int l, int i1, int j1, byte abyte0[]);
+
+    public static final native void TexSubImage1D(int i, int j, int k, int l, int i1, int j1, short aword0[]);
+
+    public static final native void TexSubImage1D(int i, int j, int k, int l, int i1, int j1, int ai[]);
+
+    public static final native void TexSubImage1D(int i, int j, int k, int l, int i1, int j1, float af[]);
+
+    public static final native void TexSubImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            byte abyte0[]);
+
+    public static final native void TexSubImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            short aword0[]);
+
+    public static final native void TexSubImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            int ai[]);
+
+    public static final native void TexSubImage2D(int i, int j, int k, int l, int i1, int j1, int k1, int l1, 
+            float af[]);
+
+    public static final native void Translated(double d, double d1, double d2);
+
+    public static final native void Translate(double d, double d1, double d2);
+
+    public static final native void Translatef(float f, float f1, float f2);
+
+    public static final native void Translate(float f, float f1, float f2);
+
+    public static final native void Vertex2d(double d, double d1);
+
+    public static final native void Vertex(double d, double d1);
+
+    public static final native void Vertex2dv(double ad[]);
+
+    public static final native void Vertex2f(float f, float f1);
+
+    public static final native void Vertex(float f, float f1);
+
+    public static final native void Vertex2fv(float af[]);
+
+    public static final native void Vertex2i(int i, int j);
+
+    public static final native void Vertex(int i, int j);
+
+    public static final native void Vertex2iv(int ai[]);
+
+    public static final native void Vertex2s(short word0, short word1);
+
+    public static final native void Vertex(short word0, short word1);
+
+    public static final native void Vertex2sv(short aword0[]);
+
+    public static final native void Vertex3d(double d, double d1, double d2);
+
+    public static final native void Vertex(double d, double d1, double d2);
+
+    public static final native void Vertex3dv(double ad[]);
+
+    public static final native void Vertex3f(float f, float f1, float f2);
+
+    public static final native void Vertex(float f, float f1, float f2);
+
+    public static final native void Vertex3fv(float af[]);
+
+    public static final native void Vertex3i(int i, int j, int k);
+
+    public static final native void Vertex(int i, int j, int k);
+
+    public static final native void Vertex3iv(int ai[]);
+
+    public static final native void Vertex3s(short word0, short word1, short word2);
+
+    public static final native void Vertex(short word0, short word1, short word2);
+
+    public static final native void Vertex3sv(short aword0[]);
+
+    public static final native void Vertex4d(double d, double d1, double d2, double d3);
+
+    public static final native void Vertex(double d, double d1, double d2, double d3);
+
+    public static final native void Vertex4dv(double ad[]);
+
+    public static final native void Vertex4f(float f, float f1, float f2, float f3);
+
+    public static final native void Vertex(float f, float f1, float f2, float f3);
+
+    public static final native void Vertex4fv(float af[]);
+
+    public static final native void Vertex4i(int i, int j, int k, int l);
+
+    public static final native void Vertex(int i, int j, int k, int l);
+
+    public static final native void Vertex4iv(int ai[]);
+
+    public static final native void Vertex4s(short word0, short word1, short word2, short word3);
+
+    public static final native void Vertex(short word0, short word1, short word2, short word3);
+
+    public static final native void Vertex4sv(short aword0[]);
+
+    public static final native void Vertex(double ad[]);
+
+    public static final native void Vertex(float af[]);
+
+    public static final native void Vertex(int ai[]);
+
+    public static final native void Vertex(short aword0[]);
+
+    public static final native void VertexPointer(int i, int j, int k, short aword0[]);
+
+    public static final native void VertexPointer(int i, int j, int k, int ai[]);
+
+    public static final native void VertexPointer(int i, int j, int k, float af[]);
+
+    public static final native void VertexPointer(int i, int j, int k, double ad[]);
+
+    public static final native void Viewport(int i, int j, int k, int l);
+
+    public static final boolean extExist(java.lang.String s)
+    {
+        java.lang.String s1 = com.maddox.opengl.gl.GetString(7939);
+        for(java.util.StringTokenizer stringtokenizer = new StringTokenizer(s1, " "); stringtokenizer.hasMoreTokens();)
+        {
+            java.lang.String s2 = stringtokenizer.nextToken();
+            if(s2.equals(s))
+                return true;
+        }
+
+        return false;
     }
-  }
 
-  static {
-    loadNative();
-  }
+    public static final void loadNative()
+    {
+        if(!libLoaded)
+        {
+            java.lang.System.loadLibrary("jgl");
+            libLoaded = true;
+        }
+    }
+
+    private static boolean libLoaded = false;
+
+    static 
+    {
+        com.maddox.opengl.gl.loadNative();
+    }
 }

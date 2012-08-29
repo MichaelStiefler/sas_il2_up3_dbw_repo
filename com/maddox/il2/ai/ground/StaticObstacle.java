@@ -1,98 +1,93 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   StaticObstacle.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
 
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            Obstacle, UnitData, ChiefGround
+
 public class StaticObstacle
 {
-  private static final int MAX_COLLISIONS = 3;
-  private Actor obj;
-  Point3d pos;
-  float R;
-  int segIdx;
-  double along;
-  double side;
-  private int nCollisions;
 
-  public StaticObstacle()
-  {
-    clear();
-  }
-
-  public void clear()
-  {
-    this.obj = null;
-    this.nCollisions = 0;
-  }
-
-  public boolean isActive()
-  {
-    return this.obj != null;
-  }
-
-  public boolean updateState()
-  {
-    if (!Actor.isValid(this.obj)) {
-      clear();
-    }
-
-    return isActive();
-  }
-
-  public void collision(Actor paramActor, ChiefGround paramChiefGround, UnitData paramUnitData)
-  {
-    if (!Actor.isValid(paramActor))
+    public StaticObstacle()
     {
-      return;
+        clear();
     }
 
-    if (!(paramActor instanceof Obstacle))
+    public void clear()
     {
-      return;
+        obj = null;
+        nCollisions = 0;
     }
 
-    if (!((Obstacle)paramActor).unmovableInFuture())
+    public boolean isActive()
     {
-      return;
+        return obj != null;
     }
 
-    if (updateState()) {
-      if (this.obj == paramActor) {
-        this.nCollisions += 1;
+    public boolean updateState()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(obj))
+            clear();
+        return isActive();
+    }
 
-        if (this.nCollisions > 3) {
-          ((Obstacle)paramActor).collisionDeath();
-          clear();
+    public void collision(com.maddox.il2.engine.Actor actor, com.maddox.il2.ai.ground.ChiefGround chiefground, com.maddox.il2.ai.ground.UnitData unitdata)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+            return;
+        if(!(actor instanceof com.maddox.il2.ai.ground.Obstacle))
+            return;
+        if(!((com.maddox.il2.ai.ground.Obstacle)actor).unmovableInFuture())
+            return;
+        if(updateState())
+        {
+            if(obj == actor)
+            {
+                nCollisions++;
+                if(nCollisions > 3)
+                {
+                    ((com.maddox.il2.ai.ground.Obstacle)actor).collisionDeath();
+                    clear();
+                }
+                return;
+            }
+            int i = unitdata.segmentIdx;
+            double d = chiefground.computePosAlong(i, actor.pos.getAbsPoint());
+            if(i < segIdx || i == segIdx && d <= along)
+            {
+                nCollisions++;
+                if(nCollisions > 3)
+                {
+                    ((com.maddox.il2.ai.ground.Obstacle)actor).collisionDeath();
+                    clear();
+                }
+                return;
+            }
         }
-
-        return;
-      }
-
-      int i = paramUnitData.segmentIdx;
-      double d = paramChiefGround.computePosAlong(i, paramActor.pos.getAbsPoint());
-
-      if ((i < this.segIdx) || ((i == this.segIdx) && (d <= this.along)))
-      {
-        this.nCollisions += 1;
-
-        if (this.nCollisions > 3) {
-          ((Obstacle)paramActor).collisionDeath();
-          clear();
-        }
-
-        return;
-      }
-
+        nCollisions = 1;
+        obj = actor;
+        pos = new Point3d(actor.pos.getAbsPoint());
+        segIdx = unitdata.segmentIdx;
+        along = chiefground.computePosAlong(segIdx, pos);
+        side = chiefground.computePosSide(segIdx, pos);
+        R = actor.collisionR();
+        if(R <= 0.0F)
+            R = 0.0F;
     }
 
-    this.nCollisions = 1;
-    this.obj = paramActor;
-    this.pos = new Point3d(paramActor.pos.getAbsPoint());
-    this.segIdx = paramUnitData.segmentIdx;
-    this.along = paramChiefGround.computePosAlong(this.segIdx, this.pos);
-    this.side = paramChiefGround.computePosSide(this.segIdx, this.pos);
-    this.R = paramActor.collisionR();
-    if (this.R <= 0.0F) this.R = 0.0F;
-  }
+    private static final int MAX_COLLISIONS = 3;
+    private com.maddox.il2.engine.Actor obj;
+    com.maddox.JGP.Point3d pos;
+    float R;
+    int segIdx;
+    double along;
+    double side;
+    private int nCollisions;
 }

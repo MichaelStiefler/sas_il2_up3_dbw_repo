@@ -1,16 +1,26 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitN1K2JA.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.Way;
+import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Atmosphere;
+import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Mass;
@@ -18,314 +28,333 @@ import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Time;
 
-public class CockpitN1K2JA extends CockpitPilot
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitPilot, Cockpit
+
+public class CockpitN1K2JA extends com.maddox.il2.objects.air.CockpitPilot
 {
-  private Variables setOld = new Variables(null);
-  private Variables setNew = new Variables(null);
-  private Variables setTmp;
-  public Vector3f w = new Vector3f();
-  private float pictAiler = 0.0F;
-  private float pictElev = 0.0F;
-  private float pictGear = 0.0F;
-  private float pictTE = 0.0F;
-  private float pictTR = 0.0F;
-
-  private static final float[] speedometerScale = { 0.0F, -2.0F, -7.5F, 22.0F, 65.5F, 109.0F, 153.0F, 197.0F, 242.5F, 290.0F, 338.0F, 374.0F, 407.0F, 439.0F, 471.0F, 503.0F, 536.5F, 570.0F, 606.0F, 643.5F, 676.0F };
-
-  private static final float[] revolutionsScale = { 0.0F, 20.0F, 75.0F, 125.0F, 180.0F, 220.0F, 285.0F, 335.0F };
-
-  private static final float[] oilTScale = { 0.0F, 20.0F, 70.5F, 122.5F, 180.0F, 237.5F, 290.5F, 338.0F };
-
-  private static final float[] frAirTempScale = { 0.0F, 20.5F, 37.0F, 48.5F, 60.5F, 75.5F };
-
-  private Point3d tmpP = new Point3d();
-  private Vector3d tmpV = new Vector3d();
-
-  protected float waypointAzimuth()
-  {
-    return super.waypointAzimuthInvertMinus(3.0F);
-  }
-
-  public CockpitN1K2JA()
-  {
-    super("3DO/Cockpit/N1K2-Ja/hier.him", "bf109");
-
-    this.cockpitNightMats = new String[] { "Gauges_01", "Gauges_02", "Gauges_03", "Gauges_04", "Gauges_05", "Gauges_06", "Gauges_07", "DGauges_01", "DGauges_02", "DGauges_03", "DGauges_04", "DGauges_05", "DGauges_06" };
-
-    setNightMats(false);
-    this.cockpitDimControl = (!this.cockpitDimControl);
-
-    interpPut(new Interpolater(), null, Time.current(), null);
-  }
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    this.mesh.chunkSetAngles("CanopyOpenLvr", cvt(this.fm.CT.getCockpitDoor(), 0.0F, 0.1F, 0.0F, 63.0F), 0.0F, 0.0F);
-    resetYPRmodifier();
-    xyz[1] = cvt(this.fm.CT.getCockpitDoor(), 0.1F, 0.99F, 0.0F, 0.61F);
-    this.mesh.chunkSetLocate("Canopy", xyz, ypr);
-    resetYPRmodifier();
-    xyz[2] = cvt(this.fm.CT.getCockpitDoor(), 0.0F, 0.1F, 0.0F, 0.0132F);
-    this.mesh.chunkSetLocate("CanopyOpenRodL", xyz, ypr);
-    xyz[2] = cvt(this.fm.CT.getCockpitDoor(), 0.0F, 0.1F, 0.0F, -0.0128F);
-    this.mesh.chunkSetLocate("CanopyOpenRodR", xyz, ypr);
-
-    this.mesh.chunkSetAngles("GSDimmArm", cvt(interp(this.setNew.dimPosition, this.setOld.dimPosition, paramFloat), 0.0F, 1.0F, 64.0F, 0.0F), 0.0F, 0.0F);
-    resetYPRmodifier();
-    xyz[2] = cvt(interp(this.setNew.dimPosition, this.setOld.dimPosition, paramFloat), 0.0F, 1.0F, -0.0594F, 0.0F);
-    this.mesh.chunkSetLocate("GSDimmBase", xyz, ypr);
-    this.mesh.chunkSetAngles("IgnitionSwitch", cvt(this.fm.EI.engines[0].getControlMagnetos(), 0.0F, 3.0F, 0.0F, 113.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("GearHandle", cvt(this.pictGear = 0.9F * this.pictGear + 0.1F * this.fm.CT.GearControl, 0.0F, 1.0F, 0.0F, -31.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("GearHandleMan", 0.0F, 0.0F, 0.0F);
-    if (this.fm.CT.FlapsControl != 0.19F) {
-      this.mesh.chunkSetAngles("FlapHandle", -48.0F * this.setNew.flap, 0.0F, 0.0F);
-    }
-    this.mesh.chunkSetAngles("TQHandle", 48.0F * this.setNew.throttle, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("TRigger", this.fm.CT.saveWeaponControl[1] != 0 ? -12.0F : 0.0F, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("PropPitchLvr", 51.0F * this.setNew.pitch, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("MixLvr", 45.0F * this.setNew.mix, 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("ChargerLvr", cvt(this.fm.EI.engines[0].getControlCompressor(), 0.0F, 2.0F, 0.0F, 49.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("ChargerAutoLvr", cvt(this.fm.EI.engines[0].getControlCompressor(), 0.0F, 2.0F, 0.0F, 49.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("CowlFlapLvr", -750.0F * this.fm.EI.engines[0].getControlRadiator(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("OilCoolerLvr", -450.0F * this.fm.EI.engines[0].getControlRadiator(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("PedalCrossBar", 25.0F * this.fm.CT.getRudder(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Pedal_L", 35.0F * this.fm.CT.getBrake(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Pedal_R", 35.0F * this.fm.CT.getBrake(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("FLCS", (this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.fm.CT.AileronControl) * 20.0F, 0.0F, 20.0F * (this.pictElev = 0.85F * this.pictElev + 0.15F * this.fm.CT.ElevatorControl));
-    this.mesh.chunkSetAngles("FLCSRod", 0.0F, 0.0F, -20.0F * this.pictElev);
-    this.mesh.chunkSetAngles("ElevTrim", 450.0F * (this.pictTE = 0.9F * this.pictTE + 0.1F * this.fm.CT.trimElevator), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("RuddrTrim", -450.0F * (this.pictTR = 0.9F * this.pictTR + 0.1F * this.fm.CT.trimRudder), 0.0F, 0.0F);
-    if (this.cockpitLightControl)
-      this.mesh.chunkSetAngles("SW_UVLight", 0.0F, 0.0F, 0.0F);
-    else {
-      this.mesh.chunkSetAngles("SW_UVLight", 0.0F, 0.0F, -54.0F);
-    }
-
-    resetYPRmodifier();
-    float f = this.pictTE;
-    if (f < 0.0F)
-      xyz[1] = cvt(f, -0.25F, 0.0F, -0.02305F, 0.0F);
-    else {
-      xyz[1] = cvt(f, 0.0F, 0.5F, 0.0F, 0.04985F);
-    }
-    this.mesh.chunkSetLocate("NeedElevTrim", xyz, ypr);
-    this.mesh.chunkSetAngles("NeedRuddrTrim", cvt(this.pictTR, -0.5F, 0.5F, 90.0F, -90.0F), 0.0F, 0.0F);
-    if (((this.fm.AS.astateCockpitState & 0x40) == 0) || ((this.fm.AS.astateCockpitState & 0x10) == 0) || ((this.fm.AS.astateCockpitState & 0x4) == 0))
+    class Interpolater extends com.maddox.il2.engine.InterpolateRef
     {
-      this.mesh.chunkSetAngles("NeedAHCyl", 0.0F, -this.fm.Or.getKren(), 0.0F);
-      this.mesh.chunkSetAngles("NeedAHBar", 0.0F, 0.0F, cvt(this.fm.Or.getTangage(), -45.0F, 45.0F, 20.0F, -20.0F));
-    }
-    if (((this.fm.AS.astateCockpitState & 0x40) == 0) || ((this.fm.AS.astateCockpitState & 0x8) == 0) || ((this.fm.AS.astateCockpitState & 0x20) == 0))
-    {
-      this.mesh.chunkSetAngles("NeedCompass_A", 0.0F, 0.0F, cvt(this.fm.Or.getTangage(), -20.0F, 20.0F, 20.0F, -20.0F));
-      this.mesh.chunkSetAngles("NeedCompass_B", -this.setNew.azimuth.getDeg(paramFloat) - 90.0F, 0.0F, 0.0F);
-    }
-    this.mesh.chunkSetAngles("NeedAlt_Km", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, 1440.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedAlt_M", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, 14400.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedBank", cvt(getBall(8.0D), -8.0F, 8.0F, 10.0F, -10.0F), 0.0F, 0.0F);
-    this.w.set(this.fm.getW());
-    this.fm.Or.transform(this.w);
-    this.mesh.chunkSetAngles("NeedTurn", cvt(this.w.z, -0.23562F, 0.23562F, -25.0F, 25.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedClimb", cvt(this.setNew.vspeed, -10.0F, 10.0F, -180.0F, 180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedCylTemp", cvt(this.fm.EI.engines[0].tWaterOut, 0.0F, 360.0F, 0.0F, 90.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedExhTemp", cvt(this.fm.EI.engines[0].tWaterOut, 0.0F, 324.0F, 0.0F, 90.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedFuelA", cvt(this.fm.M.fuel, 171.0F, 600.0F, 0.0F, 290.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedFuelB", cvt(this.fm.M.fuel, 0.0F, 171.0F, 0.0F, 153.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedFuelPress", cvt(this.fm.M.fuel > 1.0F ? 0.26F : 0.0F, 0.0F, 0.6F, 0.0F, -180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedHour", cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedMin", cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedManPress", cvt(this.setNew.manifold, 0.33339F, 1.66661F, -162.5F, 162.5F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedOilPress", cvt(1.0F + 0.05F * this.fm.EI.engines[0].tOilOut, 0.0F, 10.0F, 0.0F, 180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedOilTemp", -floatindex(cvt(this.fm.EI.engines[0].tOilOut, 30.0F, 110.0F, 0.0F, 8.0F), oilTScale), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedRPM", floatindex(cvt(this.fm.EI.engines[0].getRPM(), 0.0F, 3500.0F, 0.0F, 7.0F), revolutionsScale), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedSpeed", floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 740.7998F, 0.0F, 20.0F), speedometerScale), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedVMPressA", cvt(this.fm.M.nitro, 0.0F, 3.0F, 0.0F, 180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedVMPressB", cvt((float)Math.sqrt(this.fm.M.nitro), 0.0F, 8.0F, 0.0F, -180.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("NeedExternalT", floatindex(cvt(Atmosphere.temperature((float)this.fm.Loc.z), 233.09F, 333.09F, 0.0F, 5.0F), frAirTempScale), 0.0F, 0.0F);
-    if ((this.fm.AS.astateCockpitState & 0x10) == 0) {
-      this.mesh.chunkSetAngles("NeedDF", cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -90.0F, 90.0F, -33.0F, 33.0F), 0.0F, 0.0F);
-    }
 
-    this.mesh.chunkVisible("FlareGearDn_L", (this.fm.CT.getGear() > 0.99F) && (this.fm.Gears.lgear));
-    this.mesh.chunkVisible("FlareGearDn_R", (this.fm.CT.getGear() > 0.99F) && (this.fm.Gears.rgear));
-    this.mesh.chunkVisible("FlareGearDn_C", this.fm.CT.getGear() > 0.99F);
-    this.mesh.chunkVisible("FlareGearUp_L", (this.fm.CT.getGear() < 0.01F) || (!this.fm.Gears.lgear));
-    this.mesh.chunkVisible("FlareGearUp_R", (this.fm.CT.getGear() < 0.01F) || (!this.fm.Gears.rgear));
-    this.mesh.chunkVisible("FlareGearUp_C", this.fm.CT.getGear() < 0.01F);
-    this.mesh.chunkVisible("FlareBoostRed", this.fm.M.fuel > 52.5F);
-    this.mesh.chunkVisible("FlareBoostGreen", this.fm.M.fuel < 52.5F);
-  }
-
-  public void reflectCockpitState()
-  {
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
-      this.mesh.chunkVisible("DamageHull2", true);
-      this.mesh.chunkVisible("Gages5_D0", false);
-      this.mesh.chunkVisible("Gages5_D1", true);
-      this.mesh.chunkVisible("NeedFuelA", false);
-      this.mesh.chunkVisible("NeedFuelB", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0) {
-      this.mesh.chunkVisible("DamageHull3", true);
-      this.mesh.chunkVisible("Gages2_D0", false);
-      this.mesh.chunkVisible("Gages2_D1", true);
-      this.mesh.chunkVisible("NeedCylTemp", false);
-      this.mesh.chunkVisible("NeedFuelPress", false);
-      this.mesh.chunkVisible("NeedOilPress", false);
-      this.mesh.chunkVisible("NeedOilTemp", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0) {
-      this.mesh.chunkVisible("DamageHull2", true);
-      this.mesh.chunkVisible("Gages4_D0", false);
-      this.mesh.chunkVisible("Gages4_D1", true);
-      this.mesh.chunkVisible("NeedSpeed", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x20) != 0) {
-      this.mesh.chunkVisible("DamageHull3", true);
-      this.mesh.chunkVisible("Gages3_D0", false);
-      this.mesh.chunkVisible("Gages3_D1", true);
-      this.mesh.chunkVisible("NeedAlt_Km", false);
-      this.mesh.chunkVisible("NeedAlt_M", false);
-      this.mesh.chunkVisible("NeedClimb", false);
-      this.mesh.chunkVisible("NeedVMPressA", false);
-      this.mesh.chunkVisible("NeedVMPressB", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x80) != 0) {
-      this.mesh.chunkVisible("OilSplats", true);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x2) != 0) {
-      this.mesh.chunkVisible("GunSight_T3", false);
-      this.mesh.chunkVisible("DGS_Lenz", true);
-      this.mesh.chunkVisible("GSGlassMain", false);
-      this.mesh.chunkVisible("GSDimmArm", false);
-      this.mesh.chunkVisible("GSDimmBase", false);
-      this.mesh.chunkVisible("GSGlassDimm", false);
-      this.mesh.chunkVisible("DGunSight_T3", true);
-      this.mesh.chunkVisible("DGS_Lenz", true);
-      this.mesh.chunkVisible("Z_Z_RETICLE", false);
-      this.mesh.chunkVisible("Z_Z_MASK", false);
-      this.mesh.chunkVisible("DamageGlass1", true);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x1) != 0) {
-      this.mesh.chunkVisible("DamageGlass2", true);
-      this.mesh.chunkVisible("DamageGlass3", true);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x40) != 0) {
-      this.mesh.chunkVisible("DamageHull1", true);
-      this.mesh.chunkVisible("Gages1_D0", false);
-      this.mesh.chunkVisible("Gages1_D1", true);
-      this.mesh.chunkVisible("NeedRPM", false);
-      this.mesh.chunkVisible("NeedManPress", false);
-      this.mesh.chunkVisible("NeedExhTemp", false);
-      this.mesh.chunkVisible("NeedTurn", false);
-      this.mesh.chunkVisible("NeedBank", false);
-    }
-    retoggleLight();
-  }
-
-  public void toggleDim()
-  {
-    this.cockpitDimControl = (!this.cockpitDimControl);
-  }
-
-  public void toggleLight()
-  {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl)
-    {
-      setNightMats(true);
-    }
-    else
-    {
-      setNightMats(false);
-    }
-  }
-
-  private void retoggleLight() {
-    if (this.cockpitLightControl) {
-      setNightMats(false);
-      setNightMats(true);
-    } else {
-      setNightMats(true);
-      setNightMats(false);
-    }
-  }
-
-  class Interpolater extends InterpolateRef
-  {
-    Interpolater()
-    {
-    }
-
-    public boolean tick()
-    {
-      if (CockpitN1K2JA.this.fm != null) {
-        CockpitN1K2JA.access$102(CockpitN1K2JA.this, CockpitN1K2JA.this.setOld); CockpitN1K2JA.access$202(CockpitN1K2JA.this, CockpitN1K2JA.this.setNew); CockpitN1K2JA.access$302(CockpitN1K2JA.this, CockpitN1K2JA.this.setTmp);
-
-        CockpitN1K2JA.this.setNew.flap = (0.88F * CockpitN1K2JA.this.setOld.flap + 0.12F * CockpitN1K2JA.this.fm.CT.FlapsControl);
-        CockpitN1K2JA.this.setNew.tlock = (0.7F * CockpitN1K2JA.this.setOld.tlock + 0.3F * (CockpitN1K2JA.this.fm.Gears.bTailwheelLocked ? 1.0F : 0.0F));
-
-        if (CockpitN1K2JA.this.cockpitDimControl) {
-          if (CockpitN1K2JA.this.setNew.dimPosition > 0.0F) CockpitN1K2JA.this.setNew.dimPosition = (CockpitN1K2JA.this.setOld.dimPosition - 0.05F);
-        }
-        else if (CockpitN1K2JA.this.setNew.dimPosition < 1.0F) CockpitN1K2JA.this.setNew.dimPosition = (CockpitN1K2JA.this.setOld.dimPosition + 0.05F);
-
-        if ((CockpitN1K2JA.this.fm.CT.GearControl < 0.5F) && (CockpitN1K2JA.this.setNew.gear < 1.0F)) {
-          CockpitN1K2JA.this.setNew.gear = (CockpitN1K2JA.this.setOld.gear + 0.02F);
-        }
-        if ((CockpitN1K2JA.this.fm.CT.GearControl > 0.5F) && (CockpitN1K2JA.this.setNew.gear > 0.0F)) {
-          CockpitN1K2JA.this.setNew.gear = (CockpitN1K2JA.this.setOld.gear - 0.02F);
-        }
-        CockpitN1K2JA.this.setNew.throttle = (0.9F * CockpitN1K2JA.this.setOld.throttle + 0.1F * CockpitN1K2JA.this.fm.CT.PowerControl);
-        CockpitN1K2JA.this.setNew.manifold = (0.8F * CockpitN1K2JA.this.setOld.manifold + 0.2F * CockpitN1K2JA.this.fm.EI.engines[0].getManifoldPressure());
-        CockpitN1K2JA.this.setNew.pitch = (0.9F * CockpitN1K2JA.this.setOld.pitch + 0.1F * CockpitN1K2JA.this.fm.EI.engines[0].getControlProp());
-        CockpitN1K2JA.this.setNew.mix = (0.9F * CockpitN1K2JA.this.setOld.mix + 0.1F * CockpitN1K2JA.this.fm.EI.engines[0].getControlMix());
-        CockpitN1K2JA.this.setNew.altimeter = CockpitN1K2JA.this.fm.getAltitude();
-        CockpitN1K2JA.this.setNew.azimuth.setDeg(CockpitN1K2JA.this.setOld.azimuth.getDeg(1.0F), CockpitN1K2JA.this.fm.Or.azimut());
-
-        if (CockpitN1K2JA.this.useRealisticNavigationInstruments())
+        public boolean tick()
         {
-          CockpitN1K2JA.this.setNew.waypointAzimuth.setDeg(CockpitN1K2JA.this.setOld.waypointAzimuth.getDeg(1.0F), CockpitN1K2JA.this.getBeaconDirection());
+            if(fm != null)
+            {
+                setTmp = setOld;
+                setOld = setNew;
+                setNew = setTmp;
+                setNew.flap = 0.88F * setOld.flap + 0.12F * fm.CT.FlapsControl;
+                setNew.tlock = 0.7F * setOld.tlock + 0.3F * (fm.Gears.bTailwheelLocked ? 1.0F : 0.0F);
+                if(cockpitDimControl)
+                {
+                    if(setNew.dimPosition > 0.0F)
+                        setNew.dimPosition = setOld.dimPosition - 0.05F;
+                } else
+                if(setNew.dimPosition < 1.0F)
+                    setNew.dimPosition = setOld.dimPosition + 0.05F;
+                if(fm.CT.GearControl < 0.5F && setNew.gear < 1.0F)
+                    setNew.gear = setOld.gear + 0.02F;
+                if(fm.CT.GearControl > 0.5F && setNew.gear > 0.0F)
+                    setNew.gear = setOld.gear - 0.02F;
+                setNew.throttle = 0.9F * setOld.throttle + 0.1F * fm.CT.PowerControl;
+                setNew.manifold = 0.8F * setOld.manifold + 0.2F * fm.EI.engines[0].getManifoldPressure();
+                setNew.pitch = 0.9F * setOld.pitch + 0.1F * fm.EI.engines[0].getControlProp();
+                setNew.mix = 0.9F * setOld.mix + 0.1F * fm.EI.engines[0].getControlMix();
+                setNew.altimeter = fm.getAltitude();
+                setNew.azimuth.setDeg(setOld.azimuth.getDeg(1.0F), fm.Or.azimut());
+                float f = waypointAzimuth();
+                setNew.waypointAzimuth.setDeg(setOld.waypointAzimuth.getDeg(0.1F), (f - setOld.azimuth.getDeg(1.0F)) + com.maddox.il2.ai.World.Rnd().nextFloat(-3F, 3F));
+                setNew.vspeed = (199F * setOld.vspeed + fm.getVertSpeed()) / 200F;
+            }
+            return true;
         }
+
+        Interpolater()
+        {
+        }
+    }
+
+    private class Variables
+    {
+
+        float flap;
+        float throttle;
+        float pitch;
+        float mix;
+        float gear;
+        float tlock;
+        float altimeter;
+        float manifold;
+        com.maddox.il2.ai.AnglesFork azimuth;
+        com.maddox.il2.ai.AnglesFork waypointAzimuth;
+        float vspeed;
+        float dimPosition;
+
+        private Variables()
+        {
+            azimuth = new AnglesFork();
+            waypointAzimuth = new AnglesFork();
+        }
+
+    }
+
+
+    protected float waypointAzimuth()
+    {
+        com.maddox.il2.ai.WayPoint waypoint = fm.AP.way.curr();
+        if(waypoint == null)
+            return 0.0F;
+        waypoint.getP(tmpP);
+        tmpV.sub(tmpP, fm.Loc);
+        float f;
+        for(f = (float)(57.295779513082323D * java.lang.Math.atan2(-tmpV.y, tmpV.x)); f <= -180F; f += 180F);
+        for(; f > 180F; f -= 180F);
+        return f;
+    }
+
+    public CockpitN1K2JA()
+    {
+        super("3DO/Cockpit/N1K2-Ja/hier.him", "bf109");
+        setOld = new Variables();
+        setNew = new Variables();
+        w = new Vector3f();
+        pictAiler = 0.0F;
+        pictElev = 0.0F;
+        pictGear = 0.0F;
+        pictTE = 0.0F;
+        pictTR = 0.0F;
+        tmpP = new Point3d();
+        tmpV = new Vector3d();
+        cockpitNightMats = (new java.lang.String[] {
+            "Gauges_01", "Gauges_02", "Gauges_03", "Gauges_04", "Gauges_05", "Gauges_06", "Gauges_07", "DGauges_01", "DGauges_02", "DGauges_03", 
+            "DGauges_04", "DGauges_05", "DGauges_06"
+        });
+        setNightMats(false);
+        cockpitDimControl = !cockpitDimControl;
+        interpPut(new Interpolater(), null, com.maddox.rts.Time.current(), null);
+    }
+
+    public void reflectWorldToInstruments(float f)
+    {
+        mesh.chunkSetAngles("CanopyOpenLvr", cvt(fm.CT.getCockpitDoor(), 0.0F, 0.1F, 0.0F, 63F), 0.0F, 0.0F);
+        resetYPRmodifier();
+        com.maddox.il2.objects.air.Cockpit.xyz[1] = cvt(fm.CT.getCockpitDoor(), 0.1F, 0.99F, 0.0F, 0.61F);
+        mesh.chunkSetLocate("Canopy", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+        resetYPRmodifier();
+        com.maddox.il2.objects.air.Cockpit.xyz[2] = cvt(fm.CT.getCockpitDoor(), 0.0F, 0.1F, 0.0F, 0.0132F);
+        mesh.chunkSetLocate("CanopyOpenRodL", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+        com.maddox.il2.objects.air.Cockpit.xyz[2] = cvt(fm.CT.getCockpitDoor(), 0.0F, 0.1F, 0.0F, -0.0128F);
+        mesh.chunkSetLocate("CanopyOpenRodR", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+        mesh.chunkSetAngles("GSDimmArm", cvt(interp(setNew.dimPosition, setOld.dimPosition, f), 0.0F, 1.0F, 64F, 0.0F), 0.0F, 0.0F);
+        resetYPRmodifier();
+        com.maddox.il2.objects.air.Cockpit.xyz[2] = cvt(interp(setNew.dimPosition, setOld.dimPosition, f), 0.0F, 1.0F, -0.0594F, 0.0F);
+        mesh.chunkSetLocate("GSDimmBase", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+        mesh.chunkSetAngles("IgnitionSwitch", cvt(fm.EI.engines[0].getControlMagnetos(), 0.0F, 3F, 0.0F, 113F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("GearHandle", cvt(pictGear = 0.9F * pictGear + 0.1F * fm.CT.GearControl, 0.0F, 1.0F, 0.0F, -31F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("GearHandleMan", 0.0F, 0.0F, 0.0F);
+        if(fm.CT.FlapsControl != 0.19F)
+            mesh.chunkSetAngles("FlapHandle", -48F * setNew.flap, 0.0F, 0.0F);
+        mesh.chunkSetAngles("TQHandle", 48F * setNew.throttle, 0.0F, 0.0F);
+        mesh.chunkSetAngles("TRigger", fm.CT.saveWeaponControl[1] ? -12F : 0.0F, 0.0F, 0.0F);
+        mesh.chunkSetAngles("PropPitchLvr", 51F * setNew.pitch, 0.0F, 0.0F);
+        mesh.chunkSetAngles("MixLvr", 45F * setNew.mix, 0.0F, 0.0F);
+        mesh.chunkSetAngles("ChargerLvr", cvt(fm.EI.engines[0].getControlCompressor(), 0.0F, 2.0F, 0.0F, 49F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("ChargerAutoLvr", cvt(fm.EI.engines[0].getControlCompressor(), 0.0F, 2.0F, 0.0F, 49F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("CowlFlapLvr", -750F * fm.EI.engines[0].getControlRadiator(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("OilCoolerLvr", -450F * fm.EI.engines[0].getControlRadiator(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("PedalCrossBar", 25F * fm.CT.getRudder(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Pedal_L", 35F * fm.CT.getBrake(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Pedal_R", 35F * fm.CT.getBrake(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("FLCS", (pictAiler = 0.85F * pictAiler + 0.15F * fm.CT.AileronControl) * 20F, 0.0F, 20F * (pictElev = 0.85F * pictElev + 0.15F * fm.CT.ElevatorControl));
+        mesh.chunkSetAngles("FLCSRod", 0.0F, 0.0F, -20F * pictElev);
+        mesh.chunkSetAngles("ElevTrim", 450F * (pictTE = 0.9F * pictTE + 0.1F * fm.CT.trimElevator), 0.0F, 0.0F);
+        mesh.chunkSetAngles("RuddrTrim", -450F * (pictTR = 0.9F * pictTR + 0.1F * fm.CT.trimRudder), 0.0F, 0.0F);
+        if(cockpitLightControl)
+            mesh.chunkSetAngles("SW_UVLight", 0.0F, 0.0F, 0.0F);
         else
+            mesh.chunkSetAngles("SW_UVLight", 0.0F, 0.0F, -54F);
+        resetYPRmodifier();
+        float f1 = pictTE;
+        if(f1 < 0.0F)
+            com.maddox.il2.objects.air.Cockpit.xyz[1] = cvt(f1, -0.25F, 0.0F, -0.02305F, 0.0F);
+        else
+            com.maddox.il2.objects.air.Cockpit.xyz[1] = cvt(f1, 0.0F, 0.5F, 0.0F, 0.04985F);
+        mesh.chunkSetLocate("NeedElevTrim", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+        mesh.chunkSetAngles("NeedRuddrTrim", cvt(pictTR, -0.5F, 0.5F, 90F, -90F), 0.0F, 0.0F);
+        if((fm.AS.astateCockpitState & 0x40) == 0 || (fm.AS.astateCockpitState & 0x10) == 0 || (fm.AS.astateCockpitState & 4) == 0)
         {
-          CockpitN1K2JA.this.setNew.waypointAzimuth.setDeg(CockpitN1K2JA.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitN1K2JA.this.waypointAzimuth() - CockpitN1K2JA.this.setOld.azimuth.getDeg(1.0F));
+            mesh.chunkSetAngles("NeedAHCyl", 0.0F, -fm.Or.getKren(), 0.0F);
+            mesh.chunkSetAngles("NeedAHBar", 0.0F, 0.0F, cvt(fm.Or.getTangage(), -45F, 45F, 20F, -20F));
         }
-
-        CockpitN1K2JA.this.setNew.vspeed = ((199.0F * CockpitN1K2JA.this.setOld.vspeed + CockpitN1K2JA.this.fm.getVertSpeed()) / 200.0F);
-      }
-
-      return true;
+        if((fm.AS.astateCockpitState & 0x40) == 0 || (fm.AS.astateCockpitState & 8) == 0 || (fm.AS.astateCockpitState & 0x20) == 0)
+        {
+            mesh.chunkSetAngles("NeedCompass_A", 0.0F, 0.0F, cvt(fm.Or.getTangage(), -20F, 20F, 20F, -20F));
+            mesh.chunkSetAngles("NeedCompass_B", -setNew.azimuth.getDeg(f) - 90F, 0.0F, 0.0F);
+        }
+        mesh.chunkSetAngles("NeedAlt_Km", cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 20000F, 0.0F, 1440F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedAlt_M", cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 20000F, 0.0F, 14400F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedBank", cvt(getBall(8D), -8F, 8F, 10F, -10F), 0.0F, 0.0F);
+        w.set(fm.getW());
+        fm.Or.transform(w);
+        mesh.chunkSetAngles("NeedTurn", cvt(w.z, -0.23562F, 0.23562F, -25F, 25F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedClimb", cvt(setNew.vspeed, -10F, 10F, -180F, 180F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedCylTemp", cvt(fm.EI.engines[0].tWaterOut, 0.0F, 360F, 0.0F, 90F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedExhTemp", cvt(fm.EI.engines[0].tWaterOut, 0.0F, 324F, 0.0F, 90F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedFuelA", cvt(fm.M.fuel, 171F, 600F, 0.0F, 290F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedFuelB", cvt(fm.M.fuel, 0.0F, 171F, 0.0F, 153F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedFuelPress", cvt(fm.M.fuel <= 1.0F ? 0.0F : 0.26F, 0.0F, 0.6F, 0.0F, -180F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedHour", cvt(com.maddox.il2.ai.World.getTimeofDay(), 0.0F, 24F, 0.0F, 720F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedMin", cvt(com.maddox.il2.ai.World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedManPress", cvt(setNew.manifold, 0.33339F, 1.66661F, -162.5F, 162.5F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedOilPress", cvt(1.0F + 0.05F * fm.EI.engines[0].tOilOut, 0.0F, 10F, 0.0F, 180F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedOilTemp", -floatindex(cvt(fm.EI.engines[0].tOilOut, 30F, 110F, 0.0F, 8F), oilTScale), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedRPM", floatindex(cvt(fm.EI.engines[0].getRPM(), 0.0F, 3500F, 0.0F, 7F), revolutionsScale), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedSpeed", floatindex(cvt(com.maddox.il2.fm.Pitot.Indicator((float)fm.Loc.z, fm.getSpeedKMH()), 0.0F, 740.7998F, 0.0F, 20F), speedometerScale), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedVMPressA", cvt(fm.M.nitro, 0.0F, 3F, 0.0F, 180F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedVMPressB", cvt((float)java.lang.Math.sqrt(fm.M.nitro), 0.0F, 8F, 0.0F, -180F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("NeedExternalT", floatindex(cvt(com.maddox.il2.fm.Atmosphere.temperature((float)fm.Loc.z), 233.09F, 333.09F, 0.0F, 5F), frAirTempScale), 0.0F, 0.0F);
+        if((fm.AS.astateCockpitState & 0x10) == 0)
+            mesh.chunkSetAngles("NeedDF", cvt(setNew.waypointAzimuth.getDeg(f), -90F, 90F, -33F, 33F), 0.0F, 0.0F);
+        mesh.chunkVisible("FlareGearDn_L", fm.CT.getGear() > 0.99F && fm.Gears.lgear);
+        mesh.chunkVisible("FlareGearDn_R", fm.CT.getGear() > 0.99F && fm.Gears.rgear);
+        mesh.chunkVisible("FlareGearDn_C", fm.CT.getGear() > 0.99F);
+        mesh.chunkVisible("FlareGearUp_L", fm.CT.getGear() < 0.01F || !fm.Gears.lgear);
+        mesh.chunkVisible("FlareGearUp_R", fm.CT.getGear() < 0.01F || !fm.Gears.rgear);
+        mesh.chunkVisible("FlareGearUp_C", fm.CT.getGear() < 0.01F);
+        mesh.chunkVisible("FlareBoostRed", fm.M.fuel > 52.5F);
+        mesh.chunkVisible("FlareBoostGreen", fm.M.fuel < 52.5F);
     }
-  }
 
-  private class Variables
-  {
-    float flap;
-    float throttle;
-    float pitch;
-    float mix;
-    float gear;
-    float tlock;
-    float altimeter;
-    float manifold;
-    AnglesFork azimuth;
-    AnglesFork waypointAzimuth;
-    float vspeed;
-    float dimPosition;
-    private final CockpitN1K2JA this$0;
-
-    private Variables()
+    public void reflectCockpitState()
     {
-      this.this$0 = this$1;
-
-      this.azimuth = new AnglesFork();
-      this.waypointAzimuth = new AnglesFork();
+        if((fm.AS.astateCockpitState & 4) != 0)
+        {
+            mesh.chunkVisible("DamageHull2", true);
+            mesh.chunkVisible("Gages5_D0", false);
+            mesh.chunkVisible("Gages5_D1", true);
+            mesh.chunkVisible("NeedFuelA", false);
+            mesh.chunkVisible("NeedFuelB", false);
+        }
+        if((fm.AS.astateCockpitState & 8) != 0)
+        {
+            mesh.chunkVisible("DamageHull3", true);
+            mesh.chunkVisible("Gages2_D0", false);
+            mesh.chunkVisible("Gages2_D1", true);
+            mesh.chunkVisible("NeedCylTemp", false);
+            mesh.chunkVisible("NeedFuelPress", false);
+            mesh.chunkVisible("NeedOilPress", false);
+            mesh.chunkVisible("NeedOilTemp", false);
+        }
+        if((fm.AS.astateCockpitState & 0x10) != 0)
+        {
+            mesh.chunkVisible("DamageHull2", true);
+            mesh.chunkVisible("Gages4_D0", false);
+            mesh.chunkVisible("Gages4_D1", true);
+            mesh.chunkVisible("NeedSpeed", false);
+        }
+        if((fm.AS.astateCockpitState & 0x20) != 0)
+        {
+            mesh.chunkVisible("DamageHull3", true);
+            mesh.chunkVisible("Gages3_D0", false);
+            mesh.chunkVisible("Gages3_D1", true);
+            mesh.chunkVisible("NeedAlt_Km", false);
+            mesh.chunkVisible("NeedAlt_M", false);
+            mesh.chunkVisible("NeedClimb", false);
+            mesh.chunkVisible("NeedVMPressA", false);
+            mesh.chunkVisible("NeedVMPressB", false);
+        }
+        if((fm.AS.astateCockpitState & 0x80) != 0)
+            mesh.chunkVisible("OilSplats", true);
+        if((fm.AS.astateCockpitState & 2) != 0)
+        {
+            mesh.chunkVisible("GunSight_T3", false);
+            mesh.chunkVisible("DGS_Lenz", true);
+            mesh.chunkVisible("GSGlassMain", false);
+            mesh.chunkVisible("GSDimmArm", false);
+            mesh.chunkVisible("GSDimmBase", false);
+            mesh.chunkVisible("GSGlassDimm", false);
+            mesh.chunkVisible("DGunSight_T3", true);
+            mesh.chunkVisible("DGS_Lenz", true);
+            mesh.chunkVisible("Z_Z_RETICLE", false);
+            mesh.chunkVisible("Z_Z_MASK", false);
+            mesh.chunkVisible("DamageGlass1", true);
+        }
+        if((fm.AS.astateCockpitState & 1) != 0)
+        {
+            mesh.chunkVisible("DamageGlass2", true);
+            mesh.chunkVisible("DamageGlass3", true);
+        }
+        if((fm.AS.astateCockpitState & 0x40) != 0)
+        {
+            mesh.chunkVisible("DamageHull1", true);
+            mesh.chunkVisible("Gages1_D0", false);
+            mesh.chunkVisible("Gages1_D1", true);
+            mesh.chunkVisible("NeedRPM", false);
+            mesh.chunkVisible("NeedManPress", false);
+            mesh.chunkVisible("NeedExhTemp", false);
+            mesh.chunkVisible("NeedTurn", false);
+            mesh.chunkVisible("NeedBank", false);
+        }
+        retoggleLight();
     }
 
-    Variables(CockpitN1K2JA.1 arg2)
+    public void toggleDim()
     {
-      this();
+        cockpitDimControl = !cockpitDimControl;
     }
-  }
+
+    public void toggleLight()
+    {
+        cockpitLightControl = !cockpitLightControl;
+        if(cockpitLightControl)
+            setNightMats(true);
+        else
+            setNightMats(false);
+    }
+
+    private void retoggleLight()
+    {
+        if(cockpitLightControl)
+        {
+            setNightMats(false);
+            setNightMats(true);
+        } else
+        {
+            setNightMats(true);
+            setNightMats(false);
+        }
+    }
+
+    private com.maddox.il2.objects.air.Variables setOld;
+    private com.maddox.il2.objects.air.Variables setNew;
+    private com.maddox.il2.objects.air.Variables setTmp;
+    public com.maddox.JGP.Vector3f w;
+    private float pictAiler;
+    private float pictElev;
+    private float pictGear;
+    private float pictTE;
+    private float pictTR;
+    private static final float speedometerScale[] = {
+        0.0F, -2F, -7.5F, 22F, 65.5F, 109F, 153F, 197F, 242.5F, 290F, 
+        338F, 374F, 407F, 439F, 471F, 503F, 536.5F, 570F, 606F, 643.5F, 
+        676F
+    };
+    private static final float revolutionsScale[] = {
+        0.0F, 20F, 75F, 125F, 180F, 220F, 285F, 335F
+    };
+    private static final float oilTScale[] = {
+        0.0F, 20F, 70.5F, 122.5F, 180F, 237.5F, 290.5F, 338F
+    };
+    private static final float frAirTempScale[] = {
+        0.0F, 20.5F, 37F, 48.5F, 60.5F, 75.5F
+    };
+    private com.maddox.JGP.Point3d tmpP;
+    private com.maddox.JGP.Vector3d tmpV;
+
+
+
+
+
+
+
 }

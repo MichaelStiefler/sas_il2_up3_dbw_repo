@@ -1,41 +1,69 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   P_51C.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class P_51C extends P_51
+// Referenced classes of package com.maddox.il2.objects.air:
+//            P_51, PaintSchemeFMPar05, PaintSchemeFCSPar05, NetAircraft, 
+//            Aircraft
+
+public class P_51C extends com.maddox.il2.objects.air.P_51
 {
-  static
-  {
-    Class localClass = P_51C.class;
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "P-51");
-    Property.set(localClass, "meshNameDemo", "3DO/Plane/P-51C(USA)/hier.him");
-    Property.set(localClass, "meshName", "3DO/Plane/P-51C(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
-    Property.set(localClass, "meshName_us", "3DO/Plane/P-51C(USA)/hier.him");
-    Property.set(localClass, "PaintScheme_us", new PaintSchemeFCSPar05());
+    public P_51C()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1947.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/P-51C.fmd");
-    Property.set(localClass, "cockpitClass", CockpitP_51C.class);
-    Property.set(localClass, "LOSElevation", 1.03F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 9, 9, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", "BombGun250lbs 1", "BombGun250lbs 1", null, null });
-
-    weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", "BombGun500lbs 1", "BombGun500lbs 1", null, null });
-
-    weaponsRegister(localClass, "2x1000", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", "BombGun1000lbs 1", "BombGun1000lbs 1", null, null });
-
-    weaponsRegister(localClass, "2xTank", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", null, null, "FuelTankGun_Tank75gal2", "FuelTankGun_Tank75gal2" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.P_51C.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "P-51");
+        com.maddox.rts.Property.set(class1, "meshNameDemo", "3DO/Plane/P-51C(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/P-51C(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        com.maddox.rts.Property.set(class1, "meshName_us", "3DO/Plane/P-51C(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_us", new PaintSchemeFCSPar05());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1947.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/P-51C.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitP_51C.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 1.03F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 9, 9, 3, 3, 9, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x250", new java.lang.String[] {
+            "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", "BombGun250lbs 1", "BombGun250lbs 1", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x500", new java.lang.String[] {
+            "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", "BombGun500lbs 1", "BombGun500lbs 1", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x1000", new java.lang.String[] {
+            "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", "BombGun1000lbs 1", "BombGun1000lbs 1", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2xTank", new java.lang.String[] {
+            "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "PylonP51PLN2", "PylonP51PLN2", null, null, "FuelTankGun_Tank75gal2", "FuelTankGun_Tank75gal2"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null
+        });
+    }
 }

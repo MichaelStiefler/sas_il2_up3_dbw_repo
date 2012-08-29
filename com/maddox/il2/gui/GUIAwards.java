@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIAwards.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GBevel;
@@ -16,119 +21,141 @@ import com.maddox.il2.game.campaign.Campaign;
 import com.maddox.rts.RTSConf;
 import java.util.ResourceBundle;
 
-public class GUIAwards extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient, GUISeparate
+
+public class GUIAwards extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton bPrev;
-  public static int[] indexIcons;
-  public GTexture[] texIcons;
-  public String[] text;
-
-  public void _enter()
-  {
-    if (indexIcons != null) {
-      this.texIcons = new GTexture[indexIcons.length];
-      int i;
-      if ((Main.cur().campaign.branch().equals("de")) && (World.cur().isHakenAllowed()))
-        for (i = 0; i < indexIcons.length; i++)
-          this.texIcons[i] = GTexture.New("missions/campaign/de/awardh" + indexIcons[i] + ".mat");
-      else if ((Main.cur().campaign.branch().equals("fi")) && (World.cur().isHakenAllowed()))
-        for (i = 0; i < indexIcons.length; i++)
-          this.texIcons[i] = GTexture.New("missions/campaign/fi/awardh" + indexIcons[i] + ".mat");
-      else {
-        for (i = 0; i < indexIcons.length; i++) {
-          this.texIcons[i] = GTexture.New("missions/campaign/" + Main.cur().campaign.branch() + "/award" + indexIcons[i] + ".mat");
-        }
-      }
-      this.text = new String[indexIcons.length];
-      try {
-        ResourceBundle localResourceBundle = ResourceBundle.getBundle("missions/campaign/" + Main.cur().campaign.branch() + "/award", RTSConf.cur.locale);
-        for (int j = 0; j < indexIcons.length; j++)
-          this.text[j] = localResourceBundle.getString("" + indexIcons[j]); 
-      } catch (Exception localException) {
-      }
-    }
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.texIcons = null;
-    this.client.hideWindow();
-  }
-
-  public GUIAwards(GWindowRoot paramGWindowRoot)
-  {
-    super(32);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("awards.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bPrev = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIAwards.this.bPrev) {
-        Main.stateStack().pop();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(960.0F), 2.0F);
-
-      setCanvasColorWHITE();
-      setCanvasFont(0);
-      float f1 = this.root.C.font.height;
-      draw(x1024(96.0F), y1024(658.0F), x1024(320.0F), y1024(48.0F), 0, GUIAwards.this.i18n("awards.Back"));
-
-      if (GUIAwards.this.texIcons != null) {
-        GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
-        GBevel localGBevel = localGUILookAndFeel.bevelAward;
-        float f2 = 40.0F;
-        float f3 = 40.0F;
-        float f4 = 208.0F;
-        float f5 = 240.0F;
-        float f6 = 288.0F;
-        int i = 0;
-        for (int j = 0; j < 2; j++)
-          for (int k = 0; k < 4; k++) {
-            if (i == GUIAwards.this.texIcons.length)
-              return;
-            if (GUIAwards.this.texIcons[i] != null) {
-              localGUILookAndFeel.drawBevel(this, x1024(f2 + k * f5) - localGBevel.L.dx, y1024(f3 + j * f6) - localGBevel.T.dy, x1024(224.0F) + localGBevel.L.dx + localGBevel.R.dx, y1024(192.0F) + localGBevel.T.dy + localGBevel.B.dy, localGBevel, localGUILookAndFeel.basicelements, false);
-
-              draw(x1024(f2 + k * f5), y1024(f3 + j * f6), x1024(224.0F), y1024(192.0F), GUIAwards.this.texIcons[i]);
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bPrev)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
             }
-            if (GUIAwards.this.text[i] != null)
-              drawLines(x1024(f2 + k * f5), y1024(f3 + j * f6 + f4), GUIAwards.this.text[i], 0, GUIAwards.this.text[i].length(), x1024(224.0F), f1, 4);
-            i++;
-          }
-      }
+        }
+
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(960F), 2.0F);
+            setCanvasColorWHITE();
+            setCanvasFont(0);
+            float f = root.C.font.height;
+            draw(x1024(96F), y1024(658F), x1024(320F), y1024(48F), 0, i18n("awards.Back"));
+            if(texIcons != null)
+            {
+                com.maddox.il2.gui.GUILookAndFeel guilookandfeel = (com.maddox.il2.gui.GUILookAndFeel)lookAndFeel();
+                com.maddox.gwindow.GBevel gbevel = guilookandfeel.bevelAward;
+                float f1 = 40F;
+                float f2 = 40F;
+                float f3 = 208F;
+                float f4 = 240F;
+                float f5 = 288F;
+                int i = 0;
+                for(int j = 0; j < 2; j++)
+                {
+                    for(int k = 0; k < 4; k++)
+                    {
+                        if(i == texIcons.length)
+                            return;
+                        if(texIcons[i] != null)
+                        {
+                            guilookandfeel.drawBevel(this, x1024(f1 + (float)k * f4) - gbevel.L.dx, y1024(f2 + (float)j * f5) - gbevel.T.dy, x1024(224F) + gbevel.L.dx + gbevel.R.dx, y1024(192F) + gbevel.T.dy + gbevel.B.dy, gbevel, guilookandfeel.basicelements, false);
+                            draw(x1024(f1 + (float)k * f4), y1024(f2 + (float)j * f5), x1024(224F), y1024(192F), texIcons[i]);
+                        }
+                        if(text[i] != null)
+                            drawLines(x1024(f1 + (float)k * f4), y1024(f2 + (float)j * f5 + f3), text[i], 0, text[i].length(), x1024(224F), f, 4);
+                        i++;
+                    }
+
+                }
+
+            }
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 32F, 1024F, 736F);
+            bPrev.setPosC(x1024(56F), y1024(680F));
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void setPosSize()
+
+    public void _enter()
     {
-      set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUIAwards.this.bPrev.setPosC(x1024(56.0F), y1024(680.0F));
+        if(indexIcons != null)
+        {
+            texIcons = new com.maddox.gwindow.GTexture[indexIcons.length];
+            if(com.maddox.il2.game.Main.cur().campaign.branch().equals("de") && com.maddox.il2.ai.World.cur().isHakenAllowed())
+            {
+                for(int i = 0; i < indexIcons.length; i++)
+                    texIcons[i] = com.maddox.gwindow.GTexture.New("missions/campaign/de/awardh" + indexIcons[i] + ".mat");
+
+            } else
+            if(com.maddox.il2.game.Main.cur().campaign.branch().equals("fi") && com.maddox.il2.ai.World.cur().isHakenAllowed())
+            {
+                for(int j = 0; j < indexIcons.length; j++)
+                    texIcons[j] = com.maddox.gwindow.GTexture.New("missions/campaign/fi/awardh" + indexIcons[j] + ".mat");
+
+            } else
+            {
+                for(int k = 0; k < indexIcons.length; k++)
+                    texIcons[k] = com.maddox.gwindow.GTexture.New("missions/campaign/" + com.maddox.il2.game.Main.cur().campaign.branch() + "/award" + indexIcons[k] + ".mat");
+
+            }
+            text = new java.lang.String[indexIcons.length];
+            try
+            {
+                java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle("missions/campaign/" + com.maddox.il2.game.Main.cur().campaign.branch() + "/award", com.maddox.rts.RTSConf.cur.locale);
+                for(int l = 0; l < indexIcons.length; l++)
+                    text[l] = resourcebundle.getString("" + indexIcons[l]);
+
+            }
+            catch(java.lang.Exception exception) { }
+        }
+        client.activateWindow();
     }
-  }
+
+    public void _leave()
+    {
+        texIcons = null;
+        client.hideWindow();
+    }
+
+    public GUIAwards(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(32);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("awards.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bPrev = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton bPrev;
+    public static int indexIcons[];
+    public com.maddox.gwindow.GTexture texIcons[];
+    public java.lang.String text[];
 }

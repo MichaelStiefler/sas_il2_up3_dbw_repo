@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdEnv.java
+
 package com.maddox.rts;
 
 import com.maddox.rts.cmd.CmdLoad;
@@ -11,584 +16,641 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+// Referenced classes of package com.maddox.rts:
+//            Cmd, CmdArea, RTSConf, RTS
+
 public class CmdEnv
 {
-  public static final String AREA_PREFIX = "_$$$";
-  public static final String AREA_COMMAND = "_$$$command";
-  public static final String AREA_ALIAS = "_$$$alias";
-  public static final String AREA_HISTORY = "_$$$history";
-  public static final int LEVEL_DEVELOPER = 0;
-  public static final int LEVEL_USER = 1;
-  public static final int LEVEL_GUEST = 2;
-  public static final String FAST = "fast";
-  public static final String ALIAS = "alias";
-  public static final String HISTORY = "history";
-  public static final String ECHO = "echo";
-  public static final String ON = "on";
-  public static final String OFF = "off";
-  public static final Object RETURN_OK = "OK";
-  public String curExecCmdString;
-  private TreeMap _env;
-  private CmdEnv _parent;
-  private int _curNumCmd;
-  private boolean _bUseHistory;
-  private int _levelAccess;
 
-  public CmdEnv parent()
-  {
-    return this._parent;
-  }
-
-  public Object invoke(String paramString1, String paramString2)
-  {
-    Cmd localCmd = null;
-    try {
-      Class localClass = Class.forName(paramString1);
-      localCmd = (Cmd)localClass.newInstance();
-    } catch (Exception localException1) {
-      return null;
-    }
-    if (noAccess(localCmd))
-      return null;
-    if (setAtom("_$$$command", "_$$$$$", localCmd)) {
-      this._bUseHistory = false;
-      Object localObject = null;
-      try {
-        localObject = exec("_$$$$$ " + paramString2);
-      } catch (Exception localException2) {
-      }
-      this._bUseHistory = true;
-      delAtom("_$$$command", "_$$$$$");
-      return localObject;
-    }
-    return null;
-  }
-
-  public static boolean validAtomName(String paramString)
-  {
-    return (paramString != null) && (!paramString.startsWith("_$$$"));
-  }
-
-  public boolean flag(String paramString)
-  {
-    Object localObject = atom(null, paramString);
-    if ((localObject == null) || (!(localObject instanceof String)))
-      return false;
-    return "on".equals(localObject);
-  }
-
-  public void setFlag(String paramString, boolean paramBoolean)
-  {
-    setAtom(null, paramString, paramBoolean ? "on" : "off");
-  }
-
-  public boolean delAtom(String paramString)
-  {
-    int i = paramString.indexOf('^');
-    if ((i > 0) && (i < paramString.length())) {
-      return delAtom(paramString.substring(0, i), paramString.substring(i + 1));
-    }
-    return delAtom(null, paramString);
-  }
-
-  public boolean setAtom(String paramString, Object paramObject)
-  {
-    int i = paramString.indexOf('^');
-    if ((i > 0) && (i < paramString.length())) {
-      return setAtom(paramString.substring(0, i), paramString.substring(i + 1), paramObject);
-    }
-    return setAtom(null, paramString, paramObject);
-  }
-
-  public Object atom(String paramString)
-  {
-    int i = paramString.indexOf('^');
-    if ((i > 0) && (i < paramString.length())) {
-      return atom(paramString.substring(0, i), paramString.substring(i + 1));
-    }
-    return atom(null, paramString);
-  }
-
-  public boolean existAtom(String paramString, boolean paramBoolean)
-  {
-    int i = paramString.indexOf('^');
-    if ((i > 0) && (i < paramString.length())) {
-      return existAtom(paramString.substring(0, i), paramString.substring(i + 1), paramBoolean);
-    }
-    return existAtom(null, paramString, paramBoolean);
-  }
-
-  public boolean delAtom(String paramString1, String paramString2)
-  {
-    Object localObject1;
-    if (paramString1 == null) {
-      localObject1 = this._env;
-    } else {
-      Object localObject2 = this._env.get(paramString1);
-      if ((localObject2 instanceof CmdArea))
-        return ((CmdArea)localObject2).delAtom(paramString2);
-      localObject1 = (Map)localObject2;
-    }
-    if ((localObject1 != null) && (validAtomName(paramString2))) {
-      ((Map)localObject1).remove(paramString2);
-      return true;
+    public com.maddox.rts.CmdEnv parent()
+    {
+        return _parent;
     }
 
-    return false;
-  }
-
-  public boolean setAtom(String paramString1, String paramString2, Object paramObject)
-  {
-    Object localObject1;
-    if (paramString1 == null) {
-      localObject1 = this._env;
-    } else {
-      Object localObject2 = this._env.get(paramString1);
-      if ((localObject2 instanceof CmdArea)) {
-        return ((CmdArea)localObject2).setAtom(paramString2, paramObject);
-      }
-      localObject1 = (Map)localObject2;
-      if ((localObject1 == null) && (
-        ("_$$$command".equals(paramString1)) || ("_$$$alias".equals(paramString1)))) {
-        localObject1 = new TreeMap();
-        this._env.put(paramString1, localObject1);
-      }
-    }
-
-    if ((localObject1 != null) && (validAtomName(paramString2))) {
-      ((Map)localObject1).put(paramString2, paramObject);
-      return true;
-    }
-
-    return false;
-  }
-
-  public Object atom(String paramString1, String paramString2)
-  {
-    Object localObject1 = null;
-    if (paramString1 == null) { localObject1 = this._env;
-    } else {
-      localObject2 = this._env.get(paramString1);
-      if ((localObject2 instanceof CmdArea)) {
-        Object localObject3 = ((CmdArea)localObject2).atom(paramString2);
-        if (localObject3 != null)
-          return localObject3;
-      } else {
-        localObject1 = (Map)localObject2;
-      }
-    }
-    if ((localObject1 != null) && (validAtomName(paramString2))) {
-      localObject2 = ((Map)localObject1).get(paramString2);
-      if (localObject2 != null)
-        return localObject2;
-    }
-    Object localObject2 = parent();
-    if (localObject2 != null) {
-      return ((CmdEnv)localObject2).atom(paramString1, paramString2);
-    }
-    return null;
-  }
-
-  public boolean existAtom(String paramString1, String paramString2, boolean paramBoolean)
-  {
-    Object localObject1 = null;
-    Object localObject2;
-    if (paramString1 == null) { localObject1 = this._env;
-    } else {
-      localObject2 = this._env.get(paramString1);
-      if ((localObject2 instanceof CmdArea)) {
-        if (((CmdArea)localObject2).existAtom(paramString2, paramBoolean))
-          return true;
-      }
-      else localObject1 = (Map)localObject2;
-    }
-
-    if ((localObject1 != null) && (validAtomName(paramString2)) && 
-      (((Map)localObject1).containsKey(paramString2))) {
-      return true;
-    }
-    if (paramBoolean) {
-      localObject2 = parent();
-      if (localObject2 != null) {
-        return ((CmdEnv)localObject2).existAtom(paramString1, paramString2, paramBoolean);
-      }
-      return false;
-    }
-
-    return false;
-  }
-
-  public void setCommand(Cmd paramCmd, String paramString1, String paramString2)
-  {
-    Map localMap = paramCmd.properties();
-    localMap.put("NAME", paramString1);
-    localMap.put("HELP", paramString2);
-    setAtom("_$$$command", paramString1, paramCmd);
-  }
-
-  public String metaExpand(String paramString)
-  {
-    String str1 = paramString;
-    if (str1.length() == 0) return paramString;
-    if ((str1.charAt(0) != '$') && (str1.indexOf(" $") == -1))
-      return str1;
-    StringBuffer localStringBuffer = new StringBuffer();
-    QuoteTokenizer localQuoteTokenizer = null;
-
-    int i = 1;
-    int j = 100;
-    Object localObject;
-    int m;
-    while (i != 0) {
-      if (j-- == 0) {
-        if (Cmd.ERR_HARD)
-          System.err.println("Command cicled in command: " + paramString);
-        return null;
-      }
-      i = 0;
-      if ((str1.length() <= 0) || (
-        (str1.charAt(0) != '$') && (str1.indexOf(" $") == -1))) continue;
-      if (localStringBuffer.length() > 0)
-        localStringBuffer = new StringBuffer();
-      localQuoteTokenizer = new QuoteTokenizer(str1);
-      while (localQuoteTokenizer.hasMoreTokens()) {
-        String str2 = localQuoteTokenizer.nextToken();
-        localObject = null;
-        if ((str2.length() > 1) && (str2.charAt(0) == '$')) {
-          m = str2.charAt(1);
-          switch (m) {
-          case 36:
-          case 38:
-            break;
-          default:
-            str2 = str2.substring(1);
-            if (!existAtom(str2, true)) {
-              if (Cmd.ERR_SOFT)
-                System.err.println("Atom: " + str2 + " not found - ignored");
-              str2 = null;
-            } else {
-              localObject = atom(str2);
-              if (localObject != null) {
-                str2 = localObject.toString();
-                i = 1;
-              } else {
-                str2 = null;
-              }
-            }
-          }
+    public java.lang.Object invoke(java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.rts.Cmd cmd = null;
+        try
+        {
+            java.lang.Class class1 = java.lang.Class.forName(s);
+            cmd = (com.maddox.rts.Cmd)class1.newInstance();
         }
-
-        if (str2 != null) {
-          if (localStringBuffer.length() > 0) localStringBuffer.append(' ');
-          if (localObject == null)
-            localStringBuffer.append(QuoteTokenizer.toToken(str2));
-          else
-            localStringBuffer.append(str2);
-        }
-      }
-      str1 = localStringBuffer.toString();
-    }
-
-    if ((str1.length() > 0) && (
-      (str1.charAt(0) == '$') || (str1.indexOf(" $") != -1))) {
-      if (localStringBuffer.length() > 0)
-        localStringBuffer = new StringBuffer();
-      localQuoteTokenizer = new QuoteTokenizer(str1);
-      int k = 0;
-      while (localQuoteTokenizer.hasMoreTokens()) {
-        localObject = localQuoteTokenizer.nextToken();
-        if ((((String)localObject).length() > 1) && (((String)localObject).charAt(0) == '$')) {
-          m = ((String)localObject).charAt(1);
-          switch (m) {
-          case 38:
-            k = 1;
-            localObject = null;
-            break;
-          case 36:
-            localObject = ((String)localObject).substring(1);
-            break;
-          }
-
-        }
-
-        if (localObject != null) {
-          if ((k == 0) && (localStringBuffer.length() > 0)) localStringBuffer.append(' ');
-          localStringBuffer.append(QuoteTokenizer.toToken((String)localObject));
-          k = 0;
-        }
-      }
-      str1 = localStringBuffer.toString();
-    }
-
-    return (String)str1;
-  }
-
-  public Object exec(String paramString)
-  {
-    this.curExecCmdString = paramString;
-    try {
-      boolean bool1 = flag("fast");
-      boolean bool2 = false;
-
-      if (!bool1) {
-        bool2 = flag("alias");
-        if (this._bUseHistory) {
-          paramString = historyEntry(paramString);
-        }
-      }
-      QuoteTokenizer localQuoteTokenizer = null;
-      String str = null;
-
-      Object localObject2 = metaExpand(paramString);
-      if (localObject2 == null)
-        return null;
-      Object localObject3;
-      if (bool2)
-      {
-        for (int i = 0; i < 10; i++) {
-          localQuoteTokenizer = new QuoteTokenizer((String)localObject2);
-          if (localQuoteTokenizer.hasMoreTokens()) {
-            str = localQuoteTokenizer.nextToken();
-            localObject3 = (String)atom("_$$$alias", str);
-            if (localObject3 == null)
-              break;
-            if (localQuoteTokenizer.hasMoreTokens())
-              localObject2 = (String)localObject3 + ' ' + localQuoteTokenizer.getGap();
-            else
-              localObject2 = localObject3;
-          } else {
+        catch(java.lang.Exception exception)
+        {
             return null;
-          }
         }
+        if(noAccess(cmd))
+            return null;
+        if(setAtom("_$$$command", "_$$$$$", cmd))
+        {
+            _bUseHistory = false;
+            java.lang.Object obj = null;
+            try
+            {
+                obj = exec("_$$$$$ " + s1);
+            }
+            catch(java.lang.Exception exception1) { }
+            _bUseHistory = true;
+            delAtom("_$$$command", "_$$$$$");
+            return obj;
+        } else
+        {
+            return null;
+        }
+    }
 
-        if (i == 10) {
-          if (Cmd.ERR_HARD)
-            System.err.println("Command cicled alias in command: " + paramString);
-          return null;
-        }
-      } else {
-        localQuoteTokenizer = new QuoteTokenizer((String)localObject2);
-        if (localQuoteTokenizer.hasMoreTokens())
-          str = localQuoteTokenizer.nextToken();
-        else {
-          return null;
-        }
-      }
+    public static boolean validAtomName(java.lang.String s)
+    {
+        return s != null && !s.startsWith("_$$$");
+    }
 
-      Cmd localCmd = (Cmd)atom("_$$$command", str);
-      if (localCmd == null) {
-        if (Cmd.ERR_HARD)
-          System.err.println("Command not found: " + paramString);
-        setResult(null);
-        return null;
-      }
-      if (noAccess(localCmd)) {
-        if (Cmd.ERR_HARD) {
-          System.err.println("Command not found: " + paramString);
-        }
-        setResult(null);
-        return null;
-      }
-      Object localObject1;
-      if (localCmd.isRawFormat()) {
-        if (localQuoteTokenizer.hasMoreTokens())
-          localObject1 = localCmd.exec(this, localQuoteTokenizer.getGap());
+    public boolean flag(java.lang.String s)
+    {
+        java.lang.Object obj = atom(null, s);
+        if(obj == null || !(obj instanceof java.lang.String))
+            return false;
         else
-          localObject1 = localCmd.exec(this, "");
-      } else {
-        Map localMap = (Map)localCmd.properties().get("PARAMS");
-        localObject3 = new HashMap();
-        Object localObject4 = null;
-        Object localObject5;
-        Object localObject6;
-        if (localQuoteTokenizer.hasMoreTokens()) {
-          localObject2 = localQuoteTokenizer.getGap();
-          localObject5 = null;
-          localQuoteTokenizer = new QuoteTokenizer((String)localObject2);
-          while (localQuoteTokenizer.hasMoreTokens()) {
-            localObject6 = localQuoteTokenizer.nextToken();
-            if ((localMap != null) && (localMap.containsKey(localObject6))) {
-              if (localObject4 != null) {
-                if (localObject5 == null) localObject5 = "_$$";
-                ((HashMap)localObject3).put(localObject5, localObject4);
-              } else if (localObject5 != null) {
-                ((HashMap)localObject3).put(localObject5, localObject4);
-              }
-              localObject5 = localObject6;
-              localObject4 = (ArrayList)((HashMap)localObject3).get(localObject5);
-            } else {
-              if (localObject4 == null)
-                localObject4 = new ArrayList();
-              ((ArrayList)localObject4).add(localObject6);
+            return "on".equals(obj);
+    }
+
+    public void setFlag(java.lang.String s, boolean flag1)
+    {
+        setAtom(null, s, flag1 ? "on" : "off");
+    }
+
+    public boolean delAtom(java.lang.String s)
+    {
+        int i = s.indexOf('^');
+        if(i > 0 && i < s.length())
+            return delAtom(s.substring(0, i), s.substring(i + 1));
+        else
+            return delAtom(null, s);
+    }
+
+    public boolean setAtom(java.lang.String s, java.lang.Object obj)
+    {
+        int i = s.indexOf('^');
+        if(i > 0 && i < s.length())
+            return setAtom(s.substring(0, i), s.substring(i + 1), obj);
+        else
+            return setAtom(null, s, obj);
+    }
+
+    public java.lang.Object atom(java.lang.String s)
+    {
+        int i = s.indexOf('^');
+        if(i > 0 && i < s.length())
+            return atom(s.substring(0, i), s.substring(i + 1));
+        else
+            return atom(null, s);
+    }
+
+    public boolean existAtom(java.lang.String s, boolean flag1)
+    {
+        int i = s.indexOf('^');
+        if(i > 0 && i < s.length())
+            return existAtom(s.substring(0, i), s.substring(i + 1), flag1);
+        else
+            return existAtom(null, s, flag1);
+    }
+
+    public boolean delAtom(java.lang.String s, java.lang.String s1)
+    {
+        java.lang.Object obj;
+        if(s == null)
+        {
+            obj = _env;
+        } else
+        {
+            java.lang.Object obj1 = _env.get(s);
+            if(obj1 instanceof com.maddox.rts.CmdArea)
+                return ((com.maddox.rts.CmdArea)obj1).delAtom(s1);
+            obj = (java.util.Map)obj1;
+        }
+        if(obj != null && com.maddox.rts.CmdEnv.validAtomName(s1))
+        {
+            ((java.util.Map) (obj)).remove(s1);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public boolean setAtom(java.lang.String s, java.lang.String s1, java.lang.Object obj)
+    {
+        java.lang.Object obj1;
+        if(s == null)
+        {
+            obj1 = _env;
+        } else
+        {
+            java.lang.Object obj2 = _env.get(s);
+            if(obj2 instanceof com.maddox.rts.CmdArea)
+                return ((com.maddox.rts.CmdArea)obj2).setAtom(s1, obj);
+            obj1 = (java.util.Map)obj2;
+            if(obj1 == null && ("_$$$command".equals(s) || "_$$$alias".equals(s)))
+            {
+                obj1 = new TreeMap();
+                _env.put(s, obj1);
             }
-          }
-          if (localObject4 != null) {
-            if (localObject5 == null) localObject5 = "_$$";
-            ((HashMap)localObject3).put(localObject5, localObject4);
-          } else if (localObject5 != null) {
-            ((HashMap)localObject3).put(localObject5, localObject4);
-          }
         }
+        if(obj1 != null && com.maddox.rts.CmdEnv.validAtomName(s1))
+        {
+            ((java.util.Map) (obj1)).put(s1, obj);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
 
-        if (localMap != null) {
-          localObject5 = localMap.keySet();
-          localObject6 = ((Set)localObject5).iterator();
-          while (((Iterator)localObject6).hasNext()) {
-            Object localObject7 = ((Iterator)localObject6).next();
-            if (!((HashMap)localObject3).containsKey(localObject7)) {
-              Object localObject8 = localMap.get(localObject7);
-              if (localObject8 != null) {
-                localObject4 = new ArrayList();
-                localQuoteTokenizer = new QuoteTokenizer((String)localObject8);
-                while (localQuoteTokenizer.hasMoreTokens())
-                  ((ArrayList)localObject4).add(localQuoteTokenizer.nextToken());
-                ((HashMap)localObject3).put(localObject7, localObject4);
-              }
+    public java.lang.Object atom(java.lang.String s, java.lang.String s1)
+    {
+        java.lang.Object obj = null;
+        if(s == null)
+        {
+            obj = _env;
+        } else
+        {
+            java.lang.Object obj1 = _env.get(s);
+            if(obj1 instanceof com.maddox.rts.CmdArea)
+            {
+                java.lang.Object obj3 = ((com.maddox.rts.CmdArea)obj1).atom(s1);
+                if(obj3 != null)
+                    return obj3;
+            } else
+            {
+                obj = (java.util.Map)obj1;
             }
-          }
         }
-
-        localObject1 = localCmd.exec(this, (Map)localObject3);
-      }
-
-      setResult(localObject1);
-      return localObject1;
-    } catch (Exception localException) {
-      localException.printStackTrace();
-
-      setResult(null);
-    }return null;
-  }
-
-  private void setResult(Object paramObject) {
-    setAtom(null, "_$$2", atom(null, "_$$1"));
-    setAtom(null, "_$$1", atom(null, "_$$0"));
-    setAtom(null, "_$$0", paramObject);
-  }
-
-  private String historyEntry(String paramString) {
-    String str1 = (String)atom(null, "history");
-    TreeMap localTreeMap = (TreeMap)this._env.get("_$$$history");
-    if (str1 == null) {
-      if (localTreeMap != null)
-        this._env.remove("_$$$history");
-      return paramString;
-    }
-
-    int i = Integer.parseInt(str1);
-    if (i <= 0) {
-      if (localTreeMap != null) {
-        while (localTreeMap.size() > i)
-          localTreeMap.remove(localTreeMap.firstKey());
-      }
-      return paramString;
-    }
-    if ((paramString == null) || (paramString.length() == 0)) {
-      return paramString;
-    }
-    Object localObject = null;
-    if (localTreeMap == null) {
-      localTreeMap = new TreeMap();
-      this._env.put("_$$$history", localTreeMap);
-    } else if (paramString.charAt(0) == '!') {
-      if (paramString.charAt(1) == '!') {
-        localObject = (String)localTreeMap.get(localTreeMap.lastKey());
-      } else {
-        String str2 = paramString.substring(1);
-        try {
-          Integer localInteger = Integer.valueOf(str2);
-          localObject = (String)localTreeMap.get(localInteger);
+        if(obj != null && com.maddox.rts.CmdEnv.validAtomName(s1))
+        {
+            java.lang.Object obj2 = ((java.util.Map) (obj)).get(s1);
+            if(obj2 != null)
+                return obj2;
         }
-        catch (NumberFormatException localNumberFormatException) {
-          Set localSet = localTreeMap.keySet();
-          Iterator localIterator = localSet.iterator();
-          while (localIterator.hasNext()) {
-            String str3 = (String)localTreeMap.get(localIterator.next());
-            QuoteTokenizer localQuoteTokenizer = new QuoteTokenizer(str3);
-            if (StrMath.simple(str2, localQuoteTokenizer.nextToken()))
-              localObject = str3;
-          }
-        } catch (Exception localException) {
+        com.maddox.rts.CmdEnv cmdenv = parent();
+        if(cmdenv != null)
+            return cmdenv.atom(s, s1);
+        else
+            return null;
+    }
+
+    public boolean existAtom(java.lang.String s, java.lang.String s1, boolean flag1)
+    {
+        java.lang.Object obj = null;
+        if(s == null)
+        {
+            obj = _env;
+        } else
+        {
+            java.lang.Object obj1 = _env.get(s);
+            if(obj1 instanceof com.maddox.rts.CmdArea)
+            {
+                if(((com.maddox.rts.CmdArea)obj1).existAtom(s1, flag1))
+                    return true;
+            } else
+            {
+                obj = (java.util.Map)obj1;
+            }
         }
-      }
+        if(obj != null && com.maddox.rts.CmdEnv.validAtomName(s1) && ((java.util.Map) (obj)).containsKey(s1))
+            return true;
+        if(flag1)
+        {
+            com.maddox.rts.CmdEnv cmdenv = parent();
+            if(cmdenv != null)
+                return cmdenv.existAtom(s, s1, flag1);
+            else
+                return false;
+        } else
+        {
+            return false;
+        }
     }
-    this._curNumCmd += 1;
-    if (localObject != null)
-      paramString = (String)localObject;
-    localTreeMap.put(new Integer(this._curNumCmd), paramString);
-    while (localTreeMap.size() > i) {
-      localTreeMap.remove(localTreeMap.firstKey());
+
+    public void setCommand(com.maddox.rts.Cmd cmd, java.lang.String s, java.lang.String s1)
+    {
+        java.util.Map map = cmd.properties();
+        map.put("NAME", s);
+        map.put("HELP", s1);
+        setAtom("_$$$command", s, cmd);
     }
-    return (String)paramString;
-  }
 
-  public int curNumCmd()
-  {
-    return this._curNumCmd;
-  }
+    public java.lang.String metaExpand(java.lang.String s)
+    {
+        java.lang.String s1 = s;
+        if(s1.length() == 0)
+            return s;
+        if(s1.charAt(0) != '$' && s1.indexOf(" $") == -1)
+            return s1;
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        Object obj = null;
+        boolean flag1 = true;
+        int i = 100;
+        while(flag1) 
+        {
+            if(i-- == 0)
+            {
+                if(com.maddox.rts.Cmd.ERR_HARD)
+                    java.lang.System.err.println("Command cicled in command: " + s);
+                return null;
+            }
+            flag1 = false;
+            if(s1.length() > 0 && (s1.charAt(0) == '$' || s1.indexOf(" $") != -1))
+            {
+                if(stringbuffer.length() > 0)
+                    stringbuffer = new StringBuffer();
+                for(com.maddox.util.QuoteTokenizer quotetokenizer = new QuoteTokenizer(s1); quotetokenizer.hasMoreTokens();)
+                {
+                    java.lang.String s2 = quotetokenizer.nextToken();
+                    java.lang.Object obj1 = null;
+                    if(s2.length() > 1 && s2.charAt(0) == '$')
+                    {
+                        char c = s2.charAt(1);
+                        switch(c)
+                        {
+                        default:
+                            s2 = s2.substring(1);
+                            if(!existAtom(s2, true))
+                            {
+                                if(com.maddox.rts.Cmd.ERR_SOFT)
+                                    java.lang.System.err.println("Atom: " + s2 + " not found - ignored");
+                                s2 = null;
+                            } else
+                            {
+                                obj1 = atom(s2);
+                                if(obj1 != null)
+                                {
+                                    s2 = obj1.toString();
+                                    flag1 = true;
+                                } else
+                                {
+                                    s2 = null;
+                                }
+                            }
+                            break;
 
-  public int levelAccess()
-  {
-    return this._levelAccess;
-  }
+                        case 36: // '$'
+                        case 38: // '&'
+                            break;
+                        }
+                    }
+                    if(s2 != null)
+                    {
+                        if(stringbuffer.length() > 0)
+                            stringbuffer.append(' ');
+                        if(obj1 == null)
+                            stringbuffer.append(com.maddox.util.QuoteTokenizer.toToken(s2));
+                        else
+                            stringbuffer.append(s2);
+                    }
+                }
 
-  public void setLevelAccess(int paramInt)
-  {
-    this._levelAccess = paramInt;
-  }
-  public boolean noAccess(CmdEnv paramCmdEnv) {
-    return this._levelAccess > paramCmdEnv._levelAccess;
-  }
+                s1 = stringbuffer.toString();
+            }
+        }
+        if(s1.length() > 0 && (s1.charAt(0) == '$' || s1.indexOf(" $") != -1))
+        {
+            if(stringbuffer.length() > 0)
+                stringbuffer = new StringBuffer();
+            com.maddox.util.QuoteTokenizer quotetokenizer1 = new QuoteTokenizer(s1);
+            boolean flag2 = false;
+            while(quotetokenizer1.hasMoreTokens()) 
+            {
+                java.lang.String s3 = quotetokenizer1.nextToken();
+                if(s3.length() > 1 && s3.charAt(0) == '$')
+                {
+                    char c1 = s3.charAt(1);
+                    switch(c1)
+                    {
+                    case 38: // '&'
+                        flag2 = true;
+                        s3 = null;
+                        break;
 
-  public boolean noAccess(int paramInt)
-  {
-    return this._levelAccess > paramInt;
-  }
+                    case 36: // '$'
+                        s3 = s3.substring(1);
+                        break;
+                    }
+                }
+                if(s3 != null)
+                {
+                    if(!flag2 && stringbuffer.length() > 0)
+                        stringbuffer.append(' ');
+                    stringbuffer.append(com.maddox.util.QuoteTokenizer.toToken(s3));
+                    flag2 = false;
+                }
+            }
+            s1 = stringbuffer.toString();
+        }
+        return s1;
+    }
 
-  public boolean noAccess(Cmd paramCmd)
-  {
-    return this._levelAccess > paramCmd.levelAccess();
-  }
+    public java.lang.Object exec(java.lang.String s)
+    {
+        curExecCmdString = s;
+        boolean flag2;
+        com.maddox.util.QuoteTokenizer quotetokenizer;
+        java.lang.String s1;
+        java.lang.String s2;
+        boolean flag1 = flag("fast");
+        flag2 = false;
+        if(!flag1)
+        {
+            flag2 = flag("alias");
+            if(_bUseHistory)
+                s = historyEntry(s);
+        }
+        quotetokenizer = null;
+        s1 = null;
+        s2 = metaExpand(s);
+        if(s2 == null)
+            return null;
+        int i;
+        if(!flag2)
+            break MISSING_BLOCK_LABEL_215;
+        i = 0;
+          goto _L1
+_L3:
+        quotetokenizer = new QuoteTokenizer(s2);
+        if(quotetokenizer.hasMoreTokens())
+        {
+            s1 = quotetokenizer.nextToken();
+            java.lang.String s4 = (java.lang.String)atom("_$$$alias", s1);
+            if(s4 == null)
+                break; /* Loop/switch isn't completed */
+            if(quotetokenizer.hasMoreTokens())
+                s2 = s4 + ' ' + quotetokenizer.getGap();
+            else
+                s2 = s4;
+            continue; /* Loop/switch isn't completed */
+        }
+        return null;
+        i++;
+_L1:
+        if(i < 10) goto _L3; else goto _L2
+_L2:
+        if(i != 10)
+            break MISSING_BLOCK_LABEL_246;
+        if(com.maddox.rts.Cmd.ERR_HARD)
+            java.lang.System.err.println("Command cicled alias in command: " + s);
+        return null;
+        quotetokenizer = new QuoteTokenizer(s2);
+        if(quotetokenizer.hasMoreTokens())
+        {
+            s1 = quotetokenizer.nextToken();
+            break MISSING_BLOCK_LABEL_246;
+        }
+        return null;
+        com.maddox.rts.Cmd cmd;
+        cmd = (com.maddox.rts.Cmd)atom("_$$$command", s1);
+        if(cmd != null)
+            break MISSING_BLOCK_LABEL_302;
+        if(com.maddox.rts.Cmd.ERR_HARD)
+            java.lang.System.err.println("Command not found: " + s);
+        setResult(null);
+        return null;
+        if(!noAccess(cmd))
+            break MISSING_BLOCK_LABEL_349;
+        if(com.maddox.rts.Cmd.ERR_HARD)
+            java.lang.System.err.println("Command not found: " + s);
+        setResult(null);
+        return null;
+        java.lang.Object obj;
+        if(cmd.isRawFormat())
+        {
+            if(quotetokenizer.hasMoreTokens())
+                obj = cmd.exec(this, quotetokenizer.getGap());
+            else
+                obj = cmd.exec(this, "");
+        } else
+        {
+            java.util.Map map = (java.util.Map)cmd.properties().get("PARAMS");
+            java.util.HashMap hashmap = new HashMap();
+            java.util.ArrayList arraylist = null;
+            if(quotetokenizer.hasMoreTokens())
+            {
+                java.lang.String s3 = quotetokenizer.getGap();
+                java.lang.String s5 = null;
+                for(com.maddox.util.QuoteTokenizer quotetokenizer1 = new QuoteTokenizer(s3); quotetokenizer1.hasMoreTokens();)
+                {
+                    java.lang.String s6 = quotetokenizer1.nextToken();
+                    if(map != null && map.containsKey(s6))
+                    {
+                        if(arraylist != null)
+                        {
+                            if(s5 == null)
+                                s5 = "_$$";
+                            hashmap.put(s5, arraylist);
+                        } else
+                        if(s5 != null)
+                            hashmap.put(s5, arraylist);
+                        s5 = s6;
+                        arraylist = (java.util.ArrayList)hashmap.get(s5);
+                    } else
+                    {
+                        if(arraylist == null)
+                            arraylist = new ArrayList();
+                        arraylist.add(s6);
+                    }
+                }
 
-  public Map area()
-  {
-    return this._env;
-  }
+                if(arraylist != null)
+                {
+                    if(s5 == null)
+                        s5 = "_$$";
+                    hashmap.put(s5, arraylist);
+                } else
+                if(s5 != null)
+                    hashmap.put(s5, arraylist);
+            }
+            if(map != null)
+            {
+                java.util.Set set = map.keySet();
+                for(java.util.Iterator iterator = set.iterator(); iterator.hasNext();)
+                {
+                    java.lang.Object obj1 = iterator.next();
+                    if(!hashmap.containsKey(obj1))
+                    {
+                        java.lang.Object obj2 = map.get(obj1);
+                        if(obj2 != null)
+                        {
+                            java.util.ArrayList arraylist1 = new ArrayList();
+                            for(com.maddox.util.QuoteTokenizer quotetokenizer2 = new QuoteTokenizer((java.lang.String)obj2); quotetokenizer2.hasMoreTokens(); arraylist1.add(quotetokenizer2.nextToken()));
+                            hashmap.put(obj1, arraylist1);
+                        }
+                    }
+                }
 
-  public static CmdEnv top()
-  {
-    return RTSConf.cur.cmdEnv;
-  }
+            }
+            obj = cmd.exec(this, hashmap);
+        }
+        setResult(obj);
+        return obj;
+        java.lang.Exception exception;
+        exception;
+        exception.printStackTrace();
+        setResult(null);
+        return null;
+    }
 
-  public CmdEnv(CmdEnv paramCmdEnv)
-  {
-    this._env = new TreeMap();
-    this._parent = paramCmdEnv;
-    this._curNumCmd = 0;
-    this._bUseHistory = true;
-    this._levelAccess = paramCmdEnv.levelAccess();
-  }
+    private void setResult(java.lang.Object obj)
+    {
+        setAtom(null, "_$$2", atom(null, "_$$1"));
+        setAtom(null, "_$$1", atom(null, "_$$0"));
+        setAtom(null, "_$$0", obj);
+    }
 
-  protected CmdEnv()
-  {
-    this._env = new TreeMap();
-    this._parent = null;
-    this._env.put("_$$$command", new TreeMap());
-    this._env.put("_$$$alias", new TreeMap());
-    this._env.put("_$$$history", new TreeMap());
+    private java.lang.String historyEntry(java.lang.String s)
+    {
+        java.lang.String s1 = (java.lang.String)atom(null, "history");
+        java.util.TreeMap treemap = (java.util.TreeMap)_env.get("_$$$history");
+        if(s1 == null)
+        {
+            if(treemap != null)
+                _env.remove("_$$$history");
+            return s;
+        }
+        int i = java.lang.Integer.parseInt(s1);
+        if(i <= 0)
+        {
+            if(treemap != null)
+                for(; treemap.size() > i; treemap.remove(treemap.firstKey()));
+            return s;
+        }
+        if(s == null || s.length() == 0)
+            return s;
+        java.lang.String s2 = null;
+        if(treemap == null)
+        {
+            treemap = new TreeMap();
+            _env.put("_$$$history", treemap);
+        } else
+        if(s.charAt(0) == '!')
+            if(s.charAt(1) == '!')
+            {
+                s2 = (java.lang.String)treemap.get(treemap.lastKey());
+            } else
+            {
+                java.lang.String s3 = s.substring(1);
+                try
+                {
+                    java.lang.Integer integer = java.lang.Integer.valueOf(s3);
+                    s2 = (java.lang.String)treemap.get(integer);
+                }
+                catch(java.lang.NumberFormatException numberformatexception)
+                {
+                    java.util.Set set = treemap.keySet();
+                    for(java.util.Iterator iterator = set.iterator(); iterator.hasNext();)
+                    {
+                        java.lang.String s4 = (java.lang.String)treemap.get(iterator.next());
+                        com.maddox.util.QuoteTokenizer quotetokenizer = new QuoteTokenizer(s4);
+                        if(com.maddox.util.StrMath.simple(s3, quotetokenizer.nextToken()))
+                            s2 = s4;
+                    }
 
-    setFlag("fast", false);
-    setFlag("echo", true);
-    setFlag("alias", true);
-    setAtom(null, "history", "0");
-    setAtom("_$$$command", "CmdLoad", new CmdLoad());
-    this._curNumCmd = 0;
-    this._bUseHistory = true;
-    this._levelAccess = 0;
-  }
+                }
+                catch(java.lang.Exception exception) { }
+            }
+        _curNumCmd++;
+        if(s2 != null)
+            s = s2;
+        treemap.put(new Integer(_curNumCmd), s);
+        for(; treemap.size() > i; treemap.remove(treemap.firstKey()));
+        return s;
+    }
 
-  static
-  {
-    RTS.loadNative();
-  }
+    public int curNumCmd()
+    {
+        return _curNumCmd;
+    }
+
+    public int levelAccess()
+    {
+        return _levelAccess;
+    }
+
+    public void setLevelAccess(int i)
+    {
+        _levelAccess = i;
+    }
+
+    public boolean noAccess(com.maddox.rts.CmdEnv cmdenv)
+    {
+        return _levelAccess > cmdenv._levelAccess;
+    }
+
+    public boolean noAccess(int i)
+    {
+        return _levelAccess > i;
+    }
+
+    public boolean noAccess(com.maddox.rts.Cmd cmd)
+    {
+        return _levelAccess > cmd.levelAccess();
+    }
+
+    public java.util.Map area()
+    {
+        return _env;
+    }
+
+    public static com.maddox.rts.CmdEnv top()
+    {
+        return com.maddox.rts.RTSConf.cur.cmdEnv;
+    }
+
+    public CmdEnv(com.maddox.rts.CmdEnv cmdenv)
+    {
+        _env = new TreeMap();
+        _parent = cmdenv;
+        _curNumCmd = 0;
+        _bUseHistory = true;
+        _levelAccess = cmdenv.levelAccess();
+    }
+
+    protected CmdEnv()
+    {
+        _env = new TreeMap();
+        _parent = null;
+        _env.put("_$$$command", new TreeMap());
+        _env.put("_$$$alias", new TreeMap());
+        _env.put("_$$$history", new TreeMap());
+        setFlag("fast", false);
+        setFlag("echo", true);
+        setFlag("alias", true);
+        setAtom(null, "history", "0");
+        setAtom("_$$$command", "CmdLoad", new CmdLoad());
+        _curNumCmd = 0;
+        _bUseHistory = true;
+        _levelAccess = 0;
+    }
+
+    public static final java.lang.String AREA_PREFIX = "_$$$";
+    public static final java.lang.String AREA_COMMAND = "_$$$command";
+    public static final java.lang.String AREA_ALIAS = "_$$$alias";
+    public static final java.lang.String AREA_HISTORY = "_$$$history";
+    public static final int LEVEL_DEVELOPER = 0;
+    public static final int LEVEL_USER = 1;
+    public static final int LEVEL_GUEST = 2;
+    public static final java.lang.String FAST = "fast";
+    public static final java.lang.String ALIAS = "alias";
+    public static final java.lang.String HISTORY = "history";
+    public static final java.lang.String ECHO = "echo";
+    public static final java.lang.String ON = "on";
+    public static final java.lang.String OFF = "off";
+    public static final java.lang.Object RETURN_OK = "OK";
+    public java.lang.String curExecCmdString;
+    private java.util.TreeMap _env;
+    private com.maddox.rts.CmdEnv _parent;
+    private int _curNumCmd;
+    private boolean _bUseHistory;
+    private int _levelAccess;
+
+    static 
+    {
+        com.maddox.rts.RTS.loadNative();
+    }
 }

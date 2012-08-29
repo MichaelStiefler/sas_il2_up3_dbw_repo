@@ -1,62 +1,76 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   cppGObj.java
+
 package com.maddox.il2.engine;
 
-public class cppGObj extends cppJObj
+
+// Referenced classes of package com.maddox.il2.engine:
+//            cppJObj
+
+public class cppGObj extends com.maddox.il2.engine.cppJObj
 {
-  protected int bLinkLock;
-  protected int iLinkCount;
 
-  protected void cpp_GObj()
-  {
-  }
+    protected cppGObj()
+    {
+    }
 
-  public int jobject_GetJObject()
-  {
-    return 0;
-  }
+    protected void cpp_GObj()
+    {
+    }
 
-  public int SetJObject(int paramInt)
-  {
-    return 0;
-  }
+    public int jobject_GetJObject()
+    {
+        return 0;
+    }
 
-  public void FinalizeJObject()
-  {
-  }
+    public int SetJObject(int i)
+    {
+        return 0;
+    }
 
-  public int LinkCount()
-  {
-    return 0;
-  }
+    public void FinalizeJObject()
+    {
+    }
 
-  public cppGObj Link()
-  {
-    return null;
-  }
+    public int LinkCount()
+    {
+        return 0;
+    }
 
-  public int Unlink()
-  {
-    return 0;
-  }
+    public com.maddox.il2.engine.cppGObj Link()
+    {
+        return null;
+    }
 
-  public int GObj_Clone()
-  {
-    return 0;
-  }
+    public int Unlink()
+    {
+        return 0;
+    }
 
-  public int LinkLock()
-  {
-    return 0;
-  }
+    public int GObj_Clone()
+    {
+        return 0;
+    }
 
-  public void SetLinkLock(int paramInt)
-  {
-  }
+    public int LinkLock()
+    {
+        return 0;
+    }
 
-  public void DEFGCLASS()
-  {
-  }
+    public void SetLinkLock(int i)
+    {
+    }
 
-  public void IMPGCLASS()
-  {
-  }
+    public void DEFGCLASS()
+    {
+    }
+
+    public void IMPGCLASS()
+    {
+    }
+
+    protected int bLinkLock;
+    protected int iLinkCount;
 }

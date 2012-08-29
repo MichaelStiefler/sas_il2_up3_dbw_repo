@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIArming.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GCaption;
@@ -8,7 +13,6 @@ import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.ai.Regiment;
-import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Mat;
@@ -23,247 +27,281 @@ import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import java.io.PrintStream;
 
-public class GUIArming extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUIPocket, 
+//            GUILookAndFeel, GUIButton, GUIDialogClient, GUIAirArming, 
+//            GUISeparate
+
+public class GUIArming extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIPocket[] pAircraft;
-  public GWindowComboControl[] cWeapon;
-  public GUIButton bAirArming;
-  public GUIButton bBack;
-  private Regiment regiment;
-  private GTexture texRegiment;
-  private Slot[] slot;
-  private int playerNum;
-  private int playerSlot;
-  private boolean bSingleMission;
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
+    {
 
-  public void enterPush(GameState paramGameState)
-  {
-    this.bSingleMission = (paramGameState.id() == 4);
-    super.enterPush(paramGameState);
-  }
-  public void _enter() {
-    UserCfg localUserCfg = World.cur().userCfg;
-    try {
-      SectFile localSectFile = Main.cur().currentMissionFile;
-      String str1 = localSectFile.get("MAIN", "player", (String)null);
-      String str2 = str1.substring(0, str1.length() - 1);
-      String str3 = str2.substring(0, str2.length() - 1);
-      this.regiment = ((Regiment)Actor.getByName(str3));
-      Mat localMat = PaintScheme.makeMat(this.regiment.name(), this.regiment.fileNameTga(), 1.0F, 1.0F, 1.0F);
-      this.texRegiment = GTexture.New(localMat.Name());
-
-      int i = localSectFile.get("MAIN", "WEAPONSCONSTANT", 0, 0, 1);
-      World.cur().setWeaponsConstant(i == 1);
-
-      this.playerNum = localSectFile.get("Main", "playerNum", 0);
-      this.slot = new Slot[4];
-      this.playerSlot = -1;
-      int j = localSectFile.sectionIndex("Wing");
-      int k = localSectFile.vars(j);
-      Object localObject;
-      int n;
-      for (int m = 0; m < k; m++) {
-        localObject = localSectFile.var(j, m);
-        if (((String)localObject).startsWith(str2)) {
-          n = ((String)localObject).charAt(((String)localObject).length() - 1) - '0';
-          if (((String)localObject).equals(str1)) this.playerSlot = n;
-          int i1 = localSectFile.get((String)localObject, "Planes", 0, 0, 4);
-          Slot localSlot = new Slot();
-          this.slot[n] = localSlot;
-          localSlot.wingName = ((String)localObject);
-          localSlot.players = i1;
-          localSlot.fuel = localSectFile.get((String)localObject, "Fuel", 100, 0, 100);
-          String str4 = localSectFile.get((String)localObject, "Class", (String)null);
-          localSlot.planeClass = ObjIO.classForName(str4);
-          localSlot.planeKey = Property.stringValue(localSlot.planeClass, "keyName", null);
-          String str5 = localSectFile.get((String)localObject, "weapons", (String)null);
-          localSlot.weapons = Aircraft.getWeaponsRegistered(localSlot.planeClass);
-          localSlot.weapon = 0;
-          for (int i2 = 0; i2 < localSlot.weapons.length; i2++) {
-            if (localSlot.weapons[i2].equals(str5)) {
-              localSlot.weapon = i2;
-              break;
-            }
-          }
-        }
-      }
-      for (m = 0; m < 4; m++)
-        if (this.slot[m] == null) {
-          this.pAircraft[m].setEnable(false);
-          this.cWeapon[m].clear(false);
-        }
-        else {
-          localObject = this.slot[m];
-          if (World.cur().isWeaponsConstant()) {
-            ((Slot)localObject).bEnable = false;
-          }
-          else if (this.bSingleMission) {
-            ((Slot)localObject).bEnable = true;
-          }
-          else if (this.playerNum == 0) {
-            if (this.playerSlot == 0)
-              ((Slot)localObject).bEnable = true;
-            else
-              ((Slot)localObject).bEnable = (this.playerSlot == m);
-          }
-          else ((Slot)localObject).bEnable = false;
-
-          this.pAircraft[m].cap = new GCaption(((Slot)localObject).players + " * " + I18N.plane(((Slot)localObject).planeKey));
-          if (m == this.playerSlot)
-            this.pAircraft[m].color = 255;
-          else
-            this.pAircraft[m].color = 0;
-          this.pAircraft[m].setEnable(true);
-
-          this.cWeapon[m].clear(false);
-          if (((Slot)localObject).bEnable) {
-            for (n = 0; n < ((Slot)localObject).weapons.length; n++)
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bBack)
             {
-              if (!Aircraft.isWeaponDateOk(((Slot)localObject).planeClass, localObject.weapons[n]))
-                continue;
-              this.cWeapon[m].add(I18N.weapons(((Slot)localObject).planeKey, localObject.weapons[n]));
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
             }
-            this.cWeapon[m].setSelected(((Slot)localObject).weapon, true, false);
-          } else {
-            this.cWeapon[m].add(I18N.weapons(((Slot)localObject).planeKey, localObject.weapons[localObject.weapon]));
-            this.cWeapon[m].setSelected(0, true, false);
-          }
+            if(gwindow == bAirArming)
+            {
+                if(bSingleMission)
+                    com.maddox.il2.gui.GUIAirArming.stateId = 0;
+                else
+                    com.maddox.il2.gui.GUIAirArming.stateId = 1;
+                com.maddox.il2.game.Main.stateStack().push(55);
+            }
+            return super.notify(gwindow, i, j);
+        }
+
+        public void render()
+        {
+            super.render();
+            setCanvasColorWHITE();
+            draw(x1024(80F), y1024(32F), x1024(64F), y1024(64F), texRegiment);
+            setCanvasFont(1);
+            draw(x1024(160F), y1024(48F), x1024(784F), y1024(32F), 0, com.maddox.il2.game.I18N.regimentInfo(regiment.info()));
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(480F), x1024(962F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(64F), y1024(144F), x1024(464F), y1024(32F), 1, i18n("arming.Aircraft"));
+            draw(x1024(608F), y1024(144F), x1024(384F), y1024(32F), 1, i18n("arming.Weapons"));
+            draw(x1024(96F), y1024(536F), x1024(320F), y1024(48F), 0, i18n("arming.Apply"));
+            draw(x1024(430F), y1024(536F), x1024(492F), y1024(48F), 2, i18n("arming.WeaponDist"));
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 92F, 1024F, 616F);
+            for(int i = 0; i < 4; i++)
+            {
+                pAircraft[i].set1024PosSize(32F, 192 + i * 64, 544F, 32F);
+                cWeapon[i].set1024PosSize(608F, 192 + i * 64, 384F, 32F);
+            }
+
+            bBack.setPosC(x1024(56F), y1024(560F));
+            bAirArming.setPosC(x1024(960F), y1024(560F));
+        }
+
+        public DialogClient()
+        {
         }
     }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      Main.stateStack().pop();
-      return;
-    }
-    this.client.activateWindow();
-  }
 
-  public void _leave() {
-    try {
-      SectFile localSectFile = Main.cur().currentMissionFile;
-      for (int i = 0; i < 4; i++) {
-        if (this.slot[i] == null)
-          continue;
-        Slot localSlot = this.slot[i];
-        if (!localSlot.bEnable)
-          continue;
-        localSectFile.set(localSlot.wingName, "weapons", localSlot.weapons[this.cWeapon[i].getSelected()]);
-      }
-      this.regiment = null;
-      this.texRegiment = null;
-      this.slot = null;
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-    World.cur().setUserCovers();
-    this.client.hideWindow();
-  }
-
-  private float clampValue(GWindowEditControl paramGWindowEditControl, float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    String str = paramGWindowEditControl.getValue();
-    try { paramFloat1 = Float.parseFloat(str); } catch (Exception localException) {
-    }
-    if (paramFloat1 < paramFloat2) paramFloat1 = paramFloat2;
-    if (paramFloat1 > paramFloat3) paramFloat1 = paramFloat3;
-    paramGWindowEditControl.setValue("" + paramFloat1, false);
-    return paramFloat1;
-  }
-
-  public GUIArming(GWindowRoot paramGWindowRoot)
-  {
-    super(54);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("arming.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.pAircraft = new GUIPocket[4];
-    this.cWeapon = new GWindowComboControl[4];
-    for (int i = 0; i < 4; i++) {
-      this.pAircraft[i] = new GUIPocket(this.dialogClient, "");
-      this.pAircraft[i].setEnable(false);
-      this.cWeapon[i] = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F)));
-      this.cWeapon[i].setEditable(false);
-    }
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-    this.bBack = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bAirArming = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    static class Slot
     {
+
+        boolean bEnable;
+        java.lang.String wingName;
+        int players;
+        int fuel;
+        java.lang.Class planeClass;
+        java.lang.String planeKey;
+        java.lang.String weapons[];
+        int weapon;
+
+        Slot()
+        {
+        }
     }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
+
+    public void enterPush(com.maddox.il2.game.GameState gamestate)
     {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIArming.this.bBack) {
-        Main.stateStack().pop();
-        return true;
-      }if (paramGWindow == GUIArming.this.bAirArming) {
-        if (GUIArming.this.bSingleMission) GUIAirArming.stateId = 0; else
-          GUIAirArming.stateId = 1;
-        Main.stateStack().push(55);
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        bSingleMission = gamestate.id() == 4;
+        super.enterPush(gamestate);
     }
 
-    public void render() {
-      super.render();
-      setCanvasColorWHITE();
-      draw(x1024(80.0F), y1024(32.0F), x1024(64.0F), y1024(64.0F), GUIArming.this.texRegiment);
-      setCanvasFont(1);
-      draw(x1024(160.0F), y1024(48.0F), x1024(784.0F), y1024(32.0F), 0, I18N.regimentInfo(GUIArming.this.regiment.info()));
-
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(480.0F), x1024(962.0F), 2.0F);
-
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(64.0F), y1024(144.0F), x1024(464.0F), y1024(32.0F), 1, GUIArming.this.i18n("arming.Aircraft"));
-      draw(x1024(608.0F), y1024(144.0F), x1024(384.0F), y1024(32.0F), 1, GUIArming.this.i18n("arming.Weapons"));
-
-      draw(x1024(96.0F), y1024(536.0F), x1024(320.0F), y1024(48.0F), 0, GUIArming.this.i18n("arming.Apply"));
-      draw(x1024(430.0F), y1024(536.0F), x1024(492.0F), y1024(48.0F), 2, GUIArming.this.i18n("arming.WeaponDist"));
-    }
-
-    public void setPosSize()
+    public void _enter()
     {
-      set1024PosSize(0.0F, 92.0F, 1024.0F, 616.0F);
+        com.maddox.il2.ai.UserCfg usercfg = com.maddox.il2.ai.World.cur().userCfg;
+        try
+        {
+            com.maddox.rts.SectFile sectfile = com.maddox.il2.game.Main.cur().currentMissionFile;
+            java.lang.String s = sectfile.get("MAIN", "player", (java.lang.String)null);
+            java.lang.String s1 = s.substring(0, s.length() - 1);
+            java.lang.String s2 = s1.substring(0, s1.length() - 1);
+            regiment = (com.maddox.il2.ai.Regiment)com.maddox.il2.engine.Actor.getByName(s2);
+            com.maddox.il2.engine.Mat mat = com.maddox.il2.objects.air.PaintScheme.makeMat(regiment.name(), regiment.fileNameTga(), 1.0F, 1.0F, 1.0F);
+            texRegiment = com.maddox.gwindow.GTexture.New(mat.Name());
+            int i = sectfile.get("MAIN", "WEAPONSCONSTANT", 0, 0, 1);
+            com.maddox.il2.ai.World.cur().setWeaponsConstant(i == 1);
+            playerNum = sectfile.get("Main", "playerNum", 0);
+            slot = new com.maddox.il2.gui.Slot[4];
+            playerSlot = -1;
+            int j = sectfile.sectionIndex("Wing");
+            int k = sectfile.vars(j);
+            for(int l = 0; l < k; l++)
+            {
+                java.lang.String s3 = sectfile.var(j, l);
+                if(s3.startsWith(s1))
+                {
+                    int j1 = s3.charAt(s3.length() - 1) - 48;
+                    if(s3.equals(s))
+                        playerSlot = j1;
+                    int k1 = sectfile.get(s3, "Planes", 0, 0, 4);
+                    com.maddox.il2.gui.Slot slot2 = new Slot();
+                    slot[j1] = slot2;
+                    slot2.wingName = s3;
+                    slot2.players = k1;
+                    slot2.fuel = sectfile.get(s3, "Fuel", 100, 0, 100);
+                    java.lang.String s4 = sectfile.get(s3, "Class", (java.lang.String)null);
+                    slot2.planeClass = com.maddox.rts.ObjIO.classForName(s4);
+                    slot2.planeKey = com.maddox.rts.Property.stringValue(slot2.planeClass, "keyName", null);
+                    java.lang.String s5 = sectfile.get(s3, "weapons", (java.lang.String)null);
+                    slot2.weapons = com.maddox.il2.objects.air.Aircraft.getWeaponsRegistered(slot2.planeClass);
+                    slot2.weapon = 0;
+                    for(int i2 = 0; i2 < slot2.weapons.length; i2++)
+                    {
+                        if(!slot2.weapons[i2].equals(s5))
+                            continue;
+                        slot2.weapon = i2;
+                        break;
+                    }
 
-      for (int i = 0; i < 4; i++) {
-        GUIArming.this.pAircraft[i].set1024PosSize(32.0F, 192 + i * 64, 544.0F, 32.0F);
-        GUIArming.this.cWeapon[i].set1024PosSize(608.0F, 192 + i * 64, 384.0F, 32.0F);
-      }
-      GUIArming.this.bBack.setPosC(x1024(56.0F), y1024(560.0F));
-      GUIArming.this.bAirArming.setPosC(x1024(960.0F), y1024(560.0F));
+                }
+            }
+
+            for(int i1 = 0; i1 < 4; i1++)
+                if(slot[i1] == null)
+                {
+                    pAircraft[i1].setEnable(false);
+                    cWeapon[i1].clear(false);
+                } else
+                {
+                    com.maddox.il2.gui.Slot slot1 = slot[i1];
+                    if(com.maddox.il2.ai.World.cur().isWeaponsConstant())
+                        slot1.bEnable = false;
+                    else
+                    if(bSingleMission)
+                        slot1.bEnable = true;
+                    else
+                    if(playerNum == 0)
+                    {
+                        if(playerSlot == 0)
+                            slot1.bEnable = true;
+                        else
+                            slot1.bEnable = playerSlot == i1;
+                    } else
+                    {
+                        slot1.bEnable = false;
+                    }
+                    pAircraft[i1].cap = new GCaption(slot1.players + " * " + com.maddox.il2.game.I18N.plane(slot1.planeKey));
+                    if(i1 == playerSlot)
+                        pAircraft[i1].color = 255;
+                    else
+                        pAircraft[i1].color = 0;
+                    pAircraft[i1].setEnable(true);
+                    cWeapon[i1].clear(false);
+                    if(slot1.bEnable)
+                    {
+                        for(int l1 = 0; l1 < slot1.weapons.length; l1++)
+                            cWeapon[i1].add(com.maddox.il2.game.I18N.weapons(slot1.planeKey, slot1.weapons[l1]));
+
+                        cWeapon[i1].setSelected(slot1.weapon, true, false);
+                    } else
+                    {
+                        cWeapon[i1].add(com.maddox.il2.game.I18N.weapons(slot1.planeKey, slot1.weapons[slot1.weapon]));
+                        cWeapon[i1].setSelected(0, true, false);
+                    }
+                }
+
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            com.maddox.il2.game.Main.stateStack().pop();
+            return;
+        }
+        client.activateWindow();
     }
-  }
 
-  static class Slot
-  {
-    boolean bEnable;
-    String wingName;
-    int players;
-    int fuel;
-    Class planeClass;
-    String planeKey;
-    String[] weapons;
-    int weapon;
-  }
+    public void _leave()
+    {
+        try
+        {
+            com.maddox.rts.SectFile sectfile = com.maddox.il2.game.Main.cur().currentMissionFile;
+            for(int i = 0; i < 4; i++)
+                if(slot[i] != null)
+                {
+                    com.maddox.il2.gui.Slot slot1 = slot[i];
+                    if(slot1.bEnable)
+                        sectfile.set(slot1.wingName, "weapons", slot1.weapons[cWeapon[i].getSelected()]);
+                }
+
+            regiment = null;
+            texRegiment = null;
+            slot = null;
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        com.maddox.il2.ai.World.cur().setUserCovers();
+        client.hideWindow();
+    }
+
+    private float clampValue(com.maddox.gwindow.GWindowEditControl gwindoweditcontrol, float f, float f1, float f2)
+    {
+        java.lang.String s = gwindoweditcontrol.getValue();
+        try
+        {
+            f = java.lang.Float.parseFloat(s);
+        }
+        catch(java.lang.Exception exception) { }
+        if(f < f1)
+            f = f1;
+        if(f > f2)
+            f = f2;
+        gwindoweditcontrol.setValue("" + f, false);
+        return f;
+    }
+
+    public GUIArming(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(54);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("arming.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        pAircraft = new com.maddox.il2.gui.GUIPocket[4];
+        cWeapon = new com.maddox.gwindow.GWindowComboControl[4];
+        for(int i = 0; i < 4; i++)
+        {
+            pAircraft[i] = new GUIPocket(dialogClient, "");
+            pAircraft[i].setEnable(false);
+            cWeapon[i] = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 0.0F, 0.0F, 1.0F));
+            cWeapon[i].setEditable(false);
+        }
+
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bBack = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bAirArming = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIPocket pAircraft[];
+    public com.maddox.gwindow.GWindowComboControl cWeapon[];
+    public com.maddox.il2.gui.GUIButton bAirArming;
+    public com.maddox.il2.gui.GUIButton bBack;
+    private com.maddox.il2.ai.Regiment regiment;
+    private com.maddox.gwindow.GTexture texRegiment;
+    private com.maddox.il2.gui.Slot slot[];
+    private int playerNum;
+    private int playerSlot;
+    private boolean bSingleMission;
+
+
+
 }

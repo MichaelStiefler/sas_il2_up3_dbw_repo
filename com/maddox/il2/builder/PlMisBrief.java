@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlMisBrief.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.gwindow.GRegion;
@@ -25,231 +30,299 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class PlMisBrief extends Plugin
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, PlMission, Builder
+
+public class PlMisBrief extends com.maddox.il2.builder.Plugin
 {
-  WEditor wEditor;
-  GWindowMenuItem mEditor;
-  private PlMission pluginMission;
-
-  public void load(SectFile paramSectFile)
-  {
-    String str1 = textFileName(paramSectFile);
-    this.wEditor.wName.clear(false);
-    this.wEditor.wShort.edit.clear(false);
-    this.wEditor.wInfo.edit.clear(false);
-    BufferedReader localBufferedReader = null;
-    try {
-      localBufferedReader = new BufferedReader(new SFSReader(str1));
-      while (true) {
-        String str2 = localBufferedReader.readLine();
-        if (str2 == null)
-          break;
-        int i = str2.length();
-        if (i == 0)
-          continue;
-        SharedTokenizer.set(str2);
-        String str3 = SharedTokenizer.next();
-        if (str3 == null)
-          continue;
-        String str4;
-        if ("Name".compareToIgnoreCase(str3) == 0) {
-          str4 = SharedTokenizer.getGap();
-          if (str4 != null)
-            this.wEditor.wName.setValue(UnicodeTo8bit.load(str4), false);
-        } else if ("Short".compareToIgnoreCase(str3) == 0) {
-          str4 = SharedTokenizer.getGap();
-          if (str4 != null)
-            fillEditor(this.wEditor.wShort.edit, str4);
-        } else if ("Description".compareToIgnoreCase(str3) == 0) {
-          str4 = SharedTokenizer.getGap();
-          if (str4 != null)
-            fillEditor(this.wEditor.wInfo.edit, str4); 
-        }
-      }
-    } catch (Exception localException1) {
-    }
-    if (localBufferedReader != null)
-      try {
-        localBufferedReader.close();
-      } catch (Exception localException2) {
-      }
-  }
-
-  private void fillEditor(GWindowEditText paramGWindowEditText, String paramString) {
-    String str = UnicodeTo8bit.load(paramString);
-    ArrayList localArrayList = new ArrayList();
-    int i = 0;
-    int j = 0;
-    int k = str.length();
-    while (j < k) {
-      int m = str.charAt(j);
-      if (m == 10) {
-        if (i < j)
-          localArrayList.add(str.substring(i, j));
-        else {
-          localArrayList.add("");
-        }
-        i = j + 1;
-      }
-      j++;
-    }
-    if (i < j)
-      localArrayList.add(str.substring(i, j));
-    paramGWindowEditText.insert(localArrayList, true);
-    paramGWindowEditText.clearUnDo();
-  }
-
-  private String getEditor(GWindowEditText paramGWindowEditText) {
-    if (paramGWindowEditText.isEmpty()) return "";
-    ArrayList localArrayList = paramGWindowEditText.text;
-    StringBuffer localStringBuffer1 = new StringBuffer();
-    for (int i = 0; i < localArrayList.size(); i++) {
-      StringBuffer localStringBuffer2 = (StringBuffer)localArrayList.get(i);
-      if ((localStringBuffer2 != null) && (localStringBuffer2.length() > 0))
-        localStringBuffer1.append(localStringBuffer2.toString());
-      localStringBuffer1.append('\n');
-    }
-    return UnicodeTo8bit.save(localStringBuffer1.toString(), false);
-  }
-
-  public boolean save(SectFile paramSectFile) {
-    String str1 = textFileName(paramSectFile);
-    PrintWriter localPrintWriter = null;
-    try {
-      localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(str1, 0))));
-
-      String str2 = this.wEditor.wName.getValue();
-      if ((str2 != null) && (str2.length() > 0))
-        localPrintWriter.println("Name " + UnicodeTo8bit.save(str2, false));
-      String str3 = getEditor(this.wEditor.wShort.edit);
-      if ((str3 != null) && (str3.length() > 0))
-        localPrintWriter.println("Short " + str3);
-      str3 = getEditor(this.wEditor.wInfo.edit);
-      if ((str3 != null) && (str3.length() > 0))
-        localPrintWriter.println("Description " + str3); 
-    } catch (Exception localException1) {
-    }
-    if (localPrintWriter != null)
-      try {
-        localPrintWriter.close();
-      } catch (Exception localException2) {
-      }
-    return true;
-  }
-
-  private String textFileName(SectFile paramSectFile) {
-    String str1 = "";
-    String str2 = Locale.getDefault().getLanguage();
-    if (!"us".equals(str2))
-      str1 = "_" + str2;
-    String str3 = paramSectFile.fileName();
-    int i = str3.length() - 1;
-    while (i >= 0) {
-      int j = str3.charAt(i);
-      if ((j == 47) || (j == 92))
-        break;
-      if (j == 46) {
-        return str3.substring(0, i) + str1 + ".properties";
-      }
-      i--;
-    }
-    return str3 + str1 + ".properties";
-  }
-
-  public void deleteAll()
-  {
-    this.wEditor.deleteAll();
-  }
-
-  public void configure()
-  {
-    if (getPlugin("Mission") == null)
-      throw new RuntimeException("PlMisTarget: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-  }
-
-  public void createGUI() {
-    this.mEditor = builder.mEdit.subMenu.addItem(0, new GWindowMenuItem(builder.mEdit.subMenu, i18n("&Texts"), i18n("TIPTexts"))
+    class WEditor extends com.maddox.gwindow.GWindowFramed
     {
-      public void execute() {
-        if (PlMisBrief.this.wEditor.isVisible()) PlMisBrief.this.wEditor.hideWindow(); else
-          PlMisBrief.this.wEditor.showWindow();
-      }
-    });
-    this.wEditor = new WEditor();
-  }
 
-  public void freeResources() {
-    if (this.wEditor.isVisible()) this.wEditor.hideWindow(); 
-  }
+        public void windowShown()
+        {
+            mEditor.bChecked = true;
+            super.windowShown();
+        }
 
-  static {
-    Property.set(PlMisBrief.class, "name", "MisBrief");
-  }
+        public void windowHidden()
+        {
+            mEditor.bChecked = false;
+            super.windowHidden();
+        }
 
-  class WEditor extends GWindowFramed
-  {
-    public GWindowDialogClient nameClient;
-    public GWindowEditControl wName;
-    public GWindowEditTextControl wShort;
-    public GWindowEditTextControl wInfo;
+        public void created()
+        {
+            bAlwaysOnTop = true;
+            super.created();
+            title = com.maddox.il2.builder.Plugin.i18n("Texts");
+            clientWindow = create(new GWindowTabDialogClient());
+            com.maddox.gwindow.GWindowTabDialogClient gwindowtabdialogclient = (com.maddox.gwindow.GWindowTabDialogClient)clientWindow;
+            gwindowtabdialogclient.addTab(com.maddox.il2.builder.Plugin.i18n("textName"), gwindowtabdialogclient.create(nameClient = new GWindowDialogClient()));
+            nameClient.addControl(wName = new com.maddox.gwindow.GWindowEditControl(nameClient, 0.0F, 0.0F, 1.0F, 1.0F, "") {
 
-    public void windowShown()
+                public boolean notify(int i, int j)
+                {
+                    if(i == 2 && j == 0)
+                        com.maddox.il2.builder.PlMission.setChanged();
+                    return super.notify(i, j);
+                }
+
+            }
+);
+            gwindowtabdialogclient.addTab(com.maddox.il2.builder.Plugin.i18n("textShort"), gwindowtabdialogclient.create(wShort = new com.maddox.gwindow.GWindowEditTextControl() {
+
+                public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+                {
+                    if(gwindow == edit && i == 2 && j == 0)
+                        com.maddox.il2.builder.PlMission.setChanged();
+                    return super.notify(gwindow, i, j);
+                }
+
+            }
+));
+            gwindowtabdialogclient.addTab(com.maddox.il2.builder.Plugin.i18n("textDescr"), gwindowtabdialogclient.create(wInfo = new com.maddox.gwindow.GWindowEditTextControl() {
+
+                public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+                {
+                    if(gwindow == edit && i == 2 && j == 0)
+                        com.maddox.il2.builder.PlMission.setChanged();
+                    return super.notify(gwindow, i, j);
+                }
+
+            }
+));
+        }
+
+        public void deleteAll()
+        {
+            wName.setValue("", false);
+            wShort.edit.clear(false);
+            wInfo.edit.clear(false);
+        }
+
+        public void resized()
+        {
+            super.resized();
+            if(wName != null)
+                wName.setSize(nameClient.win.dx, 1.3F * lookAndFeel().metric());
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            resized();
+            close(false);
+        }
+
+        public com.maddox.gwindow.GWindowDialogClient nameClient;
+        public com.maddox.gwindow.GWindowEditControl wName;
+        public com.maddox.gwindow.GWindowEditTextControl wShort;
+        public com.maddox.gwindow.GWindowEditTextControl wInfo;
+
+        public WEditor()
+        {
+            doNew(com.maddox.il2.builder.Plugin.builder.clientWindow, 2.0F, 2.0F, 26F, 20F, true);
+        }
+    }
+
+
+    public PlMisBrief()
     {
-      PlMisBrief.this.mEditor.bChecked = true;
-      super.windowShown();
-    }
-    public void windowHidden() {
-      PlMisBrief.this.mEditor.bChecked = false;
-      super.windowHidden();
-    }
-    public void created() {
-      this.bAlwaysOnTop = true;
-      super.created();
-      this.title = Plugin.i18n("Texts");
-      this.clientWindow = create(new GWindowTabDialogClient());
-      GWindowTabDialogClient localGWindowTabDialogClient = (GWindowTabDialogClient)this.clientWindow;
-      localGWindowTabDialogClient.addTab(Plugin.i18n("textName"), localGWindowTabDialogClient.create(this.nameClient = new GWindowDialogClient()));
-      this.nameClient.addControl(this.wName = new GWindowEditControl(this.nameClient, 0.0F, 0.0F, 1.0F, 1.0F, "") {
-        public boolean notify(int paramInt1, int paramInt2) {
-          if ((paramInt1 == 2) && (paramInt2 == 0))
-            PlMission.setChanged();
-          return super.notify(paramInt1, paramInt2);
-        }
-      });
-      localGWindowTabDialogClient.addTab(Plugin.i18n("textShort"), localGWindowTabDialogClient.create(this.wShort = new GWindowEditTextControl() {
-        public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-          if ((paramGWindow == this.edit) && (paramInt1 == 2) && (paramInt2 == 0))
-            PlMission.setChanged();
-          return super.notify(paramGWindow, paramInt1, paramInt2);
-        }
-      }));
-      localGWindowTabDialogClient.addTab(Plugin.i18n("textDescr"), localGWindowTabDialogClient.create(this.wInfo = new GWindowEditTextControl() {
-        public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-          if ((paramGWindow == this.edit) && (paramInt1 == 2) && (paramInt2 == 0))
-            PlMission.setChanged();
-          return super.notify(paramGWindow, paramInt1, paramInt2);
-        } } ));
     }
 
-    public void deleteAll() {
-      this.wName.setValue("", false);
-      this.wShort.edit.clear(false);
-      this.wInfo.edit.clear(false);
-    }
-    public void resized() {
-      super.resized();
-      if (this.wName != null)
-        this.wName.setSize(this.nameClient.win.dx, 1.3F * lookAndFeel().metric()); 
+    public void load(com.maddox.rts.SectFile sectfile)
+    {
+        java.lang.String s = textFileName(sectfile);
+        wEditor.wName.clear(false);
+        wEditor.wShort.edit.clear(false);
+        wEditor.wInfo.edit.clear(false);
+        java.io.BufferedReader bufferedreader = null;
+        try
+        {
+            bufferedreader = new BufferedReader(new SFSReader(s));
+            do
+            {
+                java.lang.String s1 = bufferedreader.readLine();
+                if(s1 == null)
+                    break;
+                int i = s1.length();
+                if(i != 0)
+                {
+                    com.maddox.util.SharedTokenizer.set(s1);
+                    java.lang.String s2 = com.maddox.util.SharedTokenizer.next();
+                    if(s2 != null)
+                        if("Name".compareToIgnoreCase(s2) == 0)
+                        {
+                            java.lang.String s3 = com.maddox.util.SharedTokenizer.getGap();
+                            if(s3 != null)
+                                wEditor.wName.setValue(com.maddox.util.UnicodeTo8bit.load(s3), false);
+                        } else
+                        if("Short".compareToIgnoreCase(s2) == 0)
+                        {
+                            java.lang.String s4 = com.maddox.util.SharedTokenizer.getGap();
+                            if(s4 != null)
+                                fillEditor(wEditor.wShort.edit, s4);
+                        } else
+                        if("Description".compareToIgnoreCase(s2) == 0)
+                        {
+                            java.lang.String s5 = com.maddox.util.SharedTokenizer.getGap();
+                            if(s5 != null)
+                                fillEditor(wEditor.wInfo.edit, s5);
+                        }
+                }
+            } while(true);
+        }
+        catch(java.lang.Exception exception) { }
+        if(bufferedreader != null)
+            try
+            {
+                bufferedreader.close();
+            }
+            catch(java.lang.Exception exception1) { }
     }
 
-    public void afterCreated() {
-      super.afterCreated();
-      resized();
-      close(false);
+    private void fillEditor(com.maddox.gwindow.GWindowEditText gwindowedittext, java.lang.String s)
+    {
+        java.lang.String s1 = com.maddox.util.UnicodeTo8bit.load(s);
+        java.util.ArrayList arraylist = new ArrayList();
+        int i = 0;
+        int j = 0;
+        for(int k = s1.length(); j < k; j++)
+        {
+            char c = s1.charAt(j);
+            if(c == '\n')
+            {
+                if(i < j)
+                    arraylist.add(s1.substring(i, j));
+                else
+                    arraylist.add("");
+                i = j + 1;
+            }
+        }
+
+        if(i < j)
+            arraylist.add(s1.substring(i, j));
+        gwindowedittext.insert(arraylist, true);
+        gwindowedittext.clearUnDo();
     }
-    public WEditor() {
-      doNew(Plugin.builder.clientWindow, 2.0F, 2.0F, 26.0F, 20.0F, true);
+
+    private java.lang.String getEditor(com.maddox.gwindow.GWindowEditText gwindowedittext)
+    {
+        if(gwindowedittext.isEmpty())
+            return "";
+        java.util.ArrayList arraylist = gwindowedittext.text;
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            java.lang.StringBuffer stringbuffer1 = (java.lang.StringBuffer)arraylist.get(i);
+            if(stringbuffer1 != null && stringbuffer1.length() > 0)
+                stringbuffer.append(stringbuffer1.toString());
+            stringbuffer.append('\n');
+        }
+
+        return com.maddox.util.UnicodeTo8bit.save(stringbuffer.toString(), false);
     }
-  }
+
+    public boolean save(com.maddox.rts.SectFile sectfile)
+    {
+        java.lang.String s = textFileName(sectfile);
+        java.io.PrintWriter printwriter = null;
+        try
+        {
+            printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(s, 0))));
+            java.lang.String s1 = wEditor.wName.getValue();
+            if(s1 != null && s1.length() > 0)
+                printwriter.println("Name " + com.maddox.util.UnicodeTo8bit.save(s1, false));
+            java.lang.String s2 = getEditor(wEditor.wShort.edit);
+            if(s2 != null && s2.length() > 0)
+                printwriter.println("Short " + s2);
+            s2 = getEditor(wEditor.wInfo.edit);
+            if(s2 != null && s2.length() > 0)
+                printwriter.println("Description " + s2);
+        }
+        catch(java.lang.Exception exception) { }
+        if(printwriter != null)
+            try
+            {
+                printwriter.close();
+            }
+            catch(java.lang.Exception exception1) { }
+        return true;
+    }
+
+    private java.lang.String textFileName(com.maddox.rts.SectFile sectfile)
+    {
+        java.lang.String s = "";
+        java.lang.String s1 = java.util.Locale.getDefault().getLanguage();
+        if(!"us".equals(s1))
+            s = "_" + s1;
+        java.lang.String s2 = sectfile.fileName();
+        for(int i = s2.length() - 1; i >= 0; i--)
+        {
+            char c = s2.charAt(i);
+            if(c == '/' || c == '\\')
+                break;
+            if(c == '.')
+                return s2.substring(0, i) + s + ".properties";
+        }
+
+        return s2 + s + ".properties";
+    }
+
+    public void deleteAll()
+    {
+        wEditor.deleteAll();
+    }
+
+    public void configure()
+    {
+        if(com.maddox.il2.builder.Plugin.getPlugin("Mission") == null)
+        {
+            throw new RuntimeException("PlMisTarget: plugin 'Mission' not found");
+        } else
+        {
+            pluginMission = (com.maddox.il2.builder.PlMission)com.maddox.il2.builder.Plugin.getPlugin("Mission");
+            return;
+        }
+    }
+
+    public void createGUI()
+    {
+        mEditor = com.maddox.il2.builder.Plugin.builder.mEdit.subMenu.addItem(1, new com.maddox.gwindow.GWindowMenuItem(com.maddox.il2.builder.Plugin.builder.mEdit.subMenu, com.maddox.il2.builder.Plugin.i18n("&Texts"), com.maddox.il2.builder.Plugin.i18n("TIPTexts")) {
+
+            public void execute()
+            {
+                if(wEditor.isVisible())
+                    wEditor.hideWindow();
+                else
+                    wEditor.showWindow();
+            }
+
+        }
+);
+        wEditor = new WEditor();
+    }
+
+    public void freeResources()
+    {
+        if(wEditor.isVisible())
+            wEditor.hideWindow();
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    com.maddox.il2.builder.WEditor wEditor;
+    com.maddox.gwindow.GWindowMenuItem mEditor;
+    private com.maddox.il2.builder.PlMission pluginMission;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PlMisBrief.class, "name", "MisBrief");
+    }
 }

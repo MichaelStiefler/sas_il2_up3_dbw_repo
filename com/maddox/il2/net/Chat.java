@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Chat.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.ai.World;
@@ -26,354 +31,436 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
-public class Chat extends NetObj
+// Referenced classes of package com.maddox.il2.net:
+//            ChatMessage, NetUser, NetServerParams, NetMissionTrack
+
+public class Chat extends com.maddox.rts.NetObj
 {
-  public static boolean USE_NET_PHONE = true;
-  public static RadioChannelSpawn radioSpawn = new RadioChannelSpawn();
-  public ResourceBundle resOrder;
-  public ResourceBundle resLog;
-  public List buf = new ArrayList();
-  public int stampUpdate = 0;
-
-  private int maxBufLen = 80;
-  private Object[] params = new Object[2];
-
-  public int getMaxBuflen() { return this.maxBufLen; } 
-  public void setMaxBufLen(int paramInt) {
-    if (paramInt < 1) paramInt = 1;
-    this.maxBufLen = paramInt;
-    if (this.buf.size() > this.maxBufLen)
-      this.stampUpdate += 1;
-    while (this.buf.size() > this.maxBufLen)
-      this.buf.remove(this.buf.size() - 1); 
-  }
-
-  public void clear() {
-    this.buf.clear();
-    this.stampUpdate += 1;
-  }
-
-  private ChatMessage translateMsg(ChatMessage paramChatMessage)
-  {
-    Object localObject1;
-    if (paramChatMessage.flags == 1) {
-      if (this.resOrder == null)
-        this.resOrder = ResourceBundle.getBundle("i18n/hud_order", RTSConf.cur.locale, LDRres.loader());
-      localObject1 = new StringTokenizer(paramChatMessage.msg);
-      StringBuffer localStringBuffer = new StringBuffer();
-      int j = 1;
-      while (((StringTokenizer)localObject1).hasMoreTokens()) {
-        if (j == 0) localStringBuffer.append(" > ");
-        j = 0;
-        localObject2 = ((StringTokenizer)localObject1).nextToken();
-        Object localObject3 = null;
-        String str2 = World.getPlayerLastCountry();
-        if (str2 != null)
-          try {
-            localObject3 = this.resOrder.getString((String)localObject2 + "_" + str2);
-          } catch (Exception localException2) {
-          }
-        if (localObject3 == null) {
-          try {
-            localObject3 = this.resOrder.getString((String)localObject2);
-          } catch (Exception localException3) {
-            localObject3 = localObject2;
-          }
-        }
-        localStringBuffer.append((String)localObject3);
-      }
-      Object localObject2 = new ChatMessage();
-      ((ChatMessage)localObject2).flags = paramChatMessage.flags;
-      ((ChatMessage)localObject2).from = paramChatMessage.from;
-      ((ChatMessage)localObject2).to = paramChatMessage.to;
-      ((ChatMessage)localObject2).msg = localStringBuffer.toString();
-      paramChatMessage = (ChatMessage)localObject2;
-    }
-    else if ((paramChatMessage.flags & 0xE) != 0) {
-      if (this.resLog == null)
-        this.resLog = ResourceBundle.getBundle("i18n/netmessages", RTSConf.cur.locale, LDRres.loader());
-      localObject1 = new ChatMessage();
-      ((ChatMessage)localObject1).flags = paramChatMessage.flags;
-      ((ChatMessage)localObject1).from = paramChatMessage.from;
-      ((ChatMessage)localObject1).to = paramChatMessage.to;
-      int i = (paramChatMessage.flags & 0xE) >> 1;
-      switch (i) {
-      case 2:
-        if (paramChatMessage.param0 == null) break;
-        this.params[0] = ((NetUser)paramChatMessage.param0).shortName(); break;
-      case 3:
-        if (paramChatMessage.param0 != null)
-          this.params[0] = ((NetUser)paramChatMessage.param0).shortName();
-        if (paramChatMessage.param1 == null) break;
-        this.params[1] = ((NetUser)paramChatMessage.param1).shortName(); break;
-      case 6:
-        this.params[0] = paramChatMessage.param0;
-        break;
-      case 7:
-        this.params[0] = paramChatMessage.param0;
-        this.params[1] = paramChatMessage.param1;
-        break;
-      case 4:
-      case 5:
-      }
-      String str1 = null;
-      try {
-        str1 = this.resLog.getString(paramChatMessage.msg);
-      } catch (Exception localException1) {
-        str1 = paramChatMessage.msg;
-      }
-      ((ChatMessage)localObject1).msg = MessageFormat.format(str1, this.params);
-      paramChatMessage = (ChatMessage)localObject1;
-       tmp504_503 = null; this.params[1] = tmp504_503; this.params[0] = tmp504_503;
-    }
-    return (ChatMessage)(ChatMessage)(ChatMessage)paramChatMessage;
-  }
-
-  private void addMsg(ChatMessage paramChatMessage) {
-    paramChatMessage = translateMsg(paramChatMessage);
-    if ((paramChatMessage.msg != null) && ((paramChatMessage.msg.startsWith("Morse:")) || (paramChatMessage.msg.startsWith("morse:"))))
+    static class SPAWN
+        implements com.maddox.rts.NetSpawn
     {
-      try
-      {
-        if (!World.cur().blockMorseChat)
-          World.getPlayerAircraft().playChatMsgAsMorse(paramChatMessage.msg);
-      }
-      catch (Exception localException)
-      {
-        System.out.println("Exception - " + localException);
-      }
+
+        public void netSpawn(int i, com.maddox.rts.NetMsgInput netmsginput)
+        {
+            try
+            {
+                new Chat(netmsginput.channel(), i);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        }
+
+        SPAWN()
+        {
+        }
     }
-    else
+
+
+    public int getMaxBuflen()
     {
-      this.buf.add(0, paramChatMessage);
-      this.stampUpdate += 1;
-      while (this.buf.size() > this.maxBufLen) {
-        this.buf.remove(this.buf.size() - 1);
-      }
-      if (paramChatMessage.from != null)
-        System.out.println("Chat: " + paramChatMessage.from.shortName() + ": \t" + paramChatMessage.msg);
-      else
-        System.out.println("Chat: --- " + paramChatMessage.msg);
+        return maxBufLen;
     }
-  }
 
-  public static void sendLogRnd(int paramInt, String paramString, Aircraft paramAircraft1, Aircraft paramAircraft2) {
-    sendLog(paramInt, paramString + (int)(Math.random() * 2.0D + 1.4D), paramAircraft1, paramAircraft2);
-  }
-
-  public static void sendLog(int paramInt, String paramString, Aircraft paramAircraft1, Aircraft paramAircraft2) {
-    if (Main.cur().chat == null) return;
-    if (Main.cur().netServerParams == null) return;
-    if (paramInt > Main.cur().netServerParams.autoLogDetail()) return;
-    NetUser localNetUser1 = null;
-    if ((paramAircraft1 != null) && (paramAircraft1.isNetPlayer()))
-      localNetUser1 = paramAircraft1.netUser();
-    NetUser localNetUser2 = null;
-    if ((paramAircraft2 != null) && (paramAircraft2.isNetPlayer()))
-      localNetUser2 = paramAircraft2.netUser();
-    sendLog(paramInt, paramString, localNetUser1, localNetUser2);
-  }
-
-  public static void sendLog(int paramInt, String paramString, NetUser paramNetUser1, NetUser paramNetUser2) {
-    if (Main.cur().chat == null) return;
-    if (Main.cur().netServerParams == null) return;
-    if (paramInt > Main.cur().netServerParams.autoLogDetail()) return;
-
-    int i = 2;
-    if (paramNetUser1 != null)
-      i = 4;
-    if (paramNetUser2 != null)
-      i = 6;
-    Main.cur().chat.send(null, paramString, null, (byte)i, paramNetUser1, paramNetUser2, true);
-  }
-
-  public static void sendLog(int paramInt, String paramString1, String paramString2, String paramString3) {
-    if (Main.cur().chat == null) return;
-    if (Main.cur().netServerParams == null) return;
-    if (paramInt > Main.cur().netServerParams.autoLogDetail()) return;
-    int i = 2;
-    if (paramString2 != null)
-      i = 12;
-    if (paramString3 != null)
-      i = 14;
-    Main.cur().chat.send(null, paramString1, null, (byte)i, paramString2, paramString3, true);
-  }
-
-  public void send(NetHost paramNetHost, String paramString, List paramList) {
-    send(paramNetHost, paramString, paramList, 0);
-  }
-
-  public void send(NetHost paramNetHost, String paramString, List paramList, byte paramByte) {
-    send(paramNetHost, paramString, paramList, paramByte, true);
-  }
-
-  public void send(NetHost paramNetHost, String paramString, List paramList, byte paramByte, boolean paramBoolean) {
-    send(paramNetHost, paramString, paramList, paramByte, null, null, paramBoolean);
-  }
-
-  public void send(NetHost paramNetHost, String paramString, List paramList, byte paramByte, Object paramObject1, Object paramObject2, boolean paramBoolean) {
-    if (NetMissionTrack.isPlaying()) return;
-    ChatMessage localChatMessage = new ChatMessage();
-    localChatMessage.flags = paramByte;
-    localChatMessage.from = paramNetHost;
-    localChatMessage.to = paramList;
-    if (paramString.length() > 80)
-      paramString = paramString.substring(0, 80);
-    int i = NetMsgOutput.len255(paramString);
-    if (paramList != null)
-      i += paramList.size() * NetMsgOutput.netObjReferenceLen();
-    if (i > 250) {
-      i -= 250;
-      paramString = paramString.substring(0, paramString.length() - i);
+    public void setMaxBufLen(int i)
+    {
+        if(i < 1)
+            i = 1;
+        maxBufLen = i;
+        if(buf.size() > maxBufLen)
+            stampUpdate++;
+        for(; buf.size() > maxBufLen; buf.remove(buf.size() - 1));
     }
-    localChatMessage.msg = paramString;
-    localChatMessage.param0 = paramObject1;
-    localChatMessage.param1 = paramObject2;
 
-    if (paramBoolean) {
-      addMsg(localChatMessage);
+    public void clear()
+    {
+        buf.clear();
+        stampUpdate++;
     }
-    if ((isMirror()) || (isMirrored()))
-      try {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeNetObj(localChatMessage.from);
-        localNetMsgGuaranted.writeByte(localChatMessage.flags);
-        localNetMsgGuaranted.write255(localChatMessage.msg);
-        int j;
-        if ((localChatMessage.flags & 0xE) != 0) {
-          j = (localChatMessage.flags & 0xE) >> 1;
-          switch (j) {
-          case 2:
-            localNetMsgGuaranted.writeNetObj((NetObj)paramObject1);
-            break;
-          case 3:
-            localNetMsgGuaranted.writeNetObj((NetObj)paramObject1);
-            localNetMsgGuaranted.writeNetObj((NetObj)paramObject2);
-            break;
-          case 6:
-            localNetMsgGuaranted.write255((String)paramObject1);
-            break;
-          case 7:
-            localNetMsgGuaranted.write255((String)paramObject1);
-            localNetMsgGuaranted.write255((String)paramObject2);
-            break;
-          case 4:
-          case 5:
-          }
+
+    private com.maddox.il2.net.ChatMessage translateMsg(com.maddox.il2.net.ChatMessage chatmessage)
+    {
+        if(chatmessage.flags == 1)
+        {
+            if(resOrder == null)
+                resOrder = java.util.ResourceBundle.getBundle("i18n/hud_order", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+            java.util.StringTokenizer stringtokenizer = new StringTokenizer(chatmessage.msg);
+            java.lang.StringBuffer stringbuffer = new StringBuffer();
+            boolean flag = true;
+            java.lang.String s2;
+            for(; stringtokenizer.hasMoreTokens(); stringbuffer.append(s2))
+            {
+                if(!flag)
+                    stringbuffer.append(" > ");
+                flag = false;
+                java.lang.String s1 = stringtokenizer.nextToken();
+                s2 = null;
+                java.lang.String s3 = com.maddox.il2.ai.World.getPlayerLastCountry();
+                if(s3 != null)
+                    try
+                    {
+                        s2 = resOrder.getString(s1 + "_" + s3);
+                    }
+                    catch(java.lang.Exception exception1) { }
+                if(s2 == null)
+                    try
+                    {
+                        s2 = resOrder.getString(s1);
+                    }
+                    catch(java.lang.Exception exception2)
+                    {
+                        s2 = s1;
+                    }
+            }
+
+            com.maddox.il2.net.ChatMessage chatmessage2 = new ChatMessage();
+            chatmessage2.flags = chatmessage.flags;
+            chatmessage2.from = chatmessage.from;
+            chatmessage2.to = chatmessage.to;
+            chatmessage2.msg = stringbuffer.toString();
+            chatmessage = chatmessage2;
+        } else
+        if((chatmessage.flags & 0xe) != 0)
+        {
+            if(resLog == null)
+                resLog = java.util.ResourceBundle.getBundle("i18n/netmessages", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+            com.maddox.il2.net.ChatMessage chatmessage1 = new ChatMessage();
+            chatmessage1.flags = chatmessage.flags;
+            chatmessage1.from = chatmessage.from;
+            chatmessage1.to = chatmessage.to;
+            int i = (chatmessage.flags & 0xe) >> 1;
+            switch(i)
+            {
+            case 4: // '\004'
+            case 5: // '\005'
+            default:
+                break;
+
+            case 2: // '\002'
+                if(chatmessage.param0 != null)
+                    params[0] = ((com.maddox.il2.net.NetUser)chatmessage.param0).shortName();
+                break;
+
+            case 3: // '\003'
+                if(chatmessage.param0 != null)
+                    params[0] = ((com.maddox.il2.net.NetUser)chatmessage.param0).shortName();
+                if(chatmessage.param1 != null)
+                    params[1] = ((com.maddox.il2.net.NetUser)chatmessage.param1).shortName();
+                break;
+
+            case 6: // '\006'
+                params[0] = chatmessage.param0;
+                break;
+
+            case 7: // '\007'
+                params[0] = chatmessage.param0;
+                params[1] = chatmessage.param1;
+                break;
+            }
+            java.lang.String s = null;
+            try
+            {
+                s = resLog.getString(chatmessage.msg);
+            }
+            catch(java.lang.Exception exception)
+            {
+                s = chatmessage.msg;
+            }
+            chatmessage1.msg = java.text.MessageFormat.format(s, params);
+            chatmessage = chatmessage1;
+            params[0] = params[1] = null;
         }
-        if (localChatMessage.to != null) {
-          for (j = 0; j < localChatMessage.to.size(); j++)
-            localNetMsgGuaranted.writeNetObj((NetObj)localChatMessage.to.get(j));
+        return chatmessage;
+    }
+
+    private void addMsg(com.maddox.il2.net.ChatMessage chatmessage)
+    {
+        chatmessage = translateMsg(chatmessage);
+        buf.add(0, chatmessage);
+        stampUpdate++;
+        for(; buf.size() > maxBufLen; buf.remove(buf.size() - 1));
+        if(chatmessage.from != null)
+            java.lang.System.out.println("Chat: " + chatmessage.from.shortName() + ": \t" + chatmessage.msg);
+        else
+            java.lang.System.out.println("Chat: --- " + chatmessage.msg);
+    }
+
+    public static void sendLogRnd(int i, java.lang.String s, com.maddox.il2.objects.air.Aircraft aircraft, com.maddox.il2.objects.air.Aircraft aircraft1)
+    {
+        com.maddox.il2.net.Chat.sendLog(i, s + (int)(java.lang.Math.random() * 2D + 1.3999999999999999D), aircraft, aircraft1);
+    }
+
+    public static void sendLog(int i, java.lang.String s, com.maddox.il2.objects.air.Aircraft aircraft, com.maddox.il2.objects.air.Aircraft aircraft1)
+    {
+        if(com.maddox.il2.game.Main.cur().chat == null)
+            return;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return;
+        if(i > com.maddox.il2.game.Main.cur().netServerParams.autoLogDetail())
+            return;
+        com.maddox.il2.net.NetUser netuser = null;
+        if(aircraft != null && aircraft.isNetPlayer())
+            netuser = aircraft.netUser();
+        com.maddox.il2.net.NetUser netuser1 = null;
+        if(aircraft1 != null && aircraft1.isNetPlayer())
+            netuser1 = aircraft1.netUser();
+        com.maddox.il2.net.Chat.sendLog(i, s, netuser, netuser1);
+    }
+
+    public static void sendLog(int i, java.lang.String s, com.maddox.il2.net.NetUser netuser, com.maddox.il2.net.NetUser netuser1)
+    {
+        if(com.maddox.il2.game.Main.cur().chat == null)
+            return;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return;
+        if(i > com.maddox.il2.game.Main.cur().netServerParams.autoLogDetail())
+            return;
+        int j = 2;
+        if(netuser != null)
+            j = 4;
+        if(netuser1 != null)
+            j = 6;
+        com.maddox.il2.game.Main.cur().chat.send(null, s, null, (byte)j, netuser, netuser1, true);
+    }
+
+    public static void sendLog(int i, java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        if(com.maddox.il2.game.Main.cur().chat == null)
+            return;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return;
+        if(i > com.maddox.il2.game.Main.cur().netServerParams.autoLogDetail())
+            return;
+        int j = 2;
+        if(s1 != null)
+            j = 12;
+        if(s2 != null)
+            j = 14;
+        com.maddox.il2.game.Main.cur().chat.send(null, s, null, (byte)j, s1, s2, true);
+    }
+
+    public void send(com.maddox.rts.NetHost nethost, java.lang.String s, java.util.List list)
+    {
+        send(nethost, s, list, (byte)0);
+    }
+
+    public void send(com.maddox.rts.NetHost nethost, java.lang.String s, java.util.List list, byte byte0)
+    {
+        send(nethost, s, list, byte0, true);
+    }
+
+    public void send(com.maddox.rts.NetHost nethost, java.lang.String s, java.util.List list, byte byte0, boolean flag)
+    {
+        send(nethost, s, list, byte0, null, null, flag);
+    }
+
+    public void send(com.maddox.rts.NetHost nethost, java.lang.String s, java.util.List list, byte byte0, java.lang.Object obj, java.lang.Object obj1, boolean flag)
+    {
+        if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+            return;
+        com.maddox.il2.net.ChatMessage chatmessage = new ChatMessage();
+        chatmessage.flags = byte0;
+        chatmessage.from = nethost;
+        chatmessage.to = list;
+        if(s.length() > 80)
+            s = s.substring(0, 80);
+        int i = com.maddox.rts.NetMsgOutput.len255(s);
+        if(list != null)
+            i += list.size() * com.maddox.rts.NetMsgOutput.netObjReferenceLen();
+        if(i > 250)
+        {
+            i -= 250;
+            s = s.substring(0, s.length() - i);
         }
-        postExclude(null, localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
-      }
-  }
+        chatmessage.msg = s;
+        chatmessage.param0 = obj;
+        chatmessage.param1 = obj1;
+        if(flag)
+            addMsg(chatmessage);
+        if(isMirror() || isMirrored())
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeNetObj(chatmessage.from);
+                netmsgguaranted.writeByte(chatmessage.flags);
+                netmsgguaranted.write255(chatmessage.msg);
+                if((chatmessage.flags & 0xe) != 0)
+                {
+                    int j = (chatmessage.flags & 0xe) >> 1;
+                    switch(j)
+                    {
+                    case 2: // '\002'
+                        netmsgguaranted.writeNetObj((com.maddox.rts.NetObj)obj);
+                        break;
 
-  public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-    paramNetMsgInput.reset();
-    ChatMessage localChatMessage = new ChatMessage();
-    localChatMessage.from = ((NetHost)paramNetMsgInput.readNetObj());
-    localChatMessage.flags = (byte)paramNetMsgInput.readUnsignedByte();
-    localChatMessage.msg = paramNetMsgInput.read255();
-    int i = 0;
-    if ((localChatMessage.flags & 0xE) != 0) {
-      j = (localChatMessage.flags & 0xE) >> 1;
-      switch (j) {
-      case 2:
-        localChatMessage.param0 = paramNetMsgInput.readNetObj();
-        i = 1;
-        break;
-      case 3:
-        localChatMessage.param0 = paramNetMsgInput.readNetObj();
-        localChatMessage.param1 = paramNetMsgInput.readNetObj();
-        i = 2;
-        break;
-      case 6:
-        localChatMessage.param0 = paramNetMsgInput.read255();
-        break;
-      case 7:
-        localChatMessage.param0 = paramNetMsgInput.read255();
-        localChatMessage.param1 = paramNetMsgInput.read255();
-        break;
-      case 4:
-      case 5:
-      }
-    }
-    int j = 0;
-    int k = paramNetMsgInput.available() / NetMsgInput.netObjReferenceLen();
-    if (k == 0) {
-      j = 1;
-    } else {
-      localChatMessage.to = new ArrayList(k);
-      for (int m = 0; m < k; m++)
-        localChatMessage.to.add(paramNetMsgInput.readNetObj());
-      if ((paramNetMsgInput.channel() instanceof NetChannelInStream)) {
-        NetUser localNetUser = NetUser.findTrackWriter();
-        j = (localNetUser == localChatMessage.from) || (localChatMessage.to.indexOf(localNetUser) >= 0) ? 1 : 0;
-      } else {
-        j = localChatMessage.to.indexOf(NetEnv.host()) >= 0 ? 1 : 0;
-      }
-    }
-    if (j != 0) {
-      addMsg(localChatMessage);
-    }
-    int n = 0;
-    if ((isMirror()) && (paramNetMsgInput.channel() != masterChannel()))
-      n = 1;
-    if (isMirrored()) {
-      n += countMirrors();
-      if (paramNetMsgInput.channel() != masterChannel())
-        n--;
-    }
-    if (n > 0)
-      postExclude(paramNetMsgInput.channel(), new NetMsgGuaranted(paramNetMsgInput, k + i + 1));
-    return true;
-  }
+                    case 3: // '\003'
+                        netmsgguaranted.writeNetObj((com.maddox.rts.NetObj)obj);
+                        netmsgguaranted.writeNetObj((com.maddox.rts.NetObj)obj1);
+                        break;
 
-  public void destroy()
-  {
-    if (USE_NET_PHONE) {
-      AudioDevice.endNetPhone();
-      radioSpawn.killMasterChannels();
-    }
-    super.destroy();
-    Main.cur().chat = null;
-  }
+                    case 6: // '\006'
+                        netmsgguaranted.write255((java.lang.String)obj);
+                        break;
 
-  public Chat() {
-    super(null);
-    Main.cur().chat = this;
-    if (USE_NET_PHONE) {
-      AudioDevice.beginNetPhone();
-      String str = ((NetUser)NetEnv.host()).radio();
-      int i = ((NetUser)NetEnv.host()).curCodec();
-      ((NetUser)NetEnv.host()).setRadio(null, 0);
-      ((NetUser)NetEnv.host()).setRadio(str, i);
-    }
-  }
+                    case 7: // '\007'
+                        netmsgguaranted.write255((java.lang.String)obj);
+                        netmsgguaranted.write255((java.lang.String)obj1);
+                        break;
+                    }
+                }
+                if(chatmessage.to != null)
+                {
+                    for(int k = 0; k < chatmessage.to.size(); k++)
+                        netmsgguaranted.writeNetObj((com.maddox.rts.NetObj)chatmessage.to.get(k));
 
-  public Chat(NetChannel paramNetChannel, int paramInt) {
-    super(null, paramNetChannel, paramInt);
-    Main.cur().chat = this;
-    if ((USE_NET_PHONE) && 
-      (!NetMissionTrack.isPlaying()))
-      AudioDevice.beginNetPhone();
-  }
-
-  public NetMsgSpawn netReplicate(NetChannel paramNetChannel) throws IOException
-  {
-    return new NetMsgSpawn(this);
-  }
-  static {
-    Spawn.add(Chat.class, new SPAWN());
-  }
-  static class SPAWN implements NetSpawn {
-    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput) {
-      try {
-        new Chat(paramNetMsgInput.channel(), paramInt); } catch (Exception localException) {
-        Chat.access$000(localException);
-      }
+                }
+                postExclude(null, netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
     }
-  }
+
+    public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        netmsginput.reset();
+        com.maddox.il2.net.ChatMessage chatmessage = new ChatMessage();
+        chatmessage.from = (com.maddox.rts.NetHost)netmsginput.readNetObj();
+        chatmessage.flags = (byte)netmsginput.readUnsignedByte();
+        chatmessage.msg = netmsginput.read255();
+        byte byte0 = 0;
+        if((chatmessage.flags & 0xe) != 0)
+        {
+            int i = (chatmessage.flags & 0xe) >> 1;
+            switch(i)
+            {
+            case 2: // '\002'
+                chatmessage.param0 = netmsginput.readNetObj();
+                byte0 = 1;
+                break;
+
+            case 3: // '\003'
+                chatmessage.param0 = netmsginput.readNetObj();
+                chatmessage.param1 = netmsginput.readNetObj();
+                byte0 = 2;
+                break;
+
+            case 6: // '\006'
+                chatmessage.param0 = netmsginput.read255();
+                break;
+
+            case 7: // '\007'
+                chatmessage.param0 = netmsginput.read255();
+                chatmessage.param1 = netmsginput.read255();
+                break;
+            }
+        }
+        boolean flag = false;
+        int j = netmsginput.available() / com.maddox.rts.NetMsgInput.netObjReferenceLen();
+        if(j == 0)
+        {
+            flag = true;
+        } else
+        {
+            chatmessage.to = new ArrayList(j);
+            for(int k = 0; k < j; k++)
+                chatmessage.to.add(netmsginput.readNetObj());
+
+            if(netmsginput.channel() instanceof com.maddox.rts.NetChannelInStream)
+            {
+                com.maddox.il2.net.NetUser netuser = com.maddox.il2.net.NetUser.findTrackWriter();
+                flag = netuser == chatmessage.from || chatmessage.to.indexOf(netuser) >= 0;
+            } else
+            {
+                flag = chatmessage.to.indexOf(com.maddox.rts.NetEnv.host()) >= 0;
+            }
+        }
+        if(flag)
+            addMsg(chatmessage);
+        int l = 0;
+        if(isMirror() && netmsginput.channel() != masterChannel())
+            l = 1;
+        if(isMirrored())
+        {
+            l += countMirrors();
+            if(netmsginput.channel() != masterChannel())
+                l--;
+        }
+        if(l > 0)
+            postExclude(netmsginput.channel(), new NetMsgGuaranted(netmsginput, j + byte0 + 1));
+        return true;
+    }
+
+    public void destroy()
+    {
+        if(USE_NET_PHONE)
+        {
+            com.maddox.sound.AudioDevice.endNetPhone();
+            radioSpawn.killMasterChannels();
+        }
+        super.destroy();
+        com.maddox.il2.game.Main.cur().chat = null;
+    }
+
+    public Chat()
+    {
+        super(null);
+        buf = new ArrayList();
+        stampUpdate = 0;
+        maxBufLen = 80;
+        params = new java.lang.Object[2];
+        com.maddox.il2.game.Main.cur().chat = this;
+        if(USE_NET_PHONE)
+        {
+            com.maddox.sound.AudioDevice.beginNetPhone();
+            java.lang.String s = ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).radio();
+            int i = ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).curCodec();
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setRadio(null, 0);
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setRadio(s, i);
+        }
+    }
+
+    public Chat(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        super(null, netchannel, i);
+        buf = new ArrayList();
+        stampUpdate = 0;
+        maxBufLen = 80;
+        params = new java.lang.Object[2];
+        com.maddox.il2.game.Main.cur().chat = this;
+        if(USE_NET_PHONE && !com.maddox.il2.net.NetMissionTrack.isPlaying())
+            com.maddox.sound.AudioDevice.beginNetPhone();
+    }
+
+    public com.maddox.rts.NetMsgSpawn netReplicate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        return new NetMsgSpawn(this);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public static boolean USE_NET_PHONE = true;
+    public static com.maddox.sound.RadioChannelSpawn radioSpawn = new RadioChannelSpawn();
+    public java.util.ResourceBundle resOrder;
+    public java.util.ResourceBundle resLog;
+    public java.util.List buf;
+    public int stampUpdate;
+    private int maxBufLen;
+    private java.lang.Object params[];
+
+    static 
+    {
+        com.maddox.rts.Spawn.add(com.maddox.il2.net.Chat.class, new SPAWN());
+    }
+
 }

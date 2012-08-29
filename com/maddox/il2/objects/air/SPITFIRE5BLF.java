@@ -1,31 +1,55 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SPITFIRE5BLF.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class SPITFIRE5BLF extends SPITFIRE5
+// Referenced classes of package com.maddox.il2.objects.air:
+//            SPITFIRE, PaintSchemeFMPar04, NetAircraft, Aircraft
+
+public class SPITFIRE5BLF extends com.maddox.il2.objects.air.SPITFIRE
 {
-  static
-  {
-    Class localClass = SPITFIRE5BLF.class;
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "Spit");
+    public SPITFIRE5BLF()
+    {
+    }
 
-    Property.set(localClass, "meshName", "3DO/Plane/SpitfireMkVb(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar04());
-    Property.set(localClass, "meshName_gb", "3DO/Plane/SpitfireMkVb(GB)/hier.him");
-    Property.set(localClass, "PaintScheme_gb", new PaintSchemeFMPar04());
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "yearService", 1942.0F);
-    Property.set(localClass, "yearExpired", 1946.5F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/Spitfire-LF-Vb-M45M-18.fmd");
-    Property.set(localClass, "cockpitClass", CockpitSpit5B.class);
-    Property.set(localClass, "LOSElevation", 0.5926F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02" });
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIki 60", "MGunHispanoMkIki 60" });
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.SPITFIRE5BLF.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Spit");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/SpitfireMkVb(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar04());
+        com.maddox.rts.Property.set(class1, "meshName_gb", "3DO/Plane/SpitfireMkVb(GB)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_gb", new PaintSchemeFMPar04());
+        com.maddox.rts.Property.set(class1, "yearService", 1942F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1946.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/SpitfireLFVB.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitSpit5B.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.5926F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 1, 1
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_CANNON01", "_CANNON02"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunHispanoMkIki 60", "MGunHispanoMkIki 60"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

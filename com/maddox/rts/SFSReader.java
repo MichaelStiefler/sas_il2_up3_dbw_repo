@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SFSReader.java
+
 package com.maddox.rts;
 
 import java.io.File;
@@ -5,43 +10,57 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-public class SFSReader extends InputStreamReader
+// Referenced classes of package com.maddox.rts:
+//            SFSInputStream, KryptoInputFilter
+
+public class SFSReader extends java.io.InputStreamReader
 {
-  public SFSReader(String paramString)
-    throws FileNotFoundException
-  {
-    super(new SFSInputStream(paramString));
-  }
 
-  public SFSReader(File paramFile) throws FileNotFoundException {
-    super(new SFSInputStream(paramFile));
-  }
+    public SFSReader(java.lang.String s)
+        throws java.io.FileNotFoundException
+    {
+        super(new SFSInputStream(s));
+    }
 
-  public SFSReader(String paramString1, String paramString2) throws FileNotFoundException, UnsupportedEncodingException
-  {
-    super(new SFSInputStream(paramString1), paramString2);
-  }
+    public SFSReader(java.io.File file)
+        throws java.io.FileNotFoundException
+    {
+        super(new SFSInputStream(file));
+    }
 
-  public SFSReader(File paramFile, String paramString) throws FileNotFoundException, UnsupportedEncodingException
-  {
-    super(new SFSInputStream(paramFile), paramString);
-  }
+    public SFSReader(java.lang.String s, java.lang.String s1)
+        throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException
+    {
+        super(new SFSInputStream(s), s1);
+    }
 
-  public SFSReader(String paramString, int[] paramArrayOfInt) throws FileNotFoundException {
-    super(new KryptoInputFilter(new SFSInputStream(paramString), paramArrayOfInt));
-  }
+    public SFSReader(java.io.File file, java.lang.String s)
+        throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException
+    {
+        super(new SFSInputStream(file), s);
+    }
 
-  public SFSReader(File paramFile, int[] paramArrayOfInt) throws FileNotFoundException {
-    super(new KryptoInputFilter(new SFSInputStream(paramFile), paramArrayOfInt));
-  }
+    public SFSReader(java.lang.String s, int ai[])
+        throws java.io.FileNotFoundException
+    {
+        super(new KryptoInputFilter(new SFSInputStream(s), ai));
+    }
 
-  public SFSReader(String paramString1, String paramString2, int[] paramArrayOfInt) throws FileNotFoundException, UnsupportedEncodingException
-  {
-    super(new KryptoInputFilter(new SFSInputStream(paramString1), paramArrayOfInt), paramString2);
-  }
+    public SFSReader(java.io.File file, int ai[])
+        throws java.io.FileNotFoundException
+    {
+        super(new KryptoInputFilter(new SFSInputStream(file), ai));
+    }
 
-  public SFSReader(File paramFile, String paramString, int[] paramArrayOfInt) throws FileNotFoundException, UnsupportedEncodingException
-  {
-    super(new KryptoInputFilter(new SFSInputStream(paramFile), paramArrayOfInt), paramString);
-  }
+    public SFSReader(java.lang.String s, java.lang.String s1, int ai[])
+        throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException
+    {
+        super(new KryptoInputFilter(new SFSInputStream(s), ai), s1);
+    }
+
+    public SFSReader(java.io.File file, java.lang.String s, int ai[])
+        throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException
+    {
+        super(new KryptoInputFilter(new SFSInputStream(file), ai), s);
+    }
 }

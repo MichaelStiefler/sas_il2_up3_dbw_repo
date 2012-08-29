@@ -1,32 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HotKeyCmdMove.java
+
 package com.maddox.rts;
 
-public abstract class HotKeyCmdMove extends HotKeyCmd
+
+// Referenced classes of package com.maddox.rts:
+//            HotKeyCmd, Time, HotKeyCmdEnv, RTSConf, 
+//            HotKeyCmdEnvs
+
+public abstract class HotKeyCmdMove extends com.maddox.rts.HotKeyCmd
 {
-  protected int _mov;
 
-  public int move()
-  {
-    return this._mov;
-  }
-  public final void setMove(int paramInt) {
-    this._mov = paramInt;
-  }
+    public int move()
+    {
+        return _mov;
+    }
 
-  public HotKeyCmdMove(boolean paramBoolean, String paramString) {
-    super(paramBoolean, paramString);
-  }
-  public HotKeyCmdMove(boolean paramBoolean, String paramString1, String paramString2) {
-    super(paramBoolean, paramString1, paramString2);
-  }
+    public final void setMove(int i)
+    {
+        _mov = i;
+    }
 
-  public void _exec(int paramInt) {
-    boolean bool = Time.isPaused();
-    if ((Time.isPaused()) && (!isRealTime())) return;
-    if (!this.hotKeyCmdEnv.isEnabled()) return;
-    setMove(paramInt);
-    RTSConf.cur.hotKeyCmdEnvs.post(this, true, true);
-    start(0, 0);
-    RTSConf.cur.hotKeyCmdEnvs.post(this, true, false);
-    stop();
-  }
+    public HotKeyCmdMove(boolean flag, java.lang.String s)
+    {
+        super(flag, s);
+    }
+
+    public HotKeyCmdMove(boolean flag, java.lang.String s, java.lang.String s1)
+    {
+        super(flag, s, s1);
+    }
+
+    public void _exec(int i)
+    {
+        boolean flag = com.maddox.rts.Time.isPaused();
+        if(com.maddox.rts.Time.isPaused() && !isRealTime())
+            return;
+        if(!hotKeyCmdEnv.isEnabled())
+        {
+            return;
+        } else
+        {
+            setMove(i);
+            com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(this, true, true);
+            start(0, 0);
+            com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(this, true, false);
+            stop();
+            return;
+        }
+    }
+
+    protected int _mov;
 }

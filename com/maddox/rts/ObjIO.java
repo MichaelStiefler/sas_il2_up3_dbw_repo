@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ObjIO.java
+
 package com.maddox.rts;
 
 import java.io.PrintStream;
@@ -12,2320 +17,2819 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+// Referenced classes of package com.maddox.rts:
+//            RTSException, Property, LDRres, Finger
+
 public class ObjIO
 {
-  public static String[] friendPackage = { "com.maddox.il2.engine.", "com.maddox.il2.objects.", "com.maddox.il2.", "com.maddox.JGP.", "com.maddox.rts.", "com.maddox." };
-  public static final int EDREADONLY = 1;
-  public static final int ALL_FLAGS = 1;
-  private static final int _ENUM = 1048576;
-  private static final int _MINMAX = 2097152;
-  private static final int _GET = 4194304;
-  private static final int _SET = 8388608;
-  private static final int _GETSTR = 16777216;
-  private static final int _SETSTR = 33554432;
-  private static final int _EDGET = 67108864;
-  private static final int _EDSET = 134217728;
-  private static final int _EDGETSTR = 268435456;
-  private static final int _EDSETSTR = 536870912;
-  private static final int _VALIDATE = 1073741824;
-  public static final String KEY_FIELDS = "$ClassIOFields$";
-  public static final String KEY_OBJECT = "$ObjIO";
-  public static final String KEY_FIELD = "$IO";
-  private static ArrayList _fldPropLst = new ArrayList();
-  private static ArrayList _fldLst = new ArrayList();
-  private static Field[] filedsEmpty = new Field[0];
-
-  private static FieldCompare _fldsCompare = new FieldCompare();
-
-  private static int getFieldType_arrays = 0;
-
-  private static Class[] _fieldsClass = new Class[1];
-
-  private static int stackPtr = -1;
-  private static boolean bUseBundle = false;
-  private static ArrayList stackClasses = new ArrayList(64);
-  private static ArrayList stackObjects = new ArrayList(64);
-  private static ArrayList stackFields = new ArrayList(64);
-  private static ArrayList stackBundles = new ArrayList(64);
-
-  private static Node curFieldNode = new Node();
-  private static NodeObjects curFieldObjects = new NodeObjects();
-  private static Node curObjectNode = new Node();
-  private static NodeObjects curObjectObjects = new NodeObjects();
-
-  private static Object[] _fieldsObject = new Object[1];
-
-  private static StringBuffer _strBuf = new StringBuffer();
-  private static final String RES_NAME = "$NAME";
-  private static final String RES_ENUM = "$ENUM";
-  private static final String RES_TIP = "$TIP";
-  private static final int _RES_NAME = 0;
-  private static final int _RES_ENUM = 1;
-  private static final int _RES_TIP = 2;
-  private static Res curRes = new Res();
-  private static ArrayList _resLst = new ArrayList();
-  private static StringBuffer _resBuf = new StringBuffer();
-  private int level;
-  private ObjIO parent;
-  private List child;
-  private volatile Node fieldNode;
-  private NodeObjects fieldObjects;
-  private Node objectNode;
-  private NodeObjects objectObjects;
-  private Class clazz;
-  private Object object;
-  private Object field;
-  private Res res;
-  private String name;
-  private boolean bStrValid = false;
-  private String strValue;
-  private static Object[] booleanEnum = { new Boolean(false), new Boolean(true) };
-
-  private static Node emptyNode = new Node();
-  private static NodeObjects emptyObjects = new NodeObjects();
-
-  private static Node readonlyNode = new Node();
-
-  public static void setFriendPackages(String[] paramArrayOfString)
-  {
-    friendPackage = paramArrayOfString;
-  }
-
-  public static String classGetName(Class paramClass)
-  {
-    String str1 = paramClass.getName();
-    for (int i = 0; i < friendPackage.length; i++) {
-      String str2 = friendPackage[i];
-      if (str1.startsWith(str2)) {
-        return str1.substring(str2.length());
-      }
-    }
-    return str1;
-  }
-
-  public static Class classForName(String paramString)
-    throws ClassNotFoundException
-  {
-    try
+    static class Res
     {
-      for (int i = 0; i < friendPackage.length; i++) try {
-          return Class.forName(friendPackage[i] + paramString);
-        }
-        catch (Exception localException) {
-        } return Class.forName(paramString); } catch (Throwable localThrowable) {
-    }
-    throw new ClassNotFoundException(localThrowable.getMessage());
-  }
 
-  private static void checkFieldParams(Class paramClass, String paramString)
-  {
-    if (paramClass == null)
-      throw new RTSException("Parameter 'class' == null");
-    if (paramString == null)
-      throw new RTSException("Parameter 'fieldName' == null");
-  }
-
-  private static void checkFieldParams(Class paramClass, String[] paramArrayOfString) {
-    if (paramClass == null)
-      throw new RTSException("Parameter 'class' == null");
-    if (paramArrayOfString == null)
-      throw new RTSException("Parameter 'fieldNames' == null");
-  }
-
-  private static Node getNode(Class paramClass, String paramString) {
-    String str = paramString + "$IO";
-    Node localNode = (Node)Property.value(paramClass, str, null);
-    if (localNode == null) {
-      localNode = new Node();
-      Property.set(paramClass, str, localNode);
-    }
-    return localNode;
-  }
-
-  private static void initNode(Class paramClass, String paramString) {
-    String str = paramString + "$IO";
-    if (!Property.containsValue(paramClass, str))
-      Property.set(paramClass, str, (Object)null);
-  }
-
-  private static Node getNode(Class paramClass) {
-    Node localNode = (Node)Property.value(paramClass, "$ObjIO", null);
-    if (localNode == null) {
-      localNode = new Node();
-      Property.set(paramClass, "$ObjIO", localNode);
-    }
-    return localNode;
-  }
-
-  public static Class toWrapperClass(Class paramClass) {
-    if (paramClass.isPrimitive()) {
-      if (paramClass == Boolean.TYPE) paramClass = Boolean.class;
-      else if (paramClass == Byte.TYPE) paramClass = Byte.class;
-      else if (paramClass == Short.TYPE) paramClass = Short.class;
-      else if (paramClass == Character.TYPE) paramClass = Character.class;
-      else if (paramClass == Integer.TYPE) paramClass = Integer.class;
-      else if (paramClass == Long.TYPE) paramClass = Long.class;
-      else if (paramClass == Float.TYPE) paramClass = Float.class;
-      else if (paramClass == Double.TYPE) paramClass = Double.class;
-    }
-    return paramClass;
-  }
-
-  private static Field[] getFields(Class paramClass) {
-    Field[] arrayOfField = (Field[])(Field[])Property.value(paramClass, "$ClassIOFields$", null);
-    if (arrayOfField != null)
-      return arrayOfField;
-    if (!Property.vars(_fldPropLst, paramClass))
-      return filedsEmpty;
-    int i = _fldPropLst.size();
-    for (int j = 0; j < i; j++) {
-      String str1 = (String)_fldPropLst.get(j);
-      if ((str1 != null) && (str1.endsWith("$IO"))) {
-        int k = str1.indexOf('.');
-        if (k < 0)
-          k = str1.length() - "$IO".length();
-        int m = str1.indexOf('[');
-        if ((m > 0) && (m < k))
-          k = m;
-        String str2 = str1.substring(0, k);
-        Field localField = null;
-        Class localClass = paramClass;
-        while (localClass != null) {
-          try {
-            localField = localClass.getDeclaredField(str2);
-            if (!_fldLst.contains(localField))
-              _fldLst.add(localField);
-          }
-          catch (Exception localException) {
-            localClass = localClass.getSuperclass();
-          }
-        }
-      }
-    }
-    _fldPropLst.clear();
-    i = _fldLst.size();
-    if (i > 0) {
-      arrayOfField = new Field[i];
-      for (j = 0; j < i; j++)
-        arrayOfField[j] = ((Field)_fldLst.get(j));
-      Arrays.sort(arrayOfField, _fldsCompare);
-      _fldLst.clear();
-    } else {
-      arrayOfField = filedsEmpty;
-    }
-
-    Property.set(paramClass, "$ClassIOFields$", arrayOfField);
-    return arrayOfField;
-  }
-
-  private static Class getFieldType(Class paramClass, String paramString, boolean paramBoolean)
-  {
-    getFieldType_arrays = 0;
-    Class localClass = paramClass;
-    int i = paramString.length();
-    int j = 0;
-    int k = 0;
-    while (j < i) {
-      int m = paramString.charAt(j);
-      if (m == 46) {
-        if (k < j)
-          localClass = getFieldTypeOne(localClass, paramString.substring(k, j), false);
-        j++;
-        k = j;
-      } else if (m == 91) {
-        if (k < j)
-          localClass = getFieldTypeOne(localClass, paramString.substring(k, j), true);
-        j += 2;
-        k = j;
-      } else {
-        j++;
-      }
-    }
-    if (k < j)
-      localClass = getFieldTypeOne(localClass, paramString.substring(k, j), false);
-    if (paramBoolean) return toWrapperClass(localClass);
-    return localClass;
-  }
-  private static Class getFieldTypeOne(Class paramClass, String paramString, boolean paramBoolean) {
-    try {
-      Field localField = paramClass.getField(paramString);
-      paramClass = localField.getType();
-      if ((paramBoolean) && (paramClass.isArray()))
-        paramClass = paramClass.getComponentType();
-    } catch (Exception localException) {
-      printDebug(localException);
-      throw new RTSException("Filed '" + paramString + "' not found in class " + paramClass.getName());
-    }
-    if (paramBoolean)
-      getFieldType_arrays += 1;
-    return paramClass;
-  }
-
-  public static void fieldsSuperclass(Class paramClass)
-  {
-    if (paramClass == null)
-      throw new RTSException("Parameter 'class' == null");
-    Class localClass = paramClass.getSuperclass();
-    if (localClass == null) return;
-    if (!Property.vars(_fldPropLst, localClass))
-      return;
-    int i = _fldPropLst.size();
-    for (int j = 0; j < i; j++) {
-      String str = (String)_fldPropLst.get(j);
-      if ((str == null) || (!str.endsWith("$IO")) || 
-        (Property.containsValue(paramClass, str))) continue;
-      Property.set(paramClass, str, Property.value(localClass, str, null));
-    }
-
-    _fldPropLst.clear();
-  }
-
-  public static void fieldsAllSuperclasses(Class paramClass)
-  {
-    if (paramClass == null)
-      throw new RTSException("Parameter 'class' == null");
-    fieldsAllSuperclasses(paramClass, paramClass.getSuperclass());
-  }
-
-  private static void fieldsAllSuperclasses(Class paramClass1, Class paramClass2) {
-    if (paramClass2 == null) return;
-    fieldsAllSuperclasses(paramClass1, paramClass2.getSuperclass());
-    if (!Property.vars(_fldPropLst, paramClass2))
-      return;
-    int i = _fldPropLst.size();
-    for (int j = 0; j < i; j++) {
-      String str = (String)_fldPropLst.get(j);
-      if ((str == null) || (!str.endsWith("$IO")) || 
-        (Property.containsValue(paramClass1, str))) continue;
-      Property.set(paramClass1, str, Property.value(paramClass2, str, null));
-    }
-
-    _fldPropLst.clear();
-  }
-
-  public static void field(Class paramClass, String paramString)
-  {
-    checkFieldParams(paramClass, paramString);
-    initNode(paramClass, paramString);
-  }
-
-  public static void fields(Class paramClass, String[] paramArrayOfString)
-  {
-    checkFieldParams(paramClass, paramArrayOfString);
-    for (int i = 0; i < paramArrayOfString.length; i++)
-      if (paramArrayOfString[i] != null)
-        initNode(paramClass, paramArrayOfString[i]);
-  }
-
-  public static void edReadOnly(Class paramClass, String paramString)
-  {
-    checkFieldParams(paramClass, paramString);
-    Node localNode = getNode(paramClass, paramString);
-    localNode.flags |= 1;
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, Object[] paramArrayOfObject)
-  {
-    checkFieldParams(paramClass, paramString);
-    Node localNode = getNode(paramClass, paramString);
-    if (paramArrayOfObject != null) {
-      Class localClass1 = getFieldType(paramClass, paramString, true);
-      Class localClass2 = paramArrayOfObject.getClass().getComponentType();
-      if ((localNode.flags & 0x2000000) != 0)
-        localClass2 = String.class;
-      if (localClass2 != localClass1)
-        throw new RTSException("Class elements of enum array (" + localClass2.getName() + ") not equal type of class field (" + localClass1.getName() + ")");
-    }
-    localNode.jdField_enum = paramArrayOfObject;
-    localNode.flags |= 1048576;
-  }
-
-  private static Object checkEnum(Object paramObject, Object[] paramArrayOfObject) {
-    for (int i = 0; i < paramArrayOfObject.length; i++)
-      if (paramObject.equals(paramArrayOfObject[i]))
-        return paramObject;
-    return paramArrayOfObject[0];
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, byte[] paramArrayOfByte)
-  {
-    if (paramArrayOfByte == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Byte[] arrayOfByte = new Byte[paramArrayOfByte.length];
-    for (int i = 0; i < paramArrayOfByte.length; i++) arrayOfByte[i] = new Byte(paramArrayOfByte[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfByte);
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, short[] paramArrayOfShort)
-  {
-    if (paramArrayOfShort == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Short[] arrayOfShort = new Short[paramArrayOfShort.length];
-    for (int i = 0; i < paramArrayOfShort.length; i++) arrayOfShort[i] = new Short(paramArrayOfShort[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfShort);
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, char[] paramArrayOfChar)
-  {
-    if (paramArrayOfChar == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Character[] arrayOfCharacter = new Character[paramArrayOfChar.length];
-    for (int i = 0; i < paramArrayOfChar.length; i++) arrayOfCharacter[i] = new Character(paramArrayOfChar[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfCharacter);
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, int[] paramArrayOfInt)
-  {
-    if (paramArrayOfInt == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Integer[] arrayOfInteger = new Integer[paramArrayOfInt.length];
-    for (int i = 0; i < paramArrayOfInt.length; i++) arrayOfInteger[i] = new Integer(paramArrayOfInt[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfInteger);
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, long[] paramArrayOfLong)
-  {
-    if (paramArrayOfLong == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Long[] arrayOfLong = new Long[paramArrayOfLong.length];
-    for (int i = 0; i < paramArrayOfLong.length; i++) arrayOfLong[i] = new Long(paramArrayOfLong[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfLong);
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, float[] paramArrayOfFloat)
-  {
-    if (paramArrayOfFloat == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Float[] arrayOfFloat = new Float[paramArrayOfFloat.length];
-    for (int i = 0; i < paramArrayOfFloat.length; i++) arrayOfFloat[i] = new Float(paramArrayOfFloat[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfFloat);
-  }
-
-  public static void jdMethod_enum(Class paramClass, String paramString, double[] paramArrayOfDouble)
-  {
-    if (paramArrayOfDouble == null) { jdMethod_enum(paramClass, paramString, (Object[])null); return; }
-    Double[] arrayOfDouble = new Double[paramArrayOfDouble.length];
-    for (int i = 0; i < paramArrayOfDouble.length; i++) arrayOfDouble[i] = new Double(paramArrayOfDouble[i]);
-    jdMethod_enum(paramClass, paramString, arrayOfDouble);
-  }
-
-  public static void range(Class paramClass, String paramString, Object paramObject1, Object paramObject2, Object paramObject3)
-  {
-    checkFieldParams(paramClass, paramString);
-    Node localNode = getNode(paramClass, paramString);
-    if ((paramObject1 != null) || (paramObject2 != null)) {
-      Class localClass = getFieldType(paramClass, paramString, true);
-      if ((paramObject1 != null) && 
-        (localClass != paramObject1.getClass())) {
-        throw new RTSException("Class of min patameter (" + paramObject1.getClass().getName() + ") not equal type of class field (" + localClass.getName() + ")");
-      }
-      if ((paramObject2 != null) && 
-        (localClass != paramObject2.getClass())) {
-        throw new RTSException("Class of max patameter (" + paramObject2.getClass().getName() + ") not equal type of class field (" + localClass.getName() + ")");
-      }
-      if ((paramObject3 != null) && 
-        (localClass != paramObject3.getClass())) {
-        throw new RTSException("Class of step patameter (" + paramObject3.getClass().getName() + ") not equal type of class field (" + localClass.getName() + ")");
-      }
-    }
-    localNode.min = paramObject1;
-    localNode.max = paramObject2;
-    localNode.step = paramObject3;
-    localNode.flags |= 2097152;
-  }
-
-  private static Object checkRange(Object paramObject1, Object paramObject2, Object paramObject3) {
-    if (!(paramObject1 instanceof Comparable)) return paramObject1; try
-    {
-      Comparable localComparable = (Comparable)paramObject1;
-      if ((paramObject2 != null) && 
-        (localComparable.compareTo(paramObject2) < 0))
-        localComparable = (Comparable)paramObject2;
-      if ((paramObject3 != null) && 
-        (localComparable.compareTo(paramObject3) > 0))
-        localComparable = (Comparable)paramObject3;
-      return localComparable;
-    } catch (Exception localException) {
-      printDebug(localException);
-    }return paramObject1;
-  }
-
-  public static void range(Class paramClass, String paramString, byte paramByte1, byte paramByte2, byte paramByte3)
-  {
-    range(paramClass, paramString, new Byte(paramByte1), new Byte(paramByte2), new Byte(paramByte3));
-  }
-
-  public static void range(Class paramClass, String paramString, short paramShort1, short paramShort2, short paramShort3)
-  {
-    range(paramClass, paramString, new Short(paramShort1), new Short(paramShort2), new Short(paramShort3));
-  }
-
-  public static void range(Class paramClass, String paramString, char paramChar1, char paramChar2)
-  {
-    range(paramClass, paramString, new Character(paramChar1), new Character(paramChar2), null);
-  }
-
-  public static void range(Class paramClass, String paramString, int paramInt1, int paramInt2, int paramInt3)
-  {
-    range(paramClass, paramString, new Integer(paramInt1), new Integer(paramInt2), new Integer(paramInt3));
-  }
-
-  public static void range(Class paramClass, String paramString, long paramLong1, long paramLong2, long paramLong3)
-  {
-    range(paramClass, paramString, new Long(paramLong1), new Long(paramLong2), new Long(paramLong3));
-  }
-
-  public static void range(Class paramClass, String paramString, float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    range(paramClass, paramString, new Float(paramFloat1), new Float(paramFloat2), new Float(paramFloat3));
-  }
-
-  public static void range(Class paramClass, String paramString, double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    range(paramClass, paramString, new Double(paramDouble1), new Double(paramDouble2), new Double(paramDouble3));
-  }
-
-  public static void get(Class paramClass, String paramString1, String paramString2)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    if (paramString2 != null) {
-      Class localClass1 = getFieldType(paramClass, paramString1, false);
-      Method localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, null));
-        Class localClass2 = localMethod.getReturnType();
-        if (localClass2 != localClass1)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass2.getName() + "' not equal class field '" + localClass1.getName() + "'");
-      } catch (Exception localException) {
-        printDebug(localException);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.get = localMethod;
-    } else {
-      localNode.get = null;
-    }
-    localNode.flags |= 4194304;
-  }
-
-  public static void getEd(Class paramClass, String paramString1, String paramString2)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    if (paramString2 != null) {
-      Class localClass1 = getFieldType(paramClass, paramString1, false);
-      Method localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, null));
-        Class localClass2 = localMethod.getReturnType();
-        if (localClass2 != localClass1)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass2.getName() + "' not equal class field '" + localClass1.getName() + "'");
-      } catch (Exception localException) {
-        printDebug(localException);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.edget = localMethod;
-    } else {
-      localNode.edget = null;
-    }
-    localNode.flags |= 67108864;
-  }
-
-  private static Class[] fieldClassArray(int paramInt, Class paramClass) {
-    int i = paramInt;
-    if (paramClass != null)
-      i++;
-    if (i == 0)
-      return null;
-    if ((_fieldsClass != null) && (_fieldsClass.length != i))
-      _fieldsClass = null;
-    if (_fieldsClass == null)
-      _fieldsClass = new Class[i];
-    for (int j = 0; j < paramInt; j++)
-      _fieldsClass[j] = Integer.TYPE;
-    if (paramClass != null)
-      _fieldsClass[paramInt] = paramClass;
-    return _fieldsClass;
-  }
-
-  public static void set(Class paramClass, String paramString1, String paramString2)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    if (paramString2 != null) {
-      Class localClass1 = getFieldType(paramClass, paramString1, false);
-      Method localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, localClass1));
-        Class localClass2 = localMethod.getReturnType();
-        if (localClass2 != Void.TYPE)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass2.getName() + "' not equal 'void'");
-      } catch (Exception localException) {
-        printDebug(localException);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.set = localMethod;
-    } else {
-      localNode.set = null;
-    }
-    localNode.flags |= 8388608;
-  }
-
-  public static void setEd(Class paramClass, String paramString1, String paramString2)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    if (paramString2 != null) {
-      Class localClass1 = getFieldType(paramClass, paramString1, false);
-      Method localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, localClass1));
-        Class localClass2 = localMethod.getReturnType();
-        if (localClass2 != Void.TYPE)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass2.getName() + "' not equal 'void'");
-      } catch (Exception localException) {
-        printDebug(localException);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.edset = localMethod;
-    } else {
-      localNode.edset = null;
-    }
-    localNode.flags |= 134217728;
-  }
-
-  public static void access(Class paramClass, String paramString1, String paramString2, String paramString3)
-  {
-    get(paramClass, paramString1, paramString2);
-    set(paramClass, paramString1, paramString3);
-  }
-
-  public static void accessEd(Class paramClass, String paramString1, String paramString2, String paramString3)
-  {
-    getEd(paramClass, paramString1, paramString2);
-    setEd(paramClass, paramString1, paramString3);
-  }
-
-  public static void access(Class paramClass, String paramString)
-  {
-    get(paramClass, paramString, "ioGet" + paramString);
-    set(paramClass, paramString, "ioSet" + paramString);
-  }
-
-  public static void accessEd(Class paramClass, String paramString)
-  {
-    getEd(paramClass, paramString, "edGet" + paramString);
-    setEd(paramClass, paramString, "edSet" + paramString);
-  }
-
-  public static void accessStr(Class paramClass, String paramString1, String paramString2, String paramString3)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    Class localClass1 = getFieldType(paramClass, paramString1, false);
-    Method localMethod;
-    if (paramString2 != null) {
-      localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, null));
-        Class localClass2 = localMethod.getReturnType();
-        if (localClass2 != String.class)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass2.getName() + "' not equal 'String'");
-      } catch (Exception localException1) {
-        printDebug(localException1);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.get = localMethod;
-    } else {
-      localNode.get = null;
-    }
-    localNode.flags |= 20971520;
-
-    if (paramString3 != null) {
-      localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString3, fieldClassArray(getFieldType_arrays, String.class));
-        Class localClass3 = localMethod.getReturnType();
-        if (localClass3 != Void.TYPE)
-          throw new RTSException("Method '" + paramString3 + "' returned type '" + localClass3.getName() + "' not equal 'void'");
-      } catch (Exception localException2) {
-        printDebug(localException2);
-        throw new RTSException("Method '" + paramString3 + "' not found in class " + paramClass.getName());
-      }
-      localNode.set = localMethod;
-    } else {
-      localNode.set = null;
-    }
-    localNode.flags |= 41943040;
-  }
-
-  public static void accessEdStr(Class paramClass, String paramString1, String paramString2, String paramString3)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    Class localClass1 = getFieldType(paramClass, paramString1, false);
-    Method localMethod;
-    if (paramString2 != null) {
-      localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, null));
-        Class localClass2 = localMethod.getReturnType();
-        if (localClass2 != String.class)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass2.getName() + "' not equal 'String'");
-      } catch (Exception localException1) {
-        printDebug(localException1);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.edget = localMethod;
-    } else {
-      localNode.edget = null;
-    }
-    localNode.flags |= 335544320;
-
-    if (paramString3 != null) {
-      localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString3, fieldClassArray(getFieldType_arrays, String.class));
-        Class localClass3 = localMethod.getReturnType();
-        if (localClass3 != Void.TYPE)
-          throw new RTSException("Method '" + paramString3 + "' returned type '" + localClass3.getName() + "' not equal 'void'");
-      } catch (Exception localException2) {
-        printDebug(localException2);
-        throw new RTSException("Method '" + paramString3 + "' not found in class " + paramClass.getName());
-      }
-      localNode.edset = localMethod;
-    } else {
-      localNode.edset = null;
-    }
-    localNode.flags |= 671088640;
-  }
-
-  public static void accessStr(Class paramClass, String paramString)
-  {
-    accessStr(paramClass, paramString, "ioGet" + paramString, "ioSet" + paramString);
-  }
-
-  public static void accessEdStr(Class paramClass, String paramString)
-  {
-    accessEdStr(paramClass, paramString, "edGet" + paramString, "edSet" + paramString);
-  }
-
-  public static void validate(Class paramClass, String paramString1, String paramString2)
-  {
-    checkFieldParams(paramClass, paramString1);
-    Node localNode = getNode(paramClass, paramString1);
-    if (paramString2 != null) {
-      getFieldType(paramClass, paramString1, false);
-      Method localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString2, fieldClassArray(getFieldType_arrays, null));
-        Class localClass = localMethod.getReturnType();
-        if (localClass != Void.TYPE)
-          throw new RTSException("Method '" + paramString2 + "' returned type '" + localClass.getName() + "' not equal 'void'");
-      } catch (Exception localException) {
-        printDebug(localException);
-        throw new RTSException("Method '" + paramString2 + "' not found in class " + paramClass.getName());
-      }
-      localNode.validate = localMethod;
-    } else {
-      localNode.validate = null;
-    }
-    localNode.flags |= 1073741824;
-  }
-
-  public static void validate(Class paramClass, String paramString)
-  {
-    if (paramClass == null)
-      throw new RTSException("Parameter 'class' == null");
-    Node localNode = getNode(paramClass);
-    if (paramString != null) {
-      Method localMethod = null;
-      try {
-        localMethod = paramClass.getMethod(paramString, null);
-        Class localClass = localMethod.getReturnType();
-        if (localClass != Void.TYPE)
-          throw new RTSException("Method '" + paramString + "' returned type '" + localClass.getName() + "' not equal 'void'");
-      } catch (Exception localException) {
-        printDebug(localException);
-        throw new RTSException("Method '" + paramString + "' not found in class " + paramClass.getName());
-      }
-      localNode.validate = localMethod;
-    } else {
-      localNode.validate = null;
-    }
-    localNode.flags |= 1073741824;
-  }
-
-  private static void stackClear()
-  {
-    stackPtr = -1;
-  }
-  private static int stackSize() {
-    return stackPtr + 1;
-  }
-  private static void stackPop() {
-    stackClasses.set(stackPtr, null);
-    stackObjects.set(stackPtr, null);
-    stackFields.set(stackPtr, null);
-    stackBundles.set(stackPtr, null);
-    stackPtr -= 1;
-    if (stackPtr >= 0)
-      setCurObject(); 
-  }
-
-  private static void stackPop(int paramInt) {
-    while (stackPtr > paramInt) {
-      stackClasses.set(stackPtr, null);
-      stackObjects.set(stackPtr, null);
-      stackFields.set(stackPtr, null);
-      stackBundles.set(stackPtr, null);
-      stackPtr -= 1;
-    }
-    if (stackPtr >= 0)
-      setCurObject(); 
-  }
-
-  private static void stackPush(Object paramObject, Class paramClass) {
-    stackPtr += 1;
-    if (stackPtr + 1 > stackObjects.size()) {
-      stackClasses.add(null);
-      stackObjects.add(null);
-      stackFields.add(null);
-      stackBundles.add(null);
-    }
-    setCurObject(paramObject, paramClass);
-  }
-  private static void setCurObject(Object paramObject, Class paramClass) {
-    stackClasses.set(stackPtr, paramClass);
-    stackObjects.set(stackPtr, paramObject);
-    setCurObject();
-    if (bUseBundle)
-      if ((paramClass.isPrimitive()) || (paramClass == String.class) || (paramClass == StringBuffer.class) || (paramClass.isArray()))
-      {
-        stackBundles.set(stackPtr, null);
-      } else {
-        ResourceBundle localResourceBundle = null;
-        try {
-          localResourceBundle = ResourceBundle.getBundle(paramClass.getName() + "IO", Locale.getDefault(), LDRres.loader()); } catch (Exception localException) {
-        }
-        stackBundles.set(stackPtr, localResourceBundle);
-      }
-  }
-
-  private static void setCurObject() {
-    curObjectNode.clear();
-    curObjectObjects.clear();
-    for (int i = 0; i <= stackPtr; i++) {
-      Class localClass = (Class)stackClasses.get(i);
-      int j = 0;
-      for (int k = i; k < stackPtr; k++) {
-        Object localObject = stackFields.get(k);
-        if ((localObject instanceof Field)) {
-          Field localField = (Field)localObject;
-          if (k != i) j = Finger.incInt(j, ".");
-          j = Finger.incInt(j, localField.getName());
-        } else {
-          j = Finger.incInt(j, "[]");
-        }
-      }
-      j = Finger.incInt(j, "$ObjIO");
-      Node localNode = (Node)Property.value(localClass, j, null);
-      if (localNode != null)
-        curObjectNode.set(localNode, stackObjects.get(i), curObjectObjects); 
-    }
-  }
-
-  private static boolean setCurField(boolean paramBoolean1, Field paramField, boolean paramBoolean2) {
-    int i = paramField.getModifiers();
-    if ((i & 0x10) != 0) return false;
-    if (paramBoolean2) {
-      if ((i & 0x8) == 0) return false;
-    }
-    else if ((i & 0x8) != 0) return false;
-
-    setCurFieldNode(paramField);
-    return true;
-  }
-
-  private static boolean setCurField(boolean paramBoolean1, Integer paramInteger, boolean paramBoolean2) {
-    setCurFieldNode(paramInteger);
-    return true;
-  }
-
-  private static boolean setCurField(boolean paramBoolean, Field paramField)
-    throws IllegalAccessException, InstantiationException
-  {
-    int i = paramField.getModifiers();
-    if ((i & 0x10) != 0) return false;
-    setCurFieldNode(paramField);
-    if ((paramBoolean) && ((curFieldNode.flags & 0x1) != 0)) return false;
-    if (((i & 0x8) == 0) && (stackObjects.get(stackPtr) == null))
-    {
-      Class localClass = (Class)stackClasses.get(stackPtr);
-      Object localObject = localClass.newInstance();
-      setCurObject(localObject, localClass);
-    }
-    return true;
-  }
-
-  private static boolean setCurField(boolean paramBoolean, Integer paramInteger)
-    throws IllegalAccessException, InstantiationException
-  {
-    setCurFieldNode(paramInteger);
-    return (!paramBoolean) || ((curFieldNode.flags & 0x1) == 0);
-  }
-
-  private static void setCurFieldNode(Object paramObject)
-  {
-    stackFields.set(stackPtr, paramObject);
-    curFieldNode.clear();
-    curFieldObjects.clear();
-    for (int i = 0; i <= stackPtr; i++) {
-      Class localClass = (Class)stackClasses.get(i);
-      int j = 0;
-      Object localObject = stackFields.get(i);
-      if ((localObject instanceof Field)) {
-        Field localField1 = (Field)localObject;
-        j = Finger.Int(localField1.getName());
-      } else {
-        j = Finger.Int("[]");
-      }
-      for (int k = i + 1; k <= stackPtr; k++) {
-        localObject = stackFields.get(k);
-        if ((localObject instanceof Field)) {
-          Field localField2 = (Field)localObject;
-          j = Finger.incInt(j, ".");
-          j = Finger.incInt(j, localField2.getName());
-        } else {
-          j = Finger.incInt(j, "[]");
-        }
-      }
-      j = Finger.incInt(j, "$IO");
-      Node localNode = (Node)Property.value(localClass, j, null);
-      if (localNode != null)
-        curFieldNode.set(localNode, stackObjects.get(i), curFieldObjects);
-    }
-  }
-
-  private static int fillObjectArray(Object[] paramArrayOfObject) {
-    int i = 0;
-    for (int j = 0; j <= stackPtr; j++) {
-      Object localObject = stackFields.get(j);
-      if ((localObject instanceof Integer)) {
-        if (paramArrayOfObject != null)
-          paramArrayOfObject[i] = localObject;
-        i++;
-      }
-    }
-    return i;
-  }
-
-  private static Object[] fieldObjectArray(Object paramObject, boolean paramBoolean) {
-    int i = fillObjectArray(null);
-    if (paramBoolean) i++;
-    if (i == 0)
-      return null;
-    if ((_fieldsObject != null) && (_fieldsObject.length != i))
-      _fieldsObject = null;
-    if (_fieldsObject == null)
-      _fieldsObject = new Object[i];
-    fillObjectArray(_fieldsObject);
-    if (paramBoolean)
-      _fieldsObject[(i - 1)] = paramObject;
-    return _fieldsObject;
-  }
-
-  private static Object fieldGet(boolean paramBoolean)
-  {
-    Object localObject1 = stackObjects.get(stackPtr);
-    Object localObject2 = stackFields.get(stackPtr);
-    try {
-      if ((paramBoolean) && ((curFieldNode.flags & 0x4000000) != 0)) {
-        if (curFieldNode.edget != null)
-          return curFieldNode.edget.invoke(curFieldObjects.edget, fieldObjectArray(null, false));
-      } else if ((curFieldNode.flags & 0x400000) != 0) {
-        if (curFieldNode.get != null)
-          return curFieldNode.get.invoke(curFieldObjects.get, fieldObjectArray(null, false));
-      } else {
-        if ((localObject2 instanceof Field)) {
-          localObject3 = (Field)localObject2;
-          return ((Field)localObject3).get(localObject1);
-        }
-        Object localObject3 = (Integer)localObject2;
-        return Array.get(localObject1, ((Integer)localObject3).intValue());
-      }
-    }
-    catch (Exception localException) {
-      printDebug(localException);
-    }
-    return null;
-  }
-
-  private static void fieldSet(boolean paramBoolean, Object paramObject) {
-    Object localObject1 = stackObjects.get(stackPtr);
-    Object localObject2 = stackFields.get(stackPtr);
-    try {
-      if (paramObject != null) {
-        if ((curFieldNode.min != null) || (curFieldNode.max != null))
-          paramObject = checkRange(paramObject, curFieldNode.min, curFieldNode.max);
-        if (curFieldNode.jdField_enum != null)
-          paramObject = checkEnum(paramObject, curFieldNode.jdField_enum);
-      }
-      if ((paramBoolean) && ((curFieldNode.flags & 0x8000000) != 0)) {
-        if (curFieldNode.edset != null)
-          curFieldNode.edset.invoke(curFieldObjects.edset, fieldObjectArray(paramObject, true));
-      }
-      else if ((curFieldNode.flags & 0x800000) != 0) {
-        if (curFieldNode.set != null)
-          curFieldNode.set.invoke(curFieldObjects.set, fieldObjectArray(paramObject, true));
-      }
-      else
-      {
-        Object localObject3;
-        if ((localObject2 instanceof Field)) {
-          localObject3 = (Field)localObject2;
-          ((Field)localObject3).set(localObject1, paramObject);
-        } else {
-          localObject3 = (Integer)localObject2;
-          Array.set(localObject1, ((Integer)localObject3).intValue(), paramObject);
-        }
-      }
-
-      if (curFieldNode.validate != null)
-        curFieldNode.validate.invoke(curFieldObjects.validate, fieldObjectArray(null, false));
-    }
-    catch (Exception localException) {
-      printDebug(localException);
-    }
-  }
-
-  private static void fieldValidate() {
-    try {
-      if (curFieldNode.validate != null)
-        curFieldNode.validate.invoke(curFieldObjects.validate, fieldObjectArray(null, false));
-    } catch (Exception localException) {
-      printDebug(localException);
-    }
-  }
-
-  private static void objectValidate() {
-    if (curObjectNode.validate == null) return;
-    if ((curObjectObjects.validate == null) && (!Modifier.isStatic(curObjectNode.validate.getModifiers())))
-      return;
-    try {
-      curObjectNode.validate.invoke(curObjectObjects.validate, null);
-    } catch (Exception localException) {
-      printDebug(localException);
-    }
-  }
-
-  public static boolean toStrings(Map paramMap, Object paramObject)
-  {
-    if (paramObject == null) return false;
-    Class localClass = (paramObject instanceof Class) ? (Class)paramObject : paramObject.getClass();
-    boolean bool1 = paramObject == localClass;
-    try {
-      Field[] arrayOfField = getFields(localClass);
-      stackClear();
-      stackPush(paramObject, localClass);
-      for (int i = 0; i < arrayOfField.length; i++) {
-        if (setCurField(false, arrayOfField[i], bool1)) {
-          Object localObject = fieldGet(false);
-          if (localObject != null) {
-            _strBuf.setLength(0);
-            boolean bool2 = false;
-            if ((curFieldNode.flags & 0x1000000) != 0) {
-              putString(_strBuf, localObject.toString());
-              bool2 = true;
-            }
-            else if (arrayOfField[i].getType().isPrimitive()) { bool2 = _toString(_strBuf, localObject, arrayOfField[i].getType(), false); } else {
-              bool2 = _toString(_strBuf, localObject, localObject.getClass(), arrayOfField[i].getType() != localObject.getClass());
-            }
-            if (bool2)
-              paramMap.put(arrayOfField[i].getName(), _strBuf.toString());
-          }
-        }
-      }
-      stackPop();
-      return true;
-    } catch (Exception localException) {
-      printDebug(localException);
-      stackPop(-1);
-    }return false;
-  }
-
-  public static String toString(Object paramObject, boolean paramBoolean)
-  {
-    if (paramObject == null) return null;
-    _strBuf.setLength(0);
-    stackClear();
-    boolean bool = _toString(_strBuf, paramObject, (paramObject instanceof Class) ? (Class)paramObject : paramObject.getClass(), paramBoolean);
-    stackPop(-1);
-    return bool ? _strBuf.toString() : null;
-  }
-
-  public static boolean toString(StringBuffer paramStringBuffer, Object paramObject, boolean paramBoolean)
-  {
-    if (paramObject == null) return false;
-    stackClear();
-    boolean bool = _toString(paramStringBuffer, paramObject, (paramObject instanceof Class) ? (Class)paramObject : paramObject.getClass(), paramBoolean);
-    stackPop(-1);
-    return bool;
-  }
-
-  private static boolean _toString(StringBuffer paramStringBuffer, Object paramObject, Class paramClass, boolean paramBoolean) {
-    if (paramObject == null) return false;
-    boolean bool1 = paramObject == paramClass;
-    int i = paramStringBuffer.length();
-    int j = stackPtr;
-    int k;
-    int m;
-    Object localObject2;
-    if (paramClass.isArray())
-      try {
-        stackPush(paramObject, paramClass);
-        Class localClass = paramClass.getComponentType();
-        k = Array.getLength(paramObject);
-        if (k == 0) {
-          stackPop();
-          return false;
-        }
-        paramStringBuffer.append('[');
-        if (paramBoolean) {
-          if (localClass.isPrimitive()) {
-            paramStringBuffer.append(classGetName(paramClass));
-          } else {
-            paramStringBuffer.append("[L");
-            paramStringBuffer.append(classGetName(localClass));
-          }
-          paramStringBuffer.append(' ');
-        }
-        paramStringBuffer.append(k);
-        for (m = 0; m < k; m++) {
-          setCurField(false, new Integer(m), bool1);
-          paramStringBuffer.append(',');
-          localObject2 = fieldGet(false);
-          if (localObject2 != null) {
-            if (localClass.isPrimitive())
-              _toString(paramStringBuffer, localObject2, localClass, false);
-            else
-              _toString(paramStringBuffer, localObject2, localObject2.getClass(), localClass != localObject2.getClass());
-          }
-        }
-        stackPop();
-        paramStringBuffer.append(']');
-        return true;
-      } catch (Exception localException1) {
-        printDebug(localException1);
-        paramStringBuffer.setLength(i);
-        stackPop(j);
-
-        return false;
-      }
-    Object localObject1;
-    if ((paramClass.isPrimitive()) || (paramClass == String.class) || (paramClass == StringBuffer.class)) {
-      localObject1 = paramObject.toString();
-      putString(paramStringBuffer, (String)localObject1);
-      return true;
-    }
-    try {
-      stackPush(paramObject, paramClass);
-      localObject1 = getFields(paramClass);
-      paramStringBuffer.append('(');
-      if (paramBoolean)
-        paramStringBuffer.append(classGetName(paramClass));
-      k = 0;
-      for (m = 0; m < localObject1.length; m++) {
-        if (setCurField(false, localObject1[m], bool1)) {
-          localObject2 = fieldGet(false);
-          if (localObject2 != null) {
-            int n = paramStringBuffer.length();
-            if (k == 0) {
-              if (paramBoolean)
-                paramStringBuffer.append(',');
-            }
-            else paramStringBuffer.append(',');
-
-            paramStringBuffer.append(localObject1[m].getName());
-            paramStringBuffer.append('=');
-            boolean bool2 = false;
-            if ((curFieldNode.flags & 0x1000000) != 0) {
-              putString(paramStringBuffer, localObject2.toString());
-              bool2 = true;
-            }
-            else if (localObject1[m].getType().isPrimitive()) { bool2 = _toString(paramStringBuffer, localObject2, localObject1[m].getType(), false); } else {
-              bool2 = _toString(paramStringBuffer, localObject2, localObject2.getClass(), localObject1[m].getType() != localObject2.getClass());
-            }
-            if (bool2) k++; else
-              paramStringBuffer.setLength(n);
-          }
-        }
-      }
-      stackPop();
-      if ((k == 0) && (!paramBoolean)) {
-        paramStringBuffer.setLength(i);
-        return false;
-      }
-      paramStringBuffer.append(')');
-      return true;
-    } catch (Exception localException2) {
-      printDebug(localException2);
-      paramStringBuffer.setLength(i);
-      stackPop(j);
-    }
-    return false;
-  }
-  private static void putString(StringBuffer paramStringBuffer, String paramString) {
-    if ((paramString == null) || (paramString.length() == 0)) {
-      paramStringBuffer.append('"'); paramStringBuffer.append('"');
-    } else {
-      int i = 0;
-      char c;
-      for (int j = 0; j < paramString.length(); j++) {
-        c = paramString.charAt(j);
-        if ((c > ' ') && (c != '=') && (c != '"') && (c != ',') && (c != '[') && (c != ']') && (c != '(') && (c != ')'))
+        public boolean isEmpty()
         {
-          continue;
+            if(name != null)
+                return false;
+            if(enum != null)
+                return false;
+            return tip == null;
         }
 
-        i = 1;
-        break;
-      }
-
-      if (i != 0) {
-        paramStringBuffer.append('"');
-        for (j = 0; j < paramString.length(); j++) {
-          c = paramString.charAt(j);
-          if (c == '"')
-            paramStringBuffer.append('\\');
-          paramStringBuffer.append(c);
+        public void clear()
+        {
+            name = null;
+            enum = null;
+            tip = null;
         }
-        paramStringBuffer.append('"');
-      } else {
-        paramStringBuffer.append(paramString);
-      }
+
+        java.lang.String name;
+        java.lang.Object enum[];
+        java.lang.String tip;
+
+        public Res(com.maddox.rts.Res res1)
+        {
+            name = res1.name;
+            enum = res1.enum;
+            tip = res1.tip;
+        }
+
+        public Res()
+        {
+        }
     }
-  }
 
-  public static Object fromStrings(Object paramObject, Class paramClass, Map paramMap)
-  {
-    if (paramMap.size() == 0)
-      return fromString(paramObject, paramClass, "()");
-    _strBuf.setLength(0);
-    _strBuf.append('(');
-    Iterator localIterator = paramMap.entrySet().iterator();
-    int i = 0;
-    while (localIterator.hasNext()) {
-      if (i > 0) _strBuf.append(',');
-      i++;
-      Map.Entry localEntry = (Map.Entry)localIterator.next();
-      _strBuf.append((String)localEntry.getKey());
-      _strBuf.append('=');
-      _strBuf.append((String)localEntry.getValue());
+    static class FieldCompare
+        implements java.util.Comparator
+    {
+
+        public int compare(java.lang.Object obj, java.lang.Object obj1)
+        {
+            java.lang.reflect.Field field1 = (java.lang.reflect.Field)obj;
+            java.lang.reflect.Field field2 = (java.lang.reflect.Field)obj1;
+            return field1.getName().compareTo(field2.getName());
+        }
+
+        FieldCompare()
+        {
+        }
     }
-    _strBuf.append(')');
-    stackClear();
-    return _fromString(false, paramObject, paramClass, _strBuf);
-  }
 
-  public static Object fromString(Object paramObject, Class paramClass, String paramString)
-  {
-    _strBuf.setLength(0);
-    _strBuf.append(paramString);
-    stackClear();
-    return _fromString(false, paramObject, paramClass, _strBuf);
-  }
+    static class Node
+    {
 
-  public static Object fromString(Object paramObject, String paramString)
-  {
-    return fromString(paramObject, null, paramString);
-  }
-
-  public static Object fromString(String paramString)
-  {
-    return fromString(null, null, paramString);
-  }
-
-  public static Object fromString(Object paramObject, Class paramClass, StringBuffer paramStringBuffer)
-  {
-    stackClear();
-    return _fromString(false, paramObject, paramClass, paramStringBuffer);
-  }
-
-  public static Object fromString(Object paramObject, StringBuffer paramStringBuffer)
-  {
-    return fromString(paramObject, null, paramStringBuffer);
-  }
-
-  public static Object fromString(StringBuffer paramStringBuffer)
-  {
-    return fromString(null, null, paramStringBuffer);
-  }
-
-  private static Object _fromString(boolean paramBoolean, Object paramObject, Class paramClass, StringBuffer paramStringBuffer) {
-    int i = getChar(paramStringBuffer);
-    String str1 = null;
-    Object localObject1;
-    Object localObject2;
-    if (i == 91) {
-      Class localClass1 = null;
-      if (paramClass != null) {
-        if (!paramClass.isArray())
-          return null;
-        localClass1 = paramClass.getComponentType();
-      }
-
-      int k = stackPtr;
-      try
-      {
-        str1 = getWord(paramStringBuffer);
-        if ((str1 == null) || (str1.length() == 0))
-          return null;
-        if (str1.charAt(0) == '[') {
-          if (str1.length() < 2)
-            return null;
-          m = str1.charAt(1);
-          switch (m) { case 76:
-            localClass1 = classForName(str1.substring(2)); break;
-          case 90:
-            localClass1 = Boolean.TYPE; break;
-          case 66:
-            localClass1 = Byte.TYPE; break;
-          case 67:
-            localClass1 = Character.TYPE; break;
-          case 83:
-            localClass1 = Short.TYPE; break;
-          case 73:
-            localClass1 = Integer.TYPE; break;
-          case 74:
-            localClass1 = Long.TYPE; break;
-          case 70:
-            localClass1 = Float.TYPE; break;
-          case 68:
-            localClass1 = Double.TYPE; break;
-          case 69:
-          case 71:
-          case 72:
-          case 75:
-          case 77:
-          case 78:
-          case 79:
-          case 80:
-          case 81:
-          case 82:
-          case 84:
-          case 85:
-          case 86:
-          case 87:
-          case 88:
-          case 89:
-          default:
-            return null;
-          }
-          str1 = getWord(paramStringBuffer);
+        public void clear()
+        {
+            flags = 0;
+            enum = null;
+            min = null;
+            max = null;
+            step = null;
+            get = null;
+            set = null;
+            edget = null;
+            edset = null;
+            validate = null;
         }
-        if (localClass1 == null)
-          return null;
-        int m = Integer.parseInt(str1);
-        if (paramObject != null) {
-          Class localClass2 = paramObject.getClass();
-          if ((!localClass2.isArray()) || (localClass2.getComponentType() != localClass1)) {
-            paramObject = null;
-          } else {
-            int i1 = Array.getLength(paramObject);
-            if (i1 != m)
-              paramObject = null;
-          }
-        }
-        if (paramObject == null) {
-          paramObject = Array.newInstance(localClass1, m);
-        }
-        stackPush(paramObject, paramObject.getClass());
 
-        int n = 0;
-        while (true) {
-          i = getChar(paramStringBuffer);
-          if (i == 93) {
-            stackPop();
-            return paramObject;
-          }if (i == 44) {
-            setCurField(paramBoolean, new Integer(n));
-            localObject1 = null;
-            localObject2 = null;
-            if ((curFieldNode.flags & 0x2000000) != 0) {
-              localObject2 = getWord(paramStringBuffer);
-            } else if ((localClass1.isPrimitive()) || (localClass1 == String.class) || (localClass1 == StringBuffer.class))
+        public boolean isEmpty()
+        {
+            if(flags != 0)
+                return false;
+            if(enum != null)
+                return false;
+            if(min != null)
+                return false;
+            if(max != null)
+                return false;
+            if(get != null)
+                return false;
+            if(set != null)
+                return false;
+            if(edget != null)
+                return false;
+            if(edset != null)
+                return false;
+            return validate == null;
+        }
+
+        public void set(com.maddox.rts.Node node, java.lang.Object obj, com.maddox.rts.NodeObjects nodeobjects)
+        {
+            flags |= node.flags & 1;
+            if((flags & 0x100000) == 0 && (node.flags & 0x100000) != 0)
             {
-              localObject2 = _fromString(paramBoolean, null, localClass1, paramStringBuffer);
-            } else {
-              localObject1 = fieldGet(paramBoolean);
-              localObject2 = _fromString(paramBoolean, localObject1, localObject1 == null ? localClass1 : localObject1.getClass(), paramStringBuffer);
+                flags |= 0x100000;
+                enum = node.enum;
             }
-            if (localObject2 != localObject1)
-              fieldSet(paramBoolean, localObject2);
-            else
-              fieldValidate();
-          } else {
-            stackPop();
-            return null;
-          }
-          n++;
-        }
-      } catch (Exception localException4) {
-        printDebug(localException4);
-        stackPop(k);
-        return null;
-      }
-    }
-    if (i == 40)
-    {
-      str1 = getWord(paramStringBuffer);
-      i = peekChar(paramStringBuffer);
-      if ((i == 44) || (i == 41))
-      {
-        try {
-          paramClass = classForName(str1);
-          if ((paramObject != null) && (paramObject.getClass() != paramClass))
-            paramObject = null;
-        } catch (Exception localException1) {
-          printDebug(localException1);
-          return null;
-        }
-        if (i == 41) {
-          getChar(paramStringBuffer);
-          if (paramObject == null) {
-            try { paramObject = paramClass.newInstance(); } catch (Exception localException2) {
-            }if (paramObject != null) {
-              stackPush(paramObject, paramClass);
-              objectValidate();
-              stackPop();
-            }
-          }
-          return paramObject;
-        }
-      }
-      else {
-        if (str1 != null) paramStringBuffer.insert(0, str1);
-        paramStringBuffer.insert(0, ',');
-      }
-
-      if (paramObject == null) {
-        if (paramClass == null)
-          return null;
-      } else if (paramClass == null) {
-        paramClass = paramObject.getClass();
-      }
-
-      int j = stackPtr;
-      stackPush(paramObject, paramClass);
-      while (true)
-      {
-        i = getChar(paramStringBuffer);
-        if (i == 41) {
-          objectValidate();
-          stackPop();
-          return paramObject;
-        }
-        if (i != 44) {
-          stackPop();
-          return null;
-        }
-        String str2 = getWord(paramStringBuffer);
-        i = getChar(paramStringBuffer);
-        if (i != 61) {
-          stackPop();
-          return null;
-        }
-        try {
-          Field localField = paramClass.getField(str2);
-          if (setCurField(paramBoolean, localField)) {
-            if (paramObject == null) paramObject = stackObjects.get(stackPtr);
-            Class localClass3 = localField.getType();
-            localObject1 = null;
-            localObject2 = null;
-            if ((curFieldNode.flags & 0x2000000) != 0) {
-              localObject2 = getWord(paramStringBuffer);
-            } else if ((localClass3.isPrimitive()) || (localClass3 == String.class) || (localClass3 == StringBuffer.class))
+            if((flags & 0x200000) == 0 && (node.flags & 0x200000) != 0)
             {
-              localObject2 = _fromString(paramBoolean, null, localClass3, paramStringBuffer);
-            } else {
-              localObject1 = fieldGet(paramBoolean);
-              localObject2 = _fromString(paramBoolean, localObject1, localObject1 == null ? localClass3 : localObject1.getClass(), paramStringBuffer);
+                flags |= 0x200000;
+                min = node.min;
+                max = node.max;
+                step = node.step;
             }
-            if (localObject2 != localObject1)
-              fieldSet(paramBoolean, localObject2);
+            if((flags & 0x400000) == 0 && (node.flags & 0x400000) != 0)
+            {
+                flags |= node.flags & 0x1400000;
+                get = node.get;
+                nodeobjects.get = obj;
+            }
+            if((flags & 0x800000) == 0 && (node.flags & 0x800000) != 0)
+            {
+                flags |= node.flags & 0x2800000;
+                set = node.set;
+                nodeobjects.set = obj;
+            }
+            if((flags & 0x4000000) == 0 && (node.flags & 0x4000000) != 0)
+            {
+                flags |= node.flags & 0x14000000;
+                edget = node.edget;
+                nodeobjects.edget = obj;
+            }
+            if((flags & 0x8000000) == 0 && (node.flags & 0x8000000) != 0)
+            {
+                flags |= node.flags & 0x28000000;
+                edset = node.edset;
+                nodeobjects.edset = obj;
+            }
+            if((flags & 0x40000000) == 0 && (node.flags & 0x40000000) != 0)
+            {
+                flags |= 0x40000000;
+                validate = node.validate;
+                nodeobjects.validate = obj;
+            }
+        }
+
+        public int flags;
+        public java.lang.Object enum[];
+        public java.lang.Object min;
+        public java.lang.Object max;
+        public java.lang.Object step;
+        public java.lang.reflect.Method get;
+        public java.lang.reflect.Method set;
+        public java.lang.reflect.Method edget;
+        public java.lang.reflect.Method edset;
+        public java.lang.reflect.Method validate;
+
+        public Node()
+        {
+        }
+
+        public Node(com.maddox.rts.Node node)
+        {
+            flags = node.flags;
+            enum = node.enum;
+            min = node.min;
+            max = node.max;
+            step = node.step;
+            get = node.get;
+            set = node.set;
+            edget = node.edget;
+            edset = node.edset;
+            validate = node.validate;
+        }
+    }
+
+    static class NodeObjects
+    {
+
+        public void clear()
+        {
+            get = null;
+            set = null;
+            edget = null;
+            edset = null;
+            validate = null;
+        }
+
+        public boolean isEmpty()
+        {
+            if(get != null)
+                return false;
+            if(set != null)
+                return false;
+            if(edget != null)
+                return false;
+            if(edset != null)
+                return false;
+            return validate == null;
+        }
+
+        public java.lang.Object get;
+        public java.lang.Object set;
+        public java.lang.Object edget;
+        public java.lang.Object edset;
+        public java.lang.Object validate;
+
+        public NodeObjects()
+        {
+        }
+
+        public NodeObjects(com.maddox.rts.NodeObjects nodeobjects)
+        {
+            get = nodeobjects.get;
+            set = nodeobjects.set;
+            edget = nodeobjects.edget;
+            edset = nodeobjects.edset;
+            validate = nodeobjects.validate;
+        }
+    }
+
+
+    public static void setFriendPackages(java.lang.String as[])
+    {
+        friendPackage = as;
+    }
+
+    public static java.lang.String classGetName(java.lang.Class class1)
+    {
+        java.lang.String s = class1.getName();
+        for(int i = 0; i < friendPackage.length; i++)
+        {
+            java.lang.String s1 = friendPackage[i];
+            if(s.startsWith(s1))
+                return s.substring(s1.length());
+        }
+
+        return s;
+    }
+
+    public static java.lang.Class classForName(java.lang.String s)
+        throws java.lang.ClassNotFoundException
+    {
+        int i = 0;
+          goto _L1
+_L3:
+        return java.lang.Class.forName(friendPackage[i] + s);
+        java.lang.Exception exception;
+        exception;
+        i++;
+_L1:
+        if(i < friendPackage.length) goto _L3; else goto _L2
+_L2:
+        return java.lang.Class.forName(s);
+        java.lang.Throwable throwable;
+        throwable;
+        throw new ClassNotFoundException(throwable.getMessage());
+    }
+
+    private static void checkFieldParams(java.lang.Class class1, java.lang.String s)
+    {
+        if(class1 == null)
+            throw new RTSException("Parameter 'class' == null");
+        if(s == null)
+            throw new RTSException("Parameter 'fieldName' == null");
+        else
+            return;
+    }
+
+    private static void checkFieldParams(java.lang.Class class1, java.lang.String as[])
+    {
+        if(class1 == null)
+            throw new RTSException("Parameter 'class' == null");
+        if(as == null)
+            throw new RTSException("Parameter 'fieldNames' == null");
+        else
+            return;
+    }
+
+    private static com.maddox.rts.Node getNode(java.lang.Class class1, java.lang.String s)
+    {
+        java.lang.String s1 = s + "$IO";
+        com.maddox.rts.Node node = (com.maddox.rts.Node)com.maddox.rts.Property.value(class1, s1, null);
+        if(node == null)
+        {
+            node = new Node();
+            com.maddox.rts.Property.set(class1, s1, node);
+        }
+        return node;
+    }
+
+    private static void initNode(java.lang.Class class1, java.lang.String s)
+    {
+        java.lang.String s1 = s + "$IO";
+        if(!com.maddox.rts.Property.containsValue(class1, s1))
+            com.maddox.rts.Property.set(class1, s1, (java.lang.Object)null);
+    }
+
+    private static com.maddox.rts.Node getNode(java.lang.Class class1)
+    {
+        com.maddox.rts.Node node = (com.maddox.rts.Node)com.maddox.rts.Property.value(class1, "$ObjIO", null);
+        if(node == null)
+        {
+            node = new Node();
+            com.maddox.rts.Property.set(class1, "$ObjIO", node);
+        }
+        return node;
+    }
+
+    public static java.lang.Class toWrapperClass(java.lang.Class class1)
+    {
+        if(class1.isPrimitive())
+            if(class1 == java.lang.Boolean.TYPE)
+                class1 = java.lang.Boolean.class;
             else
-              fieldValidate();
-          }
-        } catch (Exception localException5) {
-          printDebug(localException5);
-          stackPop(j);
-          return null;
-        }
-      }
+            if(class1 == java.lang.Byte.TYPE)
+                class1 = java.lang.Byte.class;
+            else
+            if(class1 == java.lang.Short.TYPE)
+                class1 = java.lang.Short.class;
+            else
+            if(class1 == java.lang.Character.TYPE)
+                class1 = java.lang.Character.class;
+            else
+            if(class1 == java.lang.Integer.TYPE)
+                class1 = java.lang.Integer.class;
+            else
+            if(class1 == java.lang.Long.TYPE)
+                class1 = java.lang.Long.class;
+            else
+            if(class1 == java.lang.Float.TYPE)
+                class1 = java.lang.Float.class;
+            else
+            if(class1 == java.lang.Double.TYPE)
+                class1 = java.lang.Double.class;
+        return class1;
     }
 
-    if (paramClass == null)
-      return paramObject;
-    if (i != 65535) {
-      paramStringBuffer.insert(0, i);
-      str1 = getWord(paramStringBuffer);
-    }
-    if ((str1 == null) || (str1.length() == 0))
+    private static java.lang.reflect.Field[] getFields(java.lang.Class class1)
     {
-      if (paramClass == Boolean.TYPE) paramObject = new Boolean(false);
-      else if (paramClass == Byte.TYPE) paramObject = new Byte(0);
-      else if (paramClass == Short.TYPE) paramObject = new Short(0);
-      else if (paramClass == Character.TYPE) paramObject = new Character('\000');
-      else if (paramClass == Integer.TYPE) paramObject = new Integer(0);
-      else if (paramClass == Long.TYPE) paramObject = new Long(0L);
-      else if (paramClass == Float.TYPE) paramObject = new Float(0.0F);
-      else if (paramClass == Double.TYPE) paramObject = new Double(0.0D); 
-    }
-    else {
-      try {
-        if (paramClass == Boolean.TYPE) paramObject = new Boolean(str1);
-        else if (paramClass == Byte.TYPE) paramObject = new Byte(str1);
-        else if (paramClass == Short.TYPE) paramObject = new Short(str1);
-        else if (paramClass == Character.TYPE) paramObject = new Character(str1.charAt(0));
-        else if (paramClass == Integer.TYPE) paramObject = new Integer(str1);
-        else if (paramClass == Long.TYPE) paramObject = new Long(str1);
-        else if (paramClass == Float.TYPE) paramObject = new Float(str1);
-        else if (paramClass == Double.TYPE) paramObject = new Double(str1);
-        else if (paramClass == String.class) paramObject = str1;
-        else if (paramClass == StringBuffer.class) paramObject = new StringBuffer(str1); 
-      }
-      catch (Exception localException3) {
-        printDebug(localException3);
-        return null;
-      }
-    }
-    return paramObject;
-  }
+        java.lang.reflect.Field afield[] = (java.lang.reflect.Field[])com.maddox.rts.Property.value(class1, "$ClassIOFields$", null);
+        if(afield != null)
+            return afield;
+        if(!com.maddox.rts.Property.vars(_fldPropLst, class1))
+            return filedsEmpty;
+        int i = _fldPropLst.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = (java.lang.String)_fldPropLst.get(j);
+            if(s != null && s.endsWith("$IO"))
+            {
+                int l = s.indexOf('.');
+                if(l < 0)
+                    l = s.length() - "$IO".length();
+                int i1 = s.indexOf('[');
+                if(i1 > 0 && i1 < l)
+                    l = i1;
+                java.lang.String s1 = s.substring(0, l);
+                Object obj = null;
+                for(java.lang.Class class2 = class1; class2 != null;)
+                    try
+                    {
+                        java.lang.reflect.Field field1 = class2.getDeclaredField(s1);
+                        if(!_fldLst.contains(field1))
+                            _fldLst.add(field1);
+                        break;
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        class2 = class2.getSuperclass();
+                    }
 
-  private static char peekChar(StringBuffer paramStringBuffer)
-  {
-    if (paramStringBuffer != null)
-    {
-      while (paramStringBuffer.length() > 0) {
-        int i = paramStringBuffer.charAt(0);
-        if (i > 32)
-          return i;
-        paramStringBuffer.deleteCharAt(0);
-      }
-    }
-
-    return 65535;
-  }
-  private static char getChar(StringBuffer paramStringBuffer) {
-    if (paramStringBuffer != null)
-    {
-      while (paramStringBuffer.length() > 0) {
-        int i = paramStringBuffer.charAt(0);
-        paramStringBuffer.deleteCharAt(0);
-        if (i > 32) {
-          return i;
-        }
-      }
-    }
-    return 65535;
-  }
-  private static String getWord(StringBuffer paramStringBuffer) {
-    if (paramStringBuffer != null) {
-      int i = 0;
-
-      while (paramStringBuffer.length() > 0) {
-        i = paramStringBuffer.charAt(0);
-        if (i > 32)
-          break;
-        paramStringBuffer.deleteCharAt(0);
-      }
-      if (i == 34) {
-        paramStringBuffer.deleteCharAt(0);
-        j = 0;
-        k = paramStringBuffer.length();
-        m = 0;
-        while (j < k) {
-          i = paramStringBuffer.charAt(j);
-          if (i == 34) {
-            if (m == 92) {
-              paramStringBuffer.deleteCharAt(j - 1);
-              m = 34;
-              j--; k--;
-            } else {
-              str = "";
-              if (j > 0)
-                str = paramStringBuffer.substring(0, j);
-              paramStringBuffer.delete(0, j + 1);
-              return str;
             }
-          }
-          m = i;
-          j++;
         }
 
-        paramStringBuffer.setLength(0);
-        return null;
-      }
+        _fldPropLst.clear();
+        i = _fldLst.size();
+        if(i > 0)
+        {
+            afield = new java.lang.reflect.Field[i];
+            for(int k = 0; k < i; k++)
+                afield[k] = (java.lang.reflect.Field)_fldLst.get(k);
 
-      int j = 0;
-      int k = paramStringBuffer.length();
-      while (j < k) {
-        i = paramStringBuffer.charAt(j);
-        if ((i <= 32) || (i == 61) || (i == 44) || (i == 41) || (i == 93))
-          break;
-        j++;
-      }
-      int m = j - 1;
-
-      String str = "";
-      if (m >= 0)
-        str = paramStringBuffer.substring(0, m + 1);
-      if (j > 0)
-        paramStringBuffer.delete(0, j);
-      return str;
-    }
-
-    return null;
-  }
-
-  private static void printDebug(Exception paramException)
-  {
-    System.out.println(paramException.getMessage());
-    paramException.printStackTrace();
-  }
-
-  private static Res makeRes()
-  {
-    curRes.clear();
-    for (int i = 0; i <= stackPtr; i++) {
-      ResourceBundle localResourceBundle = (ResourceBundle)stackBundles.get(i);
-      if (localResourceBundle != null) {
-        _resBuf.setLength(0);
-        for (int j = i; j <= stackPtr; j++) {
-          Object localObject = stackFields.get(j);
-          if ((localObject instanceof Field)) {
-            Field localField = (Field)localObject;
-            if (j != i) _resBuf.append('.');
-            _resBuf.append(localField.getName());
-          } else {
-            _resBuf.append("[]");
-          }
+            java.util.Arrays.sort(afield, _fldsCompare);
+            _fldLst.clear();
+        } else
+        {
+            afield = filedsEmpty;
         }
-        String str = null;
-        try {
-          str = localResourceBundle.getString(_resBuf.toString());
-        } catch (Exception localException) {
-        }
-        if (str != null)
-          parseRes(str);
-      }
-    }
-    if (curRes.isEmpty())
-      return null;
-    return new Res(curRes);
-  }
-
-  private static void parseRes(String paramString) {
-    int i = 0;
-    int j = 0;
-    int k = 0;
-    int m = 0;
-    String str1 = paramString.length();
-    int n = -1;
-    int i1 = -1;
-    while (true) {
-      if (n != -1) {
-        switch (n) { case 0:
-          if (curRes.name != null) break; curRes.name = paramString.substring(j, k); break;
-        case 2:
-          if (curRes.tip != null) break; curRes.tip = paramString.substring(j, k); break;
-        case 1:
-          if (curRes.jdField_enum != null) break;
-          _resLst.clear();
-          _resBuf.setLength(0);
-          _resBuf.append(paramString.substring(j, k));
-          while (true) {
-            str2 = getResWord(_resBuf);
-            if ((str2 == null) || (str2.length() == 0))
-              break;
-            _resLst.add(str2);
-          }
-          if (_resLst.size() <= 0) break;
-          curRes.jdField_enum = _resLst.toArray(); break;
-        }
-
-      }
-
-      i = k; j = m; n = i1; i1 = -1;
-
-      String str2 = str1;
-      String str3 = paramString.indexOf("$NAME", j);
-      if ((str3 >= 0) && (str3 < str2)) {
-        i1 = 0; str2 = str3; k = str3; m = str3 + "$NAME".length();
-      }
-      String str4 = paramString.indexOf("$ENUM", j);
-      if ((str4 >= 0) && (str4 < str2)) {
-        i1 = 1; str2 = str4; k = str4; m = str4 + "$ENUM".length();
-      }
-      String str5 = paramString.indexOf("$TIP", j);
-      if ((str5 >= 0) && (str5 < str2)) {
-        i1 = 2; str2 = str5; k = str5; m = str5 + "$TIP".length();
-      }
-      if (i1 < 0)
-        k = m = str1;
-      if ((n == -1) && (i1 == -1))
-        return;
-    }
-  }
-
-  private static String getResWord(StringBuffer paramStringBuffer) {
-    if (paramStringBuffer != null) {
-      int i = 0;
-
-      while (paramStringBuffer.length() > 0) {
-        i = paramStringBuffer.charAt(0);
-        if (i > 32)
-          break;
-        paramStringBuffer.deleteCharAt(0);
-      }
-      if (i == 34) {
-        paramStringBuffer.deleteCharAt(0);
-        j = 0;
-        k = paramStringBuffer.length();
-        m = 0;
-        while (j < k) {
-          i = paramStringBuffer.charAt(j);
-          if (i == 34) {
-            if (m == 92) {
-              paramStringBuffer.deleteCharAt(j - 1);
-              m = 34;
-              j--; k--;
-            } else {
-              str = "";
-              if (j > 0)
-                str = paramStringBuffer.substring(0, j);
-              paramStringBuffer.delete(0, j + 1);
-              return str;
-            }
-          }
-          m = i;
-          j++;
-        }
-
-        paramStringBuffer.setLength(0);
-        return null;
-      }
-
-      int j = 0;
-      int k = paramStringBuffer.length();
-      while (j < k) {
-        i = paramStringBuffer.charAt(j);
-        if (i <= 32)
-          break;
-        j++;
-      }
-      int m = j - 1;
-      String str = "";
-      if (m >= 0)
-        str = paramStringBuffer.substring(0, m + 1);
-      if (j > 0)
-        paramStringBuffer.delete(0, j);
-      return str;
+        com.maddox.rts.Property.set(class1, "$ClassIOFields$", afield);
+        return afield;
     }
 
-    return null;
-  }
-
-  public boolean isValue()
-  {
-    return this.child == null;
-  }
-
-  public int level()
-  {
-    return this.level;
-  }
-  public ObjIO parent() { return this.parent;
-  }
-
-  public int childCount()
-  {
-    return this.child == null ? 0 : this.child.size();
-  }
-
-  public ObjIO childAt(int paramInt)
-  {
-    if ((this.child != null) && (paramInt < this.child.size()))
-      return (ObjIO)this.child.get(paramInt);
-    return null;
-  }
-
-  public String tip()
-  {
-    if ((this.res != null) && 
-      (this.res.tip != null)) {
-      return this.res.tip;
-    }
-    return "";
-  }
-  public String name() {
-    return this.name;
-  }
-
-  public Object[] getEnum() {
-    if (((this.field instanceof Field)) && (((Field)this.field).getType() == Boolean.TYPE))
-      return booleanEnum;
-    if (this.fieldNode == null)
-      return null;
-    return this.fieldNode.jdField_enum;
-  }
-
-  public Object[] getAliasEnum()
-  {
-    if (((this.field instanceof Field)) && (((Field)this.field).getType() == Boolean.TYPE)) {
-      if ((this.res != null) && (this.res.jdField_enum != null) && (this.res.jdField_enum.length == 2))
-        return this.res.jdField_enum;
-      return booleanEnum;
-    }
-    if ((this.fieldNode == null) || (this.fieldNode.jdField_enum == null)) {
-      return null;
-    }
-    if ((this.res != null) && (this.res.jdField_enum != null) && (this.res.jdField_enum.length == this.fieldNode.jdField_enum.length))
-      return this.res.jdField_enum;
-    return this.fieldNode.jdField_enum;
-  }
-
-  public boolean isReadOnly()
-  {
-    if (!isValue())
-      return true;
-    if (this.fieldNode == null)
-      return false;
-    return (this.fieldNode.flags & 0x1) != 0;
-  }
-
-  public Class getType()
-  {
-    if ((this.field instanceof Field)) return ((Field)this.field).getType();
-    return this.clazz.getComponentType();
-  }
-
-  public boolean isCheckRange()
-  {
-    if (this.fieldNode == null)
-      return false;
-    return (this.fieldNode.flags & 0x200000) != 0;
-  }
-
-  public Number getCheckRangeMin()
-  {
-    if (this.fieldNode == null)
-      return null;
-    return (Number)this.fieldNode.min;
-  }
-
-  public Number getCheckRangeMax()
-  {
-    if (this.fieldNode == null)
-      return null;
-    return (Number)this.fieldNode.max;
-  }
-
-  public Number getCheckRangeStep()
-  {
-    if (this.fieldNode == null)
-      return null;
-    return (Number)this.fieldNode.step;
-  }
-
-  public String get()
-  {
-    if (!this.bStrValid)
-      validate();
-    String str = this.strValue;
-    Object[] arrayOfObject1 = getAliasEnum();
-    if (arrayOfObject1 != null) {
-      Object[] arrayOfObject2 = getEnum();
-      if (arrayOfObject2 != arrayOfObject1) {
-        for (int i = 0; i < arrayOfObject2.length; i++) {
-          if (str.equals(arrayOfObject2[i].toString())) {
-            str = arrayOfObject1[i].toString();
-            break;
-          }
-        }
-      }
-    }
-    return str;
-  }
-
-  public void set(String paramString)
-  {
-    if (!isValue()) return;
-    if (paramString == null) paramString = "";
-    Object[] arrayOfObject = getAliasEnum();
-    Object localObject1;
-    if (arrayOfObject != null) {
-      localObject1 = getEnum();
-      if (localObject1 != arrayOfObject) {
-        for (int i = 0; i < localObject1.length; i++) {
-          if (paramString.equals(arrayOfObject[i].toString())) {
-            paramString = localObject1[i].toString();
-            break;
-          }
-        }
-      }
-    }
-    fillStack();
-
-    if ((this.field instanceof Field)) localObject1 = ((Field)this.field).getType(); else
-      localObject1 = this.clazz.getComponentType();
-    Object localObject2 = null;
-    Object localObject3 = null;
-    if ((curFieldNode.flags & 0x22000000) != 0) {
-      localObject3 = paramString;
-    } else if ((((Class)localObject1).isPrimitive()) || (localObject1 == String.class) || (localObject1 == StringBuffer.class))
+    private static java.lang.Class getFieldType(java.lang.Class class1, java.lang.String s, boolean flag)
     {
-      _strBuf.setLength(0);
-      _strBuf.append(paramString);
-      localObject3 = _fromString(true, null, (Class)localObject1, _strBuf);
-    } else {
-      localObject2 = fieldGet(true);
-      _strBuf.setLength(0);
-      _strBuf.append(paramString);
-      localObject3 = _fromString(true, localObject2, localObject2 == null ? localObject1 : localObject2.getClass(), _strBuf);
+        getFieldType_arrays = 0;
+        java.lang.Class class2 = class1;
+        int i = s.length();
+        int j = 0;
+        int k = 0;
+        while(j < i) 
+        {
+            char c = s.charAt(j);
+            if(c == '.')
+            {
+                if(k < j)
+                    class2 = com.maddox.rts.ObjIO.getFieldTypeOne(class2, s.substring(k, j), false);
+                k = ++j;
+            } else
+            if(c == '[')
+            {
+                if(k < j)
+                    class2 = com.maddox.rts.ObjIO.getFieldTypeOne(class2, s.substring(k, j), true);
+                k = j += 2;
+            } else
+            {
+                j++;
+            }
+        }
+        if(k < j)
+            class2 = com.maddox.rts.ObjIO.getFieldTypeOne(class2, s.substring(k, j), false);
+        if(flag)
+            return com.maddox.rts.ObjIO.toWrapperClass(class2);
+        else
+            return class2;
     }
-    if (localObject3 != localObject2)
-      fieldSet(true, localObject3);
-    else
-      fieldValidate();
-    stackPop(-1);
-    invalidate();
-  }
 
-  private void validate() {
-    if (this.bStrValid) return;
-    if (this.child != null) {
-      int i = this.child.size();
-      ObjIO localObjIO;
-      for (int j = 0; j < i; j++) {
-        localObjIO = (ObjIO)this.child.get(j);
-        if (localObjIO != null)
-          localObjIO.validate();
-      }
-      _strBuf.setLength(0);
-      if (this.clazz.isArray()) _strBuf.append('['); else
-        _strBuf.append('(');
-      for (j = 0; j < i; j++) {
-        if (j > 0) _strBuf.append(',');
-        localObjIO = (ObjIO)this.child.get(j);
-        if (localObjIO != null) {
-          String str = localObjIO.strValue;
-          Object[] arrayOfObject1 = localObjIO.getAliasEnum();
-          if (arrayOfObject1 != null) {
-            Object[] arrayOfObject2 = localObjIO.getEnum();
-            if (arrayOfObject2 != arrayOfObject1) {
-              for (int k = 0; k < arrayOfObject2.length; k++) {
-                if (str.equals(arrayOfObject2[k].toString())) {
-                  str = arrayOfObject1[k].toString();
-                  break;
+    private static java.lang.Class getFieldTypeOne(java.lang.Class class1, java.lang.String s, boolean flag)
+    {
+        try
+        {
+            java.lang.reflect.Field field1 = class1.getField(s);
+            class1 = field1.getType();
+            if(flag && class1.isArray())
+                class1 = class1.getComponentType();
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.ObjIO.printDebug(exception);
+            throw new RTSException("Filed '" + s + "' not found in class " + class1.getName());
+        }
+        if(flag)
+            getFieldType_arrays++;
+        return class1;
+    }
+
+    public static void fieldsSuperclass(java.lang.Class class1)
+    {
+        if(class1 == null)
+            throw new RTSException("Parameter 'class' == null");
+        java.lang.Class class2 = class1.getSuperclass();
+        if(class2 == null)
+            return;
+        if(!com.maddox.rts.Property.vars(_fldPropLst, class2))
+            return;
+        int i = _fldPropLst.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = (java.lang.String)_fldPropLst.get(j);
+            if(s != null && s.endsWith("$IO") && !com.maddox.rts.Property.containsValue(class1, s))
+                com.maddox.rts.Property.set(class1, s, com.maddox.rts.Property.value(class2, s, null));
+        }
+
+        _fldPropLst.clear();
+    }
+
+    public static void fieldsAllSuperclasses(java.lang.Class class1)
+    {
+        if(class1 == null)
+        {
+            throw new RTSException("Parameter 'class' == null");
+        } else
+        {
+            com.maddox.rts.ObjIO.fieldsAllSuperclasses(class1, class1.getSuperclass());
+            return;
+        }
+    }
+
+    private static void fieldsAllSuperclasses(java.lang.Class class1, java.lang.Class class2)
+    {
+        if(class2 == null)
+            return;
+        com.maddox.rts.ObjIO.fieldsAllSuperclasses(class1, class2.getSuperclass());
+        if(!com.maddox.rts.Property.vars(_fldPropLst, class2))
+            return;
+        int i = _fldPropLst.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = (java.lang.String)_fldPropLst.get(j);
+            if(s != null && s.endsWith("$IO") && !com.maddox.rts.Property.containsValue(class1, s))
+                com.maddox.rts.Property.set(class1, s, com.maddox.rts.Property.value(class2, s, null));
+        }
+
+        _fldPropLst.clear();
+    }
+
+    public static void field(java.lang.Class class1, java.lang.String s)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.ObjIO.initNode(class1, s);
+    }
+
+    public static void fields(java.lang.Class class1, java.lang.String as[])
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, as);
+        for(int i = 0; i < as.length; i++)
+            if(as[i] != null)
+                com.maddox.rts.ObjIO.initNode(class1, as[i]);
+
+    }
+
+    public static void edReadOnly(java.lang.Class class1, java.lang.String s)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        node.flags |= 1;
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, java.lang.Object aobj[])
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(aobj != null)
+        {
+            java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, true);
+            java.lang.Class class3 = ((java.lang.Object) (aobj)).getClass().getComponentType();
+            if((node.flags & 0x2000000) != 0)
+                class3 = java.lang.String.class;
+            if(class3 != class2)
+                throw new RTSException("Class elements of enum array (" + class3.getName() + ") not equal type of class field (" + class2.getName() + ")");
+        }
+        node.enum = aobj;
+        node.flags |= 0x100000;
+    }
+
+    private static java.lang.Object checkEnum(java.lang.Object obj, java.lang.Object aobj[])
+    {
+        for(int i = 0; i < aobj.length; i++)
+            if(obj.equals(aobj[i]))
+                return obj;
+
+        return aobj[0];
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, byte abyte0[])
+    {
+        if(abyte0 == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Byte abyte[] = new java.lang.Byte[abyte0.length];
+        for(int i = 0; i < abyte0.length; i++)
+            abyte[i] = new Byte(abyte0[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (abyte)));
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, short aword0[])
+    {
+        if(aword0 == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Short ashort[] = new java.lang.Short[aword0.length];
+        for(int i = 0; i < aword0.length; i++)
+            ashort[i] = new Short(aword0[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (ashort)));
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, char ac[])
+    {
+        if(ac == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Character acharacter[] = new java.lang.Character[ac.length];
+        for(int i = 0; i < ac.length; i++)
+            acharacter[i] = new Character(ac[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (acharacter)));
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, int ai[])
+    {
+        if(ai == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Integer ainteger[] = new java.lang.Integer[ai.length];
+        for(int i = 0; i < ai.length; i++)
+            ainteger[i] = new Integer(ai[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (ainteger)));
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, long al[])
+    {
+        if(al == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Long along[] = new java.lang.Long[al.length];
+        for(int i = 0; i < al.length; i++)
+            along[i] = new Long(al[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (along)));
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, float af[])
+    {
+        if(af == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Float afloat[] = new java.lang.Float[af.length];
+        for(int i = 0; i < af.length; i++)
+            afloat[i] = new Float(af[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (afloat)));
+    }
+
+    public static void enum(java.lang.Class class1, java.lang.String s, double ad[])
+    {
+        if(ad == null)
+        {
+            com.maddox.rts.ObjIO.enum(class1, s, (java.lang.Object[])null);
+            return;
+        }
+        java.lang.Double adouble[] = new java.lang.Double[ad.length];
+        for(int i = 0; i < ad.length; i++)
+            adouble[i] = new Double(ad[i]);
+
+        com.maddox.rts.ObjIO.enum(class1, s, ((java.lang.Object []) (adouble)));
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, java.lang.Object obj, java.lang.Object obj1, java.lang.Object obj2)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(obj != null || obj1 != null)
+        {
+            java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, true);
+            if(obj != null && class2 != obj.getClass())
+                throw new RTSException("Class of min patameter (" + obj.getClass().getName() + ") not equal type of class field (" + class2.getName() + ")");
+            if(obj1 != null && class2 != obj1.getClass())
+                throw new RTSException("Class of max patameter (" + obj1.getClass().getName() + ") not equal type of class field (" + class2.getName() + ")");
+            if(obj2 != null && class2 != obj2.getClass())
+                throw new RTSException("Class of step patameter (" + obj2.getClass().getName() + ") not equal type of class field (" + class2.getName() + ")");
+        }
+        node.min = obj;
+        node.max = obj1;
+        node.step = obj2;
+        node.flags |= 0x200000;
+    }
+
+    private static java.lang.Object checkRange(java.lang.Object obj, java.lang.Object obj1, java.lang.Object obj2)
+    {
+        if(!(obj instanceof java.lang.Comparable))
+            return obj;
+        java.lang.Comparable comparable;
+        comparable = (java.lang.Comparable)obj;
+        if(obj1 != null && comparable.compareTo(obj1) < 0)
+            comparable = (java.lang.Comparable)obj1;
+        if(obj2 != null && comparable.compareTo(obj2) > 0)
+            comparable = (java.lang.Comparable)obj2;
+        return comparable;
+        java.lang.Exception exception;
+        exception;
+        com.maddox.rts.ObjIO.printDebug(exception);
+        return obj;
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, byte byte0, byte byte1, byte byte2)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Byte(byte0), new Byte(byte1), new Byte(byte2));
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, short word0, short word1, short word2)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Short(word0), new Short(word1), new Short(word2));
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, char c, char c1)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Character(c), new Character(c1), null);
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, int i, int j, int k)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Integer(i), new Integer(j), new Integer(k));
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, long l, long l1, long l2)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Long(l), new Long(l1), new Long(l2));
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, float f, float f1, float f2)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Float(f), new Float(f1), new Float(f2));
+    }
+
+    public static void range(java.lang.Class class1, java.lang.String s, double d, double d1, double d2)
+    {
+        com.maddox.rts.ObjIO.range(class1, s, new Double(d), new Double(d1), new Double(d2));
+    }
+
+    public static void get(java.lang.Class class1, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(s1 != null)
+        {
+            java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, null));
+                java.lang.Class class3 = method.getReturnType();
+                if(class3 != class2)
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class3.getName() + "' not equal class field '" + class2.getName() + "'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.get = method;
+        } else
+        {
+            node.get = null;
+        }
+        node.flags |= 0x400000;
+    }
+
+    public static void getEd(java.lang.Class class1, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(s1 != null)
+        {
+            java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, null));
+                java.lang.Class class3 = method.getReturnType();
+                if(class3 != class2)
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class3.getName() + "' not equal class field '" + class2.getName() + "'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.edget = method;
+        } else
+        {
+            node.edget = null;
+        }
+        node.flags |= 0x4000000;
+    }
+
+    private static java.lang.Class[] fieldClassArray(int i, java.lang.Class class1)
+    {
+        int j = i;
+        if(class1 != null)
+            j++;
+        if(j == 0)
+            return null;
+        if(_fieldsClass != null && _fieldsClass.length != j)
+            _fieldsClass = null;
+        if(_fieldsClass == null)
+            _fieldsClass = new java.lang.Class[j];
+        for(int k = 0; k < i; k++)
+            _fieldsClass[k] = java.lang.Integer.TYPE;
+
+        if(class1 != null)
+            _fieldsClass[i] = class1;
+        return _fieldsClass;
+    }
+
+    public static void set(java.lang.Class class1, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(s1 != null)
+        {
+            java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, class2));
+                java.lang.Class class3 = method.getReturnType();
+                if(class3 != java.lang.Void.TYPE)
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class3.getName() + "' not equal 'void'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.set = method;
+        } else
+        {
+            node.set = null;
+        }
+        node.flags |= 0x800000;
+    }
+
+    public static void setEd(java.lang.Class class1, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(s1 != null)
+        {
+            java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, class2));
+                java.lang.Class class3 = method.getReturnType();
+                if(class3 != java.lang.Void.TYPE)
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class3.getName() + "' not equal 'void'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.edset = method;
+        } else
+        {
+            node.edset = null;
+        }
+        node.flags |= 0x8000000;
+    }
+
+    public static void access(java.lang.Class class1, java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        com.maddox.rts.ObjIO.get(class1, s, s1);
+        com.maddox.rts.ObjIO.set(class1, s, s2);
+    }
+
+    public static void accessEd(java.lang.Class class1, java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        com.maddox.rts.ObjIO.getEd(class1, s, s1);
+        com.maddox.rts.ObjIO.setEd(class1, s, s2);
+    }
+
+    public static void access(java.lang.Class class1, java.lang.String s)
+    {
+        com.maddox.rts.ObjIO.get(class1, s, "ioGet" + s);
+        com.maddox.rts.ObjIO.set(class1, s, "ioSet" + s);
+    }
+
+    public static void accessEd(java.lang.Class class1, java.lang.String s)
+    {
+        com.maddox.rts.ObjIO.getEd(class1, s, "edGet" + s);
+        com.maddox.rts.ObjIO.setEd(class1, s, "edSet" + s);
+    }
+
+    public static void accessStr(java.lang.Class class1, java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+        if(s1 != null)
+        {
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, null));
+                java.lang.Class class3 = method.getReturnType();
+                if(class3 != (java.lang.String.class))
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class3.getName() + "' not equal 'String'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.get = method;
+        } else
+        {
+            node.get = null;
+        }
+        node.flags |= 0x1400000;
+        if(s2 != null)
+        {
+            java.lang.reflect.Method method1 = null;
+            try
+            {
+                method1 = class1.getMethod(s2, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, java.lang.String.class));
+                java.lang.Class class4 = method1.getReturnType();
+                if(class4 != java.lang.Void.TYPE)
+                    throw new RTSException("Method '" + s2 + "' returned type '" + class4.getName() + "' not equal 'void'");
+            }
+            catch(java.lang.Exception exception1)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception1);
+                throw new RTSException("Method '" + s2 + "' not found in class " + class1.getName());
+            }
+            node.set = method1;
+        } else
+        {
+            node.set = null;
+        }
+        node.flags |= 0x2800000;
+    }
+
+    public static void accessEdStr(java.lang.Class class1, java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        java.lang.Class class2 = com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+        if(s1 != null)
+        {
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, null));
+                java.lang.Class class3 = method.getReturnType();
+                if(class3 != (java.lang.String.class))
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class3.getName() + "' not equal 'String'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.edget = method;
+        } else
+        {
+            node.edget = null;
+        }
+        node.flags |= 0x14000000;
+        if(s2 != null)
+        {
+            java.lang.reflect.Method method1 = null;
+            try
+            {
+                method1 = class1.getMethod(s2, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, java.lang.String.class));
+                java.lang.Class class4 = method1.getReturnType();
+                if(class4 != java.lang.Void.TYPE)
+                    throw new RTSException("Method '" + s2 + "' returned type '" + class4.getName() + "' not equal 'void'");
+            }
+            catch(java.lang.Exception exception1)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception1);
+                throw new RTSException("Method '" + s2 + "' not found in class " + class1.getName());
+            }
+            node.edset = method1;
+        } else
+        {
+            node.edset = null;
+        }
+        node.flags |= 0x28000000;
+    }
+
+    public static void accessStr(java.lang.Class class1, java.lang.String s)
+    {
+        com.maddox.rts.ObjIO.accessStr(class1, s, "ioGet" + s, "ioSet" + s);
+    }
+
+    public static void accessEdStr(java.lang.Class class1, java.lang.String s)
+    {
+        com.maddox.rts.ObjIO.accessEdStr(class1, s, "edGet" + s, "edSet" + s);
+    }
+
+    public static void validate(java.lang.Class class1, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.rts.ObjIO.checkFieldParams(class1, s);
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1, s);
+        if(s1 != null)
+        {
+            com.maddox.rts.ObjIO.getFieldType(class1, s, false);
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s1, com.maddox.rts.ObjIO.fieldClassArray(getFieldType_arrays, null));
+                java.lang.Class class2 = method.getReturnType();
+                if(class2 != java.lang.Void.TYPE)
+                    throw new RTSException("Method '" + s1 + "' returned type '" + class2.getName() + "' not equal 'void'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s1 + "' not found in class " + class1.getName());
+            }
+            node.validate = method;
+        } else
+        {
+            node.validate = null;
+        }
+        node.flags |= 0x40000000;
+    }
+
+    public static void validate(java.lang.Class class1, java.lang.String s)
+    {
+        if(class1 == null)
+            throw new RTSException("Parameter 'class' == null");
+        com.maddox.rts.Node node = com.maddox.rts.ObjIO.getNode(class1);
+        if(s != null)
+        {
+            java.lang.reflect.Method method = null;
+            try
+            {
+                method = class1.getMethod(s, null);
+                java.lang.Class class2 = method.getReturnType();
+                if(class2 != java.lang.Void.TYPE)
+                    throw new RTSException("Method '" + s + "' returned type '" + class2.getName() + "' not equal 'void'");
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.ObjIO.printDebug(exception);
+                throw new RTSException("Method '" + s + "' not found in class " + class1.getName());
+            }
+            node.validate = method;
+        } else
+        {
+            node.validate = null;
+        }
+        node.flags |= 0x40000000;
+    }
+
+    private static void stackClear()
+    {
+        stackPtr = -1;
+    }
+
+    private static int stackSize()
+    {
+        return stackPtr + 1;
+    }
+
+    private static void stackPop()
+    {
+        stackClasses.set(stackPtr, null);
+        stackObjects.set(stackPtr, null);
+        stackFields.set(stackPtr, null);
+        stackBundles.set(stackPtr, null);
+        stackPtr--;
+        if(stackPtr >= 0)
+            com.maddox.rts.ObjIO.setCurObject();
+    }
+
+    private static void stackPop(int i)
+    {
+        for(; stackPtr > i; stackPtr--)
+        {
+            stackClasses.set(stackPtr, null);
+            stackObjects.set(stackPtr, null);
+            stackFields.set(stackPtr, null);
+            stackBundles.set(stackPtr, null);
+        }
+
+        if(stackPtr >= 0)
+            com.maddox.rts.ObjIO.setCurObject();
+    }
+
+    private static void stackPush(java.lang.Object obj, java.lang.Class class1)
+    {
+        stackPtr++;
+        if(stackPtr + 1 > stackObjects.size())
+        {
+            stackClasses.add(null);
+            stackObjects.add(null);
+            stackFields.add(null);
+            stackBundles.add(null);
+        }
+        com.maddox.rts.ObjIO.setCurObject(obj, class1);
+    }
+
+    private static void setCurObject(java.lang.Object obj, java.lang.Class class1)
+    {
+        stackClasses.set(stackPtr, class1);
+        stackObjects.set(stackPtr, obj);
+        com.maddox.rts.ObjIO.setCurObject();
+        if(bUseBundle)
+            if(class1.isPrimitive() || class1 == (java.lang.String.class) || class1 == (java.lang.StringBuffer.class) || class1.isArray())
+            {
+                stackBundles.set(stackPtr, null);
+            } else
+            {
+                java.util.ResourceBundle resourcebundle = null;
+                try
+                {
+                    resourcebundle = java.util.ResourceBundle.getBundle(class1.getName() + "IO", java.util.Locale.getDefault(), com.maddox.rts.LDRres.loader());
                 }
-              }
+                catch(java.lang.Exception exception) { }
+                stackBundles.set(stackPtr, resourcebundle);
             }
-          }
-          _strBuf.append(str);
+    }
+
+    private static void setCurObject()
+    {
+        curObjectNode.clear();
+        curObjectObjects.clear();
+        for(int i = 0; i <= stackPtr; i++)
+        {
+            java.lang.Class class1 = (java.lang.Class)stackClasses.get(i);
+            int j = 0;
+            for(int k = i; k < stackPtr; k++)
+            {
+                java.lang.Object obj = stackFields.get(k);
+                if(obj instanceof java.lang.reflect.Field)
+                {
+                    java.lang.reflect.Field field1 = (java.lang.reflect.Field)obj;
+                    if(k != i)
+                        j = com.maddox.rts.Finger.incInt(j, ".");
+                    j = com.maddox.rts.Finger.incInt(j, field1.getName());
+                } else
+                {
+                    j = com.maddox.rts.Finger.incInt(j, "[]");
+                }
+            }
+
+            j = com.maddox.rts.Finger.incInt(j, "$ObjIO");
+            com.maddox.rts.Node node = (com.maddox.rts.Node)com.maddox.rts.Property.value(class1, j, null);
+            if(node != null)
+                curObjectNode.set(node, stackObjects.get(i), curObjectObjects);
         }
-      }
-      if (this.clazz.isArray()) _strBuf.append(']'); else
-        _strBuf.append(')');
-      this.strValue = _strBuf.toString();
-    } else {
-      fillStack();
-      Object localObject = fieldGet(true);
-      if (localObject != null)
-        this.strValue = localObject.toString();
-      else
-        this.strValue = "";
-      stackPop(-1);
-    }
-    this.bStrValid = true;
-  }
 
-  private void invalidate() {
-    this.bStrValid = false;
-    if (this.parent != null)
-      this.parent.invalidate();
-  }
-
-  private void checkReadOnly(boolean paramBoolean) {
-    if (paramBoolean) {
-      if (this.fieldNode == null) this.fieldNode = readonlyNode; else
-        this.fieldNode.flags |= 1;
-    } else if ((this.fieldNode != null) && ((this.fieldNode.flags & 0x1) != 0)) {
-      paramBoolean = true;
     }
 
-    if (this.child != null) {
-      int i = this.child.size();
-      for (int j = 0; j < i; j++) {
-        ObjIO localObjIO = (ObjIO)this.child.get(j);
-        if (localObjIO != null)
-          localObjIO.checkReadOnly(paramBoolean);
-      }
-    }
-  }
-
-  private void fillStack() {
-    ObjIO localObjIO = this;
-    stackPtr = localObjIO.level;
-    while ((localObjIO != null) && (localObjIO.level >= 0)) {
-      int i = localObjIO.level;
-      stackClasses.set(i, this.clazz);
-      stackObjects.set(i, this.object);
-      stackFields.set(i, this.field);
-      localObjIO = localObjIO.parent;
-    }
-    if (this.fieldNode != null) curFieldNode = this.fieldNode; else
-      curFieldNode = emptyNode;
-    if (this.fieldObjects != null) curFieldObjects = this.fieldObjects; else
-      curFieldObjects = emptyObjects;
-    if (this.objectNode != null) curObjectNode = this.objectNode; else
-      curObjectNode = emptyNode;
-    if (this.objectObjects != null) curObjectObjects = this.objectObjects; else
-      curObjectObjects = emptyObjects;
-  }
-
-  private void fillCurrent()
-  {
-    if (!curFieldNode.isEmpty()) {
-      this.fieldNode = new Node(curFieldNode);
-      if (!curFieldObjects.isEmpty())
-        this.fieldObjects = new NodeObjects(curFieldObjects);
-    }
-    if (!curObjectNode.isEmpty()) {
-      this.objectNode = new Node(curObjectNode);
-      if (!curObjectObjects.isEmpty())
-        this.objectObjects = new NodeObjects(curObjectObjects);
-    }
-    this.clazz = ((Class)stackClasses.get(stackPtr));
-    this.object = stackObjects.get(stackPtr);
-    this.field = stackFields.get(stackPtr);
-  }
-
-  private void fillNull(StringBuffer paramStringBuffer, ObjIO paramObjIO, int paramInt) {
-    this.name = paramStringBuffer.toString();
-    this.parent = paramObjIO;
-    this.level = paramInt;
-    this.fieldNode = readonlyNode;
-    this.bStrValid = true;
-    this.strValue = "null";
-  }
-
-  private boolean make(StringBuffer paramStringBuffer, ObjIO paramObjIO, int paramInt, Object paramObject, Class paramClass)
-  {
-    this.name = paramStringBuffer.toString();
-    this.parent = paramObjIO;
-    this.level = paramInt;
-
-    if (paramObject == null) return false;
-    boolean bool1 = paramObject == paramClass;
-    int i = stackPtr;
-    int j = paramStringBuffer.length();
-    int k;
-    ObjIO localObjIO;
-    if (paramClass.isArray()) {
-      try {
-        stackPush(paramObject, paramClass);
-        Class localClass = paramClass.getComponentType();
-        k = Array.getLength(paramObject);
-        if (k == 0) {
-          stackPop();
-          return false;
-        }
-        this.child = new ArrayList();
-        for (int m = 0; m < k; m++) {
-          setCurField(true, new Integer(m), bool1);
-          paramStringBuffer.append("[" + m + "]");
-          Object localObject2 = fieldGet(true);
-          localObjIO = new ObjIO();
-          if (localObject2 != null) {
-            if (localClass.isPrimitive())
-              localObjIO.make(paramStringBuffer, this, this.level + 1, localObject2, localClass);
-            else
-              localObjIO.make(paramStringBuffer, this, this.level + 1, localObject2, localObject2.getClass());
-          }
-          else localObjIO.fillNull(paramStringBuffer, this, this.level + 1);
-
-          this.child.add(localObjIO);
-          paramStringBuffer.setLength(j);
-        }
-        stackPop();
+    private static boolean setCurField(boolean flag, java.lang.reflect.Field field1, boolean flag1)
+    {
+        int i = field1.getModifiers();
+        if((i & 0x10) != 0)
+            return false;
+        if(flag1)
+        {
+            if((i & 8) == 0)
+                return false;
+        } else
+        if((i & 8) != 0)
+            return false;
+        com.maddox.rts.ObjIO.setCurFieldNode(field1);
         return true;
-      } catch (Exception localException1) {
-        printDebug(localException1);
-        paramStringBuffer.setLength(j);
-        stackPop(i);
+    }
 
-        return false;
-      }
-    }
-    if ((paramClass.isPrimitive()) || (paramClass == String.class) || (paramClass == StringBuffer.class)) {
-      this.strValue = paramObject.toString();
-      this.bStrValid = true;
-      return true;
-    }
-    try
+    private static boolean setCurField(boolean flag, java.lang.Integer integer, boolean flag1)
     {
-      stackPush(paramObject, paramClass);
-      Field[] arrayOfField = getFields(paramClass);
-      this.child = new ArrayList();
-      for (k = 0; k < arrayOfField.length; k++) {
-        if (setCurField(true, arrayOfField[k], bool1)) {
-          Object localObject1 = fieldGet(true);
-          if (localObject1 != null) {
-            if (paramStringBuffer.length() > 0) {
-              paramStringBuffer.append('.');
-            }
-            boolean bool2 = false;
-            localObjIO = new ObjIO();
-            if ((localObjIO.res != null) && (localObjIO.res.name != null))
-              paramStringBuffer.append(localObjIO.res.name);
-            else
-              paramStringBuffer.append(arrayOfField[k].getName());
-            if ((curFieldNode.flags & 0x11000000) != 0) {
-              localObjIO.strValue = localObject1.toString();
-              localObjIO.bStrValid = true;
-              localObjIO.name = paramStringBuffer.toString();
-              localObjIO.parent = this;
-              this.level += 1;
-              bool2 = true;
-            }
-            else if (arrayOfField[k].getType().isPrimitive()) { bool2 = localObjIO.make(paramStringBuffer, this, this.level + 1, localObject1, arrayOfField[k].getType()); } else {
-              bool2 = localObjIO.make(paramStringBuffer, this, this.level + 1, localObject1, localObject1.getClass());
-            }
-            if (bool2)
-              this.child.add(localObjIO);
-            paramStringBuffer.setLength(j);
-          }
+        com.maddox.rts.ObjIO.setCurFieldNode(integer);
+        return true;
+    }
+
+    private static boolean setCurField(boolean flag, java.lang.reflect.Field field1)
+        throws java.lang.IllegalAccessException, java.lang.InstantiationException
+    {
+        int i = field1.getModifiers();
+        if((i & 0x10) != 0)
+            return false;
+        com.maddox.rts.ObjIO.setCurFieldNode(field1);
+        if(flag && (curFieldNode.flags & 1) != 0)
+            return false;
+        if((i & 8) == 0 && stackObjects.get(stackPtr) == null)
+        {
+            java.lang.Class class1 = (java.lang.Class)stackClasses.get(stackPtr);
+            java.lang.Object obj = class1.newInstance();
+            com.maddox.rts.ObjIO.setCurObject(obj, class1);
         }
-      }
-      stackPop();
-      if (this.child.size() == 0) {
-        this.child = null;
+        return true;
+    }
+
+    private static boolean setCurField(boolean flag, java.lang.Integer integer)
+        throws java.lang.IllegalAccessException, java.lang.InstantiationException
+    {
+        com.maddox.rts.ObjIO.setCurFieldNode(integer);
+        return !flag || (curFieldNode.flags & 1) == 0;
+    }
+
+    private static void setCurFieldNode(java.lang.Object obj)
+    {
+        stackFields.set(stackPtr, obj);
+        curFieldNode.clear();
+        curFieldObjects.clear();
+        for(int i = 0; i <= stackPtr; i++)
+        {
+            java.lang.Class class1 = (java.lang.Class)stackClasses.get(i);
+            int j = 0;
+            java.lang.Object obj1 = stackFields.get(i);
+            if(obj1 instanceof java.lang.reflect.Field)
+            {
+                java.lang.reflect.Field field1 = (java.lang.reflect.Field)obj1;
+                j = com.maddox.rts.Finger.Int(field1.getName());
+            } else
+            {
+                j = com.maddox.rts.Finger.Int("[]");
+            }
+            for(int k = i + 1; k <= stackPtr; k++)
+            {
+                java.lang.Object obj2 = stackFields.get(k);
+                if(obj2 instanceof java.lang.reflect.Field)
+                {
+                    java.lang.reflect.Field field2 = (java.lang.reflect.Field)obj2;
+                    j = com.maddox.rts.Finger.incInt(j, ".");
+                    j = com.maddox.rts.Finger.incInt(j, field2.getName());
+                } else
+                {
+                    j = com.maddox.rts.Finger.incInt(j, "[]");
+                }
+            }
+
+            j = com.maddox.rts.Finger.incInt(j, "$IO");
+            com.maddox.rts.Node node = (com.maddox.rts.Node)com.maddox.rts.Property.value(class1, j, null);
+            if(node != null)
+                curFieldNode.set(node, stackObjects.get(i), curFieldObjects);
+        }
+
+    }
+
+    private static int fillObjectArray(java.lang.Object aobj[])
+    {
+        int i = 0;
+        for(int j = 0; j <= stackPtr; j++)
+        {
+            java.lang.Object obj = stackFields.get(j);
+            if(obj instanceof java.lang.Integer)
+            {
+                if(aobj != null)
+                    aobj[i] = obj;
+                i++;
+            }
+        }
+
+        return i;
+    }
+
+    private static java.lang.Object[] fieldObjectArray(java.lang.Object obj, boolean flag)
+    {
+        int i = com.maddox.rts.ObjIO.fillObjectArray(null);
+        if(flag)
+            i++;
+        if(i == 0)
+            return null;
+        if(_fieldsObject != null && _fieldsObject.length != i)
+            _fieldsObject = null;
+        if(_fieldsObject == null)
+            _fieldsObject = new java.lang.Object[i];
+        com.maddox.rts.ObjIO.fillObjectArray(_fieldsObject);
+        if(flag)
+            _fieldsObject[i - 1] = obj;
+        return _fieldsObject;
+    }
+
+    private static java.lang.Object fieldGet(boolean flag)
+    {
+        java.lang.Object obj;
+        java.lang.Object obj1;
+        obj = stackObjects.get(stackPtr);
+        obj1 = stackFields.get(stackPtr);
+        if(flag && (curFieldNode.flags & 0x4000000) != 0)
+        {
+            if(curFieldNode.edget != null)
+                return curFieldNode.edget.invoke(curFieldObjects.edget, com.maddox.rts.ObjIO.fieldObjectArray(null, false));
+            break MISSING_BLOCK_LABEL_151;
+        }
+        if((curFieldNode.flags & 0x400000) != 0)
+        {
+            if(curFieldNode.get != null)
+                return curFieldNode.get.invoke(curFieldObjects.get, com.maddox.rts.ObjIO.fieldObjectArray(null, false));
+            break MISSING_BLOCK_LABEL_151;
+        }
+        java.lang.Object obj2;
+        if(!(obj1 instanceof java.lang.reflect.Field))
+            break MISSING_BLOCK_LABEL_126;
+        obj2 = (java.lang.reflect.Field)obj1;
+        return ((java.lang.reflect.Field) (obj2)).get(obj);
+        obj2 = (java.lang.Integer)obj1;
+        return java.lang.reflect.Array.get(obj, ((java.lang.Integer) (obj2)).intValue());
+        java.lang.Exception exception;
+        exception;
+        com.maddox.rts.ObjIO.printDebug(exception);
+        return null;
+    }
+
+    private static void fieldSet(boolean flag, java.lang.Object obj)
+    {
+        java.lang.Object obj1 = stackObjects.get(stackPtr);
+        java.lang.Object obj2 = stackFields.get(stackPtr);
+        try
+        {
+            if(obj != null)
+            {
+                if(curFieldNode.min != null || curFieldNode.max != null)
+                    obj = com.maddox.rts.ObjIO.checkRange(obj, curFieldNode.min, curFieldNode.max);
+                if(curFieldNode.enum != null)
+                    obj = com.maddox.rts.ObjIO.checkEnum(obj, curFieldNode.enum);
+            }
+            if(flag && (curFieldNode.flags & 0x8000000) != 0)
+            {
+                if(curFieldNode.edset != null)
+                    curFieldNode.edset.invoke(curFieldObjects.edset, com.maddox.rts.ObjIO.fieldObjectArray(obj, true));
+            } else
+            if((curFieldNode.flags & 0x800000) != 0)
+            {
+                if(curFieldNode.set != null)
+                    curFieldNode.set.invoke(curFieldObjects.set, com.maddox.rts.ObjIO.fieldObjectArray(obj, true));
+            } else
+            if(obj2 instanceof java.lang.reflect.Field)
+            {
+                java.lang.reflect.Field field1 = (java.lang.reflect.Field)obj2;
+                field1.set(obj1, obj);
+            } else
+            {
+                java.lang.Integer integer = (java.lang.Integer)obj2;
+                java.lang.reflect.Array.set(obj1, integer.intValue(), obj);
+            }
+            if(curFieldNode.validate != null)
+                curFieldNode.validate.invoke(curFieldObjects.validate, com.maddox.rts.ObjIO.fieldObjectArray(null, false));
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.ObjIO.printDebug(exception);
+        }
+    }
+
+    private static void fieldValidate()
+    {
+        try
+        {
+            if(curFieldNode.validate != null)
+                curFieldNode.validate.invoke(curFieldObjects.validate, com.maddox.rts.ObjIO.fieldObjectArray(null, false));
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.ObjIO.printDebug(exception);
+        }
+    }
+
+    private static void objectValidate()
+    {
+        if(curObjectNode.validate == null)
+            return;
+        if(curObjectObjects.validate == null && !java.lang.reflect.Modifier.isStatic(curObjectNode.validate.getModifiers()))
+            return;
+        try
+        {
+            curObjectNode.validate.invoke(curObjectObjects.validate, null);
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.ObjIO.printDebug(exception);
+        }
+    }
+
+    public static boolean toStrings(java.util.Map map, java.lang.Object obj)
+    {
+        java.lang.Class class1;
+        boolean flag;
+        if(obj == null)
+            return false;
+        class1 = (obj instanceof java.lang.Class) ? (java.lang.Class)obj : obj.getClass();
+        flag = obj == class1;
+        java.lang.reflect.Field afield[] = com.maddox.rts.ObjIO.getFields(class1);
+        com.maddox.rts.ObjIO.stackClear();
+        com.maddox.rts.ObjIO.stackPush(obj, class1);
+        for(int i = 0; i < afield.length; i++)
+            if(com.maddox.rts.ObjIO.setCurField(false, afield[i], flag))
+            {
+                java.lang.Object obj1 = com.maddox.rts.ObjIO.fieldGet(false);
+                if(obj1 != null)
+                {
+                    _strBuf.setLength(0);
+                    boolean flag1 = false;
+                    if((curFieldNode.flags & 0x1000000) != 0)
+                    {
+                        com.maddox.rts.ObjIO.putString(_strBuf, obj1.toString());
+                        flag1 = true;
+                    } else
+                    if(afield[i].getType().isPrimitive())
+                        flag1 = com.maddox.rts.ObjIO._toString(_strBuf, obj1, afield[i].getType(), false);
+                    else
+                        flag1 = com.maddox.rts.ObjIO._toString(_strBuf, obj1, obj1.getClass(), afield[i].getType() != obj1.getClass());
+                    if(flag1)
+                        map.put(afield[i].getName(), _strBuf.toString());
+                }
+            }
+
+        com.maddox.rts.ObjIO.stackPop();
+        return true;
+        java.lang.Exception exception;
+        exception;
+        com.maddox.rts.ObjIO.printDebug(exception);
+        com.maddox.rts.ObjIO.stackPop(-1);
         return false;
-      }
-      return true;
-    } catch (Exception localException2) {
-      printDebug(localException2);
-      paramStringBuffer.setLength(j);
-      stackPop(i);
     }
-    return false;
-  }
 
-  public void update()
-  {
-    invalidateTree();
-    validate();
-  }
-
-  private void invalidateTree() {
-    this.bStrValid = false;
-    if (this.child != null) {
-      int i = this.child.size();
-      for (int j = 0; j < i; j++) {
-        ObjIO localObjIO = (ObjIO)this.child.get(j);
-        if (localObjIO != null)
-          localObjIO.invalidateTree();
-      }
-    }
-  }
-
-  public ObjIO(Object paramObject, String paramString)
-  {
-    _strBuf.setLength(0);
-    if (paramString != null)
-      _strBuf.append(paramString);
-    bUseBundle = true;
-    stackClear();
-    this.clazz = ((paramObject instanceof Class) ? (Class)paramObject : paramObject.getClass());
-    make(_strBuf, null, -1, paramObject, this.clazz);
-    stackPop(-1);
-    bUseBundle = false;
-    checkReadOnly(false);
-  }
-
-  private ObjIO() {
-    fillCurrent();
-    this.res = makeRes();
-  }
-
-  static
-  {
-    readonlyNode.flags |= 1;
-  }
-
-  static class Res
-  {
-    String name;
-    Object[] jdField_enum;
-    String tip;
-
-    public boolean isEmpty()
+    public static java.lang.String toString(java.lang.Object obj, boolean flag)
     {
-      if (this.name != null) return false;
-      if (this.jdField_enum != null) return false;
-      return this.tip == null;
+        if(obj == null)
+        {
+            return null;
+        } else
+        {
+            _strBuf.setLength(0);
+            com.maddox.rts.ObjIO.stackClear();
+            boolean flag1 = com.maddox.rts.ObjIO._toString(_strBuf, obj, (obj instanceof java.lang.Class) ? (java.lang.Class)obj : obj.getClass(), flag);
+            com.maddox.rts.ObjIO.stackPop(-1);
+            return flag1 ? _strBuf.toString() : null;
+        }
     }
 
-    public void clear() {
-      this.name = null;
-      this.jdField_enum = null;
-      this.tip = null;
-    }
-    public Res(Res paramRes) {
-      this.name = paramRes.name;
-      this.jdField_enum = paramRes.jdField_enum;
-      this.tip = paramRes.tip;
-    }
-
-    public Res()
+    public static boolean toString(java.lang.StringBuffer stringbuffer, java.lang.Object obj, boolean flag)
     {
+        if(obj == null)
+        {
+            return false;
+        } else
+        {
+            com.maddox.rts.ObjIO.stackClear();
+            boolean flag1 = com.maddox.rts.ObjIO._toString(stringbuffer, obj, (obj instanceof java.lang.Class) ? (java.lang.Class)obj : obj.getClass(), flag);
+            com.maddox.rts.ObjIO.stackPop(-1);
+            return flag1;
+        }
     }
-  }
 
-  static class FieldCompare
-    implements Comparator
-  {
-    public int compare(Object paramObject1, Object paramObject2)
+    private static boolean _toString(java.lang.StringBuffer stringbuffer, java.lang.Object obj, java.lang.Class class1, boolean flag)
     {
-      Field localField1 = (Field)paramObject1;
-      Field localField2 = (Field)paramObject2;
-      return localField1.getName().compareTo(localField2.getName());
+        boolean flag1;
+        int i;
+        int j;
+        if(obj == null)
+            return false;
+        flag1 = obj == class1;
+        i = stringbuffer.length();
+        j = stackPtr;
+        if(!class1.isArray())
+            break MISSING_BLOCK_LABEL_258;
+        java.lang.Class class2;
+        int k;
+        com.maddox.rts.ObjIO.stackPush(obj, class1);
+        class2 = class1.getComponentType();
+        k = java.lang.reflect.Array.getLength(obj);
+        if(k != 0)
+            break MISSING_BLOCK_LABEL_63;
+        com.maddox.rts.ObjIO.stackPop();
+        return false;
+        stringbuffer.append('[');
+        if(flag)
+        {
+            if(class2.isPrimitive())
+            {
+                stringbuffer.append(com.maddox.rts.ObjIO.classGetName(class1));
+            } else
+            {
+                stringbuffer.append("[L");
+                stringbuffer.append(com.maddox.rts.ObjIO.classGetName(class2));
+            }
+            stringbuffer.append(' ');
+        }
+        stringbuffer.append(k);
+        for(int i1 = 0; i1 < k; i1++)
+        {
+            com.maddox.rts.ObjIO.setCurField(false, new Integer(i1), flag1);
+            stringbuffer.append(',');
+            java.lang.Object obj1 = com.maddox.rts.ObjIO.fieldGet(false);
+            if(obj1 != null)
+                if(class2.isPrimitive())
+                    com.maddox.rts.ObjIO._toString(stringbuffer, obj1, class2, false);
+                else
+                    com.maddox.rts.ObjIO._toString(stringbuffer, obj1, obj1.getClass(), class2 != obj1.getClass());
+        }
+
+        com.maddox.rts.ObjIO.stackPop();
+        stringbuffer.append(']');
+        return true;
+        java.lang.Exception exception;
+        exception;
+        com.maddox.rts.ObjIO.printDebug(exception);
+        stringbuffer.setLength(i);
+        com.maddox.rts.ObjIO.stackPop(j);
+        return false;
+        if(class1.isPrimitive() || class1 == (java.lang.String.class) || class1 == (java.lang.StringBuffer.class))
+        {
+            java.lang.String s = obj.toString();
+            com.maddox.rts.ObjIO.putString(stringbuffer, s);
+            return true;
+        }
+        com.maddox.rts.ObjIO.stackPush(obj, class1);
+        java.lang.reflect.Field afield[] = com.maddox.rts.ObjIO.getFields(class1);
+        stringbuffer.append('(');
+        if(flag)
+            stringbuffer.append(com.maddox.rts.ObjIO.classGetName(class1));
+        int l = 0;
+        for(int j1 = 0; j1 < afield.length; j1++)
+            if(com.maddox.rts.ObjIO.setCurField(false, afield[j1], flag1))
+            {
+                java.lang.Object obj2 = com.maddox.rts.ObjIO.fieldGet(false);
+                if(obj2 != null)
+                {
+                    int k1 = stringbuffer.length();
+                    if(l == 0)
+                    {
+                        if(flag)
+                            stringbuffer.append(',');
+                    } else
+                    {
+                        stringbuffer.append(',');
+                    }
+                    stringbuffer.append(afield[j1].getName());
+                    stringbuffer.append('=');
+                    boolean flag2 = false;
+                    if((curFieldNode.flags & 0x1000000) != 0)
+                    {
+                        com.maddox.rts.ObjIO.putString(stringbuffer, obj2.toString());
+                        flag2 = true;
+                    } else
+                    if(afield[j1].getType().isPrimitive())
+                        flag2 = com.maddox.rts.ObjIO._toString(stringbuffer, obj2, afield[j1].getType(), false);
+                    else
+                        flag2 = com.maddox.rts.ObjIO._toString(stringbuffer, obj2, obj2.getClass(), afield[j1].getType() != obj2.getClass());
+                    if(flag2)
+                        l++;
+                    else
+                        stringbuffer.setLength(k1);
+                }
+            }
+
+        com.maddox.rts.ObjIO.stackPop();
+        if(l != 0 || flag)
+            break MISSING_BLOCK_LABEL_592;
+        stringbuffer.setLength(i);
+        return false;
+        stringbuffer.append(')');
+        return true;
+        afield;
+        com.maddox.rts.ObjIO.printDebug(afield);
+        stringbuffer.setLength(i);
+        com.maddox.rts.ObjIO.stackPop(j);
+        return false;
     }
-  }
 
-  static class Node
-  {
-    public int flags;
-    public Object[] jdField_enum;
-    public Object min;
-    public Object max;
-    public Object step;
-    public Method get;
-    public Method set;
-    public Method edget;
-    public Method edset;
-    public Method validate;
-
-    public void clear()
+    private static void putString(java.lang.StringBuffer stringbuffer, java.lang.String s)
     {
-      this.flags = 0;
-      this.jdField_enum = null;
-      this.min = null;
-      this.max = null;
-      this.step = null;
-      this.get = null;
-      this.set = null;
-      this.edget = null;
-      this.edset = null;
-      this.validate = null;
-    }
-    public boolean isEmpty() {
-      if (this.flags != 0) return false;
-      if (this.jdField_enum != null) return false;
-      if (this.min != null) return false;
-      if (this.max != null) return false;
-      if (this.get != null) return false;
-      if (this.set != null) return false;
-      if (this.edget != null) return false;
-      if (this.edset != null) return false;
-      return this.validate == null;
+        if(s == null || s.length() == 0)
+        {
+            stringbuffer.append('"');
+            stringbuffer.append('"');
+        } else
+        {
+            boolean flag = false;
+            for(int i = 0; i < s.length(); i++)
+            {
+                char c = s.charAt(i);
+                if(c > ' ' && c != '=' && c != '"' && c != ',' && c != '[' && c != ']' && c != '(' && c != ')')
+                    continue;
+                flag = true;
+                break;
+            }
+
+            if(flag)
+            {
+                stringbuffer.append('"');
+                for(int j = 0; j < s.length(); j++)
+                {
+                    char c1 = s.charAt(j);
+                    if(c1 == '"')
+                        stringbuffer.append('\\');
+                    stringbuffer.append(c1);
+                }
+
+                stringbuffer.append('"');
+            } else
+            {
+                stringbuffer.append(s);
+            }
+        }
     }
 
-    public void set(Node paramNode, Object paramObject, ObjIO.NodeObjects paramNodeObjects) {
-      this.flags |= paramNode.flags & 0x1;
-      if (((this.flags & 0x100000) == 0) && ((paramNode.flags & 0x100000) != 0)) {
-        this.flags |= 1048576;
-        this.jdField_enum = paramNode.jdField_enum;
-      }
-      if (((this.flags & 0x200000) == 0) && ((paramNode.flags & 0x200000) != 0)) {
-        this.flags |= 2097152;
-        this.min = paramNode.min;
-        this.max = paramNode.max;
-        this.step = paramNode.step;
-      }
-      if (((this.flags & 0x400000) == 0) && ((paramNode.flags & 0x400000) != 0)) {
-        this.flags |= paramNode.flags & 0x1400000;
-        this.get = paramNode.get;
-        paramNodeObjects.get = paramObject;
-      }
-      if (((this.flags & 0x800000) == 0) && ((paramNode.flags & 0x800000) != 0)) {
-        this.flags |= paramNode.flags & 0x2800000;
-        this.set = paramNode.set;
-        paramNodeObjects.set = paramObject;
-      }
-      if (((this.flags & 0x4000000) == 0) && ((paramNode.flags & 0x4000000) != 0)) {
-        this.flags |= paramNode.flags & 0x14000000;
-        this.edget = paramNode.edget;
-        paramNodeObjects.edget = paramObject;
-      }
-      if (((this.flags & 0x8000000) == 0) && ((paramNode.flags & 0x8000000) != 0)) {
-        this.flags |= paramNode.flags & 0x28000000;
-        this.edset = paramNode.edset;
-        paramNodeObjects.edset = paramObject;
-      }
-      if (((this.flags & 0x40000000) == 0) && ((paramNode.flags & 0x40000000) != 0)) {
-        this.flags |= 1073741824;
-        this.validate = paramNode.validate;
-        paramNodeObjects.validate = paramObject;
-      }
-    }
-    public Node() {
-    }
-    public Node(Node paramNode) {
-      this.flags = paramNode.flags;
-      this.jdField_enum = paramNode.jdField_enum;
-      this.min = paramNode.min;
-      this.max = paramNode.max;
-      this.step = paramNode.step;
-      this.get = paramNode.get;
-      this.set = paramNode.set;
-      this.edget = paramNode.edget;
-      this.edset = paramNode.edset;
-      this.validate = paramNode.validate;
-    }
-  }
-
-  static class NodeObjects
-  {
-    public Object get;
-    public Object set;
-    public Object edget;
-    public Object edset;
-    public Object validate;
-
-    public void clear()
+    public static java.lang.Object fromStrings(java.lang.Object obj, java.lang.Class class1, java.util.Map map)
     {
-      this.get = null;
-      this.set = null;
-      this.edget = null;
-      this.edset = null;
-      this.validate = null;
+        if(map.size() == 0)
+            return com.maddox.rts.ObjIO.fromString(obj, class1, "()");
+        _strBuf.setLength(0);
+        _strBuf.append('(');
+        java.util.Iterator iterator = map.entrySet().iterator();
+        int i = 0;
+        java.util.Map.Entry entry;
+        for(; iterator.hasNext(); _strBuf.append((java.lang.String)entry.getValue()))
+        {
+            if(i > 0)
+                _strBuf.append(',');
+            i++;
+            entry = (java.util.Map.Entry)iterator.next();
+            _strBuf.append((java.lang.String)entry.getKey());
+            _strBuf.append('=');
+        }
+
+        _strBuf.append(')');
+        com.maddox.rts.ObjIO.stackClear();
+        return com.maddox.rts.ObjIO._fromString(false, obj, class1, _strBuf);
     }
-    public boolean isEmpty() {
-      if (this.get != null) return false;
-      if (this.set != null) return false;
-      if (this.edget != null) return false;
-      if (this.edset != null) return false;
-      return this.validate == null;
+
+    public static java.lang.Object fromString(java.lang.Object obj, java.lang.Class class1, java.lang.String s)
+    {
+        _strBuf.setLength(0);
+        _strBuf.append(s);
+        com.maddox.rts.ObjIO.stackClear();
+        return com.maddox.rts.ObjIO._fromString(false, obj, class1, _strBuf);
     }
-    public NodeObjects() {
+
+    public static java.lang.Object fromString(java.lang.Object obj, java.lang.String s)
+    {
+        return com.maddox.rts.ObjIO.fromString(obj, null, s);
     }
-    public NodeObjects(NodeObjects paramNodeObjects) {
-      this.get = paramNodeObjects.get;
-      this.set = paramNodeObjects.set;
-      this.edget = paramNodeObjects.edget;
-      this.edset = paramNodeObjects.edset;
-      this.validate = paramNodeObjects.validate;
+
+    public static java.lang.Object fromString(java.lang.String s)
+    {
+        return com.maddox.rts.ObjIO.fromString(null, null, s);
     }
-  }
+
+    public static java.lang.Object fromString(java.lang.Object obj, java.lang.Class class1, java.lang.StringBuffer stringbuffer)
+    {
+        com.maddox.rts.ObjIO.stackClear();
+        return com.maddox.rts.ObjIO._fromString(false, obj, class1, stringbuffer);
+    }
+
+    public static java.lang.Object fromString(java.lang.Object obj, java.lang.StringBuffer stringbuffer)
+    {
+        return com.maddox.rts.ObjIO.fromString(obj, null, stringbuffer);
+    }
+
+    public static java.lang.Object fromString(java.lang.StringBuffer stringbuffer)
+    {
+        return com.maddox.rts.ObjIO.fromString(null, null, stringbuffer);
+    }
+
+    private static java.lang.Object _fromString(boolean flag, java.lang.Object obj, java.lang.Class class1, java.lang.StringBuffer stringbuffer)
+    {
+        char c;
+        java.lang.String s;
+        java.lang.Class class2;
+        int j;
+        c = com.maddox.rts.ObjIO.getChar(stringbuffer);
+        s = null;
+        if(c != '[')
+            break MISSING_BLOCK_LABEL_602;
+        class2 = null;
+        if(class1 != null)
+        {
+            if(!class1.isArray())
+                return null;
+            class2 = class1.getComponentType();
+        }
+        j = stackPtr;
+        s = com.maddox.rts.ObjIO.getWord(stringbuffer);
+        if(s == null || s.length() == 0)
+            return null;
+        if(s.charAt(0) != '[')
+            break MISSING_BLOCK_LABEL_298;
+        if(s.length() < 2)
+            return null;
+        char c1 = s.charAt(1);
+        c1;
+        JVM INSTR tableswitch 66 90: default 290
+    //                   66 234
+    //                   67 242
+    //                   68 282
+    //                   69 290
+    //                   70 274
+    //                   71 290
+    //                   72 290
+    //                   73 258
+    //                   74 266
+    //                   75 290
+    //                   76 212
+    //                   77 290
+    //                   78 290
+    //                   79 290
+    //                   80 290
+    //                   81 290
+    //                   82 290
+    //                   83 250
+    //                   84 290
+    //                   85 290
+    //                   86 290
+    //                   87 290
+    //                   88 290
+    //                   89 290
+    //                   90 226;
+           goto _L1 _L2 _L3 _L4 _L1 _L5 _L1 _L1 _L6 _L7 _L1 _L8 _L1 _L1 _L1 _L1 _L1 _L1 _L9 _L1 _L1 _L1 _L1 _L1 _L1 _L10
+_L8:
+        class2 = com.maddox.rts.ObjIO.classForName(s.substring(2));
+        break; /* Loop/switch isn't completed */
+_L10:
+        class2 = java.lang.Boolean.TYPE;
+        break; /* Loop/switch isn't completed */
+_L2:
+        class2 = java.lang.Byte.TYPE;
+        break; /* Loop/switch isn't completed */
+_L3:
+        class2 = java.lang.Character.TYPE;
+        break; /* Loop/switch isn't completed */
+_L9:
+        class2 = java.lang.Short.TYPE;
+        break; /* Loop/switch isn't completed */
+_L6:
+        class2 = java.lang.Integer.TYPE;
+        break; /* Loop/switch isn't completed */
+_L7:
+        class2 = java.lang.Long.TYPE;
+        break; /* Loop/switch isn't completed */
+_L5:
+        class2 = java.lang.Float.TYPE;
+        break; /* Loop/switch isn't completed */
+_L4:
+        class2 = java.lang.Double.TYPE;
+        break; /* Loop/switch isn't completed */
+_L1:
+        return null;
+        s = com.maddox.rts.ObjIO.getWord(stringbuffer);
+        if(class2 == null)
+            return null;
+        int l;
+        int k = java.lang.Integer.parseInt(s);
+        if(obj != null)
+        {
+            java.lang.Class class3 = obj.getClass();
+            if(!class3.isArray() || class3.getComponentType() != class2)
+            {
+                obj = null;
+            } else
+            {
+                int i1 = java.lang.reflect.Array.getLength(obj);
+                if(i1 != k)
+                    obj = null;
+            }
+        }
+        if(obj == null)
+            obj = java.lang.reflect.Array.newInstance(class2, k);
+        com.maddox.rts.ObjIO.stackPush(obj, obj.getClass());
+        l = 0;
+_L13:
+        c = com.maddox.rts.ObjIO.getChar(stringbuffer);
+        if(c != ']') goto _L12; else goto _L11
+_L11:
+        com.maddox.rts.ObjIO.stackPop();
+        return obj;
+_L12:
+        if(c == ',')
+        {
+            com.maddox.rts.ObjIO.setCurField(flag, new Integer(l));
+            java.lang.Object obj1 = null;
+            java.lang.Object obj3 = null;
+            if((curFieldNode.flags & 0x2000000) != 0)
+                obj3 = com.maddox.rts.ObjIO.getWord(stringbuffer);
+            else
+            if(class2.isPrimitive() || class2 == (java.lang.String.class) || class2 == (java.lang.StringBuffer.class))
+            {
+                obj3 = com.maddox.rts.ObjIO._fromString(flag, null, class2, stringbuffer);
+            } else
+            {
+                obj1 = com.maddox.rts.ObjIO.fieldGet(flag);
+                obj3 = com.maddox.rts.ObjIO._fromString(flag, obj1, obj1 != null ? obj1.getClass() : class2, stringbuffer);
+            }
+            if(obj3 != obj1)
+                com.maddox.rts.ObjIO.fieldSet(flag, obj3);
+            else
+                com.maddox.rts.ObjIO.fieldValidate();
+            break MISSING_BLOCK_LABEL_582;
+        }
+        com.maddox.rts.ObjIO.stackPop();
+        return null;
+        try
+        {
+            l++;
+        }
+        catch(java.lang.Exception exception3)
+        {
+            com.maddox.rts.ObjIO.printDebug(exception3);
+            com.maddox.rts.ObjIO.stackPop(j);
+            return null;
+        }
+          goto _L13
+        if(c == '(')
+        {
+            s = com.maddox.rts.ObjIO.getWord(stringbuffer);
+            c = com.maddox.rts.ObjIO.peekChar(stringbuffer);
+            if(c == ',' || c == ')')
+            {
+                try
+                {
+                    class1 = com.maddox.rts.ObjIO.classForName(s);
+                    if(obj != null && obj.getClass() != class1)
+                        obj = null;
+                }
+                catch(java.lang.Exception exception)
+                {
+                    com.maddox.rts.ObjIO.printDebug(exception);
+                    return null;
+                }
+                if(c == ')')
+                {
+                    com.maddox.rts.ObjIO.getChar(stringbuffer);
+                    if(obj == null)
+                    {
+                        try
+                        {
+                            obj = class1.newInstance();
+                        }
+                        catch(java.lang.Exception exception1) { }
+                        if(obj != null)
+                        {
+                            com.maddox.rts.ObjIO.stackPush(obj, class1);
+                            com.maddox.rts.ObjIO.objectValidate();
+                            com.maddox.rts.ObjIO.stackPop();
+                        }
+                    }
+                    return obj;
+                }
+            } else
+            {
+                if(s != null)
+                    stringbuffer.insert(0, s);
+                stringbuffer.insert(0, ',');
+            }
+            if(obj == null)
+            {
+                if(class1 == null)
+                    return null;
+            } else
+            if(class1 == null)
+                class1 = obj.getClass();
+            int i = stackPtr;
+            com.maddox.rts.ObjIO.stackPush(obj, class1);
+            do
+            {
+                c = com.maddox.rts.ObjIO.getChar(stringbuffer);
+                if(c == ')')
+                {
+                    com.maddox.rts.ObjIO.objectValidate();
+                    com.maddox.rts.ObjIO.stackPop();
+                    return obj;
+                }
+                if(c != ',')
+                {
+                    com.maddox.rts.ObjIO.stackPop();
+                    return null;
+                }
+                java.lang.String s1 = com.maddox.rts.ObjIO.getWord(stringbuffer);
+                c = com.maddox.rts.ObjIO.getChar(stringbuffer);
+                if(c != '=')
+                {
+                    com.maddox.rts.ObjIO.stackPop();
+                    return null;
+                }
+                try
+                {
+                    java.lang.reflect.Field field1 = class1.getField(s1);
+                    if(com.maddox.rts.ObjIO.setCurField(flag, field1))
+                    {
+                        if(obj == null)
+                            obj = stackObjects.get(stackPtr);
+                        java.lang.Class class4 = field1.getType();
+                        java.lang.Object obj2 = null;
+                        java.lang.Object obj4 = null;
+                        if((curFieldNode.flags & 0x2000000) != 0)
+                            obj4 = com.maddox.rts.ObjIO.getWord(stringbuffer);
+                        else
+                        if(class4.isPrimitive() || class4 == (java.lang.String.class) || class4 == (java.lang.StringBuffer.class))
+                        {
+                            obj4 = com.maddox.rts.ObjIO._fromString(flag, null, class4, stringbuffer);
+                        } else
+                        {
+                            obj2 = com.maddox.rts.ObjIO.fieldGet(flag);
+                            obj4 = com.maddox.rts.ObjIO._fromString(flag, obj2, obj2 != null ? obj2.getClass() : class4, stringbuffer);
+                        }
+                        if(obj4 != obj2)
+                            com.maddox.rts.ObjIO.fieldSet(flag, obj4);
+                        else
+                            com.maddox.rts.ObjIO.fieldValidate();
+                    }
+                }
+                catch(java.lang.Exception exception4)
+                {
+                    com.maddox.rts.ObjIO.printDebug(exception4);
+                    com.maddox.rts.ObjIO.stackPop(i);
+                    return null;
+                }
+            } while(true);
+        } else
+        {
+            if(class1 == null)
+                return obj;
+            if(c != '\uFFFF')
+            {
+                stringbuffer.insert(0, c);
+                s = com.maddox.rts.ObjIO.getWord(stringbuffer);
+            }
+            if(s == null || s.length() == 0)
+            {
+                if(class1 == java.lang.Boolean.TYPE)
+                    obj = new Boolean(false);
+                else
+                if(class1 == java.lang.Byte.TYPE)
+                    obj = new Byte((byte)0);
+                else
+                if(class1 == java.lang.Short.TYPE)
+                    obj = new Short((short)0);
+                else
+                if(class1 == java.lang.Character.TYPE)
+                    obj = new Character('\0');
+                else
+                if(class1 == java.lang.Integer.TYPE)
+                    obj = new Integer(0);
+                else
+                if(class1 == java.lang.Long.TYPE)
+                    obj = new Long(0L);
+                else
+                if(class1 == java.lang.Float.TYPE)
+                    obj = new Float(0.0F);
+                else
+                if(class1 == java.lang.Double.TYPE)
+                    obj = new Double(0.0D);
+            } else
+            {
+                try
+                {
+                    if(class1 == java.lang.Boolean.TYPE)
+                        obj = new Boolean(s);
+                    else
+                    if(class1 == java.lang.Byte.TYPE)
+                        obj = new Byte(s);
+                    else
+                    if(class1 == java.lang.Short.TYPE)
+                        obj = new Short(s);
+                    else
+                    if(class1 == java.lang.Character.TYPE)
+                        obj = new Character(s.charAt(0));
+                    else
+                    if(class1 == java.lang.Integer.TYPE)
+                        obj = new Integer(s);
+                    else
+                    if(class1 == java.lang.Long.TYPE)
+                        obj = new Long(s);
+                    else
+                    if(class1 == java.lang.Float.TYPE)
+                        obj = new Float(s);
+                    else
+                    if(class1 == java.lang.Double.TYPE)
+                        obj = new Double(s);
+                    else
+                    if(class1 == (java.lang.String.class))
+                        obj = s;
+                    else
+                    if(class1 == (java.lang.StringBuffer.class))
+                        obj = new StringBuffer(s);
+                }
+                catch(java.lang.Exception exception2)
+                {
+                    com.maddox.rts.ObjIO.printDebug(exception2);
+                    return null;
+                }
+            }
+            return obj;
+        }
+    }
+
+    private static char peekChar(java.lang.StringBuffer stringbuffer)
+    {
+        if(stringbuffer != null)
+            for(; stringbuffer.length() > 0; stringbuffer.deleteCharAt(0))
+            {
+                char c = stringbuffer.charAt(0);
+                if(c > ' ')
+                    return c;
+            }
+
+        return '\uFFFF';
+    }
+
+    private static char getChar(java.lang.StringBuffer stringbuffer)
+    {
+        if(stringbuffer != null)
+            while(stringbuffer.length() > 0) 
+            {
+                char c = stringbuffer.charAt(0);
+                stringbuffer.deleteCharAt(0);
+                if(c > ' ')
+                    return c;
+            }
+        return '\uFFFF';
+    }
+
+    private static java.lang.String getWord(java.lang.StringBuffer stringbuffer)
+    {
+        if(stringbuffer != null)
+        {
+            int i = 0;
+            for(; stringbuffer.length() > 0; stringbuffer.deleteCharAt(0))
+            {
+                i = stringbuffer.charAt(0);
+                if(i > 32)
+                    break;
+            }
+
+            if(i == 34)
+            {
+                stringbuffer.deleteCharAt(0);
+                int j = 0;
+                int l = stringbuffer.length();
+                int j1 = 0;
+                for(; j < l; j++)
+                {
+                    char c = stringbuffer.charAt(j);
+                    if(c == '"')
+                        if(j1 == 92)
+                        {
+                            stringbuffer.deleteCharAt(j - 1);
+                            j1 = 34;
+                            j--;
+                            l--;
+                        } else
+                        {
+                            java.lang.String s = "";
+                            if(j > 0)
+                                s = stringbuffer.substring(0, j);
+                            stringbuffer.delete(0, j + 1);
+                            return s;
+                        }
+                    j1 = c;
+                }
+
+                stringbuffer.setLength(0);
+                return null;
+            }
+            int k = 0;
+            for(int i1 = stringbuffer.length(); k < i1; k++)
+            {
+                char c1 = stringbuffer.charAt(k);
+                if(c1 <= ' ' || c1 == '=' || c1 == ',' || c1 == ')' || c1 == ']')
+                    break;
+            }
+
+            int k1 = k - 1;
+            java.lang.String s1 = "";
+            if(k1 >= 0)
+                s1 = stringbuffer.substring(0, k1 + 1);
+            if(k > 0)
+                stringbuffer.delete(0, k);
+            return s1;
+        } else
+        {
+            return null;
+        }
+    }
+
+    private static void printDebug(java.lang.Exception exception)
+    {
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+    }
+
+    private static com.maddox.rts.Res makeRes()
+    {
+        curRes.clear();
+        for(int i = 0; i <= stackPtr; i++)
+        {
+            java.util.ResourceBundle resourcebundle = (java.util.ResourceBundle)stackBundles.get(i);
+            if(resourcebundle != null)
+            {
+                _resBuf.setLength(0);
+                for(int j = i; j <= stackPtr; j++)
+                {
+                    java.lang.Object obj = stackFields.get(j);
+                    if(obj instanceof java.lang.reflect.Field)
+                    {
+                        java.lang.reflect.Field field1 = (java.lang.reflect.Field)obj;
+                        if(j != i)
+                            _resBuf.append('.');
+                        _resBuf.append(field1.getName());
+                    } else
+                    {
+                        _resBuf.append("[]");
+                    }
+                }
+
+                java.lang.String s = null;
+                try
+                {
+                    s = resourcebundle.getString(_resBuf.toString());
+                }
+                catch(java.lang.Exception exception) { }
+                if(s != null)
+                    com.maddox.rts.ObjIO.parseRes(s);
+            }
+        }
+
+        if(curRes.isEmpty())
+            return null;
+        else
+            return new Res(curRes);
+    }
+
+    private static void parseRes(java.lang.String s)
+    {
+        boolean flag = false;
+        int j = 0;
+        int k = 0;
+        int l = 0;
+        int i1 = s.length();
+        byte byte0 = -1;
+        byte byte1 = -1;
+        do
+        {
+            if(byte0 != -1)
+                switch(byte0)
+                {
+                default:
+                    break;
+
+                case 0: // '\0'
+                    if(curRes.name == null)
+                        curRes.name = s.substring(j, k);
+                    break;
+
+                case 2: // '\002'
+                    if(curRes.tip == null)
+                        curRes.tip = s.substring(j, k);
+                    break;
+
+                case 1: // '\001'
+                    if(curRes.enum != null)
+                        break;
+                    _resLst.clear();
+                    _resBuf.setLength(0);
+                    _resBuf.append(s.substring(j, k));
+                    do
+                    {
+                        java.lang.String s1 = com.maddox.rts.ObjIO.getResWord(_resBuf);
+                        if(s1 == null || s1.length() == 0)
+                            break;
+                        _resLst.add(s1);
+                    } while(true);
+                    if(_resLst.size() > 0)
+                        curRes.enum = _resLst.toArray();
+                    break;
+                }
+            int i = k;
+            j = l;
+            byte0 = byte1;
+            byte1 = -1;
+            int j1 = i1;
+            int l1 = s.indexOf("$NAME", j);
+            if(l1 >= 0 && l1 < j1)
+            {
+                byte1 = 0;
+                j1 = l1;
+                k = l1;
+                l = l1 + "$NAME".length();
+            }
+            l1 = s.indexOf("$ENUM", j);
+            if(l1 >= 0 && l1 < j1)
+            {
+                byte1 = 1;
+                j1 = l1;
+                k = l1;
+                l = l1 + "$ENUM".length();
+            }
+            l1 = s.indexOf("$TIP", j);
+            if(l1 >= 0 && l1 < j1)
+            {
+                byte1 = 2;
+                int k1 = l1;
+                k = l1;
+                l = l1 + "$TIP".length();
+            }
+            if(byte1 < 0)
+                k = l = i1;
+        } while(byte0 != -1 || byte1 != -1);
+    }
+
+    private static java.lang.String getResWord(java.lang.StringBuffer stringbuffer)
+    {
+        if(stringbuffer != null)
+        {
+            int i = 0;
+            for(; stringbuffer.length() > 0; stringbuffer.deleteCharAt(0))
+            {
+                i = stringbuffer.charAt(0);
+                if(i > 32)
+                    break;
+            }
+
+            if(i == 34)
+            {
+                stringbuffer.deleteCharAt(0);
+                int j = 0;
+                int l = stringbuffer.length();
+                int j1 = 0;
+                for(; j < l; j++)
+                {
+                    char c = stringbuffer.charAt(j);
+                    if(c == '"')
+                        if(j1 == 92)
+                        {
+                            stringbuffer.deleteCharAt(j - 1);
+                            j1 = 34;
+                            j--;
+                            l--;
+                        } else
+                        {
+                            java.lang.String s = "";
+                            if(j > 0)
+                                s = stringbuffer.substring(0, j);
+                            stringbuffer.delete(0, j + 1);
+                            return s;
+                        }
+                    j1 = c;
+                }
+
+                stringbuffer.setLength(0);
+                return null;
+            }
+            int k = 0;
+            for(int i1 = stringbuffer.length(); k < i1; k++)
+            {
+                char c1 = stringbuffer.charAt(k);
+                if(c1 <= ' ')
+                    break;
+            }
+
+            int k1 = k - 1;
+            java.lang.String s1 = "";
+            if(k1 >= 0)
+                s1 = stringbuffer.substring(0, k1 + 1);
+            if(k > 0)
+                stringbuffer.delete(0, k);
+            return s1;
+        } else
+        {
+            return null;
+        }
+    }
+
+    public boolean isValue()
+    {
+        return child == null;
+    }
+
+    public int level()
+    {
+        return level;
+    }
+
+    public com.maddox.rts.ObjIO parent()
+    {
+        return parent;
+    }
+
+    public int childCount()
+    {
+        return child != null ? child.size() : 0;
+    }
+
+    public com.maddox.rts.ObjIO childAt(int i)
+    {
+        if(child != null && i < child.size())
+            return (com.maddox.rts.ObjIO)child.get(i);
+        else
+            return null;
+    }
+
+    public java.lang.String tip()
+    {
+        if(res != null && res.tip != null)
+            return res.tip;
+        else
+            return "";
+    }
+
+    public java.lang.String name()
+    {
+        return name;
+    }
+
+    public java.lang.Object[] getEnum()
+    {
+        if((field instanceof java.lang.reflect.Field) && ((java.lang.reflect.Field)field).getType() == java.lang.Boolean.TYPE)
+            return booleanEnum;
+        if(fieldNode == null)
+            return null;
+        else
+            return fieldNode.enum;
+    }
+
+    public java.lang.Object[] getAliasEnum()
+    {
+        if((field instanceof java.lang.reflect.Field) && ((java.lang.reflect.Field)field).getType() == java.lang.Boolean.TYPE)
+            if(res != null && res.enum != null && res.enum.length == 2)
+                return res.enum;
+            else
+                return booleanEnum;
+        if(fieldNode == null || fieldNode.enum == null)
+            return null;
+        if(res != null && res.enum != null && res.enum.length == fieldNode.enum.length)
+            return res.enum;
+        else
+            return fieldNode.enum;
+    }
+
+    public boolean isReadOnly()
+    {
+        if(!isValue())
+            return true;
+        if(fieldNode == null)
+            return false;
+        else
+            return (fieldNode.flags & 1) != 0;
+    }
+
+    public java.lang.Class getType()
+    {
+        if(field instanceof java.lang.reflect.Field)
+            return ((java.lang.reflect.Field)field).getType();
+        else
+            return clazz.getComponentType();
+    }
+
+    public boolean isCheckRange()
+    {
+        if(fieldNode == null)
+            return false;
+        else
+            return (fieldNode.flags & 0x200000) != 0;
+    }
+
+    public java.lang.Number getCheckRangeMin()
+    {
+        if(fieldNode == null)
+            return null;
+        else
+            return (java.lang.Number)fieldNode.min;
+    }
+
+    public java.lang.Number getCheckRangeMax()
+    {
+        if(fieldNode == null)
+            return null;
+        else
+            return (java.lang.Number)fieldNode.max;
+    }
+
+    public java.lang.Number getCheckRangeStep()
+    {
+        if(fieldNode == null)
+            return null;
+        else
+            return (java.lang.Number)fieldNode.step;
+    }
+
+    public java.lang.String get()
+    {
+        if(!bStrValid)
+            validate();
+        java.lang.String s = strValue;
+        java.lang.Object aobj[] = getAliasEnum();
+        if(aobj != null)
+        {
+            java.lang.Object aobj1[] = getEnum();
+            if(aobj1 != aobj)
+            {
+                for(int i = 0; i < aobj1.length; i++)
+                {
+                    if(!s.equals(aobj1[i].toString()))
+                        continue;
+                    s = aobj[i].toString();
+                    break;
+                }
+
+            }
+        }
+        return s;
+    }
+
+    public void set(java.lang.String s)
+    {
+        if(!isValue())
+            return;
+        if(s == null)
+            s = "";
+        java.lang.Object aobj[] = getAliasEnum();
+        if(aobj != null)
+        {
+            java.lang.Object aobj1[] = getEnum();
+            if(aobj1 != aobj)
+            {
+                for(int i = 0; i < aobj1.length; i++)
+                {
+                    if(!s.equals(aobj[i].toString()))
+                        continue;
+                    s = aobj1[i].toString();
+                    break;
+                }
+
+            }
+        }
+        fillStack();
+        java.lang.Class class1;
+        if(field instanceof java.lang.reflect.Field)
+            class1 = ((java.lang.reflect.Field)field).getType();
+        else
+            class1 = clazz.getComponentType();
+        java.lang.Object obj = null;
+        java.lang.Object obj1 = null;
+        if((curFieldNode.flags & 0x22000000) != 0)
+            obj1 = s;
+        else
+        if(class1.isPrimitive() || class1 == (java.lang.String.class) || class1 == (java.lang.StringBuffer.class))
+        {
+            _strBuf.setLength(0);
+            _strBuf.append(s);
+            obj1 = com.maddox.rts.ObjIO._fromString(true, null, class1, _strBuf);
+        } else
+        {
+            obj = com.maddox.rts.ObjIO.fieldGet(true);
+            _strBuf.setLength(0);
+            _strBuf.append(s);
+            obj1 = com.maddox.rts.ObjIO._fromString(true, obj, obj != null ? obj.getClass() : class1, _strBuf);
+        }
+        if(obj1 != obj)
+            com.maddox.rts.ObjIO.fieldSet(true, obj1);
+        else
+            com.maddox.rts.ObjIO.fieldValidate();
+        com.maddox.rts.ObjIO.stackPop(-1);
+        invalidate();
+    }
+
+    private void validate()
+    {
+        if(bStrValid)
+            return;
+        if(child != null)
+        {
+            int i = child.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.rts.ObjIO objio = (com.maddox.rts.ObjIO)child.get(j);
+                if(objio != null)
+                    objio.validate();
+            }
+
+            _strBuf.setLength(0);
+            if(clazz.isArray())
+                _strBuf.append('[');
+            else
+                _strBuf.append('(');
+            for(int k = 0; k < i; k++)
+            {
+                if(k > 0)
+                    _strBuf.append(',');
+                com.maddox.rts.ObjIO objio1 = (com.maddox.rts.ObjIO)child.get(k);
+                if(objio1 != null)
+                {
+                    java.lang.String s = objio1.strValue;
+                    java.lang.Object aobj[] = objio1.getAliasEnum();
+                    if(aobj != null)
+                    {
+                        java.lang.Object aobj1[] = objio1.getEnum();
+                        if(aobj1 != aobj)
+                        {
+                            for(int l = 0; l < aobj1.length; l++)
+                            {
+                                if(!s.equals(aobj1[l].toString()))
+                                    continue;
+                                s = aobj[l].toString();
+                                break;
+                            }
+
+                        }
+                    }
+                    _strBuf.append(s);
+                }
+            }
+
+            if(clazz.isArray())
+                _strBuf.append(']');
+            else
+                _strBuf.append(')');
+            strValue = _strBuf.toString();
+        } else
+        {
+            fillStack();
+            java.lang.Object obj = com.maddox.rts.ObjIO.fieldGet(true);
+            if(obj != null)
+                strValue = obj.toString();
+            else
+                strValue = "";
+            com.maddox.rts.ObjIO.stackPop(-1);
+        }
+        bStrValid = true;
+    }
+
+    private void invalidate()
+    {
+        bStrValid = false;
+        if(parent != null)
+            parent.invalidate();
+    }
+
+    private void checkReadOnly(boolean flag)
+    {
+        if(flag)
+        {
+            if(fieldNode == null)
+                fieldNode = readonlyNode;
+            else
+                fieldNode.flags |= 1;
+        } else
+        if(fieldNode != null && (fieldNode.flags & 1) != 0)
+            flag = true;
+        if(child != null)
+        {
+            int i = child.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.rts.ObjIO objio = (com.maddox.rts.ObjIO)child.get(j);
+                if(objio != null)
+                    objio.checkReadOnly(flag);
+            }
+
+        }
+    }
+
+    private void fillStack()
+    {
+        com.maddox.rts.ObjIO objio = this;
+        stackPtr = objio.level;
+        for(; objio != null && objio.level >= 0; objio = objio.parent)
+        {
+            int i = objio.level;
+            stackClasses.set(i, clazz);
+            stackObjects.set(i, object);
+            stackFields.set(i, field);
+        }
+
+        if(fieldNode != null)
+            curFieldNode = fieldNode;
+        else
+            curFieldNode = emptyNode;
+        if(fieldObjects != null)
+            curFieldObjects = fieldObjects;
+        else
+            curFieldObjects = emptyObjects;
+        if(objectNode != null)
+            curObjectNode = objectNode;
+        else
+            curObjectNode = emptyNode;
+        if(objectObjects != null)
+            curObjectObjects = objectObjects;
+        else
+            curObjectObjects = emptyObjects;
+    }
+
+    private void fillCurrent()
+    {
+        if(!curFieldNode.isEmpty())
+        {
+            fieldNode = new Node(curFieldNode);
+            if(!curFieldObjects.isEmpty())
+                fieldObjects = new NodeObjects(curFieldObjects);
+        }
+        if(!curObjectNode.isEmpty())
+        {
+            objectNode = new Node(curObjectNode);
+            if(!curObjectObjects.isEmpty())
+                objectObjects = new NodeObjects(curObjectObjects);
+        }
+        clazz = (java.lang.Class)stackClasses.get(stackPtr);
+        object = stackObjects.get(stackPtr);
+        field = stackFields.get(stackPtr);
+    }
+
+    private void fillNull(java.lang.StringBuffer stringbuffer, com.maddox.rts.ObjIO objio, int i)
+    {
+        name = stringbuffer.toString();
+        parent = objio;
+        level = i;
+        fieldNode = readonlyNode;
+        bStrValid = true;
+        strValue = "null";
+    }
+
+    private boolean make(java.lang.StringBuffer stringbuffer, com.maddox.rts.ObjIO objio, int i, java.lang.Object obj, java.lang.Class class1)
+    {
+        boolean flag;
+        int j;
+        int k;
+        name = stringbuffer.toString();
+        parent = objio;
+        level = i;
+        if(obj == null)
+            return false;
+        flag = obj == class1;
+        j = stackPtr;
+        k = stringbuffer.length();
+        if(!class1.isArray())
+            break MISSING_BLOCK_LABEL_296;
+        java.lang.Class class2;
+        int l;
+        com.maddox.rts.ObjIO.stackPush(obj, class1);
+        class2 = class1.getComponentType();
+        l = java.lang.reflect.Array.getLength(obj);
+        if(l != 0)
+            break MISSING_BLOCK_LABEL_89;
+        com.maddox.rts.ObjIO.stackPop();
+        return false;
+        child = new ArrayList();
+        for(int j1 = 0; j1 < l; j1++)
+        {
+            com.maddox.rts.ObjIO.setCurField(true, new Integer(j1), flag);
+            stringbuffer.append("[" + j1 + "]");
+            java.lang.Object obj2 = com.maddox.rts.ObjIO.fieldGet(true);
+            com.maddox.rts.ObjIO objio1 = new ObjIO();
+            if(obj2 != null)
+            {
+                if(class2.isPrimitive())
+                    objio1.make(stringbuffer, this, level + 1, obj2, class2);
+                else
+                    objio1.make(stringbuffer, this, level + 1, obj2, obj2.getClass());
+            } else
+            {
+                objio1.fillNull(stringbuffer, this, level + 1);
+            }
+            child.add(objio1);
+            stringbuffer.setLength(k);
+        }
+
+        com.maddox.rts.ObjIO.stackPop();
+        return true;
+        java.lang.Exception exception;
+        exception;
+        com.maddox.rts.ObjIO.printDebug(exception);
+        stringbuffer.setLength(k);
+        com.maddox.rts.ObjIO.stackPop(j);
+        return false;
+        if(class1.isPrimitive() || class1 == (java.lang.String.class) || class1 == (java.lang.StringBuffer.class))
+        {
+            strValue = obj.toString();
+            bStrValid = true;
+            return true;
+        }
+        com.maddox.rts.ObjIO.stackPush(obj, class1);
+        java.lang.reflect.Field afield[] = com.maddox.rts.ObjIO.getFields(class1);
+        child = new ArrayList();
+        for(int i1 = 0; i1 < afield.length; i1++)
+            if(com.maddox.rts.ObjIO.setCurField(true, afield[i1], flag))
+            {
+                java.lang.Object obj1 = com.maddox.rts.ObjIO.fieldGet(true);
+                if(obj1 != null)
+                {
+                    if(stringbuffer.length() > 0)
+                        stringbuffer.append('.');
+                    boolean flag1 = false;
+                    com.maddox.rts.ObjIO objio2 = new ObjIO();
+                    if(objio2.res != null && objio2.res.name != null)
+                        stringbuffer.append(objio2.res.name);
+                    else
+                        stringbuffer.append(afield[i1].getName());
+                    if((curFieldNode.flags & 0x11000000) != 0)
+                    {
+                        objio2.strValue = obj1.toString();
+                        objio2.bStrValid = true;
+                        objio2.name = stringbuffer.toString();
+                        objio2.parent = this;
+                        objio2.level = level + 1;
+                        flag1 = true;
+                    } else
+                    if(afield[i1].getType().isPrimitive())
+                        flag1 = objio2.make(stringbuffer, this, level + 1, obj1, afield[i1].getType());
+                    else
+                        flag1 = objio2.make(stringbuffer, this, level + 1, obj1, obj1.getClass());
+                    if(flag1)
+                        child.add(objio2);
+                    stringbuffer.setLength(k);
+                }
+            }
+
+        com.maddox.rts.ObjIO.stackPop();
+        if(child.size() != 0)
+            break MISSING_BLOCK_LABEL_683;
+        child = null;
+        return false;
+        return true;
+        afield;
+        com.maddox.rts.ObjIO.printDebug(afield);
+        stringbuffer.setLength(k);
+        com.maddox.rts.ObjIO.stackPop(j);
+        return false;
+    }
+
+    public void update()
+    {
+        invalidateTree();
+        validate();
+    }
+
+    private void invalidateTree()
+    {
+        bStrValid = false;
+        if(child != null)
+        {
+            int i = child.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.rts.ObjIO objio = (com.maddox.rts.ObjIO)child.get(j);
+                if(objio != null)
+                    objio.invalidateTree();
+            }
+
+        }
+    }
+
+    public ObjIO(java.lang.Object obj, java.lang.String s)
+    {
+        bStrValid = false;
+        _strBuf.setLength(0);
+        if(s != null)
+            _strBuf.append(s);
+        bUseBundle = true;
+        com.maddox.rts.ObjIO.stackClear();
+        clazz = (obj instanceof java.lang.Class) ? (java.lang.Class)obj : obj.getClass();
+        make(_strBuf, null, -1, obj, clazz);
+        com.maddox.rts.ObjIO.stackPop(-1);
+        bUseBundle = false;
+        checkReadOnly(false);
+    }
+
+    private ObjIO()
+    {
+        bStrValid = false;
+        fillCurrent();
+        res = com.maddox.rts.ObjIO.makeRes();
+    }
+
+    public static java.lang.String friendPackage[] = {
+        "com.maddox.il2.engine.", "com.maddox.il2.objects.", "com.maddox.il2.", "com.maddox.JGP.", "com.maddox.rts.", "com.maddox."
+    };
+    public static final int EDREADONLY = 1;
+    public static final int ALL_FLAGS = 1;
+    private static final int _ENUM = 0x100000;
+    private static final int _MINMAX = 0x200000;
+    private static final int _GET = 0x400000;
+    private static final int _SET = 0x800000;
+    private static final int _GETSTR = 0x1000000;
+    private static final int _SETSTR = 0x2000000;
+    private static final int _EDGET = 0x4000000;
+    private static final int _EDSET = 0x8000000;
+    private static final int _EDGETSTR = 0x10000000;
+    private static final int _EDSETSTR = 0x20000000;
+    private static final int _VALIDATE = 0x40000000;
+    public static final java.lang.String KEY_FIELDS = "$ClassIOFields$";
+    public static final java.lang.String KEY_OBJECT = "$ObjIO";
+    public static final java.lang.String KEY_FIELD = "$IO";
+    private static java.util.ArrayList _fldPropLst = new ArrayList();
+    private static java.util.ArrayList _fldLst = new ArrayList();
+    private static java.lang.reflect.Field filedsEmpty[] = new java.lang.reflect.Field[0];
+    private static com.maddox.rts.FieldCompare _fldsCompare = new FieldCompare();
+    private static int getFieldType_arrays = 0;
+    private static java.lang.Class _fieldsClass[] = new java.lang.Class[1];
+    private static int stackPtr = -1;
+    private static boolean bUseBundle = false;
+    private static java.util.ArrayList stackClasses = new ArrayList(64);
+    private static java.util.ArrayList stackObjects = new ArrayList(64);
+    private static java.util.ArrayList stackFields = new ArrayList(64);
+    private static java.util.ArrayList stackBundles = new ArrayList(64);
+    private static com.maddox.rts.Node curFieldNode = new Node();
+    private static com.maddox.rts.NodeObjects curFieldObjects = new NodeObjects();
+    private static com.maddox.rts.Node curObjectNode = new Node();
+    private static com.maddox.rts.NodeObjects curObjectObjects = new NodeObjects();
+    private static java.lang.Object _fieldsObject[] = new java.lang.Object[1];
+    private static java.lang.StringBuffer _strBuf = new StringBuffer();
+    private static final java.lang.String RES_NAME = "$NAME";
+    private static final java.lang.String RES_ENUM = "$ENUM";
+    private static final java.lang.String RES_TIP = "$TIP";
+    private static final int _RES_NAME = 0;
+    private static final int _RES_ENUM = 1;
+    private static final int _RES_TIP = 2;
+    private static com.maddox.rts.Res curRes = new Res();
+    private static java.util.ArrayList _resLst = new ArrayList();
+    private static java.lang.StringBuffer _resBuf = new StringBuffer();
+    private int level;
+    private com.maddox.rts.ObjIO parent;
+    private java.util.List child;
+    private volatile com.maddox.rts.Node fieldNode;
+    private com.maddox.rts.NodeObjects fieldObjects;
+    private com.maddox.rts.Node objectNode;
+    private com.maddox.rts.NodeObjects objectObjects;
+    private java.lang.Class clazz;
+    private java.lang.Object object;
+    private java.lang.Object field;
+    private com.maddox.rts.Res res;
+    private java.lang.String name;
+    private boolean bStrValid;
+    private java.lang.String strValue;
+    private static java.lang.Object booleanEnum[] = {
+        new Boolean(false), new Boolean(true)
+    };
+    private static com.maddox.rts.Node emptyNode = new Node();
+    private static com.maddox.rts.NodeObjects emptyObjects = new NodeObjects();
+    private static com.maddox.rts.Node readonlyNode;
+
+    static 
+    {
+        readonlyNode = new Node();
+        readonlyNode.flags |= 1;
+    }
 }

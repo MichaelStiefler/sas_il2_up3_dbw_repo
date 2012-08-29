@@ -1,62 +1,89 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   YAK_9K.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.EnginesInterface;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.Property;
 
-public class YAK_9K extends YAK
-  implements TypeStormovik
+// Referenced classes of package com.maddox.il2.objects.air:
+//            YAK, PaintSchemeFMPar05, PaintSchemeFCSPar05, TypeStormovik, 
+//            NetAircraft, Aircraft
+
+public class YAK_9K extends com.maddox.il2.objects.air.YAK
+    implements com.maddox.il2.objects.air.TypeStormovik
 {
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    float f = Math.max(-paramFloat * 1500.0F, -80.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC99_D0", 0.0F, 80.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, 0.0F);
 
-    f = Math.max(-paramFloat * 1500.0F, -60.0F);
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, f, 0.0F);
+    public YAK_9K()
+    {
+    }
 
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, 82.5F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, 82.5F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, -85.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, -85.0F * paramFloat, 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat);
-  }
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        float f1 = java.lang.Math.max(-f * 1500F, -80F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC99_D0", 0.0F, 80F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 0.0F, 0.0F);
+        f1 = java.lang.Math.max(-f * 1500F, -60F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 82.5F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 82.5F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -85F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -85F * f, 0.0F);
+    }
 
-  public void update(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Wind_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
-    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
-    super.update(paramFloat);
-  }
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.YAK_9K.moveGear(hierMesh(), f);
+    }
 
-  static
-  {
-    Class localClass = YAK_9K.class;
-    new NetAircraft.SPAWN(localClass);
+    public void update(float f)
+    {
+        hierMesh().chunkSetAngles("Wind_luk", 0.0F, 12F * FM.EI.engines[0].getControlRadiator(), 0.0F);
+        hierMesh().chunkSetAngles("Water_luk", 0.0F, 12F * FM.EI.engines[0].getControlRadiator(), 0.0F);
+        super.update(f);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Yak");
-    Property.set(localClass, "meshName", "3DO/Plane/Yak-9K(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
-    Property.set(localClass, "meshName_fr", "3DO/Plane/Yak-9K(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme_fr", new PaintSchemeFCSPar05());
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "yearService", 1944.6F);
-    Property.set(localClass, "yearExpired", 1948.5F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/Yak-9K.fmd");
-    Property.set(localClass, "cockpitClass", CockpitYAK_9T.class);
-    Property.set(localClass, "LOSElevation", 0.661F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunNS45ki 29" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.YAK_9K.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Yak");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Yak-9K(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        com.maddox.rts.Property.set(class1, "meshName_fr", "3DO/Plane/Yak-9K(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_fr", new PaintSchemeFCSPar05());
+        com.maddox.rts.Property.set(class1, "yearService", 1944.6F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Yak-9K.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitYAK_9T.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.661F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 1
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_CANNON01"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunUBsi 200", "MGunNS45ki 29"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null
+        });
+    }
 }

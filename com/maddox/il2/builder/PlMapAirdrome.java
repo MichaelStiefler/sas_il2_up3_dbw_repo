@@ -1,6 +1,10 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlMapAirdrome.java
+
 package com.maddox.il2.builder;
 
-import com.maddox.JGP.Point3d;
 import com.maddox.gwindow.GNotifyListener;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowComboControl;
@@ -11,203 +15,267 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.rts.Property;
 import java.io.PrintStream;
 
-public class PlMapAirdrome extends Plugin
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, PathAirdrome, PAirdrome, Path, 
+//            PlMapActors, Builder, Pathes, WSelect, 
+//            PPoint
+
+public class PlMapAirdrome extends com.maddox.il2.builder.Plugin
 {
-  protected Type[] type;
-  private PlMapActors pluginActors;
-  private int startComboBox1;
-  public GWindowMenuItem mView;
-
-  public void deleteAll()
-  {
-    if (builder.pathes == null) return;
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
-    for (int i = 0; i < arrayOfObject.length; i++) {
-      Actor localActor = (Actor)arrayOfObject[i];
-      if (localActor == null) break;
-      if ((localActor instanceof PathAirdrome)) {
-        PathAirdrome localPathAirdrome = (PathAirdrome)localActor;
-        localPathAirdrome.destroy();
-      }
-    }
-  }
-
-  public void delete(Actor paramActor) {
-    if ((paramActor instanceof PAirdrome)) {
-      if (builder.selectedPoint() == paramActor)
-        builder.pathes.currentPPoint = null;
-      PAirdrome localPAirdrome = (PAirdrome)paramActor;
-      PathAirdrome localPathAirdrome = (PathAirdrome)localPAirdrome.getOwner();
-      if ((Actor.isValid(localPathAirdrome)) && (localPathAirdrome.points() == 1)) {
-        localPathAirdrome.destroy();
-        return;
-      }
-      localPAirdrome.destroy();
-    }
-  }
-
-  public void selectAll() {
-    if (builder.pathes == null) return;
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
-    for (int i = 0; i < arrayOfObject.length; i++) {
-      Actor localActor = (Actor)arrayOfObject[i];
-      if (localActor == null) break;
-      if ((localActor instanceof PathAirdrome)) {
-        int j = ((Path)localActor).points();
-        for (int k = 0; k < j; k++)
-          builder.selectActorsAdd(((Path)localActor).point(k));
-      }
-    }
-  }
-
-  public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if (this.startComboBox1 != i) return;
-    PathAirdrome localPathAirdrome = null;
-    try
+    public static class Type
     {
-      Point3d localPoint3d = paramLoc.getPoint();
-      Object localObject;
-      if (builder.selectedPath() != null) {
-        localObject = builder.selectedPath();
-        if (!(localObject instanceof PathAirdrome))
-          return;
-        localPathAirdrome = (PathAirdrome)localObject;
-        if (j != localPathAirdrome._iType)
-          builder.setSelected(null);
-      }
-      PAirdrome localPAirdrome;
-      if (builder.selectedPoint() != null) {
-        localObject = (PAirdrome)builder.selectedPoint();
-        localPAirdrome = new PAirdrome(builder.selectedPath(), builder.selectedPoint(), localPoint3d, ((PAirdrome)localObject).type());
-      } else {
-        if ((j < 0) || (j >= this.type.length))
-          return;
-        localPathAirdrome = new PathAirdrome(builder.pathes, j);
-        Property.set(localPathAirdrome, "builderPlugin", this);
-        localPathAirdrome.drawing(this.mView.bChecked);
-        localPAirdrome = new PAirdrome(localPathAirdrome, null, localPoint3d, j);
-      }
-      Property.set(localPAirdrome, "builderPlugin", this);
-      Property.set(localPAirdrome, "builderSpawn", "");
-      localPAirdrome.drawing(localPAirdrome.getOwner().isDrawing());
-      if (paramBoolean)
-        builder.setSelected(localPAirdrome);
-    } catch (Exception localException) {
-      if ((localPathAirdrome != null) && (localPathAirdrome.points() == 0))
-        localPathAirdrome.destroy();
-      System.out.println(localException);
-    }
-  }
 
-  public void configure()
-  {
-    if (getPlugin("MapActors") == null)
-      throw new RuntimeException("PlMapAirdrome: plugin 'MapActors' not found");
-    this.pluginActors = ((PlMapActors)getPlugin("MapActors"));
-    PathAirdrome.configure();
-    this.type = new Type[] { new Type(PAirdrome.types[0]), new Type(PAirdrome.types[1]), new Type(PAirdrome.types[2]) };
-  }
+        public java.lang.String name;
 
-  private void viewUpdate()
-  {
-    if (builder.pathes == null)
-      return;
-    Object[] arrayOfObject = builder.pathes.getOwnerAttached();
-    for (int i = 0; i < arrayOfObject.length; i++) {
-      Actor localActor = (Actor)arrayOfObject[i];
-      if (localActor == null) break;
-      if ((localActor instanceof PathAirdrome)) {
-        localActor.drawing(this.mView.bChecked);
-        int j = ((Path)localActor).points();
-        for (int k = 0; k < j; k++)
-          ((Path)localActor).point(k).drawing(this.mView.bChecked);
-      }
-    }
-    if ((!this.mView.bChecked) && 
-      (builder.selectedPath() != null) && 
-      ((builder.selectedPath() instanceof PathAirdrome))) {
-      builder.setSelected(null);
-    }
-
-    if (!builder.isFreeView())
-      builder.repaint();
-  }
-
-  public void viewTypeAll(boolean paramBoolean) {
-    this.mView.bChecked = paramBoolean;
-    viewUpdate();
-  }
-
-  public void syncSelector() {
-    PathAirdrome localPathAirdrome = (PathAirdrome)builder.selectedPath();
-    fillComboBox2(this.startComboBox1, localPathAirdrome._iType);
-  }
-
-  private void fillComboBox1() {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add("Airdrome Points");
-    if (this.startComboBox1 == 0)
-      builder.wSelect.comboBox1.setSelected(0, true, false); 
-  }
-
-  private void fillComboBox2(int paramInt1, int paramInt2) {
-    if (paramInt1 != this.startComboBox1)
-      return;
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
-      for (int i = 0; i < this.type.length; i++)
-        builder.wSelect.comboBox2.add(this.type[i].name);
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
-    }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
-  }
-
-  public void createGUI() {
-    fillComboBox1();
-    fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
-      public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-        int i = Plugin.builder.wSelect.comboBox1.getSelected();
-        if ((i == PlMapAirdrome.this.startComboBox1) && (paramInt1 == 2))
-          PlMapAirdrome.this.fillComboBox2(i, 0);
-        return false;
-      }
-    });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginActors.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
-      i--;
-    }
-    i--;
-    if (i >= 0) {
-      int j = i;
-      this.mView = builder.mDisplayFilter.subMenu.addItem(j, new GWindowMenuItem(builder.mDisplayFilter.subMenu, "show Airdrome Points", null)
-      {
-        public void execute() {
-          this.bChecked = (!this.bChecked);
-          PlMapAirdrome.this.viewUpdate();
+        public Type(java.lang.String s)
+        {
+            name = s;
         }
-      });
-      this.mView.bChecked = true;
-      viewUpdate();
     }
-  }
 
-  static {
-    Property.set(PlMapAirdrome.class, "name", "MapAirdrome");
-  }
 
-  public static class Type
-  {
-    public String name;
-
-    public Type(String paramString)
+    public PlMapAirdrome()
     {
-      this.name = paramString;
     }
-  }
+
+    public void deleteAll()
+    {
+        if(com.maddox.il2.builder.Plugin.builder.pathes == null)
+            return;
+        java.lang.Object aobj[] = com.maddox.il2.builder.Plugin.builder.pathes.getOwnerAttached();
+        for(int i = 0; i < aobj.length; i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)aobj[i];
+            if(actor == null)
+                break;
+            if(actor instanceof com.maddox.il2.builder.PathAirdrome)
+            {
+                com.maddox.il2.builder.PathAirdrome pathairdrome = (com.maddox.il2.builder.PathAirdrome)actor;
+                pathairdrome.destroy();
+            }
+        }
+
+    }
+
+    public void delete(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor instanceof com.maddox.il2.builder.PAirdrome)
+        {
+            if(com.maddox.il2.builder.Plugin.builder.selectedPoint() == actor)
+                com.maddox.il2.builder.Plugin.builder.pathes.currentPPoint = null;
+            com.maddox.il2.builder.PAirdrome pairdrome = (com.maddox.il2.builder.PAirdrome)actor;
+            com.maddox.il2.builder.PathAirdrome pathairdrome = (com.maddox.il2.builder.PathAirdrome)pairdrome.getOwner();
+            if(com.maddox.il2.engine.Actor.isValid(pathairdrome) && pathairdrome.points() == 1)
+            {
+                pathairdrome.destroy();
+                return;
+            }
+            pairdrome.destroy();
+        }
+    }
+
+    public void selectAll()
+    {
+        if(com.maddox.il2.builder.Plugin.builder.pathes == null)
+            return;
+        java.lang.Object aobj[] = com.maddox.il2.builder.Plugin.builder.pathes.getOwnerAttached();
+        for(int i = 0; i < aobj.length; i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)aobj[i];
+            if(actor == null)
+                break;
+            if(actor instanceof com.maddox.il2.builder.PathAirdrome)
+            {
+                int j = ((com.maddox.il2.builder.Path)actor).points();
+                for(int k = 0; k < j; k++)
+                    com.maddox.il2.builder.Plugin.builder.selectActorsAdd(((com.maddox.il2.builder.Path)actor).point(k));
+
+            }
+        }
+
+    }
+
+    public void insert(com.maddox.il2.engine.Loc loc, boolean flag)
+    {
+        int j;
+        com.maddox.il2.builder.PathAirdrome pathairdrome;
+        int i = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.getSelected();
+        j = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox2.getSelected();
+        if(startComboBox1 != i)
+            return;
+        pathairdrome = null;
+        com.maddox.JGP.Point3d point3d;
+        com.maddox.il2.builder.Path path;
+        point3d = loc.getPoint();
+        if(com.maddox.il2.builder.Plugin.builder.selectedPath() == null)
+            break MISSING_BLOCK_LABEL_95;
+        path = com.maddox.il2.builder.Plugin.builder.selectedPath();
+        if(!(path instanceof com.maddox.il2.builder.PathAirdrome))
+            return;
+        pathairdrome = (com.maddox.il2.builder.PathAirdrome)path;
+        if(j != pathairdrome._iType)
+            com.maddox.il2.builder.Plugin.builder.setSelected(null);
+        com.maddox.il2.builder.PAirdrome pairdrome;
+        if(com.maddox.il2.builder.Plugin.builder.selectedPoint() != null)
+        {
+            com.maddox.il2.builder.PAirdrome pairdrome1 = (com.maddox.il2.builder.PAirdrome)com.maddox.il2.builder.Plugin.builder.selectedPoint();
+            pairdrome = new PAirdrome(com.maddox.il2.builder.Plugin.builder.selectedPath(), com.maddox.il2.builder.Plugin.builder.selectedPoint(), point3d, pairdrome1.type());
+            break MISSING_BLOCK_LABEL_215;
+        }
+        if(j < 0 || j >= type.length)
+            return;
+        pathairdrome = new PathAirdrome(com.maddox.il2.builder.Plugin.builder.pathes, j);
+        com.maddox.rts.Property.set(pathairdrome, "builderPlugin", this);
+        pathairdrome.drawing(mView.bChecked);
+        pairdrome = new PAirdrome(pathairdrome, null, point3d, j);
+        com.maddox.rts.Property.set(pairdrome, "builderPlugin", this);
+        com.maddox.rts.Property.set(pairdrome, "builderSpawn", "");
+        pairdrome.drawing(pairdrome.getOwner().isDrawing());
+        if(flag)
+            com.maddox.il2.builder.Plugin.builder.setSelected(pairdrome);
+        break MISSING_BLOCK_LABEL_291;
+        java.lang.Exception exception;
+        exception;
+        if(pathairdrome != null && pathairdrome.points() == 0)
+            pathairdrome.destroy();
+        java.lang.System.out.println(exception);
+    }
+
+    public void configure()
+    {
+        if(com.maddox.il2.builder.Plugin.getPlugin("MapActors") == null)
+        {
+            throw new RuntimeException("PlMapAirdrome: plugin 'MapActors' not found");
+        } else
+        {
+            pluginActors = (com.maddox.il2.builder.PlMapActors)com.maddox.il2.builder.Plugin.getPlugin("MapActors");
+            com.maddox.il2.builder.PathAirdrome.configure();
+            type = (new com.maddox.il2.builder.Type[] {
+                new Type(com.maddox.il2.builder.PAirdrome.types[0]), new Type(com.maddox.il2.builder.PAirdrome.types[1]), new Type(com.maddox.il2.builder.PAirdrome.types[2])
+            });
+            return;
+        }
+    }
+
+    private void viewUpdate()
+    {
+        if(com.maddox.il2.builder.Plugin.builder.pathes == null)
+            return;
+        java.lang.Object aobj[] = com.maddox.il2.builder.Plugin.builder.pathes.getOwnerAttached();
+        for(int i = 0; i < aobj.length; i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)aobj[i];
+            if(actor == null)
+                break;
+            if(actor instanceof com.maddox.il2.builder.PathAirdrome)
+            {
+                actor.drawing(mView.bChecked);
+                int j = ((com.maddox.il2.builder.Path)actor).points();
+                for(int k = 0; k < j; k++)
+                    ((com.maddox.il2.builder.Path)actor).point(k).drawing(mView.bChecked);
+
+            }
+        }
+
+        if(!mView.bChecked && com.maddox.il2.builder.Plugin.builder.selectedPath() != null && (com.maddox.il2.builder.Plugin.builder.selectedPath() instanceof com.maddox.il2.builder.PathAirdrome))
+            com.maddox.il2.builder.Plugin.builder.setSelected(null);
+        if(!com.maddox.il2.builder.Plugin.builder.isFreeView())
+            com.maddox.il2.builder.Plugin.builder.repaint();
+    }
+
+    public void viewTypeAll(boolean flag)
+    {
+        mView.bChecked = flag;
+        viewUpdate();
+    }
+
+    public void syncSelector()
+    {
+        com.maddox.il2.builder.PathAirdrome pathairdrome = (com.maddox.il2.builder.PathAirdrome)com.maddox.il2.builder.Plugin.builder.selectedPath();
+        fillComboBox2(startComboBox1, pathairdrome._iType);
+    }
+
+    private void fillComboBox1()
+    {
+        startComboBox1 = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.size();
+        com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.add("Airdrome Points");
+        if(startComboBox1 == 0)
+            com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.setSelected(0, true, false);
+    }
+
+    private void fillComboBox2(int i, int j)
+    {
+        if(i != startComboBox1)
+            return;
+        if(com.maddox.il2.builder.Plugin.builder.wSelect.curFilledType != i)
+        {
+            com.maddox.il2.builder.Plugin.builder.wSelect.curFilledType = i;
+            com.maddox.il2.builder.Plugin.builder.wSelect.comboBox2.clear(false);
+            for(int k = 0; k < type.length; k++)
+                com.maddox.il2.builder.Plugin.builder.wSelect.comboBox2.add(type[k].name);
+
+            com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.setSelected(i, true, false);
+        }
+        com.maddox.il2.builder.Plugin.builder.wSelect.comboBox2.setSelected(j, true, false);
+    }
+
+    public void createGUI()
+    {
+        fillComboBox1();
+        fillComboBox2(0, 0);
+        com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.addNotifyListener(new com.maddox.gwindow.GNotifyListener() {
+
+            public boolean notify(com.maddox.gwindow.GWindow gwindow, int k, int l)
+            {
+                int i1 = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.getSelected();
+                if(i1 == startComboBox1 && k == 2)
+                    fillComboBox2(i1, 0);
+                return false;
+            }
+
+        }
+);
+        int i;
+        for(i = com.maddox.il2.builder.Plugin.builder.mDisplayFilter.subMenu.size() - 1; i >= 0; i--)
+            if(pluginActors.viewBridge == com.maddox.il2.builder.Plugin.builder.mDisplayFilter.subMenu.getItem(i))
+                break;
+
+        if(--i >= 0)
+        {
+            int j = i;
+            mView = com.maddox.il2.builder.Plugin.builder.mDisplayFilter.subMenu.addItem(j, new com.maddox.gwindow.GWindowMenuItem(com.maddox.il2.builder.Plugin.builder.mDisplayFilter.subMenu, "show Airdrome Points", null) {
+
+                public void execute()
+                {
+                    bChecked = !bChecked;
+                    viewUpdate();
+                }
+
+            }
+);
+            mView.bChecked = true;
+            viewUpdate();
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    protected com.maddox.il2.builder.Type type[];
+    private com.maddox.il2.builder.PlMapActors pluginActors;
+    private int startComboBox1;
+    public com.maddox.gwindow.GWindowMenuItem mView;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PlMapAirdrome.class, "name", "MapAirdrome");
+    }
+
+
+
 }

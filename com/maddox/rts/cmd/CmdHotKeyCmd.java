@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdHotKeyCmd.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -9,92 +14,96 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class CmdHotKeyCmd extends Cmd
+public class CmdHotKeyCmd extends com.maddox.rts.Cmd
 {
-  public static final String ENV = "ENV";
-  public static final String EXEC = "EXEC";
-  public static final String TIME = "TIME";
-  public static final String START = "START";
-  public static final String STOP = "STOP";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    String str = exist(paramMap, "ENV") ? args(paramMap, "ENV") : null;
-    Object localObject;
-    if (exist(paramMap, "EXEC")) {
-      localObject = args(paramMap, "EXEC");
-      double d = exist(paramMap, "TIME") ? arg(paramMap, "TIME", 0, 0.0D, 0.0D, 60.0D) : 0.0D;
-      int j = HotKeyCmd.exec(d, str, (String)localObject);
-      if (j > 0) {
-        INFO_SOFT("  " + j + " " + (String)localObject + " executed");
-      } else {
-        ERR_SOFT("command " + (String)localObject + " not executed");
-        return null;
-      }
-    }
-    else
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      int i;
-      if (exist(paramMap, "START")) {
-        localObject = args(paramMap, "START");
-        i = HotKeyCmd.exec(true, str, (String)localObject);
-        if (i > 0) {
-          INFO_SOFT("  " + i + " " + (String)localObject + " started");
-        } else {
-          ERR_SOFT("command " + (String)localObject + " not started");
-          return null;
-        }
-      }
-      else if (exist(paramMap, "STOP")) {
-        localObject = args(paramMap, "STOP");
-        i = HotKeyCmd.exec(false, str, (String)localObject);
-        if (i > 0) {
-          INFO_SOFT("  " + i + " " + (String)localObject + " stoped");
-        } else {
-          ERR_SOFT("command " + (String)localObject + " not stoped");
-          return null;
-        }
-      }
-      else
-      {
-        HotKeyCmdEnv localHotKeyCmdEnv;
-        if (((exist(paramMap, "ENV")) && (0 == nargs(paramMap, "ENV"))) || (!exist(paramMap, "ENV"))) {
-          localObject = HotKeyCmdEnv.allEnv().iterator();
-          INFO_HARD("HotKeyCmd environments:");
-          while (((Iterator)localObject).hasNext()) {
-            localHotKeyCmdEnv = (HotKeyCmdEnv)((Iterator)localObject).next();
-            INFO_HARD(localHotKeyCmdEnv.name() + (localHotKeyCmdEnv.isEnabled() ? " ENABLED" : " DISABLED"));
-          }
-        } else {
-          localObject = args(paramMap, "ENV");
-          if (localObject == null) localObject = "default";
-          localHotKeyCmdEnv = HotKeyCmdEnv.env((String)localObject);
-          if (localHotKeyCmdEnv == null) {
-            ERR_SOFT("environment '" + (String)localObject + "' not present");
-            return null;
-          }
-          INFO_HARD("HotKeyCmd environment: " + (String)localObject);
-          Iterator localIterator = localHotKeyCmdEnv.all().entrySet().iterator();
-          while (localIterator.hasNext()) {
-            Map.Entry localEntry = (Map.Entry)localIterator.next();
-            INFO_HARD((String)localEntry.getKey() + (((HotKeyCmd)localEntry.getValue()).isRealTime() ? " REALTIME" : ""));
-          }
-        }
-      }
-    }
-    return CmdEnv.RETURN_OK;
-  }
+        java.lang.String s = com.maddox.rts.Cmd.exist(map, "ENV") ? com.maddox.rts.Cmd.args(map, "ENV") : null;
+        if(com.maddox.rts.Cmd.exist(map, "EXEC"))
+        {
+            java.lang.String s1 = com.maddox.rts.Cmd.args(map, "EXEC");
+            double d = com.maddox.rts.Cmd.exist(map, "TIME") ? com.maddox.rts.Cmd.arg(map, "TIME", 0, 0.0D, 0.0D, 60D) : 0.0D;
+            int k = com.maddox.rts.HotKeyCmd.exec(d, s, s1);
+            if(k > 0)
+            {
+                INFO_SOFT("  " + k + " " + s1 + " executed");
+            } else
+            {
+                ERR_SOFT("command " + s1 + " not executed");
+                return null;
+            }
+        } else
+        if(com.maddox.rts.Cmd.exist(map, "START"))
+        {
+            java.lang.String s2 = com.maddox.rts.Cmd.args(map, "START");
+            int i = com.maddox.rts.HotKeyCmd.exec(true, s, s2);
+            if(i > 0)
+            {
+                INFO_SOFT("  " + i + " " + s2 + " started");
+            } else
+            {
+                ERR_SOFT("command " + s2 + " not started");
+                return null;
+            }
+        } else
+        if(com.maddox.rts.Cmd.exist(map, "STOP"))
+        {
+            java.lang.String s3 = com.maddox.rts.Cmd.args(map, "STOP");
+            int j = com.maddox.rts.HotKeyCmd.exec(false, s, s3);
+            if(j > 0)
+            {
+                INFO_SOFT("  " + j + " " + s3 + " stoped");
+            } else
+            {
+                ERR_SOFT("command " + s3 + " not stoped");
+                return null;
+            }
+        } else
+        if(com.maddox.rts.Cmd.exist(map, "ENV") && 0 == com.maddox.rts.Cmd.nargs(map, "ENV") || !com.maddox.rts.Cmd.exist(map, "ENV"))
+        {
+            java.util.Iterator iterator = com.maddox.rts.HotKeyCmdEnv.allEnv().iterator();
+            INFO_HARD("HotKeyCmd environments:");
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv;
+            for(; iterator.hasNext(); INFO_HARD(hotkeycmdenv.name() + (hotkeycmdenv.isEnabled() ? " ENABLED" : " DISABLED")))
+                hotkeycmdenv = (com.maddox.rts.HotKeyCmdEnv)iterator.next();
 
-  public CmdHotKeyCmd() {
-    this.param.put("ENV", null);
-    this.param.put("EXEC", null);
-    this.param.put("TIME", null);
-    this.param.put("TIME", null);
-    this._properties.put("NAME", "hotkeycmd");
-    this._levelAccess = 1;
-  }
+        } else
+        {
+            java.lang.String s4 = com.maddox.rts.Cmd.args(map, "ENV");
+            if(s4 == null)
+                s4 = "default";
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv1 = com.maddox.rts.HotKeyCmdEnv.env(s4);
+            if(hotkeycmdenv1 == null)
+            {
+                ERR_SOFT("environment '" + s4 + "' not present");
+                return null;
+            }
+            INFO_HARD("HotKeyCmd environment: " + s4);
+            java.util.Map.Entry entry;
+            for(java.util.Iterator iterator1 = hotkeycmdenv1.all().entrySet().iterator(); iterator1.hasNext(); INFO_HARD((java.lang.String)entry.getKey() + (((com.maddox.rts.HotKeyCmd)entry.getValue()).isRealTime() ? " REALTIME" : "")))
+                entry = (java.util.Map.Entry)iterator1.next();
+
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
+    }
+
+    public CmdHotKeyCmd()
+    {
+        param.put("ENV", null);
+        param.put("EXEC", null);
+        param.put("TIME", null);
+        param.put("TIME", null);
+        _properties.put("NAME", "hotkeycmd");
+        _levelAccess = 1;
+    }
+
+    public static final java.lang.String ENV = "ENV";
+    public static final java.lang.String EXEC = "EXEC";
+    public static final java.lang.String TIME = "TIME";
+    public static final java.lang.String START = "START";
+    public static final java.lang.String STOP = "STOP";
 }

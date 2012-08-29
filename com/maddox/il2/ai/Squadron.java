@@ -1,53 +1,78 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Squadron.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Message;
 
-public class Squadron extends Actor
+// Referenced classes of package com.maddox.il2.ai:
+//            Regiment, Wing
+
+public class Squadron extends com.maddox.il2.engine.Actor
 {
-  public Wing[] wing = new Wing[4];
 
-  public int indexInRegiment()
-  {
-    int i = name().charAt(name().length() - 1);
-    return i - 48;
-  }
+    public int indexInRegiment()
+    {
+        char c = name().charAt(name().length() - 1);
+        return c - 48;
+    }
 
-  public Regiment regiment() {
-    return (Regiment)getOwner();
-  }
+    public com.maddox.il2.ai.Regiment regiment()
+    {
+        return (com.maddox.il2.ai.Regiment)getOwner();
+    }
 
-  public int getWingsNumber()
-  {
-    int j = 0;
-    for (int i = 0; i < this.wing.length; i++) { if (this.wing[i] == null) continue; j++; }
-    return j;
-  }
+    public int getWingsNumber()
+    {
+        int j = 0;
+        for(int i = 0; i < wing.length; i++)
+            if(wing[i] != null)
+                j++;
 
-  public static Squadron New(String paramString) {
-    Squadron localSquadron = (Squadron)Actor.getByName(paramString);
-    if (localSquadron != null)
-      return localSquadron;
-    return new Squadron(paramString);
-  }
+        return j;
+    }
 
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-  public Squadron(String paramString) {
-    setName(paramString);
-    int i = indexInRegiment();
-    if ((i < 0) || (i > 3))
-      throw new RuntimeException("Squadron '" + paramString + "' NOT valid");
-    String str = paramString.substring(0, paramString.length() - 1);
-    Regiment localRegiment = (Regiment)Actor.getByName(str);
-    if (localRegiment == null)
-      throw new RuntimeException("Regiment '" + str + "' NOT found");
-    setOwner(localRegiment);
-    setArmy(localRegiment.getArmy());
-  }
+    public static com.maddox.il2.ai.Squadron New(java.lang.String s)
+    {
+        com.maddox.il2.ai.Squadron squadron = (com.maddox.il2.ai.Squadron)com.maddox.il2.engine.Actor.getByName(s);
+        if(squadron != null)
+            return squadron;
+        else
+            return new Squadron(s);
+    }
 
-  protected Squadron()
-  {
-  }
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public Squadron(java.lang.String s)
+    {
+        wing = new com.maddox.il2.ai.Wing[4];
+        setName(s);
+        int i = indexInRegiment();
+        if(i < 0 || i > 3)
+            throw new RuntimeException("Squadron '" + s + "' NOT valid");
+        java.lang.String s1 = s.substring(0, s.length() - 1);
+        com.maddox.il2.ai.Regiment regiment1 = (com.maddox.il2.ai.Regiment)com.maddox.il2.engine.Actor.getByName(s1);
+        if(regiment1 == null)
+        {
+            throw new RuntimeException("Regiment '" + s1 + "' NOT found");
+        } else
+        {
+            setOwner(regiment1);
+            setArmy(regiment1.getArmy());
+            return;
+        }
+    }
+
+    protected Squadron()
+    {
+        wing = new com.maddox.il2.ai.Wing[4];
+    }
+
+    public com.maddox.il2.ai.Wing wing[];
 }

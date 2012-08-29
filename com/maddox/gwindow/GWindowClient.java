@@ -1,21 +1,37 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowClient.java
+
 package com.maddox.gwindow;
 
-public class GWindowClient extends GWindow
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GSize, GWindowLookAndFeel
+
+public class GWindowClient extends com.maddox.gwindow.GWindow
 {
-  public void close(boolean paramBoolean)
-  {
-    if (!paramBoolean)
-      this.parentWindow.close(paramBoolean);
-    super.close(paramBoolean);
-  }
 
-  public GSize getMinSize(GSize paramGSize) {
-    paramGSize.dx = 50.0F;
-    paramGSize.dy = 50.0F;
-    return paramGSize;
-  }
+    public GWindowClient()
+    {
+    }
 
-  public void render() {
-    lookAndFeel().render(this);
-  }
+    public void close(boolean flag)
+    {
+        if(!flag)
+            parentWindow.close(flag);
+        super.close(flag);
+    }
+
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        gsize.dx = 50F;
+        gsize.dy = 50F;
+        return gsize;
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
 }

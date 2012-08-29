@@ -1,35 +1,44 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MessageProvider.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            Destroy, MessageProxy, Message
+
 public class MessageProvider
-  implements MessageProxy
+    implements com.maddox.rts.MessageProxy
 {
-  private Object listener;
 
-  public Object getListener()
-  {
-    return this.listener;
-  }
+    public java.lang.Object getListener()
+    {
+        return listener;
+    }
 
-  public void setListener(Object paramObject)
-  {
-    this.listener = paramObject;
-  }
+    public void setListener(java.lang.Object obj)
+    {
+        listener = obj;
+    }
 
-  public Object getListener(Message paramMessage)
-  {
-    if ((this.listener != null) && ((this.listener instanceof Destroy)) && 
-      (((Destroy)this.listener).isDestroyed()))
-      this.listener = null;
-    return this.listener;
-  }
+    public java.lang.Object getListener(com.maddox.rts.Message message)
+    {
+        if(listener != null && (listener instanceof com.maddox.rts.Destroy) && ((com.maddox.rts.Destroy)listener).isDestroyed())
+            listener = null;
+        return listener;
+    }
 
-  public MessageProvider(Object paramObject)
-  {
-    this.listener = paramObject;
-  }
+    public MessageProvider(java.lang.Object obj)
+    {
+        listener = obj;
+    }
 
-  public MessageProvider()
-  {
-    this.listener = null;
-  }
+    public MessageProvider()
+    {
+        listener = null;
+    }
+
+    private java.lang.Object listener;
 }

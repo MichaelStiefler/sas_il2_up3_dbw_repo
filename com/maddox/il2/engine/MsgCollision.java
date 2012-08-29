@@ -1,68 +1,104 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgCollision.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Message;
 import com.maddox.rts.MessageCache;
 
-public class MsgCollision extends Message
+// Referenced classes of package com.maddox.il2.engine:
+//            MsgCollisionListener, Actor
+
+public class MsgCollision extends com.maddox.rts.Message
 {
-  public String thisChunk = null;
-  public String otherChunk = null;
 
-  private static MessageCache cache = new MessageCache(MsgCollision.class);
+    public MsgCollision()
+    {
+        thisChunk = null;
+        otherChunk = null;
+    }
 
-  public static void post(long paramLong, Actor paramActor1, Actor paramActor2, String paramString1, String paramString2)
-  {
-    MsgCollision localMsgCollision = (MsgCollision)cache.get();
-    localMsgCollision.thisChunk = paramString1;
-    localMsgCollision.otherChunk = paramString2;
-    localMsgCollision.post(paramActor1, paramLong, paramActor2);
-  }
+    public static void post(long l, com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.il2.engine.MsgCollision msgcollision = (com.maddox.il2.engine.MsgCollision)cache.get();
+        msgcollision.thisChunk = s;
+        msgcollision.otherChunk = s1;
+        msgcollision.post(actor, l, actor1);
+    }
 
-  public static void post2(long paramLong, Actor paramActor1, Actor paramActor2, String paramString1, String paramString2)
-  {
-    MsgCollision localMsgCollision = null;
-    int i = (paramActor1.flags & 0x80) != 0 ? 1 : 0;
-    int j = (paramActor2.flags & 0x80) != 0 ? 1 : 0;
-    if ((i == 0) && (j == 0)) {
-      localMsgCollision = (MsgCollision)cache.get();
-      localMsgCollision.thisChunk = paramString1;
-      localMsgCollision.otherChunk = paramString2;
-      localMsgCollision.post(paramActor1, paramLong, paramActor2);
-      localMsgCollision = (MsgCollision)cache.get();
-      localMsgCollision.thisChunk = paramString2;
-      localMsgCollision.otherChunk = paramString1;
-      localMsgCollision.post(paramActor2, paramLong, paramActor1);
-      return;
+    public static void post2(long l, com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1, java.lang.String s, java.lang.String s1)
+    {
+        Object obj = null;
+        boolean flag = (actor.flags & 0x80) != 0;
+        boolean flag1 = (actor1.flags & 0x80) != 0;
+        if(!flag && !flag1)
+        {
+            com.maddox.il2.engine.MsgCollision msgcollision = (com.maddox.il2.engine.MsgCollision)cache.get();
+            msgcollision.thisChunk = s;
+            msgcollision.otherChunk = s1;
+            msgcollision.post(actor, l, actor1);
+            msgcollision = (com.maddox.il2.engine.MsgCollision)cache.get();
+            msgcollision.thisChunk = s1;
+            msgcollision.otherChunk = s;
+            msgcollision.post(actor1, l, actor);
+            return;
+        }
+        if(flag && flag1)
+            if((actor1.flags & 0x20) != 0)
+                flag = false;
+            else
+                flag1 = false;
+        if(flag)
+        {
+            com.maddox.il2.engine.MsgCollision msgcollision1 = (com.maddox.il2.engine.MsgCollision)cache.get();
+            msgcollision1.thisChunk = s;
+            msgcollision1.otherChunk = s1;
+            msgcollision1.post(actor, l, actor1);
+        }
+        if(flag1)
+        {
+            com.maddox.il2.engine.MsgCollision msgcollision2 = (com.maddox.il2.engine.MsgCollision)cache.get();
+            msgcollision2.thisChunk = s1;
+            msgcollision2.otherChunk = s;
+            msgcollision2.post(actor1, l, actor);
+        }
     }
-    if ((i != 0) && (j != 0)) {
-      if ((paramActor2.flags & 0x20) != 0) i = 0; else
-        j = 0;
-    }
-    if (i != 0) {
-      localMsgCollision = (MsgCollision)cache.get();
-      localMsgCollision.thisChunk = paramString1;
-      localMsgCollision.otherChunk = paramString2;
-      localMsgCollision.post(paramActor1, paramLong, paramActor2);
-    }
-    if (j != 0) {
-      localMsgCollision = (MsgCollision)cache.get();
-      localMsgCollision.thisChunk = paramString2;
-      localMsgCollision.otherChunk = paramString1;
-      localMsgCollision.post(paramActor2, paramLong, paramActor1);
-    }
-  }
 
-  public void clean() {
-    this.thisChunk = null;
-    this.otherChunk = null;
-    super.clean();
-  }
-
-  public boolean invokeListener(Object paramObject) {
-    if ((paramObject instanceof MsgCollisionListener)) {
-      ((MsgCollisionListener)paramObject).msgCollision((Actor)this._sender, this.thisChunk, this.otherChunk);
-      return true;
+    public void clean()
+    {
+        thisChunk = null;
+        otherChunk = null;
+        super.clean();
     }
-    return false;
-  }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        if(obj instanceof com.maddox.il2.engine.MsgCollisionListener)
+        {
+            ((com.maddox.il2.engine.MsgCollisionListener)obj).msgCollision((com.maddox.il2.engine.Actor)_sender, thisChunk, otherChunk);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public java.lang.String thisChunk;
+    public java.lang.String otherChunk;
+    private static com.maddox.rts.MessageCache cache;
+
+    static 
+    {
+        cache = new MessageCache(com.maddox.il2.engine.MsgCollision.class);
+    }
 }

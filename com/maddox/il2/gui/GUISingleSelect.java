@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUISingleSelect.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GCanvas;
@@ -10,6 +15,7 @@ import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.I18N;
@@ -26,336 +32,380 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class GUISingleSelect extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient, GUIRoot, GUISeparate
+
+public class GUISingleSelect extends com.maddox.il2.game.GameState
 {
-  public static final String HOME_DIR = "missions/single";
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton wPrev;
-  public GUIButton wNext;
-  public GWindowComboControl wCountry;
-  public GTexture countryIcon;
-  public GWindowComboControl wDirs;
-  public Table wTable;
-  public WDescript wDescript;
-  public String country;
-  public boolean bInited = false;
-  public ResourceBundle resCountry;
-  public ArrayList countryLst = new ArrayList();
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
+    {
 
-  public TreeMap _scanMap = new TreeMap();
-
-  public void _enter()
-  {
-    init();
-    int i = this.wCountry.getSelected();
-    if (i >= 0) Main3D.menuMusicPlay((String)this.countryLst.get(i));
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  private void init() {
-    if (this.bInited) return;
-    this.resCountry = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-
-    this._scanMap.put(this.resCountry.getString("ru"), "ru");
-    this._scanMap.put(this.resCountry.getString("de"), "de");
-
-    File localFile = new File(HomePath.get(0), "missions/single");
-    if (localFile != null) {
-      localObject = localFile.listFiles();
-      if (localObject != null) {
-        for (int i = 0; i < localObject.length; i++) {
-          if ((localObject[i].isDirectory()) && (!localObject[i].isHidden())) {
-            String str2 = localObject[i].getName().toLowerCase();
-            String str3 = null;
-            try {
-              str3 = this.resCountry.getString(str2);
-            } catch (Exception localException) {
-              continue;
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == wPrev)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
             }
-            if (this._scanMap.containsKey(str3))
-              continue;
-            this._scanMap.put(str3, str2);
-          }
-        }
-      }
-    }
-
-    Object localObject = this._scanMap.keySet().iterator();
-    while (((Iterator)localObject).hasNext()) {
-      String str1 = (String)((Iterator)localObject).next();
-      this.countryLst.add(this._scanMap.get(str1));
-      this.wCountry.add(str1);
-    }
-    this._scanMap.clear();
-
-    this.wCountry.setSelected(-1, false, true);
-    if (this.countryLst.size() > 0)
-      this.wCountry.setSelected(0, true, true);
-    this.bInited = true;
-  }
-
-  public void fillDirs() {
-    this.countryIcon = null;
-    this.country = null;
-    int i = this.wCountry.getSelected();
-    if (i < 0) {
-      this.wDirs.clear(false);
-      this.wTable.files.clear();
-      this.wTable.setSelect(-1, 0);
-      return;
-    }
-    this.country = ((String)this.countryLst.get(i));
-    File localFile = new File(HomePath.get(0), "missions/single/" + this.country);
-    File[] arrayOfFile = localFile.listFiles();
-    this.wDirs.clear(false);
-    if ((arrayOfFile == null) || (arrayOfFile.length == 0)) {
-      this.wTable.files.clear();
-      this.wTable.setSelect(-1, 0);
-      return;
-    }
-
-    for (int j = 0; j < arrayOfFile.length; j++) {
-      if ((!arrayOfFile[j].isDirectory()) || (arrayOfFile[j].isHidden()) || (".".equals(arrayOfFile[j].getName())) || ("..".equals(arrayOfFile[j].getName()))) {
-        continue;
-      }
-      this._scanMap.put(arrayOfFile[j].getName(), null);
-    }
-    Iterator localIterator = this._scanMap.keySet().iterator();
-    while (localIterator.hasNext())
-      this.wDirs.add((String)localIterator.next());
-    if (this._scanMap.size() > 0)
-      this.wDirs.setSelected(0, true, false);
-    this._scanMap.clear();
-    fillFiles();
-  }
-
-  public void fillFiles()
-  {
-    this.wTable.files.clear();
-    String str1 = this.wDirs.getValue();
-    int i = this.wCountry.getSelected();
-    if (str1 != null) {
-      String str2 = "missions/single/" + this.country + "/" + str1;
-      File localFile = new File(HomePath.get(0), str2);
-      File[] arrayOfFile = localFile.listFiles();
-      if ((arrayOfFile != null) && (arrayOfFile.length > 0)) {
-        for (int j = 0; j < arrayOfFile.length; j++) {
-          if ((arrayOfFile[j].isDirectory()) || (arrayOfFile[j].isHidden()) || (arrayOfFile[j].getName().toLowerCase().lastIndexOf(".properties") >= 0)) {
-            continue;
-          }
-          FileMission localFileMission = new FileMission(str2, arrayOfFile[j].getName());
-          this._scanMap.put(localFileMission.fileName, localFileMission);
+            if(gwindow == wCountry)
+            {
+                fillDirs();
+                int k = wCountry.getSelected();
+                if(k >= 0)
+                {
+                    com.maddox.il2.game.Main3D.menuMusicPlay((java.lang.String)countryLst.get(k));
+                    ((com.maddox.il2.gui.GUIRoot)root).setBackCountry("single", (java.lang.String)countryLst.get(k));
+                }
+                return true;
+            }
+            if(gwindow == wDirs)
+            {
+                fillFiles();
+                return true;
+            }
+            if(gwindow == wNext)
+            {
+                if(wDirs.getValue() == null)
+                    return true;
+                int l = wTable.selectRow;
+                if(l < 0 || l >= wTable.files.size())
+                {
+                    return true;
+                } else
+                {
+                    com.maddox.il2.gui.FileMission filemission = (com.maddox.il2.gui.FileMission)wTable.files.get(l);
+                    int i1 = wCountry.getSelected();
+                    com.maddox.il2.game.Main.cur().currentMissionFile = new SectFile("missions/single/" + country + "/" + wDirs.getValue() + "/" + filemission.fileName, 0);
+                    com.maddox.il2.game.Main.stateStack().push(4);
+                    return true;
+                }
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
 
-        Iterator localIterator = this._scanMap.keySet().iterator();
-        while (localIterator.hasNext())
-          this.wTable.files.add(this._scanMap.get(localIterator.next()));
-        if (this._scanMap.size() > 0)
-          this.wTable.setSelect(0, 0);
-        else
-          this.wTable.setSelect(-1, 0);
-        this._scanMap.clear();
-      } else {
-        this.wTable.setSelect(-1, 0);
-      }
-    } else {
-      this.wTable.setSelect(-1, 0);
-    }
-    this.wTable.resized();
-  }
-
-  public GUISingleSelect(GWindowRoot paramGWindowRoot)
-  {
-    super(3);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("singleSelect.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wCountry = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 2.0F, 2.0F, 20.0F + paramGWindowRoot.lookAndFeel().getHScrollBarW() / paramGWindowRoot.lookAndFeel().metric())));
-
-    this.wCountry.setEditable(false);
-
-    this.wDirs = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 2.0F, 2.0F, 20.0F + paramGWindowRoot.lookAndFeel().getHScrollBarW() / paramGWindowRoot.lookAndFeel().metric())));
-
-    this.wDirs.setEditable(false);
-    this.wTable = new Table(this.dialogClient);
-
-    this.dialogClient.create(this.wDescript = new WDescript());
-    this.wDescript.bNotify = true;
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.wPrev = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.wNext = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUISingleSelect.this.wPrev) {
-        Main.stateStack().pop();
-        return true;
-      }
-      int i;
-      if (paramGWindow == GUISingleSelect.this.wCountry) {
-        GUISingleSelect.this.fillDirs();
-        i = GUISingleSelect.this.wCountry.getSelected();
-        if (i >= 0) {
-          Main3D.menuMusicPlay((String)GUISingleSelect.this.countryLst.get(i));
-          ((GUIRoot)this.root).setBackCountry("single", (String)GUISingleSelect.this.countryLst.get(i));
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(432F), y1024(546F), x1024(384F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(416F), y1024(32F), 2.0F, y1024(608F));
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(64F), y1024(40F), x1024(240F), y1024(32F), 0, i18n("singleSelect.Country"));
+            draw(x1024(64F), y1024(156F), x1024(240F), y1024(32F), 0, i18n("singleSelect.MissType"));
+            draw(x1024(64F), y1024(264F), x1024(240F), y1024(32F), 0, i18n("singleSelect.Miss"));
+            draw(x1024(464F), y1024(264F), x1024(248F), y1024(32F), 0, i18n("singleSelect.Desc"));
+            draw(x1024(104F), y1024(592F), x1024(192F), y1024(48F), 0, i18n("singleSelect.MainMenu"));
+            draw(x1024(528F), y1024(592F), x1024(216F), y1024(48F), 2, i18n("singleSelect.Brief"));
         }
-        return true;
-      }if (paramGWindow == GUISingleSelect.this.wDirs) {
-        GUISingleSelect.this.fillFiles();
-        return true;
-      }if (paramGWindow == GUISingleSelect.this.wNext) {
-        if (GUISingleSelect.this.wDirs.getValue() == null) return true;
-        i = GUISingleSelect.this.wTable.selectRow;
-        if ((i < 0) || (i >= GUISingleSelect.this.wTable.files.size())) return true;
-        GUISingleSelect.FileMission localFileMission = (GUISingleSelect.FileMission)GUISingleSelect.this.wTable.files.get(i);
 
-        int j = GUISingleSelect.this.wCountry.getSelected();
-        Main.cur().currentMissionFile = new SectFile("missions/single/" + GUISingleSelect.this.country + "/" + GUISingleSelect.this.wDirs.getValue() + "/" + localFileMission.fileName, 0);
+        public void setPosSize()
+        {
+            set1024PosSize(80F, 64F, 848F, 672F);
+            wPrev.setPosC(x1024(56F), y1024(616F));
+            wNext.setPosC(x1024(792F), y1024(616F));
+            wCountry.setPosSize(x1024(48F), y1024(80F), x1024(336F), M(2.0F));
+            wDirs.setPosSize(x1024(48F), y1024(192F), x1024(336F), M(2.0F));
+            wTable.setPosSize(x1024(48F), y1024(304F), x1024(336F), y1024(256F));
+            wDescript.setPosSize(x1024(448F), y1024(312F), x1024(354F), y1024(212F));
+        }
 
-        Main.stateStack().push(4);
-        return true;
-      }
-
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        public DialogClient()
+        {
+        }
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(432.0F), y1024(546.0F), x1024(384.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(416.0F), y1024(32.0F), 2.0F, y1024(608.0F));
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(64.0F), y1024(40.0F), x1024(240.0F), y1024(32.0F), 0, GUISingleSelect.this.i18n("singleSelect.Country"));
-      draw(x1024(64.0F), y1024(156.0F), x1024(240.0F), y1024(32.0F), 0, GUISingleSelect.this.i18n("singleSelect.MissType"));
-      draw(x1024(64.0F), y1024(264.0F), x1024(240.0F), y1024(32.0F), 0, GUISingleSelect.this.i18n("singleSelect.Miss"));
-      draw(x1024(464.0F), y1024(264.0F), x1024(248.0F), y1024(32.0F), 0, GUISingleSelect.this.i18n("singleSelect.Desc"));
-
-      draw(x1024(104.0F), y1024(592.0F), x1024(192.0F), y1024(48.0F), 0, GUISingleSelect.this.i18n("singleSelect.MainMenu"));
-      draw(x1024(528.0F), y1024(592.0F), x1024(216.0F), y1024(48.0F), 2, GUISingleSelect.this.i18n("singleSelect.Brief"));
-    }
-
-    public void setPosSize() {
-      set1024PosSize(80.0F, 64.0F, 848.0F, 672.0F);
-      GUISingleSelect.this.wPrev.setPosC(x1024(56.0F), y1024(616.0F));
-      GUISingleSelect.this.wNext.setPosC(x1024(792.0F), y1024(616.0F));
-      GUISingleSelect.this.wCountry.setPosSize(x1024(48.0F), y1024(80.0F), x1024(336.0F), M(2.0F));
-      GUISingleSelect.this.wDirs.setPosSize(x1024(48.0F), y1024(192.0F), x1024(336.0F), M(2.0F));
-      GUISingleSelect.this.wTable.setPosSize(x1024(48.0F), y1024(304.0F), x1024(336.0F), y1024(256.0F));
-      GUISingleSelect.this.wDescript.setPosSize(x1024(448.0F), y1024(312.0F), x1024(354.0F), y1024(212.0F));
-    }
-  }
-
-  public class WDescript extends GWindow
-  {
-    public WDescript()
+    public class WDescript extends com.maddox.gwindow.GWindow
     {
+
+        public void render()
+        {
+            java.lang.String s = null;
+            if(wTable.selectRow >= 0)
+            {
+                s = ((com.maddox.il2.gui.FileMission)wTable.files.get(wTable.selectRow)).description;
+                if(s != null && s.length() == 0)
+                    s = null;
+            }
+            if(s != null)
+            {
+                setCanvasFont(0);
+                setCanvasColorBLACK();
+                drawLines(0.0F, -root.C.font.descender, s, 0, s.length(), win.dx, root.C.font.height);
+            }
+        }
+
+        public WDescript()
+        {
+        }
     }
 
-    public void render()
+    public class Table extends com.maddox.gwindow.GWindowTable
     {
-      String str = null;
-      if (GUISingleSelect.this.wTable.selectRow >= 0) {
-        str = ((GUISingleSelect.FileMission)GUISingleSelect.this.wTable.files.get(GUISingleSelect.this.wTable.selectRow)).description;
-        if ((str != null) && (str.length() == 0)) str = null;
-      }
-      if (str != null) {
-        setCanvasFont(0);
-        setCanvasColorBLACK();
-        drawLines(0.0F, -this.root.C.font.descender, str, 0, str.length(), this.win.dx, this.root.C.font.height);
-      }
+
+        public int countRows()
+        {
+            return files == null ? 0 : files.size();
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            java.lang.String s = ((com.maddox.il2.gui.FileMission)files.get(i)).name;
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, 0, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, 0, s);
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = false;
+            addColumn(com.maddox.il2.game.I18N.gui("singleSelect.MissFiles"), null);
+            vSB.scroll = rowHeight(0);
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public java.util.ArrayList files;
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow, 2.0F, 4F, 20F, 16F);
+            files = new ArrayList();
+            bNotify = true;
+            wClient.bNotify = true;
+        }
     }
-  }
 
-  public class Table extends GWindowTable
-  {
-    public ArrayList files = new ArrayList();
-
-    public int countRows() { return this.files != null ? this.files.size() : 0; }
-
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      String str = ((GUISingleSelect.FileMission)this.files.get(paramInt1)).name;
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, str);
-      }
-      else
-      {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, str);
-      }
-    }
-
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = false;
-      addColumn(I18N.gui("singleSelect.MissFiles"), null);
-      this.vSB.scroll = rowHeight(0);
-      resized();
-    }
-
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public Table(GWindow arg2) {
-      super(2.0F, 4.0F, 20.0F, 16.0F);
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-    }
-  }
-
-  static class FileMission
-  {
-    public String fileName;
-    public String name;
-    public String description;
-
-    public FileMission(String paramString1, String paramString2)
+    static class FileMission
     {
-      this.fileName = paramString2;
-      try {
-        String str = paramString2;
-        int i = str.lastIndexOf(".");
-        if (i >= 0)
-          str = str.substring(0, i);
-        ResourceBundle localResourceBundle = ResourceBundle.getBundle(paramString1 + "/" + str, RTSConf.cur.locale);
-        this.name = localResourceBundle.getString("Name");
-        this.description = localResourceBundle.getString("Short");
-      } catch (Exception localException) {
-        this.name = paramString2;
-        this.description = null;
-      }
+
+        public java.lang.String fileName;
+        public java.lang.String name;
+        public java.lang.String description;
+
+        public FileMission(java.lang.String s, java.lang.String s1)
+        {
+            fileName = s1;
+            try
+            {
+                java.lang.String s2 = s1;
+                int i = s2.lastIndexOf(".");
+                if(i >= 0)
+                    s2 = s2.substring(0, i);
+                java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle(s + "/" + s2, com.maddox.rts.RTSConf.cur.locale);
+                name = resourcebundle.getString("Name");
+                description = resourcebundle.getString("Short");
+            }
+            catch(java.lang.Exception exception)
+            {
+                name = s1;
+                description = null;
+            }
+        }
     }
-  }
+
+
+    public void _enter()
+    {
+        init();
+        int i = wCountry.getSelected();
+        if(i >= 0)
+            com.maddox.il2.game.Main3D.menuMusicPlay((java.lang.String)countryLst.get(i));
+        client.activateWindow();
+    }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    private void init()
+    {
+        if(bInited)
+            return;
+        resCountry = java.util.ResourceBundle.getBundle("i18n/country", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+        _scanMap.put(resCountry.getString("ru"), "ru");
+        _scanMap.put(resCountry.getString("de"), "de");
+        java.io.File file = new File(com.maddox.rts.HomePath.get(0), "missions/single");
+        if(file != null)
+        {
+            java.io.File afile[] = file.listFiles();
+            if(afile != null)
+            {
+                for(int i = 0; i < afile.length; i++)
+                {
+                    if(!afile[i].isDirectory() || afile[i].isHidden())
+                        continue;
+                    java.lang.String s1 = afile[i].getName().toLowerCase();
+                    java.lang.String s2 = null;
+                    try
+                    {
+                        s2 = resCountry.getString(s1);
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        continue;
+                    }
+                    if(!_scanMap.containsKey(s2))
+                        _scanMap.put(s2, s1);
+                }
+
+            }
+        }
+        java.lang.String s;
+        for(java.util.Iterator iterator = _scanMap.keySet().iterator(); iterator.hasNext(); wCountry.add(s))
+        {
+            s = (java.lang.String)iterator.next();
+            countryLst.add(_scanMap.get(s));
+        }
+
+        _scanMap.clear();
+        wCountry.setSelected(-1, false, true);
+        if(countryLst.size() > 0)
+            wCountry.setSelected(0, true, true);
+        bInited = true;
+    }
+
+    public void fillDirs()
+    {
+        countryIcon = null;
+        country = null;
+        int i = wCountry.getSelected();
+        if(i < 0)
+        {
+            wDirs.clear(false);
+            wTable.files.clear();
+            wTable.setSelect(-1, 0);
+            return;
+        }
+        country = (java.lang.String)countryLst.get(i);
+        java.io.File file = new File(com.maddox.rts.HomePath.get(0), "missions/single/" + country);
+        java.io.File afile[] = file.listFiles();
+        wDirs.clear(false);
+        if(afile == null || afile.length == 0)
+        {
+            wTable.files.clear();
+            wTable.setSelect(-1, 0);
+            return;
+        }
+        for(int j = 0; j < afile.length; j++)
+            if(afile[j].isDirectory() && !afile[j].isHidden() && !".".equals(afile[j].getName()) && !"..".equals(afile[j].getName()))
+                _scanMap.put(afile[j].getName(), null);
+
+        for(java.util.Iterator iterator = _scanMap.keySet().iterator(); iterator.hasNext(); wDirs.add((java.lang.String)iterator.next()));
+        if(_scanMap.size() > 0)
+            wDirs.setSelected(0, true, false);
+        _scanMap.clear();
+        fillFiles();
+    }
+
+    public void fillFiles()
+    {
+        wTable.files.clear();
+        java.lang.String s = wDirs.getValue();
+        int i = wCountry.getSelected();
+        if(s != null)
+        {
+            java.lang.String s1 = "missions/single/" + country + "/" + s;
+            java.io.File file = new File(com.maddox.rts.HomePath.get(0), s1);
+            java.io.File afile[] = file.listFiles();
+            if(afile != null && afile.length > 0)
+            {
+                for(int j = 0; j < afile.length; j++)
+                    if(!afile[j].isDirectory() && !afile[j].isHidden() && afile[j].getName().toLowerCase().lastIndexOf(".properties") < 0)
+                    {
+                        com.maddox.il2.gui.FileMission filemission = new FileMission(s1, afile[j].getName());
+                        _scanMap.put(filemission.fileName, filemission);
+                    }
+
+                for(java.util.Iterator iterator = _scanMap.keySet().iterator(); iterator.hasNext(); wTable.files.add(_scanMap.get(iterator.next())));
+                if(_scanMap.size() > 0)
+                    wTable.setSelect(0, 0);
+                else
+                    wTable.setSelect(-1, 0);
+                _scanMap.clear();
+            } else
+            {
+                wTable.setSelect(-1, 0);
+            }
+        } else
+        {
+            wTable.setSelect(-1, 0);
+        }
+        wTable.resized();
+    }
+
+    public GUISingleSelect(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(3);
+        bInited = false;
+        countryLst = new ArrayList();
+        _scanMap = new TreeMap();
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("singleSelect.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wCountry = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 2.0F, 2.0F, 20F + gwindowroot.lookAndFeel().getHScrollBarW() / gwindowroot.lookAndFeel().metric()));
+        wCountry.setEditable(false);
+        wDirs = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 2.0F, 2.0F, 20F + gwindowroot.lookAndFeel().getHScrollBarW() / gwindowroot.lookAndFeel().metric()));
+        wDirs.setEditable(false);
+        wTable = new Table(dialogClient);
+        dialogClient.create(wDescript = new WDescript());
+        wDescript.bNotify = true;
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        wPrev = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        wNext = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public static final java.lang.String HOME_DIR = "missions/single";
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton wPrev;
+    public com.maddox.il2.gui.GUIButton wNext;
+    public com.maddox.gwindow.GWindowComboControl wCountry;
+    public com.maddox.gwindow.GTexture countryIcon;
+    public com.maddox.gwindow.GWindowComboControl wDirs;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.WDescript wDescript;
+    public java.lang.String country;
+    public boolean bInited;
+    public java.util.ResourceBundle resCountry;
+    public java.util.ArrayList countryLst;
+    public java.util.TreeMap _scanMap;
 }

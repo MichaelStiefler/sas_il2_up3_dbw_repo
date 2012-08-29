@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdDotRange.java
+
 package com.maddox.il2.game.cmd;
 
 import com.maddox.il2.game.DotRange;
@@ -11,84 +16,93 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdDotRange extends Cmd
+public class CmdDotRange extends com.maddox.rts.Cmd
 {
-  public static final String DEFAULT = "DEFAULT";
-  public static final String FRIENDLY = "FRIENDLY";
-  public static final String FOE = "FOE";
-  public static final String DOT = "DOT";
-  public static final String COLOR = "COLOR";
-  public static final String TYPE = "TYPE";
-  public static final String NAME = "NAME";
-  public static final String ID = "ID";
-  public static final String RANGE = "RANGE";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    boolean bool1 = paramMap.containsKey("FRIENDLY");
-    boolean bool2 = paramMap.containsKey("FOE");
-    if ((!bool1) && (!bool2)) {
-      bool1 = bool2 = 1;
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        boolean flag = map.containsKey("FRIENDLY");
+        boolean flag1 = map.containsKey("FOE");
+        if(!flag && !flag1)
+            flag = flag1 = true;
+        if(com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+        {
+            if(map.containsKey("DEFAULT"))
+            {
+                if(flag)
+                {
+                    com.maddox.il2.game.Main.cur().dotRangeFriendly.setDefault();
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).replicateDotRange(true);
+                }
+                if(flag1)
+                {
+                    com.maddox.il2.game.Main.cur().dotRangeFoe.setDefault();
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).replicateDotRange(false);
+                }
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            }
+            if(map.containsKey("DOT") || map.containsKey("COLOR") || map.containsKey("TYPE") || map.containsKey("NAME") || map.containsKey("ID") || map.containsKey("RANGE"))
+            {
+                double d = com.maddox.rts.Cmd.arg(map, "DOT", 0, -1D) * 1000D;
+                double d1 = com.maddox.rts.Cmd.arg(map, "COLOR", 0, -1D) * 1000D;
+                double d2 = com.maddox.rts.Cmd.arg(map, "TYPE", 0, -1D) * 1000D;
+                double d3 = com.maddox.rts.Cmd.arg(map, "NAME", 0, -1D) * 1000D;
+                double d4 = com.maddox.rts.Cmd.arg(map, "ID", 0, -1D) * 1000D;
+                double d5 = com.maddox.rts.Cmd.arg(map, "RANGE", 0, -1D) * 1000D;
+                if(flag)
+                {
+                    com.maddox.il2.game.Main.cur().dotRangeFriendly.set(d, d1, d2, d3, d4, d5);
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).replicateDotRange(true);
+                }
+                if(flag1)
+                {
+                    com.maddox.il2.game.Main.cur().dotRangeFoe.set(d, d1, d2, d3, d4, d5);
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).replicateDotRange(false);
+                }
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            }
+        }
+        if(flag)
+            typeInfo(true);
+        if(flag1)
+            typeInfo(false);
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
-    if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster())) {
-      if (paramMap.containsKey("DEFAULT")) {
-        if (bool1) {
-          Main.cur().dotRangeFriendly.setDefault();
-          ((NetUser)NetEnv.host()).replicateDotRange(true);
-        }
-        if (bool2) {
-          Main.cur().dotRangeFoe.setDefault();
-          ((NetUser)NetEnv.host()).replicateDotRange(false);
-        }
-        return CmdEnv.RETURN_OK;
-      }
-      if ((paramMap.containsKey("DOT")) || (paramMap.containsKey("COLOR")) || (paramMap.containsKey("TYPE")) || (paramMap.containsKey("NAME")) || (paramMap.containsKey("ID")) || (paramMap.containsKey("RANGE")))
-      {
-        double d1 = arg(paramMap, "DOT", 0, -1.0D) * 1000.0D;
-        double d2 = arg(paramMap, "COLOR", 0, -1.0D) * 1000.0D;
-        double d3 = arg(paramMap, "TYPE", 0, -1.0D) * 1000.0D;
-        double d4 = arg(paramMap, "NAME", 0, -1.0D) * 1000.0D;
-        double d5 = arg(paramMap, "ID", 0, -1.0D) * 1000.0D;
-        double d6 = arg(paramMap, "RANGE", 0, -1.0D) * 1000.0D;
 
-        if (bool1) {
-          Main.cur().dotRangeFriendly.set(d1, d2, d3, d4, d5, d6);
-          ((NetUser)NetEnv.host()).replicateDotRange(true);
-        }
-        if (bool2) {
-          Main.cur().dotRangeFoe.set(d1, d2, d3, d4, d5, d6);
-          ((NetUser)NetEnv.host()).replicateDotRange(false);
-        }
-        return CmdEnv.RETURN_OK;
-      }
+    private void typeInfo(boolean flag)
+    {
+        com.maddox.il2.game.DotRange dotrange = flag ? com.maddox.il2.game.Main.cur().dotRangeFriendly : com.maddox.il2.game.Main.cur().dotRangeFoe;
+        INFO_HARD(flag ? "Friendly Dot Ranges:" : "Foe Dot Ranges:");
+        INFO_HARD("  DOT\t" + dotrange.dot() / 1000D + " km");
+        INFO_HARD("  COLOR\t" + dotrange.color() / 1000D + " km");
+        INFO_HARD("  TYPE\t" + dotrange.type() / 1000D + " km");
+        INFO_HARD("  NAME\t" + dotrange.name() / 1000D + " km");
+        INFO_HARD("  ID\t" + dotrange.id() / 1000D + " km");
+        INFO_HARD("  RANGE\t" + dotrange.range() / 1000D + " km");
     }
-    if (bool1) typeInfo(true);
-    if (bool2) typeInfo(false);
-    return CmdEnv.RETURN_OK;
-  }
 
-  private void typeInfo(boolean paramBoolean) {
-    DotRange localDotRange = paramBoolean ? Main.cur().dotRangeFriendly : Main.cur().dotRangeFoe;
-    INFO_HARD(paramBoolean ? "Friendly Dot Ranges:" : "Foe Dot Ranges:");
-    INFO_HARD("  DOT\t" + localDotRange.dot() / 1000.0D + " km");
-    INFO_HARD("  COLOR\t" + localDotRange.color() / 1000.0D + " km");
-    INFO_HARD("  TYPE\t" + localDotRange.type() / 1000.0D + " km");
-    INFO_HARD("  NAME\t" + localDotRange.name() / 1000.0D + " km");
-    INFO_HARD("  ID\t" + localDotRange.id() / 1000.0D + " km");
-    INFO_HARD("  RANGE\t" + localDotRange.range() / 1000.0D + " km");
-  }
+    public CmdDotRange()
+    {
+        param.put("DEFAULT", null);
+        param.put("FRIENDLY", null);
+        param.put("FOE", null);
+        param.put("DOT", null);
+        param.put("COLOR", null);
+        param.put("TYPE", null);
+        param.put("NAME", null);
+        param.put("ID", null);
+        param.put("RANGE", null);
+        _properties.put("NAME", "mp_dotrange");
+        _levelAccess = 1;
+    }
 
-  public CmdDotRange() {
-    this.param.put("DEFAULT", null);
-    this.param.put("FRIENDLY", null);
-    this.param.put("FOE", null);
-    this.param.put("DOT", null);
-    this.param.put("COLOR", null);
-    this.param.put("TYPE", null);
-    this.param.put("NAME", null);
-    this.param.put("ID", null);
-    this.param.put("RANGE", null);
-    this._properties.put("NAME", "mp_dotrange");
-    this._levelAccess = 1;
-  }
+    public static final java.lang.String DEFAULT = "DEFAULT";
+    public static final java.lang.String FRIENDLY = "FRIENDLY";
+    public static final java.lang.String FOE = "FOE";
+    public static final java.lang.String DOT = "DOT";
+    public static final java.lang.String COLOR = "COLOR";
+    public static final java.lang.String TYPE = "TYPE";
+    public static final java.lang.String NAME = "NAME";
+    public static final java.lang.String ID = "ID";
+    public static final java.lang.String RANGE = "RANGE";
 }

@@ -1,168 +1,185 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetHost.java
+
 package com.maddox.rts;
 
-import com.maddox.il2.game.Main;
-import com.maddox.il2.net.NetServerParams;
 import java.io.IOException;
 import java.util.List;
 
-public class NetHost extends NetObj
+// Referenced classes of package com.maddox.rts:
+//            NetObj, NetMsgGuaranted, NetMsgSpawn, NetMsgInput, 
+//            NetEnv, Spawn, NetChannel, NetSpawn
+
+public class NetHost extends com.maddox.rts.NetObj
 {
-  public static final int MSG_NAME = 0;
-  protected String shortName;
-  protected NetHost[] path;
-
-  public String toString()
-  {
-    if (this.shortName != null) {
-      return this.shortName;
-    }
-    return super.toString();
-  }
-
-  private String getCleanedString(String paramString)
-  {
-    if ((Main.cur().netServerParams == null) || (!Main.cur().netServerParams.filterUserNames))
+    static class SPAWN
+        implements com.maddox.rts.NetSpawn
     {
-      return paramString;
-    }
-    StringBuffer localStringBuffer = new StringBuffer();
-    for (int i = 0; i < paramString.length(); i++)
-    {
-      int j = paramString.charAt(i);
-      if (!isCharValid(j))
-        continue;
-      localStringBuffer.append(paramString.charAt(i));
-    }
 
-    return localStringBuffer.toString();
-  }
+        public void netSpawn(int i, com.maddox.rts.NetMsgInput netmsginput)
+        {
+            try
+            {
+                java.lang.String s = netmsginput.read255();
+                com.maddox.rts.NetHost anethost[] = null;
+                int j = netmsginput.available() / netmsginput.netObjReferenceLen();
+                if(j > 0)
+                {
+                    anethost = new com.maddox.rts.NetHost[j];
+                    for(int k = 0; k < j; k++)
+                        anethost[k] = (com.maddox.rts.NetHost)netmsginput.readNetObj();
 
-  private boolean isCharValid(int paramInt)
-  {
-    if ((paramInt >= 33) && (paramInt <= 160)) {
-      return true;
-    }
+                }
+                new NetHost(netmsginput.channel(), i, s, anethost);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        }
 
-    if ((paramInt >= 1025) && (paramInt <= 1119)) {
-      return true;
-    }
-    return (paramInt >= 1168) && (paramInt <= 1257);
-  }
-
-  public String shortName()
-  {
-    return this.shortName;
-  }
-  public void setShortName(String paramString) {
-    paramString = getCleanedString(paramString);
-    if (isMaster()) {
-      this.shortName = paramString;
-      if (isMirrored())
-        try {
-          NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted(paramString.length() + 2);
-          localNetMsgGuaranted.writeByte(0);
-          localNetMsgGuaranted.write255(paramString);
-          post(localNetMsgGuaranted); } catch (Exception localException) {
-          printDebug(localException);
+        SPAWN()
+        {
         }
     }
-  }
 
-  public NetHost[] path()
-  {
-    return this.path;
-  }
 
-  public String fullName()
-  {
-    if (this.path == null)
-      return this.shortName;
-    StringBuffer localStringBuffer = new StringBuffer();
-    for (int i = 0; i < this.path.length; i++) {
-      localStringBuffer.append(this.path[i].shortName());
-      localStringBuffer.append('.');
+    public java.lang.String toString()
+    {
+        if(shortName != null)
+            return shortName;
+        else
+            return super.toString();
     }
-    localStringBuffer.append(this.shortName);
-    return localStringBuffer.toString();
-  }
 
-  public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException
-  {
-    if ((isMirror()) && (paramNetMsgInput.channel() == this.masterChannel)) {
-      paramNetMsgInput.reset();
-      int i = paramNetMsgInput.readByte();
-      if (i == 0) {
-        this.shortName = paramNetMsgInput.read255();
-        if (isMirrored())
-          post(new NetMsgGuaranted(paramNetMsgInput, 0));
-        return true;
-      }
-      paramNetMsgInput.reset();
+    public java.lang.String shortName()
+    {
+        return shortName;
     }
-    return false;
-  }
 
-  public void destroy() {
-    if (isMirror()) {
-      int i = NetEnv.hosts().indexOf(this);
-      if (i >= 0)
-        NetEnv.hosts().remove(i);
-    } else {
-      NetEnv.cur().host = null;
-    }
-    super.destroy();
-  }
-
-  public NetMsgSpawn netReplicate(NetChannel paramNetChannel) throws IOException {
-    NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this);
-    this.shortName = getCleanedString(this.shortName);
-    localNetMsgSpawn.write255(this.shortName);
-    if (isMirror()) {
-      if (this.path != null) {
-        for (int i = 0; i < this.path.length; i++)
-          localNetMsgSpawn.writeNetObj(this.path[i]);
-      }
-      localNetMsgSpawn.writeNetObj(NetEnv.host());
-    }
-    return localNetMsgSpawn;
-  }
-
-  public NetHost(String paramString) {
-    super(null, -1);
-
-    this.shortName = getCleanedString(paramString);
-    this.path = null;
-    NetEnv.cur().host = this;
-  }
-
-  public NetHost(NetChannel paramNetChannel, int paramInt, String paramString, NetHost[] paramArrayOfNetHost)
-  {
-    super(null, -1, paramNetChannel, paramInt);
-
-    this.shortName = getCleanedString(paramString);
-    this.path = paramArrayOfNetHost;
-    NetEnv.hosts().add(this);
-  }
-
-  static
-  {
-    Spawn.add(NetHost.class, new SPAWN());
-  }
-
-  static class SPAWN implements NetSpawn {
-    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput) {
-      try {
-        String str = paramNetMsgInput.read255();
-        NetHost[] arrayOfNetHost = null;
-        int i = paramNetMsgInput.available() / NetMsgInput.netObjReferenceLen();
-        if (i > 0) {
-          arrayOfNetHost = new NetHost[i];
-          for (int j = 0; j < i; j++)
-            arrayOfNetHost[j] = ((NetHost)paramNetMsgInput.readNetObj());
+    public void setShortName(java.lang.String s)
+    {
+        if(isMaster())
+        {
+            shortName = s;
+            if(isMirrored())
+                try
+                {
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(s.length() + 2);
+                    netmsgguaranted.writeByte(0);
+                    netmsgguaranted.write255(s);
+                    post(netmsgguaranted);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    com.maddox.rts.NetObj.printDebug(exception);
+                }
         }
-        new NetHost(paramNetMsgInput.channel(), paramInt, str, arrayOfNetHost); } catch (Exception localException) {
-        NetObj.printDebug(localException);
-      }
     }
-  }
+
+    public com.maddox.rts.NetHost[] path()
+    {
+        return path;
+    }
+
+    public java.lang.String fullName()
+    {
+        if(path == null)
+            return shortName;
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        for(int i = 0; i < path.length; i++)
+        {
+            stringbuffer.append(path[i].shortName());
+            stringbuffer.append('.');
+        }
+
+        stringbuffer.append(shortName);
+        return stringbuffer.toString();
+    }
+
+    public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        if(isMirror() && netmsginput.channel() == masterChannel)
+        {
+            netmsginput.reset();
+            byte byte0 = netmsginput.readByte();
+            if(byte0 == 0)
+            {
+                shortName = netmsginput.read255();
+                if(isMirrored())
+                    post(new NetMsgGuaranted(netmsginput, 0));
+                return true;
+            }
+            netmsginput.reset();
+        }
+        return false;
+    }
+
+    public void destroy()
+    {
+        if(isMirror())
+        {
+            int i = com.maddox.rts.NetEnv.hosts().indexOf(this);
+            if(i >= 0)
+                com.maddox.rts.NetEnv.hosts().remove(i);
+        } else
+        {
+            com.maddox.rts.NetEnv.cur().host = null;
+        }
+        super.destroy();
+    }
+
+    public com.maddox.rts.NetMsgSpawn netReplicate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgSpawn netmsgspawn = new NetMsgSpawn(this);
+        netmsgspawn.write255(shortName);
+        if(isMirror())
+        {
+            if(path != null)
+            {
+                for(int i = 0; i < path.length; i++)
+                    netmsgspawn.writeNetObj(path[i]);
+
+            }
+            netmsgspawn.writeNetObj(com.maddox.rts.NetEnv.host());
+        }
+        return netmsgspawn;
+    }
+
+    public NetHost(java.lang.String s)
+    {
+        super(null, -1);
+        shortName = s;
+        path = null;
+        com.maddox.rts.NetEnv.cur().host = this;
+    }
+
+    public NetHost(com.maddox.rts.NetChannel netchannel, int i, java.lang.String s, com.maddox.rts.NetHost anethost[])
+    {
+        super(null, -1, netchannel, i);
+        shortName = s;
+        path = anethost;
+        com.maddox.rts.NetEnv.hosts().add(this);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public static final int MSG_NAME = 0;
+    protected java.lang.String shortName;
+    protected com.maddox.rts.NetHost path[];
+
+    static 
+    {
+        com.maddox.rts.Spawn.add(com.maddox.rts.NetHost.class, new SPAWN());
+    }
 }

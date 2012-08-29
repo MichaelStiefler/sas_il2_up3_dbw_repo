@@ -1,113 +1,147 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitHE_111H2_TGunner.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.HookNamed;
-import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orient;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.Property;
 
-public class CockpitHE_111H2_TGunner extends CockpitGunner
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitGunner, Aircraft
+
+public class CockpitHE_111H2_TGunner extends com.maddox.il2.objects.air.CockpitGunner
 {
-  private boolean bNeedSetUp = true;
 
-  private Hook hook1 = null;
-  private int iCocking = 0;
-  private int iOldVisDrums = 3;
-  private int iNewVisDrums = 3;
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    if (this.bNeedSetUp) {
-      reflectPlaneMats();
-      this.bNeedSetUp = false;
-    }
-  }
-
-  public void moveGun(Orient paramOrient) {
-    super.moveGun(paramOrient);
-    this.mesh.chunkSetAngles("TurretA", -paramOrient.getYaw(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("TurretB", 0.0F, 0.0F, -paramOrient.getTangage());
-  }
-
-  public void clipAnglesGun(Orient paramOrient) {
-    if (!isRealMode()) return;
-    if (!aiTurret().bIsOperable) {
-      paramOrient.setYPR(0.0F, 0.0F, 0.0F);
-      return;
-    }
-    float f1 = paramOrient.getYaw(); float f2 = paramOrient.getTangage();
-    if (f1 < -42.0F) f1 = -42.0F;
-    if (f1 > 42.0F) f1 = 42.0F;
-    if (f2 > 60.0F) f2 = 60.0F;
-    if (f2 < -3.0F) f2 = -3.0F;
-    paramOrient.setYPR(f1, f2, 0.0F);
-    paramOrient.wrap();
-  }
-
-  protected void interpTick() {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void reflectWorldToInstruments(float f)
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-
-    if (this.bGunFire) {
-      if (this.hook1 == null) {
-        this.hook1 = new HookNamed(aircraft(), "_MGUN02");
-      }
-      doHitMasterAircraft(aircraft(), this.hook1, "_MGUN02");
-      if (this.iCocking > 0) this.iCocking = 0; else
-        this.iCocking = 1;
-    }
-    else {
-      this.iCocking = 0;
-    }
-    this.iNewVisDrums = (int)(this.emitter.countBullets() / 333.0F);
-    if (this.iNewVisDrums < this.iOldVisDrums) {
-      this.iOldVisDrums = this.iNewVisDrums;
-      this.mesh.chunkVisible("Drum1", this.iNewVisDrums > 2);
-      this.mesh.chunkVisible("Drum2", this.iNewVisDrums > 1);
-      this.mesh.chunkVisible("Drum3", this.iNewVisDrums > 0);
-      sfxClick(13);
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            bNeedSetUp = false;
+        }
     }
 
-    this.mesh.chunkSetAngles("CockingLever", -0.75F * this.iCocking, 0.0F, 0.0F);
-  }
-
-  public void doGunFire(boolean paramBoolean)
-  {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void moveGun(com.maddox.il2.engine.Orient orient)
     {
-      this.bGunFire = false;
+        super.moveGun(orient);
+        mesh.chunkSetAngles("TurretA", -orient.getYaw(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("TurretB", 0.0F, 0.0F, -orient.getTangage());
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-  }
 
-  protected void reflectPlaneMats()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D1o"));
-    this.mesh.materialReplace("Gloss1D1o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D2o"));
-    this.mesh.materialReplace("Gloss1D2o", localMat);
-  }
+    public void clipAnglesGun(com.maddox.il2.engine.Orient orient)
+    {
+        if(!isRealMode())
+            return;
+        if(!aiTurret().bIsOperable)
+        {
+            orient.setYPR(0.0F, 0.0F, 0.0F);
+            return;
+        }
+        float f = orient.getYaw();
+        float f1 = orient.getTangage();
+        if(f < -42F)
+            f = -42F;
+        if(f > 42F)
+            f = 42F;
+        if(f1 > 60F)
+            f1 = 60F;
+        if(f1 < -3F)
+            f1 = -3F;
+        orient.setYPR(f, f1, 0.0F);
+        orient.wrap();
+    }
 
-  public CockpitHE_111H2_TGunner()
-  {
-    super("3DO/Cockpit/He-111H-2-TGun/hier.him", "he111_gunner");
-  }
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+        if(bGunFire)
+        {
+            if(hook1 == null)
+                hook1 = new HookNamed(aircraft(), "_MGUN02");
+            doHitMasterAircraft(aircraft(), hook1, "_MGUN02");
+            if(iCocking > 0)
+                iCocking = 0;
+            else
+                iCocking = 1;
+        } else
+        {
+            iCocking = 0;
+        }
+        iNewVisDrums = (int)((float)emitter.countBullets() / 333F);
+        if(iNewVisDrums < iOldVisDrums)
+        {
+            iOldVisDrums = iNewVisDrums;
+            mesh.chunkVisible("Drum1", iNewVisDrums > 2);
+            mesh.chunkVisible("Drum2", iNewVisDrums > 1);
+            mesh.chunkVisible("Drum3", iNewVisDrums > 0);
+            sfxClick(13);
+        }
+        mesh.chunkSetAngles("CockingLever", -0.75F * (float)iCocking, 0.0F, 0.0F);
+    }
 
-  static
-  {
-    Property.set(CockpitHE_111H2_TGunner.class, "aiTuretNum", 1);
-    Property.set(CockpitHE_111H2_TGunner.class, "weaponControlNum", 11);
-    Property.set(CockpitHE_111H2_TGunner.class, "astatePilotIndx", 2);
-  }
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        else
+            bGunFire = flag;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    protected void reflectPlaneMats()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        mesh.materialReplace("Gloss1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss1D1o"));
+        mesh.materialReplace("Gloss1D1o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss1D2o"));
+        mesh.materialReplace("Gloss1D2o", mat);
+    }
+
+    public CockpitHE_111H2_TGunner()
+    {
+        super("3DO/Cockpit/He-111H-2-TGun/hier.him", "he111_gunner");
+        bNeedSetUp = true;
+        hook1 = null;
+        iCocking = 0;
+        iOldVisDrums = 3;
+        iNewVisDrums = 3;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private boolean bNeedSetUp;
+    private com.maddox.il2.engine.Hook hook1;
+    private int iCocking;
+    private int iOldVisDrums;
+    private int iNewVisDrums;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitHE_111H2_TGunner.class, "aiTuretNum", 1);
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitHE_111H2_TGunner.class, "weaponControlNum", 11);
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitHE_111H2_TGunner.class, "astatePilotIndx", 2);
+    }
 }

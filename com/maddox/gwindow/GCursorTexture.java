@@ -1,33 +1,47 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GCursorTexture.java
+
 package com.maddox.gwindow;
 
-public class GCursorTexture extends GCursor
+
+// Referenced classes of package com.maddox.gwindow:
+//            GCursor, GWindowRoot, GCanvas, GPoint, 
+//            GTexture, GSize, GColor
+
+public class GCursorTexture extends com.maddox.gwindow.GCursor
 {
-  public GTexture tex;
-  public float hotX;
-  public float hotY;
 
-  public void preRender(GWindowRoot paramGWindowRoot)
-  {
-    paramGWindowRoot.C.cur.x = (paramGWindowRoot.mousePos.x - this.hotX);
-    paramGWindowRoot.C.cur.y = (paramGWindowRoot.mousePos.y - this.hotY);
-    paramGWindowRoot.C.preRender(this.tex, this.tex.size.dx, this.tex.size.dy);
-  }
+    public void preRender(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        gwindowroot.C.cur.x = gwindowroot.mousePos.x - hotX;
+        gwindowroot.C.cur.y = gwindowroot.mousePos.y - hotY;
+        gwindowroot.C.preRender(tex, tex.size.dx, tex.size.dy);
+    }
 
-  public void render(GWindowRoot paramGWindowRoot)
-  {
-    paramGWindowRoot.C.cur.x = (paramGWindowRoot.mousePos.x - this.hotX);
-    paramGWindowRoot.C.cur.y = (paramGWindowRoot.mousePos.y - this.hotY);
-    paramGWindowRoot.C.color.setWhite();
-    paramGWindowRoot.C.draw(this.tex, this.tex.size.dx, this.tex.size.dy, 0.0F, 0.0F, this.tex.size.dx, this.tex.size.dy);
-  }
+    public void render(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        gwindowroot.C.cur.x = gwindowroot.mousePos.x - hotX;
+        gwindowroot.C.cur.y = gwindowroot.mousePos.y - hotY;
+        gwindowroot.C.color.setWhite();
+        gwindowroot.C.draw(tex, tex.size.dx, tex.size.dy, 0.0F, 0.0F, tex.size.dx, tex.size.dy);
+    }
 
-  public GCursorTexture(GTexture paramGTexture, float paramFloat1, float paramFloat2, int paramInt) {
-    this.tex = paramGTexture;
-    this.hotX = paramFloat1;
-    this.hotY = paramFloat2;
-    this.nativeCursor = paramInt;
-  }
-  public GCursorTexture(String paramString, float paramFloat1, float paramFloat2, int paramInt) {
-    this(GTexture.New(paramString), paramFloat1, paramFloat2, paramInt);
-  }
+    public GCursorTexture(com.maddox.gwindow.GTexture gtexture, float f, float f1, int i)
+    {
+        tex = gtexture;
+        hotX = f;
+        hotY = f1;
+        nativeCursor = i;
+    }
+
+    public GCursorTexture(java.lang.String s, float f, float f1, int i)
+    {
+        this(com.maddox.gwindow.GTexture.New(s), f, f1, i);
+    }
+
+    public com.maddox.gwindow.GTexture tex;
+    public float hotX;
+    public float hotY;
 }

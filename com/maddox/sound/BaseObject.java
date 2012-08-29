@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BaseObject.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.Cpu86ID;
@@ -6,61 +11,76 @@ import java.io.PrintStream;
 
 public class BaseObject
 {
-  private static final String DLL_NAME = "mg_snd";
-  protected static boolean enabled = true;
-  protected static boolean loaded = false;
 
-  public static boolean isEnabled()
-  {
-    return enabled;
-  }
+    protected BaseObject()
+    {
+    }
 
-  public static void setEnabled(boolean paramBoolean)
-  {
-    enabled = paramBoolean;
-  }
+    public static boolean isEnabled()
+    {
+        return enabled;
+    }
 
-  private String mkErrMsg(String paramString)
-  {
-    return "ERROR [" + toString() + "] " + paramString;
-  }
+    public static void setEnabled(boolean flag)
+    {
+        enabled = flag;
+    }
 
-  protected static void printf(String paramString)
-  {
-    System.out.println(paramString);
-  }
+    private java.lang.String mkErrMsg(java.lang.String s)
+    {
+        return "ERROR [" + toString() + "] " + s;
+    }
 
-  protected void errmsg(String paramString)
-  {
-    System.out.println(mkErrMsg(paramString));
-  }
+    protected static void printf(java.lang.String s)
+    {
+        java.lang.System.out.println(s);
+    }
 
-  protected void raise(String paramString) throws Exception
-  {
-    System.out.println(mkErrMsg(paramString));
-    throw new Exception(paramString); } 
-  protected static native int libVersion(int paramInt);
+    protected void errmsg(java.lang.String s)
+    {
+        java.lang.System.out.println(mkErrMsg(s));
+    }
 
-  protected static native void libInit(int paramInt);
+    protected void raise(java.lang.String s)
+        throws java.lang.Exception
+    {
+        java.lang.System.out.println(mkErrMsg(s));
+        throw new Exception(s);
+    }
 
-  protected static native void initRTS(int paramInt);
+    protected static native int libVersion(int i);
 
-  protected static void loadNative() { if (!loaded) {
-      String str = "standard";
-      loaded = true;
-      if (Cpu86ID.isSSE()) {
-        System.loadLibrary("mg_snd_sse");
-        str = "P IV";
-      } else {
-        System.loadLibrary("mg_snd");
-      }int i = libVersion(101);
-      libInit(Cpu86ID.get());
-      initRTS(RTS.interf());
-      printf("Sound: Native library (build " + i / 100 + "." + i % 100 + ", target - " + str + ") loaded.");
-    } }
+    protected static native void libInit(int i);
 
-  static
-  {
-    loadNative();
-  }
+    protected static native void initRTS(int i);
+
+    protected static void loadNative()
+    {
+        if(!loaded)
+        {
+            java.lang.String s = "standard";
+            loaded = true;
+            if(com.maddox.rts.Cpu86ID.isSSE())
+            {
+                java.lang.System.loadLibrary("mg_snd_sse");
+                s = "P IV";
+            } else
+            {
+                java.lang.System.loadLibrary("mg_snd");
+            }
+            int i = com.maddox.sound.BaseObject.libVersion(101);
+            com.maddox.sound.BaseObject.libInit(com.maddox.rts.Cpu86ID.get());
+            com.maddox.sound.BaseObject.initRTS(com.maddox.rts.RTS.interf());
+            com.maddox.sound.BaseObject.printf("Sound: Native library (build " + i / 100 + "." + i % 100 + ", target - " + s + ") loaded.");
+        }
+    }
+
+    private static final java.lang.String DLL_NAME = "mg_snd";
+    protected static boolean enabled = true;
+    protected static boolean loaded = false;
+
+    static 
+    {
+        com.maddox.sound.BaseObject.loadNative();
+    }
 }

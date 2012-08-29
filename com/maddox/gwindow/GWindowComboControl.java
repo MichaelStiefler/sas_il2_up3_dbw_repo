@@ -1,360 +1,514 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowComboControl.java
+
 package com.maddox.gwindow;
 
 import java.util.ArrayList;
 
-public class GWindowComboControl extends GWindowDialogControl
-  implements GWindowCellEdit
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GWindowCellEdit, GWindowLookAndFeel, GWindowVScrollBar, 
+//            GWindowRoot, GRegion, GWindow, GWindowButtonTexture, 
+//            GPoint, GWindowEditBox
+
+public class GWindowComboControl extends com.maddox.gwindow.GWindowDialogControl
+    implements com.maddox.gwindow.GWindowCellEdit
 {
-  public EditBox editBox;
-  public Button button;
-  public ListArea listArea;
-  public GWindowVScrollBar scrollBar;
-  public ArrayList list = new ArrayList();
-  public boolean[] posEnable;
-  public int listVisibleLines = 7;
-  public boolean bFindIgnoreCase = true;
-
-  public int iSelected = -1;
-
-  public int listSelected = -1;
-  public int listStartLine = 0;
-  public int listCountLines = this.listVisibleLines;
-
-  public void setEnable(boolean paramBoolean)
-  {
-    super.setEnable(paramBoolean);
-    this.editBox.setEnable(paramBoolean);
-    this.button.setEnable(paramBoolean);
-  }
-
-  public void setToolTip(String paramString) {
-    super.setToolTip(paramString);
-    this.editBox.setToolTip(paramString);
-  }
-
-  public void setEditDelayedNotify(boolean paramBoolean) {
-    this.editBox.bDelayedNotify = paramBoolean;
-  }
-
-  public void setMaxLength(int paramInt) {
-    this.editBox.maxLength = paramInt;
-  }
-  public void setEditable(boolean paramBoolean) {
-    this.editBox.setEditable(paramBoolean);
-  }
-  public void setEditTextColor(int paramInt) {
-    this.editBox.color = paramInt;
-  }
-  public void setNumericOnly(boolean paramBoolean) {
-    this.editBox.bNumericOnly = paramBoolean;
-  }
-  public void setNumericFloat(boolean paramBoolean) {
-    this.editBox.bNumericFloat = paramBoolean;
-  }
-  public void setValue(String paramString) {
-    this.editBox.setValue(paramString);
-  }
-  public void setValue(String paramString, boolean paramBoolean) {
-    this.editBox.setValue(paramString, paramBoolean);
-  }
-  public String getValue() {
-    return this.editBox.getValue();
-  }
-  public void clearValue() {
-    this.editBox.clear();
-  }
-  public void clearValue(boolean paramBoolean) {
-    this.editBox.clear(paramBoolean);
-  }
-
-  public void setCellEditValue(Object paramObject) {
-    setValue(paramObject.toString(), false);
-  }
-  public Object getCellEditValue() {
-    return getValue();
-  }
-
-  public int size() {
-    return this.list.size();
-  }
-  public void add(String paramString) {
-    hideList();
-    this.list.add(paramString);
-  }
-  public void add(int paramInt, String paramString) {
-    hideList();
-    this.list.add(paramInt, paramString);
-  }
-  public void remove(int paramInt) {
-    hideList();
-    this.list.remove(paramInt);
-  }
-  public void clear() {
-    hideList();
-    clearValue();
-    this.list.clear();
-  }
-  public void clear(boolean paramBoolean) {
-    hideList();
-    clearValue(paramBoolean);
-    this.list.clear();
-  }
-  public String get(int paramInt) {
-    return (String)this.list.get(paramInt);
-  }
-  public int getSelected() { return this.iSelected; } 
-  public void setSelected(int paramInt, boolean paramBoolean1, boolean paramBoolean2) {
-    if (paramBoolean1)
-      setValue(get(paramInt), false);
-    if (this.iSelected == paramInt) return;
-    this.iSelected = paramInt;
-    updateList();
-    if (paramBoolean2)
-      notify(2, this.iSelected); 
-  }
-
-  public int findStartsWith(String paramString, boolean paramBoolean) {
-    int i = paramString.length();
-    int j = this.list.size();
-    for (int k = 0; k < j; k++) {
-      String str = (String)this.list.get(k);
-      if ((str.length() >= i) && (str.regionMatches(paramBoolean, 0, paramString, 0, i)) && (this.posEnable != null) && (this.posEnable[k] != 0))
-      {
-        return k;
-      }
-    }
-    return -1;
-  }
-
-  public void hideList() {
-    if (this.listArea.isVisible())
-      lAF().soundPlay("comboHide");
-    this.listArea.hideWindow();
-  }
-  public void updateList() {
-    if (!this.listArea.isVisible()) return;
-    if (!this.scrollBar.isVisible()) return;
-    if (this.iSelected < 0)
-      this.scrollBar.setPos(0.0F, false);
-    else
-      this.scrollBar.setPos(this.iSelected, false);
-    this.listSelected = this.iSelected;
-    this.listStartLine = (int)this.scrollBar.pos();
-  }
-  public void showList() {
-    if (!this.bEnable) return;
-    if (this.list.size() == 0) return;
-    if (this.listArea.isVisible()) return;
-    lookAndFeel().setupComboList(this);
-    this.listArea.showWindow();
-    lAF().soundPlay("comboShow");
-  }
-
-  public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-    if (paramInt1 == 17) {
-      if (this.scrollBar.isVisible())
-        this.scrollBar.scrollDz(this.root.mouseRelMoveZ);
-      return true;
-    }
-    if ((paramGWindow == this.editBox) && 
-      (this.bEnable) && (paramInt1 == 10)) {
-      if (paramInt2 == 38) {
-        editScroll(true);
-        return true;
-      }
-      if (paramInt2 == 40) {
-        editScroll(false);
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  public void editScroll(boolean paramBoolean) {
-    if (!this.bEnable) return;
-    if (this.listArea.isVisible()) return;
-    int i;
-    int j;
-    if (paramBoolean) {
-      i = size();
-      j = this.iSelected;
-      while (i-- > 0) {
-        j = (j - 1 + size()) % size();
-        if ((this.posEnable == null) || (this.posEnable[j] != 0))
-          setSelected(j, true, true);
-      }
-    }
-    else
+    public class Button extends com.maddox.gwindow.GWindowButtonTexture
     {
-      i = size();
-      j = this.iSelected;
-      while (i-- > 0) {
-        j = (j + 1) % size();
-        if ((this.posEnable == null) || (this.posEnable[j] != 0))
-          setSelected(j, true, true);
-      }
-    }
-  }
 
-  public void render()
-  {
-    lookAndFeel().render(this);
-  }
-
-  public void afterCreated() {
-    super.afterCreated();
-    this.button = new Button(this);
-    this.editBox = new EditBox(this);
-    this.listArea = new ListArea(this);
-    this.scrollBar = new ScrollBar(this.listArea);
-    this.listArea.hideWindow();
-  }
-  public void resized() {
-    if (this.metricWin != null)
-      this.metricWin.dy = (lookAndFeel().getComboH() / lookAndFeel().metric());
-    if (this.button != null) this.button.resized();
-    if (this.editBox != null) this.editBox.resized();
-    hideList();
-  }
-
-  public GWindowComboControl()
-  {
-  }
-
-  public GWindowComboControl(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3) {
-    float f = paramGWindow.lookAndFeel().getComboH() / paramGWindow.lookAndFeel().metric();
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, f, true);
-  }
-
-  public class Button extends GWindowButtonTexture
-  {
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
-      if (GWindowComboControl.this.listArea.isVisible()) GWindowComboControl.this.hideList(); else
-        GWindowComboControl.this.showList(); 
-    }
-
-    public void resized() {
-      lookAndFeel().setupComboButton(this);
-    }
-    public void created() {
-      this.bAcceptsKeyFocus = false;
-      this.bTransient = true;
-      this.bAlwaysOnTop = true;
-      lookAndFeel().setupComboButton(this);
-    }
-    public Button(GWindow arg2) { super();
-    }
-  }
-
-  public class EditBox extends GWindowEditBox
-  {
-    public void mouseClick(int paramInt, float paramFloat1, float paramFloat2)
-    {
-      if (paramInt != 0) return;
-      if (!GWindowComboControl.this.listArea.isVisible()) GWindowComboControl.this.showList(); else
-        GWindowComboControl.this.hideList(); 
-    }
-
-    public boolean notify(int paramInt1, int paramInt2) {
-      if ((paramInt1 == 17) && (this.root.mouseRelMoveZ != 0.0F)) {
-        GWindowComboControl.this.editScroll(this.root.mouseRelMoveZ > 0.0F);
-        return true;
-      }
-      String str;
-      int i;
-      if (paramInt1 == 2) {
-        str = getValue();
-        if (str.length() > 0) {
-          i = GWindowComboControl.this.findStartsWith(str, GWindowComboControl.this.bFindIgnoreCase);
-          if (i >= 0) {
-            GWindowComboControl.this.setSelected(i, false, false);
-            if (str.equals(GWindowComboControl.this.get(i)))
-              return super.notify(paramInt1, i);
-          }
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(i != 0 || !flag || !bEnable)
+                return;
+            if(listArea.isVisible())
+                hideList();
+            else
+                showList();
         }
-        return super.notify(paramInt1, -1);
-      }if ((this.bDelayedNotify) && (this.bCanEdit) && (GWindowComboControl.this.listArea.isVisible())) {
-        str = getValue();
-        if (str.length() > 0) {
-          i = GWindowComboControl.this.findStartsWith(str, GWindowComboControl.this.bFindIgnoreCase);
-          if (i >= 0)
-            GWindowComboControl.this.setSelected(i, false, false);
+
+        public void resized()
+        {
+            lookAndFeel().setupComboButton(this);
         }
-      }
-      return super.notify(paramInt1, paramInt2);
-    }
-    public void created() {
-      this.bDelayedNotify = true;
-      lookAndFeel().setupComboEditBox(this);
-    }
-    public void resized() {
-      lookAndFeel().setupComboEditBox(this);
-    }
-    public EditBox(GWindow arg2) {
-      this.align = 0;
-      GWindow localGWindow;
-      doNew(localGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-    }
-  }
 
-  public class ListArea extends GWindowDialogControl
-  {
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
+        public void created()
+        {
+            bAcceptsKeyFocus = false;
+            bTransient = true;
+            bAlwaysOnTop = true;
+            lookAndFeel().setupComboButton(this);
+        }
+
+        public Button(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
+    }
+
+    public class EditBox extends com.maddox.gwindow.GWindowEditBox
     {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt != 0) || (!paramBoolean)) return;
-      int i = (int)(paramFloat2 / (this.win.dy / GWindowComboControl.this.listCountLines)) + GWindowComboControl.this.listStartLine;
-      if ((GWindowComboControl.this.posEnable != null) && (GWindowComboControl.this.posEnable[i] == 0)) return;
-      if (isVisible())
-        lAF().soundPlay("comboHide");
-      hideWindow();
-      GWindowComboControl.this.setSelected(i, true, true);
-    }
-    public void mouseMove(float paramFloat1, float paramFloat2) {
-      super.mouseMove(paramFloat1, paramFloat2);
-      int i = (int)(paramFloat2 / (this.win.dy / GWindowComboControl.this.listCountLines)) + GWindowComboControl.this.listStartLine;
-      if ((GWindowComboControl.this.posEnable != null) && (GWindowComboControl.this.posEnable[i] == 0)) return;
-      GWindowComboControl.this.listSelected = i;
+
+        public void mouseClick(int i, float f, float f1)
+        {
+            if(i != 0)
+                return;
+            if(!listArea.isVisible())
+                showList();
+            else
+                hideList();
+        }
+
+        public boolean notify(int i, int j)
+        {
+            if(i == 17 && root.mouseRelMoveZ != 0.0F)
+            {
+                editScroll(root.mouseRelMoveZ > 0.0F);
+                return true;
+            }
+            if(i == 2)
+            {
+                java.lang.String s = getValue();
+                if(s.length() > 0)
+                {
+                    int k = findStartsWith(s, bFindIgnoreCase);
+                    if(k >= 0)
+                    {
+                        setSelected(k, false, false);
+                        if(s.equals(get(k)))
+                            return super.notify(i, k);
+                    }
+                }
+                return super.notify(i, -1);
+            }
+            if(bDelayedNotify && bCanEdit && listArea.isVisible())
+            {
+                java.lang.String s1 = getValue();
+                if(s1.length() > 0)
+                {
+                    int l = findStartsWith(s1, bFindIgnoreCase);
+                    if(l >= 0)
+                        setSelected(l, false, false);
+                }
+            }
+            return super.notify(i, j);
+        }
+
+        public void created()
+        {
+            bDelayedNotify = true;
+            lookAndFeel().setupComboEditBox(this);
+        }
+
+        public void resized()
+        {
+            lookAndFeel().setupComboEditBox(this);
+        }
+
+        public EditBox(com.maddox.gwindow.GWindow gwindow)
+        {
+            align = 0;
+            doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+        }
     }
 
-    public void render() {
-      lookAndFeel().renderComboList((GWindowComboControl)this.parentWindow);
-    }
-    public void msgMouseButton(boolean paramBoolean1, int paramInt, boolean paramBoolean2, float paramFloat1, float paramFloat2) {
-      if (paramBoolean1) return;
-      GWindow localGWindow1 = this.root.findWindowUnder(this.root.mousePos.x, this.root.mousePos.y);
-      GWindow localGWindow2 = localGWindow1.getParent(GWindowComboControl.class, false);
-      if (localGWindow2 != this.parentWindow) {
-        if (isVisible())
-          lAF().soundPlay("comboHide");
-        hideWindow();
-      }
-    }
-
-    public ListArea(GWindow arg2) {
-      this.bClip = false;
-      this.bAlwaysOnTop = true;
-      this.bMouseListener = true;
-      GWindow localGWindow;
-      doNew(localGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-    }
-  }
-
-  public class ScrollBar extends GWindowVScrollBar
-  {
-    public boolean setPos(float paramFloat, boolean paramBoolean)
+    public class ListArea extends com.maddox.gwindow.GWindowDialogControl
     {
-      boolean bool = super.setPos(paramFloat, paramBoolean);
-      if (paramBoolean)
-        GWindowComboControl.this.listStartLine = (int)this.pos;
-      return bool;
+
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(i != 0 || !flag)
+                return;
+            int j = (int)(f1 / (win.dy / (float)listCountLines)) + listStartLine;
+            if(posEnable != null && !posEnable[j])
+                return;
+            if(isVisible())
+                lAF().soundPlay("comboHide");
+            hideWindow();
+            setSelected(j, true, true);
+        }
+
+        public void mouseMove(float f, float f1)
+        {
+            super.mouseMove(f, f1);
+            int i = (int)(f1 / (win.dy / (float)listCountLines)) + listStartLine;
+            if(posEnable != null && !posEnable[i])
+            {
+                return;
+            } else
+            {
+                listSelected = i;
+                return;
+            }
+        }
+
+        public void render()
+        {
+            lookAndFeel().renderComboList((com.maddox.gwindow.GWindowComboControl)parentWindow);
+        }
+
+        public void msgMouseButton(boolean flag, int i, boolean flag1, float f, float f1)
+        {
+            if(flag)
+                return;
+            com.maddox.gwindow.GWindow gwindow = root.findWindowUnder(root.mousePos.x, root.mousePos.y);
+            com.maddox.gwindow.GWindow gwindow1 = gwindow.getParent(com.maddox.gwindow.GWindowComboControl.class$com$maddox$gwindow$GWindowComboControl != null ? com.maddox.gwindow.GWindowComboControl.class$com$maddox$gwindow$GWindowComboControl : (com.maddox.gwindow.GWindowComboControl.class$com$maddox$gwindow$GWindowComboControl = com.maddox.gwindow.GWindowComboControl._mthclass$("com.maddox.gwindow.GWindowComboControl")), false);
+            if(gwindow1 != parentWindow)
+            {
+                if(isVisible())
+                    lAF().soundPlay("comboHide");
+                hideWindow();
+            }
+        }
+
+        public ListArea(com.maddox.gwindow.GWindow gwindow)
+        {
+            bClip = false;
+            bAlwaysOnTop = true;
+            bMouseListener = true;
+            doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+        }
     }
-    public ScrollBar(GWindow arg2) {
-      super();
+
+    public class ScrollBar extends com.maddox.gwindow.GWindowVScrollBar
+    {
+
+        public boolean setPos(float f, boolean flag)
+        {
+            boolean flag1 = super.setPos(f, flag);
+            if(flag)
+                listStartLine = (int)pos;
+            return flag1;
+        }
+
+        public ScrollBar(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
-  }
+
+
+    public void setEnable(boolean flag)
+    {
+        super.setEnable(flag);
+        editBox.setEnable(flag);
+        button.setEnable(flag);
+    }
+
+    public void setToolTip(java.lang.String s)
+    {
+        super.setToolTip(s);
+        editBox.setToolTip(s);
+    }
+
+    public void setEditDelayedNotify(boolean flag)
+    {
+        editBox.bDelayedNotify = flag;
+    }
+
+    public void setMaxLength(int i)
+    {
+        editBox.maxLength = i;
+    }
+
+    public void setEditable(boolean flag)
+    {
+        editBox.setEditable(flag);
+    }
+
+    public void setEditTextColor(int i)
+    {
+        editBox.color = i;
+    }
+
+    public void setNumericOnly(boolean flag)
+    {
+        editBox.bNumericOnly = flag;
+    }
+
+    public void setNumericFloat(boolean flag)
+    {
+        editBox.bNumericFloat = flag;
+    }
+
+    public void setValue(java.lang.String s)
+    {
+        editBox.setValue(s);
+    }
+
+    public void setValue(java.lang.String s, boolean flag)
+    {
+        editBox.setValue(s, flag);
+    }
+
+    public java.lang.String getValue()
+    {
+        return editBox.getValue();
+    }
+
+    public void clearValue()
+    {
+        editBox.clear();
+    }
+
+    public void clearValue(boolean flag)
+    {
+        editBox.clear(flag);
+    }
+
+    public void setCellEditValue(java.lang.Object obj)
+    {
+        setValue(obj.toString(), false);
+    }
+
+    public java.lang.Object getCellEditValue()
+    {
+        return getValue();
+    }
+
+    public int size()
+    {
+        return list.size();
+    }
+
+    public void add(java.lang.String s)
+    {
+        hideList();
+        list.add(s);
+    }
+
+    public void add(int i, java.lang.String s)
+    {
+        hideList();
+        list.add(i, s);
+    }
+
+    public void remove(int i)
+    {
+        hideList();
+        list.remove(i);
+    }
+
+    public void clear()
+    {
+        hideList();
+        clearValue();
+        list.clear();
+    }
+
+    public void clear(boolean flag)
+    {
+        hideList();
+        clearValue(flag);
+        list.clear();
+    }
+
+    public java.lang.String get(int i)
+    {
+        return (java.lang.String)list.get(i);
+    }
+
+    public int getSelected()
+    {
+        return iSelected;
+    }
+
+    public void setSelected(int i, boolean flag, boolean flag1)
+    {
+        if(flag)
+            setValue(get(i), false);
+        if(iSelected == i)
+            return;
+        iSelected = i;
+        updateList();
+        if(flag1)
+            notify(2, iSelected);
+    }
+
+    public int findStartsWith(java.lang.String s, boolean flag)
+    {
+        int i = s.length();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            java.lang.String s1 = (java.lang.String)list.get(k);
+            if(s1.length() >= i && s1.regionMatches(flag, 0, s, 0, i) && posEnable != null && posEnable[k])
+                return k;
+        }
+
+        return -1;
+    }
+
+    public void hideList()
+    {
+        if(listArea.isVisible())
+            lAF().soundPlay("comboHide");
+        listArea.hideWindow();
+    }
+
+    public void updateList()
+    {
+        if(!listArea.isVisible())
+            return;
+        if(!scrollBar.isVisible())
+            return;
+        if(iSelected < 0)
+            scrollBar.setPos(0.0F, false);
+        else
+            scrollBar.setPos(iSelected, false);
+        listSelected = iSelected;
+        listStartLine = (int)scrollBar.pos();
+    }
+
+    public void showList()
+    {
+        if(!bEnable)
+            return;
+        if(list.size() == 0)
+            return;
+        if(listArea.isVisible())
+        {
+            return;
+        } else
+        {
+            lookAndFeel().setupComboList(this);
+            listArea.showWindow();
+            lAF().soundPlay("comboShow");
+            return;
+        }
+    }
+
+    public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+    {
+        if(i == 17)
+        {
+            if(scrollBar.isVisible())
+                scrollBar.scrollDz(root.mouseRelMoveZ);
+            return true;
+        }
+        if(gwindow == editBox && bEnable && i == 10)
+        {
+            if(j == 38)
+            {
+                editScroll(true);
+                return true;
+            }
+            if(j == 40)
+            {
+                editScroll(false);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void editScroll(boolean flag)
+    {
+        if(!bEnable)
+            return;
+        if(listArea.isVisible())
+            return;
+        if(flag)
+        {
+            int i = size();
+            int k = iSelected;
+            while(i-- > 0) 
+            {
+                k = ((k - 1) + size()) % size();
+                if(posEnable == null || posEnable[k])
+                {
+                    setSelected(k, true, true);
+                    break;
+                }
+            }
+        } else
+        {
+            int j = size();
+            int l = iSelected;
+            while(j-- > 0) 
+            {
+                l = (l + 1) % size();
+                if(posEnable == null || posEnable[l])
+                {
+                    setSelected(l, true, true);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public void afterCreated()
+    {
+        super.afterCreated();
+        button = new Button(this);
+        editBox = new EditBox(this);
+        listArea = new ListArea(this);
+        scrollBar = new ScrollBar(listArea);
+        listArea.hideWindow();
+    }
+
+    public void resized()
+    {
+        if(metricWin != null)
+            metricWin.dy = lookAndFeel().getComboH() / lookAndFeel().metric();
+        if(button != null)
+            button.resized();
+        if(editBox != null)
+            editBox.resized();
+        hideList();
+    }
+
+    public GWindowComboControl()
+    {
+        list = new ArrayList();
+        listVisibleLines = 7;
+        bFindIgnoreCase = true;
+        iSelected = -1;
+        listSelected = -1;
+        listStartLine = 0;
+        listCountLines = listVisibleLines;
+    }
+
+    public GWindowComboControl(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2)
+    {
+        list = new ArrayList();
+        listVisibleLines = 7;
+        bFindIgnoreCase = true;
+        iSelected = -1;
+        listSelected = -1;
+        listStartLine = 0;
+        listCountLines = listVisibleLines;
+        float f3 = gwindow.lookAndFeel().getComboH() / gwindow.lookAndFeel().metric();
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public com.maddox.gwindow.EditBox editBox;
+    public com.maddox.gwindow.Button button;
+    public com.maddox.gwindow.ListArea listArea;
+    public com.maddox.gwindow.GWindowVScrollBar scrollBar;
+    public java.util.ArrayList list;
+    public boolean posEnable[];
+    public int listVisibleLines;
+    public boolean bFindIgnoreCase;
+    public int iSelected;
+    public int listSelected;
+    public int listStartLine;
+    public int listCountLines;
+    static java.lang.Class class$com$maddox$gwindow$GWindowComboControl; /* synthetic field */
 }

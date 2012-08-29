@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MachineGunFlak30_20mm.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Vector3d;
@@ -6,52 +11,49 @@ import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.Loc;
 
-public class MachineGunFlak30_20mm extends MGunAntiAirGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            MGunAntiAirGeneric, BulletAntiAirSmallGermany, Bullet
+
+public class MachineGunFlak30_20mm extends com.maddox.il2.objects.weapons.MGunAntiAirGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.traceFreq = 1;
-    paramGunProperties.aimMaxDist = 2450.0F;
-    paramGunProperties.shotFreq = 4.666667F;
-    paramGunProperties.bulletsCluster = 1;
-    paramGunProperties.sound = "weapon.zenitka_20";
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
+    public MachineGunFlak30_20mm()
+    {
+    }
 
-    localBulletProperties.timeLife = 4.45F;
-    localBulletProperties.addExplTime = 0.15F;
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.traceFreq = 1;
+        gunproperties.aimMaxDist = 2450F;
+        gunproperties.shotFreq = 4.666667F;
+        gunproperties.bulletsCluster = 1;
+        gunproperties.sound = "weapon.zenitka_20";
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.timeLife = 4.45F;
+        bulletproperties.addExplTime = 0.15F;
+        bulletproperties.power = 0.055F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 50F;
+        bulletproperties.kalibr = 0.02F;
+        bulletproperties.massa = 0.148F;
+        bulletproperties.speed = 830F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
+        bulletproperties.traceTrail = "3DO/Effects/Tracers/TrailCurved.eff";
+        bulletproperties.traceColor = 0xd2ff0000;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.timeLife = 3F;
+        bulletproperties.power = 0.0F;
+        bulletproperties.kalibr = 0.02F;
+        bulletproperties.massa = 0.148F;
+        bulletproperties.speed = 900F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
+        bulletproperties.traceTrail = "3DO/Effects/Tracers/TrailCurved.eff";
+        bulletproperties.traceColor = 0xd2ff0000;
+        return 115F;
+    }
 
-    localBulletProperties.power = 0.055F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 50.0F;
-
-    localBulletProperties.kalibr = 0.02F;
-    localBulletProperties.massa = 0.148F;
-    localBulletProperties.speed = 830.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
-    localBulletProperties.traceTrail = "3DO/Effects/Tracers/TrailCurved.eff";
-    localBulletProperties.traceColor = -755040256;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.timeLife = 3.0F;
-
-    localBulletProperties.power = 0.0F;
-
-    localBulletProperties.kalibr = 0.02F;
-    localBulletProperties.massa = 0.148F;
-    localBulletProperties.speed = 900.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
-    localBulletProperties.traceTrail = "3DO/Effects/Tracers/TrailCurved.eff";
-    localBulletProperties.traceColor = -755040256;
-
-    return 115.0F;
-  }
-
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
-  {
-    return new BulletAntiAirSmallGermany(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong, this.explAddTimeT);
-  }
+    public com.maddox.il2.objects.weapons.Bullet createNextBullet(int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d, long l)
+    {
+        return new BulletAntiAirSmallGermany(i, gungeneric, loc, vector3d, l, explAddTimeT);
+    }
 }

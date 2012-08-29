@@ -1,73 +1,83 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgAction.java
+
 package com.maddox.rts;
 
-public class MsgAction extends Message
+
+// Referenced classes of package com.maddox.rts:
+//            Message
+
+public class MsgAction extends com.maddox.rts.Message
 {
-  public void doAction()
-  {
-  }
 
-  public void doAction(Object paramObject)
-  {
-    doAction();
-  }
+    public void doAction()
+    {
+    }
 
-  public MsgAction(int paramInt, long paramLong, Object paramObject)
-  {
-    post(paramInt, this, paramLong, paramObject);
-  }
+    public void doAction(java.lang.Object obj)
+    {
+        doAction();
+    }
 
-  public MsgAction(int paramInt, double paramDouble, Object paramObject)
-  {
-    post(paramInt, this, paramDouble, paramObject);
-  }
+    public MsgAction(int i, long l, java.lang.Object obj)
+    {
+        post(i, this, l, obj);
+    }
 
-  public MsgAction(int paramInt, long paramLong)
-  {
-    post(paramInt, this, paramLong);
-  }
+    public MsgAction(int i, double d, java.lang.Object obj)
+    {
+        post(i, this, d, obj);
+    }
 
-  public MsgAction(int paramInt, double paramDouble)
-  {
-    post(paramInt, this, paramDouble);
-  }
+    public MsgAction(int i, long l)
+    {
+        post(i, this, l);
+    }
 
-  public MsgAction(long paramLong, Object paramObject)
-  {
-    post(0, this, paramLong, paramObject);
-  }
+    public MsgAction(int i, double d)
+    {
+        post(i, this, d);
+    }
 
-  public MsgAction(double paramDouble, Object paramObject)
-  {
-    post(0, this, paramDouble, paramObject);
-  }
+    public MsgAction(long l, java.lang.Object obj)
+    {
+        post(0, this, l, obj);
+    }
 
-  public MsgAction(boolean paramBoolean, Object paramObject)
-  {
-    post(paramBoolean ? 64 : 0, this, 0.0D, paramObject);
-  }
+    public MsgAction(double d, java.lang.Object obj)
+    {
+        post(0, this, d, obj);
+    }
 
-  public MsgAction(boolean paramBoolean)
-  {
-    post(paramBoolean ? 64 : 0, this, 0.0D);
-  }
+    public MsgAction(boolean flag, java.lang.Object obj)
+    {
+        post(flag ? 64 : 0, this, 0.0D, obj);
+    }
 
-  public MsgAction(long paramLong)
-  {
-    post(0, this, paramLong);
-  }
+    public MsgAction(boolean flag)
+    {
+        post(flag ? 64 : 0, this, 0.0D);
+    }
 
-  public MsgAction(double paramDouble)
-  {
-    post(0, this, paramDouble);
-  }
+    public MsgAction(long l)
+    {
+        post(0, this, l);
+    }
 
-  public MsgAction()
-  {
-  }
+    public MsgAction(double d)
+    {
+        post(0, this, d);
+    }
 
-  public boolean invokeListener(Object paramObject)
-  {
-    doAction(this._sender);
-    return true;
-  }
+    public MsgAction()
+    {
+    }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        doAction(_sender);
+        return true;
+    }
 }

@@ -1,26 +1,35 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   UnitInterface.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.il2.engine.Actor;
 
-public abstract interface UnitInterface
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            UnitInPackedForm, UnitData
+
+public interface UnitInterface
 {
-  public abstract void startMove();
 
-  public abstract void forceReaskMove();
+    public abstract void startMove();
 
-  public abstract UnitInPackedForm Pack();
+    public abstract void forceReaskMove();
 
-  public abstract UnitData GetUnitData();
+    public abstract com.maddox.il2.ai.ground.UnitInPackedForm Pack();
 
-  public abstract float HeightAboveLandSurface();
+    public abstract com.maddox.il2.ai.ground.UnitData GetUnitData();
 
-  public abstract float SpeedAverage();
+    public abstract float HeightAboveLandSurface();
 
-  public abstract float BestSpace();
+    public abstract float SpeedAverage();
 
-  public abstract float CommandInterval();
+    public abstract float BestSpace();
 
-  public abstract float StayInterval();
+    public abstract float CommandInterval();
 
-  public abstract void absoluteDeath(Actor paramActor);
+    public abstract float StayInterval();
+
+    public abstract void absoluteDeath(com.maddox.il2.engine.Actor actor);
 }

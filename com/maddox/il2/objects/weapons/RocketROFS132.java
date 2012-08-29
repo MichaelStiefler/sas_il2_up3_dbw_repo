@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketROFS132.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -8,45 +13,59 @@ import com.maddox.il2.engine.ActorPos;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class RocketROFS132 extends Rocket
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Rocket
+
+public class RocketROFS132 extends com.maddox.il2.objects.weapons.Rocket
 {
-  private static Point3d p = new Point3d();
 
-  protected void doExplosion(Actor paramActor, String paramString)
-  {
-    this.pos.getTime(Time.current(), p);
-    MsgExplosion.send(paramActor, paramString, p, getOwner(), 10.1F, 8.4F, 1, 1200.0F);
-    super.doExplosion(paramActor, paramString);
-  }
-  protected void doExplosionAir() {
-    this.pos.getTime(Time.current(), p);
-    MsgExplosion.send(null, null, p, getOwner(), 10.1F, 8.4F, 1, 1200.0F);
-    super.doExplosionAir();
-  }
+    public RocketROFS132()
+    {
+    }
 
-  static
-  {
-    Class localClass = RocketROFS132.class;
-    Property.set(localClass, "mesh", "3do/arms/RS-132-45/mono.sim");
+    protected void doExplosion(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        pos.getTime(com.maddox.rts.Time.current(), p);
+        com.maddox.il2.ai.MsgExplosion.send(actor, s, p, getOwner(), 10.1F, 8.4F, 1, 1200F);
+        super.doExplosion(actor, s);
+    }
 
-    Property.set(localClass, "sprite", "3do/effects/rocket/firesprite.eff");
-    Property.set(localClass, "flame", "3do/effects/rocket/mono.sim");
-    Property.set(localClass, "smoke", "3do/effects/rocket/rocketsmokewhite.eff");
-    Property.set(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
-    Property.set(localClass, "emitLen", 75.0F);
-    Property.set(localClass, "emitMax", 1.0F);
+    protected void doExplosionAir()
+    {
+        pos.getTime(com.maddox.rts.Time.current(), p);
+        com.maddox.il2.ai.MsgExplosion.send(null, null, p, getOwner(), 10.1F, 8.4F, 1, 1200F);
+        super.doExplosionAir();
+    }
 
-    Property.set(localClass, "sound", "weapon.rocket_132");
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "radius", 112.0F);
-    Property.set(localClass, "timeLife", 2.12F);
-    Property.set(localClass, "timeFire", 4.0F);
-    Property.set(localClass, "force", 1300.0F);
+    private static com.maddox.JGP.Point3d p = new Point3d();
 
-    Property.set(localClass, "power", 8.4F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.132F);
-    Property.set(localClass, "massa", 32.0F);
-    Property.set(localClass, "massaEnd", 19.0F);
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketROFS132.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3do/arms/RS-132-45/mono.sim");
+        com.maddox.rts.Property.set(class1, "sprite", "3do/effects/rocket/firesprite.eff");
+        com.maddox.rts.Property.set(class1, "flame", "3do/effects/rocket/mono.sim");
+        com.maddox.rts.Property.set(class1, "smoke", "3do/effects/rocket/rocketsmokewhite.eff");
+        com.maddox.rts.Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
+        com.maddox.rts.Property.set(class1, "emitLen", 75F);
+        com.maddox.rts.Property.set(class1, "emitMax", 1.0F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.rocket_132");
+        com.maddox.rts.Property.set(class1, "radius", 112F);
+        com.maddox.rts.Property.set(class1, "timeLife", 2.12F);
+        com.maddox.rts.Property.set(class1, "timeFire", 4F);
+        com.maddox.rts.Property.set(class1, "force", 1300F);
+        com.maddox.rts.Property.set(class1, "power", 8.4F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.132F);
+        com.maddox.rts.Property.set(class1, "massa", 32F);
+        com.maddox.rts.Property.set(class1, "massaEnd", 19F);
+    }
 }

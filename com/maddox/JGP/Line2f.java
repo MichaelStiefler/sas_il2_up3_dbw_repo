@@ -1,165 +1,219 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Line2f.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Vector2f, Point2f, JGPException, Point3f, 
+//            NSolvef
+
 public class Line2f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Vector2f N = new Vector2f();
-  public float C;
-  private Point2f tmpP = new Point2f();
 
-  public Line2f()
-  {
-    this.N.x = 1.0F; this.C = 0.0F;
-  }
+    public Line2f()
+    {
+        N = new Vector2f();
+        tmpP = new Point2f();
+        N.x = 1.0F;
+        C = 0.0F;
+    }
 
-  public Line2f(Line2f paramLine2f)
-  {
-    this.N.set(paramLine2f.N); this.C = paramLine2f.C;
-  }
+    public Line2f(com.maddox.JGP.Line2f line2f)
+    {
+        N = new Vector2f();
+        tmpP = new Point2f();
+        N.set(line2f.N);
+        C = line2f.C;
+    }
 
-  public Line2f(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    set(paramPoint2f1, paramPoint2f2);
-  }
+    public Line2f(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        N = new Vector2f();
+        tmpP = new Point2f();
+        set(point2f, point2f1);
+    }
 
-  public final void set(Line2f paramLine2f)
-  {
-    this.N.set(paramLine2f.N); this.C = paramLine2f.C;
-  }
+    public final void set(com.maddox.JGP.Line2f line2f)
+    {
+        N.set(line2f.N);
+        C = line2f.C;
+    }
 
-  public final void set(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    this.N.x = (paramPoint2f1.y - paramPoint2f2.y);
-    this.N.y = (paramPoint2f2.x - paramPoint2f1.x);
-    this.N.normalize();
-    this.C = (-this.N.dot(paramPoint2f1));
-  }
+    public final void set(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        N.x = point2f.y - point2f1.y;
+        N.y = point2f1.x - point2f.x;
+        N.normalize();
+        C = -N.dot(point2f);
+    }
 
-  public final void set(Point2f paramPoint2f, Vector2f paramVector2f)
-  {
-    this.N.x = paramVector2f.x; this.N.y = paramVector2f.y;
-    this.N.normalize();
-    this.C = (-this.N.dot(paramPoint2f));
-  }
+    public final void set(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Vector2f vector2f)
+    {
+        N.x = vector2f.x;
+        N.y = vector2f.y;
+        N.normalize();
+        C = -N.dot(point2f);
+    }
 
-  public final float deviation(Point2f paramPoint2f)
-  {
-    return this.N.dot(paramPoint2f) + this.C;
-  }
+    public final float deviation(com.maddox.JGP.Point2f point2f)
+    {
+        return N.dot(point2f) + C;
+    }
 
-  public final float distance(Point2f paramPoint2f)
-  {
-    return Math.abs(this.N.dot(paramPoint2f) + this.C);
-  }
+    public final float distance(com.maddox.JGP.Point2f point2f)
+    {
+        return java.lang.Math.abs(N.dot(point2f) + C);
+    }
 
-  public final void mirror(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    this.tmpP.scale(-2.0F * deviation(paramPoint2f1), this.N);
-    paramPoint2f2.add(paramPoint2f1, this.tmpP);
-  }
+    public final void mirror(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        tmpP.scale(-2F * deviation(point2f), N);
+        point2f1.add(point2f, tmpP);
+    }
 
-  public final void mirror(Point2f paramPoint2f)
-  {
-    this.tmpP.scale(-2.0F * deviation(paramPoint2f), this.N);
-    paramPoint2f.add(this.tmpP);
-  }
+    public final void mirror(com.maddox.JGP.Point2f point2f)
+    {
+        tmpP.scale(-2F * deviation(point2f), N);
+        point2f.add(tmpP);
+    }
 
-  public final void mirror(Point3f paramPoint3f1, Point3f paramPoint3f2)
-  {
-    this.tmpP.set(paramPoint3f1);
-    this.tmpP.scale(-2.0F * deviation(this.tmpP), this.N);
-    paramPoint3f1.x += this.tmpP.x;
-    paramPoint3f1.y += this.tmpP.y;
-    paramPoint3f2.z = paramPoint3f1.z;
-  }
+    public final void mirror(com.maddox.JGP.Point3f point3f, com.maddox.JGP.Point3f point3f1)
+    {
+        tmpP.set(point3f);
+        tmpP.scale(-2F * deviation(tmpP), N);
+        point3f1.x = point3f.x + tmpP.x;
+        point3f1.y = point3f.y + tmpP.y;
+        point3f1.z = point3f.z;
+    }
 
-  public final void mirror(Point3f paramPoint3f)
-  {
-    this.tmpP.set(paramPoint3f);
-    this.tmpP.scale(-2.0F * deviation(this.tmpP), this.N);
-    paramPoint3f.x += this.tmpP.x;
-    paramPoint3f.y += this.tmpP.y;
-  }
+    public final void mirror(com.maddox.JGP.Point3f point3f)
+    {
+        tmpP.set(point3f);
+        tmpP.scale(-2F * deviation(tmpP), N);
+        point3f.x += tmpP.x;
+        point3f.y += tmpP.y;
+    }
 
-  public final void project(Point2f paramPoint2f1, Point2f paramPoint2f2)
-  {
-    this.tmpP.scale(-deviation(paramPoint2f1), this.N);
-    paramPoint2f2.add(paramPoint2f1, this.tmpP);
-  }
+    public final void project(com.maddox.JGP.Point2f point2f, com.maddox.JGP.Point2f point2f1)
+    {
+        tmpP.scale(-deviation(point2f), N);
+        point2f1.add(point2f, tmpP);
+    }
 
-  public final void project(Point2f paramPoint2f)
-  {
-    this.tmpP.scale(-deviation(paramPoint2f), this.N);
-    paramPoint2f.add(this.tmpP);
-  }
+    public final void project(com.maddox.JGP.Point2f point2f)
+    {
+        tmpP.scale(-deviation(point2f), N);
+        point2f.add(tmpP);
+    }
 
-  public final float distance(Line2f paramLine2f)
-  {
-    if (!this.N.equals(paramLine2f.N)) return 0.0F;
-    return Math.abs(this.C - paramLine2f.C);
-  }
+    public final float distance(com.maddox.JGP.Line2f line2f)
+    {
+        if(!N.equals(line2f.N))
+            return 0.0F;
+        else
+            return java.lang.Math.abs(C - line2f.C);
+    }
 
-  public final Point2f cross(Line2f paramLine2f) throws JGPException
-  {
-    float[] arrayOfFloat = { this.N.x, this.N.y, -this.C, paramLine2f.N.x, paramLine2f.N.y, -paramLine2f.C };
+    public final com.maddox.JGP.Point2f cross(com.maddox.JGP.Line2f line2f)
+        throws com.maddox.JGP.JGPException
+    {
+        float af[] = {
+            N.x, N.y, -C, line2f.N.x, line2f.N.y, -line2f.C
+        };
+        return com.maddox.JGP.NSolvef.Solve2f(af);
+    }
 
-    return NSolvef.Solve2f(arrayOfFloat);
-  }
+    public final void crossXc(float f, com.maddox.JGP.Point2f point2f)
+    {
+        point2f.x = f;
+        float f1 = (-N.x * f - C) / N.y;
+        if(java.lang.Math.abs(f1) < 1E+036F)
+        {
+            point2f.y = f1;
+            return;
+        } else
+        {
+            point2f.y = 1E+036F;
+            return;
+        }
+    }
 
-  public final void crossXc(float paramFloat, Point2f paramPoint2f)
-  {
-    paramPoint2f.x = paramFloat;
-    float f = (-this.N.x * paramFloat - this.C) / this.N.y;
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.y = f; return; }
-    paramPoint2f.y = 1.0E+036F;
-  }
+    public final void crossYc(float f, com.maddox.JGP.Point2f point2f)
+    {
+        point2f.y = f;
+        float f1 = (-N.y * f - C) / N.x;
+        if(java.lang.Math.abs(f1) < 1E+036F)
+        {
+            point2f.x = f1;
+            return;
+        } else
+        {
+            point2f.x = 1E+036F;
+            return;
+        }
+    }
 
-  public final void crossYc(float paramFloat, Point2f paramPoint2f)
-  {
-    paramPoint2f.y = paramFloat;
-    float f = (-this.N.y * paramFloat - this.C) / this.N.x;
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.x = f; return; }
-    paramPoint2f.x = 1.0E+036F;
-  }
+    public final void crossXsubYc(float f, com.maddox.JGP.Point2f point2f)
+    {
+        float f1 = (-N.y * f - C) / (N.x + N.y);
+        if(java.lang.Math.abs(f1) < 1E+036F)
+        {
+            point2f.x = f1;
+            point2f.y = f1 + f;
+            return;
+        } else
+        {
+            point2f.x = point2f.y = 1E+036F;
+            return;
+        }
+    }
 
-  public final void crossXsubYc(float paramFloat, Point2f paramPoint2f)
-  {
-    float f = (-this.N.y * paramFloat - this.C) / (this.N.x + this.N.y);
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.x = f; paramPoint2f.y = (f + paramFloat); return; }
-    paramPoint2f.x = (paramPoint2f.y = 1.0E+036F);
-  }
+    public final void crossXaddYc(float f, com.maddox.JGP.Point2f point2f)
+    {
+        float f1 = (N.y * f + C) / (N.y - N.x);
+        if(java.lang.Math.abs(f1) < 1E+036F)
+        {
+            point2f.x = f1;
+            point2f.y = f - f1;
+            return;
+        } else
+        {
+            point2f.x = point2f.y = 1E+036F;
+            return;
+        }
+    }
 
-  public final void crossXaddYc(float paramFloat, Point2f paramPoint2f)
-  {
-    float f = (this.N.y * paramFloat + this.C) / (this.N.y - this.N.x);
-    if (Math.abs(f) < 1.0E+036F) { paramPoint2f.x = f; paramPoint2f.y = (paramFloat - f); return; }
-    paramPoint2f.x = (paramPoint2f.y = 1.0E+036F);
-  }
+    public final boolean crossed(com.maddox.JGP.Line2f line2f)
+    {
+        return !N.equals(line2f.N);
+    }
 
-  public final boolean crossed(Line2f paramLine2f)
-  {
-    return !this.N.equals(paramLine2f.N);
-  }
+    public final boolean equals(com.maddox.JGP.Line2f line2f)
+    {
+        return N.equals(line2f.N) && C == line2f.C;
+    }
 
-  public final boolean equals(Line2f paramLine2f)
-  {
-    return (this.N.equals(paramLine2f.N)) && (this.C == paramLine2f.C);
-  }
+    public final boolean parallel(com.maddox.JGP.Line2f line2f)
+    {
+        return N.equals(line2f.N);
+    }
 
-  public final boolean parallel(Line2f paramLine2f)
-  {
-    return this.N.equals(paramLine2f.N);
-  }
+    public final float cos(com.maddox.JGP.Line2f line2f)
+    {
+        return N.dot(line2f.N);
+    }
 
-  public final float cos(Line2f paramLine2f)
-  {
-    return this.N.dot(paramLine2f.N);
-  }
+    public java.lang.String toString()
+    {
+        return "( " + N.x + "," + N.y + "; " + C + " )";
+    }
 
-  public String toString()
-  {
-    return "( " + this.N.x + "," + this.N.y + "; " + this.C + " )";
-  }
+    public com.maddox.JGP.Vector2f N;
+    public float C;
+    private com.maddox.JGP.Point2f tmpP;
 }

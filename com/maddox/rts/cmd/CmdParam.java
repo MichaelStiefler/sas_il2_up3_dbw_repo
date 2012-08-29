@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdParam.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -10,95 +15,103 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class CmdParam extends Cmd
+public class CmdParam extends com.maddox.rts.Cmd
 {
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    Object localObject1 = null;
-    List localList = null;
-    if (paramMap.containsKey("_$$")) {
-      localList = (List)paramMap.get("_$$");
-      if (localList.size() > 0) {
-        localObject1 = (String)localList.get(0);
-        localList.remove(0);
-      }
-    }
-    if (localObject1 == null) {
-      ERR_HARD("Bad command format");
-      return null;
-    }
 
-    Cmd localCmd = (Cmd)paramCmdEnv.atom("_$$$command", (String)localObject1);
-    if (localCmd == null) {
-      ERR_HARD("Command " + (String)localObject1 + " not found");
-      return null;
-    }
-
-    if (paramCmdEnv.noAccess(localCmd)) {
-      ERR_HARD("Access denied");
-      return null;
-    }
-
-    if (!localCmd.properties().containsKey("PARAMS")) {
-      ERR_HARD("Command " + (String)localObject1 + " not supported parameters");
-      return null;
-    }
-
-    Map localMap = (Map)localCmd.properties().get("PARAMS");
-    Object localObject2;
-    if (localList.size() > 0) {
-      StringBuffer localStringBuffer = null;
-      Iterator localIterator1 = localList.iterator();
-
-      if (localIterator1.hasNext()) {
-        localObject2 = (String)localIterator1.next();
-        if (!localMap.containsKey(localObject2)) {
-          ERR_HARD("Class " + (String)localObject1 + " not supported parameter " + (String)localObject2);
-          return null;
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        java.lang.String s = null;
+        java.util.List list = null;
+        if(map.containsKey("_$$"))
+        {
+            list = (java.util.List)map.get("_$$");
+            if(list.size() > 0)
+            {
+                s = (java.lang.String)list.get(0);
+                list.remove(0);
+            }
         }
-        localObject1 = localObject2;
-      }
-
-      while (localIterator1.hasNext()) {
-        localObject2 = (String)localIterator1.next();
-        if (localMap.containsKey(localObject2)) {
-          localMap.put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
-          localObject1 = localObject2;
-          localStringBuffer = null; continue;
+        if(s == null)
+        {
+            ERR_HARD("Bad command format");
+            return null;
         }
-        if (localStringBuffer == null) localStringBuffer = new StringBuffer(); else
-          localStringBuffer.append(' ');
-        localStringBuffer.append(QuoteTokenizer.toToken((String)localObject2));
-      }
+        com.maddox.rts.Cmd cmd = (com.maddox.rts.Cmd)cmdenv.atom("_$$$command", s);
+        if(cmd == null)
+        {
+            ERR_HARD("Command " + s + " not found");
+            return null;
+        }
+        if(cmdenv.noAccess(cmd))
+        {
+            ERR_HARD("Access denied");
+            return null;
+        }
+        if(!cmd.properties().containsKey("PARAMS"))
+        {
+            ERR_HARD("Command " + s + " not supported parameters");
+            return null;
+        }
+        java.util.Map map1 = (java.util.Map)cmd.properties().get("PARAMS");
+        if(list.size() > 0)
+        {
+            java.lang.StringBuffer stringbuffer = null;
+            java.util.Iterator iterator = list.iterator();
+            if(iterator.hasNext())
+            {
+                java.lang.String s1 = (java.lang.String)iterator.next();
+                if(!map1.containsKey(s1))
+                {
+                    ERR_HARD("Class " + s + " not supported parameter " + s1);
+                    return null;
+                }
+                s = s1;
+            }
+            while(iterator.hasNext()) 
+            {
+                java.lang.String s2 = (java.lang.String)iterator.next();
+                if(map1.containsKey(s2))
+                {
+                    map1.put(s, stringbuffer != null ? ((java.lang.Object) (stringbuffer.toString())) : null);
+                    s = s2;
+                    stringbuffer = null;
+                } else
+                {
+                    if(stringbuffer == null)
+                        stringbuffer = new StringBuffer();
+                    else
+                        stringbuffer.append(' ');
+                    stringbuffer.append(com.maddox.util.QuoteTokenizer.toToken(s2));
+                }
+            }
+            map1.put(s, stringbuffer != null ? ((java.lang.Object) (stringbuffer.toString())) : null);
+            return com.maddox.rts.CmdEnv.RETURN_OK;
+        }
+        boolean flag = cmdenv.flag("fast");
+        boolean flag1 = false;
+        if(!flag)
+            flag1 = cmdenv.flag("echo");
+        if(flag1)
+        {
+            java.util.Set set = map1.keySet();
+            for(java.util.Iterator iterator1 = set.iterator(); iterator1.hasNext();)
+            {
+                java.lang.Object obj = iterator1.next();
+                java.lang.Object obj1 = map1.get(obj);
+                if(obj1 != null)
+                    INFO_HARD(obj.toString() + " is " + obj1.toString());
+                else
+                    INFO_HARD(obj.toString() + " is NULL");
+            }
 
-      localMap.put(localObject1, localStringBuffer == null ? null : localStringBuffer.toString());
-      return CmdEnv.RETURN_OK;
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
 
-    boolean bool1 = paramCmdEnv.flag("fast");
-    boolean bool2 = false;
-    if (!bool1)
-      bool2 = paramCmdEnv.flag("echo");
-    if (bool2) {
-      localObject2 = localMap.keySet();
-      Iterator localIterator2 = ((Set)localObject2).iterator();
-      while (localIterator2.hasNext()) {
-        Object localObject3 = localIterator2.next();
-        Object localObject4 = localMap.get(localObject3);
-        if (localObject4 != null)
-          INFO_HARD(localObject3.toString() + " is " + localObject4.toString());
-        else {
-          INFO_HARD(localObject3.toString() + " is NULL");
-        }
-      }
+    public CmdParam()
+    {
+        param.remove("_$$");
+        _properties.put("NAME", "param");
+        _levelAccess = 2;
     }
-
-    return CmdEnv.RETURN_OK;
-  }
-
-  public CmdParam() {
-    this.param.remove("_$$");
-    this._properties.put("NAME", "param");
-    this._levelAccess = 2;
-  }
 }

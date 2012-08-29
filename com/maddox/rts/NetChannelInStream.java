@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetChannelInStream.java
+
 package com.maddox.rts;
 
 import com.maddox.rts.net.NetEmptyAddress;
@@ -8,298 +13,421 @@ import com.maddox.util.HashMapIntEntry;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map.Entry;
+import java.util.Map;
 
-public class NetChannelInStream extends NetChannel
-  implements NetChannelStream, MsgTimeOutListener
+// Referenced classes of package com.maddox.rts:
+//            NetChannel, NetObj, NetChannelCallbackStream, NetMsgInput, 
+//            NetException, NetMsgGuaranted, NetChannelStream, MsgTimeOutListener, 
+//            NetEnv, MsgNet, Time, MsgTimeOut, 
+//            CRC16, RTSConf, NetMsgSpawn, NetMsgDestroy, 
+//            NetMsgFiltered, NetMsgOutput, NetPacket
+
+public class NetChannelInStream extends com.maddox.rts.NetChannel
+    implements com.maddox.rts.NetChannelStream, com.maddox.rts.MsgTimeOutListener
 {
-  private static final boolean DEBUG = false;
-  private boolean bDestroyGo = false;
-  InputStream inStream;
-  DataInputStream inData;
-  NetMsgInput packet = new NetMsgInput();
-  byte[] buf = new byte[2048];
-  long lastPacketTime;
-  int receiveGMsgSequenceNum_ = 0;
-  boolean bGameTime = false;
-  boolean bPause = false;
-  boolean bQueueSync = false;
-  int ng = 0;
-  private static SyncMessage syncMessage;
+    static class SyncMessage extends com.maddox.rts.NetObj
+    {
 
-  public void destroy()
-  {
-    if ((this.state & 0x80000000) != 0) return;
-
-    NetObj localNetObj1 = (NetObj)NetEnv.cur().objects.get(9);
-    if ((localNetObj1 != null) && (!this.bDestroyGo)) {
-      this.bDestroyGo = true;
-      localNetObj1.msgNetDelChannel(this);
-      this.bDestroyGo = false;
-      if ((this.state & 0x80000000) != 0) return;
-    }
-    this.state |= -2147483648;
-
-    while (!this.objects.isEmpty()) {
-      localObject1 = this.objects.nextEntry(null);
-      if (localObject1 == null) break;
-      localObject2 = (NetObj)((HashMapIntEntry)localObject1).getValue();
-      int i = ((HashMapIntEntry)localObject1).getKey();
-      destroyNetObj((NetObj)localObject2);
-      if (this.objects.containsKey(i)) {
-        this.objects.remove(i);
-      }
-    }
-    while (!this.mirrored.isEmpty()) {
-      localObject1 = this.mirrored.nextEntry(null);
-      if (localObject1 == null) break;
-      localObject2 = (NetObj)((Map.Entry)localObject1).getKey();
-      localObject2.countMirrors -= 1;
-      this.mirrored.remove(localObject2);
-      MsgNet.postRealDelChannel(localObject2, this);
-    }
-
-    Object localObject1 = NetEnv.cur().objects;
-    Object localObject2 = ((HashMapInt)localObject1).nextEntry(null);
-    while (localObject2 != null) {
-      NetObj localNetObj2 = (NetObj)((HashMapIntEntry)localObject2).getValue();
-      if (localNetObj2.isCommon())
-        MsgNet.postRealDelChannel(localNetObj2, this);
-      localObject2 = ((HashMapInt)localObject1).nextEntry((HashMapIntEntry)localObject2);
-    }
-    clearReceivedGMsgs();
-    if (this.inStream != null) {
-      try {
-        this.inStream.close(); } catch (Exception localException) {
-      }
-      this.inStream = null;
-    }
-  }
-
-  public boolean isGameTime()
-  {
-    return this.bGameTime;
-  }
-  public void setGameTime() { if (this.bGameTime) return;
-    this.bGameTime = true;
-    this.lastPacketTime = Time.current();
-    MsgTimeOut.post(Time.current(), this, null); }
-
-  public boolean isPause() {
-    return this.bPause;
-  }
-  public void setPause(boolean paramBoolean) { if (this.bPause == paramBoolean) return;
-    this.bPause = paramBoolean; }
-
-  protected boolean isEnableFlushReceivedGuarantedMsgs()
-  {
-    return !this.bPause;
-  }
-
-  protected boolean update() {
-    if (this.state < 0) return false;
-    if (this.bGameTime) return true;
-    return _update();
-  }
-
-  public void msgTimeOut(Object paramObject) {
-    if (!_update()) return;
-    MsgTimeOut.post(this.lastPacketTime, this, null);
-  }
-
-  private boolean _update() {
-    if (this.state < 0) return false;
-
-    if (this.bPause) return true;
-
-    if (this.bQueueSync) {
-      if (this.receiveGMsgs.size() == 0)
-        this.bQueueSync = false;
-      else
-        flushReceivedGuarantedMsgs();
-      return true;
-    }
-
-    int i = 0;
-    try {
-      while ((!this.bPause) && (!this.bQueueSync)) {
-        if (!this.bGameTime)
-          this.lastPacketTime = Time.currentReal();
-        else if (this.lastPacketTime > Time.current())
-            break;
-        if (this.packet.available() > 0)
+        public SyncMessage(int i)
         {
-          Object localObject;
-          if (this.ng == 0) {
-            int j = this.packet.readUnsignedShort();
-            localObject = this.packet.buf;
-            int n = this.packet.pos - 2;
-            int i1 = this.packet.available() + 2;
-            localObject[(n + 0)] = 28; localObject[(n + 1)] = -63;
-            int i2 = CRC16.checksum(0, localObject, n, i1);
-            if (j != i2) {
-              i = 0;
-              throw new Exception("bad packet CRC");
-            }
-            this.ng = this.packet.readUnsignedByte();
-          }
-          boolean bool = this.bGameTime;
-          while (this.ng > 0) {
-            localObject = getMessage(this.packet);
-            if (syncMessage == getMessageObj)
-              this.bQueueSync = true;
-            this.receiveGMsgSequenceNum_ = (this.receiveGMsgSequenceNum_ + 1 & 0xFFFF);
-            receivedGuarantedMsg((NetMsgInput)localObject, this.receiveGMsgSequenceNum_);
-            this.ng -= 1;
-            if ((this.bPause) || (bool != this.bGameTime)) {
-              if (this.ng == 0)
-              {
-                while (this.packet.available() > 0)
-                  this.packet.readByte();
-              }
-              return true;
-            }
-          }
-          while (this.packet.available() > 0) {
-            localObject = getMessage(this.packet, this.lastPacketTime);
-            if (localObject != null) {
-              statIn(true, getMessageObj, (NetMsgInput)localObject);
-              if (!this.bGameTime) MsgNet.postReal(getMessageTime, getMessageObj, (NetMsgInput)localObject); else
-                MsgNet.postGame(getMessageTime, getMessageObj, (NetMsgInput)localObject);
-            }
-          }
-          i = 1;
-          this.packet.setData(this, false, null, 0, 0);
+            super(null, i);
         }
-        if (this.inData.available() == 0) {
-          if (i != 0) break;
-          destroy();
-          return false;
+    }
+
+
+    public void destroy()
+    {
+        if((state & 0x80000000) != 0)
+            return;
+        com.maddox.rts.NetObj netobj = (com.maddox.rts.NetObj)com.maddox.rts.NetEnv.cur().objects.get(9);
+        if(netobj != null && !bDestroyGo)
+        {
+            bDestroyGo = true;
+            netobj.msgNetDelChannel(this);
+            bDestroyGo = false;
+            if((state & 0x80000000) != 0)
+                return;
+        }
+        state |= 0x80000000;
+        while(!objects.isEmpty()) 
+        {
+            com.maddox.util.HashMapIntEntry hashmapintentry = objects.nextEntry(null);
+            if(hashmapintentry == null)
+                break;
+            com.maddox.rts.NetObj netobj1 = (com.maddox.rts.NetObj)hashmapintentry.getValue();
+            int i = hashmapintentry.getKey();
+            com.maddox.rts.NetChannel.destroyNetObj(netobj1);
+            if(objects.containsKey(i))
+                objects.remove(i);
+        }
+        com.maddox.rts.NetObj netobj2;
+        for(; !mirrored.isEmpty(); com.maddox.rts.MsgNet.postRealDelChannel(netobj2, this))
+        {
+            java.util.Map.Entry entry = mirrored.nextEntry(null);
+            if(entry == null)
+                break;
+            netobj2 = (com.maddox.rts.NetObj)entry.getKey();
+            netobj2.countMirrors--;
+            mirrored.remove(netobj2);
         }
 
-        int k = this.inData.readUnsignedShort();
-        int m = this.inData.readUnsignedShort();
-        this.inData.read(this.buf, 0, m);
-        this.packet.setData(this, false, this.buf, 0, m);
-        if (!this.bGameTime) {
-          break;
+        com.maddox.util.HashMapInt hashmapint = com.maddox.rts.NetEnv.cur().objects;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+        {
+            com.maddox.rts.NetObj netobj3 = (com.maddox.rts.NetObj)hashmapintentry1.getValue();
+            if(netobj3.isCommon())
+                com.maddox.rts.MsgNet.postRealDelChannel(netobj3, this);
         }
-        this.lastPacketTime += k;
-      }
-    } catch (Exception localException) {
-      localException.printStackTrace();
-      destroy(localException.toString());
-      return false;
+
+        clearReceivedGMsgs();
+        if(inStream != null)
+        {
+            try
+            {
+                inStream.close();
+            }
+            catch(java.lang.Exception exception) { }
+            inStream = null;
+        }
     }
-    return true;
-  }
-  protected void postReceivedGMsg(long paramLong, NetObj paramNetObj, NetMsgInput paramNetMsgInput) {
-    statIn(false, paramNetObj, paramNetMsgInput);
-    int i = !this.bGameTime ? 1 : 0;
-    if (((paramNetObj instanceof NetChannelCallbackStream)) && (!((NetChannelCallbackStream)paramNetObj).netChannelCallback(this, paramNetMsgInput)))
+
+    public boolean isGameTime()
     {
-      return;
-    }if (i != 0) MsgNet.postReal(Time.currentReal(), paramNetObj, paramNetMsgInput); else
-      MsgNet.postGame(Time.current(), paramNetObj, paramNetMsgInput);
-  }
-
-  public NetChannelInStream(InputStream paramInputStream, int paramInt) {
-    this.inStream = paramInputStream;
-    this.inData = new DataInputStream(paramInputStream);
-    this.flags = paramInt;
-    this.id = RTSConf.cur.netEnv.nextIdChannel(true);
-    this.remoteId = 0;
-    this.socket = new NetEmptySocket();
-    this.remoteAddress = new NetEmptyAddress();
-    this.remotePort = 0;
-    this.lastPacketTime = Time.currentReal();
-    this.packet.setData(this, false, null, 0, 0);
-    this.state = 1;
-  }
-
-  protected void putMessageSpawn(NetMsgSpawn paramNetMsgSpawn) throws IOException
-  {
-    if ((paramNetMsgSpawn._sender instanceof NetChannelCallbackStream)) {
-      ((NetChannelCallbackStream)paramNetMsgSpawn._sender).netChannelCallback(this, paramNetMsgSpawn);
-      return;
+        return bGameTime;
     }
-    throw new NetException("putMessageSpawn NOT supported");
-  }
 
-  protected void putMessageDestroy(NetMsgDestroy paramNetMsgDestroy) throws IOException {
-    if ((paramNetMsgDestroy._sender instanceof NetChannelCallbackStream)) {
-      ((NetChannelCallbackStream)paramNetMsgDestroy._sender).netChannelCallback(this, paramNetMsgDestroy);
-      return;
+    public void setGameTime()
+    {
+        if(bGameTime)
+        {
+            return;
+        } else
+        {
+            bGameTime = true;
+            lastPacketTime = com.maddox.rts.Time.current();
+            com.maddox.rts.MsgTimeOut.post(com.maddox.rts.Time.current(), this, null);
+            return;
+        }
     }
-    throw new NetException("putMessageDestroy NOT supported");
-  }
 
-  protected void putMessage(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    if ((paramNetMsgGuaranted._sender instanceof NetChannelCallbackStream)) {
-      ((NetChannelCallbackStream)paramNetMsgGuaranted._sender).netChannelCallback(this, paramNetMsgGuaranted);
-      return;
+    public boolean isPause()
+    {
+        return bPause;
     }
-    throw new NetException("putMessage NOT supported");
-  }
 
-  public void startSortGuaranted() {
-    throw new NetException("startSortGuaranted NOT supported");
-  }
-
-  public void stopSortGuaranted() throws IOException {
-    throw new NetException("stopSortGuaranted NOT supported");
-  }
-
-  protected void putMessage(NetMsgFiltered paramNetMsgFiltered) throws IOException {
-    throw new NetException("putMessage NOT supported");
-  }
-  public int gSendQueueLenght() { return 0; } 
-  public int gSendQueueSize() { return 0; } 
-  protected boolean sendPacket(NetMsgOutput paramNetMsgOutput, NetPacket paramNetPacket) {
-    return false;
-  }
-  protected boolean receivePacket(NetMsgInput paramNetMsgInput, long paramLong) throws IOException {
-    return true;
-  }
-  public int ping() {
-    return 0;
-  }
-  public int pingTo() { return 0; } 
-  public int getMaxTimeout() {
-    return 1000;
-  }
-  public void setMaxTimeout(int paramInt) {
-  }
-  public int getCurTimeout() { return 0; } 
-  public boolean isRequeredSendPacket(long paramLong) { return false; } 
-  public double getMaxSpeed() {
-    return this.maxSendSpeed;
-  }
-
-  public void setMaxSpeed(double paramDouble) {
-  }
-
-  public static void sendSyncMsg(NetChannel paramNetChannel) {
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      syncMessage.postTo(paramNetChannel, localNetMsgGuaranted);
+    public void setPause(boolean flag)
+    {
+        if(bPause == flag)
+        {
+            return;
+        } else
+        {
+            bPause = flag;
+            return;
+        }
     }
-    catch (Exception localException)
+
+    protected boolean isEnableFlushReceivedGuarantedMsgs()
+    {
+        return !bPause;
+    }
+
+    protected boolean update()
+    {
+        if(state < 0)
+            return false;
+        if(bGameTime)
+            return true;
+        else
+            return _update();
+    }
+
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(!_update())
+        {
+            return;
+        } else
+        {
+            com.maddox.rts.MsgTimeOut.post(lastPacketTime, this, null);
+            return;
+        }
+    }
+
+    private boolean _update()
+    {
+        boolean flag;
+        if(state < 0)
+            return false;
+        if(bPause)
+            return true;
+        if(bQueueSync)
+        {
+            if(receiveGMsgs.size() == 0)
+                bQueueSync = false;
+            else
+                flushReceivedGuarantedMsgs();
+            return true;
+        }
+        flag = false;
+          goto _L1
+_L7:
+        boolean flag1;
+        if(!bGameTime)
+            lastPacketTime = com.maddox.rts.Time.currentReal();
+        else
+        if(lastPacketTime > com.maddox.rts.Time.current())
+            break; /* Loop/switch isn't completed */
+        if(packet.available() <= 0)
+            break MISSING_BLOCK_LABEL_395;
+        if(ng == 0)
+        {
+            int i = packet.readUnsignedShort();
+            byte abyte0[] = packet.buf;
+            int l = packet.pos - 2;
+            int i1 = packet.available() + 2;
+            abyte0[l + 0] = 28;
+            abyte0[l + 1] = -63;
+            int j1 = com.maddox.rts.CRC16.checksum(0, abyte0, l, i1);
+            if(i != j1)
+            {
+                flag = false;
+                throw new Exception("bad packet CRC");
+            }
+            ng = packet.readUnsignedByte();
+        }
+        flag1 = bGameTime;
+          goto _L2
+_L5:
+        com.maddox.rts.NetMsgInput netmsginput = getMessage(packet);
+        if(syncMessage == com.maddox.rts.NetChannel.getMessageObj)
+            bQueueSync = true;
+        receiveGMsgSequenceNum_ = receiveGMsgSequenceNum_ + 1 & 0xffff;
+        receivedGuarantedMsg(netmsginput, receiveGMsgSequenceNum_);
+        ng--;
+        if(!bPause && flag1 == bGameTime) goto _L2; else goto _L3
+_L3:
+        if(ng == 0)
+            for(; packet.available() > 0; packet.readByte());
+        return true;
+_L2:
+        if(ng > 0) goto _L5; else goto _L4
+_L4:
+        while(packet.available() > 0) 
+        {
+            com.maddox.rts.NetMsgInput netmsginput1 = getMessage(packet, lastPacketTime);
+            if(netmsginput1 != null)
+            {
+                statIn(true, com.maddox.rts.NetChannel.getMessageObj, netmsginput1);
+                if(!bGameTime)
+                    com.maddox.rts.MsgNet.postReal(com.maddox.rts.NetChannel.getMessageTime, com.maddox.rts.NetChannel.getMessageObj, netmsginput1);
+                else
+                    com.maddox.rts.MsgNet.postGame(com.maddox.rts.NetChannel.getMessageTime, com.maddox.rts.NetChannel.getMessageObj, netmsginput1);
+            }
+        }
+        flag = true;
+        packet.setData(this, false, null, 0, 0);
+        if(inData.available() != 0)
+            break MISSING_BLOCK_LABEL_415;
+        if(flag)
+            break; /* Loop/switch isn't completed */
+        destroy();
+        return false;
+        int j = inData.readUnsignedShort();
+        int k = inData.readUnsignedShort();
+        inData.read(buf, 0, k);
+        packet.setData(this, false, buf, 0, k);
+        if(!bGameTime)
+            break; /* Loop/switch isn't completed */
+        lastPacketTime += j;
+_L1:
+        if(!bPause && !bQueueSync) goto _L7; else goto _L6
+        java.lang.Exception exception;
+        exception;
+        exception.printStackTrace();
+        destroy(exception.toString());
+        return false;
+_L6:
+        return true;
+    }
+
+    protected void postReceivedGMsg(long l, com.maddox.rts.NetObj netobj, com.maddox.rts.NetMsgInput netmsginput)
+    {
+        statIn(false, netobj, netmsginput);
+        boolean flag = !bGameTime;
+        if((netobj instanceof com.maddox.rts.NetChannelCallbackStream) && !((com.maddox.rts.NetChannelCallbackStream)netobj).netChannelCallback(this, netmsginput))
+            return;
+        if(flag)
+            com.maddox.rts.MsgNet.postReal(com.maddox.rts.Time.currentReal(), netobj, netmsginput);
+        else
+            com.maddox.rts.MsgNet.postGame(com.maddox.rts.Time.current(), netobj, netmsginput);
+    }
+
+    public NetChannelInStream(java.io.InputStream inputstream, int i)
+    {
+        bDestroyGo = false;
+        packet = new NetMsgInput();
+        buf = new byte[2048];
+        receiveGMsgSequenceNum_ = 0;
+        bGameTime = false;
+        bPause = false;
+        bQueueSync = false;
+        ng = 0;
+        inStream = inputstream;
+        inData = new DataInputStream(inputstream);
+        flags = i;
+        id = com.maddox.rts.RTSConf.cur.netEnv.nextIdChannel(true);
+        remoteId = 0;
+        socket = new NetEmptySocket();
+        remoteAddress = new NetEmptyAddress();
+        remotePort = 0;
+        lastPacketTime = com.maddox.rts.Time.currentReal();
+        packet.setData(this, false, null, 0, 0);
+        state = 1;
+    }
+
+    protected void putMessageSpawn(com.maddox.rts.NetMsgSpawn netmsgspawn)
+        throws java.io.IOException
+    {
+        if(netmsgspawn._sender instanceof com.maddox.rts.NetChannelCallbackStream)
+        {
+            ((com.maddox.rts.NetChannelCallbackStream)netmsgspawn._sender).netChannelCallback(this, netmsgspawn);
+            return;
+        } else
+        {
+            throw new NetException("putMessageSpawn NOT supported");
+        }
+    }
+
+    protected void putMessageDestroy(com.maddox.rts.NetMsgDestroy netmsgdestroy)
+        throws java.io.IOException
+    {
+        if(netmsgdestroy._sender instanceof com.maddox.rts.NetChannelCallbackStream)
+        {
+            ((com.maddox.rts.NetChannelCallbackStream)netmsgdestroy._sender).netChannelCallback(this, netmsgdestroy);
+            return;
+        } else
+        {
+            throw new NetException("putMessageDestroy NOT supported");
+        }
+    }
+
+    protected void putMessage(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        if(netmsgguaranted._sender instanceof com.maddox.rts.NetChannelCallbackStream)
+        {
+            ((com.maddox.rts.NetChannelCallbackStream)netmsgguaranted._sender).netChannelCallback(this, netmsgguaranted);
+            return;
+        } else
+        {
+            throw new NetException("putMessage NOT supported");
+        }
+    }
+
+    public void startSortGuaranted()
+    {
+        throw new NetException("startSortGuaranted NOT supported");
+    }
+
+    public void stopSortGuaranted()
+        throws java.io.IOException
+    {
+        throw new NetException("stopSortGuaranted NOT supported");
+    }
+
+    protected void putMessage(com.maddox.rts.NetMsgFiltered netmsgfiltered)
+        throws java.io.IOException
+    {
+        throw new NetException("putMessage NOT supported");
+    }
+
+    public int gSendQueueLenght()
+    {
+        return 0;
+    }
+
+    public int gSendQueueSize()
+    {
+        return 0;
+    }
+
+    protected boolean sendPacket(com.maddox.rts.NetMsgOutput netmsgoutput, com.maddox.rts.NetPacket netpacket)
+    {
+        return false;
+    }
+
+    protected boolean receivePacket(com.maddox.rts.NetMsgInput netmsginput, long l)
+        throws java.io.IOException
+    {
+        return true;
+    }
+
+    public int ping()
+    {
+        return 0;
+    }
+
+    public int pingTo()
+    {
+        return 0;
+    }
+
+    public int getMaxTimeout()
+    {
+        return 1000;
+    }
+
+    public void setMaxTimeout(int i)
     {
     }
-  }
 
-  protected static void classInit()
-  {
-    if (syncMessage == null)
-      syncMessage = new SyncMessage(8);
-  }
-
-  static class SyncMessage extends NetObj
-  {
-    public SyncMessage(int paramInt)
+    public int getCurTimeout()
     {
-      super(paramInt);
+        return 0;
     }
-  }
+
+    public boolean isRequeredSendPacket(long l)
+    {
+        return false;
+    }
+
+    public double getMaxSpeed()
+    {
+        return maxSendSpeed;
+    }
+
+    public void setMaxSpeed(double d)
+    {
+    }
+
+    public static void sendSyncMsg(com.maddox.rts.NetChannel netchannel)
+    {
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            syncMessage.postTo(netchannel, netmsgguaranted);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    protected static void classInit()
+    {
+        if(syncMessage == null)
+            syncMessage = new SyncMessage(8);
+    }
+
+    private static final boolean DEBUG = false;
+    private boolean bDestroyGo;
+    java.io.InputStream inStream;
+    java.io.DataInputStream inData;
+    com.maddox.rts.NetMsgInput packet;
+    byte buf[];
+    long lastPacketTime;
+    int receiveGMsgSequenceNum_;
+    boolean bGameTime;
+    boolean bPause;
+    boolean bQueueSync;
+    int ng;
+    private static com.maddox.rts.SyncMessage syncMessage;
 }

@@ -1,171 +1,243 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CellObject.java
+
 package com.maddox.il2.ai.air;
 
 import java.io.PrintStream;
 import java.io.Serializable;
 
 public class CellObject
-  implements Serializable
+    implements java.io.Serializable
 {
-  private CellObject[][] cells;
-  private String id = "*";
-  private double cellX;
-  private double cellY;
-  private double cellSize = 0.5D;
 
-  public void setCells(CellObject[][] paramArrayOfCellObject)
-  {
-    this.cells = paramArrayOfCellObject; } 
-  public CellObject[][] getCells() { return this.cells;
-  }
-
-  public String getId()
-  {
-    return this.id; } 
-  public void setId(String paramString) { this.id = paramString;
-  }
-
-  public void setCellX(double paramDouble)
-  {
-    this.cellX = paramDouble; } 
-  public double getCellX() { return this.cellX;
-  }
-
-  public void setCellY(double paramDouble)
-  {
-    this.cellY = paramDouble; } 
-  public double getCellY() { return this.cellY;
-  }
-
-  public void setCoordinates(double paramDouble1, double paramDouble2)
-  {
-    setCellX(paramDouble1);
-    setCellY(paramDouble2);
-  }
-
-  public int getWidth()
-  {
-    if (this.cells == null) return 0;
-    return this.cells.length;
-  }
-
-  public int getHeight()
-  {
-    if (this.cells == null) return 0;
-    if (this.cells[0] == null) return 0;
-    return this.cells[0].length;
-  }
-
-  public double getXCoordinate()
-  {
-    if (this.cells == null) return 0.0D;
-    if (this.cells[0][0] == null) return 0.0D;
-    return this.cells[0][0].getCellX();
-  }
-
-  public double getYCoordinate()
-  {
-    if (this.cells == null) return 0.0D;
-    if (this.cells[0][0] == null) return 0.0D;
-    return this.cells[0][0].getCellY();
-  }
-
-  public double getCellSize()
-  {
-    return this.cellSize; } 
-  public void setCellSize(double paramDouble) { this.cellSize = paramDouble;
-  }
-
-  public void setWorldCoordinates(double paramDouble1, double paramDouble2)
-  {
-    if (this.cells == null) return;
-    if (this.cells[0][0] == null) return;
-    double d = this.cells[0][0].getCellSize();
-    for (int i = 0; i < this.cells.length; i++)
-      for (int j = 0; j < this.cells[0].length; j++)
-        if (this.cells[i][j] != null)
-          this.cells[i][j].setCoordinates(paramDouble1 + i * d, paramDouble2 + j * d);
-  }
-
-  public CellObject getClone()
-  {
-    if (this.cells == null) return null;
-    CellObject[][] arrayOfCellObject = new CellObject[getWidth()][getHeight()];
-    for (int i = 0; i < this.cells.length; i++) {
-      for (int j = 0; j < this.cells[0].length; j++) {
-        if (this.cells[i][j] != null)
-          arrayOfCellObject[i][j] = this.cells[i][j];
-      }
+    public void setCells(com.maddox.il2.ai.air.CellObject acellobject[][])
+    {
+        cells = acellobject;
     }
-    return new CellObject(arrayOfCellObject);
-  }
 
-  public void clearCells()
-  {
-    if (this.cells == null) return;
-    for (int i = 0; i < this.cells.length; i++)
-      for (int j = 0; j < this.cells[0].length; j++)
-        this.cells[i][j] = null;
-  }
-
-  public int calcFilledCells()
-  {
-    int i = 0;
-    if (this.cells == null) return 0;
-    for (int j = 0; j < this.cells.length; j++) {
-      for (int k = 0; k < this.cells[0].length; k++) {
-        if (this.cells[j][k] == null) continue; i++;
-      }
+    public com.maddox.il2.ai.air.CellObject[][] getCells()
+    {
+        return cells;
     }
-    return i;
-  }
 
-  public int calcFreeCells()
-  {
-    int i = 0;
-    if (this.cells == null) return 0;
-    if (this.cells[0][0] == null) return 0;
-    for (int j = 0; j < this.cells.length; j++) {
-      for (int k = 0; k < this.cells[0].length; k++) {
-        if (this.cells[j][k] != null) continue; i++;
-      }
+    public java.lang.String getId()
+    {
+        return id;
     }
-    return i;
-  }
 
-  public void debugPrint()
-  {
-    if (this.cells == null) return;
-    System.out.println();
-    for (int i = 0; i < this.cells[0].length; i++) {
-      for (int j = 0; j < this.cells.length; j++) {
-        if (this.cells[j][i] != null)
-          System.out.print(this.cells[j][i].getId());
+    public void setId(java.lang.String s)
+    {
+        id = s;
+    }
+
+    public void setCellX(double d)
+    {
+        cellX = d;
+    }
+
+    public double getCellX()
+    {
+        return cellX;
+    }
+
+    public void setCellY(double d)
+    {
+        cellY = d;
+    }
+
+    public double getCellY()
+    {
+        return cellY;
+    }
+
+    public void setCoordinates(double d, double d1)
+    {
+        setCellX(d);
+        setCellY(d1);
+    }
+
+    public int getWidth()
+    {
+        if(cells == null)
+            return 0;
         else
-          System.out.print("_");
-      }
-      System.out.println();
+            return cells.length;
     }
-    System.out.println();
-  }
 
-  public void reInitReferences()
-  {
-    if (this.cells == null) return;
-    for (int i = 0; i < this.cells.length; i++)
-      for (int j = 0; j < this.cells[0].length; j++) {
-        if (this.cells[i][j] == null) continue; this.cells[i][j] = this;
-      }
-  }
+    public int getHeight()
+    {
+        if(cells == null)
+            return 0;
+        if(cells[0] == null)
+            return 0;
+        else
+            return cells[0].length;
+    }
 
-  public CellObject(CellObject[][] paramArrayOfCellObject)
-  {
-    this.cells = paramArrayOfCellObject;
-    reInitReferences();
-  }
+    public double getXCoordinate()
+    {
+        if(cells == null)
+            return 0.0D;
+        if(cells[0][0] == null)
+            return 0.0D;
+        else
+            return cells[0][0].getCellX();
+    }
 
-  public CellObject()
-  {
-    this.cells = new CellObject[1][1];
-    this.cells[0][0] = this;
-  }
+    public double getYCoordinate()
+    {
+        if(cells == null)
+            return 0.0D;
+        if(cells[0][0] == null)
+            return 0.0D;
+        else
+            return cells[0][0].getCellY();
+    }
+
+    public double getCellSize()
+    {
+        return cellSize;
+    }
+
+    public void setCellSize(double d)
+    {
+        cellSize = d;
+    }
+
+    public void setWorldCoordinates(double d, double d1)
+    {
+        if(cells == null)
+            return;
+        if(cells[0][0] == null)
+            return;
+        double d2 = cells[0][0].getCellSize();
+        for(int i = 0; i < cells.length; i++)
+        {
+            for(int j = 0; j < cells[0].length; j++)
+                if(cells[i][j] != null)
+                    cells[i][j].setCoordinates(d + (double)i * d2, d1 + (double)j * d2);
+
+        }
+
+    }
+
+    public com.maddox.il2.ai.air.CellObject getClone()
+    {
+        if(cells == null)
+            return null;
+        com.maddox.il2.ai.air.CellObject acellobject[][] = new com.maddox.il2.ai.air.CellObject[getWidth()][getHeight()];
+        for(int i = 0; i < cells.length; i++)
+        {
+            for(int j = 0; j < cells[0].length; j++)
+                if(cells[i][j] != null)
+                    acellobject[i][j] = cells[i][j];
+
+        }
+
+        return new CellObject(acellobject);
+    }
+
+    public void clearCells()
+    {
+        if(cells == null)
+            return;
+        for(int i = 0; i < cells.length; i++)
+        {
+            for(int j = 0; j < cells[0].length; j++)
+                cells[i][j] = null;
+
+        }
+
+    }
+
+    public int calcFilledCells()
+    {
+        int i = 0;
+        if(cells == null)
+            return 0;
+        for(int j = 0; j < cells.length; j++)
+        {
+            for(int k = 0; k < cells[0].length; k++)
+                if(cells[j][k] != null)
+                    i++;
+
+        }
+
+        return i;
+    }
+
+    public int calcFreeCells()
+    {
+        int i = 0;
+        if(cells == null)
+            return 0;
+        if(cells[0][0] == null)
+            return 0;
+        for(int j = 0; j < cells.length; j++)
+        {
+            for(int k = 0; k < cells[0].length; k++)
+                if(cells[j][k] == null)
+                    i++;
+
+        }
+
+        return i;
+    }
+
+    public void debugPrint()
+    {
+        if(cells == null)
+            return;
+        java.lang.System.out.println();
+        for(int i = 0; i < cells[0].length; i++)
+        {
+            for(int j = 0; j < cells.length; j++)
+                if(cells[j][i] != null)
+                    java.lang.System.out.print(cells[j][i].getId());
+                else
+                    java.lang.System.out.print("_");
+
+            java.lang.System.out.println();
+        }
+
+        java.lang.System.out.println();
+    }
+
+    public void reInitReferences()
+    {
+        if(cells == null)
+            return;
+        for(int i = 0; i < cells.length; i++)
+        {
+            for(int j = 0; j < cells[0].length; j++)
+                if(cells[i][j] != null)
+                    cells[i][j] = this;
+
+        }
+
+    }
+
+    public CellObject(com.maddox.il2.ai.air.CellObject acellobject[][])
+    {
+        id = "*";
+        cellSize = 0.5D;
+        cells = acellobject;
+        reInitReferences();
+    }
+
+    public CellObject()
+    {
+        id = "*";
+        cellSize = 0.5D;
+        cells = new com.maddox.il2.ai.air.CellObject[1][1];
+        cells[0][0] = this;
+    }
+
+    private com.maddox.il2.ai.air.CellObject cells[][];
+    private java.lang.String id;
+    private double cellX;
+    private double cellY;
+    private double cellSize;
 }

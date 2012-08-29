@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIRoot.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GRegion;
@@ -11,64 +16,78 @@ import com.maddox.rts.RTSConf;
 import com.maddox.rts.SFSInputStream;
 import java.util.Locale;
 
-public class GUIRoot extends GWindowRoot
+public class GUIRoot extends com.maddox.gwindow.GWindowRoot
 {
-  GTexture background;
-  GTexture backgroundCountry = null;
 
-  public void setBackCountry(String paramString1, String paramString2) {
-    if ((paramString1 == null) || (paramString2 == null)) {
-      this.backgroundCountry = null;
-    } else {
-      String str1 = RTSConf.cur.locale.getLanguage();
-      String str2 = null;
-      if ((!"us".equalsIgnoreCase(str1)) && (!"en".equalsIgnoreCase(str1))) {
-        str2 = "missions/" + paramString1 + "/" + paramString2 + "/background_" + str1 + ".mat";
-        if (!existSFSFile(str2))
-          str2 = null;
-      }
-      if (str2 == null)
-        str2 = "missions/" + paramString1 + "/" + paramString2 + "/background.mat";
-      Object localObject = FObj.Get(str2);
-      if (localObject != null)
-        this.backgroundCountry = GTexture.New(str2);
+    public GUIRoot()
+    {
+        backgroundCountry = null;
     }
-  }
 
-  public void render() {
-    if (RendersMain.getRenderFocus() == (Render)Actor.getByName("renderGUI")) {
-      setCanvasColorWHITE();
-      if (this.backgroundCountry != null)
-        draw(0.0F, 0.0F, this.win.dx, this.win.dy, this.backgroundCountry);
-      else
-        draw(0.0F, 0.0F, this.win.dx, this.win.dy, this.background);
+    public void setBackCountry(java.lang.String s, java.lang.String s1)
+    {
+        if(s == null || s1 == null)
+        {
+            backgroundCountry = null;
+        } else
+        {
+            java.lang.String s2 = com.maddox.rts.RTSConf.cur.locale.getLanguage();
+            java.lang.String s3 = null;
+            if(!"us".equalsIgnoreCase(s2) && !"en".equalsIgnoreCase(s2))
+            {
+                s3 = "missions/" + s + "/" + s1 + "/background_" + s2 + ".mat";
+                if(!existSFSFile(s3))
+                    s3 = null;
+            }
+            if(s3 == null)
+                s3 = "missions/" + s + "/" + s1 + "/background.mat";
+            java.lang.Object obj = com.maddox.il2.engine.FObj.Get(s3);
+            if(obj != null)
+                backgroundCountry = com.maddox.gwindow.GTexture.New(s3);
+        }
     }
-  }
 
-  public void created() {
-    this.background = GTexture.New("GUI/background.mat");
-
-    String str1 = null;
-    String str2 = RTSConf.cur.locale.getLanguage();
-    if ((!"us".equalsIgnoreCase(str2)) && (!"en".equalsIgnoreCase(str2))) {
-      str1 = "missions/background_" + RTSConf.cur.locale.getLanguage() + ".mat";
-      if (!existSFSFile(str1))
-        str1 = null;
+    public void render()
+    {
+        if(com.maddox.il2.engine.RendersMain.getRenderFocus() == (com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"))
+        {
+            setCanvasColorWHITE();
+            if(backgroundCountry != null)
+                draw(0.0F, 0.0F, win.dx, win.dy, backgroundCountry);
+            else
+                draw(0.0F, 0.0F, win.dx, win.dy, background);
+        }
     }
-    if (str1 == null)
-      str1 = "missions/background.mat";
-    Object localObject = FObj.Get(str1);
-    if (localObject != null)
-      this.background = GTexture.New(str1);
-    super.created();
-  }
 
-  private boolean existSFSFile(String paramString) {
-    try {
-      SFSInputStream localSFSInputStream = new SFSInputStream(paramString);
-      localSFSInputStream.close();
-      return true; } catch (Exception localException) {
+    public void created()
+    {
+        background = com.maddox.gwindow.GTexture.New("GUI/background.mat");
+        java.lang.String s = null;
+        java.lang.String s1 = com.maddox.rts.RTSConf.cur.locale.getLanguage();
+        if(!"us".equalsIgnoreCase(s1) && !"en".equalsIgnoreCase(s1))
+        {
+            s = "missions/background_" + com.maddox.rts.RTSConf.cur.locale.getLanguage() + ".mat";
+            if(!existSFSFile(s))
+                s = null;
+        }
+        if(s == null)
+            s = "missions/background.mat";
+        java.lang.Object obj = com.maddox.il2.engine.FObj.Get(s);
+        if(obj != null)
+            background = com.maddox.gwindow.GTexture.New(s);
+        super.created();
     }
-    return false;
-  }
+
+    private boolean existSFSFile(java.lang.String s)
+    {
+        com.maddox.rts.SFSInputStream sfsinputstream = new SFSInputStream(s);
+        sfsinputstream.close();
+        return true;
+        java.lang.Exception exception;
+        exception;
+        return false;
+    }
+
+    com.maddox.gwindow.GTexture background;
+    com.maddox.gwindow.GTexture backgroundCountry;
 }

@@ -1,18 +1,39 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Bomb175Napalm.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class Bomb175Napalm extends Bomb
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bomb
+
+public class Bomb175Napalm extends com.maddox.il2.objects.weapons.Bomb
 {
-  static
-  {
-    Class localClass = Bomb175Napalm.class;
-    Property.set(localClass, "mesh", "3DO/Arms/F4U_Napalm/mono.sim");
-    Property.set(localClass, "radius", 78.680496F);
-    Property.set(localClass, "power", 175.0F);
-    Property.set(localClass, "powerType", 2);
-    Property.set(localClass, "kalibr", 0.408F);
-    Property.set(localClass, "massa", 526.0F);
-    Property.set(localClass, "sound", "weapon.bomb_std");
-  }
+
+    public Bomb175Napalm()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.Bomb175Napalm.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/F4U_Napalm/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 78.6805F);
+        com.maddox.rts.Property.set(class1, "power", 175F);
+        com.maddox.rts.Property.set(class1, "powerType", 2);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.408F);
+        com.maddox.rts.Property.set(class1, "massa", 526F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bomb_std");
+    }
 }

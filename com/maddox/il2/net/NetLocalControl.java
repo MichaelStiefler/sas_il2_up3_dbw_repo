@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetLocalControl.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.game.Main;
@@ -8,104 +13,137 @@ import com.maddox.rts.NetObj;
 import com.maddox.util.HashMapExt;
 import com.maddox.util.NumberTokenizer;
 
+// Referenced classes of package com.maddox.il2.net:
+//            NetServerParams
+
 public class NetLocalControl
-  implements NetControlReal
+    implements com.maddox.rts.NetControlReal
 {
-  private NetControl control;
-  private HashMapExt mapUsers = new HashMapExt();
-
-  public void msgNewClient(NetObj paramNetObj, int paramInt1, String paramString, int paramInt2)
-  {
-    if (Main.cur().netServerParams.isProtected()) {
-      User localUser = new User(paramNetObj, paramInt1);
-      localUser.address = paramString;
-      localUser.port = paramInt2;
-      if (this.mapUsers.containsKey(localUser)) {
-        localUser = (User)this.mapUsers.get(localUser);
-        if (!localUser.address.equals(paramString)) {
-          localUser.address = paramString;
-          localUser.port = paramInt2;
-          localUser.countConnect = 0;
-        }
-      } else {
-        this.mapUsers.put(localUser, localUser);
-      }
-      this.control.doRequest(paramNetObj, paramInt1, "SP " + localUser.nextPublicKey());
-    } else {
-      this.control.doAsk(paramNetObj, paramInt1);
-    }
-  }
-
-  public void msgAnswer(NetObj paramNetObj, int paramInt, String paramString)
-  {
-    if (!Main.cur().netServerParams.isProtected()) return;
-    User localUser = new User(paramNetObj, paramInt);
-    localUser = (User)this.mapUsers.get(localUser);
-    if (localUser == null) {
-      return;
-    }
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramString);
-
-    if ("SP".equals(localNumberTokenizer.next("_"))) {
-      long l1 = 0L;
-      try {
-        l1 = Long.parseLong(localNumberTokenizer.next("0")); } catch (Exception localException) {
-      }
-      long l2 = Finger.incLong(0L, "" + localUser.publicKey);
-      l2 = Finger.incLong(l2, Main.cur().netServerParams.getPassword());
-      if (l1 == l2) {
-        this.mapUsers.remove(localUser);
-        this.control.doAsk(paramNetObj, paramInt);
-        return;
-      }
-    }
-
-    localUser.countConnect += 1;
-    if (localUser.countConnect == 3) {
-      this.mapUsers.remove(localUser);
-      this.control.doNak(paramNetObj, paramInt, "bad password");
-      return;
-    }
-    localUser.publicKey = ()Math.random();
-    this.control.doRequest(paramNetObj, paramInt, "SP " + localUser.nextPublicKey());
-  }
-
-  public void destroy() {
-    if (this.control != null) {
-      this.control.destroy();
-      this.control = null;
-    }
-  }
-
-  public NetLocalControl() {
-    this.control = new NetControl(this);
-  }
-
-  static class User
-  {
-    public NetObj firstHost;
-    public int idChannel;
-    public String address;
-    public int port;
-    public int countConnect;
-    public long publicKey;
-
-    public long nextPublicKey()
+    static class User
     {
-      this.publicKey = ()(Math.random() * 1000000000.0D);
-      return this.publicKey;
+
+        public long nextPublicKey()
+        {
+            publicKey = (long)(java.lang.Math.random() * 1000000000D);
+            return publicKey;
+        }
+
+        public boolean equals(java.lang.Object obj)
+        {
+            if(obj == null)
+                return false;
+            if(!(obj instanceof com.maddox.il2.net.User))
+            {
+                return false;
+            } else
+            {
+                com.maddox.il2.net.User user = (com.maddox.il2.net.User)obj;
+                return firstHost == user.firstHost && idChannel == user.idChannel;
+            }
+        }
+
+        public int hashCode()
+        {
+            return idChannel;
+        }
+
+        public com.maddox.rts.NetObj firstHost;
+        public int idChannel;
+        public java.lang.String address;
+        public int port;
+        public int countConnect;
+        public long publicKey;
+
+        public User(com.maddox.rts.NetObj netobj, int i)
+        {
+            firstHost = netobj;
+            idChannel = i;
+        }
     }
 
-    public boolean equals(Object paramObject) {
-      if (paramObject == null) return false;
-      if (!(paramObject instanceof User)) return false;
-      User localUser = (User)paramObject;
-      return (this.firstHost == localUser.firstHost) && (this.idChannel == localUser.idChannel);
+
+    public void msgNewClient(com.maddox.rts.NetObj netobj, int i, java.lang.String s, int j)
+    {
+        if(com.maddox.il2.game.Main.cur().netServerParams.isProtected())
+        {
+            com.maddox.il2.net.User user = new User(netobj, i);
+            user.address = s;
+            user.port = j;
+            if(mapUsers.containsKey(user))
+            {
+                user = (com.maddox.il2.net.User)mapUsers.get(user);
+                if(!user.address.equals(s))
+                {
+                    user.address = s;
+                    user.port = j;
+                    user.countConnect = 0;
+                }
+            } else
+            {
+                mapUsers.put(user, user);
+            }
+            control.doRequest(netobj, i, "SP " + user.nextPublicKey());
+        } else
+        {
+            control.doAsk(netobj, i);
+        }
     }
-    public int hashCode() { return this.idChannel; } 
-    public User(NetObj paramNetObj, int paramInt) {
-      this.firstHost = paramNetObj;
-      this.idChannel = paramInt;
+
+    public void msgAnswer(com.maddox.rts.NetObj netobj, int i, java.lang.String s)
+    {
+        if(!com.maddox.il2.game.Main.cur().netServerParams.isProtected())
+            return;
+        com.maddox.il2.net.User user = new User(netobj, i);
+        user = (com.maddox.il2.net.User)mapUsers.get(user);
+        if(user == null)
+            return;
+        com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s);
+        if("SP".equals(numbertokenizer.next("_")))
+        {
+            long l = 0L;
+            try
+            {
+                l = java.lang.Long.parseLong(numbertokenizer.next("0"));
+            }
+            catch(java.lang.Exception exception) { }
+            long l1 = com.maddox.rts.Finger.incLong(0L, "" + user.publicKey);
+            l1 = com.maddox.rts.Finger.incLong(l1, com.maddox.il2.game.Main.cur().netServerParams.getPassword());
+            if(l == l1)
+            {
+                mapUsers.remove(user);
+                control.doAsk(netobj, i);
+                return;
+            }
+        }
+        user.countConnect++;
+        if(user.countConnect == 3)
+        {
+            mapUsers.remove(user);
+            control.doNak(netobj, i, "bad password");
+            return;
+        } else
+        {
+            user.publicKey = (long)java.lang.Math.random();
+            control.doRequest(netobj, i, "SP " + user.nextPublicKey());
+            return;
+        }
     }
-  }
+
+    public void destroy()
+    {
+        if(control != null)
+        {
+            control.destroy();
+            control = null;
+        }
+    }
+
+    public NetLocalControl()
+    {
+        mapUsers = new HashMapExt();
+        control = new NetControl(this);
+    }
+
+    private com.maddox.rts.NetControl control;
+    private com.maddox.util.HashMapExt mapUsers;
 }

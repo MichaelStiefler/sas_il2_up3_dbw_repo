@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Renders.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.MessageQueue;
@@ -6,44 +11,53 @@ import com.maddox.rts.MsgTimeOutListener;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            Renders
+
 class RendersTicker
-  implements MsgTimeOutListener
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  private Renders renders;
-  private MsgTimeOut msgTimeOut;
 
-  public void msgTimeOut(Object paramObject)
-  {
-    this.msgTimeOut.post();
-    if ((Time.isPaused()) || (Time.tickOffset() != 0.0F))
-      if (this.renders.maxFps <= 0.0F) {
-        this.renders.paint();
-        this.renders.prevTimePaint = Time.real();
-      } else {
-        long l = Time.real();
-        if (l >= this.renders.prevTimePaint + this.renders.stepTimePaint) {
-          this.renders.paint();
-          this.renders.prevTimePaint = l;
-        }
-      }
-  }
-
-  public void destroy()
-  {
-    if (this.msgTimeOut != null) {
-      RTSConf.cur.queueRealTime.remove(this.msgTimeOut);
-      RTSConf.cur.queueRealTimeNextTick.remove(this.msgTimeOut);
-      this.msgTimeOut = null;
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        msgTimeOut.post();
+        if(com.maddox.rts.Time.isPaused() || com.maddox.rts.Time.tickOffset() != 0.0F)
+            if(renders.maxFps <= 0.0F)
+            {
+                renders.paint();
+                renders.prevTimePaint = com.maddox.rts.Time.real();
+            } else
+            {
+                long l = com.maddox.rts.Time.real();
+                if(l >= renders.prevTimePaint + renders.stepTimePaint)
+                {
+                    renders.paint();
+                    renders.prevTimePaint = l;
+                }
+            }
     }
-  }
 
-  public RendersTicker(Renders paramRenders) {
-    this.renders = paramRenders;
-    this.msgTimeOut = new MsgTimeOut();
-    this.msgTimeOut.setListener(this);
-    this.msgTimeOut.setNotCleanAfterSend();
-    this.msgTimeOut.setFlags(104);
-    this.msgTimeOut.setTickPos(2147483647);
-    this.msgTimeOut.post();
-  }
+    public void destroy()
+    {
+        if(msgTimeOut != null)
+        {
+            com.maddox.rts.RTSConf.cur.queueRealTime.remove(msgTimeOut);
+            com.maddox.rts.RTSConf.cur.queueRealTimeNextTick.remove(msgTimeOut);
+            msgTimeOut = null;
+        }
+    }
+
+    public RendersTicker(com.maddox.il2.engine.Renders renders1)
+    {
+        renders = renders1;
+        msgTimeOut = new MsgTimeOut();
+        msgTimeOut.setListener(this);
+        msgTimeOut.setNotCleanAfterSend();
+        msgTimeOut.setFlags(104);
+        msgTimeOut.setTickPos(0x7fffffff);
+        msgTimeOut.post();
+    }
+
+    private com.maddox.il2.engine.Renders renders;
+    private com.maddox.rts.MsgTimeOut msgTimeOut;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HookViewFly.java
+
 package com.maddox.il2.engine.hotkey;
 
 import com.maddox.JGP.Point3d;
@@ -14,96 +19,119 @@ import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.engine.Render;
 import com.maddox.rts.IniFile;
 
-public class HookViewFly extends Hook
+public class HookViewFly extends com.maddox.il2.engine.Hook
 {
-  private float timeFirstStep = 2.0F;
-  private float deltaZ = 10.0F;
-  private double maxLen;
-  private Point3d p0 = new Point3d();
-  private Point3d pAbs = new Point3d();
-  private Orient oAbs = new Orient();
-  private Vector3d vect = new Vector3d();
-  private boolean bUse = false;
-  private boolean bView = false;
-  private Actor camera;
-  private Orient o = new Orientation();
-  private Vector3d v = new Vector3d();
 
-  public static HookViewFly current = null;
-
-  private boolean computePos(Actor paramActor)
-  {
-    double d1 = paramActor.getSpeed(this.vect);
-    if (d1 < 0.009999999776482582D) {
-      if (paramActor.pos == null) return false;
-      Loc localLoc = paramActor.pos.getAbs();
-      this.vect.set(1.0D, 0.0D, 0.0D);
-      localLoc.transform(this.vect);
-      d1 = 20.0D;
+    private boolean computePos(com.maddox.il2.engine.Actor actor)
+    {
+        double d = actor.getSpeed(vect);
+        if(d < 0.0099999997764825821D)
+        {
+            if(actor.pos == null)
+                return false;
+            com.maddox.il2.engine.Loc loc = actor.pos.getAbs();
+            vect.set(1.0D, 0.0D, 0.0D);
+            loc.transform(vect);
+            d = 20D;
+        }
+        vect.normalize();
+        vect.scaleAdd(d * (double)timeFirstStep, pAbs);
+        p0.set(vect);
+        float f = oAbs.getTangage();
+        if(f > 0.0F)
+            p0.z -= deltaZ;
+        else
+            p0.z += deltaZ;
+        if(java.lang.Math.abs(p0.x - pAbs.x) > java.lang.Math.abs(p0.y - pAbs.y))
+        {
+            p0.y += deltaZ;
+            p0.x += deltaZ / 4F;
+        } else
+        {
+            p0.x += deltaZ;
+            p0.y += deltaZ / 4F;
+        }
+        double d1 = com.maddox.il2.engine.Engine.land().HQ_Air(p0.x, p0.y) + 25D;
+        if(p0.z < d1)
+            p0.z = d1;
+        double d2 = pAbs.distance(p0);
+        maxLen = 2D * d2;
+        if(d2 < 10D)
+            maxLen = 20D;
+        if(com.maddox.il2.engine.Actor.isValid(camera))
+        {
+            camera.pos.inValidate(true);
+            camera.pos.resetAsBase();
+        }
+        return true;
     }
-    this.vect.normalize();
-    this.vect.scaleAdd(d1 * this.timeFirstStep, this.pAbs);
-    this.p0.set(this.vect);
 
-    float f = this.oAbs.getTangage();
-    if (f > 0.0F) this.p0.z -= this.deltaZ; else
-      this.p0.z += this.deltaZ;
-    if (Math.abs(this.p0.x - this.pAbs.x) > Math.abs(this.p0.y - this.pAbs.y)) {
-      this.p0.y += this.deltaZ; this.p0.x += this.deltaZ / 4.0F;
-    } else {
-      this.p0.x += this.deltaZ; this.p0.y += this.deltaZ / 4.0F;
+    public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        if(bUse)
+        {
+            loc.get(pAbs, oAbs);
+            if(!bView)
+                bView = computePos(actor);
+            if(pAbs.distance(p0) > maxLen && com.maddox.il2.engine.Render.current() == null)
+                bView = computePos(actor);
+            if(!bView)
+                return;
+            v.set(pAbs);
+            v.sub(p0);
+            o.setAT0(v);
+            loc1.set(p0, o);
+        }
     }
-    double d2 = Engine.land().HQ_Air(this.p0.x, this.p0.y) + 25.0D;
-    if (this.p0.z < d2) this.p0.z = d2;
-    double d3 = this.pAbs.distance(this.p0);
-    this.maxLen = (2.0D * d3);
-    if (d3 < 10.0D)
-      this.maxLen = 20.0D;
-    if (Actor.isValid(this.camera)) {
-      this.camera.pos.inValidate(true);
-      this.camera.pos.resetAsBase();
+
+    public boolean use(boolean flag)
+    {
+        boolean flag1 = bUse;
+        bUse = flag;
+        bView = false;
+        return flag1;
     }
-    return true;
-  }
 
-  public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2) {
-    if (this.bUse) {
-      paramLoc1.get(this.pAbs, this.oAbs);
-      if (!this.bView) {
-        this.bView = computePos(paramActor);
-      }
-      if ((this.pAbs.distance(this.p0) > this.maxLen) && (Render.current() == null))
-        this.bView = computePos(paramActor);
-      if (!this.bView) {
-        return;
-      }
-
-      this.v.set(this.pAbs);
-      this.v.sub(this.p0);
-      this.o.setAT0(this.v);
-      paramLoc2.set(this.p0, this.o);
+    public void reset()
+    {
+        bView = false;
     }
-  }
 
-  public boolean use(boolean paramBoolean)
-  {
-    boolean bool = this.bUse;
-    this.bUse = paramBoolean;
-    this.bView = false;
-    return bool;
-  }
+    public void setCamera(com.maddox.il2.engine.Actor actor)
+    {
+        camera = actor;
+    }
 
-  public void reset() {
-    this.bView = false;
-  }
-  public void setCamera(Actor paramActor) {
-    this.camera = paramActor;
-  }
+    public HookViewFly(java.lang.String s)
+    {
+        timeFirstStep = 2.0F;
+        deltaZ = 10F;
+        p0 = new Point3d();
+        pAbs = new Point3d();
+        oAbs = new Orient();
+        vect = new Vector3d();
+        bUse = false;
+        bView = false;
+        o = new Orientation();
+        v = new Vector3d();
+        java.lang.String s1 = s + " Config";
+        timeFirstStep = com.maddox.il2.engine.Config.cur.ini.get(s1, "timeFirstStep", timeFirstStep);
+        deltaZ = com.maddox.il2.engine.Config.cur.ini.get(s1, "deltaZ", deltaZ);
+        current = this;
+    }
 
-  public HookViewFly(String paramString) {
-    String str = paramString + " Config";
-    this.timeFirstStep = Config.cur.ini.get(str, "timeFirstStep", this.timeFirstStep);
-    this.deltaZ = Config.cur.ini.get(str, "deltaZ", this.deltaZ);
-    current = this;
-  }
+    private float timeFirstStep;
+    private float deltaZ;
+    private double maxLen;
+    private com.maddox.JGP.Point3d p0;
+    private com.maddox.JGP.Point3d pAbs;
+    private com.maddox.il2.engine.Orient oAbs;
+    private com.maddox.JGP.Vector3d vect;
+    private boolean bUse;
+    private boolean bView;
+    private com.maddox.il2.engine.Actor camera;
+    private com.maddox.il2.engine.Orient o;
+    private com.maddox.JGP.Vector3d v;
+    public static com.maddox.il2.engine.hotkey.HookViewFly current = null;
+
 }

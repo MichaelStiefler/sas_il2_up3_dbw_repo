@@ -1,235 +1,270 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HomePath.java
+
 package com.maddox.rts;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.rts:
+//            RTS
+
 public final class HomePath
 {
-  private static char notSeparator;
 
-  public static final List list()
-  {
-    ArrayList localArrayList = new ArrayList();
-    int i = 0;
-    while (true) {
-      String str = get(i);
-      if (str == null)
-        return localArrayList;
-      localArrayList.add(str);
-      i++;
-    }
-  }
-
-  private static final String subNames(String paramString1, String paramString2, boolean paramBoolean) {
-    int i = paramString1.length() - 1;
-    while (i >= 0) {
-      j = paramString1.charAt(i);
-      if ((j == 47) || (j == 92)) {
-        i++;
-        break;
-      }
-      i--;
-    }
-    if (i <= 0) {
-      i = 0;
-    }
-    int j = paramString2.length() - 1;
-    while (j >= 0) {
-      k = paramString2.charAt(j);
-      if ((k == 47) || (k == 92)) {
-        j++;
-        break;
-      }
-      j--;
-    }
-    if (j == paramString2.length())
+    public static final java.util.List list()
     {
-      return null;
-    }
-    if (j <= 0)
-      j = 0;
-    int k = 0;
-    while ((k < i) && (k < j)) {
-      m = Character.toLowerCase(paramString1.charAt(k));
-      if (m == 92) m = 47;
-      int n = Character.toLowerCase(paramString2.charAt(k));
-      if (n == 92) n = 47;
-      if (m != n)
-        break;
-      k++;
-    }
-    if ((k != i) && (paramBoolean))
-      return null;
-    if (k < i) {
-      while (k > 0) {
-        m = Character.toLowerCase(paramString1.charAt(k));
-        if ((m == 92) || (m == 47)) {
-          k++;
-          break;
-        }
-        k--;
-      }
-    }
-    int m = k;
-    StringBuffer localStringBuffer = new StringBuffer();
-    char c;
-    while (k < i) {
-      c = Character.toLowerCase(paramString1.charAt(k));
-      if ((c == '\\') || (c == '/'))
-        localStringBuffer.append("../");
-      k++;
-    }
-    k = m;
-    j = paramString2.length();
-    while (k < j) {
-      c = Character.toLowerCase(paramString2.charAt(k));
-      if (c == '\\') c = '/';
-      localStringBuffer.append(c);
-      k++;
-    }
-    return localStringBuffer.toString();
-  }
-
-  public static final String toLocalName(String paramString, int paramInt) {
-    if (!isFileSystemName(paramString))
-      return paramString;
-    String str = get(paramInt);
-    if (str == null)
-      return null;
-    int i = str.charAt(str.length() - 1);
-    if ((i != 47) && (i != 92)) {
-      return subNames(str + '/', paramString, true);
-    }
-    return subNames(str, paramString, true);
-  }
-
-  public static final String toLocalName(String paramString1, String paramString2, int paramInt) {
-    paramString1 = toLocalName(paramString1, paramInt);
-    paramString2 = toLocalName(paramString2, paramInt);
-    if ((paramString1 == null) || (paramString2 == null))
-      return null;
-    return subNames(paramString1, paramString2, false);
-  }
-
-  public static final boolean isFileSystemName(String paramString) {
-    int i = paramString.charAt(0);
-    if ((i == 47) || (i == 92))
-      return true;
-    if (paramString.length() > 1) {
-      i = paramString.charAt(1);
-      if (i == 58)
-        return true;
-    }
-    return false;
-  }
-
-  public static final String concatNames(String paramString1, String paramString2) {
-    if (isFileSystemName(paramString2))
-      return paramString2;
-    StringBuffer localStringBuffer = new StringBuffer(paramString1);
-    int i = localStringBuffer.length();
-    int j = -1;
-    char c;
-    for (int k = 0; k < i; k++) {
-      c = Character.toLowerCase(localStringBuffer.charAt(k));
-      if ((c == '/') || (c == '\\')) {
-        c = '/';
-        j = k;
-      }
-      localStringBuffer.setCharAt(k, c);
-    }
-    if ((j >= 0) && (j + 1 < i)) {
-      localStringBuffer.delete(j + 1, i);
-    }
-    k = 0;
-    i = paramString2.length();
-    while (k < i) {
-      c = paramString2.charAt(k);
-      if (c == '.') {
-        k++;
-        if (k == i) break;
-        c = paramString2.charAt(k);
-        if (c == '.') {
-          k++;
-          if (k == i) break;
-          c = paramString2.charAt(k);
-          if ((c == '\\') || (c == '/')) {
-            j--;
-            while ((j >= 0) && (localStringBuffer.charAt(j) != '/')) j--;
-            if (j < 0)
-            {
-              return null;
-            }
-            localStringBuffer.delete(j + 1, localStringBuffer.length());
-          }
-        } else if ((c != '\\') && (c != '/'))
+        java.util.ArrayList arraylist = new ArrayList();
+        int i = 0;
+        do
         {
-          k--;
-          break;
-        }
-      } else {
-        if (c >= ' ')
-          break;
-      }
-      k++;
+            java.lang.String s = com.maddox.rts.HomePath.get(i);
+            if(s == null)
+                return arraylist;
+            arraylist.add(s);
+            i++;
+        } while(true);
     }
-    if (k == i)
+
+    private static final java.lang.String subNames(java.lang.String s, java.lang.String s1, boolean flag)
     {
-      return null;
+        int i;
+        for(i = s.length() - 1; i >= 0; i--)
+        {
+            char c = s.charAt(i);
+            if(c != '/' && c != '\\')
+                continue;
+            i++;
+            break;
+        }
+
+        if(i <= 0)
+            i = 0;
+        int j;
+        for(j = s1.length() - 1; j >= 0; j--)
+        {
+            char c1 = s1.charAt(j);
+            if(c1 != '/' && c1 != '\\')
+                continue;
+            j++;
+            break;
+        }
+
+        if(j == s1.length())
+            return null;
+        if(j <= 0)
+            j = 0;
+        int l;
+        for(l = 0; l < i && l < j; l++)
+        {
+            char c2 = java.lang.Character.toLowerCase(s.charAt(l));
+            if(c2 == '\\')
+                c2 = '/';
+            char c4 = java.lang.Character.toLowerCase(s1.charAt(l));
+            if(c4 == '\\')
+                c4 = '/';
+            if(c2 != c4)
+                break;
+        }
+
+        if(l != i && flag)
+            return null;
+        if(l < i)
+            for(; l > 0; l--)
+            {
+                char c3 = java.lang.Character.toLowerCase(s.charAt(l));
+                if(c3 != '\\' && c3 != '/')
+                    continue;
+                l++;
+                break;
+            }
+
+        int i1 = l;
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        for(; l < i; l++)
+        {
+            char c5 = java.lang.Character.toLowerCase(s.charAt(l));
+            if(c5 == '\\' || c5 == '/')
+                stringbuffer.append("../");
+        }
+
+        l = i1;
+        for(int k = s1.length(); l < k; l++)
+        {
+            char c6 = java.lang.Character.toLowerCase(s1.charAt(l));
+            if(c6 == '\\')
+                c6 = '/';
+            stringbuffer.append(c6);
+        }
+
+        return stringbuffer.toString();
     }
-    if (k > 0) localStringBuffer.append(paramString2.substring(k)); else
-      localStringBuffer.append(paramString2);
-    i = localStringBuffer.length();
-    if (j < 0) j = 0;
-    while (j < i) {
-      c = localStringBuffer.charAt(j);
-      if (c == '\\') {
-        localStringBuffer.setCharAt(j, '/');
-      }
-      j++;
+
+    public static final java.lang.String toLocalName(java.lang.String s, int i)
+    {
+        if(!com.maddox.rts.HomePath.isFileSystemName(s))
+            return s;
+        java.lang.String s1 = com.maddox.rts.HomePath.get(i);
+        if(s1 == null)
+            return null;
+        char c = s1.charAt(s1.length() - 1);
+        if(c != '/' && c != '\\')
+            return com.maddox.rts.HomePath.subNames(s1 + '/', s, true);
+        else
+            return com.maddox.rts.HomePath.subNames(s1, s, true);
     }
-    return localStringBuffer.toString();
-  }
 
-  public static final String toFileSystemName(String paramString, int paramInt) {
-    if (isFileSystemName(paramString))
-      return paramString.replace(notSeparator, File.separatorChar);
-    String str1 = get(paramInt);
-    if (str1 == null)
-      return null;
-    int i = str1.charAt(str1.length() - 1);
-    String str2 = null;
-    if ((i != 47) && (i != 92))
-      str2 = concatNames(str1 + '/', paramString);
-    else
-      str2 = concatNames(str1, paramString);
-    if (str2 != null)
-      str2 = str2.replace(notSeparator, File.separatorChar);
-    return str2;
-  }
+    public static final java.lang.String toLocalName(java.lang.String s, java.lang.String s1, int i)
+    {
+        s = com.maddox.rts.HomePath.toLocalName(s, i);
+        s1 = com.maddox.rts.HomePath.toLocalName(s1, i);
+        if(s == null || s1 == null)
+            return null;
+        else
+            return com.maddox.rts.HomePath.subNames(s, s1, false);
+    }
 
-  public static final String toFileSystemName(String paramString1, String paramString2, int paramInt) {
-    if (isFileSystemName(paramString2))
-      return paramString2.replace(notSeparator, File.separatorChar);
-    if (!isFileSystemName(paramString1))
-      paramString1 = toFileSystemName(paramString1, paramInt);
-    if (paramString1 == null)
-      return null;
-    String str = concatNames(paramString1, paramString2);
-    if (str != null)
-      str = str.replace(notSeparator, File.separatorChar);
-    return str;
-  }
-  public static final native String get(int paramInt);
+    public static final boolean isFileSystemName(java.lang.String s)
+    {
+        char c = s.charAt(0);
+        if(c == '/' || c == '\\')
+            return true;
+        if(s.length() > 1)
+        {
+            char c1 = s.charAt(1);
+            if(c1 == ':')
+                return true;
+        }
+        return false;
+    }
 
-  public static final native void add(String paramString);
+    public static final java.lang.String concatNames(java.lang.String s, java.lang.String s1)
+    {
+        if(com.maddox.rts.HomePath.isFileSystemName(s1))
+            return s1;
+        java.lang.StringBuffer stringbuffer = new StringBuffer(s);
+        int i = stringbuffer.length();
+        int j = -1;
+        for(int k = 0; k < i; k++)
+        {
+            char c = java.lang.Character.toLowerCase(stringbuffer.charAt(k));
+            if(c == '/' || c == '\\')
+            {
+                c = '/';
+                j = k;
+            }
+            stringbuffer.setCharAt(k, c);
+        }
 
-  public static final native void remove(String paramString);
+        if(j >= 0 && j + 1 < i)
+            stringbuffer.delete(j + 1, i);
+        int l = 0;
+        for(i = s1.length(); l < i; l++)
+        {
+            char c1 = s1.charAt(l);
+            if(c1 == '.')
+            {
+                if(++l == i)
+                    break;
+                c1 = s1.charAt(l);
+                if(c1 == '.')
+                {
+                    if(++l == i)
+                        break;
+                    c1 = s1.charAt(l);
+                    if(c1 == '\\' || c1 == '/')
+                    {
+                        for(j--; j >= 0; j--)
+                            if(stringbuffer.charAt(j) == '/')
+                                break;
 
-  static {
-    RTS.loadNative();
-    if (File.separatorChar == '/') notSeparator = '\\'; else
-      notSeparator = '/';
-  }
+                        if(j < 0)
+                            return null;
+                        stringbuffer.delete(j + 1, stringbuffer.length());
+                    }
+                    continue;
+                }
+                if(c1 == '\\' || c1 == '/')
+                    continue;
+                l--;
+                break;
+            }
+            if(c1 >= ' ')
+                break;
+        }
+
+        if(l == i)
+            return null;
+        if(l > 0)
+            stringbuffer.append(s1.substring(l));
+        else
+            stringbuffer.append(s1);
+        i = stringbuffer.length();
+        if(j < 0)
+            j = 0;
+        for(; j < i; j++)
+        {
+            char c2 = stringbuffer.charAt(j);
+            if(c2 == '\\')
+                stringbuffer.setCharAt(j, '/');
+        }
+
+        return stringbuffer.toString();
+    }
+
+    public static final java.lang.String toFileSystemName(java.lang.String s, int i)
+    {
+        if(com.maddox.rts.HomePath.isFileSystemName(s))
+            return s.replace(notSeparator, java.io.File.separatorChar);
+        java.lang.String s1 = com.maddox.rts.HomePath.get(i);
+        if(s1 == null)
+            return null;
+        char c = s1.charAt(s1.length() - 1);
+        java.lang.String s2 = null;
+        if(c != '/' && c != '\\')
+            s2 = com.maddox.rts.HomePath.concatNames(s1 + '/', s);
+        else
+            s2 = com.maddox.rts.HomePath.concatNames(s1, s);
+        if(s2 != null)
+            s2 = s2.replace(notSeparator, java.io.File.separatorChar);
+        return s2;
+    }
+
+    public static final java.lang.String toFileSystemName(java.lang.String s, java.lang.String s1, int i)
+    {
+        if(com.maddox.rts.HomePath.isFileSystemName(s1))
+            return s1.replace(notSeparator, java.io.File.separatorChar);
+        if(!com.maddox.rts.HomePath.isFileSystemName(s))
+            s = com.maddox.rts.HomePath.toFileSystemName(s, i);
+        if(s == null)
+            return null;
+        java.lang.String s2 = com.maddox.rts.HomePath.concatNames(s, s1);
+        if(s2 != null)
+            s2 = s2.replace(notSeparator, java.io.File.separatorChar);
+        return s2;
+    }
+
+    public static final native java.lang.String get(int i);
+
+    public static final native void add(java.lang.String s);
+
+    public static final native void remove(java.lang.String s);
+
+    private HomePath()
+    {
+    }
+
+    private static char notSeparator;
+
+    static 
+    {
+        com.maddox.rts.RTS.loadNative();
+        if(java.io.File.separatorChar == '/')
+            notSeparator = '\\';
+        else
+            notSeparator = '/';
+    }
 }

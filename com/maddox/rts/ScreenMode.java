@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ScreenMode.java
+
 package com.maddox.rts;
 
 import com.maddox.il2.engine.Config;
@@ -6,125 +11,147 @@ import java.util.Vector;
 
 public class ScreenMode
 {
-  public Object ext = null;
-  private static ScreenMode def;
-  private static ScreenMode cur;
-  private static int[] n = new int[3];
-  private int cx;
-  private int cy;
-  private int bpp;
 
-  public int width()
-  {
-    return this.cx;
-  }
-  public int height() {
-    return this.cy;
-  }
-  public int colourBits() {
-    return this.bpp;
-  }
-
-  public static ScreenMode[] all()
-  {
-    Vector localVector = new Vector();
-    int j = 0;
-
-    while (EGet(j, n))
+    public int width()
     {
-      for (int i = 0; i < localVector.size(); i++) {
-        localObject = (ScreenMode)localVector.elementAt(i);
-        if ((((ScreenMode)localObject).cx == n[0]) && (((ScreenMode)localObject).cy == n[1]) && (((ScreenMode)localObject).bpp == n[2]))
-          break;
-      }
-      if (i == localVector.size()) {
-        localObject = new ScreenMode(n[0], n[1], n[2]);
-        localVector.addElement(localObject);
-      }
-      j++;
+        return cx;
     }
-    Object localObject = new ScreenMode[localVector.size()];
-    localVector.copyInto(localObject);
-    return (ScreenMode)localObject;
-  }
 
-  public static ScreenMode startup()
-  {
-    init();
-    return def;
-  }
-
-  public static ScreenMode current()
-  {
-    init();
-    return cur;
-  }
-
-  public static boolean set(int paramInt1, int paramInt2, int paramInt3)
-  {
-    init();
-    if ((paramInt1 == cur.cx) && (paramInt2 == cur.cy) && (paramInt3 == cur.bpp))
-      return true;
-    if ((paramInt1 == def.cx) && (paramInt2 == def.cy) && (paramInt3 == def.bpp)) {
-      restore();
-      return true;
+    public int height()
+    {
+        return cy;
     }
-    n[0] = paramInt1; n[1] = paramInt2; n[2] = paramInt3;
-    if (ESet(n)) {
-      EGetCurrent(n);
-      cur = new ScreenMode(n[0], n[1], n[2]);
-      return true;
+
+    public int colourBits()
+    {
+        return bpp;
     }
-    return false;
-  }
 
-  public static ScreenMode readCurrent() {
-    EGetCurrent(n);
-    return new ScreenMode(n[0], n[1], n[2]);
-  }
+    public static com.maddox.rts.ScreenMode[] all()
+    {
+        java.util.Vector vector = new Vector();
+        for(int j = 0; com.maddox.rts.ScreenMode.EGet(j, n); j++)
+        {
+            int i;
+            for(i = 0; i < vector.size(); i++)
+            {
+                com.maddox.rts.ScreenMode screenmode = (com.maddox.rts.ScreenMode)vector.elementAt(i);
+                if(screenmode.cx == n[0] && screenmode.cy == n[1] && screenmode.bpp == n[2])
+                    break;
+            }
 
-  public static boolean set(ScreenMode paramScreenMode)
-  {
-    return set(paramScreenMode.width(), paramScreenMode.height(), paramScreenMode.colourBits());
-  }
+            if(i == vector.size())
+            {
+                com.maddox.rts.ScreenMode screenmode1 = new ScreenMode(n[0], n[1], n[2]);
+                vector.addElement(screenmode1);
+            }
+        }
 
-  public static void restore()
-  {
-    if (cur != def) {
-      cur = def;
-      ESet(null);
+        com.maddox.rts.ScreenMode ascreenmode[] = new com.maddox.rts.ScreenMode[vector.size()];
+        vector.copyInto(ascreenmode);
+        return ascreenmode;
     }
-  }
 
-  public ScreenMode(ScreenMode paramScreenMode) {
-    this.cx = paramScreenMode.cx;
-    this.cy = paramScreenMode.cy;
-    this.bpp = paramScreenMode.bpp;
-  }
-
-  private static void init()
-  {
-    if (Config.isUSE_RENDER()) {
-      if (def != null)
-        return;
-      EGetCurrent(n);
-      def = new ScreenMode(n[0], n[1], n[2]);
-      cur = def;
+    public static com.maddox.rts.ScreenMode startup()
+    {
+        com.maddox.rts.ScreenMode.init();
+        return def;
     }
-  }
 
-  private static final native boolean EGet(int paramInt, int[] paramArrayOfInt);
+    public static com.maddox.rts.ScreenMode current()
+    {
+        com.maddox.rts.ScreenMode.init();
+        return cur;
+    }
 
-  private static final native boolean ESet(int[] paramArrayOfInt);
+    public static boolean set(int i, int j, int k)
+    {
+        com.maddox.rts.ScreenMode.init();
+        if(i == cur.cx && j == cur.cy && k == cur.bpp)
+            return true;
+        if(i == def.cx && j == def.cy && k == def.bpp)
+        {
+            com.maddox.rts.ScreenMode.restore();
+            return true;
+        }
+        n[0] = i;
+        n[1] = j;
+        n[2] = k;
+        if(com.maddox.rts.ScreenMode.ESet(n))
+        {
+            com.maddox.rts.ScreenMode.EGetCurrent(n);
+            cur = new ScreenMode(n[0], n[1], n[2]);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
 
-  private static final native void EGetCurrent(int[] paramArrayOfInt);
+    public static com.maddox.rts.ScreenMode readCurrent()
+    {
+        com.maddox.rts.ScreenMode.EGetCurrent(n);
+        return new ScreenMode(n[0], n[1], n[2]);
+    }
 
-  private ScreenMode(int paramInt1, int paramInt2, int paramInt3) {
-    this.cx = paramInt1; this.cy = paramInt2; this.bpp = paramInt3;
-  }
+    public static boolean set(com.maddox.rts.ScreenMode screenmode)
+    {
+        return com.maddox.rts.ScreenMode.set(screenmode.width(), screenmode.height(), screenmode.colourBits());
+    }
 
-  static
-  {
-    GObj.loadNative();
-  }
+    public static void restore()
+    {
+        if(cur != def)
+        {
+            cur = def;
+            com.maddox.rts.ScreenMode.ESet(null);
+        }
+    }
+
+    public ScreenMode(com.maddox.rts.ScreenMode screenmode)
+    {
+        ext = null;
+        cx = screenmode.cx;
+        cy = screenmode.cy;
+        bpp = screenmode.bpp;
+    }
+
+    private static void init()
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(def != null)
+                return;
+            com.maddox.rts.ScreenMode.EGetCurrent(n);
+            def = new ScreenMode(n[0], n[1], n[2]);
+            cur = def;
+        }
+    }
+
+    private static final native boolean EGet(int i, int ai[]);
+
+    private static final native boolean ESet(int ai[]);
+
+    private static final native void EGetCurrent(int ai[]);
+
+    private ScreenMode(int i, int j, int k)
+    {
+        ext = null;
+        cx = i;
+        cy = j;
+        bpp = k;
+    }
+
+    public java.lang.Object ext;
+    private static com.maddox.rts.ScreenMode def;
+    private static com.maddox.rts.ScreenMode cur;
+    private static int n[] = new int[3];
+    private int cx;
+    private int cy;
+    private int bpp;
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

@@ -1,73 +1,81 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AnglesRange.java
+
 package com.maddox.il2.ai;
 
 import java.io.PrintStream;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            AnglesFork
+
 public final class AnglesRange
 {
-  private float minA;
-  private float maxA;
-  private static AnglesFork tmpfork = new AnglesFork();
 
-  public AnglesRange(float paramFloat1, float paramFloat2)
-  {
-    set(paramFloat1, paramFloat2);
-  }
-
-  public boolean fullcircle() {
-    return this.maxA - this.minA >= 360.0F;
-  }
-
-  public boolean isInside(float paramFloat) {
-    if (fullcircle()) {
-      return true;
-    }
-    return (paramFloat >= this.minA) && (paramFloat <= this.maxA);
-  }
-
-  public final void set(float paramFloat1, float paramFloat2) {
-    if (paramFloat2 - paramFloat1 >= 360.0F)
+    public AnglesRange(float f, float f1)
     {
-      this.minA = -181.0F;
-      this.maxA = 181.0F;
+        set(f, f1);
     }
-    else if ((paramFloat1 <= -360.0F) || (paramFloat2 >= 360.0F)) {
-      System.out.println("*** err1: AnglesRange(" + paramFloat1 + "," + paramFloat2 + ")");
-      this.minA = 0.0F;
-      this.maxA = 0.0F;
-    }
-    else
+
+    public boolean fullcircle()
     {
-      this.minA = paramFloat1;
-      this.maxA = paramFloat2;
+        return maxA - minA >= 360F;
     }
-  }
 
-  public float transformIntoRangeSpace(float paramFloat)
-  {
-    if (fullcircle())
+    public boolean isInside(float f)
     {
-      if ((paramFloat >= -180.0F) && (paramFloat <= 180.0F))
-      {
-        return paramFloat;
-      }
-
-      return AnglesFork.signedAngleDeg(paramFloat);
+        if(fullcircle())
+            return true;
+        else
+            return f >= minA && f <= maxA;
     }
 
-    if ((paramFloat >= this.minA) && (paramFloat <= this.maxA))
+    public final void set(float f, float f1)
     {
-      return paramFloat;
+        if(f1 - f >= 360F)
+        {
+            minA = -181F;
+            maxA = 181F;
+        } else
+        if(f <= -360F || f1 >= 360F)
+        {
+            java.lang.System.out.println("*** err1: AnglesRange(" + f + "," + f1 + ")");
+            minA = 0.0F;
+            maxA = 0.0F;
+        } else
+        {
+            minA = f;
+            maxA = f1;
+        }
     }
 
-    float f1 = (this.minA + this.maxA) * 0.5F;
-    tmpfork.setDeg(f1, paramFloat);
+    public float transformIntoRangeSpace(float f)
+    {
+        if(fullcircle())
+            if(f >= -180F && f <= 180F)
+                return f;
+            else
+                return com.maddox.il2.ai.AnglesFork.signedAngleDeg(f);
+        if(f >= minA && f <= maxA)
+        {
+            return f;
+        } else
+        {
+            float f1 = (minA + maxA) * 0.5F;
+            tmpfork.setDeg(f1, f);
+            float f2 = tmpfork.getDiffDeg();
+            return f1 + f2;
+        }
+    }
 
-    float f2 = tmpfork.getDiffDeg();
+    public java.lang.String toString()
+    {
+        return "(" + minA + "," + maxA + ")";
+    }
 
-    return f1 + f2;
-  }
+    private float minA;
+    private float maxA;
+    private static com.maddox.il2.ai.AnglesFork tmpfork = new AnglesFork();
 
-  public String toString() {
-    return "(" + this.minA + "," + this.maxA + ")";
-  }
 }

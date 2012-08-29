@@ -1,6 +1,10 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   DXXI_SARJA3_EARLY.java
+
 package com.maddox.il2.objects.air;
 
-import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
@@ -12,8 +16,8 @@ import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.HomePath;
@@ -23,340 +27,301 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintStream;
 
-public class DXXI_SARJA3_EARLY extends DXXI
+// Referenced classes of package com.maddox.il2.objects.air:
+//            DXXI, PaintSchemeFMPar00DXXI, CockpitDXXI_SARJA3_EARLY, Aircraft, 
+//            NetAircraft, PaintScheme
+
+public class DXXI_SARJA3_EARLY extends com.maddox.il2.objects.air.DXXI
 {
-  private boolean hasRevi = false;
-  private CockpitDXXI_SARJA3_EARLY pit = null;
-  private float skiAngleL = 0.0F;
-  private float skiAngleR = 0.0F;
-  private float spring = 0.15F;
-  public float gyroDelta = 0.0F;
 
-  public void missionStarting()
-  {
-    super.missionStarting();
-    customization();
-    if (this.FM.isStationedOnGround())
-      this.gyroDelta += (float)Math.random() * 360.0F;
-  }
-
-  public void registerPit(CockpitDXXI_SARJA3_EARLY paramCockpitDXXI_SARJA3_EARLY)
-  {
-    this.pit = paramCockpitDXXI_SARJA3_EARLY;
-  }
-
-  public boolean hasRevi()
-  {
-    return this.hasRevi;
-  }
-
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-
-    if ((Config.isUSE_RENDER()) && (World.cur().camouflage == 1))
+    public DXXI_SARJA3_EARLY()
     {
-      this.hasSkis = true;
-      hierMesh().chunkVisible("GearL1_D0", false);
-      hierMesh().chunkVisible("GearL22_D0", false);
-      hierMesh().chunkVisible("GearR1_D0", false);
-      hierMesh().chunkVisible("GearR22_D0", false);
-      hierMesh().chunkVisible("GearC1_D0", false);
-      hierMesh().chunkVisible("GearL31_D0", false);
-      hierMesh().chunkVisible("GearL32_D0", false);
-      hierMesh().chunkVisible("GearR31_D0", false);
-      hierMesh().chunkVisible("GearR32_D0", false);
-
-      hierMesh().chunkVisible("GearC11_D0", true);
-      hierMesh().chunkVisible("GearL11_D0", true);
-      hierMesh().chunkVisible("GearL21_D0", true);
-      hierMesh().chunkVisible("GearR11_D0", true);
-      hierMesh().chunkVisible("GearR21_D0", true);
-
-      this.FM.CT.bHasBrakeControl = false;
-
-      if ((this.FM.isPlayers()) && (!isNetPlayer()))
-      {
-        areYouJormaSarvanto();
-      }
-
+        hasRevi = false;
+        pit = null;
+        skiAngleL = 0.0F;
+        skiAngleR = 0.0F;
+        spring = 0.15F;
     }
-    else if (World.Rnd().nextFloat() < 0.01F) {
-      removeWheelSpats();
-    }
-  }
 
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    if ((this.FM.Or.getKren() < -10.0F) || (this.FM.Or.getKren() > 10.0F))
+    public void missionStarting()
     {
-      this.gyroDelta = (float)(this.gyroDelta - 0.01D);
+        super.missionStarting();
+        customization();
     }
-  }
 
-  private void areYouJormaSarvanto()
-  {
-    UserCfg localUserCfg = World.cur().userCfg;
-    if ((localUserCfg.callsign.trim().equals("Zamba")) && (localUserCfg.name.trim().equals("Jorma")) && (localUserCfg.surname.trim().equals("Sarvanto")))
+    public void registerPit(com.maddox.il2.objects.air.CockpitDXXI_SARJA3_EARLY cockpitdxxi_sarja3_early)
     {
-      System.out.println("Herra luutnantti. Laitoin teille hieman väkevämpää kuulaa vöihin.");
-      for (int i = 0; i < this.FM.CT.Weapons.length; i++)
-      {
-        BulletEmitter[] arrayOfBulletEmitter = this.FM.CT.Weapons[i];
-        if (arrayOfBulletEmitter == null)
-          continue;
-        for (int j = 0; j < arrayOfBulletEmitter.length; j++)
+        pit = cockpitdxxi_sarja3_early;
+    }
+
+    public boolean hasRevi()
+    {
+        return hasRevi;
+    }
+
+    public void onAircraftLoaded()
+    {
+        super.onAircraftLoaded();
+        if(com.maddox.il2.engine.Config.isUSE_RENDER() && com.maddox.il2.ai.World.cur().camouflage == 1)
         {
-          BulletEmitter localBulletEmitter = arrayOfBulletEmitter[j];
-          if (!(localBulletEmitter instanceof Gun))
-            continue;
-          GunProperties localGunProperties = ((Gun)localBulletEmitter).prop;
-          BulletProperties[] arrayOfBulletProperties = localGunProperties.bullet;
-          if (arrayOfBulletProperties == null)
-            continue;
-          for (int k = 0; k < arrayOfBulletProperties.length; k++)
-          {
-            arrayOfBulletProperties[k].powerType = 3;
-            arrayOfBulletProperties[k].massa = 0.02F;
-            arrayOfBulletProperties[k].kalibr = 4.442132E-005F;
-            arrayOfBulletProperties[k].speed = 835.0F;
+            hasSkis = true;
+            hierMesh().chunkVisible("GearL1_D0", false);
+            hierMesh().chunkVisible("GearL22_D0", false);
+            hierMesh().chunkVisible("GearR1_D0", false);
+            hierMesh().chunkVisible("GearR22_D0", false);
+            hierMesh().chunkVisible("GearC1_D0", false);
+            hierMesh().chunkVisible("GearL31_D0", false);
+            hierMesh().chunkVisible("GearL32_D0", false);
+            hierMesh().chunkVisible("GearR31_D0", false);
+            hierMesh().chunkVisible("GearR32_D0", false);
+            hierMesh().chunkVisible("GearC11_D0", true);
+            hierMesh().chunkVisible("GearL11_D0", true);
+            hierMesh().chunkVisible("GearL21_D0", true);
+            hierMesh().chunkVisible("GearR11_D0", true);
+            hierMesh().chunkVisible("GearR21_D0", true);
+            FM.CT.bHasBrakeControl = false;
+            if(FM.isPlayers() && !isNetPlayer())
+                areYouJormaSarvanto();
+        } else
+        if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.01F)
+            removeWheelSpats();
+    }
 
-            if (arrayOfBulletProperties[k].power == 0.0F)
-              continue;
-            arrayOfBulletProperties[k].power = 0.002F;
-          }
+    private void areYouJormaSarvanto()
+    {
+        com.maddox.il2.ai.UserCfg usercfg = com.maddox.il2.ai.World.cur().userCfg;
+        if(usercfg.callsign.trim().equals("Zamba") && usercfg.name.trim().equals("Jorma") && usercfg.surname.trim().equals("Sarvanto"))
+        {
+            java.lang.System.out.println("Herra luutnantti. Laitoin teille hieman v\u0434kev\u0434mp\u0434\u0434 kuulaa v\u0446ihin.");
+            for(int i = 0; i < FM.CT.Weapons.length; i++)
+            {
+                com.maddox.il2.ai.BulletEmitter abulletemitter[] = FM.CT.Weapons[i];
+                if(abulletemitter != null)
+                {
+                    for(int j = 0; j < abulletemitter.length; j++)
+                    {
+                        com.maddox.il2.ai.BulletEmitter bulletemitter = abulletemitter[j];
+                        if(bulletemitter instanceof com.maddox.il2.objects.weapons.Gun)
+                        {
+                            com.maddox.il2.engine.GunProperties gunproperties = ((com.maddox.il2.objects.weapons.Gun)bulletemitter).prop;
+                            com.maddox.il2.engine.BulletProperties abulletproperties[] = gunproperties.bullet;
+                            if(abulletproperties != null)
+                            {
+                                for(int k = 0; k < abulletproperties.length; k++)
+                                {
+                                    abulletproperties[k].powerType = 3;
+                                    abulletproperties[k].massa = 0.02F;
+                                    abulletproperties[k].kalibr = 4.442131E-005F;
+                                    abulletproperties[k].speed = 835F;
+                                    if(abulletproperties[k].power != 0.0F)
+                                        abulletproperties[k].power = 0.002F;
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+            }
+
         }
-      }
     }
-  }
 
-  private void removeWheelSpats()
-  {
-    hierMesh().chunkVisible("GearR22_D0", false);
-    hierMesh().chunkVisible("GearL22_D0", false);
-    hierMesh().chunkVisible("GearR22_D2", true);
-    hierMesh().chunkVisible("GearL22_D2", true);
-    hierMesh().chunkVisible("gearl31_d0", true);
-    hierMesh().chunkVisible("gearl32_d0", true);
-    hierMesh().chunkVisible("gearr31_d0", true);
-    hierMesh().chunkVisible("gearr32_d0", true);
-  }
-
-  private void customization()
-  {
-    if (!Mission.isSingle())
-      return;
-    int i = hierMesh().chunkFindCheck("cf_D0");
-    int j = hierMesh().materialFindInChunk("Gloss1D0o", i);
-    Mat localMat = hierMesh().material(j);
-    String str1 = localMat.Name();
-    if (str1.startsWith("PaintSchemes/Cache"))
+    private void removeWheelSpats()
     {
-      try
-      {
-        str1 = str1.substring(19);
-        str1 = str1.substring(0, str1.indexOf("/"));
-        String str2 = Main.cur().netFileServerSkin.primaryPath();
-        File localFile = new File(HomePath.toFileSystemName(str2 + "/DXXI_SARJA3_EARLY/Customization.ini", 0));
-        BufferedReader localBufferedReader = new BufferedReader(new FileReader(localFile));
-        String str3 = null;
-        int k = 0;
-        int m = 0;
-        while ((str3 = localBufferedReader.readLine()) != null)
+        hierMesh().chunkVisible("GearR22_D0", false);
+        hierMesh().chunkVisible("GearL22_D0", false);
+        hierMesh().chunkVisible("GearR22_D2", true);
+        hierMesh().chunkVisible("GearL22_D2", true);
+        hierMesh().chunkVisible("gearl31_d0", true);
+        hierMesh().chunkVisible("gearl32_d0", true);
+        hierMesh().chunkVisible("gearr31_d0", true);
+        hierMesh().chunkVisible("gearr32_d0", true);
+    }
+
+    private void customization()
+    {
+        int i = hierMesh().chunkFindCheck("cf_D0");
+        int j = hierMesh().materialFindInChunk("Gloss1D0o", i);
+        com.maddox.il2.engine.Mat mat = hierMesh().material(j);
+        java.lang.String s = mat.Name();
+        if(s.startsWith("PaintSchemes/Cache"))
+            try
+            {
+                s = s.substring(19);
+                s = s.substring(0, s.indexOf("/"));
+                java.lang.String s1 = com.maddox.il2.game.Main.cur().netFileServerSkin.primaryPath();
+                java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName(s1 + "/DXXI_SARJA3_EARLY/Customization.ini", 0));
+                java.io.BufferedReader bufferedreader = new BufferedReader(new FileReader(file));
+                java.lang.String s2 = null;
+                boolean flag = false;
+                boolean flag1 = false;
+                while((s2 = bufferedreader.readLine()) != null) 
+                    if(s2.equals("[ReflectorSight]"))
+                    {
+                        flag = true;
+                        flag1 = false;
+                    } else
+                    if(s2.equals("[NoWheelSpats]"))
+                    {
+                        flag = false;
+                        flag1 = true;
+                    } else
+                    if(s2.equals(s))
+                    {
+                        if(flag)
+                        {
+                            hierMesh().chunkVisible("Revi_D0", true);
+                            hierMesh().chunkVisible("Goertz_D0", false);
+                            hasRevi = true;
+                        }
+                        if(flag1 && com.maddox.il2.ai.World.cur().camouflage == 1)
+                            removeWheelSpats();
+                    }
+                bufferedreader.close();
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception);
+            }
+        else
+        if(com.maddox.il2.ai.World.Rnd().nextFloat() > 0.6F)
         {
-          if (str3.equals("[ReflectorSight]"))
-          {
-            k = 1;
-            m = 0; continue;
-          }
-          if (str3.equals("[NoWheelSpats]"))
-          {
-            k = 0;
-            m = 1; continue;
-          }
-          if (!str3.equals(str1))
-            continue;
-          if (k != 0)
-          {
             hierMesh().chunkVisible("Revi_D0", true);
             hierMesh().chunkVisible("Goertz_D0", false);
-            this.hasRevi = true;
-          }
-          if ((m == 0) || (World.cur().camouflage == 1))
-            continue;
-          removeWheelSpats();
+            hasRevi = true;
         }
-
-        localBufferedReader.close();
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException);
-      }
-
-    }
-    else if (World.Rnd().nextFloat() > 0.6F)
-    {
-      hierMesh().chunkVisible("Revi_D0", true);
-      hierMesh().chunkVisible("Goertz_D0", false);
-      this.hasRevi = true;
+        if(hasRevi && pit != null)
+            pit.setRevi();
     }
 
-    if ((this.hasRevi) && (this.pit != null))
-      this.pit.setRevi();
-  }
-
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    if ((World.cur().camouflage == 1) && (World.Rnd().nextFloat() > 0.1F))
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
     {
-      paramHierMesh.chunkVisible("GearL1_D0", false);
-      paramHierMesh.chunkVisible("GearL22_D0", false);
-      paramHierMesh.chunkVisible("GearR1_D0", false);
-      paramHierMesh.chunkVisible("GearR22_D0", false);
-      paramHierMesh.chunkVisible("GearC1_D0", false);
-      paramHierMesh.chunkVisible("GearL31_D0", false);
-      paramHierMesh.chunkVisible("GearL32_D0", false);
-      paramHierMesh.chunkVisible("GearR31_D0", false);
-      paramHierMesh.chunkVisible("GearR32_D0", false);
-
-      paramHierMesh.chunkVisible("GearC11_D0", true);
-      paramHierMesh.chunkVisible("GearL11_D0", true);
-      paramHierMesh.chunkVisible("GearL21_D0", true);
-      paramHierMesh.chunkVisible("GearR11_D0", true);
-      paramHierMesh.chunkVisible("GearR21_D0", true);
-
-      paramHierMesh.chunkSetAngles("GearL21_D0", 0.0F, 12.0F, 0.0F);
-      paramHierMesh.chunkSetAngles("GearR21_D0", 0.0F, 12.0F, 0.0F);
-      paramHierMesh.chunkSetAngles("GearC11_D0", 0.0F, 12.0F, 0.0F);
-    }
-  }
-
-  protected void moveFan(float paramFloat)
-  {
-    if (Config.isUSE_RENDER())
-    {
-      super.moveFan(paramFloat);
-      float f1 = this.FM.CT.getAileron();
-      float f2 = this.FM.CT.getElevator();
-
-      hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9.0F * f1, cvt(f2, -1.0F, 1.0F, -8.0F, 9.5F));
-      hierMesh().chunkSetAngles("pilotarm2_d0", cvt(f1, -1.0F, 1.0F, 14.0F, -16.0F), 0.0F, cvt(f1, -1.0F, 1.0F, 6.0F, -8.0F) - cvt(f2, -1.0F, 1.0F, -37.0F, 35.0F));
-      hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, cvt(f1, -1.0F, 1.0F, -16.0F, 14.0F) + cvt(f2, -1.0F, 0.0F, -61.0F, 0.0F) + cvt(f2, 0.0F, 1.0F, 0.0F, 43.0F));
-
-      if (World.cur().camouflage == 1)
-      {
-        float f3 = Aircraft.cvt(this.FM.getSpeed(), 30.0F, 100.0F, 1.0F, 0.0F);
-        float f4 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 30.0F, 0.0F, 0.5F);
-
-        if (this.FM.Gears.gWheelSinking[0] > 0.0F)
+        if(com.maddox.il2.ai.World.cur().camouflage == 1 && com.maddox.il2.ai.World.Rnd().nextFloat() > 0.1F)
         {
-          this.skiAngleL = (0.5F * this.skiAngleL + 0.5F * this.FM.Or.getTangage());
-
-          if (this.skiAngleL > 20.0F)
-          {
-            this.skiAngleL -= this.spring;
-          }
-
-          hierMesh().chunkSetAngles("GearL21_D0", World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + this.skiAngleL, World.Rnd().nextFloat(f4, f4));
-
-          if ((this.FM.Gears.gWheelSinking[1] == 0.0F) && (this.FM.Or.getRoll() < 365.0F) && (this.FM.Or.getRoll() > 355.0F))
-          {
-            this.skiAngleR = this.skiAngleL;
-            hierMesh().chunkSetAngles("GearR21_D0", World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + this.skiAngleR, World.Rnd().nextFloat(f4, f4));
-          }
-
+            hiermesh.chunkVisible("GearL1_D0", false);
+            hiermesh.chunkVisible("GearL22_D0", false);
+            hiermesh.chunkVisible("GearR1_D0", false);
+            hiermesh.chunkVisible("GearR22_D0", false);
+            hiermesh.chunkVisible("GearC1_D0", false);
+            hiermesh.chunkVisible("GearL31_D0", false);
+            hiermesh.chunkVisible("GearL32_D0", false);
+            hiermesh.chunkVisible("GearR31_D0", false);
+            hiermesh.chunkVisible("GearR32_D0", false);
+            hiermesh.chunkVisible("GearC11_D0", true);
+            hiermesh.chunkVisible("GearL11_D0", true);
+            hiermesh.chunkVisible("GearL21_D0", true);
+            hiermesh.chunkVisible("GearR11_D0", true);
+            hiermesh.chunkVisible("GearR21_D0", true);
+            hiermesh.chunkSetAngles("GearL21_D0", 0.0F, 12F, 0.0F);
+            hiermesh.chunkSetAngles("GearR21_D0", 0.0F, 12F, 0.0F);
+            hiermesh.chunkSetAngles("GearC11_D0", 0.0F, 12F, 0.0F);
         }
-        else
-        {
-          if (this.skiAngleL > f3 * -10.0F + 0.01D)
-          {
-            this.skiAngleL -= this.spring;
-          }
-          else if (this.skiAngleL < f3 * -10.0F - 0.01D)
-          {
-            this.skiAngleL += this.spring;
-          }
-
-          hierMesh().chunkSetAngles("GearL21_D0", 0.0F, this.skiAngleL, 0.0F);
-        }
-
-        if (this.FM.Gears.gWheelSinking[1] > 0.0F)
-        {
-          this.skiAngleR = (0.5F * this.skiAngleR + 0.5F * this.FM.Or.getTangage());
-
-          if (this.skiAngleR > 20.0F)
-          {
-            this.skiAngleR -= this.spring;
-          }
-
-          hierMesh().chunkSetAngles("GearR21_D0", World.Rnd().nextFloat(-f4, f4), World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + this.skiAngleR, World.Rnd().nextFloat(f4, f4));
-        }
-        else
-        {
-          if (this.skiAngleR > f3 * -10.0F + 0.01D)
-          {
-            this.skiAngleR -= this.spring;
-          }
-          else if (this.skiAngleR < f3 * -10.0F - 0.01D)
-          {
-            this.skiAngleR += this.spring;
-          }
-          hierMesh().chunkSetAngles("GearR21_D0", 0.0F, this.skiAngleR, 0.0F);
-        }
-
-        hierMesh().chunkSetAngles("GearC11_D0", 0.0F, (this.skiAngleL + this.skiAngleR) / 2.0F, 0.0F);
-      }
     }
-  }
 
-  public void sfxWheels()
-  {
-    if (!this.hasSkis)
-      super.sfxWheels();
-  }
-
-  public void auxPlus(int paramInt)
-  {
-    switch (paramInt)
+    protected void moveFan(float f)
     {
-    case 1:
-      this.gyroDelta += 1.0F;
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            super.moveFan(f);
+            float f1 = FM.CT.getAileron();
+            float f2 = FM.CT.getElevator();
+            hierMesh().chunkSetAngles("Stick_D0", 0.0F, 9F * f1, com.maddox.il2.objects.air.Aircraft.cvt(f2, -1F, 1.0F, -8F, 9.5F));
+            hierMesh().chunkSetAngles("pilotarm2_d0", com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, 14F, -16F), 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, 6F, -8F) - com.maddox.il2.objects.air.Aircraft.cvt(f2, -1F, 1.0F, -37F, 35F));
+            hierMesh().chunkSetAngles("pilotarm1_d0", 0.0F, 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f1, -1F, 1.0F, -16F, 14F) + com.maddox.il2.objects.air.Aircraft.cvt(f2, -1F, 0.0F, -61F, 0.0F) + com.maddox.il2.objects.air.Aircraft.cvt(f2, 0.0F, 1.0F, 0.0F, 43F));
+            if(com.maddox.il2.ai.World.cur().camouflage == 1)
+            {
+                float f3 = com.maddox.il2.objects.air.Aircraft.cvt(FM.getSpeed(), 30F, 100F, 1.0F, 0.0F);
+                float f4 = com.maddox.il2.objects.air.Aircraft.cvt(FM.getSpeed(), 0.0F, 30F, 0.0F, 0.5F);
+                if(FM.Gears.gWheelSinking[0] > 0.0F)
+                {
+                    skiAngleL = 0.5F * skiAngleL + 0.5F * FM.Or.getTangage();
+                    if(skiAngleL > 20F)
+                        skiAngleL = skiAngleL - spring;
+                    hierMesh().chunkSetAngles("GearL21_D0", com.maddox.il2.ai.World.Rnd().nextFloat(-f4, f4), com.maddox.il2.ai.World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + skiAngleL, com.maddox.il2.ai.World.Rnd().nextFloat(f4, f4));
+                    if(FM.Gears.gWheelSinking[1] == 0.0F && FM.Or.getRoll() < 365F && FM.Or.getRoll() > 355F)
+                    {
+                        skiAngleR = skiAngleL;
+                        hierMesh().chunkSetAngles("GearR21_D0", com.maddox.il2.ai.World.Rnd().nextFloat(-f4, f4), com.maddox.il2.ai.World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + skiAngleR, com.maddox.il2.ai.World.Rnd().nextFloat(f4, f4));
+                    }
+                } else
+                {
+                    if((double)skiAngleL > (double)(f3 * -10F) + 0.01D)
+                        skiAngleL = skiAngleL - spring;
+                    else
+                    if((double)skiAngleL < (double)(f3 * -10F) - 0.01D)
+                        skiAngleL = skiAngleL + spring;
+                    hierMesh().chunkSetAngles("GearL21_D0", 0.0F, skiAngleL, 0.0F);
+                }
+                if(FM.Gears.gWheelSinking[1] > 0.0F)
+                {
+                    skiAngleR = 0.5F * skiAngleR + 0.5F * FM.Or.getTangage();
+                    if(skiAngleR > 20F)
+                        skiAngleR = skiAngleR - spring;
+                    hierMesh().chunkSetAngles("GearR21_D0", com.maddox.il2.ai.World.Rnd().nextFloat(-f4, f4), com.maddox.il2.ai.World.Rnd().nextFloat(-f4 * 2.0F, f4 * 2.0F) + skiAngleR, com.maddox.il2.ai.World.Rnd().nextFloat(f4, f4));
+                } else
+                {
+                    if((double)skiAngleR > (double)(f3 * -10F) + 0.01D)
+                        skiAngleR = skiAngleR - spring;
+                    else
+                    if((double)skiAngleR < (double)(f3 * -10F) - 0.01D)
+                        skiAngleR = skiAngleR + spring;
+                    hierMesh().chunkSetAngles("GearR21_D0", 0.0F, skiAngleR, 0.0F);
+                }
+                hierMesh().chunkSetAngles("GearC11_D0", 0.0F, (skiAngleL + skiAngleR) / 2.0F, 0.0F);
+            }
+        }
     }
-  }
 
-  public void auxMinus(int paramInt)
-  {
-    switch (paramInt)
+    public void sfxWheels()
     {
-    case 1:
-      this.gyroDelta -= 1.0F;
+        if(!hasSkis)
+            super.sfxWheels();
     }
-  }
 
-  static
-  {
-    Class localClass = DXXI_SARJA3_EARLY.class;
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "D.XXI");
-    Property.set(localClass, "meshName_fi", "3DO/Plane/DXXI_SARJA3_EARLY/hier.him");
-    Property.set(localClass, "meshName", "3DO/Plane/DXXI_SARJA3_EARLY/hierMulti.him");
-    Property.set(localClass, "PaintScheme_fi", new PaintSchemeFMPar00DXXI());
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar00DXXI());
-    Property.set(localClass, "yearService", 1939.0F);
-    Property.set(localClass, "yearExpired", 1940.0F);
-    Property.set(localClass, "FlightModel", "FlightModels/FokkerS3Early.fmd");
-    Property.set(localClass, "cockpitClass", CockpitDXXI_SARJA3_EARLY.class);
-    Property.set(localClass, "LOSElevation", 0.8472F);
-    Property.set(localClass, "originCountry", PaintScheme.countryFinland);
-    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0 });
-    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303sipzl 500", "MGunBrowning303sipzl 500", "MGunBrowning303k 500", "MGunBrowning303k 500" });
+    private boolean hasRevi;
+    private com.maddox.il2.objects.air.CockpitDXXI_SARJA3_EARLY pit;
+    private float skiAngleL;
+    private float skiAngleR;
+    private float spring;
 
-    weaponsRegister(localClass, "AlternativeTracers", new String[] { "MGunBrowning303sipzl_fullTracers 500", "MGunBrowning303sipzl_NoTracers 500", "MGunBrowning303k_NoTracers 500", "MGunBrowning303k_NoTracers 500" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.DXXI_SARJA3_EARLY.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "D.XXI");
+        com.maddox.rts.Property.set(class1, "meshName_fi", "3DO/Plane/DXXI_SARJA3_EARLY/hier.him");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/DXXI_SARJA3_EARLY/hierMulti.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_fi", new PaintSchemeFMPar00DXXI());
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar00DXXI());
+        com.maddox.rts.Property.set(class1, "yearService", 1939F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1940F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/FokkerS3Early.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitDXXI_SARJA3_EARLY.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.8472F);
+        com.maddox.rts.Property.set(class1, "originCountry", com.maddox.il2.objects.air.PaintScheme.countryFinland);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning303sipzl 500", "MGunBrowning303sipzl 500", "MGunBrowning303k 500", "MGunBrowning303k 500"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "AlternativeTracers", new java.lang.String[] {
+            "MGunBrowning303sipzl_fullTracers 500", "MGunBrowning303sipzl_NoTracers 500", "MGunBrowning303k_NoTracers 500", "MGunBrowning303k_NoTracers 500"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

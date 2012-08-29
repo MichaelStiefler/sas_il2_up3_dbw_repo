@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   I_16TYPE24DRONE.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Vector3d;
@@ -9,7 +14,6 @@ import com.maddox.il2.ai.air.AirGroup;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.MsgCollisionRequestListener;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.AircraftState;
@@ -27,296 +31,327 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import java.io.IOException;
 
-public class I_16TYPE24DRONE extends I_16
-  implements MsgCollisionRequestListener, TypeTNBFighter, TypeStormovik, TypeDockable
+// Referenced classes of package com.maddox.il2.objects.air:
+//            I_16, Aircraft, TB_3_4M_34R_SPB, TypeDockable, 
+//            PaintSchemeFMPar01, PaintSchemeFCSPar01, TypeTNBFighter, TypeStormovik, 
+//            NetAircraft
+
+public class I_16TYPE24DRONE extends com.maddox.il2.objects.air.I_16
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.objects.air.TypeTNBFighter, com.maddox.il2.objects.air.TypeStormovik, com.maddox.il2.objects.air.TypeDockable
 {
-  private Actor queen_last = null;
-  private long queen_time = 0L;
 
-  private boolean bNeedSetup = true;
-  private long dtime = -1L;
-
-  private Actor target_ = null;
-
-  private Actor queen_ = null;
-  private int dockport_;
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    super.msgCollisionRequest(paramActor, paramArrayOfBoolean);
-    if ((this.queen_last != null) && (this.queen_last == paramActor) && ((this.queen_time == 0L) || (Time.current() < this.queen_time + 5000L)))
+    public I_16TYPE24DRONE()
     {
-      paramArrayOfBoolean[0] = false;
-    }
-    else paramArrayOfBoolean[0] = true;
-  }
-
-  public void update(float paramFloat)
-  {
-    if (this.bNeedSetup) {
-      checkAsDrone();
-    }
-    int i = aircIndex();
-    if ((this.FM instanceof Maneuver)) {
-      if (typeDockableIsDocked()) {
-        if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
-          ((Maneuver)this.FM).unblock();
-          ((Maneuver)this.FM).set_maneuver(48);
-          for (int j = 0; j < i; j++) ((Maneuver)this.FM).push(48);
-          if (this.FM.AP.way.curr().Action != 3)
-            ((Maneuver)this.FM).AP.way.setCur(((Aircraft)this.queen_).FM.AP.way.Cur());
-          ((Pilot)this.FM).setDumbTime(3000L);
-        }
-        if (this.FM.M.fuel < this.FM.M.maxFuel) {
-          this.FM.M.fuel += 0.06F * paramFloat;
-        }
-      }
-      else if ((!(this.FM instanceof RealFlightModel)) || (!((RealFlightModel)this.FM).isRealMode())) {
-        if (this.FM.EI.engines[0].getStage() == 0) {
-          this.FM.EI.setEngineRunning();
-        }
-        if ((this.dtime > 0L) && (((Maneuver)this.FM).Group != null)) {
-          ((Maneuver)this.FM).Group.leaderGroup = null;
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Pilot)this.FM).setDumbTime(3000L);
-          if (Time.current() > this.dtime + 3000L) {
-            this.dtime = -1L;
-            ((Maneuver)this.FM).clear_stack();
-            ((Maneuver)this.FM).set_maneuver(0);
-            ((Pilot)this.FM).setDumbTime(0L);
-          }
-
-        }
-        else if (this.FM.AP.way.curr().Action == 0) {
-          Maneuver localManeuver = (Maneuver)this.FM;
-          if ((localManeuver.Group != null) && (localManeuver.Group.airc[0] == this) && (localManeuver.Group.clientGroup != null)) {
-            localManeuver.Group.setGroupTask(2);
-          }
-        }
-      }
-
+        queen_last = null;
+        queen_time = 0L;
+        bNeedSetup = true;
+        dtime = -1L;
+        target_ = null;
+        queen_ = null;
     }
 
-    super.update(paramFloat);
-  }
-
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    if ((paramBoolean) && 
-      (this.FM.AP.way.curr().Action == 3) && (typeDockableIsDocked()) && (Math.abs(((Aircraft)this.queen_).FM.Or.getKren()) < 3.0F))
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
     {
-      if (this.FM.isPlayers()) {
-        if (((this.FM instanceof RealFlightModel)) && (!((RealFlightModel)this.FM).isRealMode())) {
-          typeDockableAttemptDetach();
-
-          ((Maneuver)this.FM).set_maneuver(22);
-          ((Maneuver)this.FM).setCheckStrike(false);
-          this.FM.Vwld.z -= 5.0D;
-          this.dtime = Time.current();
-        }
-      } else {
-        typeDockableAttemptDetach();
-
-        ((Maneuver)this.FM).set_maneuver(22);
-        ((Maneuver)this.FM).setCheckStrike(false);
-        this.FM.Vwld.z -= 5.0D;
-        this.dtime = Time.current();
-      }
+        super.msgCollisionRequest(actor, aflag);
+        if(queen_last != null && queen_last == actor && (queen_time == 0L || com.maddox.rts.Time.current() < queen_time + 5000L))
+            aflag[0] = false;
+        else
+            aflag[0] = true;
     }
-  }
 
-  public void missionStarting()
-  {
-    checkAsDrone();
-  }
-
-  private void checkAsDrone()
-  {
-    if (this.target_ == null) {
-      if (this.FM.AP.way.curr().getTarget() == null) this.FM.AP.way.next();
-      this.target_ = this.FM.AP.way.curr().getTarget();
-      if ((Actor.isValid(this.target_)) && ((this.target_ instanceof Wing))) {
-        Wing localWing = (Wing)this.target_;
+    public void update(float f)
+    {
+        if(bNeedSetup)
+            checkAsDrone();
         int i = aircIndex();
-        if (Actor.isValid(localWing.airc[(i / 2)]))
-          this.target_ = localWing.airc[(i / 2)];
-        else this.target_ = null;
-      }
+        if(FM instanceof com.maddox.il2.ai.air.Maneuver)
+            if(typeDockableIsDocked())
+            {
+                if(!(FM instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)FM).isRealMode())
+                {
+                    ((com.maddox.il2.ai.air.Maneuver)FM).unblock();
+                    ((com.maddox.il2.ai.air.Maneuver)FM).set_maneuver(48);
+                    for(int j = 0; j < i; j++)
+                        ((com.maddox.il2.ai.air.Maneuver)FM).push(48);
+
+                    if(FM.AP.way.curr().Action != 3)
+                        ((com.maddox.il2.ai.air.Maneuver)FM).AP.way.setCur(((com.maddox.il2.objects.air.Aircraft)queen_).FM.AP.way.Cur());
+                    ((com.maddox.il2.ai.air.Pilot)FM).setDumbTime(3000L);
+                }
+                if(FM.M.fuel < FM.M.maxFuel)
+                    FM.M.fuel += 0.06F * f;
+            } else
+            if(!(FM instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)FM).isRealMode())
+            {
+                if(FM.EI.engines[0].getStage() == 0)
+                    FM.EI.setEngineRunning();
+                if(dtime > 0L && ((com.maddox.il2.ai.air.Maneuver)FM).Group != null)
+                {
+                    ((com.maddox.il2.ai.air.Maneuver)FM).Group.leaderGroup = null;
+                    ((com.maddox.il2.ai.air.Maneuver)FM).set_maneuver(22);
+                    ((com.maddox.il2.ai.air.Pilot)FM).setDumbTime(3000L);
+                    if(com.maddox.rts.Time.current() > dtime + 3000L)
+                    {
+                        dtime = -1L;
+                        ((com.maddox.il2.ai.air.Maneuver)FM).clear_stack();
+                        ((com.maddox.il2.ai.air.Maneuver)FM).set_maneuver(0);
+                        ((com.maddox.il2.ai.air.Pilot)FM).setDumbTime(0L);
+                    }
+                } else
+                if(FM.AP.way.curr().Action == 0)
+                {
+                    com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)FM;
+                    if(maneuver.Group != null && maneuver.Group.airc[0] == this && maneuver.Group.clientGroup != null)
+                        maneuver.Group.setGroupTask(2);
+                }
+            }
+        super.update(f);
     }
-    if ((Actor.isValid(this.target_)) && ((this.target_ instanceof TB_3_4M_34R_SPB))) {
-      this.queen_last = this.target_;
-      this.queen_time = Time.current();
-      if (isNetMaster())
-      {
-        ((TypeDockable)this.target_).typeDockableRequestAttach(this, aircIndex() % 2, true);
-      }
-    }
 
-    this.bNeedSetup = false;
-    this.target_ = null;
-  }
-
-  public int typeDockableGetDockport()
-  {
-    if (typeDockableIsDocked()) {
-      return this.dockport_;
-    }
-    return -1;
-  }
-  public Actor typeDockableGetQueen() {
-    return this.queen_;
-  }
-
-  public boolean typeDockableIsDocked()
-  {
-    return Actor.isValid(this.queen_);
-  }
-
-  public void typeDockableAttemptAttach()
-  {
-    if (!this.FM.AS.isMaster()) {
-      return;
-    }
-
-    if (!typeDockableIsDocked())
+    public void rareAction(float f, boolean flag)
     {
-      Aircraft localAircraft = War.getNearestFriend(this);
-      if ((localAircraft instanceof TB_3_4M_34R_SPB))
-      {
-        ((TypeDockable)localAircraft).typeDockableRequestAttach(this);
-      }
+        super.rareAction(f, flag);
+        if(flag && FM.AP.way.curr().Action == 3 && typeDockableIsDocked() && java.lang.Math.abs(((com.maddox.il2.objects.air.Aircraft)queen_).FM.Or.getKren()) < 3F)
+            if(FM.isPlayers())
+            {
+                if((FM instanceof com.maddox.il2.fm.RealFlightModel) && !((com.maddox.il2.fm.RealFlightModel)FM).isRealMode())
+                {
+                    typeDockableAttemptDetach();
+                    ((com.maddox.il2.ai.air.Maneuver)FM).set_maneuver(22);
+                    ((com.maddox.il2.ai.air.Maneuver)FM).setCheckStrike(false);
+                    FM.Vwld.z -= 5D;
+                    dtime = com.maddox.rts.Time.current();
+                }
+            } else
+            {
+                typeDockableAttemptDetach();
+                ((com.maddox.il2.ai.air.Maneuver)FM).set_maneuver(22);
+                ((com.maddox.il2.ai.air.Maneuver)FM).setCheckStrike(false);
+                FM.Vwld.z -= 5D;
+                dtime = com.maddox.rts.Time.current();
+            }
     }
-  }
 
-  public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+    public void missionStarting()
     {
-      if (typeDockableIsDocked())
-      {
-        if (Actor.isValid(this.queen_))
-          ((TypeDockable)this.queen_).typeDockableRequestDetach(this); 
-      }
+        checkAsDrone();
     }
-  }
 
-  public void typeDockableRequestAttach(Actor paramActor) {
-  }
-
-  public void typeDockableRequestDetach(Actor paramActor) {
-  }
-
-  public void typeDockableRequestAttach(Actor paramActor, int paramInt, boolean paramBoolean) {
-  }
-
-  public void typeDockableRequestDetach(Actor paramActor, int paramInt, boolean paramBoolean) {
-  }
-
-  public void typeDockableDoAttachToDrone(Actor paramActor, int paramInt) {
-  }
-
-  public void typeDockableDoDetachFromDrone(int paramInt) {
-  }
-
-  public void typeDockableDoAttachToQueen(Actor paramActor, int paramInt) {
-    this.queen_ = paramActor;
-    this.dockport_ = paramInt;
-    this.queen_last = this.queen_;
-    this.queen_time = 0L;
-
-    this.FM.EI.setEngineRunning();
-    this.FM.CT.setGearAirborne();
-    moveGear(0.0F);
-
-    FlightModel localFlightModel = ((Aircraft)this.queen_).FM;
-    if ((aircIndex() == 0) && ((this.FM instanceof Maneuver)) && ((localFlightModel instanceof Maneuver))) {
-      Maneuver localManeuver1 = (Maneuver)localFlightModel;
-      Maneuver localManeuver2 = (Maneuver)this.FM;
-      if ((localManeuver1.Group != null) && (localManeuver2.Group != null) && (localManeuver2.Group.numInGroup(this) == localManeuver2.Group.nOfAirc - 1))
-      {
-        AirGroup localAirGroup = new AirGroup(localManeuver2.Group);
-        localManeuver2.Group.delAircraft(this);
-        localAirGroup.addAircraft(this);
-        localAirGroup.attachGroup(localManeuver1.Group);
-        localAirGroup.rejoinGroup = null;
-        localAirGroup.leaderGroup = null;
-        localAirGroup.clientGroup = localManeuver1.Group;
-      }
-    }
-  }
-
-  public void typeDockableDoDetachFromQueen(int paramInt)
-  {
-    if (this.dockport_ != paramInt) {
-      return;
-    }
-    this.queen_last = this.queen_;
-    this.queen_time = Time.current();
-    this.queen_ = null;
-    this.dockport_ = 0;
-  }
-
-  public void typeDockableReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException
-  {
-    if (typeDockableIsDocked())
+    private void checkAsDrone()
     {
-      paramNetMsgGuaranted.writeByte(1);
-      ActorNet localActorNet = null;
-      if (Actor.isValid(this.queen_))
-      {
-        localActorNet = this.queen_.net;
-
-        if (localActorNet.countNoMirrors() > 0)
+        if(target_ == null)
         {
-          localActorNet = null;
+            if(FM.AP.way.curr().getTarget() == null)
+                FM.AP.way.next();
+            target_ = FM.AP.way.curr().getTarget();
+            if(com.maddox.il2.engine.Actor.isValid(target_) && (target_ instanceof com.maddox.il2.ai.Wing))
+            {
+                com.maddox.il2.ai.Wing wing = (com.maddox.il2.ai.Wing)target_;
+                int i = aircIndex();
+                if(com.maddox.il2.engine.Actor.isValid(wing.airc[i / 2]))
+                    target_ = wing.airc[i / 2];
+                else
+                    target_ = null;
+            }
         }
-      }
-      paramNetMsgGuaranted.writeByte(this.dockport_);
-
-      paramNetMsgGuaranted.writeNetObj(localActorNet);
+        if(com.maddox.il2.engine.Actor.isValid(target_) && (target_ instanceof com.maddox.il2.objects.air.TB_3_4M_34R_SPB))
+        {
+            queen_last = target_;
+            queen_time = com.maddox.rts.Time.current();
+            if(isNetMaster())
+                ((com.maddox.il2.objects.air.TypeDockable)target_).typeDockableRequestAttach(this, aircIndex() % 2, true);
+        }
+        bNeedSetup = false;
+        target_ = null;
     }
-    else
+
+    public int typeDockableGetDockport()
     {
-      paramNetMsgGuaranted.writeByte(0);
+        if(typeDockableIsDocked())
+            return dockport_;
+        else
+            return -1;
     }
-  }
 
-  public void typeDockableReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-    if (paramNetMsgInput.readByte() == 1) {
-      this.dockport_ = paramNetMsgInput.readByte();
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      if (localNetObj != null) {
-        Actor localActor = (Actor)localNetObj.superObj();
-        ((TypeDockable)localActor).typeDockableDoAttachToDrone(this, this.dockport_);
-      }
+    public com.maddox.il2.engine.Actor typeDockableGetQueen()
+    {
+        return queen_;
     }
-  }
 
-  static
-  {
-    Class localClass = I_16TYPE24DRONE.class;
-    new NetAircraft.SPAWN(localClass);
+    public boolean typeDockableIsDocked()
+    {
+        return com.maddox.il2.engine.Actor.isValid(queen_);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "I-16");
-    Property.set(localClass, "meshName", "3DO/Plane/I-16type24(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-    Property.set(localClass, "meshName_ru", "3DO/Plane/I-16type24/hier.him");
-    Property.set(localClass, "PaintScheme_ru", new PaintSchemeFCSPar01());
+    public void typeDockableAttemptAttach()
+    {
+        if(!FM.AS.isMaster())
+            return;
+        if(!typeDockableIsDocked())
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.War.getNearestFriend(this);
+            if(aircraft instanceof com.maddox.il2.objects.air.TB_3_4M_34R_SPB)
+                ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableRequestAttach(this);
+        }
+    }
 
-    Property.set(localClass, "yearService", 1939.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    public void typeDockableAttemptDetach()
+    {
+        if(FM.AS.isMaster() && typeDockableIsDocked() && com.maddox.il2.engine.Actor.isValid(queen_))
+            ((com.maddox.il2.objects.air.TypeDockable)queen_).typeDockableRequestDetach(this);
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/I-16type24.fmd");
-    Property.set(localClass, "cockpitClass", CockpitI_16TYPE24_SPB.class);
-    Property.set(localClass, "LOSElevation", 0.82595F);
+    public void typeDockableRequestAttach(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 9, 9, 9, 9, 9, 9, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08" });
+    public void typeDockableRequestDetach(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASsi 650", "MGunShKASsi 650", "MGunShVAKk 120", "MGunShVAKk 120", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    public void typeDockableRequestAttach(com.maddox.il2.engine.Actor actor, int i, boolean flag)
+    {
+    }
 
-    weaponsRegister(localClass, "2fab250", new String[] { "MGunShKASsi 650", "MGunShKASsi 650", "MGunShVAKk 120", "MGunShVAKk 120", null, null, null, null, null, null, "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null, null, null });
+    public void typeDockableRequestDetach(com.maddox.il2.engine.Actor actor, int i, boolean flag)
+    {
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    public void typeDockableDoAttachToDrone(com.maddox.il2.engine.Actor actor, int i)
+    {
+    }
+
+    public void typeDockableDoDetachFromDrone(int i)
+    {
+    }
+
+    public void typeDockableDoAttachToQueen(com.maddox.il2.engine.Actor actor, int i)
+    {
+        queen_ = actor;
+        dockport_ = i;
+        queen_last = queen_;
+        queen_time = 0L;
+        FM.EI.setEngineRunning();
+        FM.CT.setGearAirborne();
+        moveGear(0.0F);
+        com.maddox.il2.fm.FlightModel flightmodel = ((com.maddox.il2.objects.air.Aircraft)queen_).FM;
+        if(aircIndex() == 0 && (FM instanceof com.maddox.il2.ai.air.Maneuver) && (flightmodel instanceof com.maddox.il2.ai.air.Maneuver))
+        {
+            com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)flightmodel;
+            com.maddox.il2.ai.air.Maneuver maneuver1 = (com.maddox.il2.ai.air.Maneuver)FM;
+            if(maneuver.Group != null && maneuver1.Group != null && maneuver1.Group.numInGroup(this) == maneuver1.Group.nOfAirc - 1)
+            {
+                com.maddox.il2.ai.air.AirGroup airgroup = new AirGroup(maneuver1.Group);
+                maneuver1.Group.delAircraft(this);
+                airgroup.addAircraft(this);
+                airgroup.attachGroup(maneuver.Group);
+                airgroup.rejoinGroup = null;
+                airgroup.leaderGroup = null;
+                airgroup.clientGroup = maneuver.Group;
+            }
+        }
+    }
+
+    public void typeDockableDoDetachFromQueen(int i)
+    {
+        if(dockport_ != i)
+        {
+            return;
+        } else
+        {
+            queen_last = queen_;
+            queen_time = com.maddox.rts.Time.current();
+            queen_ = null;
+            dockport_ = 0;
+            return;
+        }
+    }
+
+    public void typeDockableReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        if(typeDockableIsDocked())
+        {
+            netmsgguaranted.writeByte(1);
+            com.maddox.il2.engine.ActorNet actornet = null;
+            if(com.maddox.il2.engine.Actor.isValid(queen_))
+            {
+                actornet = queen_.net;
+                if(actornet.countNoMirrors() > 0)
+                    actornet = null;
+            }
+            netmsgguaranted.writeByte(dockport_);
+            netmsgguaranted.writeNetObj(actornet);
+        } else
+        {
+            netmsgguaranted.writeByte(0);
+        }
+    }
+
+    public void typeDockableReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        if(netmsginput.readByte() == 1)
+        {
+            dockport_ = netmsginput.readByte();
+            com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+            if(netobj != null)
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)netobj.superObj();
+                ((com.maddox.il2.objects.air.TypeDockable)actor).typeDockableDoAttachToDrone(this, dockport_);
+            }
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private com.maddox.il2.engine.Actor queen_last;
+    private long queen_time;
+    private boolean bNeedSetup;
+    private long dtime;
+    private com.maddox.il2.engine.Actor target_;
+    private com.maddox.il2.engine.Actor queen_;
+    private int dockport_;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.I_16TYPE24DRONE.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "I-16");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/I-16type24(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "meshName_ru", "3DO/Plane/I-16type24/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ru", new PaintSchemeFCSPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1939F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/I-16type24.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitI_16TYPE24_SPB.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.82595F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 
+            3, 3, 9, 9, 9, 9, 9, 9, 9, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_CANNON01", "_CANNON02", "_MGUN01", "_MGUN02", "_ExternalRock01", "_ExternalRock02", "_ExternalRock03", "_ExternalRock04", "_ExternalRock05", "_ExternalRock06", 
+            "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunShKASsi 650", "MGunShKASsi 650", "MGunShVAKk 120", "MGunShVAKk 120", null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab250", new java.lang.String[] {
+            "MGunShKASsi 650", "MGunShKASsi 650", "MGunShVAKk 120", "MGunShVAKk 120", null, null, null, null, null, null, 
+            "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null
+        });
+    }
 }

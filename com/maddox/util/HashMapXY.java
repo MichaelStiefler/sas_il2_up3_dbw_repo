@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HashMapXY.java
+
 package com.maddox.util;
 
 import java.io.IOException;
@@ -5,167 +10,195 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.util:
+//            HashMapInt, HashMapIntEntry
+
 public class HashMapXY
-  implements Cloneable, Serializable
+    implements java.lang.Cloneable, java.io.Serializable
 {
-  private transient HashMapInt mapY;
-  private int initialCapacity = 101;
-  private float loadFactor = 0.75F;
 
-  public HashMapXY() {
-    this.mapY = new HashMapInt(this.initialCapacity, this.loadFactor);
-  }
-
-  public HashMapXY(int paramInt) {
-    this.initialCapacity = paramInt;
-    this.mapY = new HashMapInt(paramInt, this.loadFactor);
-  }
-
-  public HashMapXY(int paramInt, float paramFloat) {
-    this.initialCapacity = paramInt;
-    this.loadFactor = paramFloat;
-    this.mapY = new HashMapInt(paramInt, paramFloat);
-  }
-
-  public int size() {
-    int i = 0;
-    HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      i += ((HashMapInt)(HashMapInt)localHashMapIntEntry.getValue()).size();
-      localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
-    }
-    return i;
-  }
-
-  public int sizeY() {
-    return this.mapY.size();
-  }
-
-  public boolean isEmpty() {
-    return size() == 0;
-  }
-
-  public boolean isEmptyY() {
-    return sizeY() == 0;
-  }
-
-  public HashMapInt mapY() {
-    return this.mapY;
-  }
-
-  public HashMapInt get(int paramInt) {
-    return (HashMapInt)this.mapY.get(paramInt);
-  }
-
-  public Object get(int paramInt1, int paramInt2) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt != null)
-      return localHashMapInt.get(paramInt2);
-    return null;
-  }
-
-  public boolean containsKey(int paramInt) {
-    return this.mapY.containsKey(paramInt);
-  }
-
-  public boolean containsKey(int paramInt1, int paramInt2) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt != null)
-      return localHashMapInt.containsKey(paramInt2);
-    return false;
-  }
-
-  public boolean containsValue(Object paramObject) {
-    HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      if (((HashMapInt)(HashMapInt)localHashMapIntEntry.getValue()).containsValue(paramObject))
-        return true;
-      localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
-    }
-    return false;
-  }
-
-  public boolean containsValue(int paramInt, Object paramObject) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt);
-    if (localHashMapInt != null)
-      return localHashMapInt.containsValue(paramObject);
-    return false;
-  }
-
-  public Object put(int paramInt1, int paramInt2, Object paramObject) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt == null) {
-      localHashMapInt = new HashMapInt(this.initialCapacity, this.loadFactor);
-      this.mapY.put(paramInt1, localHashMapInt);
-    }
-    return localHashMapInt.put(paramInt2, paramObject);
-  }
-
-  public void clear() {
-    HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      ((HashMapInt)(HashMapInt)localHashMapIntEntry.getValue()).clear();
-      localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
-    }
-    this.mapY.clear();
-  }
-
-  public void clear(int paramInt) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt);
-    if (localHashMapInt != null) {
-      localHashMapInt.clear();
-      this.mapY.remove(paramInt);
-    }
-  }
-
-  public Object remove(int paramInt1, int paramInt2) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-
-    if (localHashMapInt != null) {
-      Object localObject = localHashMapInt.remove(paramInt2);
-      if (localHashMapInt.isEmpty())
-        this.mapY.remove(paramInt1);
-      return localObject;
-    }
-    return null;
-  }
-
-  public boolean equals(Object paramObject)
-  {
-    return this == paramObject;
-  }
-
-  public Object clone()
-  {
-    try
+    public HashMapXY()
     {
-      HashMapXY localHashMapXY = (HashMapXY)super.clone();
-      localHashMapXY.mapY = new HashMapInt(this.initialCapacity, this.loadFactor);
-      HashMapIntEntry localHashMapIntEntry = this.mapY.nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        int i = localHashMapIntEntry.getKey();
-        HashMapInt localHashMapInt = (HashMapInt)localHashMapIntEntry.getValue();
-        localHashMapInt = (HashMapInt)localHashMapInt.clone();
-        localHashMapXY.mapY.put(i, localHashMapInt);
-        localHashMapIntEntry = this.mapY.nextEntry(localHashMapIntEntry);
-      }
-      return localHashMapXY;
-    } catch (CloneNotSupportedException localCloneNotSupportedException) {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        mapY = new HashMapInt(initialCapacity, loadFactor);
     }
-    throw new InternalError();
-  }
 
-  private void writeObject(ObjectOutputStream paramObjectOutputStream)
-    throws IOException
-  {
-    paramObjectOutputStream.defaultWriteObject();
-    paramObjectOutputStream.writeObject(this.mapY);
-  }
+    public HashMapXY(int i)
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        initialCapacity = i;
+        mapY = new HashMapInt(i, loadFactor);
+    }
 
-  private void readObject(ObjectInputStream paramObjectInputStream)
-    throws IOException, ClassNotFoundException
-  {
-    paramObjectInputStream.defaultReadObject();
-    this.mapY = ((HashMapInt)paramObjectInputStream.readObject());
-  }
+    public HashMapXY(int i, float f)
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        initialCapacity = i;
+        loadFactor = f;
+        mapY = new HashMapInt(i, f);
+    }
+
+    public int size()
+    {
+        int i = 0;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+            i += ((com.maddox.util.HashMapInt)hashmapintentry.getValue()).size();
+
+        return i;
+    }
+
+    public int sizeY()
+    {
+        return mapY.size();
+    }
+
+    public boolean isEmpty()
+    {
+        return size() == 0;
+    }
+
+    public boolean isEmptyY()
+    {
+        return sizeY() == 0;
+    }
+
+    public com.maddox.util.HashMapInt mapY()
+    {
+        return mapY;
+    }
+
+    public com.maddox.util.HashMapInt get(int i)
+    {
+        return (com.maddox.util.HashMapInt)mapY.get(i);
+    }
+
+    public java.lang.Object get(int i, int j)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+            return hashmapint.get(j);
+        else
+            return null;
+    }
+
+    public boolean containsKey(int i)
+    {
+        return mapY.containsKey(i);
+    }
+
+    public boolean containsKey(int i, int j)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+            return hashmapint.containsKey(j);
+        else
+            return false;
+    }
+
+    public boolean containsValue(java.lang.Object obj)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+            if(((com.maddox.util.HashMapInt)hashmapintentry.getValue()).containsValue(obj))
+                return true;
+
+        return false;
+    }
+
+    public boolean containsValue(int i, java.lang.Object obj)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+            return hashmapint.containsValue(obj);
+        else
+            return false;
+    }
+
+    public java.lang.Object put(int i, int j, java.lang.Object obj)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint == null)
+        {
+            hashmapint = new HashMapInt(initialCapacity, loadFactor);
+            mapY.put(i, hashmapint);
+        }
+        return hashmapint.put(j, obj);
+    }
+
+    public void clear()
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+            ((com.maddox.util.HashMapInt)hashmapintentry.getValue()).clear();
+
+        mapY.clear();
+    }
+
+    public void clear(int i)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+        {
+            hashmapint.clear();
+            mapY.remove(i);
+        }
+    }
+
+    public java.lang.Object remove(int i, int j)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+        {
+            java.lang.Object obj = hashmapint.remove(j);
+            if(hashmapint.isEmpty())
+                mapY.remove(i);
+            return obj;
+        } else
+        {
+            return null;
+        }
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        return this == obj;
+    }
+
+    public java.lang.Object clone()
+    {
+        com.maddox.util.HashMapXY hashmapxy;
+        hashmapxy = (com.maddox.util.HashMapXY)super.clone();
+        hashmapxy.mapY = new HashMapInt(initialCapacity, loadFactor);
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+        {
+            int i = hashmapintentry.getKey();
+            com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)hashmapintentry.getValue();
+            hashmapint = (com.maddox.util.HashMapInt)hashmapint.clone();
+            hashmapxy.mapY.put(i, hashmapint);
+        }
+
+        return hashmapxy;
+        java.lang.CloneNotSupportedException clonenotsupportedexception;
+        clonenotsupportedexception;
+        throw new InternalError();
+    }
+
+    private void writeObject(java.io.ObjectOutputStream objectoutputstream)
+        throws java.io.IOException
+    {
+        objectoutputstream.defaultWriteObject();
+        objectoutputstream.writeObject(mapY);
+    }
+
+    private void readObject(java.io.ObjectInputStream objectinputstream)
+        throws java.io.IOException, java.lang.ClassNotFoundException
+    {
+        objectinputstream.defaultReadObject();
+        mapY = (com.maddox.util.HashMapInt)objectinputstream.readObject();
+    }
+
+    private transient com.maddox.util.HashMapInt mapY;
+    private int initialCapacity;
+    private float loadFactor;
 }

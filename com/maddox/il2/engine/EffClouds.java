@@ -1,141 +1,223 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   EffClouds.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.rts.Destroy;
 import com.maddox.sound.SoundFX;
 
-public class EffClouds extends GObj
-  implements Destroy
+// Referenced classes of package com.maddox.il2.engine:
+//            GObj, GObjException, Engine, Landscape, 
+//            LandConf
+
+public class EffClouds extends com.maddox.il2.engine.GObj
+    implements com.maddox.rts.Destroy
 {
-  private boolean bShow = true;
-  private int type;
-  private float height;
-  protected SoundFX sound = null;
-  protected float vmax = 1.0F;
 
-  private static float[] farr3 = new float[3];
-
-  public boolean isShow()
-  {
-    return this.bShow; } 
-  public void setShow(boolean paramBoolean) { this.bShow = paramBoolean; } 
-  public int type() {
-    return this.type; } 
-  public float height() { return this.height;
-  }
-
-  public void soundUpdate(double paramDouble)
-  {
-    if (this.sound != null) {
-      float f1 = (float)paramDouble; float f2 = 1.0F; float f3 = 200.0F;
-      if (f1 > this.height) {
-        f1 -= this.height;
-        if (f1 < f3) f2 = 1.0F - f1 / f3; else
-          f2 = 0.0F;
-      }
-      this.sound.setVolume(f2 * this.vmax);
+    public boolean isShow()
+    {
+        return bShow;
     }
-  }
 
-  protected void setRainSound(int paramInt)
-  {
-    int i = Engine.land().config.month;
-    int j = (i <= 10) && (i >= 4) && (paramInt >= 5) ? 1 : 0;
-    if (j != 0) {
-      if (this.sound == null) this.sound = new SoundFX("objects.rain");
-      if (this.sound != null) {
-        this.sound.setUsrFlag(paramInt - 5);
-        this.sound.play();
-      }
+    public void setShow(boolean flag)
+    {
+        bShow = flag;
     }
-    else if (this.sound != null) {
-      this.sound.clear();
-      this.sound.cancel();
-      this.sound = null;
+
+    public int type()
+    {
+        return type;
     }
-  }
 
-  public void setType(int paramInt)
-  {
-    if (this.cppObj == 0) {
-      setRainSound(0);
-      return;
+    public float height()
+    {
+        return height;
     }
-    this.type = paramInt;
-    SetType(this.cppObj, paramInt);
-    setRainSound(paramInt);
-  }
 
-  public void setHeight(float paramFloat) {
-    if (this.cppObj == 0) return;
-    this.height = paramFloat;
-    SetHeight(this.cppObj, paramFloat);
-  }
-
-  public boolean getRandomCloudPos(Point3d paramPoint3d) {
-    if (this.cppObj == 0) return false;
-    boolean bool = GetRandomCloudPos(this.cppObj, farr3);
-    if (!bool) return false;
-    paramPoint3d.x = farr3[0]; paramPoint3d.y = farr3[1]; paramPoint3d.z = farr3[2];
-    return true;
-  }
-
-  public float getVisibility(Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    return GetVisibility(this.cppObj, (float)paramPoint3d1.x, (float)paramPoint3d1.y, (float)paramPoint3d1.z, (float)paramPoint3d2.x, (float)paramPoint3d2.y, (float)paramPoint3d2.z);
-  }
-
-  public int preRender()
-  {
-    if ((!this.bShow) || (this.cppObj == 0)) return 0;
-    return PreRender(this.cppObj);
-  }
-
-  public void render() {
-    if ((!this.bShow) || (this.cppObj == 0)) return;
-    Render(this.cppObj);
-  }
-
-  public void destroy() {
-    setRainSound(0);
-    if (!isDestroyed()) {
-      Destroy(this.cppObj);
-      this.cppObj = 0;
+    public void soundUpdate(double d)
+    {
+        if(sound != null)
+        {
+            float f = (float)d;
+            float f1 = 1.0F;
+            float f2 = 200F;
+            if(f > height)
+            {
+                f -= height;
+                if(f < f2)
+                    f1 = 1.0F - f / f2;
+                else
+                    f1 = 0.0F;
+            }
+            sound.setVolume(f1 * vmax);
+        }
     }
-  }
 
-  public boolean isDestroyed() {
-    return this.cppObj == 0;
-  }
-  public EffClouds(boolean paramBoolean, int paramInt, float paramFloat) {
-    super(0);
-    this.height = paramFloat;
-    this.type = paramInt;
-    int i = paramInt;
-    if (paramBoolean) i |= 16;
-    this.cppObj = Load(i, paramFloat);
-    if (this.cppObj == 0) throw new GObjException("EffClouds not created");
-    setRainSound(paramInt);
-  }
+    protected void setRainSound(int i)
+    {
+        int j = com.maddox.il2.engine.Engine.land().config.month;
+        boolean flag = j <= 10 && j >= 4 && i >= 5;
+        if(flag)
+        {
+            if(sound == null)
+                sound = new SoundFX("objects.rain");
+            if(sound != null)
+            {
+                sound.setUsrFlag(i - 5);
+                sound.play();
+            }
+        } else
+        if(sound != null)
+        {
+            sound.clear();
+            sound.cancel();
+            sound = null;
+        }
+    }
 
-  public EffClouds(int paramInt) {
-    super(paramInt); } 
-  private native int Load(int paramInt, float paramFloat);
+    public void setType(int i)
+    {
+        if(cppObj == 0)
+        {
+            setRainSound(0);
+            return;
+        } else
+        {
+            type = i;
+            SetType(cppObj, i);
+            setRainSound(i);
+            return;
+        }
+    }
 
-  private native void Destroy(int paramInt);
+    public void setHeight(float f)
+    {
+        if(cppObj == 0)
+        {
+            return;
+        } else
+        {
+            height = f;
+            SetHeight(cppObj, f);
+            return;
+        }
+    }
 
-  private native void SetType(int paramInt1, int paramInt2);
+    public boolean getRandomCloudPos(com.maddox.JGP.Point3d point3d)
+    {
+        if(cppObj == 0)
+            return false;
+        boolean flag = GetRandomCloudPos(cppObj, farr3);
+        if(!flag)
+        {
+            return false;
+        } else
+        {
+            point3d.x = farr3[0];
+            point3d.y = farr3[1];
+            point3d.z = farr3[2];
+            return true;
+        }
+    }
 
-  private native void SetHeight(int paramInt, float paramFloat);
+    public float getVisibility(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        return GetVisibility(cppObj, (float)point3d.x, (float)point3d.y, (float)point3d.z, (float)point3d1.x, (float)point3d1.y, (float)point3d1.z);
+    }
 
-  private native boolean GetRandomCloudPos(int paramInt, float[] paramArrayOfFloat);
+    public int preRender()
+    {
+        if(!bShow || cppObj == 0)
+            return 0;
+        else
+            return PreRender(cppObj);
+    }
 
-  private native float GetVisibility(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6);
+    public void render()
+    {
+        if(!bShow || cppObj == 0)
+        {
+            return;
+        } else
+        {
+            Render(cppObj);
+            return;
+        }
+    }
 
-  private native int PreRender(int paramInt);
+    public void destroy()
+    {
+        setRainSound(0);
+        if(!isDestroyed())
+        {
+            Destroy(cppObj);
+            cppObj = 0;
+        }
+    }
 
-  private native void Render(int paramInt);
+    public boolean isDestroyed()
+    {
+        return cppObj == 0;
+    }
 
-  static { GObj.loadNative();
-  }
+    public EffClouds(boolean flag, int i, float f)
+    {
+        super(0);
+        bShow = true;
+        sound = null;
+        vmax = 1.0F;
+        height = f;
+        type = i;
+        int j = i;
+        if(flag)
+            j |= 0x10;
+        cppObj = Load(j, f);
+        if(cppObj == 0)
+        {
+            throw new GObjException("EffClouds not created");
+        } else
+        {
+            setRainSound(i);
+            return;
+        }
+    }
+
+    public EffClouds(int i)
+    {
+        super(i);
+        bShow = true;
+        sound = null;
+        vmax = 1.0F;
+    }
+
+    private native int Load(int i, float f);
+
+    private native void Destroy(int i);
+
+    private native void SetType(int i, int j);
+
+    private native void SetHeight(int i, float f);
+
+    private native boolean GetRandomCloudPos(int i, float af[]);
+
+    private native float GetVisibility(int i, float f, float f1, float f2, float f3, float f4, float f5);
+
+    private native int PreRender(int i);
+
+    private native void Render(int i);
+
+    private boolean bShow;
+    private int type;
+    private float height;
+    protected com.maddox.sound.SoundFX sound;
+    protected float vmax;
+    private static float farr3[] = new float[3];
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

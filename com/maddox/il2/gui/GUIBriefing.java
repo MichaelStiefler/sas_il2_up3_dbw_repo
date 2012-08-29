@@ -1,1037 +1,619 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIBriefing.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.JGP.Point2d;
-import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Point3f;
 import com.maddox.gwindow.GPoint;
 import com.maddox.gwindow.GRegion;
 import com.maddox.gwindow.GWindow;
-import com.maddox.gwindow.GWindowRoot;
-import com.maddox.il2.ai.Airport;
-import com.maddox.il2.ai.AirportCarrier;
 import com.maddox.il2.ai.Army;
-import com.maddox.il2.ai.DifficultySettings;
-import com.maddox.il2.ai.UserCfg;
-import com.maddox.il2.ai.Wing;
 import com.maddox.il2.ai.World;
-import com.maddox.il2.ai.ZutiTargetsSupportMethods;
-import com.maddox.il2.ai.air.CellAirField;
-import com.maddox.il2.ai.air.CellAirPlane;
-import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.CameraOrtho2D;
 import com.maddox.il2.engine.GUIRenders;
 import com.maddox.il2.engine.IconDraw;
-import com.maddox.il2.engine.Landscape;
-import com.maddox.il2.engine.Loc;
 import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Render;
 import com.maddox.il2.engine.TTFont;
-import com.maddox.il2.game.GameStateStack;
-import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Mission;
-import com.maddox.il2.game.ZutiNetSendMethods;
-import com.maddox.il2.game.ZutiPadObject;
-import com.maddox.il2.game.ZutiRadarRefresh;
-import com.maddox.il2.game.ZutiSupportMethods;
 import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetUser;
-import com.maddox.il2.net.NetUserRegiment;
-import com.maddox.il2.objects.air.Aircraft;
-import com.maddox.il2.objects.air.NetAircraft;
-import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.TestRunway;
-import com.maddox.il2.objects.vehicles.artillery.RocketryRocket;
-import com.maddox.il2.objects.vehicles.radios.Beacon;
-import com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon;
-import com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon_AAIAS;
-import com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon_LongRunway;
-import com.maddox.il2.objects.vehicles.radios.Beacon.RadioBeacon;
-import com.maddox.il2.objects.vehicles.radios.Beacon.RadioBeaconLowVis;
-import com.maddox.il2.objects.vehicles.radios.Beacon.YGBeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.NetEnv;
 import com.maddox.rts.ObjIO;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.util.NumberTokenizer;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
-public class GUIBriefing extends GUIBriefingGeneric
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIBriefingGeneric, GUINetAircraft
+
+public class GUIBriefing extends com.maddox.il2.gui.GUIBriefingGeneric
 {
-  protected String playerName;
-  protected ArrayList playerPath = new ArrayList();
-  protected ArrayList targets = new ArrayList();
-  protected ArrayList beacons = new ArrayList();
-  protected Mat iconBornPlace;
-  protected Mat iconPlayer;
-  private double lastScale = 0.0D;
-
-  public static Set ZUTI_TARGETS = new HashSet();
-
-  public static boolean ZUTI_IS_BRIEFING_ACTIVE = false;
-
-  private static String[] tip = new String[3];
-
-  private float[] lineNXYZ = new float[6];
-  private int lineNCounter;
-  protected boolean bSelectBorn = false;
-
-  public void _enter()
-  {
-    this.playerPath.clear();
-    this.playerName = null;
-    super._enter();
-
-    ZutiRadarRefresh.findRadars(ZutiSupportMethods.getPlayerArmy());
-
-    ZutiRadarRefresh.resetStartTimes();
-
-    ZUTI_IS_BRIEFING_ACTIVE = true;
-
-    ZutiNetSendMethods.requestUnavailableAircraftList();
-
-    ZutiNetSendMethods.requestCompletedReconList();
-
-    ZutiTargetsSupportMethods.checkForDeactivatedTargets();
-
-    NetAircraft.ZUTI_REFLY_OWERRIDE = false;
-
-    fillBeacons();
-  }
-
-  public void _leave()
-  {
-    super._leave();
-
-    ZUTI_IS_BRIEFING_ACTIVE = false;
-  }
-
-  private void drawBornPlaces() {
-    if (this.iconBornPlace == null)
-      return;
-    ArrayList localArrayList = World.cur().bornPlaces;
-    if ((localArrayList == null) || (localArrayList.size() == 0))
-      return;
-    int i = localArrayList.size();
-
-    for (int j = 0; j < i; j++) {
-      BornPlace localBornPlace1 = (BornPlace)localArrayList.get(j);
-      localBornPlace1.tmpForBrief = 0;
-    }
-
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    int k = localNetUser.getBornPlace();
-    if ((k >= 0) && (k < i)) {
-      localObject1 = (BornPlace)localArrayList.get(k);
-      ((BornPlace)localObject1).tmpForBrief = 1;
-    }
-    Object localObject1 = NetEnv.hosts();
-    Object localObject2;
-    for (int m = 0; m < ((List)localObject1).size(); m++) {
-      localObject2 = (NetUser)((List)localObject1).get(m);
-      int n = ((NetUser)localObject2).getBornPlace();
-      if ((n >= 0) && (n < i)) {
-        BornPlace localBornPlace2 = (BornPlace)localArrayList.get(n);
-        localBornPlace2.tmpForBrief += 1;
-      }
-    }
-
-    for (m = 0; m < i; m++) {
-      localObject2 = (BornPlace)localArrayList.get(m);
-      IconDraw.setColor(Army.color(((BornPlace)localObject2).army));
-      float f1 = (float)((((BornPlace)localObject2).place.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      float f2 = (float)((((BornPlace)localObject2).place.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-
-      if (((BornPlace)localObject2).zutiStaticPositionOnly)
-      {
-        f1 = (float)((((BornPlace)localObject2).zutiOriginalX - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        f2 = (float)((((BornPlace)localObject2).zutiOriginalY - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-      }
-
-      IconDraw.render(this.iconBornPlace, f1, f2);
-      if ((m == k) && (this.iconPlayer != null)) {
-        Render.drawTile(f1, f2, IconDraw.scrSizeX(), IconDraw.scrSizeY(), 0.0F, this.iconPlayer, Army.color(((BornPlace)localObject2).army), 0.0F, 1.0F, 1.0F, -1.0F);
-      }
-
-      if ((((BornPlace)localObject2).tmpForBrief > 0) && (!Main.cur().mission.zutiMisc_HidePlayersCountOnHomeBase))
-        this.gridFont.output(Army.color(((BornPlace)localObject2).army), (int)f1 + IconDraw.scrSizeX() / 2 + 2, (int)f2 - IconDraw.scrSizeY() / 2 - 2, 0.0F, "" + ((BornPlace)localObject2).tmpForBrief);
-    }
-  }
-
-  private void fillBeacons()
-  {
-    SectFile localSectFile = Main.cur().currentMissionFile;
-    int i = -1;
-    if (Mission.isDogfight())
-      i = ((NetUser)NetEnv.host()).getArmy();
-    else {
-      i = localSectFile.get("MAIN", "army", 0);
-    }
-
-    this.beacons.clear();
-    int j = localSectFile.sectionIndex("NStationary");
-    if (j < 0)
-      return;
-    int k = localSectFile.vars(j);
-    for (int m = 0; m < k; m++)
+    public static class TargetPoint
     {
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(localSectFile.line(j, m));
-      BeaconPoint localBeaconPoint = loadbeacon(i, localNumberTokenizer.next(""), localNumberTokenizer.next(""), localNumberTokenizer.next(0), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0D));
-      if (localBeaconPoint != null)
-        this.beacons.add(localBeaconPoint);
-    }
-  }
 
-  private BeaconPoint loadbeacon(int paramInt1, String paramString1, String paramString2, int paramInt2, double paramDouble1, double paramDouble2)
-  {
-    if (paramInt1 != paramInt2) {
-      return null;
-    }
-    Class localClass = null;
-    try
-    {
-      localClass = ObjIO.classForName(paramString2);
-    }
-    catch (Exception localException)
-    {
-      System.out.println("Mission: class '" + paramString2 + "' not found");
-      return null;
-    }
+        public float x;
+        public float y;
+        public int r;
+        public int type;
+        public int importance;
+        public com.maddox.il2.engine.Mat icon;
+        public java.lang.String nameTarget;
 
-    if (TypeHasBeacon.class.isAssignableFrom(localClass))
-    {
-      BeaconPoint localBeaconPoint = new BeaconPoint();
-      localBeaconPoint.x = (float)paramDouble1;
-      localBeaconPoint.y = (float)paramDouble2;
-      localBeaconPoint.army = paramInt2;
-
-      if (Beacon.RadioBeacon.class.isAssignableFrom(localClass))
-      {
-        localBeaconPoint.icon = IconDraw.get("icons/beacon.mat");
-      }
-      else if (Beacon.RadioBeaconLowVis.class.isAssignableFrom(localClass))
-      {
-        localBeaconPoint.icon = IconDraw.get("icons/beacon.mat");
-      }
-      else if (Beacon.YGBeacon.class.isAssignableFrom(localClass))
-      {
-        localBeaconPoint.icon = IconDraw.get("icons/beaconYG.mat");
-      }
-      else if (Beacon.LorenzBLBeacon.class.isAssignableFrom(localClass))
-      {
-        localBeaconPoint.icon = IconDraw.get("icons/ILS.mat");
-      }
-      else if (Beacon.LorenzBLBeacon_LongRunway.class.isAssignableFrom(localClass))
-      {
-        localBeaconPoint.icon = IconDraw.get("icons/ILS.mat");
-      }
-      else if (Beacon.LorenzBLBeacon_AAIAS.class.isAssignableFrom(localClass))
-      {
-        localBeaconPoint.icon = IconDraw.get("icons/ILS.mat");
-      }
-      else
-        return null;
-      String str = Beacon.getBeaconID(this.beacons.size());
-      localBeaconPoint.id = str;
-      return localBeaconPoint;
-    }
-
-    return null;
-  }
-
-  public static void fillTargets(SectFile paramSectFile, ArrayList paramArrayList)
-  {
-    paramArrayList.clear();
-    int i = paramSectFile.sectionIndex("Target");
-    if (i >= 0) {
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++) {
-        NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-        int m = localNumberTokenizer.next(0, 0, 7);
-        int n = localNumberTokenizer.next(0, 0, 2);
-        if (n == 2)
-          continue;
-        TargetPoint localTargetPoint = new TargetPoint();
-        localTargetPoint.type = m;
-        localTargetPoint.importance = n;
-        int i1 = localNumberTokenizer.next(0) == 1 ? 1 : 0;
-        int i2 = localNumberTokenizer.next(0, 0, 720);
-        int i3 = localNumberTokenizer.next(0) == 1 ? 1 : 0;
-        localTargetPoint.x = localNumberTokenizer.next(0);
-        localTargetPoint.y = localNumberTokenizer.next(0);
-        int i4 = localNumberTokenizer.next(0);
-        if ((localTargetPoint.type == 3) || (localTargetPoint.type == 6) || (localTargetPoint.type == 1))
+        public TargetPoint()
         {
-          if (i4 < 50) i4 = 50;
-          if (i4 > 3000) i4 = 3000;
         }
-        localTargetPoint.r = i4;
-        int i5 = localNumberTokenizer.next(0);
-        localTargetPoint.nameTarget = localNumberTokenizer.next(null);
-        if ((localTargetPoint.nameTarget != null) && (localTargetPoint.nameTarget.startsWith("Bridge")))
-          localTargetPoint.nameTarget = null;
-        int i6 = localNumberTokenizer.next(0);
-        int i7 = localNumberTokenizer.next(0);
-        if ((i6 != 0) && (i7 != 0)) {
-          localTargetPoint.x = i6; localTargetPoint.y = i7;
-        }
-        switch (localTargetPoint.type) { case 0:
-          localTargetPoint.icon = IconDraw.get("icons/tdestroyair.mat");
-          if ((localTargetPoint.nameTarget == null) || 
-            (!paramSectFile.exist("Chiefs", localTargetPoint.nameTarget))) break;
-          localTargetPoint.icon = IconDraw.get("icons/tdestroychief.mat"); break;
-        case 1:
-          localTargetPoint.icon = IconDraw.get("icons/tdestroyground.mat"); break;
-        case 2:
-          localTargetPoint.icon = IconDraw.get("icons/tdestroybridge.mat");
-          localTargetPoint.nameTarget = null;
-          break;
-        case 3:
-          localTargetPoint.icon = IconDraw.get("icons/tinspect.mat"); break;
-        case 4:
-          localTargetPoint.icon = IconDraw.get("icons/tescort.mat"); break;
-        case 5:
-          localTargetPoint.icon = IconDraw.get("icons/tdefence.mat"); break;
-        case 6:
-          localTargetPoint.icon = IconDraw.get("icons/tdefenceground.mat"); break;
-        case 7:
-          localTargetPoint.icon = IconDraw.get("icons/tdefencebridge.mat");
-          localTargetPoint.nameTarget = null;
+    }
+
+    private static class PathPoint
+    {
+
+        public int type;
+        public float x;
+        public float y;
+
+        private PathPoint()
+        {
         }
 
-        if (localTargetPoint.nameTarget != null)
+    }
+
+
+    public void _enter()
+    {
+        playerPath.clear();
+        playerName = null;
+        super._enter();
+    }
+
+    private void drawBornPlaces()
+    {
+        if(iconBornPlace == null)
+            return;
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().bornPlaces;
+        if(arraylist == null || arraylist.size() == 0)
+            return;
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
         {
-          Object localObject;
-          if (paramSectFile.exist("Chiefs", localTargetPoint.nameTarget)) {
-            try {
-              StringTokenizer localStringTokenizer = new StringTokenizer(paramSectFile.get("Chiefs", localTargetPoint.nameTarget, (String)null));
-              localObject = localStringTokenizer.nextToken();
-              int i8 = ((String)localObject).indexOf(".");
-              localTargetPoint.nameTarget = (I18N.technic(((String)localObject).substring(0, i8)) + " " + I18N.technic(((String)localObject).substring(i8 + 1)));
-            }
-            catch (Exception localException1)
+            com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)arraylist.get(j);
+            bornplace.tmpForBrief = 0;
+        }
+
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        int k = netuser.getBornPlace();
+        if(k >= 0 && k < i)
+        {
+            com.maddox.il2.net.BornPlace bornplace1 = (com.maddox.il2.net.BornPlace)arraylist.get(k);
+            bornplace1.tmpForBrief = 1;
+        }
+        java.util.List list = com.maddox.rts.NetEnv.hosts();
+        for(int l = 0; l < list.size(); l++)
+        {
+            com.maddox.il2.net.NetUser netuser1 = (com.maddox.il2.net.NetUser)list.get(l);
+            int j1 = netuser1.getBornPlace();
+            if(j1 >= 0 && j1 < i)
             {
-              localTargetPoint.nameTarget = null;
+                com.maddox.il2.net.BornPlace bornplace3 = (com.maddox.il2.net.BornPlace)arraylist.get(j1);
+                bornplace3.tmpForBrief++;
             }
-          }
-          else if (paramSectFile.sectionIndex(localTargetPoint.nameTarget) >= 0)
-            try {
-              String str = paramSectFile.get(localTargetPoint.nameTarget, "Class", (String)null);
-              localObject = ObjIO.classForName(str);
-              localTargetPoint.nameTarget = Property.stringValue(localObject, "iconFar_shortClassName", null);
-            } catch (Exception localException2) {
-              localTargetPoint.nameTarget = null;
+        }
+
+        for(int i1 = 0; i1 < i; i1++)
+        {
+            com.maddox.il2.net.BornPlace bornplace2 = (com.maddox.il2.net.BornPlace)arraylist.get(i1);
+            com.maddox.il2.engine.IconDraw.setColor(com.maddox.il2.ai.Army.color(bornplace2.army));
+            float f = (float)((bornplace2.place.x - cameraMap2D.worldXOffset) * cameraMap2D.worldScale);
+            float f1 = (float)((bornplace2.place.y - cameraMap2D.worldYOffset) * cameraMap2D.worldScale);
+            com.maddox.il2.engine.IconDraw.render(iconBornPlace, f, f1);
+            if(i1 == k && iconPlayer != null)
+                com.maddox.il2.engine.Render.drawTile(f, f1, com.maddox.il2.engine.IconDraw.scrSizeX(), com.maddox.il2.engine.IconDraw.scrSizeY(), 0.0F, iconPlayer, com.maddox.il2.ai.Army.color(bornplace2.army), 0.0F, 1.0F, 1.0F, -1F);
+            if(bornplace2.tmpForBrief > 0)
+                gridFont.output(com.maddox.il2.ai.Army.color(bornplace2.army), (int)f + com.maddox.il2.engine.IconDraw.scrSizeX() / 2 + 2, (int)f1 - com.maddox.il2.engine.IconDraw.scrSizeY() / 2 - 2, 0.0F, "" + bornplace2.tmpForBrief);
+        }
+
+    }
+
+    public static void fillTargets(com.maddox.rts.SectFile sectfile, java.util.ArrayList arraylist)
+    {
+        arraylist.clear();
+        int i = sectfile.sectionIndex("Target");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            for(int k = 0; k < j; k++)
+            {
+                com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+                int l = numbertokenizer.next(0, 0, 7);
+                int i1 = numbertokenizer.next(0, 0, 2);
+                if(i1 != 2)
+                {
+                    com.maddox.il2.gui.TargetPoint targetpoint = new TargetPoint();
+                    targetpoint.type = l;
+                    targetpoint.importance = i1;
+                    boolean flag = numbertokenizer.next(0) == 1;
+                    int j1 = numbertokenizer.next(0, 0, 720);
+                    boolean flag1 = numbertokenizer.next(0) == 1;
+                    targetpoint.x = numbertokenizer.next(0);
+                    targetpoint.y = numbertokenizer.next(0);
+                    int k1 = numbertokenizer.next(0);
+                    if(targetpoint.type == 3 || targetpoint.type == 6 || targetpoint.type == 1)
+                    {
+                        if(k1 < 50)
+                            k1 = 50;
+                        if(k1 > 3000)
+                            k1 = 3000;
+                    }
+                    targetpoint.r = k1;
+                    int l1 = numbertokenizer.next(0);
+                    targetpoint.nameTarget = numbertokenizer.next(null);
+                    if(targetpoint.nameTarget != null && targetpoint.nameTarget.startsWith("Bridge"))
+                        targetpoint.nameTarget = null;
+                    int i2 = numbertokenizer.next(0);
+                    int j2 = numbertokenizer.next(0);
+                    if(i2 != 0 && j2 != 0)
+                    {
+                        targetpoint.x = i2;
+                        targetpoint.y = j2;
+                    }
+                    switch(targetpoint.type)
+                    {
+                    case 0: // '\0'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroyair.mat");
+                        if(targetpoint.nameTarget != null && sectfile.exist("Chiefs", targetpoint.nameTarget))
+                            targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroychief.mat");
+                        break;
+
+                    case 1: // '\001'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroyground.mat");
+                        break;
+
+                    case 2: // '\002'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroybridge.mat");
+                        targetpoint.nameTarget = null;
+                        break;
+
+                    case 3: // '\003'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tinspect.mat");
+                        break;
+
+                    case 4: // '\004'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tescort.mat");
+                        break;
+
+                    case 5: // '\005'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefence.mat");
+                        break;
+
+                    case 6: // '\006'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefenceground.mat");
+                        break;
+
+                    case 7: // '\007'
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefencebridge.mat");
+                        targetpoint.nameTarget = null;
+                        break;
+                    }
+                    if(targetpoint.nameTarget != null)
+                        if(sectfile.exist("Chiefs", targetpoint.nameTarget))
+                            try
+                            {
+                                java.util.StringTokenizer stringtokenizer = new StringTokenizer(sectfile.get("Chiefs", targetpoint.nameTarget, (java.lang.String)null));
+                                java.lang.String s1 = stringtokenizer.nextToken();
+                                int k2 = s1.indexOf(".");
+                                targetpoint.nameTarget = com.maddox.il2.game.I18N.technic(s1.substring(0, k2)) + " " + com.maddox.il2.game.I18N.technic(s1.substring(k2 + 1));
+                            }
+                            catch(java.lang.Exception exception)
+                            {
+                                targetpoint.nameTarget = null;
+                            }
+                        else
+                        if(sectfile.sectionIndex(targetpoint.nameTarget) >= 0)
+                            try
+                            {
+                                java.lang.String s = sectfile.get(targetpoint.nameTarget, "Class", (java.lang.String)null);
+                                java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s);
+                                targetpoint.nameTarget = com.maddox.rts.Property.stringValue(class1, "iconFar_shortClassName", null);
+                            }
+                            catch(java.lang.Exception exception1)
+                            {
+                                targetpoint.nameTarget = null;
+                            }
+                        else
+                            targetpoint.nameTarget = null;
+                    arraylist.add(targetpoint);
+                }
             }
-          else {
-            localTargetPoint.nameTarget = null;
-          }
+
         }
-        paramArrayList.add(localTargetPoint);
-      }
     }
-  }
 
-  public static void drawTargets(GUIRenders paramGUIRenders, TTFont paramTTFont, Mat paramMat, CameraOrtho2D paramCameraOrtho2D, ArrayList paramArrayList)
-  {
-    int i = paramArrayList.size();
-    if (i == 0) return;
-    GPoint localGPoint = paramGUIRenders.getMouseXY();
-    int j = -1;
-    float f1 = localGPoint.x;
-    float f2 = paramGUIRenders.win.dy - 1.0F - localGPoint.y;
-    float f3 = IconDraw.scrSizeX() / 2;
-    float f4 = f1; float f5 = f2;
-    IconDraw.setColor(-16711681);
-    for (int k = 0; k < i; k++) {
-      TargetPoint localTargetPoint2 = (TargetPoint)paramArrayList.get(k);
-      if (localTargetPoint2.icon != null) {
-        float f7 = (float)((localTargetPoint2.x - paramCameraOrtho2D.worldXOffset) * paramCameraOrtho2D.worldScale);
-        float f8 = (float)((localTargetPoint2.y - paramCameraOrtho2D.worldYOffset) * paramCameraOrtho2D.worldScale);
-        IconDraw.render(localTargetPoint2.icon, f7, f8);
-        if ((f7 >= f1 - f3) && (f7 <= f1 + f3) && (f8 >= f2 - f3) && (f8 <= f2 + f3)) {
-          j = k;
-          f4 = f7; f5 = f8;
-        }
-      }
-    }
-    if (j != -1) {
-      TargetPoint localTargetPoint1 = (TargetPoint)paramArrayList.get(j);
-      for (int m = 0; m < 3; m++) tip[m] = null;
-      if (localTargetPoint1.importance == 0) tip[0] = I18N.gui("brief.Primary"); else
-        tip[0] = I18N.gui("brief.Secondary");
-      switch (localTargetPoint1.type) { case 0:
-        tip[1] = I18N.gui("brief.Destroy"); break;
-      case 1:
-        tip[1] = I18N.gui("brief.DestroyGround"); break;
-      case 2:
-        tip[1] = I18N.gui("brief.DestroyBridge"); break;
-      case 3:
-        tip[1] = I18N.gui("brief.Inspect"); break;
-      case 4:
-        tip[1] = I18N.gui("brief.Escort"); break;
-      case 5:
-        tip[1] = I18N.gui("brief.Defence"); break;
-      case 6:
-        tip[1] = I18N.gui("brief.DefenceGround"); break;
-      case 7:
-        tip[1] = I18N.gui("brief.DefenceBridge");
-      }
-      if (localTargetPoint1.nameTarget != null) {
-        tip[2] = localTargetPoint1.nameTarget;
-      }
-
-      float f6 = paramTTFont.width(tip[0]);
-      int n = 1;
-      for (int i1 = 1; (i1 < 3) && 
-        (tip[i1] != null); i1++)
-      {
-        n = i1;
-        f10 = paramTTFont.width(tip[i1]);
-        if (f6 >= f10) continue; f6 = f10;
-      }
-      float f9 = -paramTTFont.descender();
-      float f10 = paramTTFont.height() + f9;
-      f6 += 2.0F * f9;
-      float f11 = f10 * (n + 1) + 2.0F * f9;
-
-      float f12 = f4 - f6 / 2.0F;
-      float f13 = f5 + f3;
-      if (f12 + f6 > paramGUIRenders.win.dx) f12 = paramGUIRenders.win.dx - f6;
-      if (f13 + f11 > paramGUIRenders.win.dy) f13 = paramGUIRenders.win.dy - f11;
-      if (f12 < 0.0F) f12 = 0.0F;
-      if (f13 < 0.0F) f13 = 0.0F;
-
-      Render.drawTile(f12, f13, f6, f11, 0.0F, paramMat, -813694977, 0.0F, 0.0F, 1.0F, 1.0F);
-      Render.drawEnd();
-      for (int i2 = 0; i2 <= n; i2++)
-        paramTTFont.output(-16777216, f12 + f9, f13 + f9 + (n - i2) * f10 + f9, 0.0F, tip[i2]);
-    }
-  }
-
-  public void drawBeacons(GUIRenders paramGUIRenders, TTFont paramTTFont, Mat paramMat, CameraOrtho2D paramCameraOrtho2D, ArrayList paramArrayList)
-  {
-    int i = paramArrayList.size();
-    if (i == 0) {
-      return;
-    }
-    for (int j = 0; j < i; j++)
+    public static void drawTargets(com.maddox.il2.engine.GUIRenders guirenders, com.maddox.il2.engine.TTFont ttfont, com.maddox.il2.engine.Mat mat, com.maddox.il2.engine.CameraOrtho2D cameraortho2d, java.util.ArrayList arraylist)
     {
-      BeaconPoint localBeaconPoint = (BeaconPoint)paramArrayList.get(j);
-      int k = Army.color(localBeaconPoint.army);
-      IconDraw.setColor(k);
-      if (localBeaconPoint.icon == null)
-        continue;
-      float f1 = (float)((localBeaconPoint.x - paramCameraOrtho2D.worldXOffset) * paramCameraOrtho2D.worldScale);
-      float f2 = (float)((localBeaconPoint.y - paramCameraOrtho2D.worldYOffset) * paramCameraOrtho2D.worldScale);
-      IconDraw.render(localBeaconPoint.icon, f1, f2);
-
-      if (paramCameraOrtho2D.worldScale <= 0.01999999955296516D)
-        continue;
-      float f3 = 20.0F;
-      float f4 = 15.0F;
-      this.gridFont.output(k, f1 + f3, f2 - f4, 0.0F, localBeaconPoint.id);
-    }
-  }
-
-  private void drawBeacons()
-  {
-    if (World.cur().diffCur.RealisticNavigationInstruments)
-      drawBeacons(this.renders, this.gridFont, this.emptyMat, this.cameraMap2D, this.beacons);
-  }
-
-  private void drawTargets() {
-    drawTargets(this.renders, this.gridFont, this.emptyMat, this.cameraMap2D, this.targets);
-  }
-
-  private Mat getIconAir(int paramInt) {
-    String str = null;
-    switch (paramInt) { case 0:
-      str = "normfly"; break;
-    case 1:
-      str = "takeoff"; break;
-    case 2:
-      str = "landing"; break;
-    case 3:
-      str = "gattack"; break;
-    default:
-      return null;
-    }
-    return IconDraw.get("icons/" + str + ".mat");
-  }
-
-  private void drawPlayerPath() {
-    checkPlayerPath();
-    int i = this.playerPath.size();
-    if (i == 0) return;
-    if (this.lineNXYZ.length / 3 <= i)
-      this.lineNXYZ = new float[(i + 1) * 3];
-    this.lineNCounter = 0;
-    for (int j = 0; j < i; j++) {
-      PathPoint localPathPoint1 = (PathPoint)this.playerPath.get(j);
-      this.lineNXYZ[(this.lineNCounter * 3 + 0)] = (float)((localPathPoint1.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      this.lineNXYZ[(this.lineNCounter * 3 + 1)] = (float)((localPathPoint1.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-      this.lineNXYZ[(this.lineNCounter * 3 + 2)] = 0.0F;
-      this.lineNCounter += 1;
-    }
-    Render.drawBeginLines(-1);
-    Render.drawLines(this.lineNXYZ, this.lineNCounter, 2.0F, -16777216, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
-
-    Render.drawEnd();
-    IconDraw.setColor(-16711681);
-    float f1 = 0.0F;
-    for (int k = 0; k < i; k++) {
-      PathPoint localPathPoint2 = (PathPoint)this.playerPath.get(k);
-      float f2 = (float)((localPathPoint2.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-      float f3 = (float)((localPathPoint2.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-      IconDraw.render(getIconAir(localPathPoint2.type), f2, f3);
-
-      if (k == i - 1) {
-        this.gridFont.output(-16777216, (int)f2 + IconDraw.scrSizeX() / 2 + 2, (int)f3 - IconDraw.scrSizeY() / 2 - 2, 0.0F, "" + (k + 1));
-      }
-
-      float f4 = 1.0F - this.curScale / 7.0F;
-      if (k >= i - 1)
-        continue;
-      PathPoint localPathPoint3 = (PathPoint)this.playerPath.get(k + 1);
-      Point3f localPoint3f1 = new Point3f(localPathPoint2.x, localPathPoint2.y, 0.0F);
-      Point3f localPoint3f2 = new Point3f(localPathPoint3.x, localPathPoint3.y, 0.0F);
-      localPoint3f1.sub(localPoint3f2);
-      float f5 = 57.324841F * (float)Math.atan2(localPoint3f1.x, localPoint3f1.y);
-
-      for (f5 = (f5 + 180.0F) % 360.0F; f5 < 0.0F; f5 += 360.0F);
-      while (f5 >= 360.0F) f5 -= 360.0F;
-
-      f5 = Math.round(f5);
-
-      float f6 = 0.0F;
-      float f7 = 0.0F;
-
-      if ((f5 >= 0.0F) && (f5 < 90.0F))
-      {
-        f6 = 15.0F;
-        f7 = -40.0F;
-        if ((f1 >= 270.0F) && (f1 <= 360.0F))
+        int i = arraylist.size();
+        if(i == 0)
+            return;
+        com.maddox.gwindow.GPoint gpoint = guirenders.getMouseXY();
+        int j = -1;
+        float f = gpoint.x;
+        float f1 = guirenders.win.dy - 1.0F - gpoint.y;
+        float f2 = com.maddox.il2.engine.IconDraw.scrSizeX() / 2;
+        float f3 = f;
+        float f4 = f1;
+        com.maddox.il2.engine.IconDraw.setColor(0xff00ffff);
+        for(int k = 0; k < i; k++)
         {
-          f6 = -70.0F;
-          f7 = 60.0F;
+            com.maddox.il2.gui.TargetPoint targetpoint = (com.maddox.il2.gui.TargetPoint)arraylist.get(k);
+            if(targetpoint.icon != null)
+            {
+                float f5 = (float)(((double)targetpoint.x - cameraortho2d.worldXOffset) * cameraortho2d.worldScale);
+                float f6 = (float)(((double)targetpoint.y - cameraortho2d.worldYOffset) * cameraortho2d.worldScale);
+                com.maddox.il2.engine.IconDraw.render(targetpoint.icon, f5, f6);
+                if(f5 >= f - f2 && f5 <= f + f2 && f6 >= f1 - f2 && f6 <= f1 + f2)
+                {
+                    j = k;
+                    f3 = f5;
+                    f4 = f6;
+                }
+            }
         }
-      }
-      else if ((f5 >= 90.0F) && (f5 < 180.0F))
-      {
-        f6 = 15.0F;
-        f7 = 60.0F;
-        if ((f1 >= 180.0F) && (f1 < 270.0F))
+
+        if(j != -1)
         {
-          f6 = -70.0F;
-          f7 = -15.0F;
+            com.maddox.il2.gui.TargetPoint targetpoint1 = (com.maddox.il2.gui.TargetPoint)arraylist.get(j);
+            for(int l = 0; l < 3; l++)
+                tip[l] = null;
+
+            if(targetpoint1.importance == 0)
+                tip[0] = com.maddox.il2.game.I18N.gui("brief.Primary");
+            else
+                tip[0] = com.maddox.il2.game.I18N.gui("brief.Secondary");
+            switch(targetpoint1.type)
+            {
+            case 0: // '\0'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.Destroy");
+                break;
+
+            case 1: // '\001'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.DestroyGround");
+                break;
+
+            case 2: // '\002'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.DestroyBridge");
+                break;
+
+            case 3: // '\003'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.Inspect");
+                break;
+
+            case 4: // '\004'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.Escort");
+                break;
+
+            case 5: // '\005'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.Defence");
+                break;
+
+            case 6: // '\006'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.DefenceGround");
+                break;
+
+            case 7: // '\007'
+                tip[1] = com.maddox.il2.game.I18N.gui("brief.DefenceBridge");
+                break;
+            }
+            if(targetpoint1.nameTarget != null)
+                tip[2] = targetpoint1.nameTarget;
+            float f7 = ttfont.width(tip[0]);
+            int i1 = 1;
+            for(int j1 = 1; j1 < 3; j1++)
+            {
+                if(tip[j1] == null)
+                    break;
+                i1 = j1;
+                float f8 = ttfont.width(tip[j1]);
+                if(f7 < f8)
+                    f7 = f8;
+            }
+
+            float f9 = -ttfont.descender();
+            float f10 = (float)ttfont.height() + f9;
+            f7 += 2.0F * f9;
+            float f11 = f10 * (float)(i1 + 1) + 2.0F * f9;
+            float f12 = f3 - f7 / 2.0F;
+            float f13 = f4 + f2;
+            if(f12 + f7 > guirenders.win.dx)
+                f12 = guirenders.win.dx - f7;
+            if(f13 + f11 > guirenders.win.dy)
+                f13 = guirenders.win.dy - f11;
+            if(f12 < 0.0F)
+                f12 = 0.0F;
+            if(f13 < 0.0F)
+                f13 = 0.0F;
+            com.maddox.il2.engine.Render.drawTile(f12, f13, f7, f11, 0.0F, mat, 0xcf7fffff, 0.0F, 0.0F, 1.0F, 1.0F);
+            com.maddox.il2.engine.Render.drawEnd();
+            for(int k1 = 0; k1 <= i1; k1++)
+                ttfont.output(0xff000000, f12 + f9, f13 + f9 + (float)(i1 - k1) * f10 + f9, 0.0F, tip[k1]);
+
         }
-      }
-      else if ((f5 >= 180.0F) && (f5 < 270.0F))
-      {
-        f6 = -70.0F;
-        f7 = 60.0F;
-        if ((f1 >= 90.0F) && (f1 < 180.0F))
+    }
+
+    private void drawTargets()
+    {
+        com.maddox.il2.gui.GUIBriefing.drawTargets(renders, gridFont, emptyMat, cameraMap2D, targets);
+    }
+
+    private com.maddox.il2.engine.Mat getIconAir(int i)
+    {
+        java.lang.String s = null;
+        switch(i)
         {
-          f6 = 15.0F;
-          f7 = 60.0F;
+        case 0: // '\0'
+            s = "normfly";
+            break;
+
+        case 1: // '\001'
+            s = "takeoff";
+            break;
+
+        case 2: // '\002'
+            s = "landing";
+            break;
+
+        case 3: // '\003'
+            s = "gattack";
+            break;
+
+        default:
+            return null;
         }
-      }
-      else if ((f5 >= 270.0F) && (f5 <= 360.0F))
-      {
-        f6 = -70.0F;
-        f7 = -40.0F;
-        if ((f1 >= 0.0F) && (f1 < 90.0F))
+        return com.maddox.il2.engine.IconDraw.get("icons/" + s + ".mat");
+    }
+
+    private void drawPlayerPath()
+    {
+        checkPlayerPath();
+        int i = playerPath.size();
+        if(i == 0)
+            return;
+        if(lineNXYZ.length / 3 <= i)
+            lineNXYZ = new float[(i + 1) * 3];
+        lineNCounter = 0;
+        for(int j = 0; j < i; j++)
         {
-          f6 = 15.0F;
-          f7 = -40.0F;
+            com.maddox.il2.gui.PathPoint pathpoint = (com.maddox.il2.gui.PathPoint)playerPath.get(j);
+            lineNXYZ[lineNCounter * 3 + 0] = (float)(((double)pathpoint.x - cameraMap2D.worldXOffset) * cameraMap2D.worldScale);
+            lineNXYZ[lineNCounter * 3 + 1] = (float)(((double)pathpoint.y - cameraMap2D.worldYOffset) * cameraMap2D.worldScale);
+            lineNXYZ[lineNCounter * 3 + 2] = 0.0F;
+            lineNCounter++;
         }
-      }
 
-      f6 *= f4;
-      f7 *= f4;
-
-      if (this.curScale >= 3)
-      {
-        if (f6 < 0.0F)
-          f6 /= 2.0F;
-        if (f7 > 0.0F) {
-          f7 /= 2.0F;
-        }
-      }
-      f1 = f5;
-      this.gridFont.output(-16777216, f2 + f6, f3 + f7, 0.0F, "" + (k + 1));
-      if (this.curScale >= 2)
-        continue;
-      double d = Math.sqrt(localPoint3f1.y * localPoint3f1.y + localPoint3f1.x * localPoint3f1.x) / 1000.0D;
-      if (d < 0.5D)
-        continue;
-      String str1 = " km";
-
-      if ((HUD.drawSpeed() == 2) || (HUD.drawSpeed() == 3))
-      {
-        d *= 0.5399569869041443D;
-        str1 = " nm";
-      }
-
-      String str2 = "" + d;
-      str2 = str2.substring(0, str2.indexOf(".") + 2);
-
-      this.gridFont.output(-16777216, f2 + f6, f3 + f7 - 22.0F, 0.0F, (int)f5 + "°");
-      this.gridFont.output(-16777216, f2 + f6, f3 + f7 - 44.0F, 0.0F, str2 + str1);
-    }
-  }
-
-  private void checkPlayerPath()
-  {
-    SectFile localSectFile = Main.cur().currentMissionFile;
-    String str1 = null;
-    if (Mission.isCoop()) {
-      str1 = GUINetAircraft.selectedWingName();
-      if (str1 == null)
-        str1 = localSectFile.get("MAIN", "player", (String)null);
-    } else {
-      str1 = localSectFile.get("MAIN", "player", (String)null);
-    }
-    if (str1 == null) {
-      if (this.playerName == null) return;
-      this.playerPath.clear();
-      this.playerName = null;
-      return;
-    }
-    if (str1.equals(this.playerName))
-      return;
-    this.playerName = str1;
-    this.playerPath.clear();
-    if (this.playerName != null) {
-      int i = localSectFile.sectionIndex(this.playerName + "_WAY");
-      if (i >= 0) {
-        int j = localSectFile.vars(i);
-        for (int k = 0; k < j; k++) {
-          PathPoint localPathPoint = new PathPoint(null);
-          String str2 = localSectFile.var(i, k);
-          if ("NORMFLY".equals(str2)) localPathPoint.type = 0;
-          else if ("TAKEOFF".equals(str2)) localPathPoint.type = 1;
-          else if ("LANDING".equals(str2)) localPathPoint.type = 2;
-          else if ("GATTACK".equals(str2)) localPathPoint.type = 3; else
-            localPathPoint.type = 0;
-          String str3 = localSectFile.value(i, k);
-          if ((str3 == null) || (str3.length() <= 0)) {
-            localPathPoint.x = (localPathPoint.y = 0.0F);
-          } else {
-            NumberTokenizer localNumberTokenizer = new NumberTokenizer(str3);
-            localPathPoint.x = localNumberTokenizer.next(-1.0E+030F, -1.0E+030F, 1.0E+030F);
-            localPathPoint.y = localNumberTokenizer.next(-1.0E+030F, -1.0E+030F, 1.0E+030F);
-            double d1 = localNumberTokenizer.next(0.0D, 0.0D, 10000.0D);
-            double d2 = localNumberTokenizer.next(0.0D, 0.0D, 1000.0D);
-          }
-          this.playerPath.add(localPathPoint);
-        }
-      }
-    }
-  }
-
-  protected void doRenderMap2D()
-  {
-    ZutiRadarRefresh.update(this.lastScale < this.cameraMap2D.worldScale);
-    this.lastScale = this.cameraMap2D.worldScale;
-
-    int i = (int)Math.round(Mission.ZUTI_ICON_SIZE * this.client.root.win.dx / 1024.0D);
-    IconDraw.setScrSize(i, i);
-    try
-    {
-      Mission localMission = Main.cur().mission;
-      if (localMission != null)
-      {
-        localMission.getClass(); localMission.getClass();
-        ZutiSupportMethods.drawTargets(this.renders, this.gridFont, this.emptyMat, this.cameraMap2D);
-      }
-      else {
-        drawTargets();
-      }
-
-      drawBornPlaces();
-
-      drawPlayerPath();
-
-      drawBeacons();
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
-
-  protected int findBornPlace(float paramFloat1, float paramFloat2)
-  {
-    if ((id() != 40) && (id() != 39))
-      return -1;
-    ArrayList localArrayList = World.cur().bornPlaces;
-    if ((localArrayList == null) || (localArrayList.size() == 0))
-      return -1;
-    int i = localArrayList.size();
-    double d1 = IconDraw.scrSizeX() / 2 / this.cameraMap2D.worldScale;
-    d1 = 2.0D * d1 * d1;
-    for (int j = 0; j < i; j++) {
-      BornPlace localBornPlace = (BornPlace)localArrayList.get(j);
-
-      if (localBornPlace.zutiDisableSpawning)
-      {
-        continue;
-      }
-      double d2 = localBornPlace.place.x;
-      double d3 = localBornPlace.place.y;
-      if (localBornPlace.zutiStaticPositionOnly)
-      {
-        d2 = localBornPlace.zutiOriginalX;
-        d3 = localBornPlace.zutiOriginalY;
-      }
-
-      if (((d2 - paramFloat1) * (d2 - paramFloat1) + (d3 - paramFloat2) * (d3 - paramFloat2) >= d1) || (localBornPlace.army == 0)) {
-        continue;
-      }
-      if (localBornPlace.zutiCanUserJoin())
-      {
-        return j;
-      }
-    }
-    return -1;
-  }
-
-  protected boolean isBornPlace(float paramFloat1, float paramFloat2) {
-    return findBornPlace(paramFloat1, paramFloat2) >= 0;
-  }
-  protected void setBornPlace(float paramFloat1, float paramFloat2) {
-    int i = findBornPlace(paramFloat1, paramFloat2);
-    if (i < 0) return;
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    int j = localNetUser.getArmy();
-    localNetUser.setBornPlace(i);
-    if ((j != localNetUser.getArmy()) && (this.briefSound != null)) {
-      localObject = Main.cur().currentMissionFile.get("MAIN", "briefSound" + localNetUser.getArmy());
-      if (localObject != null) {
-        this.briefSound = ((String)localObject);
-        CmdEnv.top().exec("music LIST " + this.briefSound);
-      }
-
-    }
-
-    Object localObject = (BornPlace)World.cur().bornPlaces.get(i);
-    UserCfg localUserCfg = World.cur().userCfg;
-
-    if ((localUserCfg != null) && (!ZutiSupportMethods.isRegimentValidForSelectedHB(localUserCfg.netRegiment, (BornPlace)localObject)))
-    {
-      String str = ZutiSupportMethods.getHomeBaseFirstCountry((BornPlace)localObject);
-
-      str = ZutiSupportMethods.getUserCfgRegiment(str);
-
-      localUserCfg.netRegiment = str;
-      localUserCfg.netSquadron = 0;
-      GUIAirArming.stateId = 2;
-      Main.stateStack().push(55);
-    }
-
-    if (localUserCfg != null) {
-      int k = 0;
-      ArrayList localArrayList = ((BornPlace)localObject).zutiGetAcLoadouts(localUserCfg.netAirName);
-      for (int m = 0; m < localArrayList.size(); m++) {
-        if (((String)localArrayList.get(m)).equals(I18N.weapons(localUserCfg.netAirName, localUserCfg.getWeapon(localUserCfg.netAirName)))) {
-          k = 1;
-          break;
-        }
-      }
-      if ((k == 0) && (localArrayList.size() != 0)) {
-        localUserCfg.setWeapon(localUserCfg.netAirName, (String)localArrayList.get(0));
-        GUIAirArming.stateId = 2;
-        Main.stateStack().push(55);
-      }
-
-    }
-
-    ZutiRadarRefresh.findRadars(ZutiSupportMethods.getPlayerArmy());
-    fillBeacons();
-  }
-
-  protected void doMouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-  {
-    if (paramInt == 0) {
-      this.bLPressed = paramBoolean;
-      if (this.bSelectBorn) {
-        if (this.bLPressed) {
-          float f1 = (float)(this.cameraMap2D.worldXOffset + paramFloat1 / this.cameraMap2D.worldScale);
-          float f2 = (float)(this.cameraMap2D.worldYOffset + (this.renders.win.dy - paramFloat2 - 1.0F) / this.cameraMap2D.worldScale);
-
-          setBornPlace(f1, f2);
-        }
-        return;
-      }
-    }
-    super.doMouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-  }
-  protected void doMouseMove(float paramFloat1, float paramFloat2) {
-    if ((this.bLPressed) && (!this.bSelectBorn)) {
-      super.doMouseMove(paramFloat1, paramFloat2);
-    } else {
-      float f1 = (float)(this.cameraMap2D.worldXOffset + paramFloat1 / this.cameraMap2D.worldScale);
-      float f2 = (float)(this.cameraMap2D.worldYOffset + (this.renders.win.dy - paramFloat2 - 1.0F) / this.cameraMap2D.worldScale);
-
-      this.bSelectBorn = isBornPlace(f1, f2);
-      this.renders.mouseCursor = (this.bSelectBorn ? 2 : 3);
-    }
-  }
-
-  protected void fillMap() throws Exception
-  {
-    super.fillMap();
-    SectFile localSectFile = Main.cur().currentMissionFile;
-    try
-    {
-      this.iconBornPlace = IconDraw.get("icons/born.mat");
-      this.iconPlayer = IconDraw.get("icons/player.mat");
-
-      ZutiSupportMethods.setTargetsLoaded(false);
-
-      if (Mission.cur() != null)
-        ZutiSupportMethods.fillTargets(localSectFile);
-      else
-        fillTargets(localSectFile, this.targets);
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
-
-  protected void clientRender()
-  {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-    localDialogClient.draw(localDialogClient.x1024(427.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(170.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Fly"));
-  }
-  protected String infoMenuInfo() {
-    return i18n("brief.info");
-  }
-
-  public GUIBriefing(int paramInt) {
-    super(paramInt);
-  }
-
-  protected AirportCarrier getCarrier(NetUser paramNetUser)
-  {
-    BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(paramNetUser.getBornPlace());
-    if (!World.land().isWater(localBornPlace.place.x, localBornPlace.place.y)) {
-      return null;
-    }
-    Loc localLoc = new Loc(localBornPlace.place.x, localBornPlace.place.y, 0.0D, 0.0F, 0.0F, 0.0F);
-    AirportCarrier localAirportCarrier = (AirportCarrier)Airport.nearest(localLoc.getPoint(), -1, 4);
-
-    if ((localAirportCarrier.ship() instanceof TestRunway)) {
-      return null;
-    }
-    return localAirportCarrier;
-  }
-
-  protected boolean isCarrierDeckFree(NetUser paramNetUser)
-  {
-    BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(paramNetUser.getBornPlace());
-    if ((localBornPlace.zutiAirspawnIfCarrierFull) || (localBornPlace.zutiAirspawnOnly) || (!World.cur().diffCur.Takeoff_N_Landing) || (!World.land().isWater(localBornPlace.place.x, localBornPlace.place.y)))
-    {
-      return true;
-    }
-    Loc localLoc = new Loc(localBornPlace.place.x, localBornPlace.place.y, 0.0D, 0.0F, 0.0F, 0.0F);
-    AirportCarrier localAirportCarrier = (AirportCarrier)Airport.nearest(localLoc.getPoint(), -1, 4);
-    if ((localAirportCarrier != null) && (localAirportCarrier.ship().isAlive()) && (!localAirportCarrier.ship().zutiIsStatic()))
-    {
-      try
-      {
-        UserCfg localUserCfg = World.cur().userCfg;
-        Class localClass = (Class)Property.value(localUserCfg.netAirName, "airClass", null);
-        NetAircraft localNetAircraft = (NetAircraft)localClass.newInstance();
-        CellAirField localCellAirField = localAirportCarrier.ship().getCellTO();
-        Aircraft localAircraft = (Aircraft)localNetAircraft;
-        if (localAircraft.FM == null);
-        localAircraft.setFM(1, false);
-        CellAirPlane localCellAirPlane = localAircraft.getCellAirPlane();
-        if (localCellAirField.findPlaceForAirPlane(localCellAirPlane))
+        com.maddox.il2.engine.Render.drawBeginLines(-1);
+        com.maddox.il2.engine.Render.drawLines(lineNXYZ, lineNCounter, 2.0F, 0xff000000, com.maddox.il2.engine.Mat.NOWRITEZ | com.maddox.il2.engine.Mat.MODULATE | com.maddox.il2.engine.Mat.NOTEXTURE | com.maddox.il2.engine.Mat.BLEND, 3);
+        com.maddox.il2.engine.Render.drawEnd();
+        com.maddox.il2.engine.IconDraw.setColor(0xff00ffff);
+        for(int k = 0; k < i; k++)
         {
-          localAircraft = null;
-          return true;
+            com.maddox.il2.gui.PathPoint pathpoint1 = (com.maddox.il2.gui.PathPoint)playerPath.get(k);
+            float f = (float)(((double)pathpoint1.x - cameraMap2D.worldXOffset) * cameraMap2D.worldScale);
+            float f1 = (float)(((double)pathpoint1.y - cameraMap2D.worldYOffset) * cameraMap2D.worldScale);
+            com.maddox.il2.engine.IconDraw.render(getIconAir(pathpoint1.type), f, f1);
+            gridFont.output(0xff000000, (int)f + com.maddox.il2.engine.IconDraw.scrSizeX() / 2 + 2, (int)f1 - com.maddox.il2.engine.IconDraw.scrSizeY() / 2 - 2, 0.0F, "" + (k + 1));
         }
 
-        localAircraft = null;
-        return false;
-      }
-      catch (Exception localException)
-      {
-        localException.printStackTrace();
-        return false;
-      }
     }
-    return true;
-  }
 
-  protected boolean isValidArming()
-  {
-    UserCfg localUserCfg = World.cur().userCfg;
-    if (localUserCfg.netRegiment == null) return false;
-    if ((((NetUser)NetEnv.host()).netUserRegiment.isEmpty()) && (Actor.getByName(localUserCfg.netRegiment) == null))
-      return false;
-    if (localUserCfg.netAirName == null) return false;
-    if (Property.value(localUserCfg.netAirName, "airClass", null) == null) return false;
-    if (localUserCfg.getWeapon(localUserCfg.netAirName) == null) return false; try
+    private void checkPlayerPath()
     {
-      Class localClass1 = (Class)Property.value(localUserCfg.netAirName, "airClass", null);
+        com.maddox.rts.SectFile sectfile = com.maddox.il2.game.Main.cur().currentMissionFile;
+        java.lang.String s = null;
+        if(com.maddox.il2.game.Mission.isCoop())
+        {
+            s = com.maddox.il2.gui.GUINetAircraft.selectedWingName();
+            if(s == null)
+                s = sectfile.get("MAIN", "player", (java.lang.String)null);
+        } else
+        {
+            s = sectfile.get("MAIN", "player", (java.lang.String)null);
+        }
+        if(s == null)
+            if(playerName == null)
+            {
+                return;
+            } else
+            {
+                playerPath.clear();
+                playerName = null;
+                return;
+            }
+        if(s.equals(playerName))
+            return;
+        playerName = s;
+        playerPath.clear();
+        if(playerName != null)
+        {
+            int i = sectfile.sectionIndex(playerName + "_WAY");
+            if(i >= 0)
+            {
+                int j = sectfile.vars(i);
+                for(int k = 0; k < j; k++)
+                {
+                    com.maddox.il2.gui.PathPoint pathpoint = new PathPoint();
+                    java.lang.String s1 = sectfile.var(i, k);
+                    if("NORMFLY".equals(s1))
+                        pathpoint.type = 0;
+                    else
+                    if("TAKEOFF".equals(s1))
+                        pathpoint.type = 1;
+                    else
+                    if("LANDING".equals(s1))
+                        pathpoint.type = 2;
+                    else
+                    if("GATTACK".equals(s1))
+                        pathpoint.type = 3;
+                    else
+                        pathpoint.type = 0;
+                    java.lang.String s2 = sectfile.value(i, k);
+                    if(s2 == null || s2.length() <= 0)
+                    {
+                        pathpoint.x = pathpoint.y = 0.0F;
+                    } else
+                    {
+                        com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s2);
+                        pathpoint.x = numbertokenizer.next(-1E+030F, -1E+030F, 1E+030F);
+                        pathpoint.y = numbertokenizer.next(-1E+030F, -1E+030F, 1E+030F);
+                        double d = numbertokenizer.next(0.0D, 0.0D, 10000D);
+                        double d1 = numbertokenizer.next(0.0D, 0.0D, 1000D);
+                    }
+                    playerPath.add(pathpoint);
+                }
 
-      NetUser localNetUser = (NetUser)NetEnv.host();
-      int i = localNetUser.getBornPlace();
-      BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(i);
-      if (localBornPlace.airNames != null) {
-        ArrayList localArrayList = localBornPlace.airNames;
-        int j = 0;
-        for (int k = 0; k < localArrayList.size(); k++) {
-          String str = (String)localArrayList.get(k);
-          Class localClass2 = (Class)Property.value(str, "airClass", null);
-          if ((localClass2 == null) || 
-            (localClass1 != localClass2)) continue;
-          j = 1;
-          break;
+            }
+        }
+    }
+
+    protected void doRenderMap2D()
+    {
+        if(id() == 40 || id() == 39)
+        {
+            drawBornPlaces();
+        } else
+        {
+            drawPlayerPath();
+            drawTargets();
+        }
+    }
+
+    protected int findBornPlace(float f, float f1)
+    {
+        if(id() != 40 && id() != 39)
+            return -1;
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().bornPlaces;
+        if(arraylist == null || arraylist.size() == 0)
+            return -1;
+        int i = arraylist.size();
+        double d = (double)(com.maddox.il2.engine.IconDraw.scrSizeX() / 2) / cameraMap2D.worldScale;
+        d = 2D * d * d;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)arraylist.get(j);
+            if((bornplace.place.x - (double)f) * (bornplace.place.x - (double)f) + (bornplace.place.y - (double)f1) * (bornplace.place.y - (double)f1) < d && bornplace.army != 0)
+                return j;
         }
 
-        if (j == 0)
-          return false;
-      }
-      return Aircraft.weaponsExist(localClass1, localUserCfg.getWeapon(localUserCfg.netAirName)); } catch (Exception localException) {
-    }
-    return false;
-  }
-
-  public static class BeaconPoint
-  {
-    public float x;
-    public float y;
-    public Mat icon;
-    public int army;
-    public String id;
-  }
-
-  public static class TargetPoint
-  {
-    public float x;
-    public float y;
-    public float z = 0.0F;
-    public int r;
-    public int type;
-    public int typeOArmy;
-    public int importance;
-    public Mat icon;
-    public Mat iconOArmy;
-    public String nameTarget;
-    public String nameTargetOrig;
-    public Actor actor;
-    public boolean isBaseActorWing = false;
-    public Wing wing = null;
-
-    private boolean visibleForPlayerArmy = false;
-
-    private Mission mission = null;
-
-    public TargetPoint()
-    {
-      this.mission = Main.cur().mission;
+        return -1;
     }
 
-    public boolean isGroundUnit()
+    protected boolean isBornPlace(float f, float f1)
     {
-      return ZutiPadObject.isGroundUnit(this.actor);
+        return findBornPlace(f, f1) >= 0;
     }
 
-    public boolean getIsAlive()
+    protected void setBornPlace(float f, float f1)
     {
-      if (this.actor == null) {
-        return false;
-      }
-      if ((this.actor instanceof RocketryRocket)) {
-        return !((RocketryRocket)this.actor).isDamaged();
-      }
-      return !this.actor.getDiedFlag();
-    }
-
-    public boolean equals(Object paramObject)
-    {
-      if (!(paramObject instanceof TargetPoint)) {
-        return false;
-      }
-      TargetPoint localTargetPoint = (TargetPoint)paramObject;
-
-      if (this.actor != null)
-      {
-        if (this.actor.equals(localTargetPoint.actor)) {
-          return true;
+        int i = findBornPlace(f, f1);
+        if(i < 0)
+            return;
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        int j = netuser.getArmy();
+        netuser.setBornPlace(i);
+        if(j != netuser.getArmy() && briefSound != null)
+        {
+            java.lang.String s = com.maddox.il2.game.Main.cur().currentMissionFile.get("MAIN", "briefSound" + netuser.getArmy());
+            if(s != null)
+            {
+                briefSound = s;
+                com.maddox.rts.CmdEnv.top().exec("music LIST " + briefSound);
+            }
         }
-
-      }
-      else if (this.nameTargetOrig.equals(localTargetPoint.nameTargetOrig)) {
-        return true;
-      }
-
-      return false;
     }
 
-    public int hashCode()
+    protected void doMouseButton(int i, boolean flag, float f, float f1)
     {
-      if (this.actor != null) {
-        return this.actor.hashCode();
-      }
-      return this.nameTargetOrig.hashCode();
+        com.maddox.il2.engine.GUIRenders _tmp = renders;
+        if(i == 0)
+        {
+            bLPressed = flag;
+            if(bSelectBorn)
+            {
+                if(bLPressed)
+                {
+                    float f2 = (float)(cameraMap2D.worldXOffset + (double)f / cameraMap2D.worldScale);
+                    float f3 = (float)(cameraMap2D.worldYOffset + (double)(renders.win.dy - f1 - 1.0F) / cameraMap2D.worldScale);
+                    setBornPlace(f2, f3);
+                }
+                return;
+            }
+        }
+        super.doMouseButton(i, flag, f, f1);
     }
 
-    public void refreshPosition()
+    protected void doMouseMove(float f, float f1)
     {
-      this.mission.getClass(); if (!this.mission.zutiRadar_PlayerSideHasRadars) {
-        return;
-      }
-
-      if ((this.actor != null) && (this.actor.pos != null))
-      {
-        Point3d localPoint3d = this.actor.pos.getAbsPoint();
-
-        this.x = (float)localPoint3d.x;
-        this.y = (float)localPoint3d.y;
-        this.z = (float)localPoint3d.z;
-      }
+        if(bLPressed && !bSelectBorn)
+        {
+            super.doMouseMove(f, f1);
+        } else
+        {
+            float f2 = (float)(cameraMap2D.worldXOffset + (double)f / cameraMap2D.worldScale);
+            float f3 = (float)(cameraMap2D.worldYOffset + (double)(renders.win.dy - f1 - 1.0F) / cameraMap2D.worldScale);
+            bSelectBorn = isBornPlace(f2, f3);
+            renders.mouseCursor = bSelectBorn ? 2 : 3;
+        }
     }
 
-    public boolean isVisibleForPlayerArmy()
+    protected void fillMap()
+        throws java.lang.Exception
     {
-      return this.visibleForPlayerArmy;
+        super.fillMap();
+        com.maddox.rts.SectFile sectfile = com.maddox.il2.game.Main.cur().currentMissionFile;
+        if(id() == 40 || id() == 39)
+        {
+            iconBornPlace = com.maddox.il2.engine.IconDraw.get("icons/born.mat");
+            iconPlayer = com.maddox.il2.engine.IconDraw.get("icons/player.mat");
+        } else
+        {
+            com.maddox.il2.gui.GUIBriefing.fillTargets(sectfile, targets);
+        }
     }
 
-    public void setVisibleForPlayerArmy(boolean paramBoolean)
+    protected void clientRender()
     {
-      this.visibleForPlayerArmy = paramBoolean;
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp = dialogclient;
+        dialogclient.draw(dialogclient.x1024(768F), dialogclient.y1024(656F), dialogclient.x1024(160F), dialogclient.y1024(48F), 2, i18n("brief.Fly"));
     }
-  }
 
-  private static class PathPoint
-  {
-    public int type;
-    public float x;
-    public float y;
-
-    private PathPoint()
+    protected java.lang.String infoMenuInfo()
     {
+        return i18n("brief.info");
     }
 
-    PathPoint(GUIBriefing.1 param1)
+    public GUIBriefing(int i)
     {
-      this();
+        super(i);
+        playerPath = new ArrayList();
+        targets = new ArrayList();
+        lineNXYZ = new float[6];
+        bSelectBorn = false;
     }
-  }
+
+    protected java.lang.String playerName;
+    protected java.util.ArrayList playerPath;
+    protected java.util.ArrayList targets;
+    protected com.maddox.il2.engine.Mat iconBornPlace;
+    protected com.maddox.il2.engine.Mat iconPlayer;
+    private static java.lang.String tip[] = new java.lang.String[3];
+    private float lineNXYZ[];
+    private int lineNCounter;
+    protected boolean bSelectBorn;
+
 }

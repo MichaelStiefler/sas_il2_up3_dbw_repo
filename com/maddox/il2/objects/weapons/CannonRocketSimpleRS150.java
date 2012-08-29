@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CannonRocketSimpleRS150.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -6,21 +11,28 @@ import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.Orient;
 
-public class CannonRocketSimpleRS150 extends CannonRocketSimple
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            CannonRocketSimple, RocketSimpleRS150
+
+public class CannonRocketSimpleRS150 extends com.maddox.il2.objects.weapons.CannonRocketSimple
 {
-  protected void Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.shotFreq = 0.33F;
 
-    paramGunProperties.aimMinDist = 20.0F;
-    paramGunProperties.aimMaxDist = 8000.0F;
+    public CannonRocketSimpleRS150()
+    {
+    }
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
-    localBulletProperties.speed = 400.0F;
-  }
+    protected void Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.shotFreq = 0.33F;
+        gunproperties.aimMinDist = 20F;
+        gunproperties.aimMaxDist = 8000F;
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.speed = 400F;
+    }
 
-  public void launch(Point3d paramPoint3d, Orient paramOrient, float paramFloat, Actor paramActor) {
-    RocketSimpleRS150 localRocketSimpleRS150 = new RocketSimpleRS150(paramPoint3d, paramOrient, paramActor);
-    localRocketSimpleRS150.start(paramFloat);
-  }
+    public void launch(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient, float f, com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.objects.weapons.RocketSimpleRS150 rocketsimplers150 = new RocketSimpleRS150(point3d, orient, actor);
+        rocketsimplers150.start(f);
+    }
 }

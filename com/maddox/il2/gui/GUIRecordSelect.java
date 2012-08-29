@@ -1,15 +1,21 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIRecordSelect.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
+import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
@@ -23,237 +29,294 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class GUIRecordSelect extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUISwitchBox2, GUIDialogClient, GUISeparate
+
+public class GUIRecordSelect extends com.maddox.il2.game.GameState
 {
-  public String selectedFile;
-  public boolean bCycle = true;
-  public boolean bManualTimeCompression = false;
-  public boolean bManualViewControls = false;
-  public boolean bDrawAllMessages = true;
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton wPrev;
-  public GUIButton wPlay;
-  public GUIButton wDelete;
-  public Table wTable;
-  public GUISwitchBox2 sCycle;
-  public GUISwitchBox2 sTimeCompression;
-  public GUISwitchBox2 sViewControls;
-  public GUISwitchBox2 sViewMessages;
-  public boolean bSaveManualTimeCompression = false;
-  public boolean bSaveManualViewControls = false;
-
-  public TreeMap _scanMap = new TreeMap();
-
-  public void _enter()
-  {
-    if ((Mission.cur() != null) && (!Mission.cur().isDestroyed()))
-      Mission.cur().destroy();
-    if (Main3D.cur3D().keyRecord != null)
-      Main3D.cur3D().keyRecord.clearRecorded();
-    this.bSaveManualTimeCompression = HotKeyEnv.isEnabled("timeCompression");
-    this.bSaveManualViewControls = HotKeyEnv.isEnabled("aircraftView");
-    this.sCycle.setChecked(this.bCycle, false);
-    this.sTimeCompression.setChecked(this.bManualTimeCompression, false);
-    this.sViewControls.setChecked(this.bManualViewControls, false);
-    this.sViewMessages.setChecked(this.bDrawAllMessages, false);
-    Main3D.cur3D().hud.bDrawAllMessages = this.bDrawAllMessages;
-    fillFiles();
-    this.client.activateWindow();
-  }
-  public void leavePop(GameState paramGameState) {
-    Main3D.cur3D().hud.bDrawAllMessages = true;
-    World.cur().setUserCovers();
-    super.leavePop(paramGameState);
-  }
-
-  public void _leave() {
-    HotKeyEnv.enable("timeCompression", this.bSaveManualTimeCompression);
-    HotKeyEnv.enable("aircraftView", this.bSaveManualViewControls);
-    HotKeyEnv.enable("HookView", this.bSaveManualViewControls);
-    HotKeyEnv.enable("PanView", this.bSaveManualViewControls);
-    HotKeyEnv.enable("SnapView", this.bSaveManualViewControls);
-    this.client.hideWindow();
-  }
-
-  public void fillFiles() {
-    this.wTable.files.clear();
-    File localFile = new File(HomePath.get(0), "Records");
-    File[] arrayOfFile = localFile.listFiles();
-    if ((arrayOfFile != null) && (arrayOfFile.length > 0)) {
-      for (int i = 0; i < arrayOfFile.length; i++) {
-        if ((!arrayOfFile[i].isDirectory()) && (!arrayOfFile[i].isHidden()))
-          this._scanMap.put(arrayOfFile[i].getName(), null);
-      }
-      Iterator localIterator = this._scanMap.keySet().iterator();
-      while (localIterator.hasNext())
-        this.wTable.files.add(localIterator.next());
-      if (this._scanMap.size() > 0)
-        this.wTable.setSelect(0, 0);
-      this._scanMap.clear();
-    }
-    this.wTable.resized();
-  }
-
-  public GUIRecordSelect(GWindowRoot paramGWindowRoot)
-  {
-    super(7);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("record.infoSelect");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wTable = new Table(this.dialogClient);
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.wPrev = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.wPlay = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.wDelete = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.sCycle = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.sTimeCompression = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.sViewControls = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.sViewMessages = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.sCycle.setChecked(this.bCycle, false);
-    this.sTimeCompression.setChecked(this.bManualTimeCompression, false);
-    this.sViewControls.setChecked(this.bManualViewControls, false);
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == wPrev)
+            {
+                sCycle.setChecked(bCycle, false);
+                sTimeCompression.setChecked(bManualTimeCompression, false);
+                sViewControls.setChecked(bManualViewControls, false);
+                com.maddox.il2.game.Main3D.cur3D().viewSet_Load();
+                com.maddox.il2.game.Main.stateStack().pop();
+            } else
+            {
+                if(gwindow == wPlay)
+                {
+                    bCycle = sCycle.isChecked();
+                    bManualTimeCompression = sTimeCompression.isChecked();
+                    bManualViewControls = sViewControls.isChecked();
+                    int k = wTable.selectRow;
+                    if(k < 0 || k >= wTable.files.size())
+                    {
+                        return true;
+                    } else
+                    {
+                        selectedFile = (java.lang.String)wTable.files.get(k);
+                        com.maddox.il2.game.Main.stateStack().push(8);
+                        return true;
+                    }
+                }
+                if(gwindow == wDelete)
+                {
+                    int l = wTable.selectRow;
+                    if(l < 0 || l >= wTable.files.size())
+                    {
+                        return true;
+                    } else
+                    {
+                        new com.maddox.gwindow.GWindowMessageBox(root, 20F, true, i18n("warning.Warning"), i18n("warning.DeleteFile"), 1, 0.0F) {
 
-      if (paramGWindow == GUIRecordSelect.this.wPrev) {
-        GUIRecordSelect.this.sCycle.setChecked(GUIRecordSelect.this.bCycle, false);
-        GUIRecordSelect.this.sTimeCompression.setChecked(GUIRecordSelect.this.bManualTimeCompression, false);
-        GUIRecordSelect.this.sViewControls.setChecked(GUIRecordSelect.this.bManualViewControls, false);
-        Main3D.cur3D().viewSet_Load();
-        Main.stateStack().pop();
-      }
-      else
-      {
-        int i;
-        if (paramGWindow == GUIRecordSelect.this.wPlay) {
-          GUIRecordSelect.this.bCycle = GUIRecordSelect.this.sCycle.isChecked();
-          GUIRecordSelect.this.bManualTimeCompression = GUIRecordSelect.this.sTimeCompression.isChecked();
-          GUIRecordSelect.this.bManualViewControls = GUIRecordSelect.this.sViewControls.isChecked();
-          i = GUIRecordSelect.this.wTable.selectRow;
-          if ((i < 0) || (i >= GUIRecordSelect.this.wTable.files.size())) return true;
-          GUIRecordSelect.this.selectedFile = ((String)GUIRecordSelect.this.wTable.files.get(i));
+                            public void result(int i1)
+                            {
+                                if(i1 != 3)
+                                    return;
+                                int j1 = wTable.selectRow;
+                                java.lang.String s = (java.lang.String)wTable.files.get(j1);
+                                try
+                                {
+                                    java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("Records/" + s, 0));
+                                    file.delete();
+                                }
+                                catch(java.lang.Exception exception) { }
+                                fillFiles();
+                                if(j1 >= wTable.files.size())
+                                    j1 = wTable.files.size() - 1;
+                                if(j1 < 0)
+                                {
+                                    return;
+                                } else
+                                {
+                                    wTable.setSelect(j1, 0);
+                                    return;
+                                }
+                            }
 
-          Main.stateStack().push(8);
-          return true;
-        }if (paramGWindow == GUIRecordSelect.this.wDelete) {
-          i = GUIRecordSelect.this.wTable.selectRow;
-          if ((i < 0) || (i >= GUIRecordSelect.this.wTable.files.size())) return true;
-          new GWindowMessageBox(this.root, 20.0F, true, GUIRecordSelect.this.i18n("warning.Warning"), GUIRecordSelect.this.i18n("warning.DeleteFile"), 1, 0.0F)
-          {
-            public void result(int paramInt) {
-              if (paramInt != 3) return;
-              int i = GUIRecordSelect.this.wTable.selectRow;
-              String str = (String)GUIRecordSelect.this.wTable.files.get(i);
-              try {
-                File localFile = new File(HomePath.toFileSystemName("Records/" + str, 0));
-                localFile.delete(); } catch (Exception localException) {
-              }
-              GUIRecordSelect.this.fillFiles();
-              if (i >= GUIRecordSelect.this.wTable.files.size())
-                i = GUIRecordSelect.this.wTable.files.size() - 1;
-              if (i < 0)
-                return;
-              GUIRecordSelect.this.wTable.setSelect(i, 0);
+                        }
+;
+                        return true;
+                    }
+                }
+                if(gwindow == sViewMessages)
+                {
+                    com.maddox.il2.game.Main3D.cur3D().hud.bDrawAllMessages = sViewMessages.isChecked();
+                    bDrawAllMessages = sViewMessages.isChecked();
+                }
             }
-          };
-          return true;
-        }if (paramGWindow == GUIRecordSelect.this.sViewMessages) {
-          Main3D.cur3D().hud.bDrawAllMessages = GUIRecordSelect.this.sViewMessages.isChecked();
-          GUIRecordSelect.this.bDrawAllMessages = GUIRecordSelect.this.sViewMessages.isChecked();
+            return super.notify(gwindow, i, j);
         }
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(464F), x1024(720F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(448F), y1024(352F), x1024(305F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(432F), y1024(32F), 2.0F, y1024(400F));
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(528F), y1024(48F), x1024(224F), y1024(48F), i18n("record.Cycle"), 2);
+            draw(x1024(528F), y1024(128F), x1024(224F), y1024(48F), i18n("record.ManualTime"), 2);
+            draw(x1024(528F), y1024(208F), x1024(224F), y1024(48F), i18n("record.ManualView"), 2);
+            draw(x1024(528F), y1024(288F), x1024(224F), y1024(48F), i18n("record.InflightMessages"), 2);
+            draw(x1024(528F), y1024(384F), x1024(224F), y1024(48F), i18n("record.Delete"), 2);
+            draw(x1024(96F), y1024(496F), x1024(208F), y1024(48F), 0, i18n("record.MainMenu"));
+            draw(x1024(448F), y1024(496F), x1024(240F), y1024(48F), 2, i18n("record.Play"));
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(128F, 112F, 784F, 576F);
+            wPrev.setPosC(x1024(56F), y1024(520F));
+            wPlay.setPosC(x1024(728F), y1024(520F));
+            wDelete.setPosC(x1024(488F), y1024(408F));
+            sCycle.setPosC(x1024(496F), y1024(72F));
+            sTimeCompression.setPosC(x1024(496F), y1024(152F));
+            sViewControls.setPosC(x1024(496F), y1024(232F));
+            sViewMessages.setPosC(x1024(496F), y1024(312F));
+            wTable.setPosSize(x1024(32F), y1024(32F), x1024(384F), y1024(400F));
+        }
+
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(464.0F), x1024(720.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(448.0F), y1024(352.0F), x1024(305.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(432.0F), y1024(32.0F), 2.0F, y1024(400.0F));
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(528.0F), y1024(48.0F), x1024(224.0F), y1024(48.0F), GUIRecordSelect.this.i18n("record.Cycle"), 2);
-      draw(x1024(528.0F), y1024(128.0F), x1024(224.0F), y1024(48.0F), GUIRecordSelect.this.i18n("record.ManualTime"), 2);
-      draw(x1024(528.0F), y1024(208.0F), x1024(224.0F), y1024(48.0F), GUIRecordSelect.this.i18n("record.ManualView"), 2);
-      draw(x1024(528.0F), y1024(288.0F), x1024(224.0F), y1024(48.0F), GUIRecordSelect.this.i18n("record.InflightMessages"), 2);
-      draw(x1024(528.0F), y1024(384.0F), x1024(224.0F), y1024(48.0F), GUIRecordSelect.this.i18n("record.Delete"), 2);
-      draw(x1024(96.0F), y1024(496.0F), x1024(208.0F), y1024(48.0F), 0, GUIRecordSelect.this.i18n("record.MainMenu"));
-      draw(x1024(448.0F), y1024(496.0F), x1024(240.0F), y1024(48.0F), 2, GUIRecordSelect.this.i18n("record.Play"));
+    public class Table extends com.maddox.gwindow.GWindowTable
+    {
+
+        public int countRows()
+        {
+            return files == null ? 0 : files.size();
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, 0, (java.lang.String)files.get(i));
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, 0, (java.lang.String)files.get(i));
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = false;
+            addColumn(com.maddox.il2.game.I18N.gui("record.TrackFiles"), null);
+            vSB.scroll = rowHeight(0);
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public java.util.ArrayList files;
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            files = new ArrayList();
+            bNotify = true;
+            wClient.bNotify = true;
+        }
     }
 
-    public void setPosSize() {
-      set1024PosSize(128.0F, 112.0F, 784.0F, 576.0F);
-      GUIRecordSelect.this.wPrev.setPosC(x1024(56.0F), y1024(520.0F));
-      GUIRecordSelect.this.wPlay.setPosC(x1024(728.0F), y1024(520.0F));
-      GUIRecordSelect.this.wDelete.setPosC(x1024(488.0F), y1024(408.0F));
-      GUIRecordSelect.this.sCycle.setPosC(x1024(496.0F), y1024(72.0F));
-      GUIRecordSelect.this.sTimeCompression.setPosC(x1024(496.0F), y1024(152.0F));
-      GUIRecordSelect.this.sViewControls.setPosC(x1024(496.0F), y1024(232.0F));
-      GUIRecordSelect.this.sViewMessages.setPosC(x1024(496.0F), y1024(312.0F));
-      GUIRecordSelect.this.wTable.setPosSize(x1024(32.0F), y1024(32.0F), x1024(384.0F), y1024(400.0F));
-    }
-  }
 
-  public class Table extends GWindowTable
-  {
-    public ArrayList files = new ArrayList();
-
-    public int countRows() { return this.files != null ? this.files.size() : 0; }
-
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, (String)this.files.get(paramInt1));
-      }
-      else
-      {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, (String)this.files.get(paramInt1));
-      }
+    public void _enter()
+    {
+        if(com.maddox.il2.game.Mission.cur() != null && !com.maddox.il2.game.Mission.cur().isDestroyed())
+            com.maddox.il2.game.Mission.cur().destroy();
+        if(com.maddox.il2.game.Main3D.cur3D().keyRecord != null)
+            com.maddox.il2.game.Main3D.cur3D().keyRecord.clearRecorded();
+        bSaveManualTimeCompression = com.maddox.rts.HotKeyEnv.isEnabled("timeCompression");
+        bSaveManualViewControls = com.maddox.rts.HotKeyEnv.isEnabled("aircraftView");
+        sCycle.setChecked(bCycle, false);
+        sTimeCompression.setChecked(bManualTimeCompression, false);
+        sViewControls.setChecked(bManualViewControls, false);
+        sViewMessages.setChecked(bDrawAllMessages, false);
+        com.maddox.il2.game.Main3D.cur3D().hud.bDrawAllMessages = bDrawAllMessages;
+        fillFiles();
+        client.activateWindow();
     }
 
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = false;
-      addColumn(I18N.gui("record.TrackFiles"), null);
-      this.vSB.scroll = rowHeight(0);
-      resized();
+    public void leavePop(com.maddox.il2.game.GameState gamestate)
+    {
+        com.maddox.il2.game.Main3D.cur3D().hud.bDrawAllMessages = true;
+        com.maddox.il2.ai.World.cur().setUserCovers();
+        super.leavePop(gamestate);
     }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
+
+    public void _leave()
+    {
+        com.maddox.rts.HotKeyEnv.enable("timeCompression", bSaveManualTimeCompression);
+        com.maddox.rts.HotKeyEnv.enable("aircraftView", bSaveManualViewControls);
+        com.maddox.rts.HotKeyEnv.enable("HookView", bSaveManualViewControls);
+        com.maddox.rts.HotKeyEnv.enable("PanView", bSaveManualViewControls);
+        com.maddox.rts.HotKeyEnv.enable("SnapView", bSaveManualViewControls);
+        client.hideWindow();
     }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
+
+    public void fillFiles()
+    {
+        wTable.files.clear();
+        java.io.File file = new File(com.maddox.rts.HomePath.get(0), "Records");
+        java.io.File afile[] = file.listFiles();
+        if(afile != null && afile.length > 0)
+        {
+            for(int i = 0; i < afile.length; i++)
+                if(!afile[i].isDirectory() && !afile[i].isHidden())
+                    _scanMap.put(afile[i].getName(), null);
+
+            for(java.util.Iterator iterator = _scanMap.keySet().iterator(); iterator.hasNext(); wTable.files.add(iterator.next()));
+            if(_scanMap.size() > 0)
+                wTable.setSelect(0, 0);
+            _scanMap.clear();
+        }
+        wTable.resized();
     }
-    public Table(GWindow arg2) {
-      super();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
+
+    public GUIRecordSelect(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(7);
+        bCycle = true;
+        bManualTimeCompression = false;
+        bManualViewControls = false;
+        bDrawAllMessages = true;
+        bSaveManualTimeCompression = false;
+        bSaveManualViewControls = false;
+        _scanMap = new TreeMap();
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("record.infoSelect");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wTable = new Table(dialogClient);
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        wPrev = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        wPlay = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        wDelete = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        sCycle = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        sTimeCompression = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        sViewControls = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        sViewMessages = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        sCycle.setChecked(bCycle, false);
+        sTimeCompression.setChecked(bManualTimeCompression, false);
+        sViewControls.setChecked(bManualViewControls, false);
+        dialogClient.activateWindow();
+        client.hideWindow();
     }
-  }
+
+    public java.lang.String selectedFile;
+    public boolean bCycle;
+    public boolean bManualTimeCompression;
+    public boolean bManualViewControls;
+    public boolean bDrawAllMessages;
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton wPrev;
+    public com.maddox.il2.gui.GUIButton wPlay;
+    public com.maddox.il2.gui.GUIButton wDelete;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.GUISwitchBox2 sCycle;
+    public com.maddox.il2.gui.GUISwitchBox2 sTimeCompression;
+    public com.maddox.il2.gui.GUISwitchBox2 sViewControls;
+    public com.maddox.il2.gui.GUISwitchBox2 sViewMessages;
+    public boolean bSaveManualTimeCompression;
+    public boolean bSaveManualViewControls;
+    public java.util.TreeMap _scanMap;
 }

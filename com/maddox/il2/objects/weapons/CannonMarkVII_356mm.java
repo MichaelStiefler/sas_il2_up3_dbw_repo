@@ -1,54 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CannonMarkVII_356mm.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 
-public class CannonMarkVII_356mm extends CannonLongrangeGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            CannonLongrangeGeneric
+
+public class CannonMarkVII_356mm extends com.maddox.il2.objects.weapons.CannonLongrangeGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.aimMaxDist = 46630.0F;
 
-    paramGunProperties.fireMesh = null;
-    paramGunProperties.fire = "Effects/BigShip/GunFire350mm/Fire.eff";
-    paramGunProperties.sprite = null;
-    paramGunProperties.smoke = "Effects/BigShip/GunFire350mm/Burst.eff";
-    paramGunProperties.shells = null;
+    public CannonMarkVII_356mm()
+    {
+    }
 
-    paramGunProperties.emitColor = new Color3f(1.0F, 0.5F, 0.2F);
-    paramGunProperties.emitI = 5.0F;
-    paramGunProperties.emitR = 38.0F;
-    paramGunProperties.emitTime = 0.6F;
-
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
-
-    localBulletProperties.power = 20.379999F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 200.0F;
-
-    localBulletProperties.kalibr = 0.356F;
-    localBulletProperties.massa = 747.79999F;
-    localBulletProperties.speed = 732.0F;
-
-    localBulletProperties.traceMesh = null;
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = 16843009;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.power = 75.849998F;
-    localBulletProperties.powerType = 0;
-    localBulletProperties.powerRadius = 220.0F;
-
-    localBulletProperties.kalibr = 0.356F;
-    localBulletProperties.massa = 747.79999F;
-    localBulletProperties.speed = 732.0F;
-
-    localBulletProperties.traceMesh = null;
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = 16843009;
-
-    return 45.0F;
-  }
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.aimMaxDist = 46630F;
+        gunproperties.fireMesh = null;
+        gunproperties.fire = "Effects/BigShip/GunFire350mm/Fire.eff";
+        gunproperties.sprite = null;
+        gunproperties.smoke = "Effects/BigShip/GunFire350mm/Burst.eff";
+        gunproperties.shells = null;
+        gunproperties.emitColor = new Color3f(1.0F, 0.5F, 0.2F);
+        gunproperties.emitI = 5F;
+        gunproperties.emitR = 38F;
+        gunproperties.emitTime = 0.6F;
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.power = 20.38F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 200F;
+        bulletproperties.kalibr = 0.356F;
+        bulletproperties.massa = 747.8F;
+        bulletproperties.speed = 732F;
+        bulletproperties.traceMesh = null;
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0x1010101;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.power = 75.85F;
+        bulletproperties.powerType = 0;
+        bulletproperties.powerRadius = 220F;
+        bulletproperties.kalibr = 0.356F;
+        bulletproperties.massa = 747.8F;
+        bulletproperties.speed = 732F;
+        bulletproperties.traceMesh = null;
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0x1010101;
+        return 45F;
+    }
 }

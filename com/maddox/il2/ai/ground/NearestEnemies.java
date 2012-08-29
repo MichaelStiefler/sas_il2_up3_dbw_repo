@@ -1,6 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NearestEnemies.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.JGP.Point3d;
+import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Accumulator;
 import com.maddox.il2.engine.Actor;
@@ -9,266 +15,250 @@ import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.Paratrooper;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            Prey
+
 public class NearestEnemies
-  implements Accumulator
+    implements com.maddox.il2.engine.Accumulator
 {
-  private static final int MAX_OBJECTS = 3;
-  private static Actor[] nearAct = new Actor[3];
-  private static double[] nearDSq = new double[3];
-  private static int nearNUsed;
-  private static NearestEnemies enemies = new NearestEnemies();
-  private static int usedWeaponsMask;
-  private static boolean useSpeed = false;
-  private static float minSpeed;
-  private static float maxSpeed;
 
-  public static NearestEnemies enemies()
-  {
-    return enemies;
-  }
-
-  public static void set(int paramInt) {
-    set(paramInt, 0.0F, 0.0F);
-    useSpeed = false;
-  }
-  public static void set(int paramInt, float paramFloat1, float paramFloat2) {
-    enemies.clear();
-    usedWeaponsMask = paramInt;
-    minSpeed = paramFloat1;
-    maxSpeed = paramFloat2;
-    useSpeed = true;
-  }
-
-  public static void resetGameClear() {
-    for (int i = 0; i < nearAct.length; i++)
-      nearAct[i] = null;
-  }
-
-  public void clear()
-  {
-    nearNUsed = 0;
-  }
-
-  public boolean add(Actor paramActor, double paramDouble)
-  {
-    if ((!(paramActor instanceof Prey)) || ((((Prey)paramActor).HitbyMask() & usedWeaponsMask) == 0))
+    public NearestEnemies()
     {
-      return true;
     }
 
-    if (useSpeed) {
-      float f = (float)paramActor.getSpeed(null);
-      if ((f < minSpeed) || (f > maxSpeed)) {
-        return true;
-      }
-
-    }
-
-    for (int i = nearNUsed - 1; (i >= 0) && 
-      (paramDouble < nearDSq[i]); i--);
-    i++;
-    if (i >= nearNUsed) {
-      if (nearNUsed < 3) {
-        nearAct[nearNUsed] = paramActor;
-        nearDSq[nearNUsed] = paramDouble;
-        nearNUsed += 1;
-      }
-    }
-    else
+    public static com.maddox.il2.ai.ground.NearestEnemies enemies()
     {
-      int j;
-      if (nearNUsed < 3) {
-        j = nearNUsed - 1;
-        nearNUsed += 1;
-      }
-      else {
-        j = nearNUsed - 2;
-      }
-      for (; j >= i; j--) {
-        nearAct[(j + 1)] = nearAct[j];
-        nearDSq[(j + 1)] = nearDSq[j];
-      }
-      nearAct[i] = paramActor;
-      nearDSq[i] = paramDouble;
+        return enemies;
     }
-    return true;
-  }
 
-  public static Actor getAFoundEnemy()
-  {
-    if (nearNUsed <= 0) {
-      return null;
+    public static void set(int i)
+    {
+        com.maddox.il2.ai.ground.NearestEnemies.set(i, 0.0F, 0.0F);
+        useSpeed = false;
     }
-    return nearAct[World.Rnd().nextInt(nearNUsed)];
-  }
 
-  public static Actor getAFoundEnemy(Point3d paramPoint3d, double paramDouble, int paramInt) {
-    double d1 = paramDouble * paramDouble;
-    List localList = Engine.targets();
-    int i = localList.size();
+    public static void set(int i, float f, float f1)
+    {
+        enemies.clear();
+        usedWeaponsMask = i;
+        minSpeed = f;
+        maxSpeed = f1;
+        useSpeed = true;
+    }
 
-    int j = 0;
+    public static void resetGameClear()
+    {
+        for(int i = 0; i < nearAct.length; i++)
+            nearAct[i] = null;
 
-    for (int k = 0; k < i; k++) {
-      Actor localActor = (Actor)localList.get(k);
+    }
 
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        continue;
-      }
+    public void clear()
+    {
+        nearNUsed = 0;
+    }
 
-      if ((((Prey)localActor).HitbyMask() & usedWeaponsMask) == 0)
-      {
-        continue;
-      }
-
-      int m = localActor.getArmy();
-      if ((m == 0) || (m == paramInt))
-      {
-        continue;
-      }
-      Point3d localPoint3d = localActor.pos.getAbsPoint();
-      double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y);
-
-      if (d2 > d1)
-      {
-        continue;
-      }
-      if (useSpeed) {
-        float f = (float)localActor.getSpeed(null);
-        if ((f < minSpeed) || (f > maxSpeed))
+    public boolean add(com.maddox.il2.engine.Actor actor, double d)
+    {
+        if(!(actor instanceof com.maddox.il2.ai.ground.Prey) || (((com.maddox.il2.ai.ground.Prey)actor).HitbyMask() & usedWeaponsMask) == 0)
+            return true;
+        if(useSpeed)
         {
-          continue;
+            float f = (float)actor.getSpeed(null);
+            if(f < minSpeed || f > maxSpeed)
+                return true;
         }
-      }
-      if ((localActor instanceof Paratrooper))
-      {
-        d2 += 1.0D + d1;
-        j = 1;
-      }
+        int i;
+        for(i = nearNUsed - 1; i >= 0; i--)
+            if(d >= nearDSq[i])
+                break;
 
-      for (int n = nearNUsed - 1; (n >= 0) && 
-        (d2 < nearDSq[n]); n--);
-      n++;
-      if (n >= nearNUsed) {
-        if (nearNUsed < 3) {
-          nearAct[nearNUsed] = localActor;
-          nearDSq[nearNUsed] = d2;
-          nearNUsed += 1;
+        if(++i >= nearNUsed)
+        {
+            if(nearNUsed < 3)
+            {
+                nearAct[nearNUsed] = actor;
+                nearDSq[nearNUsed] = d;
+                nearNUsed++;
+            }
+        } else
+        {
+            int j;
+            if(nearNUsed < 3)
+            {
+                j = nearNUsed - 1;
+                nearNUsed++;
+            } else
+            {
+                j = nearNUsed - 2;
+            }
+            for(; j >= i; j--)
+            {
+                nearAct[j + 1] = nearAct[j];
+                nearDSq[j + 1] = nearDSq[j];
+            }
+
+            nearAct[i] = actor;
+            nearDSq[i] = d;
         }
-      }
-      else
-      {
-        int i1;
-        if (nearNUsed < 3) {
-          i1 = nearNUsed - 1;
-          nearNUsed += 1;
-        }
-        else {
-          i1 = nearNUsed - 2;
-        }
-        for (; i1 >= n; i1--) {
-          nearAct[(i1 + 1)] = nearAct[i1];
-          nearDSq[(i1 + 1)] = nearDSq[i1];
-        }
-        nearAct[n] = localActor;
-        nearDSq[n] = d2;
-      }
+        return true;
     }
 
-    if (nearNUsed <= 0) {
-      return null;
-    }
-
-    if ((j == 0) || ((nearAct[0] instanceof Paratrooper))) {
-      return nearAct[World.Rnd().nextInt(nearNUsed)];
-    }
-
-    k = 1;
-    while ((k < nearNUsed) && 
-      (!(nearAct[k] instanceof Paratrooper)))
+    public static com.maddox.il2.engine.Actor getAFoundEnemy()
     {
-      k++;
+        if(nearNUsed <= 0)
+            return null;
+        else
+            return nearAct[nearNUsed != 1 ? com.maddox.il2.ai.World.Rnd().nextInt(nearNUsed) : 0];
     }
 
-    return nearAct[World.Rnd().nextInt(k)];
-  }
+    public static com.maddox.il2.engine.Actor getAFoundEnemy(com.maddox.JGP.Point3d point3d, double d, int i)
+    {
+        double d1 = d * d;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        boolean flag = false;
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if((((com.maddox.il2.ai.ground.Prey)actor).HitbyMask() & usedWeaponsMask) == 0)
+                continue;
+            int i1 = actor.getArmy();
+            if(i1 == 0 || i1 == i)
+                continue;
+            com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+            double d2 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y);
+            if(d2 > d1)
+                continue;
+            if(useSpeed)
+            {
+                float f = (float)actor.getSpeed(null);
+                if(f < minSpeed || f > maxSpeed)
+                    continue;
+            }
+            if(actor instanceof com.maddox.il2.objects.air.Paratrooper)
+            {
+                d2 += 1.0D + d1;
+                flag = true;
+            }
+            int j1;
+            for(j1 = nearNUsed - 1; j1 >= 0; j1--)
+                if(d2 >= nearDSq[j1])
+                    break;
 
-  public static Actor getAFoundFlyingPlane(Point3d paramPoint3d, double paramDouble, int paramInt, float paramFloat)
-  {
-    double d1 = paramDouble * paramDouble;
-    List localList = Engine.targets();
-    int i = localList.size();
+            if(++j1 >= nearNUsed)
+            {
+                if(nearNUsed < 3)
+                {
+                    nearAct[nearNUsed] = actor;
+                    nearDSq[nearNUsed] = d2;
+                    nearNUsed++;
+                }
+            } else
+            {
+                int k1;
+                if(nearNUsed < 3)
+                {
+                    k1 = nearNUsed - 1;
+                    nearNUsed++;
+                } else
+                {
+                    k1 = nearNUsed - 2;
+                }
+                for(; k1 >= j1; k1--)
+                {
+                    nearAct[k1 + 1] = nearAct[k1];
+                    nearDSq[k1 + 1] = nearDSq[k1];
+                }
 
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)localList.get(j);
-
-      if (!(localActor instanceof Aircraft))
-      {
-        continue;
-      }
-      int k = localActor.getArmy();
-      if ((k == 0) || (k == paramInt))
-      {
-        continue;
-      }
-      if ((((Prey)localActor).HitbyMask() & usedWeaponsMask) == 0)
-      {
-        continue;
-      }
-      Point3d localPoint3d = localActor.pos.getAbsPoint();
-
-      double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
-
-      if (d2 > d1)
-      {
-        continue;
-      }
-      if (localActor.getSpeed(null) < 10.0D)
-      {
-        continue;
-      }
-      if (localPoint3d.z - World.land().HQ(localPoint3d.x, localPoint3d.y) < paramFloat)
-      {
-        continue;
-      }
-
-      for (int m = nearNUsed - 1; (m >= 0) && 
-        (d2 < nearDSq[m]); m--);
-      m++;
-      if (m >= nearNUsed) {
-        if (nearNUsed < 3) {
-          nearAct[nearNUsed] = localActor;
-          nearDSq[nearNUsed] = d2;
-          nearNUsed += 1;
+                nearAct[j1] = actor;
+                nearDSq[j1] = d2;
+            }
         }
-      }
-      else
-      {
-        int n;
-        if (nearNUsed < 3) {
-          n = nearNUsed - 1;
-          nearNUsed += 1;
-        }
-        else {
-          n = nearNUsed - 2;
-        }
-        for (; n >= m; n--) {
-          nearAct[(n + 1)] = nearAct[n];
-          nearDSq[(n + 1)] = nearDSq[n];
-        }
-        nearAct[m] = localActor;
-        nearDSq[m] = d2;
-      }
+
+        if(nearNUsed <= 0)
+            return null;
+        if(!flag || (nearAct[0] instanceof com.maddox.il2.objects.air.Paratrooper))
+            return nearAct[nearNUsed != 1 ? com.maddox.il2.ai.World.Rnd().nextInt(nearNUsed) : 0];
+        int l;
+        for(l = 1; l < nearNUsed; l++)
+            if(nearAct[l] instanceof com.maddox.il2.objects.air.Paratrooper)
+                break;
+
+        return nearAct[l != 1 ? com.maddox.il2.ai.World.Rnd().nextInt(l) : 0];
     }
-    if (nearNUsed <= 0) {
-      return null;
+
+    public static com.maddox.il2.engine.Actor getAFoundFlyingPlane(com.maddox.JGP.Point3d point3d, double d, int i, float f)
+    {
+        double d1 = d * d;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            {
+                int l = actor.getArmy();
+                if(l != 0 && l != i && (((com.maddox.il2.ai.ground.Prey)actor).HitbyMask() & usedWeaponsMask) != 0)
+                {
+                    com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                    double d2 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+                    if(d2 <= d1 && actor.getSpeed(null) >= 10D && point3d1.z - com.maddox.il2.ai.World.land().HQ(point3d1.x, point3d1.y) >= (double)f)
+                    {
+                        int i1;
+                        for(i1 = nearNUsed - 1; i1 >= 0; i1--)
+                            if(d2 >= nearDSq[i1])
+                                break;
+
+                        if(++i1 >= nearNUsed)
+                        {
+                            if(nearNUsed < 3)
+                            {
+                                nearAct[nearNUsed] = actor;
+                                nearDSq[nearNUsed] = d2;
+                                nearNUsed++;
+                            }
+                        } else
+                        {
+                            int j1;
+                            if(nearNUsed < 3)
+                            {
+                                j1 = nearNUsed - 1;
+                                nearNUsed++;
+                            } else
+                            {
+                                j1 = nearNUsed - 2;
+                            }
+                            for(; j1 >= i1; j1--)
+                            {
+                                nearAct[j1 + 1] = nearAct[j1];
+                                nearDSq[j1 + 1] = nearDSq[j1];
+                            }
+
+                            nearAct[i1] = actor;
+                            nearDSq[i1] = d2;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(nearNUsed <= 0)
+            return null;
+        else
+            return nearAct[nearNUsed != 1 ? com.maddox.il2.ai.World.Rnd().nextInt(nearNUsed) : 0];
     }
-    return nearAct[World.Rnd().nextInt(nearNUsed)];
-  }
+
+    private static final int MAX_OBJECTS = 3;
+    private static com.maddox.il2.engine.Actor nearAct[] = new com.maddox.il2.engine.Actor[3];
+    private static double nearDSq[] = new double[3];
+    private static int nearNUsed;
+    private static com.maddox.il2.ai.ground.NearestEnemies enemies = new NearestEnemies();
+    private static int usedWeaponsMask;
+    private static boolean useSpeed = false;
+    private static float minSpeed;
+    private static float maxSpeed;
+
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Engine.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.il2.ai.World;
@@ -12,232 +17,264 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorDestroyListener, Actor, ActorSoundListener, LightEnvXY, 
+//            DrawEnvXY, CollideEnvXY, DreamEnvXY, InterpolateAdapter, 
+//            EngineProfile, Renders, Landscape, BulletGeneric, 
+//            DrawEnv, CollideEnv, DreamEnv, MeshShared, 
+//            GObj, LightEnv
+
 public class Engine
 {
-  public static Engine cur;
-  public static final boolean CHECK_DESTROY_ACTORS = false;
-  public Landscape land;
-  public World world = new World();
-  public Actor actorLand;
-  public BulletGeneric bulletList;
-  public LightEnv lightEnv = new LightEnvXY(this.world.sun());
 
-  public DrawEnv drawEnv = new DrawEnvXY();
-
-  public CollideEnv collideEnv = new CollideEnvXY();
-
-  public DreamEnv dreamEnv = new DreamEnvXY();
-
-  protected ArrayList targets = new ArrayList();
-
-  private Acoustics worldAcoustics = null;
-
-  protected ActorSoundListener soundListener = null;
-  private Renders rendersMain;
-  protected InterpolateAdapter interpolateAdapter = new InterpolateAdapter();
-
-  private ArrayList actorDestroyListeners = new ArrayList();
-
-  protected EngineProfile profile = new EngineProfile();
-
-  private ArrayList queueDestroyActors = new ArrayList();
-
-  protected HashMapExt name2Actor = new HashMapExt();
-
-  protected HashMapExt allEff3DActors = new HashMapExt();
-
-  protected HashMapExt allActors = new HashMapExt();
-
-  protected ArrayList posChanged = new ArrayList();
-
-  public static boolean isServer()
-  {
-    return NetEnv.isServer();
-  }
-
-  public static Landscape land()
-  {
-    return cur.land;
-  }
-
-  public static Actor actorLand()
-  {
-    return cur.actorLand;
-  }
-
-  public static LightEnv lightEnv()
-  {
-    return cur.lightEnv;
-  }
-
-  public static DrawEnv drawEnv()
-  {
-    return cur.drawEnv;
-  }
-
-  public static CollideEnv collideEnv()
-  {
-    return cur.collideEnv;
-  }
-
-  public static DreamEnv dreamEnv()
-  {
-    return cur.dreamEnv;
-  }
-
-  public static List targets()
-  {
-    return cur.targets;
-  }
-
-  public static void setWorldAcoustics(String paramString) {
-    cur.worldAcoustics = new Acoustics(paramString);
-  }
-  public static Acoustics worldAcoustics() {
-    return cur.worldAcoustics;
-  }
-
-  public static ActorSoundListener soundListener()
-  {
-    return cur.soundListener;
-  }
-
-  public static Renders rendersMain()
-  {
-    return cur.rendersMain;
-  }
-
-  public static InterpolateAdapter interpolateAdapter()
-  {
-    return cur.interpolateAdapter;
-  }
-
-  protected void actorDestroyed(Actor paramActor)
-  {
-    for (int i = 0; i < this.actorDestroyListeners.size(); i++)
-      ((ActorDestroyListener)this.actorDestroyListeners.get(i)).actorDestroyed(paramActor);
-  }
-
-  public void addActorDestroyListener(ActorDestroyListener paramActorDestroyListener) {
-    if (!this.actorDestroyListeners.contains(paramActorDestroyListener))
-      this.actorDestroyListeners.add(paramActorDestroyListener); 
-  }
-
-  public void removeActorDestroyListener(ActorDestroyListener paramActorDestroyListener) {
-    int i = this.actorDestroyListeners.indexOf(paramActorDestroyListener);
-    if (i >= 0)
-      this.actorDestroyListeners.remove(i);
-  }
-
-  public static void processPostDestroyActors()
-  {
-    int i = cur.queueDestroyActors.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)cur.queueDestroyActors.get(j);
-      if (Actor.isValid(localActor))
-        localActor.destroy();
-    }
-    cur.queueDestroyActors.clear();
-  }
-
-  public static void postDestroyActor(Actor paramActor)
-  {
-    cur.queueDestroyActors.add(paramActor);
-  }
-
-  public static HashMapExt name2Actor()
-  {
-    return cur.name2Actor;
-  }
-
-  public static void destroyListGameActors(List paramList)
-  {
-    int i = paramList.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)paramList.get(j);
-      if ((!Actor.isValid(localActor)) || ((localActor.flags & 0x4000) != 0)) continue;
-      try {
-        localActor.destroy();
-      } catch (Exception localException) {
-        printDebug(localException);
-      }
-    }
-
-    paramList.clear();
-  }
-
-  private void dectroyMsgActors(Message[] paramArrayOfMessage) {
-    if (paramArrayOfMessage == null) return;
-    for (int i = 0; (i < paramArrayOfMessage.length) && 
-      (paramArrayOfMessage[i] != null); i++)
+    public static boolean isServer()
     {
-      Object localObject = paramArrayOfMessage[i].listener();
-      if ((localObject instanceof Actor)) {
-        Actor localActor = (Actor)localObject;
-        if ((Actor.isValid(localActor)) && ((localActor.flags & 0x4000) == 0)) {
-          try {
-            localActor.destroy();
-          } catch (Exception localException) {
-            printDebug(localException);
-          }
+        return com.maddox.rts.NetEnv.isServer();
+    }
+
+    public static com.maddox.il2.engine.Landscape land()
+    {
+        return cur.land;
+    }
+
+    public static com.maddox.il2.engine.Actor actorLand()
+    {
+        return cur.actorLand;
+    }
+
+    public static com.maddox.il2.engine.LightEnv lightEnv()
+    {
+        return cur.lightEnv;
+    }
+
+    public static com.maddox.il2.engine.DrawEnv drawEnv()
+    {
+        return cur.drawEnv;
+    }
+
+    public static com.maddox.il2.engine.CollideEnv collideEnv()
+    {
+        return cur.collideEnv;
+    }
+
+    public static com.maddox.il2.engine.DreamEnv dreamEnv()
+    {
+        return cur.dreamEnv;
+    }
+
+    public static java.util.List targets()
+    {
+        return cur.targets;
+    }
+
+    public static void setWorldAcoustics(java.lang.String s)
+    {
+        cur.worldAcoustics = new Acoustics(s);
+    }
+
+    public static com.maddox.sound.Acoustics worldAcoustics()
+    {
+        return cur.worldAcoustics;
+    }
+
+    public static com.maddox.il2.engine.ActorSoundListener soundListener()
+    {
+        return cur.soundListener;
+    }
+
+    public static com.maddox.il2.engine.Renders rendersMain()
+    {
+        return cur.rendersMain;
+    }
+
+    public static com.maddox.il2.engine.InterpolateAdapter interpolateAdapter()
+    {
+        return cur.interpolateAdapter;
+    }
+
+    protected void actorDestroyed(com.maddox.il2.engine.Actor actor)
+    {
+        for(int i = 0; i < actorDestroyListeners.size(); i++)
+            ((com.maddox.il2.engine.ActorDestroyListener)actorDestroyListeners.get(i)).actorDestroyed(actor);
+
+    }
+
+    public void addActorDestroyListener(com.maddox.il2.engine.ActorDestroyListener actordestroylistener)
+    {
+        if(!actorDestroyListeners.contains(actordestroylistener))
+            actorDestroyListeners.add(actordestroylistener);
+    }
+
+    public void removeActorDestroyListener(com.maddox.il2.engine.ActorDestroyListener actordestroylistener)
+    {
+        int i = actorDestroyListeners.indexOf(actordestroylistener);
+        if(i >= 0)
+            actorDestroyListeners.remove(i);
+    }
+
+    public static void processPostDestroyActors()
+    {
+        int i = cur.queueDestroyActors.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)cur.queueDestroyActors.get(j);
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+                actor.destroy();
         }
-      }
-      paramArrayOfMessage[i] = null;
+
+        cur.queueDestroyActors.clear();
     }
-  }
 
-  public void resetGameClear() {
-    while (this.bulletList != null) {
-      localObject = this.bulletList;
-      this.bulletList = ((BulletGeneric)localObject).nextBullet;
-      ((BulletGeneric)localObject).destroy();
-      ((BulletGeneric)localObject).nextBullet = null;
+    public static void postDestroyActor(com.maddox.il2.engine.Actor actor)
+    {
+        cur.queueDestroyActors.add(actor);
     }
-    this.targets.clear();
-    Object localObject = new ArrayList();
-    cur.drawEnv.resetGameClear();
-    cur.collideEnv.resetGameClear();
-    cur.dreamEnv.resetGameClear();
-    cur.interpolateAdapter.resetGameClear();
-    this.actorLand.destroy();
-    ((ArrayList)localObject).addAll(this.allEff3DActors.keySet());
-    destroyListGameActors((List)localObject);
-    ((ArrayList)localObject).addAll(this.name2Actor.values());
-    destroyListGameActors((List)localObject);
-    MeshShared.clearAll();
-    cur.world.resetGameClear();
 
-    dectroyMsgActors(RTSConf.cur.queue.toArray());
-    dectroyMsgActors(RTSConf.cur.queueNextTick.toArray());
-    processPostDestroyActors();
+    public static com.maddox.util.HashMapExt name2Actor()
+    {
+        return cur.name2Actor;
+    }
 
-    GObj.DeleteCppObjects();
-  }
+    public static void destroyListGameActors(java.util.List list)
+    {
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(j);
+            if(com.maddox.il2.engine.Actor.isValid(actor) && (actor.flags & 0x4000) == 0)
+                try
+                {
+                    actor.destroy();
+                }
+                catch(java.lang.Exception exception)
+                {
+                    com.maddox.il2.engine.Engine.printDebug(exception);
+                }
+        }
 
-  public void resetGameCreate() {
-    Actor.resetActorGameHashCodes();
-    cur.world.resetGameCreate();
-    cur.collideEnv.resetGameCreate();
-    cur.drawEnv.resetGameCreate();
-    cur.lightEnv.clear();
-    cur.dreamEnv.resetGameCreate();
-    cur.interpolateAdapter.resetGameCreate();
+        list.clear();
+    }
 
-    this.actorLand = new ActorLand();
-    this.soundListener = new ActorSoundListener();
-    this.soundListener.initDraw();
-  }
+    private void dectroyMsgActors(com.maddox.rts.Message amessage[])
+    {
+        if(amessage == null)
+            return;
+        for(int i = 0; i < amessage.length; i++)
+        {
+            if(amessage[i] == null)
+                break;
+            java.lang.Object obj = amessage[i].listener();
+            if(obj instanceof com.maddox.il2.engine.Actor)
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)obj;
+                if(com.maddox.il2.engine.Actor.isValid(actor) && (actor.flags & 0x4000) == 0)
+                    try
+                    {
+                        actor.destroy();
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        com.maddox.il2.engine.Engine.printDebug(exception);
+                    }
+            }
+            amessage[i] = null;
+        }
 
-  public Engine() {
-    cur = this;
-    this.rendersMain = new Renders();
-    this.land = new Landscape();
-    this.actorLand = new ActorLand();
-    this.soundListener = new ActorSoundListener();
-  }
+    }
 
-  protected static void printDebug(Exception paramException) {
-    System.out.println(paramException.getMessage());
-    paramException.printStackTrace();
-  }
+    public void resetGameClear()
+    {
+        while(bulletList != null) 
+        {
+            com.maddox.il2.engine.BulletGeneric bulletgeneric = bulletList;
+            bulletList = bulletgeneric.nextBullet;
+            bulletgeneric.destroy();
+            bulletgeneric.nextBullet = null;
+        }
+        targets.clear();
+        java.util.ArrayList arraylist = new ArrayList();
+        cur.drawEnv.resetGameClear();
+        cur.collideEnv.resetGameClear();
+        cur.dreamEnv.resetGameClear();
+        cur.interpolateAdapter.resetGameClear();
+        actorLand.destroy();
+        arraylist.addAll(allEff3DActors.keySet());
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        arraylist.addAll(name2Actor.values());
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        com.maddox.il2.engine.MeshShared.clearAll();
+        cur.world.resetGameClear();
+        dectroyMsgActors(com.maddox.rts.RTSConf.cur.queue.toArray());
+        dectroyMsgActors(com.maddox.rts.RTSConf.cur.queueNextTick.toArray());
+        com.maddox.il2.engine.Engine.processPostDestroyActors();
+        com.maddox.il2.engine.GObj.DeleteCppObjects();
+    }
+
+    public void resetGameCreate()
+    {
+        com.maddox.il2.engine.Actor.resetActorGameHashCodes();
+        cur.world.resetGameCreate();
+        cur.collideEnv.resetGameCreate();
+        cur.drawEnv.resetGameCreate();
+        cur.lightEnv.clear();
+        cur.dreamEnv.resetGameCreate();
+        cur.interpolateAdapter.resetGameCreate();
+        actorLand = new ActorLand();
+        soundListener = new ActorSoundListener();
+        soundListener.initDraw();
+    }
+
+    public Engine()
+    {
+        world = new World();
+        lightEnv = new LightEnvXY(world.sun());
+        drawEnv = new DrawEnvXY();
+        collideEnv = new CollideEnvXY();
+        dreamEnv = new DreamEnvXY();
+        targets = new ArrayList();
+        worldAcoustics = null;
+        soundListener = null;
+        interpolateAdapter = new InterpolateAdapter();
+        actorDestroyListeners = new ArrayList();
+        profile = new EngineProfile();
+        queueDestroyActors = new ArrayList();
+        name2Actor = new HashMapExt();
+        allEff3DActors = new HashMapExt();
+        allActors = new HashMapExt();
+        posChanged = new ArrayList();
+        cur = this;
+        rendersMain = new Renders();
+        land = new Landscape();
+        actorLand = new ActorLand();
+        soundListener = new ActorSoundListener();
+    }
+
+    protected static void printDebug(java.lang.Exception exception)
+    {
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+    }
+
+    public static com.maddox.il2.engine.Engine cur;
+    public static final boolean CHECK_DESTROY_ACTORS = false;
+    public com.maddox.il2.engine.Landscape land;
+    public com.maddox.il2.ai.World world;
+    public com.maddox.il2.engine.Actor actorLand;
+    public com.maddox.il2.engine.BulletGeneric bulletList;
+    public com.maddox.il2.engine.LightEnv lightEnv;
+    public com.maddox.il2.engine.DrawEnv drawEnv;
+    public com.maddox.il2.engine.CollideEnv collideEnv;
+    public com.maddox.il2.engine.DreamEnv dreamEnv;
+    protected java.util.ArrayList targets;
+    private com.maddox.sound.Acoustics worldAcoustics;
+    protected com.maddox.il2.engine.ActorSoundListener soundListener;
+    private com.maddox.il2.engine.Renders rendersMain;
+    protected com.maddox.il2.engine.InterpolateAdapter interpolateAdapter;
+    private java.util.ArrayList actorDestroyListeners;
+    protected com.maddox.il2.engine.EngineProfile profile;
+    private java.util.ArrayList queueDestroyActors;
+    protected com.maddox.util.HashMapExt name2Actor;
+    protected com.maddox.util.HashMapExt allEff3DActors;
+    protected com.maddox.util.HashMapExt allActors;
+    protected java.util.ArrayList posChanged;
 }

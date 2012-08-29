@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BulletParabolaGeneric.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -5,23 +10,32 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.Loc;
 
-public class BulletParabolaGeneric extends Bullet
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bullet
+
+public class BulletParabolaGeneric extends com.maddox.il2.objects.weapons.Bullet
 {
-  public BulletParabolaGeneric(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
-  {
-    super(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong);
-  }
 
-  public void move(float paramFloat)
-  {
-    if (this.gun == null) return;
+    public BulletParabolaGeneric(int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d, long l)
+    {
+        super(i, gungeneric, loc, vector3d, l);
+    }
 
-    this.p0.set(this.p1);
-    this.p1.scaleAdd(paramFloat, this.speed, this.p0);
-    this.speed.z += this.gun.bulletAG[indx()] * paramFloat;
-  }
+    public void move(float f)
+    {
+        if(gun == null)
+        {
+            return;
+        } else
+        {
+            p0.set(p1);
+            p1.scaleAdd(f, speed, p0);
+            speed.z += gun.bulletAG[indx()] * f;
+            return;
+        }
+    }
 
-  public void timeOut()
-  {
-  }
+    public void timeOut()
+    {
+    }
 }

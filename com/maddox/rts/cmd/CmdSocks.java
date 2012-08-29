@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdSocks.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -7,74 +12,80 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdSocks extends Cmd
+public class CmdSocks extends com.maddox.rts.Cmd
 {
-  public static final String HOST = "HOST";
-  public static final String PORT = "PORT";
-  public static final String USER = "USER";
-  public static final String PWD = "PWD";
-  public static final String ON = "ON";
-  public static final String OFF = "OFF";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    int i = 1;
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        boolean flag = true;
+        if(com.maddox.rts.Cmd.exist(map, "ON"))
+        {
+            com.maddox.rts.net.SocksUdpSocket.setProxyEnable(true);
+            flag = false;
+        } else
+        if(com.maddox.rts.Cmd.exist(map, "OFF"))
+        {
+            com.maddox.rts.net.SocksUdpSocket.setProxyEnable(false);
+            flag = false;
+        }
+        if(com.maddox.rts.Cmd.exist(map, "HOST"))
+        {
+            if(com.maddox.rts.Cmd.nargs(map, "HOST") > 0)
+                com.maddox.rts.net.SocksUdpSocket.setProxyHost(com.maddox.rts.Cmd.arg(map, "HOST", 0));
+            else
+                com.maddox.rts.net.SocksUdpSocket.setProxyHost(null);
+            flag = false;
+        }
+        if(com.maddox.rts.Cmd.exist(map, "PORT") && com.maddox.rts.Cmd.nargs(map, "PORT") > 0)
+        {
+            com.maddox.rts.net.SocksUdpSocket.setProxyPort(com.maddox.rts.Cmd.arg(map, "PORT", 0, 1080));
+            flag = false;
+        }
+        if(com.maddox.rts.Cmd.exist(map, "USER"))
+        {
+            if(com.maddox.rts.Cmd.nargs(map, "USER") > 0)
+                com.maddox.rts.net.SocksUdpSocket.setProxyUser(com.maddox.rts.Cmd.arg(map, "USER", 0));
+            else
+                com.maddox.rts.net.SocksUdpSocket.setProxyUser(null);
+            flag = false;
+        }
+        if(com.maddox.rts.Cmd.exist(map, "PWD"))
+        {
+            if(com.maddox.rts.Cmd.nargs(map, "PWD") > 0)
+                com.maddox.rts.net.SocksUdpSocket.setProxyPassword(com.maddox.rts.Cmd.arg(map, "PWD", 0));
+            else
+                com.maddox.rts.net.SocksUdpSocket.setProxyPassword(null);
+            flag = false;
+        }
+        if(flag)
+        {
+            INFO_HARD(" Proxy socks is " + (com.maddox.rts.net.SocksUdpSocket.isProxyEnable() ? "enable" : "disable"));
+            INFO_HARD("   HOST " + (com.maddox.rts.net.SocksUdpSocket.getProxyHost() == null ? "UNKNOWN" : com.maddox.rts.net.SocksUdpSocket.getProxyHost()));
+            INFO_HARD("   PORT " + com.maddox.rts.net.SocksUdpSocket.getProxyPort());
+            if(com.maddox.rts.net.SocksUdpSocket.getProxyUser() != null)
+                INFO_HARD("   USER " + com.maddox.rts.net.SocksUdpSocket.getProxyUser());
+            if(com.maddox.rts.net.SocksUdpSocket.getProxyPassword() != null)
+                INFO_HARD("   PWD " + com.maddox.rts.net.SocksUdpSocket.getProxyPassword());
+        }
+        return null;
+    }
 
-    if (exist(paramMap, "ON")) {
-      SocksUdpSocket.setProxyEnable(true);
-      i = 0;
-    } else if (exist(paramMap, "OFF")) {
-      SocksUdpSocket.setProxyEnable(false);
-      i = 0;
+    public CmdSocks()
+    {
+        param.put("HOST", null);
+        param.put("PORT", null);
+        param.put("USER", null);
+        param.put("PWD", null);
+        param.put("ON", null);
+        param.put("OFF", null);
+        _properties.put("NAME", "socks");
+        _levelAccess = 1;
     }
-    if (exist(paramMap, "HOST")) {
-      if (nargs(paramMap, "HOST") > 0)
-        SocksUdpSocket.setProxyHost(arg(paramMap, "HOST", 0));
-      else {
-        SocksUdpSocket.setProxyHost(null);
-      }
-      i = 0;
-    }
-    if ((exist(paramMap, "PORT")) && (nargs(paramMap, "PORT") > 0)) {
-      SocksUdpSocket.setProxyPort(arg(paramMap, "PORT", 0, 1080));
-      i = 0;
-    }
-    if (exist(paramMap, "USER")) {
-      if (nargs(paramMap, "USER") > 0)
-        SocksUdpSocket.setProxyUser(arg(paramMap, "USER", 0));
-      else {
-        SocksUdpSocket.setProxyUser(null);
-      }
-      i = 0;
-    }
-    if (exist(paramMap, "PWD")) {
-      if (nargs(paramMap, "PWD") > 0)
-        SocksUdpSocket.setProxyPassword(arg(paramMap, "PWD", 0));
-      else {
-        SocksUdpSocket.setProxyPassword(null);
-      }
-      i = 0;
-    }
-    if (i != 0) {
-      INFO_HARD(" Proxy socks is " + (SocksUdpSocket.isProxyEnable() ? "enable" : "disable"));
-      INFO_HARD("   HOST " + (SocksUdpSocket.getProxyHost() != null ? SocksUdpSocket.getProxyHost() : "UNKNOWN"));
-      INFO_HARD("   PORT " + SocksUdpSocket.getProxyPort());
-      if (SocksUdpSocket.getProxyUser() != null)
-        INFO_HARD("   USER " + SocksUdpSocket.getProxyUser());
-      if (SocksUdpSocket.getProxyPassword() != null)
-        INFO_HARD("   PWD " + SocksUdpSocket.getProxyPassword());
-    }
-    return null;
-  }
 
-  public CmdSocks() {
-    this.param.put("HOST", null);
-    this.param.put("PORT", null);
-    this.param.put("USER", null);
-    this.param.put("PWD", null);
-    this.param.put("ON", null);
-    this.param.put("OFF", null);
-    this._properties.put("NAME", "socks");
-    this._levelAccess = 1;
-  }
+    public static final java.lang.String HOST = "HOST";
+    public static final java.lang.String PORT = "PORT";
+    public static final java.lang.String USER = "USER";
+    public static final java.lang.String PWD = "PWD";
+    public static final java.lang.String ON = "ON";
+    public static final java.lang.String OFF = "OFF";
 }

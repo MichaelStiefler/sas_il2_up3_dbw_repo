@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitTB_3_Bombardier.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.ActorPos;
@@ -20,193 +25,238 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
 
-public class CockpitTB_3_Bombardier extends CockpitPilot
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitPilot, TB_3_4M_17, Cockpit
+
+public class CockpitTB_3_Bombardier extends com.maddox.il2.objects.air.CockpitPilot
 {
-  private float pencilDisp = 0.0F;
-  private float curAlt = 300.0F;
-  private float curSpd = 50.0F;
-  private float saveFov;
-  private float aAim;
-  private float tAim;
-  private float kAim;
-  private boolean bEntered = false;
-
-  protected boolean doFocusEnter()
-  {
-    if (super.doFocusEnter())
+    class Interpolater extends com.maddox.il2.engine.InterpolateRef
     {
-      HookPilot localHookPilot = HookPilot.current;
-      localHookPilot.doAim(false);
-      return true;
-    }
-    return false;
-  }
 
-  protected void doFocusLeave() {
-    if (!isFocused()) return;
-
-    leave();
-    super.doFocusLeave();
-  }
-
-  private void enter()
-  {
-    this.saveFov = Main3D.FOVX;
-    CmdEnv.top().exec("fov 45.0");
-    Main3D.cur3D().aircraftHotKeys.setEnableChangeFov(false);
-    HookPilot localHookPilot = HookPilot.current;
-    if (localHookPilot.isPadlock())
-      localHookPilot.stopPadlock();
-    localHookPilot.doAim(true);
-    localHookPilot.setSimpleUse(true);
-    localHookPilot.setSimpleAimOrient(this.aAim, this.tAim, 0.0F);
-    HotKeyEnv.enable("PanView", false);
-    HotKeyEnv.enable("SnapView", false);
-    this.bEntered = true;
-  }
-
-  private void leave()
-  {
-    if (!this.bEntered) return;
-    Main3D.cur3D().aircraftHotKeys.setEnableChangeFov(true);
-    CmdEnv.top().exec("fov " + this.saveFov);
-    HookPilot localHookPilot = HookPilot.current;
-    localHookPilot.doAim(false);
-    localHookPilot.setSimpleAimOrient(0.0F, 0.0F, 0.0F);
-    localHookPilot.setSimpleUse(false);
-    boolean bool = HotKeyEnv.isEnabled("aircraftView");
-    HotKeyEnv.enable("PanView", bool);
-    HotKeyEnv.enable("SnapView", bool);
-    this.bEntered = false;
-  }
-  public void destroy() {
-    super.destroy();
-    leave();
-  }
-
-  public void doToggleAim(boolean paramBoolean) {
-    if (!isFocused()) return;
-    if (isToggleAim() == paramBoolean) return;
-    if (paramBoolean) enter(); else
-      leave();
-  }
-
-  public CockpitTB_3_Bombardier()
-  {
-    super("3DO/Cockpit/TB-3-Bombardier/hier.him", "he111");
-    try {
-      Loc localLoc = new Loc();
-      HookNamed localHookNamed = new HookNamed(this.mesh, "CAMERAAIM");
-      localHookNamed.computePos(this, this.pos.getAbs(), localLoc);
-      this.aAim = localLoc.getOrient().getAzimut();
-      this.tAim = localLoc.getOrient().getTangage();
-      this.kAim = localLoc.getOrient().getKren();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-    this.cockpitNightMats = new String[] { "BombGauges", "Gauge03" };
-    setNightMats(false);
-    interpPut(new Interpolater(), null, Time.current(), null);
-  }
-
-  public void toggleLight()
-  {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl)
-      setNightMats(true);
-    else
-      setNightMats(false);
-  }
-
-  public void reflectCockpitState()
-  {
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0) {
-      this.mesh.chunkVisible("HullDamage1", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x20) != 0) {
-      this.mesh.chunkVisible("HullDamage2", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
-      this.mesh.chunkVisible("HullDamage3", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0) {
-      this.mesh.chunkVisible("HullDamage4", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x1) != 0) {
-      this.mesh.chunkVisible("XGlassDamage1", false);
-      this.mesh.chunkVisible("XGlassDamage2", false);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x2) != 0)
-      this.mesh.chunkVisible("XGlassDamage3", false);
-  }
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    if (this.bEntered) {
-      this.mesh.chunkVisible("BlackBox", true);
-      this.mesh.chunkVisible("zReticle", true);
-      this.mesh.chunkVisible("zScaleCurve", true);
-      this.mesh.chunkVisible("zScaleM", true);
-      this.mesh.chunkVisible("zScaleKM", true);
-      this.mesh.chunkVisible("zScaleKMH", true);
-    } else {
-      this.mesh.chunkVisible("BlackBox", false);
-      this.mesh.chunkVisible("zReticle", false);
-      this.mesh.chunkVisible("zScaleCurve", false);
-      this.mesh.chunkVisible("zScaleM", false);
-      this.mesh.chunkVisible("zScaleKM", false);
-      this.mesh.chunkVisible("zScaleKMH", false);
-    }
-  }
-
-  static
-  {
-    Property.set(CockpitTB_3_Bombardier.class, "astatePilotIndx", 3);
-  }
-
-  class Interpolater extends InterpolateRef
-  {
-    Interpolater()
-    {
-    }
-
-    public boolean tick()
-    {
-      CockpitTB_3_Bombardier.this.resetYPRmodifier();
-      float f1 = ((TB_3_4M_17)CockpitTB_3_Bombardier.this.aircraft()).fSightCurSpeed;
-      float f2 = ((TB_3_4M_17)CockpitTB_3_Bombardier.this.aircraft()).fSightCurAltitude;
-      CockpitTB_3_Bombardier.access$002(CockpitTB_3_Bombardier.this, (19.0F * CockpitTB_3_Bombardier.this.curAlt + f2) / 20.0F);
-      CockpitTB_3_Bombardier.access$102(CockpitTB_3_Bombardier.this, (19.0F * CockpitTB_3_Bombardier.this.curSpd + f1) / 20.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("zScaleKM", 0.04F * CockpitTB_3_Bombardier.this.curAlt, 0.0F, 0.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("zScaleM", 0.36F * CockpitTB_3_Bombardier.this.curAlt, 0.0F, 0.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("zScaleKMH", -0.8F * (CockpitTB_3_Bombardier.this.curSpd - 50.0F), 0.0F, 0.0F);
-      float f3 = 0.5F * (float)Math.tan(Math.atan(83.333335876464844D * Math.sqrt(2.0F * CockpitTB_3_Bombardier.this.curAlt / Atmosphere.g()) / CockpitTB_3_Bombardier.this.curAlt));
-      float f4 = (float)Math.tan(Math.atan(CockpitTB_3_Bombardier.this.curSpd / 3.6F * Math.sqrt(2.0F * CockpitTB_3_Bombardier.this.curAlt / Atmosphere.g()) / CockpitTB_3_Bombardier.this.curAlt));
-      Cockpit.xyz[0] = (-0.0005F * CockpitTB_3_Bombardier.access$000(CockpitTB_3_Bombardier.this));
-      Cockpit.xyz[1] = (-1.0F * (f3 - f4));
-
-      CockpitTB_3_Bombardier.this.mesh.chunkSetLocate("zScaleCurve", Cockpit.xyz, Cockpit.ypr);
-      if (Math.abs(CockpitTB_3_Bombardier.this.fm.Or.getKren()) < 30.0D) {
-        CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_Compass1", 0.0F, -CockpitTB_3_Bombardier.this.fm.Or.getYaw(), 0.0F);
-      }
-      if (Math.abs(CockpitTB_3_Bombardier.this.fm.Or.getKren()) > 3.5D) {
-        CockpitTB_3_Bombardier.access$224(CockpitTB_3_Bombardier.this, 0.0004F * CockpitTB_3_Bombardier.this.fm.Or.getKren());
-        if (CockpitTB_3_Bombardier.this.pencilDisp > 0.1725F) {
-          CockpitTB_3_Bombardier.access$202(CockpitTB_3_Bombardier.this, 0.1725F);
+        public boolean tick()
+        {
+            resetYPRmodifier();
+            float f = ((com.maddox.il2.objects.air.TB_3_4M_17)aircraft()).fSightCurSpeed;
+            float f1 = ((com.maddox.il2.objects.air.TB_3_4M_17)aircraft()).fSightCurAltitude;
+            curAlt = (19F * curAlt + f1) / 20F;
+            curSpd = (19F * curSpd + f) / 20F;
+            mesh.chunkSetAngles("zScaleKM", 0.04F * curAlt, 0.0F, 0.0F);
+            mesh.chunkSetAngles("zScaleM", 0.36F * curAlt, 0.0F, 0.0F);
+            mesh.chunkSetAngles("zScaleKMH", -0.8F * (curSpd - 50F), 0.0F, 0.0F);
+            float f2 = 0.5F * (float)java.lang.Math.tan(java.lang.Math.atan((83.333335876464844D * java.lang.Math.sqrt((2.0F * curAlt) / com.maddox.il2.fm.Atmosphere.g())) / (double)curAlt));
+            float f3 = (float)java.lang.Math.tan(java.lang.Math.atan(((double)(curSpd / 3.6F) * java.lang.Math.sqrt((2.0F * curAlt) / com.maddox.il2.fm.Atmosphere.g())) / (double)curAlt));
+            com.maddox.il2.objects.air.Cockpit.xyz[0] = -0.0005F * curAlt;
+            com.maddox.il2.objects.air.Cockpit.xyz[1] = -1F * (f2 - f3);
+            mesh.chunkSetLocate("zScaleCurve", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+            if((double)java.lang.Math.abs(fm.Or.getKren()) < 30D)
+                mesh.chunkSetAngles("Z_Compass1", 0.0F, -fm.Or.getYaw(), 0.0F);
+            if((double)java.lang.Math.abs(fm.Or.getKren()) > 3.5D)
+            {
+                pencilDisp-= = 0.0004F * fm.Or.getKren();
+                if(pencilDisp > 0.1725F)
+                    pencilDisp = 0.1725F;
+                if(pencilDisp < -0.2529F)
+                    pencilDisp = -0.2529F;
+                com.maddox.il2.objects.air.Cockpit.xyz[0] = 0.0F;
+                com.maddox.il2.objects.air.Cockpit.xyz[1] = pencilDisp;
+                mesh.chunkSetLocate("Z_Pencil1", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+                mesh.chunkSetAngles("Z_Pencilrot1", 0.0F, 11459.16F * pencilDisp, 0.0F);
+            }
+            mesh.chunkSetAngles("Z_ANO1", 0.0F, fm.AS.bNavLightsOn ? -50F : 0.0F, 0.0F);
+            mesh.chunkSetAngles("Z_CockpLight1", 0.0F, cockpitLightControl ? -50F : 0.0F, 0.0F);
+            return true;
         }
-        if (CockpitTB_3_Bombardier.this.pencilDisp < -0.2529F) {
-          CockpitTB_3_Bombardier.access$202(CockpitTB_3_Bombardier.this, -0.2529F);
-        }
-        Cockpit.xyz[0] = 0.0F;
-        Cockpit.xyz[1] = CockpitTB_3_Bombardier.access$200(CockpitTB_3_Bombardier.this);
-        CockpitTB_3_Bombardier.this.mesh.chunkSetLocate("Z_Pencil1", Cockpit.xyz, Cockpit.ypr);
-        CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_Pencilrot1", 0.0F, 11459.156F * CockpitTB_3_Bombardier.this.pencilDisp, 0.0F);
-      }
 
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_ANO1", 0.0F, CockpitTB_3_Bombardier.this.fm.AS.bNavLightsOn ? -50.0F : 0.0F, 0.0F);
-      CockpitTB_3_Bombardier.this.mesh.chunkSetAngles("Z_CockpLight1", 0.0F, CockpitTB_3_Bombardier.this.cockpitLightControl ? -50.0F : 0.0F, 0.0F);
-      return true;
+        Interpolater()
+        {
+        }
     }
-  }
+
+
+    protected boolean doFocusEnter()
+    {
+        if(super.doFocusEnter())
+        {
+            com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+            hookpilot.doAim(false);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    protected void doFocusLeave()
+    {
+        if(!isFocused())
+        {
+            return;
+        } else
+        {
+            leave();
+            super.doFocusLeave();
+            return;
+        }
+    }
+
+    private void enter()
+    {
+        saveFov = com.maddox.il2.game.Main3D.FOVX;
+        com.maddox.rts.CmdEnv.top().exec("fov 45.0");
+        com.maddox.il2.game.Main3D.cur3D().aircraftHotKeys.setEnableChangeFov(false);
+        com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+        if(hookpilot.isPadlock())
+            hookpilot.stopPadlock();
+        hookpilot.doAim(true);
+        hookpilot.setSimpleUse(true);
+        hookpilot.setSimpleAimOrient(aAim, tAim, 0.0F);
+        com.maddox.rts.HotKeyEnv.enable("PanView", false);
+        com.maddox.rts.HotKeyEnv.enable("SnapView", false);
+        bEntered = true;
+    }
+
+    private void leave()
+    {
+        if(!bEntered)
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.game.Main3D.cur3D().aircraftHotKeys.setEnableChangeFov(true);
+            com.maddox.rts.CmdEnv.top().exec("fov " + saveFov);
+            com.maddox.il2.engine.hotkey.HookPilot hookpilot = com.maddox.il2.engine.hotkey.HookPilot.current;
+            hookpilot.doAim(false);
+            hookpilot.setSimpleAimOrient(0.0F, 0.0F, 0.0F);
+            hookpilot.setSimpleUse(false);
+            boolean flag = com.maddox.rts.HotKeyEnv.isEnabled("aircraftView");
+            com.maddox.rts.HotKeyEnv.enable("PanView", flag);
+            com.maddox.rts.HotKeyEnv.enable("SnapView", flag);
+            bEntered = false;
+            return;
+        }
+    }
+
+    public void destroy()
+    {
+        super.destroy();
+        leave();
+    }
+
+    public void doToggleAim(boolean flag)
+    {
+        if(!isFocused())
+            return;
+        if(isToggleAim() == flag)
+            return;
+        if(flag)
+            enter();
+        else
+            leave();
+    }
+
+    public CockpitTB_3_Bombardier()
+    {
+        super("3DO/Cockpit/TB-3-Bombardier/hier.him", "he111");
+        pencilDisp = 0.0F;
+        curAlt = 300F;
+        curSpd = 50F;
+        bEntered = false;
+        try
+        {
+            com.maddox.il2.engine.Loc loc = new Loc();
+            com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(mesh, "CAMERAAIM");
+            hooknamed.computePos(this, pos.getAbs(), loc);
+            aAim = loc.getOrient().getAzimut();
+            tAim = loc.getOrient().getTangage();
+            kAim = loc.getOrient().getKren();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        cockpitNightMats = (new java.lang.String[] {
+            "BombGauges", "Gauge03"
+        });
+        setNightMats(false);
+        interpPut(new Interpolater(), null, com.maddox.rts.Time.current(), null);
+    }
+
+    public void toggleLight()
+    {
+        cockpitLightControl = !cockpitLightControl;
+        if(cockpitLightControl)
+            setNightMats(true);
+        else
+            setNightMats(false);
+    }
+
+    public void reflectCockpitState()
+    {
+        if((fm.AS.astateCockpitState & 0x10) != 0)
+            mesh.chunkVisible("HullDamage1", false);
+        if((fm.AS.astateCockpitState & 0x20) != 0)
+            mesh.chunkVisible("HullDamage2", false);
+        if((fm.AS.astateCockpitState & 4) != 0)
+            mesh.chunkVisible("HullDamage3", false);
+        if((fm.AS.astateCockpitState & 8) != 0)
+            mesh.chunkVisible("HullDamage4", false);
+        if((fm.AS.astateCockpitState & 1) != 0)
+        {
+            mesh.chunkVisible("XGlassDamage1", false);
+            mesh.chunkVisible("XGlassDamage2", false);
+        }
+        if((fm.AS.astateCockpitState & 2) != 0)
+            mesh.chunkVisible("XGlassDamage3", false);
+    }
+
+    public void reflectWorldToInstruments(float f)
+    {
+        if(bEntered)
+        {
+            mesh.chunkVisible("BlackBox", true);
+            mesh.chunkVisible("zReticle", true);
+            mesh.chunkVisible("zScaleCurve", true);
+            mesh.chunkVisible("zScaleM", true);
+            mesh.chunkVisible("zScaleKM", true);
+            mesh.chunkVisible("zScaleKMH", true);
+        } else
+        {
+            mesh.chunkVisible("BlackBox", false);
+            mesh.chunkVisible("zReticle", false);
+            mesh.chunkVisible("zScaleCurve", false);
+            mesh.chunkVisible("zScaleM", false);
+            mesh.chunkVisible("zScaleKM", false);
+            mesh.chunkVisible("zScaleKMH", false);
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private float pencilDisp;
+    private float curAlt;
+    private float curSpd;
+    private float saveFov;
+    private float aAim;
+    private float tAim;
+    private float kAim;
+    private boolean bEntered;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitTB_3_Bombardier.class, "astatePilotIndx", 3);
+    }
+
+
+
+
+
+
+
 }

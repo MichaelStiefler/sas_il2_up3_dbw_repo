@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetEnv.java
+
 package com.maddox.rts;
 
 import com.maddox.rts.net.NetFileServer;
@@ -8,520 +13,575 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.rts:
+//            NetChannel, NetException, NetSocketListener, NetSocket, 
+//            NetControlLock, NetUpdate, NetObj, Destroy, 
+//            NetExtPacket, MsgTimeOut, Listeners, NetPacket, 
+//            NetMsgInput, NetMsgOutput, NetHost, MsgTimeOutListener, 
+//            MsgAddListenerListener, MsgRemoveListenerListener, RTSConf, Time, 
+//            MsgNetExt, NetChannelInStream, NetConnect, NetAddress, 
+//            MsgAction
+
 public class NetEnv
-  implements MsgTimeOutListener, MsgAddListenerListener, MsgRemoveListenerListener
+    implements com.maddox.rts.MsgTimeOutListener, com.maddox.rts.MsgAddListenerListener, com.maddox.rts.MsgRemoveListenerListener
 {
-  public static final int ADAPTER_READ_TICK_POS = 0;
-  public static final int ADAPTER_WRITE_TICK_POS = 2147483646;
-  public static final int ID_NULL = 0;
-  public static final int ID_ASK_MESSAGE = 1;
-  public static final int ID_NAK_MESSAGE = 2;
-  public static final int ID_SPAWN = 3;
-  public static final int ID_DESTROY = 4;
-  public static final int ID_CHANNEL = 5;
-  public static final int ID_FILE_TRANSPORT = 6;
-  public static final int ID_FILE_SERVERDEF = 7;
-  public static final int ID_STREAM_SYNC = 8;
-  public static final int ID_KEYRECORD = 9;
-  public static final int ID_BEGIN = 255;
-  public static final int ID_END = 32767;
-  public static final int MAX_LEN_MSG = 255;
-  public NetConnect connect;
-  public NetObj control;
-  protected NetHost host;
-  protected List hosts = new ArrayList();
-
-  protected ArrayList channels = new ArrayList();
-
-  protected HashMapInt indxChannels = new HashMapInt();
-
-  public HashMapInt objects = new HashMapInt();
-
-  protected int nextFreeID = 255;
-
-  protected ArrayList udatedObjects = new ArrayList();
-
-  protected ArrayList socketsNoBlock = new ArrayList();
-  protected ArrayList socketsBlock = new ArrayList();
-
-  protected ArrayList socketThreads = new ArrayList();
-  public NetFileTransport fileTransport;
-  public NetFileServer fileServerDef;
-  private Object[] _updateObjects = new Object[1];
-  private Object idReadStep = new Object();
-  private Object idWriteStep = new Object();
-
-  private ArrayList extPackets = new ArrayList();
-
-  private boolean bActive = false;
-  private int nextId = 0;
-  private MsgTimeOut tickerRead;
-  private MsgTimeOut tickerWrite;
-  private Listeners listeners;
-  private NetMsgInput msgInput;
-  private NetMsgOutput msgOutput;
-  private NetPacket packet;
-  private List inputPackets;
-  private List inputSockets;
-  private ActionReceivedPacket inputAction;
-  public static boolean bTestTransfer = false;
-  public static float testSpeed = 0.0F;
-  public static int testMinLag = 0;
-  public static int testMaxLag = 0;
-  public static float testDown = 0.0F;
-  public static boolean testLag = false;
-
-  public static boolean isServer()
-  {
-    if (!RTSConf.cur.netEnv.bActive)
-      return true;
-    return (RTSConf.cur.netEnv.control != null) && (RTSConf.cur.netEnv.control.isMaster());
-  }
-
-  public static boolean isActive()
-  {
-    return RTSConf.cur.netEnv.bActive;
-  }
-
-  public static void active(boolean paramBoolean) {
-    RTSConf.cur.netEnv.bActive = paramBoolean;
-    if (paramBoolean) {
-      if (!RTSConf.cur.netEnv.tickerRead.busy())
-        RTSConf.cur.netEnv.tickerRead.post();
-      if (!RTSConf.cur.netEnv.tickerWrite.busy())
-        RTSConf.cur.netEnv.tickerWrite.post();
-    }
-  }
-
-  public static NetHost host()
-  {
-    return RTSConf.cur.netEnv.host;
-  }
-
-  public static List hosts()
-  {
-    return RTSConf.cur.netEnv.hosts;
-  }
-
-  public static List socketsBlock()
-  {
-    return RTSConf.cur.netEnv.socketsBlock;
-  }
-
-  public static List socketsNoBlock()
-  {
-    return RTSConf.cur.netEnv.socketsNoBlock;
-  }
-
-  public static List channels()
-  {
-    return RTSConf.cur.netEnv.channels;
-  }
-
-  public static NetChannel getChannel(int paramInt)
-  {
-    return (NetChannel)RTSConf.cur.netEnv.indxChannels.get(paramInt);
-  }
-  public static void addSocket(NetSocket paramNetSocket) {
-    RTSConf.cur.netEnv._addSocket(paramNetSocket);
-  }
-  private void _addSocket(NetSocket paramNetSocket) { if (!paramNetSocket.isOpen()) {
-      throw new NetException("Socket not opened");
-    }
-    if (paramNetSocket.isSupportedBlockOperation()) {
-      NetSocketListener localNetSocketListener = new NetSocketListener(paramNetSocket);
-      localNetSocketListener.setPriority(Thread.currentThread().getPriority() + 1);
-      localNetSocketListener.start();
-      this.socketThreads.add(localNetSocketListener);
-      this.socketsBlock.add(paramNetSocket);
-    } else {
-      this.socketsNoBlock.add(paramNetSocket);
-    } }
-
-  public static boolean isExistExclusiveSocket()
-  {
-    return getExclusiveSocket() != null;
-  }
-
-  public static NetSocket getExclusiveSocket() {
-    return RTSConf.cur.netEnv._getExclusiveSocket();
-  }
-
-  private NetSocket _getExclusiveSocket()
-  {
-    NetSocket localNetSocket;
-    for (int i = 0; i < this.socketsNoBlock.size(); i++) {
-      localNetSocket = (NetSocket)this.socketsNoBlock.get(i);
-      if ((localNetSocket.isExclusive()) && (localNetSocket.isOpen()))
-        return localNetSocket;
-    }
-    for (i = 0; i < this.socketsBlock.size(); i++) {
-      localNetSocket = (NetSocket)this.socketsBlock.get(i);
-      if ((localNetSocket.isExclusive()) && (localNetSocket.isOpen()))
-        return localNetSocket;
-    }
-    return null;
-  }
-
-  public NetChannel createChannel(int paramInt1, int paramInt2, int paramInt3, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt4, NetConnect paramNetConnect)
-  {
-    if (((paramInt1 & 0x4) != 0) && (this.control != null) && ((this.control instanceof NetControlLock)))
+    class ActionReceivedPacket extends com.maddox.rts.MsgAction
     {
-      throw new NetException("Creating global channel is locked");
-    }if (this.indxChannels.containsKey(paramInt2))
-      throw new NetException("Created channel used bad ID");
-    if ((this.socketsBlock.indexOf(paramNetSocket) == -1) && (this.socketsNoBlock.indexOf(paramNetSocket) == -1)) {
-      throw new NetException("Socket NOT registered");
-    }
-    NetChannel localNetChannel = new NetChannel(paramInt1, paramInt2, paramInt3, paramNetSocket, paramNetAddress, paramInt4, paramNetConnect);
-    this.indxChannels.put(paramInt2, localNetChannel);
-    this.channels.add(localNetChannel);
-    this.fileTransport.msgNetNewChannel(localNetChannel);
-    return localNetChannel;
-  }
 
-  public void addChannel(NetChannel paramNetChannel)
-  {
-    if ((paramNetChannel.isGlobal()) && (this.control != null) && ((this.control instanceof NetControlLock)))
-    {
-      throw new NetException("Creating global channel is locked");
-    }if (this.indxChannels.containsKey(paramNetChannel.id())) {
-      throw new NetException("Created channel used bad ID");
-    }
-    this.indxChannels.put(paramNetChannel.id(), paramNetChannel);
-    this.channels.add(paramNetChannel);
-    this.fileTransport.msgNetNewChannel(paramNetChannel);
-  }
-
-  public void msgTimeOut(Object paramObject)
-  {
-    if (this.bActive)
-    {
-      int i;
-      int j;
-      if (paramObject == this.idReadStep)
-      {
-        i = this.channels.size();
-        j = 0;
-        Object localObject1;
-        while (j < i) {
-          localObject1 = (NetChannel)this.channels.get(j);
-          if (((NetChannel)localObject1).update()) {
-            j++;
-          }
-          else {
-            this.channels.remove(j);
-            this.indxChannels.remove(((NetChannel)localObject1).id);
-            if (((NetChannel)localObject1).socket() != null)
-              ((NetChannel)localObject1).socket().countChannels -= 1;
-            i--;
-          }
-
-        }
-
-        i = this.socketsBlock.size();
-        j = 0;
-        while (j < i) {
-          localObject1 = (NetSocket)this.socketsBlock.get(j);
-          if ((((NetSocket)localObject1).maxChannels > 0) || (((NetSocket)localObject1).countChannels > 0)) {
-            j++;
-          } else {
-            NetSocketListener localNetSocketListener = (NetSocketListener)this.socketThreads.get(j);
-            this.socketThreads.remove(j);
-            localNetSocketListener.bDoRun = false;
-            if (((NetSocket)localObject1).isOpen()) try {
-                ((NetSocket)localObject1).close();
-              } catch (Exception localException2) {
-              } this.socketsBlock.remove(j);
-            i--;
-          }
-        }
-
-        i = this.socketsNoBlock.size();
-        j = 0;
-        while (j < i) {
-          localObject1 = (NetSocket)this.socketsNoBlock.get(j);
-          if ((((NetSocket)localObject1).maxChannels > 0) || (((NetSocket)localObject1).countChannels > 0)) {
-            j++;
-          } else {
-            if (((NetSocket)localObject1).isOpen()) try {
-                ((NetSocket)localObject1).close();
-              } catch (Exception localException1) {
-              } this.socketsNoBlock.remove(j);
-            i--;
-          }
-
-        }
-
-        i = this.socketsNoBlock.size();
-        for (j = 0; j < i; j++) {
-          localObject1 = (NetSocket)this.socketsNoBlock.get(j);
-          this.packet.time = 0L;
-          while (((NetSocket)localObject1).receive(this.packet)) {
-            long l2 = this.packet.time;
-            if (l2 == 0L)
-              l2 = Time.real();
-            int m = this.packet.getLength();
-            if ((m > 1) && 
-              (!receivedPacket((NetSocket)localObject1, this.packet, l2))) {
-              receivedExtPacket((NetSocket)localObject1, this.packet);
-            }
-            this.packet.time = 0L;
-          }
-        }
-
-        this.tickerRead.post();
-      }
-      else if (paramObject == this.idWriteStep)
-      {
-        i = 0;
-        j = this.channels.size();
-        long l1 = Time.real();
-        for (int k = 0; k < j; k++) {
-          NetChannel localNetChannel = (NetChannel)this.channels.get(k);
-          if (localNetChannel.isRequeredSendPacket(l1)) {
-            i = 1;
-            break;
-          }
-        }
-
-        if (i != 0)
+        public void doAction()
         {
-          k = this.udatedObjects.size();
-          Object localObject2;
-          if (k > 0) {
-            this._updateObjects = this.udatedObjects.toArray(this._updateObjects);
-            try {
-              for (int n = 0; n < k; n++) {
-                localObject2 = (NetUpdate)this._updateObjects[n];
-                this._updateObjects[n] = null;
-                if ((localObject2 instanceof NetObj)) {
-                  NetObj localNetObj = (NetObj)localObject2;
-                  if (localNetObj.isDestroyed())
-                    continue;
-                  if ((localNetObj.superObj != null) && ((localNetObj.superObj instanceof Destroy)) && (((Destroy)localNetObj.superObj).isDestroyed()))
-                    continue;
+            while(inputPackets.size() > 0) 
+            {
+                com.maddox.rts.NetPacket netpacket = (com.maddox.rts.NetPacket)inputPackets.get(0);
+                if(com.maddox.rts.NetEnv.bTestTransfer)
+                {
+                    int i = 0;
+                    if(com.maddox.rts.NetEnv.testSpeed > 0.0F)
+                        i = (int)((float)netpacket.getLength() / (com.maddox.rts.NetEnv.testSpeed / 1000F));
+                    if(com.maddox.rts.NetEnv.testMaxLag > 0)
+                        i += com.maddox.rts.NetEnv.testMinLag + (int)(java.lang.Math.random() * (double)(com.maddox.rts.NetEnv.testMaxLag - com.maddox.rts.NetEnv.testMinLag));
+                    if(i > 0)
+                    {
+                        if(netpacket.time + (long)i < lastResTime)
+                            i = (int)(lastResTime - netpacket.time);
+                        if(com.maddox.rts.Time.currentReal() < netpacket.time + (long)i)
+                        {
+                            if(!busy())
+                                post(64, this, 0.0050000000000000001D);
+                            return;
+                        }
+                        if((float)java.lang.Math.random() < com.maddox.rts.NetEnv.testDown)
+                        {
+                            inputPackets.remove(0);
+                            inputSockets.remove(0);
+                            continue;
+                        }
+                        netpacket.time += i;
+                        lastResTime = netpacket.time;
+                    }
                 }
-                else {
-                  if (((localObject2 instanceof Destroy)) && (((Destroy)localObject2).isDestroyed()))
-                    continue;
-                }
-                ((NetUpdate)localObject2).netUpdate();
-              }
-            } catch (Exception localException3) {
-              System.out.println(localException3.getMessage());
-              localException3.printStackTrace();
+                inputPackets.remove(0);
+                com.maddox.rts.NetSocket netsocket = (com.maddox.rts.NetSocket)inputSockets.get(0);
+                inputSockets.remove(0);
+                int j = netpacket.getLength();
+                if(j > 1 && netsocket.isOpen() && !receivedPacket(netsocket, netpacket, netpacket.time))
+                    receivedExtPacket(netsocket, netpacket);
             }
-
-          }
-
-          for (int i1 = 0; i1 < j; i1++) { localObject2 = (NetChannel)this.channels.get(i1);
-            while (((NetChannel)localObject2).sendPacket(this.msgOutput, this.packet)); }
         }
-        sendExtPackets();
 
-        this.tickerWrite.post();
-      }
+        public void activate()
+        {
+            if(!busy())
+                post(64, this, 0.0D);
+        }
+
+        private long lastResTime;
+
+        ActionReceivedPacket()
+        {
+            lastResTime = 0L;
+        }
     }
-  }
 
-  protected void listenerReceivedPacket(NetSocket paramNetSocket, NetPacket paramNetPacket)
-  {
-    synchronized (this.inputAction) {
-      this.inputPackets.add(paramNetPacket);
-      this.inputSockets.add(paramNetSocket);
-      this.inputAction.activate();
+
+    public static boolean isServer()
+    {
+        if(!com.maddox.rts.RTSConf.cur.netEnv.bActive)
+            return true;
+        else
+            return com.maddox.rts.RTSConf.cur.netEnv.control != null && com.maddox.rts.RTSConf.cur.netEnv.control.isMaster();
     }
-  }
 
-  private boolean receivedPacket(NetSocket paramNetSocket, NetPacket paramNetPacket, long paramLong)
-  {
-    if (paramNetPacket.getLength() <= 6) return false;
-    this.msgInput.setData(null, false, paramNetPacket.getData(), paramNetPacket.getOffset(), paramNetPacket.getLength());
-    try {
-      NetChannel localNetChannel = (NetChannel)this.indxChannels.get(this.msgInput.readUnsignedShort());
-      if (localNetChannel == null) return false;
-      if ((!localNetChannel.remoteAddress().equals(paramNetPacket.getAddress())) || (localNetChannel.remotePort() != paramNetPacket.getPort()))
+    public static boolean isActive()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv.bActive;
+    }
+
+    public static void active(boolean flag)
+    {
+        com.maddox.rts.RTSConf.cur.netEnv.bActive = flag;
+        if(flag)
+        {
+            if(!com.maddox.rts.RTSConf.cur.netEnv.tickerRead.busy())
+                com.maddox.rts.RTSConf.cur.netEnv.tickerRead.post();
+            if(!com.maddox.rts.RTSConf.cur.netEnv.tickerWrite.busy())
+                com.maddox.rts.RTSConf.cur.netEnv.tickerWrite.post();
+        }
+    }
+
+    public static com.maddox.rts.NetHost host()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv.host;
+    }
+
+    public static java.util.List hosts()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv.hosts;
+    }
+
+    public static java.util.List socketsBlock()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv.socketsBlock;
+    }
+
+    public static java.util.List socketsNoBlock()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv.socketsNoBlock;
+    }
+
+    public static java.util.List channels()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv.channels;
+    }
+
+    public static com.maddox.rts.NetChannel getChannel(int i)
+    {
+        return (com.maddox.rts.NetChannel)com.maddox.rts.RTSConf.cur.netEnv.indxChannels.get(i);
+    }
+
+    public static void addSocket(com.maddox.rts.NetSocket netsocket)
+    {
+        com.maddox.rts.RTSConf.cur.netEnv._addSocket(netsocket);
+    }
+
+    private void _addSocket(com.maddox.rts.NetSocket netsocket)
+    {
+        if(!netsocket.isOpen())
+            throw new NetException("Socket not opened");
+        if(netsocket.isSupportedBlockOperation())
+        {
+            com.maddox.rts.NetSocketListener netsocketlistener = new NetSocketListener(netsocket);
+            netsocketlistener.setPriority(java.lang.Thread.currentThread().getPriority() + 1);
+            netsocketlistener.start();
+            socketThreads.add(netsocketlistener);
+            socketsBlock.add(netsocket);
+        } else
+        {
+            socketsNoBlock.add(netsocket);
+        }
+    }
+
+    public static boolean isExistExclusiveSocket()
+    {
+        return com.maddox.rts.NetEnv.getExclusiveSocket() != null;
+    }
+
+    public static com.maddox.rts.NetSocket getExclusiveSocket()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv._getExclusiveSocket();
+    }
+
+    private com.maddox.rts.NetSocket _getExclusiveSocket()
+    {
+        for(int i = 0; i < socketsNoBlock.size(); i++)
+        {
+            com.maddox.rts.NetSocket netsocket = (com.maddox.rts.NetSocket)socketsNoBlock.get(i);
+            if(netsocket.isExclusive() && netsocket.isOpen())
+                return netsocket;
+        }
+
+        for(int j = 0; j < socketsBlock.size(); j++)
+        {
+            com.maddox.rts.NetSocket netsocket1 = (com.maddox.rts.NetSocket)socketsBlock.get(j);
+            if(netsocket1.isExclusive() && netsocket1.isOpen())
+                return netsocket1;
+        }
+
+        return null;
+    }
+
+    public com.maddox.rts.NetChannel createChannel(int i, int j, int k, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int l, com.maddox.rts.NetConnect netconnect)
+    {
+        if((i & 4) != 0 && control != null && (control instanceof com.maddox.rts.NetControlLock))
+            throw new NetException("Creating global channel is locked");
+        if(indxChannels.containsKey(j))
+            throw new NetException("Created channel used bad ID");
+        if(socketsBlock.indexOf(netsocket) == -1 && socketsNoBlock.indexOf(netsocket) == -1)
+        {
+            throw new NetException("Socket NOT registered");
+        } else
+        {
+            com.maddox.rts.NetChannel netchannel = new NetChannel(i, j, k, netsocket, netaddress, l, netconnect);
+            indxChannels.put(j, netchannel);
+            channels.add(netchannel);
+            fileTransport.msgNetNewChannel(netchannel);
+            return netchannel;
+        }
+    }
+
+    public void addChannel(com.maddox.rts.NetChannel netchannel)
+    {
+        if(netchannel.isGlobal() && control != null && (control instanceof com.maddox.rts.NetControlLock))
+            throw new NetException("Creating global channel is locked");
+        if(indxChannels.containsKey(netchannel.id()))
+        {
+            throw new NetException("Created channel used bad ID");
+        } else
+        {
+            indxChannels.put(netchannel.id(), netchannel);
+            channels.add(netchannel);
+            fileTransport.msgNetNewChannel(netchannel);
+            return;
+        }
+    }
+
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(bActive)
+            if(obj == idReadStep)
+            {
+                int i = channels.size();
+                for(int j = 0; j < i;)
+                {
+                    com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)channels.get(j);
+                    if(netchannel.update())
+                    {
+                        j++;
+                    } else
+                    {
+                        channels.remove(j);
+                        indxChannels.remove(netchannel.id);
+                        if(netchannel.socket() != null)
+                            netchannel.socket().countChannels--;
+                        i--;
+                    }
+                }
+
+                i = socketsBlock.size();
+                for(int k = 0; k < i;)
+                {
+                    com.maddox.rts.NetSocket netsocket = (com.maddox.rts.NetSocket)socketsBlock.get(k);
+                    if(netsocket.maxChannels > 0 || netsocket.countChannels > 0)
+                    {
+                        k++;
+                    } else
+                    {
+                        com.maddox.rts.NetSocketListener netsocketlistener = (com.maddox.rts.NetSocketListener)socketThreads.get(k);
+                        socketThreads.remove(k);
+                        netsocketlistener.bDoRun = false;
+                        if(netsocket.isOpen())
+                            try
+                            {
+                                netsocket.close();
+                            }
+                            catch(java.lang.Exception exception1) { }
+                        socketsBlock.remove(k);
+                        i--;
+                    }
+                }
+
+                i = socketsNoBlock.size();
+                for(int l = 0; l < i;)
+                {
+                    com.maddox.rts.NetSocket netsocket1 = (com.maddox.rts.NetSocket)socketsNoBlock.get(l);
+                    if(netsocket1.maxChannels > 0 || netsocket1.countChannels > 0)
+                    {
+                        l++;
+                    } else
+                    {
+                        if(netsocket1.isOpen())
+                            try
+                            {
+                                netsocket1.close();
+                            }
+                            catch(java.lang.Exception exception) { }
+                        socketsNoBlock.remove(l);
+                        i--;
+                    }
+                }
+
+                i = socketsNoBlock.size();
+                for(int i1 = 0; i1 < i; i1++)
+                {
+                    com.maddox.rts.NetSocket netsocket2 = (com.maddox.rts.NetSocket)socketsNoBlock.get(i1);
+                    for(packet.time = 0L; netsocket2.receive(packet); packet.time = 0L)
+                    {
+                        long l2 = packet.time;
+                        if(l2 == 0L)
+                            l2 = com.maddox.rts.Time.real();
+                        int i2 = packet.getLength();
+                        if(i2 > 1 && !receivedPacket(netsocket2, packet, l2))
+                            receivedExtPacket(netsocket2, packet);
+                    }
+
+                }
+
+                tickerRead.post();
+            } else
+            if(obj == idWriteStep)
+            {
+                boolean flag = false;
+                int j1 = channels.size();
+                long l1 = com.maddox.rts.Time.real();
+                for(int k1 = 0; k1 < j1; k1++)
+                {
+                    com.maddox.rts.NetChannel netchannel1 = (com.maddox.rts.NetChannel)channels.get(k1);
+                    if(!netchannel1.isRequeredSendPacket(l1))
+                        continue;
+                    flag = true;
+                    break;
+                }
+
+                if(flag)
+                {
+                    int j2 = udatedObjects.size();
+                    if(j2 > 0)
+                    {
+                        _updateObjects = udatedObjects.toArray(_updateObjects);
+                        try
+                        {
+                            for(int k2 = 0; k2 < j2; k2++)
+                            {
+                                com.maddox.rts.NetUpdate netupdate = (com.maddox.rts.NetUpdate)_updateObjects[k2];
+                                _updateObjects[k2] = null;
+                                com.maddox.rts.NetObj netobj;
+                                if((netupdate instanceof com.maddox.rts.NetObj) ? !(netobj = (com.maddox.rts.NetObj)netupdate).isDestroyed() && (netobj.superObj == null || !(netobj.superObj instanceof com.maddox.rts.Destroy) || !((com.maddox.rts.Destroy)netobj.superObj).isDestroyed()) : !(netupdate instanceof com.maddox.rts.Destroy) || !((com.maddox.rts.Destroy)netupdate).isDestroyed())
+                                    netupdate.netUpdate();
+                            }
+
+                        }
+                        catch(java.lang.Exception exception2)
+                        {
+                            java.lang.System.out.println(exception2.getMessage());
+                            exception2.printStackTrace();
+                        }
+                    }
+                    for(int i3 = 0; i3 < j1; i3++)
+                    {
+                        for(com.maddox.rts.NetChannel netchannel2 = (com.maddox.rts.NetChannel)channels.get(i3); netchannel2.sendPacket(msgOutput, packet););
+                    }
+
+                }
+                sendExtPackets();
+                tickerWrite.post();
+            }
+    }
+
+    protected void listenerReceivedPacket(com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetPacket netpacket)
+    {
+        synchronized(inputAction)
+        {
+            inputPackets.add(netpacket);
+            inputSockets.add(netsocket);
+            inputAction.activate();
+        }
+    }
+
+    private boolean receivedPacket(com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetPacket netpacket, long l)
+    {
+        if(netpacket.getLength() <= 6)
+            return false;
+        msgInput.setData(null, false, netpacket.getData(), netpacket.getOffset(), netpacket.getLength());
+        com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)indxChannels.get(msgInput.readUnsignedShort());
+        if(netchannel == null)
+            return false;
+        if(!netchannel.remoteAddress().equals(netpacket.getAddress()) || netchannel.remotePort() != netpacket.getPort())
+            return false;
+        msgInput.reset();
+        return netchannel.receivePacket(msgInput, l);
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
         return false;
-      this.msgInput.reset();
-      return localNetChannel.receivePacket(this.msgInput, paramLong);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }return false;
-  }
-
-  public void postExt(byte[] paramArrayOfByte, int paramInt1, int paramInt2, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt3)
-  {
-    if (this.bActive)
-      this.extPackets.add(new NetExtPacket(paramArrayOfByte, paramInt1, paramInt2, paramNetSocket, paramNetAddress, paramInt3)); 
-  }
-
-  public void postExtUTF(byte paramByte, String paramString, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt) {
-    if (this.bActive)
-      try {
-        this.msgOutput.clear();
-        this.msgOutput.writeByte(paramByte);
-        this.msgOutput.writeUTF(paramString);
-        this.extPackets.add(new NetExtPacket(this.msgOutput.data(), 0, this.msgOutput.dataLength(), paramNetSocket, paramNetAddress, paramInt));
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-  }
-
-  private void sendExtPackets()
-  {
-    int i = this.extPackets.size();
-    for (int j = 0; j < i; j++) {
-      NetExtPacket localNetExtPacket = (NetExtPacket)this.extPackets.get(j);
-      try {
-        this.msgOutput.clear();
-        this.msgOutput.write(localNetExtPacket.getBuf());
-        this.packet.setLength(this.msgOutput.dataLength());
-        this.packet.setAddress(localNetExtPacket.getAddress());
-        this.packet.setPort(localNetExtPacket.getPort());
-        localNetExtPacket.getSocket().send(this.packet);
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-
-      localNetExtPacket.clear();
     }
-    this.extPackets.clear();
-  }
 
-  private void receivedExtPacket(NetSocket paramNetSocket, NetPacket paramNetPacket)
-  {
-    try {
-      Object[] arrayOfObject = this.listeners.get();
-      if (arrayOfObject != null) {
-        byte[] arrayOfByte = new byte[paramNetPacket.getLength()];
-        System.arraycopy(paramNetPacket.getData(), paramNetPacket.getOffset(), arrayOfByte, 0, paramNetPacket.getLength());
-        MsgNetExt.postReal(Time.currentReal(), arrayOfObject, arrayOfByte, paramNetSocket, paramNetPacket.getAddress(), paramNetPacket.getPort());
-      }
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public Object[] getListeners()
-  {
-    return this.listeners.get();
-  }
-
-  public void msgAddListener(Object paramObject1, Object paramObject2)
-  {
-    this.listeners.addListener(paramObject1);
-  }
-
-  public void msgRemoveListener(Object paramObject1, Object paramObject2)
-  {
-    this.listeners.removeListener(paramObject1);
-  }
-
-  public int nextIdChannel(boolean paramBoolean)
-  {
-    int i;
-    do
+    public void postExt(byte abyte0[], int i, int j, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int k)
     {
-      i = this.nextId;
-      if (paramBoolean) i |= 1;
-      this.nextId = (this.nextId + 2 & 0xFFFF);
-    }while (this.indxChannels.containsKey(i));
-    return i;
-  }
-
-  protected NetEnv()
-  {
-    RTSConf.cur.netEnv = this;
-    NetChannel.classInit();
-    NetChannelInStream.classInit();
-    this.tickerRead = new MsgTimeOut(this.idReadStep);
-    this.tickerRead.setNotCleanAfterSend();
-    this.tickerRead.setListener(this);
-    this.tickerRead.setFlags(72);
-    this.tickerRead.setTickPos(0);
-
-    this.tickerWrite = new MsgTimeOut(this.idWriteStep);
-    this.tickerWrite.setNotCleanAfterSend();
-    this.tickerWrite.setListener(this);
-    this.tickerWrite.setFlags(104);
-    this.tickerWrite.setTickPos(2147483646);
-
-    this.listeners = new Listeners();
-    this.packet = new NetPacket(new byte[2048], 0);
-    this.msgInput = new NetMsgInput();
-    this.msgOutput = new NetMsgOutput(this.packet.getData());
-
-    this.inputPackets = new ArrayList();
-    this.inputSockets = new ArrayList();
-    this.inputAction = new ActionReceivedPacket();
-
-    new NetHost("NoName");
-    this.fileTransport = new NetFileTransport(6);
-    this.fileServerDef = new NetFileServerDef(7);
-  }
-
-  public static NetEnv cur()
-  {
-    return RTSConf.cur.netEnv;
-  }
-
-  class ActionReceivedPacket extends MsgAction
-  {
-    private long lastResTime = 0L;
-
-    ActionReceivedPacket()
-    {
+        if(bActive)
+            extPackets.add(new NetExtPacket(abyte0, i, j, netsocket, netaddress, k));
     }
 
-    public void doAction()
+    public void postExtUTF(byte byte0, java.lang.String s, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
     {
-      while (NetEnv.this.inputPackets.size() > 0) {
-        NetPacket localNetPacket = (NetPacket)NetEnv.this.inputPackets.get(0);
-
-        if (NetEnv.bTestTransfer) {
-          int i = 0;
-          if (NetEnv.testSpeed > 0.0F)
-            i = (int)(localNetPacket.getLength() / (NetEnv.testSpeed / 1000.0F));
-          if (NetEnv.testMaxLag > 0)
-            i += NetEnv.testMinLag + (int)(Math.random() * (NetEnv.testMaxLag - NetEnv.testMinLag));
-          if (i > 0) {
-            if (localNetPacket.time + i < this.lastResTime) i = (int)(this.lastResTime - localNetPacket.time);
-            if (Time.currentReal() < localNetPacket.time + i) {
-              if (!busy())
-                post(64, this, 0.005D);
-              return;
+        if(bActive)
+            try
+            {
+                msgOutput.clear();
+                msgOutput.writeByte(byte0);
+                msgOutput.writeUTF(s);
+                extPackets.add(new NetExtPacket(msgOutput.data(), 0, msgOutput.dataLength(), netsocket, netaddress, i));
             }
-            if ((float)Math.random() < NetEnv.testDown) {
-              NetEnv.this.inputPackets.remove(0);
-              NetEnv.this.inputSockets.remove(0);
-              continue;
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
             }
-            localNetPacket.time += i;
-            this.lastResTime = localNetPacket.time;
-          }
+    }
 
+    private void sendExtPackets()
+    {
+        int i = extPackets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.rts.NetExtPacket netextpacket = (com.maddox.rts.NetExtPacket)extPackets.get(j);
+            try
+            {
+                msgOutput.clear();
+                msgOutput.write(netextpacket.getBuf());
+                packet.setLength(msgOutput.dataLength());
+                packet.setAddress(netextpacket.getAddress());
+                packet.setPort(netextpacket.getPort());
+                netextpacket.getSocket().send(packet);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+            netextpacket.clear();
         }
 
-        NetEnv.this.inputPackets.remove(0);
-        NetSocket localNetSocket = (NetSocket)NetEnv.this.inputSockets.get(0);
-        NetEnv.this.inputSockets.remove(0);
-        int j = localNetPacket.getLength();
-        if ((j > 1) && (localNetSocket.isOpen()) && 
-          (!NetEnv.this.receivedPacket(localNetSocket, localNetPacket, localNetPacket.time)))
-          NetEnv.this.receivedExtPacket(localNetSocket, localNetPacket);
-      }
+        extPackets.clear();
     }
 
-    public void activate()
+    private void receivedExtPacket(com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetPacket netpacket)
     {
-      if (!busy())
-        post(64, this, 0.0D);
+        try
+        {
+            java.lang.Object aobj[] = listeners.get();
+            if(aobj != null)
+            {
+                byte abyte0[] = new byte[netpacket.getLength()];
+                java.lang.System.arraycopy(netpacket.getData(), netpacket.getOffset(), abyte0, 0, netpacket.getLength());
+                com.maddox.rts.MsgNetExt.postReal(com.maddox.rts.Time.currentReal(), ((java.lang.Object) (aobj)), abyte0, netsocket, netpacket.getAddress(), netpacket.getPort());
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
     }
-  }
+
+    public java.lang.Object[] getListeners()
+    {
+        return listeners.get();
+    }
+
+    public void msgAddListener(java.lang.Object obj, java.lang.Object obj1)
+    {
+        listeners.addListener(obj);
+    }
+
+    public void msgRemoveListener(java.lang.Object obj, java.lang.Object obj1)
+    {
+        listeners.removeListener(obj);
+    }
+
+    public int nextIdChannel(boolean flag)
+    {
+        int i;
+        do
+        {
+            i = nextId;
+            if(flag)
+                i |= 1;
+            nextId = nextId + 2 & 0xffff;
+        } while(indxChannels.containsKey(i));
+        return i;
+    }
+
+    protected NetEnv()
+    {
+        hosts = new ArrayList();
+        channels = new ArrayList();
+        indxChannels = new HashMapInt();
+        objects = new HashMapInt();
+        nextFreeID = 255;
+        udatedObjects = new ArrayList();
+        socketsNoBlock = new ArrayList();
+        socketsBlock = new ArrayList();
+        socketThreads = new ArrayList();
+        _updateObjects = new java.lang.Object[1];
+        idReadStep = new Object();
+        idWriteStep = new Object();
+        extPackets = new ArrayList();
+        bActive = false;
+        nextId = 0;
+        com.maddox.rts.RTSConf.cur.netEnv = this;
+        com.maddox.rts.NetChannel.classInit();
+        com.maddox.rts.NetChannelInStream.classInit();
+        tickerRead = new MsgTimeOut(idReadStep);
+        tickerRead.setNotCleanAfterSend();
+        tickerRead.setListener(this);
+        tickerRead.setFlags(72);
+        tickerRead.setTickPos(0);
+        tickerWrite = new MsgTimeOut(idWriteStep);
+        tickerWrite.setNotCleanAfterSend();
+        tickerWrite.setListener(this);
+        tickerWrite.setFlags(104);
+        tickerWrite.setTickPos(0x7ffffffe);
+        listeners = new Listeners();
+        packet = new NetPacket(new byte[2048], 0);
+        msgInput = new NetMsgInput();
+        msgOutput = new NetMsgOutput(packet.getData());
+        inputPackets = new ArrayList();
+        inputSockets = new ArrayList();
+        inputAction = new ActionReceivedPacket();
+        new NetHost("NoName");
+        fileTransport = new NetFileTransport(6);
+        fileServerDef = new NetFileServerDef(7);
+    }
+
+    public static com.maddox.rts.NetEnv cur()
+    {
+        return com.maddox.rts.RTSConf.cur.netEnv;
+    }
+
+    public static final int ADAPTER_READ_TICK_POS = 0;
+    public static final int ADAPTER_WRITE_TICK_POS = 0x7ffffffe;
+    public static final int ID_NULL = 0;
+    public static final int ID_ASK_MESSAGE = 1;
+    public static final int ID_NAK_MESSAGE = 2;
+    public static final int ID_SPAWN = 3;
+    public static final int ID_DESTROY = 4;
+    public static final int ID_CHANNEL = 5;
+    public static final int ID_FILE_TRANSPORT = 6;
+    public static final int ID_FILE_SERVERDEF = 7;
+    public static final int ID_STREAM_SYNC = 8;
+    public static final int ID_KEYRECORD = 9;
+    public static final int ID_BEGIN = 255;
+    public static final int ID_END = 32767;
+    public static final int MAX_LEN_MSG = 255;
+    public com.maddox.rts.NetConnect connect;
+    public com.maddox.rts.NetObj control;
+    protected com.maddox.rts.NetHost host;
+    protected java.util.List hosts;
+    protected java.util.ArrayList channels;
+    protected com.maddox.util.HashMapInt indxChannels;
+    public com.maddox.util.HashMapInt objects;
+    protected int nextFreeID;
+    protected java.util.ArrayList udatedObjects;
+    protected java.util.ArrayList socketsNoBlock;
+    protected java.util.ArrayList socketsBlock;
+    protected java.util.ArrayList socketThreads;
+    public com.maddox.rts.net.NetFileTransport fileTransport;
+    public com.maddox.rts.net.NetFileServer fileServerDef;
+    private java.lang.Object _updateObjects[];
+    private java.lang.Object idReadStep;
+    private java.lang.Object idWriteStep;
+    private java.util.ArrayList extPackets;
+    private boolean bActive;
+    private int nextId;
+    private com.maddox.rts.MsgTimeOut tickerRead;
+    private com.maddox.rts.MsgTimeOut tickerWrite;
+    private com.maddox.rts.Listeners listeners;
+    private com.maddox.rts.NetMsgInput msgInput;
+    private com.maddox.rts.NetMsgOutput msgOutput;
+    private com.maddox.rts.NetPacket packet;
+    private java.util.List inputPackets;
+    private java.util.List inputSockets;
+    private com.maddox.rts.ActionReceivedPacket inputAction;
+    public static boolean bTestTransfer = false;
+    public static float testSpeed = 0.0F;
+    public static int testMinLag = 0;
+    public static int testMaxLag = 0;
+    public static float testDown = 0.0F;
+    public static boolean testLag = false;
+
+
+
+
+
 }

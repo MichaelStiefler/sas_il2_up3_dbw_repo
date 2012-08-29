@@ -1,12 +1,16 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetCStart.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.I18N;
@@ -18,199 +22,237 @@ import com.maddox.rts.HotKeyCmd;
 import com.maddox.rts.NetEnv;
 import java.util.List;
 
-public class GUINetCStart extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient, GUINetClientGuard, GUI, 
+//            GUISeparate
+
+public class GUINetCStart extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton bPrev;
-  public GUIButton bKick;
-  public GUIButton bFly;
-  public Table wTable;
-
-  public void _enter()
-  {
-    if (this.bFly != null)
-      this.bFly.hideWindow();
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public GUINetCStart(int paramInt, GWindowRoot paramGWindowRoot)
-  {
-    super(paramInt);
-
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("netcstart.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wTable = new Table(this.dialogClient);
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bPrev = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    if (paramInt == 47) {
-      this.bKick = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-      this.bFly = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    }
-
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bPrev)
+            {
+                if(bKick == null)
+                {
+                    com.maddox.il2.gui.GUINetClientGuard guinetclientguard = (com.maddox.il2.gui.GUINetClientGuard)com.maddox.il2.game.Main.cur().netChannelListener;
+                    guinetclientguard.dlgDestroy(new com.maddox.il2.gui.GUINetClientGuard.DestroyExec() {
 
-      if (paramGWindow == GUINetCStart.this.bPrev) {
-        if (GUINetCStart.this.bKick == null) {
-          GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-          localGUINetClientGuard.dlgDestroy(new GUINetClientGuard.DestroyExec() {
-            public void destroy(GUINetClientGuard paramGUINetClientGuard) { paramGUINetClientGuard.destroy(true); } } );
-        } else {
-          Mission.cur().destroy();
-          Main.stateStack().change(Main.cur().netServerParams.bNGEN ? 69 : 38);
-        }
-        return true;
-      }if (paramGWindow == GUINetCStart.this.bKick) {
-        int i = GUINetCStart.this.wTable.selectRow;
-        if ((i >= 0) && (i < NetEnv.hosts().size())) {
-          NetUser localNetUser = (NetUser)NetEnv.hosts().get(i);
-          ((NetUser)NetEnv.host()).kick(localNetUser);
-        }
-        return true;
-      }
-      if (paramGWindow == GUINetCStart.this.bFly)
-      {
-        Main.cur().netServerParams.doMissionCoopEnter();
+                        public void destroy(com.maddox.il2.gui.GUINetClientGuard guinetclientguard1)
+                        {
+                            guinetclientguard1.destroy(true);
+                        }
 
-        GUI.unActivate();
-        HotKeyCmd.exec("aircraftView", "CockpitView");
-
-        Main.stateStack().change(49);
-        return true;
-      }
-
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void preRender() {
-      if ((GUINetCStart.this.bFly != null) && 
-        (!GUINetCStart.this.bFly.isVisible())) {
-        int i = 1;
-        if (NetEnv.hosts() != null) {
-          List localList = NetEnv.hosts();
-          for (int j = 0; j < localList.size(); j++) {
-            NetUser localNetUser = (NetUser)localList.get(j);
-            if (!localNetUser.isWaitStartCoopMission()) {
-              i = 0;
-              break;
+                    }
+);
+                } else
+                {
+                    com.maddox.il2.game.Mission.cur().destroy();
+                    com.maddox.il2.game.Main.stateStack().change(com.maddox.il2.game.Main.cur().netServerParams.bNGEN ? 69 : 38);
+                }
+                return true;
             }
-          }
+            if(gwindow == bKick)
+            {
+                int k = wTable.selectRow;
+                if(k >= 0 && k < com.maddox.rts.NetEnv.hosts().size())
+                {
+                    com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(k);
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).kick(netuser);
+                }
+                return true;
+            }
+            if(gwindow == bFly)
+            {
+                com.maddox.il2.game.Main.cur().netServerParams.doMissionCoopEnter();
+                com.maddox.il2.gui.GUI.unActivate();
+                com.maddox.rts.HotKeyCmd.exec("aircraftView", "CockpitView");
+                com.maddox.il2.game.Main.stateStack().change(49);
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-        if (i != 0) {
-          GUINetCStart.this.bFly.showWindow();
+
+        public void preRender()
+        {
+            if(bFly != null && !bFly.isVisible())
+            {
+                boolean flag = true;
+                if(com.maddox.rts.NetEnv.hosts() != null)
+                {
+                    java.util.List list = com.maddox.rts.NetEnv.hosts();
+                    for(int i = 0; i < list.size(); i++)
+                    {
+                        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)list.get(i);
+                        if(netuser.isWaitStartCoopMission())
+                            continue;
+                        flag = false;
+                        break;
+                    }
+
+                }
+                if(flag)
+                    bFly.showWindow();
+            }
+            super.preRender();
         }
-      }
-      super.preRender();
+
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(544F), x1024(512F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            if(bKick != null)
+            {
+                draw(x1024(96F), y1024(656F), x1024(192F), y1024(48F), 0, i18n("netcstart.EndMission"));
+                draw(x1024(96F), y1024(576F), x1024(240F), y1024(48F), 0, i18n("netcstart.KickPlayer"));
+                if(bFly.isVisible())
+                    draw(x1024(304F), y1024(656F), x1024(176F), y1024(48F), 2, i18n("netcstart.Fly"));
+                else
+                    draw(x1024(304F), y1024(656F), x1024(208F), y1024(48F), 2, i18n("netcstart.Wait"));
+            } else
+            {
+                draw(x1024(96F), y1024(656F), x1024(192F), y1024(48F), 0, i18n("netcstart.Disconnect"));
+                draw(x1024(304F), y1024(656F), x1024(208F), y1024(48F), 2, i18n("netcstart.Wait"));
+            }
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(224F, 32F, 576F, 736F);
+            wTable.set1024PosSize(32F, 32F, 512F, 480F);
+            bPrev.setPosC(x1024(56F), y1024(680F));
+            if(bKick != null)
+            {
+                bKick.setPosC(x1024(56F), y1024(600F));
+                bFly.setPosC(x1024(520F), y1024(680F));
+            }
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(544.0F), x1024(512.0F), 2.0F);
-
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      if (GUINetCStart.this.bKick != null) {
-        draw(x1024(96.0F), y1024(656.0F), x1024(192.0F), y1024(48.0F), 0, GUINetCStart.this.i18n("netcstart.EndMission"));
-        draw(x1024(96.0F), y1024(576.0F), x1024(240.0F), y1024(48.0F), 0, GUINetCStart.this.i18n("netcstart.KickPlayer"));
-        if (GUINetCStart.this.bFly.isVisible())
-          draw(x1024(304.0F), y1024(656.0F), x1024(176.0F), y1024(48.0F), 2, GUINetCStart.this.i18n("netcstart.Fly"));
-        else
-          draw(x1024(304.0F), y1024(656.0F), x1024(208.0F), y1024(48.0F), 2, GUINetCStart.this.i18n("netcstart.Wait"));
-      } else {
-        draw(x1024(96.0F), y1024(656.0F), x1024(192.0F), y1024(48.0F), 0, GUINetCStart.this.i18n("netcstart.Disconnect"));
-        draw(x1024(304.0F), y1024(656.0F), x1024(208.0F), y1024(48.0F), 2, GUINetCStart.this.i18n("netcstart.Wait"));
-      }
-    }
-
-    public void setPosSize() {
-      set1024PosSize(224.0F, 32.0F, 576.0F, 736.0F);
-      GUINetCStart.this.wTable.set1024PosSize(32.0F, 32.0F, 512.0F, 480.0F);
-      GUINetCStart.this.bPrev.setPosC(x1024(56.0F), y1024(680.0F));
-      if (GUINetCStart.this.bKick != null) {
-        GUINetCStart.this.bKick.setPosC(x1024(56.0F), y1024(600.0F));
-        GUINetCStart.this.bFly.setPosC(x1024(520.0F), y1024(680.0F));
-      }
-    }
-  }
-
-  public class Table extends GWindowTable
-  {
-    public int countRows()
+    public class Table extends com.maddox.gwindow.GWindowTable
     {
-      return NetEnv.hosts() == null ? 0 : NetEnv.hosts().size();
-    }
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      if (paramBoolean) setCanvasColorWHITE(); else
-        setCanvasColorBLACK();
-      NetUser localNetUser = (NetUser)NetEnv.hosts().get(paramInt1);
-      String str = null;
-      int i = 0;
-      switch (paramInt2) {
-      case 0:
-        str = localNetUser.uniqueName();
-        break;
-      case 1:
-        i = 1;
-        str = "" + localNetUser.ping;
-        break;
-      case 2:
-        if (!localNetUser.isWaitStartCoopMission()) break;
-        str = I18N.gui("netcstart.Ready");
-      }
 
-      if (str != null)
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str); 
+        public int countRows()
+        {
+            return com.maddox.rts.NetEnv.hosts() != null ? com.maddox.rts.NetEnv.hosts().size() : 0;
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            if(flag)
+                setCanvasColorWHITE();
+            else
+                setCanvasColorBLACK();
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(i);
+            java.lang.String s = null;
+            int k = 0;
+            switch(j)
+            {
+            case 0: // '\0'
+                s = netuser.uniqueName();
+                break;
+
+            case 1: // '\001'
+                k = 1;
+                s = "" + netuser.ping;
+                break;
+
+            case 2: // '\002'
+                if(netuser.isWaitStartCoopMission())
+                    s = com.maddox.il2.game.I18N.gui("netcstart.Ready");
+                break;
+            }
+            if(s != null)
+                draw(0.0F, 0.0F, f, f1, k, s);
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelecting = true;
+            bSelectRow = true;
+            addColumn(com.maddox.il2.game.I18N.gui("netcstart.Player"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("netcstart.Ping"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("netcstart.State"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(5F);
+            getColumn(1).setRelativeDx(2.0F);
+            getColumn(2).setRelativeDx(3F);
+            alignColumns();
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
 
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelecting = true;
-      this.bSelectRow = true;
-      addColumn(I18N.gui("netcstart.Player"), null);
-      addColumn(I18N.gui("netcstart.Ping"), null);
-      addColumn(I18N.gui("netcstart.State"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(5.0F);
-      getColumn(1).setRelativeDx(2.0F);
-      getColumn(2).setRelativeDx(3.0F);
-      alignColumns();
-      resized();
+
+    public void _enter()
+    {
+        if(bFly != null)
+            bFly.hideWindow();
+        client.activateWindow();
     }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
+
+    public void _leave()
+    {
+        client.hideWindow();
     }
-    public Table(GWindow arg2) {
-      super();
+
+    public GUINetCStart(int i, com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(i);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("netcstart.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wTable = new Table(dialogClient);
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bPrev = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        if(i == 47)
+        {
+            bKick = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+            bFly = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        }
+        dialogClient.activateWindow();
+        client.hideWindow();
     }
-  }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton bPrev;
+    public com.maddox.il2.gui.GUIButton bKick;
+    public com.maddox.il2.gui.GUIButton bFly;
+    public com.maddox.il2.gui.Table wTable;
 }

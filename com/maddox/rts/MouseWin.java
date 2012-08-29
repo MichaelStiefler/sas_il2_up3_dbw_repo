@@ -1,88 +1,119 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MouseWin.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            MouseWinException, MsgTimeOut, MsgTimeOutListener, MouseCursor, 
+//            RTSConf, MainWindow, MessageQueue, Time, 
+//            Mouse, RTS
+
 public final class MouseWin
-  implements MsgTimeOutListener, MouseCursor
+    implements com.maddox.rts.MsgTimeOutListener, com.maddox.rts.MouseCursor
 {
-  private static final int PRESS = 0;
-  private static final int RELEASE = 1;
-  private static final int ABSMOVE = 2;
-  private boolean bOnlyAbsMove = false;
-  private boolean bCreated;
-  private int[] param;
-  private MsgTimeOut ticker;
 
-  public final boolean isCreated()
-  {
-    return this.bCreated;
-  }
-
-  public final void create()
-    throws MouseWinException
-  {
-    if (this.bCreated) {
-      return;
+    public final boolean isCreated()
+    {
+        return bCreated;
     }
-    if (RTSConf.cur.mainWindow.hWnd() == 0)
-      throw new MouseWinException("Mouse windows driver: main window not present");
-    nCreate();
-    this.ticker.post();
-    this.bCreated = true;
-  }
 
-  public final void destroy()
-  {
-    if (this.bCreated) {
-      nDestroy();
-      RTSConf.cur.queueRealTime.remove(this.ticker);
-      RTSConf.cur.queueRealTimeNextTick.remove(this.ticker);
-      this.bCreated = false;
-    }
-  }
-
-  public void setCursor(int paramInt) {
-    SetCursor(paramInt);
-  }
-
-  public void msgTimeOut(Object paramObject)
-  {
-    if (this.bCreated) {
-      while (nGetMsg(this.param)) {
-        long l = Time.realFromRawClamp(this.param[1]);
-        switch (this.param[0]) { case 0:
-          RTSConf.cur.mouse.setPress(l, this.param[2]); break;
-        case 1:
-          RTSConf.cur.mouse.setRelease(l, this.param[2]); break;
-        case 2:
-          int i = this.param[2];
-          int j = RTSConf.cur.mainWindow.height() - this.param[3] - 1;
-          int k = this.param[4];
-          RTSConf.cur.mouse.setAbsMove(l, i, j, k);
+    public final void create()
+        throws com.maddox.rts.MouseWinException
+    {
+        if(bCreated)
+            return;
+        if(com.maddox.rts.RTSConf.cur.mainWindow.hWnd() == 0)
+        {
+            throw new MouseWinException("Mouse windows driver: main window not present");
+        } else
+        {
+            com.maddox.rts.MouseWin.nCreate();
+            ticker.post();
+            bCreated = true;
+            return;
         }
-      }
-
-      this.ticker.post();
     }
-  }
 
-  protected MouseWin(int paramInt, boolean paramBoolean) {
-    this.param = new int[5];
-    this.bCreated = false;
-    this.ticker = new MsgTimeOut(null);
-    this.ticker.setTickPos(paramInt);
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setFlags(88);
-    this.ticker.setListener(this);
-    if (paramBoolean)
-      create(); 
-  }
-  private static final native void nCreate();
+    public final void destroy()
+    {
+        if(bCreated)
+        {
+            com.maddox.rts.MouseWin.nDestroy();
+            com.maddox.rts.RTSConf.cur.queueRealTime.remove(ticker);
+            com.maddox.rts.RTSConf.cur.queueRealTimeNextTick.remove(ticker);
+            bCreated = false;
+        }
+    }
 
-  private static final native void nDestroy();
+    public void setCursor(int i)
+    {
+        com.maddox.rts.MouseWin.SetCursor(i);
+    }
 
-  private static final native boolean nGetMsg(int[] paramArrayOfInt);
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(bCreated)
+        {
+            while(com.maddox.rts.MouseWin.nGetMsg(param)) 
+            {
+                long l = com.maddox.rts.Time.realFromRawClamp(param[1]);
+                switch(param[0])
+                {
+                case 0: // '\0'
+                    com.maddox.rts.RTSConf.cur.mouse.setPress(l, param[2]);
+                    break;
 
-  private static final native void SetCursor(int paramInt);
+                case 1: // '\001'
+                    com.maddox.rts.RTSConf.cur.mouse.setRelease(l, param[2]);
+                    break;
 
-  static { RTS.loadNative();
-  }
+                case 2: // '\002'
+                    int i = param[2];
+                    int j = com.maddox.rts.RTSConf.cur.mainWindow.height() - param[3] - 1;
+                    int k = param[4];
+                    com.maddox.rts.RTSConf.cur.mouse.setAbsMove(l, i, j, k);
+                    break;
+                }
+            }
+            ticker.post();
+        }
+    }
+
+    protected MouseWin(int i, boolean flag)
+    {
+        bOnlyAbsMove = false;
+        param = new int[5];
+        bCreated = false;
+        ticker = new MsgTimeOut(null);
+        ticker.setTickPos(i);
+        ticker.setNotCleanAfterSend();
+        ticker.setFlags(88);
+        ticker.setListener(this);
+        if(flag)
+            create();
+    }
+
+    private static final native void nCreate();
+
+    private static final native void nDestroy();
+
+    private static final native boolean nGetMsg(int ai[]);
+
+    private static final native void SetCursor(int i);
+
+    private static final int PRESS = 0;
+    private static final int RELEASE = 1;
+    private static final int ABSMOVE = 2;
+    private boolean bOnlyAbsMove;
+    private boolean bCreated;
+    private int param[];
+    private com.maddox.rts.MsgTimeOut ticker;
+
+    static 
+    {
+        com.maddox.rts.RTS.loadNative();
+    }
 }

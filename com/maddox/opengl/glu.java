@@ -1,145 +1,224 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   glu.java
+
 package com.maddox.opengl;
+
+
+// Referenced classes of package com.maddox.opengl:
+//            GLUNurbs, GLUQuadric, GLUTesselator, gl
 
 public final class glu
 {
-  public static final native void Ortho2D(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
 
-  public static final native void Perspective(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4);
+    public glu()
+    {
+    }
 
-  public static final native void LookAt(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7, double paramDouble8, double paramDouble9);
+    public static final native void Ortho2D(double d, double d1, double d2, double d3);
 
-  public static final native int Project(double paramDouble1, double paramDouble2, double paramDouble3, double[] paramArrayOfDouble1, double[] paramArrayOfDouble2, int[] paramArrayOfInt, double[] paramArrayOfDouble3, double[] paramArrayOfDouble4, double[] paramArrayOfDouble5);
+    public static final native void Perspective(double d, double d1, double d2, double d3);
 
-  public static final native int UnProject(double paramDouble1, double paramDouble2, double paramDouble3, double[] paramArrayOfDouble1, double[] paramArrayOfDouble2, int[] paramArrayOfInt, double[] paramArrayOfDouble3, double[] paramArrayOfDouble4, double[] paramArrayOfDouble5);
+    public static final native void LookAt(double d, double d1, double d2, double d3, 
+            double d4, double d5, double d6, double d7, double d8);
 
-  public static final native int ScaleImage(int paramInt1, int paramInt2, int paramInt3, int paramInt4, byte[] paramArrayOfByte1, int paramInt5, int paramInt6, int paramInt7, byte[] paramArrayOfByte2);
+    public static final native int Project(double d, double d1, double d2, double ad[], double ad1[], 
+            int ai[], double ad2[], double ad3[], double ad4[]);
 
-  public static final native void PickMatrix(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, int[] paramArrayOfInt);
+    public static final native int UnProject(double d, double d1, double d2, double ad[], double ad1[], 
+            int ai[], double ad2[], double ad3[], double ad4[]);
 
-  public static final native int Build1DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, byte[] paramArrayOfByte);
+    public static final native int ScaleImage(int i, int j, int k, int l, byte abyte0[], int i1, int j1, int k1, 
+            byte abyte1[]);
 
-  public static final native int Build1DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, short[] paramArrayOfShort);
+    public static final native void PickMatrix(double d, double d1, double d2, double d3, 
+            int ai[]);
 
-  public static final native int Build1DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int[] paramArrayOfInt);
+    public static final native int Build1DMipmaps(int i, int j, int k, int l, int i1, byte abyte0[]);
 
-  public static final native int Build1DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, float[] paramArrayOfFloat);
+    public static final native int Build1DMipmaps(int i, int j, int k, int l, int i1, short aword0[]);
 
-  public static final native int Build2DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, byte[] paramArrayOfByte);
+    public static final native int Build1DMipmaps(int i, int j, int k, int l, int i1, int ai[]);
 
-  public static final native int Build2DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, short[] paramArrayOfShort);
+    public static final native int Build1DMipmaps(int i, int j, int k, int l, int i1, float af[]);
 
-  public static final native int Build2DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int[] paramArrayOfInt);
+    public static final native int Build2DMipmaps(int i, int j, int k, int l, int i1, int j1, byte abyte0[]);
 
-  public static final native int Build2DMipmaps(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, float[] paramArrayOfFloat);
+    public static final native int Build2DMipmaps(int i, int j, int k, int l, int i1, int j1, short aword0[]);
 
-  public static final native String ErrorString(int paramInt);
+    public static final native int Build2DMipmaps(int i, int j, int k, int l, int i1, int j1, int ai[]);
 
-  public static final native String GetString(int paramInt);
+    public static final native int Build2DMipmaps(int i, int j, int k, int l, int i1, int j1, float af[]);
 
-  public static final GLUNurbs NewNurbsRenderer()
-  {
-    return new GLUNurbs();
-  }
-  public static final void DeleteNurbsRenderer(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.Delete();
-  }
-  public static final void NurbsProperty(GLUNurbs paramGLUNurbs, int paramInt, float paramFloat) {
-    paramGLUNurbs.Property(paramInt, paramFloat);
-  }
-  public static final void GetNurbsProperty(GLUNurbs paramGLUNurbs, int paramInt, float[] paramArrayOfFloat) {
-    paramGLUNurbs.GetProperty(paramInt, paramArrayOfFloat);
-  }
-  public static final void LoadSamplingMatrices(GLUNurbs paramGLUNurbs, float[] paramArrayOfFloat1, float[] paramArrayOfFloat2, int[] paramArrayOfInt) {
-    paramGLUNurbs.LoadSamplingMatrices(paramArrayOfFloat1, paramArrayOfFloat2, paramArrayOfInt);
-  }
-  public static final void BeginSurface(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.BeginSurface();
-  }
-  public static final void EndSurface(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.EndSurface();
-  }
-  public static final void NurbsSurface(GLUNurbs paramGLUNurbs, int paramInt1, float[] paramArrayOfFloat1, int paramInt2, float[] paramArrayOfFloat2, int paramInt3, int paramInt4, float[] paramArrayOfFloat3, int paramInt5, int paramInt6, int paramInt7) {
-    paramGLUNurbs.Surface(paramInt1, paramArrayOfFloat1, paramInt2, paramArrayOfFloat2, paramInt3, paramInt4, paramArrayOfFloat3, paramInt5, paramInt6, paramInt7);
-  }
-  public static final void BeginCurve(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.BeginCurve();
-  }
-  public static final void EndCurve(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.EndCurve();
-  }
-  public static final void NurbsCurve(GLUNurbs paramGLUNurbs, int paramInt1, float[] paramArrayOfFloat1, int paramInt2, float[] paramArrayOfFloat2, int paramInt3, int paramInt4) {
-    paramGLUNurbs.Curve(paramInt1, paramArrayOfFloat1, paramInt2, paramArrayOfFloat2, paramInt3, paramInt4);
-  }
-  public static final void BeginTrim(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.BeginTrim();
-  }
-  public static final void EndTrim(GLUNurbs paramGLUNurbs) {
-    paramGLUNurbs.EndTrim();
-  }
-  public static final void PwlCurve(GLUNurbs paramGLUNurbs, int paramInt1, float[] paramArrayOfFloat, int paramInt2, int paramInt3) {
-    paramGLUNurbs.PwlCurve(paramInt1, paramArrayOfFloat, paramInt2, paramInt3);
-  }
+    public static final native java.lang.String ErrorString(int i);
 
-  public static final GLUQuadric NewQuadric()
-  {
-    return new GLUQuadric();
-  }
-  public static final void DeleteQuadric(GLUQuadric paramGLUQuadric) {
-    paramGLUQuadric.Delete();
-  }
-  public static final void QuadricDrawStyle(GLUQuadric paramGLUQuadric, int paramInt) {
-    paramGLUQuadric.DrawStyle(paramInt);
-  }
-  public static final void QuadricNormals(GLUQuadric paramGLUQuadric, int paramInt) {
-    paramGLUQuadric.Normals(paramInt);
-  }
-  public static final void QuadricOrientation(GLUQuadric paramGLUQuadric, int paramInt) {
-    paramGLUQuadric.Orientation(paramInt);
-  }
-  public static final void QuadricTexture(GLUQuadric paramGLUQuadric, boolean paramBoolean) {
-    paramGLUQuadric.Texture(paramBoolean);
-  }
-  public static final void Sphere(GLUQuadric paramGLUQuadric, double paramDouble, int paramInt1, int paramInt2) {
-    paramGLUQuadric.Sphere(paramDouble, paramInt1, paramInt2);
-  }
-  public static final void Cylinder(GLUQuadric paramGLUQuadric, double paramDouble1, double paramDouble2, double paramDouble3, int paramInt1, int paramInt2) {
-    paramGLUQuadric.Cylinder(paramDouble1, paramDouble2, paramDouble3, paramInt1, paramInt2);
-  }
-  public static final void Disk(GLUQuadric paramGLUQuadric, double paramDouble1, double paramDouble2, int paramInt1, int paramInt2) {
-    paramGLUQuadric.Disk(paramDouble1, paramDouble2, paramInt1, paramInt2);
-  }
-  public static final void PartialDisk(GLUQuadric paramGLUQuadric, double paramDouble1, double paramDouble2, int paramInt1, int paramInt2, double paramDouble3, double paramDouble4) {
-    paramGLUQuadric.PartialDisk(paramDouble1, paramDouble2, paramInt1, paramInt2, paramDouble3, paramDouble4);
-  }
+    public static final native java.lang.String GetString(int i);
 
-  public static final GLUTesselator NewTess()
-  {
-    return new GLUTesselator();
-  }
-  public static final void DeleteTess(GLUTesselator paramGLUTesselator) {
-    paramGLUTesselator.Delete();
-  }
-  public static final void TessVertex(GLUTesselator paramGLUTesselator, double[] paramArrayOfDouble, float[] paramArrayOfFloat) {
-    paramGLUTesselator.Vertex(paramArrayOfDouble, paramArrayOfFloat);
-  }
-  public static final void TessVertex(GLUTesselator paramGLUTesselator, double[] paramArrayOfDouble, int[] paramArrayOfInt) {
-    paramGLUTesselator.Vertex(paramArrayOfDouble, paramArrayOfInt);
-  }
-  public static final void TessVertex(GLUTesselator paramGLUTesselator, double[] paramArrayOfDouble1, double[] paramArrayOfDouble2) {
-    paramGLUTesselator.Vertex(paramArrayOfDouble1, paramArrayOfDouble2);
-  }
-  public static final void BeginPolygon(GLUTesselator paramGLUTesselator) {
-    paramGLUTesselator.BeginPolygon();
-  }
-  public static final void EndPolygon(GLUTesselator paramGLUTesselator) {
-    paramGLUTesselator.EndPolygon();
-  }
-  public static final void NextContour(GLUTesselator paramGLUTesselator, int paramInt) {
-    paramGLUTesselator.NextContour(paramInt);
-  }
+    public static final com.maddox.opengl.GLUNurbs NewNurbsRenderer()
+    {
+        return new GLUNurbs();
+    }
 
-  static
-  {
-    gl.loadNative();
-  }
+    public static final void DeleteNurbsRenderer(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.Delete();
+    }
+
+    public static final void NurbsProperty(com.maddox.opengl.GLUNurbs glunurbs, int i, float f)
+    {
+        glunurbs.Property(i, f);
+    }
+
+    public static final void GetNurbsProperty(com.maddox.opengl.GLUNurbs glunurbs, int i, float af[])
+    {
+        glunurbs.GetProperty(i, af);
+    }
+
+    public static final void LoadSamplingMatrices(com.maddox.opengl.GLUNurbs glunurbs, float af[], float af1[], int ai[])
+    {
+        glunurbs.LoadSamplingMatrices(af, af1, ai);
+    }
+
+    public static final void BeginSurface(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.BeginSurface();
+    }
+
+    public static final void EndSurface(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.EndSurface();
+    }
+
+    public static final void NurbsSurface(com.maddox.opengl.GLUNurbs glunurbs, int i, float af[], int j, float af1[], int k, int l, float af2[], 
+            int i1, int j1, int k1)
+    {
+        glunurbs.Surface(i, af, j, af1, k, l, af2, i1, j1, k1);
+    }
+
+    public static final void BeginCurve(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.BeginCurve();
+    }
+
+    public static final void EndCurve(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.EndCurve();
+    }
+
+    public static final void NurbsCurve(com.maddox.opengl.GLUNurbs glunurbs, int i, float af[], int j, float af1[], int k, int l)
+    {
+        glunurbs.Curve(i, af, j, af1, k, l);
+    }
+
+    public static final void BeginTrim(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.BeginTrim();
+    }
+
+    public static final void EndTrim(com.maddox.opengl.GLUNurbs glunurbs)
+    {
+        glunurbs.EndTrim();
+    }
+
+    public static final void PwlCurve(com.maddox.opengl.GLUNurbs glunurbs, int i, float af[], int j, int k)
+    {
+        glunurbs.PwlCurve(i, af, j, k);
+    }
+
+    public static final com.maddox.opengl.GLUQuadric NewQuadric()
+    {
+        return new GLUQuadric();
+    }
+
+    public static final void DeleteQuadric(com.maddox.opengl.GLUQuadric gluquadric)
+    {
+        gluquadric.Delete();
+    }
+
+    public static final void QuadricDrawStyle(com.maddox.opengl.GLUQuadric gluquadric, int i)
+    {
+        gluquadric.DrawStyle(i);
+    }
+
+    public static final void QuadricNormals(com.maddox.opengl.GLUQuadric gluquadric, int i)
+    {
+        gluquadric.Normals(i);
+    }
+
+    public static final void QuadricOrientation(com.maddox.opengl.GLUQuadric gluquadric, int i)
+    {
+        gluquadric.Orientation(i);
+    }
+
+    public static final void QuadricTexture(com.maddox.opengl.GLUQuadric gluquadric, boolean flag)
+    {
+        gluquadric.Texture(flag);
+    }
+
+    public static final void Sphere(com.maddox.opengl.GLUQuadric gluquadric, double d, int i, int j)
+    {
+        gluquadric.Sphere(d, i, j);
+    }
+
+    public static final void Cylinder(com.maddox.opengl.GLUQuadric gluquadric, double d, double d1, double d2, int i, 
+            int j)
+    {
+        gluquadric.Cylinder(d, d1, d2, i, j);
+    }
+
+    public static final void Disk(com.maddox.opengl.GLUQuadric gluquadric, double d, double d1, int i, int j)
+    {
+        gluquadric.Disk(d, d1, i, j);
+    }
+
+    public static final void PartialDisk(com.maddox.opengl.GLUQuadric gluquadric, double d, double d1, int i, int j, double d2, double d3)
+    {
+        gluquadric.PartialDisk(d, d1, i, j, d2, d3);
+    }
+
+    public static final com.maddox.opengl.GLUTesselator NewTess()
+    {
+        return new GLUTesselator();
+    }
+
+    public static final void DeleteTess(com.maddox.opengl.GLUTesselator glutesselator)
+    {
+        glutesselator.Delete();
+    }
+
+    public static final void TessVertex(com.maddox.opengl.GLUTesselator glutesselator, double ad[], float af[])
+    {
+        glutesselator.Vertex(ad, af);
+    }
+
+    public static final void TessVertex(com.maddox.opengl.GLUTesselator glutesselator, double ad[], int ai[])
+    {
+        glutesselator.Vertex(ad, ai);
+    }
+
+    public static final void TessVertex(com.maddox.opengl.GLUTesselator glutesselator, double ad[], double ad1[])
+    {
+        glutesselator.Vertex(ad, ad1);
+    }
+
+    public static final void BeginPolygon(com.maddox.opengl.GLUTesselator glutesselator)
+    {
+        glutesselator.BeginPolygon();
+    }
+
+    public static final void EndPolygon(com.maddox.opengl.GLUTesselator glutesselator)
+    {
+        glutesselator.EndPolygon();
+    }
+
+    public static final void NextContour(com.maddox.opengl.GLUTesselator glutesselator, int i)
+    {
+        glutesselator.NextContour(i);
+    }
+
+    static 
+    {
+        com.maddox.opengl.gl.loadNative();
+    }
 }

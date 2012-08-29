@@ -1,33 +1,57 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   P_80A.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class P_80A extends P_80
+// Referenced classes of package com.maddox.il2.objects.air:
+//            P_80, PaintSchemeFMPar05, PaintSchemeFMPar06, NetAircraft, 
+//            Aircraft
+
+public class P_80A extends com.maddox.il2.objects.air.P_80
 {
-  static
-  {
-    Class localClass = P_80A.class;
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "YP-80");
-    Property.set(localClass, "meshName", "3DO/Plane/P-80(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
-    Property.set(localClass, "meshName_us", "3DO/Plane/P-80(USA)/hier.him");
-    Property.set(localClass, "PaintScheme_us", new PaintSchemeFMPar06());
-    Property.set(localClass, "meshNameDemo", "3DO/Plane/P-80(USA)/hier.him");
+    public P_80A()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1944.9F);
-    Property.set(localClass, "yearExpired", 1948.3F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/P-80A.fmd");
-    Property.set(localClass, "cockpitClass", CockpitYP_80.class);
-    Property.set(localClass, "LOSElevation", 0.965F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.P_80A.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "YP-80");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/P-80(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        com.maddox.rts.Property.set(class1, "meshName_us", "3DO/Plane/P-80(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
+        com.maddox.rts.Property.set(class1, "meshNameDemo", "3DO/Plane/P-80(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "yearService", 1944.9F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948.3F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/P-80A.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitYP_80.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.965F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 0, 0
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300", "MGunBrowning50ki 300"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

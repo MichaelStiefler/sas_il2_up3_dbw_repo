@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Loc.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Matrix3d;
@@ -6,259 +11,303 @@ import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            Orient
+
 public class Loc
 {
-  protected Point3d P;
-  protected Orient O;
-  private static Matrix3d M3 = new Matrix3d();
 
-  private static final Tuple3d tup = new Point3d();
+    public Loc()
+    {
+        P = new Point3d();
+        O = new Orient();
+    }
 
-  public Loc()
-  {
-    this.P = new Point3d();
-    this.O = new Orient();
-  }
+    public Loc(double d, double d1, double d2, float f, 
+            float f1, float f2)
+    {
+        this();
+        set(d, d1, d2, f, f1, f2);
+    }
 
-  public Loc(double paramDouble1, double paramDouble2, double paramDouble3, float paramFloat1, float paramFloat2, float paramFloat3) {
-    this();
-    set(paramDouble1, paramDouble2, paramDouble3, paramFloat1, paramFloat2, paramFloat3);
-  }
+    public Loc(com.maddox.il2.engine.Loc loc)
+    {
+        this();
+        set(loc);
+    }
 
-  public Loc(Loc paramLoc) {
-    this();
-    set(paramLoc);
-  }
+    public Loc(com.maddox.JGP.Tuple3d tuple3d, com.maddox.il2.engine.Orient orient1)
+    {
+        this();
+        set(tuple3d, orient1);
+    }
 
-  public Loc(Tuple3d paramTuple3d, Orient paramOrient) {
-    this();
-    set(paramTuple3d, paramOrient);
-  }
+    public Loc(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        this();
+        set(tuple3d);
+    }
 
-  public Loc(Tuple3d paramTuple3d) {
-    this();
-    set(paramTuple3d);
-  }
+    public Loc(com.maddox.il2.engine.Orient orient1)
+    {
+        this();
+        set(orient1);
+    }
 
-  public Loc(Orient paramOrient) {
-    this();
-    set(paramOrient);
-  }
+    public Loc(double ad[])
+    {
+        this();
+        set(ad);
+    }
 
-  public Loc(double[] paramArrayOfDouble) {
-    this();
-    set(paramArrayOfDouble);
-  }
+    public void set(double d, double d1, double d2, float f, 
+            float f1, float f2)
+    {
+        P.set(d, d1, d2);
+        O.set(f, f1, f2);
+    }
 
-  public void set(double paramDouble1, double paramDouble2, double paramDouble3, float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.P.set(paramDouble1, paramDouble2, paramDouble3);
-    this.O.set(paramFloat1, paramFloat2, paramFloat3);
-  }
+    public void set(com.maddox.il2.engine.Loc loc)
+    {
+        P.set(loc.P);
+        O.set(loc.O);
+    }
 
-  public void set(Loc paramLoc)
-  {
-    this.P.set(paramLoc.P);
-    this.O.set(paramLoc.O);
-  }
+    public void set(com.maddox.JGP.Tuple3d tuple3d, com.maddox.il2.engine.Orient orient1)
+    {
+        P.set(tuple3d);
+        O.set(orient1);
+    }
 
-  public void set(Tuple3d paramTuple3d, Orient paramOrient)
-  {
-    this.P.set(paramTuple3d);
-    this.O.set(paramOrient);
-  }
+    public void set(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        P.set(tuple3d);
+    }
 
-  public void set(Tuple3d paramTuple3d)
-  {
-    this.P.set(paramTuple3d);
-  }
+    public void set(com.maddox.il2.engine.Orient orient1)
+    {
+        O.set(orient1);
+    }
 
-  public void set(Orient paramOrient)
-  {
-    this.O.set(paramOrient);
-  }
+    public void set(double ad[])
+    {
+        P.set(ad[0], ad[1], ad[2]);
+        O.set((float)ad[3], (float)ad[4], (float)ad[5]);
+    }
 
-  public void set(double[] paramArrayOfDouble)
-  {
-    this.P.set(paramArrayOfDouble[0], paramArrayOfDouble[1], paramArrayOfDouble[2]);
-    this.O.set((float)paramArrayOfDouble[3], (float)paramArrayOfDouble[4], (float)paramArrayOfDouble[5]);
-  }
+    public float getAzimut()
+    {
+        return O.getAzimut();
+    }
 
-  public float getAzimut() {
-    return this.O.getAzimut();
-  }
-  public float getTangage() {
-    return this.O.getTangage();
-  }
-  public float getKren() {
-    return this.O.getKren();
-  }
-  public double getX() { return this.P.x; } 
-  public double getY() { return this.P.y; } 
-  public double getZ() { return this.P.z; } 
-  public Point3d getPoint() {
-    return this.P; } 
-  public Orient getOrient() { return this.O; }
+    public float getTangage()
+    {
+        return O.getTangage();
+    }
 
-  public void get(Tuple3d paramTuple3d) {
-    paramTuple3d.set(this.P);
-  }
-  public void get(Orient paramOrient) {
-    paramOrient.set(this.O);
-  }
+    public float getKren()
+    {
+        return O.getKren();
+    }
 
-  public void get(Tuple3d paramTuple3d, Orient paramOrient) {
-    paramTuple3d.set(this.P);
-    paramOrient.set(this.O);
-  }
+    public double getX()
+    {
+        return P.x;
+    }
 
-  public void get(double[] paramArrayOfDouble)
-  {
-    paramArrayOfDouble[0] = this.P.x; paramArrayOfDouble[1] = this.P.y; paramArrayOfDouble[2] = this.P.z;
-    paramArrayOfDouble[3] = this.O.getAzimut(); paramArrayOfDouble[4] = this.O.getTangage(); paramArrayOfDouble[5] = this.O.getKren();
-  }
+    public double getY()
+    {
+        return P.y;
+    }
 
-  public void add(Loc paramLoc1, Loc paramLoc2)
-  {
-    paramLoc2.transform(paramLoc1.P, this.P);
-    this.O.add(paramLoc1.O, paramLoc2.O);
-  }
+    public double getZ()
+    {
+        return P.z;
+    }
 
-  public void add(Loc paramLoc)
-  {
-    add(this, paramLoc);
-  }
+    public com.maddox.JGP.Point3d getPoint()
+    {
+        return P;
+    }
 
-  public void add(Tuple3d paramTuple3d)
-  {
-    this.P.add(paramTuple3d);
-  }
+    public com.maddox.il2.engine.Orient getOrient()
+    {
+        return O;
+    }
 
-  public void sub(Loc paramLoc1, Loc paramLoc2)
-  {
-    paramLoc2.transformInv(paramLoc1.P, this.P);
-    this.O.sub(paramLoc1.O, paramLoc2.O);
-  }
+    public void get(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        tuple3d.set(P);
+    }
 
-  public void sub(Loc paramLoc)
-  {
-    sub(this, paramLoc);
-  }
+    public void get(com.maddox.il2.engine.Orient orient1)
+    {
+        orient1.set(O);
+    }
 
-  public void wrap()
-  {
-    this.O.wrap();
-  }
+    public void get(com.maddox.JGP.Tuple3d tuple3d, com.maddox.il2.engine.Orient orient1)
+    {
+        tuple3d.set(P);
+        orient1.set(O);
+    }
 
-  public void getMatrix(Matrix4d paramMatrix4d)
-  {
-    this.O.getMatrix(M3);
-    paramMatrix4d.set(M3);
-    paramMatrix4d.m03 = this.P.x;
-    paramMatrix4d.m13 = this.P.y;
-    paramMatrix4d.m23 = this.P.z;
-  }
+    public void get(double ad[])
+    {
+        ad[0] = P.x;
+        ad[1] = P.y;
+        ad[2] = P.z;
+        ad[3] = O.getAzimut();
+        ad[4] = O.getTangage();
+        ad[5] = O.getKren();
+    }
 
-  public void getOrientMatrix(Matrix3d paramMatrix3d)
-  {
-    this.O.getMatrix(paramMatrix3d);
-  }
+    public void add(com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        loc1.transform(loc.P, P);
+        O.add(loc.O, loc1.O);
+    }
 
-  public void getOrientMatrixInv(Matrix3d paramMatrix3d)
-  {
-    this.O.getMatrixInv(paramMatrix3d);
-  }
+    public void add(com.maddox.il2.engine.Loc loc)
+    {
+        add(this, loc);
+    }
 
-  public void transform(Point3d paramPoint3d)
-  {
-    this.O.transform(paramPoint3d);
-    paramPoint3d.add(this.P);
-  }
+    public void add(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        P.add(tuple3d);
+    }
 
-  public void transform(Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    this.O.transform(paramPoint3d1, paramPoint3d2);
-    paramPoint3d2.add(this.P);
-  }
+    public void sub(com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        loc1.transformInv(loc.P, P);
+        O.sub(loc.O, loc1.O);
+    }
 
-  public void transform(Vector3d paramVector3d)
-  {
-    this.O.transform(paramVector3d);
-  }
+    public void sub(com.maddox.il2.engine.Loc loc)
+    {
+        sub(this, loc);
+    }
 
-  public void transform(Vector3d paramVector3d1, Vector3d paramVector3d2)
-  {
-    this.O.transform(paramVector3d1, paramVector3d2);
-  }
+    public void wrap()
+    {
+        O.wrap();
+    }
 
-  public void transformInv(Point3d paramPoint3d)
-  {
-    paramPoint3d.sub(this.P);
-    this.O.transformInv(paramPoint3d);
-  }
+    public void getMatrix(com.maddox.JGP.Matrix4d matrix4d)
+    {
+        O.getMatrix(M3);
+        matrix4d.set(M3);
+        matrix4d.m03 = P.x;
+        matrix4d.m13 = P.y;
+        matrix4d.m23 = P.z;
+    }
 
-  public void transformInv(Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    tup.sub(paramPoint3d1, this.P);
-    this.O.transformInv(tup, paramPoint3d2);
-  }
+    public void getOrientMatrix(com.maddox.JGP.Matrix3d matrix3d)
+    {
+        O.getMatrix(matrix3d);
+    }
 
-  public void transformInv(Vector3d paramVector3d)
-  {
-    this.O.transformInv(paramVector3d);
-  }
+    public void getOrientMatrixInv(com.maddox.JGP.Matrix3d matrix3d)
+    {
+        O.getMatrixInv(matrix3d);
+    }
 
-  public void transformInv(Vector3d paramVector3d1, Vector3d paramVector3d2)
-  {
-    this.O.transformInv(paramVector3d1, paramVector3d2);
-  }
+    public void transform(com.maddox.JGP.Point3d point3d)
+    {
+        O.transform(point3d);
+        point3d.add(P);
+    }
 
-  public final void interpolate(Loc paramLoc1, Loc paramLoc2, float paramFloat)
-  {
-    this.P.interpolate(paramLoc1.P, paramLoc2.P, paramFloat);
-    this.O.interpolate(paramLoc1.O, paramLoc2.O, paramFloat);
-  }
+    public void transform(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        O.transform(point3d, point3d1);
+        point3d1.add(P);
+    }
 
-  public final void interpolate(Loc paramLoc, float paramFloat)
-  {
-    this.P.interpolate(paramLoc.P, paramFloat);
-    this.O.interpolate(paramLoc.O, paramFloat);
-  }
+    public void transform(com.maddox.JGP.Vector3d vector3d)
+    {
+        O.transform(vector3d);
+    }
 
-  public final void interpolate(Loc paramLoc1, Loc paramLoc2, double paramDouble)
-  {
-    this.P.interpolate(paramLoc1.P, paramLoc2.P, paramDouble);
-    this.O.interpolate(paramLoc1.O, paramLoc2.O, (float)paramDouble);
-  }
+    public void transform(com.maddox.JGP.Vector3d vector3d, com.maddox.JGP.Vector3d vector3d1)
+    {
+        O.transform(vector3d, vector3d1);
+    }
 
-  public final void interpolate(Loc paramLoc, double paramDouble)
-  {
-    this.P.interpolate(paramLoc.P, paramDouble);
-    this.O.interpolate(paramLoc.O, (float)paramDouble);
-  }
+    public void transformInv(com.maddox.JGP.Point3d point3d)
+    {
+        point3d.sub(P);
+        O.transformInv(point3d);
+    }
 
-  public int hashCode()
-  {
-    return this.P.hashCode() ^ this.O.hashCode();
-  }
+    public void transformInv(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        tup.sub(point3d, P);
+        O.transformInv(tup, point3d1);
+    }
 
-  public boolean equals(Loc paramLoc)
-  {
-    return (this.P.equals(paramLoc.P)) && (this.O.equals(paramLoc.O));
-  }
+    public void transformInv(com.maddox.JGP.Vector3d vector3d)
+    {
+        O.transformInv(vector3d);
+    }
 
-  public boolean epsilonEquals(Loc paramLoc, float paramFloat)
-  {
-    return (this.P.epsilonEquals(paramLoc.P, paramFloat)) && (this.O.epsilonEquals(paramLoc.O, paramFloat));
-  }
+    public void transformInv(com.maddox.JGP.Vector3d vector3d, com.maddox.JGP.Vector3d vector3d1)
+    {
+        O.transformInv(vector3d, vector3d1);
+    }
 
-  public String toString()
-  {
-    return "( " + this.P + "," + this.O + " ) ";
-  }
+    public final void interpolate(com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1, float f)
+    {
+        P.interpolate(loc.P, loc1.P, f);
+        O.interpolate(loc.O, loc1.O, f);
+    }
 
-  public void orient(Vector3d paramVector3d)
-  {
-    this.O.orient(paramVector3d);
-  }
+    public final void interpolate(com.maddox.il2.engine.Loc loc, float f)
+    {
+        P.interpolate(loc.P, f);
+        O.interpolate(loc.O, f);
+    }
+
+    public final void interpolate(com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1, double d)
+    {
+        P.interpolate(loc.P, loc1.P, d);
+        O.interpolate(loc.O, loc1.O, (float)d);
+    }
+
+    public final void interpolate(com.maddox.il2.engine.Loc loc, double d)
+    {
+        P.interpolate(loc.P, d);
+        O.interpolate(loc.O, (float)d);
+    }
+
+    public int hashCode()
+    {
+        return P.hashCode() ^ O.hashCode();
+    }
+
+    public boolean equals(com.maddox.il2.engine.Loc loc)
+    {
+        return P.equals(loc.P) && O.equals(loc.O);
+    }
+
+    public boolean epsilonEquals(com.maddox.il2.engine.Loc loc, float f)
+    {
+        return P.epsilonEquals(loc.P, f) && O.epsilonEquals(loc.O, f);
+    }
+
+    public java.lang.String toString()
+    {
+        return "( " + P + "," + O + " ) ";
+    }
+
+    public void orient(com.maddox.JGP.Vector3d vector3d)
+    {
+        O.orient(vector3d);
+    }
+
+    protected com.maddox.JGP.Point3d P;
+    protected com.maddox.il2.engine.Orient O;
+    private static com.maddox.JGP.Matrix3d M3 = new Matrix3d();
+    private static final com.maddox.JGP.Tuple3d tup = new Point3d();
+
 }

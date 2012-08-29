@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorSimpleHMesh.java
+
 package com.maddox.il2.objects;
 
 import com.maddox.il2.engine.Actor;
@@ -9,40 +14,64 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.rts.Message;
 import com.maddox.rts.Spawn;
 
-public class ActorSimpleHMesh extends ActorHMesh
+public class ActorSimpleHMesh extends com.maddox.il2.engine.ActorHMesh
 {
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-  public ActorSimpleHMesh(String paramString, Loc paramLoc) {
-    super(paramString, paramLoc);
-    drawing(true);
-  }
-  public ActorSimpleHMesh(String paramString, ActorPos paramActorPos) {
-    super(paramString, paramActorPos);
-    drawing(true);
-  }
-  public ActorSimpleHMesh(String paramString) {
-    super(paramString);
-    drawing(true);
-  }
-  protected void createActorHashCode() {
-    makeActorRealHashCode();
-  }
-
-  static
-  {
-    Spawn.add(ActorSimpleHMesh.class, new SPAWN());
-  }
-
-  public static class SPAWN
-    implements ActorSpawn
-  {
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg)
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
     {
-      if (paramActorSpawnArg.isNoExistHARD(paramActorSpawnArg.meshName, "mesh name not present")) return null;
-      return paramActorSpawnArg.set(new ActorSimpleHMesh(paramActorSpawnArg.meshName));
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            if(actorspawnarg.isNoExistHARD(actorspawnarg.meshName, "mesh name not present"))
+                return null;
+            else
+                return actorspawnarg.set(new ActorSimpleHMesh(actorspawnarg.meshName));
+        }
+
+        public SPAWN()
+        {
+        }
     }
-  }
+
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public ActorSimpleHMesh(java.lang.String s, com.maddox.il2.engine.Loc loc)
+    {
+        super(s, loc);
+        drawing(true);
+    }
+
+    public ActorSimpleHMesh(java.lang.String s, com.maddox.il2.engine.ActorPos actorpos)
+    {
+        super(s, actorpos);
+        drawing(true);
+    }
+
+    public ActorSimpleHMesh(java.lang.String s)
+    {
+        super(s);
+        drawing(true);
+    }
+
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        com.maddox.rts.Spawn.add(com.maddox.il2.objects.ActorSimpleHMesh.class, new SPAWN());
+    }
 }

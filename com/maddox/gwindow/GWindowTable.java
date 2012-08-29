@@ -1,640 +1,841 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowTable.java
+
 package com.maddox.gwindow;
 
 import java.util.ArrayList;
 
-public class GWindowTable extends GWindow
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GWindowEditControl, GWindowCellEdit, GWindowButton, 
+//            GWindowHScrollBar, GWindowVScrollBar, GRegion, GWindowRoot, 
+//            GFont, GWindowLookAndFeel, GSize, GCanvas, 
+//            GPoint
+
+public class GWindowTable extends com.maddox.gwindow.GWindow
 {
-  public boolean bColumnsSizable = true;
-  public boolean bColAlign = true;
-  public boolean bRowAlign = true;
-  public boolean bSelecting = true;
-  public boolean bSelectRow = false;
-  public boolean bEditExitOnFocusExit = true;
-  public boolean bEditExitOnEnterPress = true;
-
-  public int selectRow = -1;
-  public int selectCol = -1;
-  public GWindowCellEdit editor;
-  public Client wClient;
-  public GWindowVScrollBar vSB;
-  public GWindowHScrollBar hSB;
-  public ArrayList columns = new ArrayList();
-  public GWindowButton endColumn;
-  public GWindowButton button;
-  private GRegion _clientRegion = new GRegion();
-
-  public int countColumns()
-  {
-    return this.columns.size();
-  }
-  public int countRows() { return 0; } 
-  public float rowHeight(int paramInt) {
-    return (int)(this.root.textFonts[0].height * 1.2F);
-  }
-  public float fullClientHeight() { return rowHeight(0) * countRows(); } 
-  public void columnClicked(int paramInt) {
-  }
-  public Object getValueAt(int paramInt1, int paramInt2) {
-    return null;
-  }
-  public void setValueAt(Object paramObject, int paramInt1, int paramInt2) {
-  }
-  public boolean isCellEditable(int paramInt1, int paramInt2) { return false; }
-
-  public GWindowCellEdit getCellEdit(int paramInt1, int paramInt2) {
-    if (!isCellEditable(paramInt1, paramInt2)) return null;
-    Object localObject = getValueAt(paramInt1, paramInt2);
-    if (localObject == null) return null;
-
-    GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.wClient.create(new GWindowEditControl());
-    localGWindowCellEdit.setCellEditValue(localObject);
-    ((GWindow)localGWindowCellEdit).activateWindow();
-    return localGWindowCellEdit;
-  }
-
-  public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2)
-  {
-    Object localObject = getValueAt(paramInt1, paramInt2);
-    if (localObject == null) return;
-    String str = localObject.toString();
-    setCanvasFont(0);
-    if (paramBoolean) {
-      setCanvasColorBLACK();
-      draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      setCanvasColorWHITE();
-      draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, str);
-    }
-    else
+    public class Column extends com.maddox.gwindow.GWindowButton
     {
-      setCanvasColorBLACK();
-      draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, str);
-    }
-  }
 
-  public Column addColumn(String paramString1, String paramString2) {
-    Column localColumn = new Column(this, paramString1, paramString2);
-    this.columns.add(localColumn);
-    resized();
-    return localColumn;
-  }
-  public Column addColumn(int paramInt, String paramString1, String paramString2) {
-    Column localColumn = new Column(this, paramString1, paramString2);
-    this.columns.add(paramInt, localColumn);
-    resized();
-    return localColumn;
-  }
-  public void removeColumn(int paramInt) {
-    this.columns.remove(paramInt);
-    resized();
-  }
-  public Column getColumn(int paramInt) {
-    return (Column)this.columns.get(paramInt);
-  }
-
-  public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-    if ((paramInt1 == 17) && (this.vSB != null) && (this.vSB.isVisible())) {
-      this.vSB.scrollDz(this.root.mouseRelMoveZ);
-      return true;
-    }
-    if (paramGWindow == this.hSB) {
-      if (paramInt1 == 2) {
-        resized();
-        return true;
-      }
-    } else if ((paramGWindow == this.vSB) && 
-      (paramInt1 == 2)) {
-      resized();
-      return true;
-    }
-
-    return false;
-  }
-
-  public void setSelect(int paramInt1, int paramInt2) {
-    if ((paramInt1 == this.selectRow) && (paramInt2 == this.selectCol)) {
-      if ((this.selectRow < 0) || (this.selectCol < 0)) return;
-      if ((isCellEditable(paramInt1, paramInt2)) && (this.editor == null)) {
-        this.editor = getCellEdit(this.selectRow, this.selectCol);
-        if (this.editor != null)
-          this.wClient.setPosEditor();
-      }
-      return;
-    }
-    if (this.editor != null) {
-      Object localObject = this.editor.getCellEditValue();
-      setValueAt(localObject, this.selectRow, this.selectCol);
-      ((GWindow)this.editor).hideWindow();
-      this.editor = null;
-    }
-    this.selectRow = paramInt1;
-    this.selectCol = paramInt2;
-    if ((this.selectRow < 0) || (this.selectCol < 0)) return;
-    this.editor = getCellEdit(this.selectRow, this.selectCol);
-    if (this.editor != null)
-      this.wClient.setPosEditor();
-  }
-
-  public void alignColumns()
-  {
-    if (this.columns.size() == 0) return;
-    float f1 = 0.0F;
-    float f2 = 0.0F;
-    for (int i = 0; i < this.columns.size(); i++) {
-      Column localColumn1 = (Column)this.columns.get(i);
-      GSize localGSize1 = localColumn1.getMinSize();
-      f5 = localColumn1.getRelativeDx();
-      if (f5 > 0.0F) f1 += f5; else
-        f1 += localGSize1.dx;
-      f2 = localGSize1.dy;
-    }
-    GRegion localGRegion = getClientRegion();
-    float f3 = localGRegion.dx;
-    if (this.vSB.isVisible()) f3 -= lookAndFeel().getVScrollBarW();
-    float f4 = f3 / f1;
-    float f5 = localGRegion.x;
-    float f6 = f5;
-    float f7 = localGRegion.y;
-    Column localColumn2 = null;
-    for (int j = 0; j < this.columns.size(); j++) {
-      localColumn2 = (Column)this.columns.get(j);
-      GSize localGSize2 = localColumn2.getMinSize();
-      float f8 = localColumn2.getRelativeDx();
-      if (f8 > 0.0F) localColumn2.setSize(f8 * f4, f2); else
-        localColumn2.setSize(localGSize2.dx * f4, f2);
-      localColumn2.setPos(f6, f7);
-      f6 += localColumn2.win.dx;
-    }
-    if (localColumn2.win.dx + localColumn2.win.x - f5 != f3)
-      localColumn2.setSize(f3 - localColumn2.win.x + f5, f2);
-  }
-
-  private void _alignColumns() {
-    if (this.columns.size() == 0) return;
-    float f1 = 0.0F;
-    float f2 = 0.0F;
-    for (int i = 0; i < this.columns.size(); i++) {
-      Column localColumn1 = (Column)this.columns.get(i);
-      GSize localGSize = localColumn1.getMinSize();
-      f1 += localColumn1.win.dx;
-      f2 = localGSize.dy;
-    }
-    GRegion localGRegion = getClientRegion();
-    float f3 = localGRegion.dx;
-    if (this.vSB.isVisible()) f3 -= lookAndFeel().getVScrollBarW();
-    float f4 = f3 / f1;
-    float f5 = localGRegion.x;
-    float f6 = f5;
-    float f7 = localGRegion.y;
-    Column localColumn2 = null;
-    for (int j = 0; j < this.columns.size(); j++) {
-      localColumn2 = (Column)this.columns.get(j);
-      localColumn2.setSize(localColumn2.win.dx * f4, f2);
-      localColumn2.setPos(f6, f7);
-      f6 += localColumn2.win.dx;
-    }
-    if (localColumn2.win.dx + localColumn2.win.x - f5 != f3)
-      localColumn2.setSize(f3 - localColumn2.win.x + f5, f2);
-  }
-
-  public void resized() {
-    getClientRegion(this._clientRegion, 0.0F);
-    float f1 = 0.0F;
-    if (this.columns.size() > 0) {
-      Column localColumn1 = (Column)this.columns.get(0);
-      GSize localGSize = localColumn1.getMinSize();
-      f1 = localGSize.dy;
-    }
-
-    if (this.bColumnsSizable) {
-      float f2 = 0.0F;
-      if (!this.bColAlign) {
-        for (i = 0; i < this.columns.size(); i++) {
-          Column localColumn2 = (Column)this.columns.get(i);
-          f2 += localColumn2.win.dx;
+        public void setRelativeDx(float f)
+        {
+            relDx = f;
         }
-      }
-      int i = 0;
-      int j = 0;
 
-      for (int k = 0; k < 2; k++) {
-        f3 = this._clientRegion.dy - f1;
-        if (j != 0) f3 -= lookAndFeel().getHScrollBarH();
-        f4 = this._clientRegion.dx;
-        if (i != 0) f4 -= lookAndFeel().getVScrollBarW();
-        if (!this.bColAlign)
-          j = f2 > f4 ? 1 : 0;
-        i = fullClientHeight() > f3 ? 1 : 0;
-      }
-      float f3 = this._clientRegion.dy - f1;
-      if (j != 0) f3 -= lookAndFeel().getHScrollBarH();
-      float f4 = this._clientRegion.dx;
-      if (i != 0) f4 -= lookAndFeel().getVScrollBarW();
-
-      if (i != 0) {
-        this.vSB.setRange(0.0F, fullClientHeight(), f3, this.vSB.scroll, this.vSB.pos);
-        this.vSB.setSize(lookAndFeel().getVScrollBarW(), f3 + f1);
-        this.vSB.setPos(this._clientRegion.x + f4, this._clientRegion.y);
-        this.vSB.showWindow();
-      } else {
-        this.vSB.setPos(0.0F, false);
-        this.vSB.hideWindow();
-      }
-      float f5;
-      if (j != 0) {
-        this.hSB.setRange(0.0F, f2, f4, lookAndFeel().metric() / 2.0F, this.hSB.pos);
-        this.hSB.setSize(f4, lookAndFeel().getHScrollBarH());
-        this.hSB.setPos(this._clientRegion.x, this._clientRegion.y + f1 + f3);
-        this.hSB.showWindow();
-        f5 = this._clientRegion.x - (int)this.hSB.pos();
-      } else {
-        this.hSB.setPos(0.0F, false);
-        this.hSB.hideWindow();
-        f5 = this._clientRegion.x;
-      }
-      if (this.bColAlign) {
-        _alignColumns();
-        this.endColumn.hideWindow();
-      } else {
-        for (int m = 0; m < this.columns.size(); m++) {
-          Column localColumn3 = (Column)this.columns.get(m);
-          localColumn3.setPos(f5, this._clientRegion.y);
-          localColumn3.setSize(localColumn3.win.dx, f1);
-          f5 += localColumn3.win.dx;
+        public float getRelativeDx()
+        {
+            return relDx;
         }
-        if ((f5 < f4 + this._clientRegion.x) && (f1 > 0.0F)) {
-          this.endColumn.setPos(f5, this._clientRegion.y);
-          this.endColumn.setSize(f4 + this._clientRegion.x - f5, f1);
-          this.endColumn.showWindow();
-        } else {
-          this.endColumn.hideWindow();
-        }
-      }
-      if ((j != 0) && (i != 0)) {
-        this.button.setPos(f4 + this._clientRegion.x, this._clientRegion.y + f1 + f3);
-        this.button.setSize(lookAndFeel().getVScrollBarW(), lookAndFeel().getHScrollBarH());
-        this.button.showWindow();
-      } else {
-        this.button.hideWindow();
-      }
-      this.wClient.setSize(f4, f3);
-    } else {
-      if (this._clientRegion.dy - f1 < fullClientHeight()) {
-        this.vSB.setRange(0.0F, fullClientHeight(), this._clientRegion.dy - f1, this.vSB.scroll, this.vSB.pos);
-        this.vSB.setSize(lookAndFeel().getVScrollBarW(), this._clientRegion.dy);
-        this.vSB.setPos(this._clientRegion.x + this._clientRegion.dx - lookAndFeel().getVScrollBarW(), this._clientRegion.y);
 
-        this.vSB.showWindow();
-        this.wClient.setSize(this._clientRegion.dx - lookAndFeel().getVScrollBarW(), this._clientRegion.dy - f1);
-      } else {
-        this.vSB.setPos(0.0F, false);
-        this.vSB.hideWindow();
-        this.wClient.setSize(this._clientRegion.dx, this._clientRegion.dy - f1);
-      }
-      alignColumns();
-    }
-    this.wClient.setPos(this._clientRegion.x, this._clientRegion.y + f1);
-    this.wClient.setPosEditor();
-  }
-
-  public void afterCreated()
-  {
-    this.endColumn = new GWindowButton(this);
-    this.endColumn.bAcceptsKeyFocus = false;
-    this.endColumn.bDrawActive = false;
-    this.endColumn.bDrawOnlyUP = true;
-    this.button = new GWindowButton(this);
-    this.button.bAcceptsKeyFocus = false;
-    this.button.bAlwaysOnTop = true;
-    this.button.bDrawOnlyUP = true;
-    this.button.bDrawActive = false;
-    this.button.hideWindow();
-    this.hSB = new GWindowHScrollBar(this);
-    this.hSB.bAlwaysOnTop = true;
-    this.hSB.hideWindow();
-    this.vSB = new GWindowVScrollBar(this);
-    this.vSB.bAlwaysOnTop = true;
-    this.vSB.hideWindow();
-    this.wClient = new Client(this);
-    resized();
-  }
-
-  public void render() {
-    lookAndFeel().render(this);
-  }
-
-  public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    return lookAndFeel().getClientRegion(this, paramGRegion, paramFloat);
-  }
-
-  public GWindowTable(GWindow paramGWindow) {
-    doNew(paramGWindow);
-  }
-
-  public GWindowTable(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
-
-  public class Column extends GWindowButton
-  {
-    private boolean bSizingLeft;
-    private float relDx = -1.0F;
-
-    public void setRelativeDx(float paramFloat) { this.relDx = paramFloat; } 
-    public float getRelativeDx() { return this.relDx; }
-
-    public boolean notify(int paramInt1, int paramInt2) {
-      if (paramInt1 == 2) {
-        int i = GWindowTable.this.columns.indexOf(this);
-        GWindowTable.this.columnClicked(i);
-        return true;
-      }
-      return super.notify(paramInt1, paramInt2);
-    }
-
-    private boolean isSizableArea(float paramFloat) {
-      if (!GWindowTable.this.bColumnsSizable) return false;
-      float f = lookAndFeel().metric() / 2.0F;
-      if ((paramFloat > f) && (paramFloat < this.win.dx - f)) return false;
-      this.bSizingLeft = (paramFloat <= f);
-      if ((this.bSizingLeft) && (this == GWindowTable.this.columns.get(0))) return false;
-
-      return (!GWindowTable.this.bColAlign) || (this.bSizingLeft) || (this != GWindowTable.this.columns.get(GWindowTable.this.columns.size() - 1));
-    }
-
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      if ((paramInt == 0) && (
-        (isMouseCaptured()) || ((isSizableArea(paramFloat1)) && (!this.bDown)))) {
-        mouseCapture(paramBoolean);
-        return;
-      }
-
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    }
-
-    public void mouseMove(float paramFloat1, float paramFloat2) {
-      super.mouseMove(paramFloat1, paramFloat2);
-      if (isMouseCaptured()) {
-        this.mouseCursor = 11;
-        int i = GWindowTable.this.columns.indexOf(this);
-        if (i < 0) return;
-        float f1 = this.root.mouseStep.dx;
-        float f2;
-        Column localColumn;
-        if (this.bSizingLeft) {
-          f2 = this.win.dx - f1;
-          if (f2 < 1.0F) f1 = this.win.dx - 1.0F;
-          localColumn = (Column)GWindowTable.this.columns.get(i - 1);
-          f2 = localColumn.win.dx + f1;
-          if (f2 < 1.0F) f1 = -(localColumn.win.dx - 1.0F);
-          localColumn.setSize(localColumn.win.dx + f1, localColumn.win.dy);
-          setSize(this.win.dx - f1, this.win.dy);
-        } else {
-          f2 = this.win.dx + f1;
-          if (f2 < 1.0F) f1 = -(this.win.dx - 1.0F);
-          if (i < GWindowTable.this.columns.size() - 1) {
-            localColumn = (Column)GWindowTable.this.columns.get(i + 1);
-            f2 = localColumn.win.dx - f1;
-            if (f2 < 1.0F) f1 = localColumn.win.dx - 1.0F;
-            localColumn.setSize(localColumn.win.dx - f1, localColumn.win.dy);
-          }
-          setSize(this.win.dx + f1, this.win.dy);
-        }
-        this.parentWindow.resized();
-      } else if ((isSizableArea(paramFloat1)) && (!isMouseDownAny(0))) {
-        this.mouseCursor = 11;
-      } else {
-        this.mouseCursor = 1;
-      }
-    }
-
-    public Column(GWindow paramString1, String paramString2, String arg4) {
-      super(paramString2, str);
-      GSize localGSize = getMinSize();
-      setSize(localGSize.dx, localGSize.dy);
-      this.bDrawActive = false;
-    }
-  }
-
-  public class Client extends GWindow
-  {
-    public int findedRow;
-    public int findedCol;
-    private GRegion _clipRegion = new GRegion();
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if ((GWindowTable.this.editor != null) && (paramGWindow == GWindowTable.this.editor) && (
-        ((GWindowTable.this.bEditExitOnFocusExit) && (paramInt1 == 16)) || ((GWindowTable.this.bEditExitOnEnterPress) && (paramInt1 == 11) && (paramInt2 == 10))))
-      {
-        Object localObject = GWindowTable.this.editor.getCellEditValue();
-        GWindowTable.this.setValueAt(localObject, GWindowTable.this.selectRow, GWindowTable.this.selectCol);
-        ((GWindow)GWindowTable.this.editor).hideWindow();
-        GWindowTable.this.editor = null;
-        return true;
-      }
-
-      return false;
-    }
-
-    public void mouseClick(int paramInt, float paramFloat1, float paramFloat2) {
-      super.mouseClick(paramInt, paramFloat1, paramFloat2);
-      if (paramInt == 0) {
-        findSelected(paramFloat1, paramFloat2);
-        if ((this.findedRow >= 0) && (this.findedCol >= 0))
-          GWindowTable.this.setSelect(this.findedRow, this.findedCol);
-      }
-    }
-
-    public void keyboardKey(int paramInt, boolean paramBoolean) {
-      super.keyboardKey(paramInt, paramBoolean);
-      if (!paramBoolean) {
-        if (paramInt == 10)
-          GWindowTable.this.setSelect(GWindowTable.this.selectRow, GWindowTable.this.selectCol);
-        return;
-      }
-      switch (paramInt) {
-      case 38:
-        if (GWindowTable.this.selectRow <= 0) break;
-        GWindowTable.this.setSelect(GWindowTable.this.selectRow - 1, GWindowTable.this.selectCol); break;
-      case 40:
-        if (GWindowTable.this.selectRow >= GWindowTable.this.countRows() - 1) break;
-        GWindowTable.this.setSelect(GWindowTable.this.selectRow + 1, GWindowTable.this.selectCol); break;
-      case 37:
-        if (GWindowTable.this.selectCol <= 0) break;
-        GWindowTable.this.setSelect(GWindowTable.this.selectRow, GWindowTable.this.selectCol - 1); break;
-      case 39:
-        if (GWindowTable.this.selectCol >= GWindowTable.this.countColumns() - 1) break;
-        GWindowTable.this.setSelect(GWindowTable.this.selectRow, GWindowTable.this.selectCol + 1); break;
-      }
-    }
-
-    public void findSelected(float paramFloat1, float paramFloat2)
-    {
-      this.findedRow = -1;
-      this.findedCol = -1;
-      if ((GWindowTable.this.countColumns() == 0) || (GWindowTable.this.countRows() == 0)) return;
-      if ((paramFloat1 < 0.0F) || (paramFloat2 < 0.0F)) return;
-      float f1 = 0.0F;
-      if (GWindowTable.this.hSB.isVisible()) f1 = -(int)GWindowTable.this.hSB.pos();
-      int i = 0;
-      for (; i < GWindowTable.this.countColumns(); i++) {
-        GWindowTable.Column localColumn = (GWindowTable.Column)GWindowTable.this.columns.get(i);
-        if ((f1 < paramFloat1) && (paramFloat1 <= f1 + localColumn.win.dx))
-          break;
-        f1 += localColumn.win.dx;
-      }
-      if (i == GWindowTable.this.countColumns()) return;
-      float f2 = 0.0F;
-      if (GWindowTable.this.vSB.isVisible()) f2 = -(int)GWindowTable.this.vSB.pos();
-      int j = 0;
-      int k = GWindowTable.this.countRows();
-      float f3;
-      for (; j < k; j++) {
-        f3 = GWindowTable.this.rowHeight(j);
-        if (f2 + f3 > 0.0F)
-          break;
-        f2 += f3;
-      }
-      if ((GWindowTable.this.bRowAlign) && (f2 < 0.0F)) {
-        f2 = 0.0F;
-        j++;
-      }
-      for (; j < k; j++) {
-        f3 = GWindowTable.this.rowHeight(j);
-        if ((f2 < paramFloat2) && (paramFloat2 <= f2 + f3))
-          break;
-        f2 += f3;
-      }
-      if (j == k) return;
-      this.findedRow = j;
-      this.findedCol = i;
-    }
-
-    public void render() {
-      if ((GWindowTable.this.countColumns() == 0) || (GWindowTable.this.countRows() == 0)) return;
-      float f1 = 0.0F;
-      if (GWindowTable.this.hSB.isVisible()) f1 = -(int)GWindowTable.this.hSB.pos();
-      float f2 = 0.0F;
-      if (GWindowTable.this.vSB.isVisible()) f2 = -(int)GWindowTable.this.vSB.pos();
-      GWindowTable.Column localColumn1 = 0;
-      for (; localColumn1 < GWindowTable.this.countColumns() - 1; localColumn1++) {
-        localColumn2 = (GWindowTable.Column)GWindowTable.this.columns.get(localColumn1);
-        if (f1 + localColumn2.win.dx > 0.0F)
-          break;
-        f1 += localColumn2.win.dx;
-      }
-      GWindowTable.Column localColumn2 = localColumn1;
-      float f3 = f1;
-      for (; localColumn2 < GWindowTable.this.countColumns() - 1; localColumn2++) {
-        GWindowTable.Column localColumn3 = (GWindowTable.Column)GWindowTable.this.columns.get(localColumn2);
-        if (f3 + localColumn3.win.dx > this.win.dx)
-          break;
-        f3 += localColumn3.win.dx;
-      }
-      int i = 0;
-      int j = GWindowTable.this.countRows();
-      float f4;
-      for (; i < j; i++) {
-        f4 = GWindowTable.this.rowHeight(i);
-        if (f2 + f4 > 0.0F)
-          break;
-        f2 += f4;
-      }
-      if ((GWindowTable.this.bRowAlign) && (f2 < 0.0F)) {
-        f2 = 0.0F;
-        i++;
-      }
-      this._clipRegion.x = 0.0F;
-      this._clipRegion.y = 0.0F;
-      for (; (i < j) && 
-        (f2 <= this.win.dy); i++)
-      {
-        f4 = GWindowTable.this.rowHeight(i);
-        this._clipRegion.dy = f4;
-        f3 = f1;
-        for (GWindowTable.Column localColumn4 = localColumn1; localColumn4 <= localColumn2; localColumn4++) {
-          GWindowTable.Column localColumn5 = (GWindowTable.Column)GWindowTable.this.columns.get(localColumn4);
-          this._clipRegion.dx = localColumn5.win.dx;
-          GPoint localGPoint = this.root.C.org;
-          localGPoint.add(f3, f2);
-          if (pushClipRegion(this._clipRegion, true, 0.0F)) {
-            boolean bool = false;
-            if (GWindowTable.this.bSelecting) {
-              if (GWindowTable.this.bSelectRow)
-                bool = i == GWindowTable.this.selectRow;
-              else {
-                bool = (i == GWindowTable.this.selectRow) && (localColumn4 == GWindowTable.this.selectCol);
-              }
-            }
-            if ((GWindowTable.this.editor == null) || (i != GWindowTable.this.selectRow) || (localColumn4 != GWindowTable.this.selectCol))
+        public boolean notify(int i, int j)
+        {
+            if(i == 2)
             {
-              GWindowTable.this.renderCell(i, localColumn4, bool, this._clipRegion.dx, this._clipRegion.dy);
+                int k = columns.indexOf(this);
+                columnClicked(k);
+                return true;
+            } else
+            {
+                return super.notify(i, j);
+            }
+        }
+
+        private boolean isSizableArea(float f)
+        {
+            if(!bColumnsSizable)
+                return false;
+            float f1 = lookAndFeel().metric() / 2.0F;
+            if(f > f1 && f < win.dx - f1)
+                return false;
+            bSizingLeft = f <= f1;
+            if(bSizingLeft && this == columns.get(0))
+                return false;
+            return !bColAlign || bSizingLeft || this != columns.get(columns.size() - 1);
+        }
+
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            if(i == 0 && (isMouseCaptured() || isSizableArea(f) && !bDown))
+            {
+                mouseCapture(flag);
+                return;
+            } else
+            {
+                super.mouseButton(i, flag, f, f1);
+                return;
+            }
+        }
+
+        public void mouseMove(float f, float f1)
+        {
+            super.mouseMove(f, f1);
+            if(isMouseCaptured())
+            {
+                mouseCursor = 11;
+                int i = columns.indexOf(this);
+                if(i < 0)
+                    return;
+                float f2 = root.mouseStep.dx;
+                if(bSizingLeft)
+                {
+                    float f3 = win.dx - f2;
+                    if(f3 < 1.0F)
+                        f2 = win.dx - 1.0F;
+                    com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(i - 1);
+                    f3 = column.win.dx + f2;
+                    if(f3 < 1.0F)
+                        f2 = -(column.win.dx - 1.0F);
+                    column.setSize(column.win.dx + f2, column.win.dy);
+                    setSize(win.dx - f2, win.dy);
+                } else
+                {
+                    float f4 = win.dx + f2;
+                    if(f4 < 1.0F)
+                        f2 = -(win.dx - 1.0F);
+                    if(i < columns.size() - 1)
+                    {
+                        com.maddox.gwindow.Column column1 = (com.maddox.gwindow.Column)columns.get(i + 1);
+                        float f5 = column1.win.dx - f2;
+                        if(f5 < 1.0F)
+                            f2 = column1.win.dx - 1.0F;
+                        column1.setSize(column1.win.dx - f2, column1.win.dy);
+                    }
+                    setSize(win.dx + f2, win.dy);
+                }
+                parentWindow.resized();
+            } else
+            if(isSizableArea(f) && !isMouseDownAny(0))
+                mouseCursor = 11;
+            else
+                mouseCursor = 1;
+        }
+
+        private boolean bSizingLeft;
+        private float relDx;
+
+        public Column(com.maddox.gwindow.GWindow gwindow, java.lang.String s, java.lang.String s1)
+        {
+            super(gwindow, s, s1);
+            relDx = -1F;
+            com.maddox.gwindow.GSize gsize = getMinSize();
+            setSize(gsize.dx, gsize.dy);
+            bDrawActive = false;
+        }
+    }
+
+    public class Client extends com.maddox.gwindow.GWindow
+    {
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(editor != null && gwindow == editor && (bEditExitOnFocusExit && i == 16 || bEditExitOnEnterPress && i == 11 && j == 10))
+            {
+                java.lang.Object obj = editor.getCellEditValue();
+                setValueAt(obj, selectRow, selectCol);
+                ((com.maddox.gwindow.GWindow)editor).hideWindow();
+                editor = null;
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        public void mouseClick(int i, float f, float f1)
+        {
+            super.mouseClick(i, f, f1);
+            if(i == 0)
+            {
+                findSelected(f, f1);
+                if(findedRow >= 0 && findedCol >= 0)
+                    setSelect(findedRow, findedCol);
+            }
+        }
+
+        public void keyboardKey(int i, boolean flag)
+        {
+            super.keyboardKey(i, flag);
+            if(!flag)
+            {
+                if(i == 10)
+                    setSelect(selectRow, selectCol);
+                return;
+            }
+            switch(i)
+            {
+            default:
+                break;
+
+            case 38: // '&'
+                if(selectRow > 0)
+                    setSelect(selectRow - 1, selectCol);
+                break;
+
+            case 40: // '('
+                if(selectRow < countRows() - 1)
+                    setSelect(selectRow + 1, selectCol);
+                break;
+
+            case 37: // '%'
+                if(selectCol > 0)
+                    setSelect(selectRow, selectCol - 1);
+                break;
+
+            case 39: // '\''
+                if(selectCol < countColumns() - 1)
+                    setSelect(selectRow, selectCol + 1);
+                break;
+            }
+        }
+
+        public void findSelected(float f, float f1)
+        {
+            findedRow = -1;
+            findedCol = -1;
+            if(countColumns() == 0 || countRows() == 0)
+                return;
+            if(f < 0.0F || f1 < 0.0F)
+                return;
+            float f2 = 0.0F;
+            if(hSB.isVisible())
+                f2 = -(int)hSB.pos();
+            int i;
+            for(i = 0; i < countColumns(); i++)
+            {
+                com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(i);
+                if(f2 < f && f <= f2 + column.win.dx)
+                    break;
+                f2 += column.win.dx;
             }
 
-            popClip();
-          }
-          localGPoint.sub(f3, f2);
-          f3 += localColumn5.win.dx;
+            if(i == countColumns())
+                return;
+            float f3 = 0.0F;
+            if(vSB.isVisible())
+                f3 = -(int)vSB.pos();
+            int j = 0;
+            int k;
+            for(k = countRows(); j < k; j++)
+            {
+                float f4 = rowHeight(j);
+                if(f3 + f4 > 0.0F)
+                    break;
+                f3 += f4;
+            }
+
+            if(bRowAlign && f3 < 0.0F)
+            {
+                f3 = 0.0F;
+                j++;
+            }
+            for(; j < k; j++)
+            {
+                float f5 = rowHeight(j);
+                if(f3 < f1 && f1 <= f3 + f5)
+                    break;
+                f3 += f5;
+            }
+
+            if(j == k)
+            {
+                return;
+            } else
+            {
+                findedRow = j;
+                findedCol = i;
+                return;
+            }
         }
-        f2 += f4;
-      }
+
+        public void render()
+        {
+            if(countColumns() == 0 || countRows() == 0)
+                return;
+            float f = 0.0F;
+            if(hSB.isVisible())
+                f = -(int)hSB.pos();
+            float f1 = 0.0F;
+            if(vSB.isVisible())
+                f1 = -(int)vSB.pos();
+            int i;
+            for(i = 0; i < countColumns() - 1; i++)
+            {
+                com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(i);
+                if(f + column.win.dx > 0.0F)
+                    break;
+                f += column.win.dx;
+            }
+
+            int j = i;
+            float f2 = f;
+            for(; j < countColumns() - 1; j++)
+            {
+                com.maddox.gwindow.Column column1 = (com.maddox.gwindow.Column)columns.get(j);
+                if(f2 + column1.win.dx > win.dx)
+                    break;
+                f2 += column1.win.dx;
+            }
+
+            int k = 0;
+            int l;
+            for(l = countRows(); k < l; k++)
+            {
+                float f4 = rowHeight(k);
+                if(f1 + f4 > 0.0F)
+                    break;
+                f1 += f4;
+            }
+
+            if(bRowAlign && f1 < 0.0F)
+            {
+                f1 = 0.0F;
+                k++;
+            }
+            _clipRegion.x = 0.0F;
+            _clipRegion.y = 0.0F;
+            for(; k < l; k++)
+            {
+                if(f1 > win.dy)
+                    break;
+                float f5 = rowHeight(k);
+                _clipRegion.dy = f5;
+                float f3 = f;
+                for(int i1 = i; i1 <= j; i1++)
+                {
+                    com.maddox.gwindow.Column column2 = (com.maddox.gwindow.Column)columns.get(i1);
+                    _clipRegion.dx = column2.win.dx;
+                    com.maddox.gwindow.GPoint gpoint = root.C.org;
+                    gpoint.add(f3, f1);
+                    if(pushClipRegion(_clipRegion, true, 0.0F))
+                    {
+                        boolean flag = false;
+                        if(bSelecting)
+                            if(bSelectRow)
+                                flag = k == selectRow;
+                            else
+                                flag = k == selectRow && i1 == selectCol;
+                        if(editor == null || k != selectRow || i1 != selectCol)
+                            renderCell(k, i1, flag, _clipRegion.dx, _clipRegion.dy);
+                        popClip();
+                    }
+                    gpoint.sub(f3, f1);
+                    f3 += column2.win.dx;
+                }
+
+                f1 += f5;
+            }
+
+        }
+
+        public void setPosEditor()
+        {
+            if(editor == null)
+                return;
+            com.maddox.gwindow.GWindow gwindow = (com.maddox.gwindow.GWindow)editor;
+            float f = 0.0F;
+            if(hSB.isVisible())
+                f = -(int)hSB.pos();
+            float f1 = 0.0F;
+            if(vSB.isVisible())
+                f1 = -(int)vSB.pos();
+            for(int i = 0; i < selectCol; i++)
+            {
+                com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(i);
+                f += column.win.dx;
+            }
+
+            com.maddox.gwindow.Column column1 = (com.maddox.gwindow.Column)columns.get(selectCol);
+            gwindow.setSize(column1.win.dx, rowHeight(selectRow));
+            int j = 0;
+            int k;
+            for(k = countRows(); j < k; j++)
+            {
+                float f2 = rowHeight(j);
+                if(f1 + f2 > 0.0F)
+                    break;
+                f1 += f2;
+            }
+
+            if(bRowAlign && f1 < 0.0F)
+            {
+                f1 = 0.0F;
+                if(++j == selectRow)
+                {
+                    _setPosEditor(gwindow, f, f1, rowHeight(j));
+                    return;
+                }
+            }
+            if(j > selectRow)
+                _setPosEditor(gwindow, f, -rowHeight(selectRow), rowHeight(selectRow));
+            for(; j < k; j++)
+            {
+                float f3 = rowHeight(j);
+                if(j == selectRow)
+                {
+                    _setPosEditor(gwindow, f, f1, f3);
+                    return;
+                }
+                f1 += f3;
+            }
+
+        }
+
+        private void _setPosEditor(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2)
+        {
+            if(bRowAlign && f1 < 0.0F && f1 + f2 > 0.0F)
+                f1 = 0.0F;
+            gwindow.setPos(f, f1);
+        }
+
+        public int findedRow;
+        public int findedCol;
+        private com.maddox.gwindow.GRegion _clipRegion;
+
+        public Client(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            _clipRegion = new GRegion();
+        }
     }
 
-    public void setPosEditor()
+
+    public int countColumns()
     {
-      if (GWindowTable.this.editor == null) return;
-      GWindow localGWindow = (GWindow)GWindowTable.this.editor;
-      float f1 = 0.0F;
-      if (GWindowTable.this.hSB.isVisible()) f1 = -(int)GWindowTable.this.hSB.pos();
-      float f2 = 0.0F;
-      if (GWindowTable.this.vSB.isVisible()) f2 = -(int)GWindowTable.this.vSB.pos();
-      for (int i = 0; i < GWindowTable.this.selectCol; i++) {
-        GWindowTable.Column localColumn2 = (GWindowTable.Column)GWindowTable.this.columns.get(i);
-        f1 += localColumn2.win.dx;
-      }
-      GWindowTable.Column localColumn1 = (GWindowTable.Column)GWindowTable.this.columns.get(GWindowTable.this.selectCol);
-      localGWindow.setSize(localColumn1.win.dx, GWindowTable.this.rowHeight(GWindowTable.this.selectRow));
+        return columns.size();
+    }
 
-      int j = 0;
-      int k = GWindowTable.this.countRows();
-      float f3;
-      for (; j < k; j++) {
-        f3 = GWindowTable.this.rowHeight(j);
-        if (f2 + f3 > 0.0F)
-          break;
-        f2 += f3;
-      }
-      if ((GWindowTable.this.bRowAlign) && (f2 < 0.0F)) {
-        f2 = 0.0F;
-        j++;
-        if (j == GWindowTable.this.selectRow) {
-          _setPosEditor(localGWindow, f1, f2, GWindowTable.this.rowHeight(j));
-          return;
+    public int countRows()
+    {
+        return 0;
+    }
+
+    public float rowHeight(int i)
+    {
+        return (float)(int)(root.textFonts[0].height * 1.2F);
+    }
+
+    public float fullClientHeight()
+    {
+        return rowHeight(0) * (float)countRows();
+    }
+
+    public void columnClicked(int i)
+    {
+    }
+
+    public java.lang.Object getValueAt(int i, int j)
+    {
+        return null;
+    }
+
+    public void setValueAt(java.lang.Object obj, int i, int j)
+    {
+    }
+
+    public boolean isCellEditable(int i, int j)
+    {
+        return false;
+    }
+
+    public com.maddox.gwindow.GWindowCellEdit getCellEdit(int i, int j)
+    {
+        if(!isCellEditable(i, j))
+            return null;
+        java.lang.Object obj = getValueAt(i, j);
+        if(obj == null)
+        {
+            return null;
+        } else
+        {
+            com.maddox.gwindow.GWindowCellEdit gwindowcelledit = (com.maddox.gwindow.GWindowCellEdit)wClient.create(new GWindowEditControl());
+            gwindowcelledit.setCellEditValue(obj);
+            ((com.maddox.gwindow.GWindow)gwindowcelledit).activateWindow();
+            return gwindowcelledit;
         }
-      }
-      if (j > GWindowTable.this.selectRow)
-        _setPosEditor(localGWindow, f1, -GWindowTable.this.rowHeight(GWindowTable.this.selectRow), GWindowTable.this.rowHeight(GWindowTable.this.selectRow));
-      for (; j < k; j++) {
-        f3 = GWindowTable.this.rowHeight(j);
-        if (j == GWindowTable.this.selectRow) {
-          _setPosEditor(localGWindow, f1, f2, f3);
-          return;
+    }
+
+    public void renderCell(int i, int j, boolean flag, float f, float f1)
+    {
+        java.lang.Object obj = getValueAt(i, j);
+        if(obj == null)
+            return;
+        java.lang.String s = obj.toString();
+        setCanvasFont(0);
+        if(flag)
+        {
+            setCanvasColorBLACK();
+            draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            setCanvasColorWHITE();
+            draw(0.0F, 0.0F, f, f1, 0, s);
+        } else
+        {
+            setCanvasColorBLACK();
+            draw(0.0F, 0.0F, f, f1, 0, s);
         }
-        f2 += f3;
-      }
     }
 
-    private void _setPosEditor(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3) {
-      if ((GWindowTable.this.bRowAlign) && 
-        (paramFloat2 < 0.0F) && (paramFloat2 + paramFloat3 > 0.0F)) {
-        paramFloat2 = 0.0F;
-      }
-      paramGWindow.setPos(paramFloat1, paramFloat2);
+    public com.maddox.gwindow.Column addColumn(java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.gwindow.Column column = new Column(this, s, s1);
+        columns.add(column);
+        resized();
+        return column;
     }
 
-    public Client(GWindow arg2) {
-      super();
+    public com.maddox.gwindow.Column addColumn(int i, java.lang.String s, java.lang.String s1)
+    {
+        com.maddox.gwindow.Column column = new Column(this, s, s1);
+        columns.add(i, column);
+        resized();
+        return column;
     }
-  }
+
+    public void removeColumn(int i)
+    {
+        columns.remove(i);
+        resized();
+    }
+
+    public com.maddox.gwindow.Column getColumn(int i)
+    {
+        return (com.maddox.gwindow.Column)columns.get(i);
+    }
+
+    public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+    {
+        if(i == 17 && vSB != null && vSB.isVisible())
+        {
+            vSB.scrollDz(root.mouseRelMoveZ);
+            return true;
+        }
+        if(gwindow == hSB)
+        {
+            if(i == 2)
+            {
+                resized();
+                return true;
+            }
+        } else
+        if(gwindow == vSB && i == 2)
+        {
+            resized();
+            return true;
+        }
+        return false;
+    }
+
+    public void setSelect(int i, int j)
+    {
+        if(i == selectRow && j == selectCol)
+        {
+            if(selectRow < 0 || selectCol < 0)
+                return;
+            if(isCellEditable(i, j) && editor == null)
+            {
+                editor = getCellEdit(selectRow, selectCol);
+                if(editor != null)
+                    wClient.setPosEditor();
+            }
+            return;
+        }
+        if(editor != null)
+        {
+            java.lang.Object obj = editor.getCellEditValue();
+            setValueAt(obj, selectRow, selectCol);
+            ((com.maddox.gwindow.GWindow)editor).hideWindow();
+            editor = null;
+        }
+        selectRow = i;
+        selectCol = j;
+        if(selectRow < 0 || selectCol < 0)
+            return;
+        editor = getCellEdit(selectRow, selectCol);
+        if(editor != null)
+            wClient.setPosEditor();
+    }
+
+    public void alignColumns()
+    {
+        if(columns.size() == 0)
+            return;
+        float f = 0.0F;
+        float f1 = 0.0F;
+        for(int i = 0; i < columns.size(); i++)
+        {
+            com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(i);
+            com.maddox.gwindow.GSize gsize = column.getMinSize();
+            float f3 = column.getRelativeDx();
+            if(f3 > 0.0F)
+                f += f3;
+            else
+                f += gsize.dx;
+            f1 = gsize.dy;
+        }
+
+        com.maddox.gwindow.GRegion gregion = getClientRegion();
+        float f2 = gregion.dx;
+        if(vSB.isVisible())
+            f2 -= lookAndFeel().getVScrollBarW();
+        float f4 = f2 / f;
+        float f5 = gregion.x;
+        float f6 = f5;
+        float f7 = gregion.y;
+        com.maddox.gwindow.Column column1 = null;
+        for(int j = 0; j < columns.size(); j++)
+        {
+            column1 = (com.maddox.gwindow.Column)columns.get(j);
+            com.maddox.gwindow.GSize gsize1 = column1.getMinSize();
+            float f8 = column1.getRelativeDx();
+            if(f8 > 0.0F)
+                column1.setSize(f8 * f4, f1);
+            else
+                column1.setSize(gsize1.dx * f4, f1);
+            column1.setPos(f6, f7);
+            f6 += column1.win.dx;
+        }
+
+        if((column1.win.dx + column1.win.x) - f5 != f2)
+            column1.setSize((f2 - column1.win.x) + f5, f1);
+    }
+
+    private void _alignColumns()
+    {
+        if(columns.size() == 0)
+            return;
+        float f = 0.0F;
+        float f1 = 0.0F;
+        for(int i = 0; i < columns.size(); i++)
+        {
+            com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(i);
+            com.maddox.gwindow.GSize gsize = column.getMinSize();
+            f += column.win.dx;
+            f1 = gsize.dy;
+        }
+
+        com.maddox.gwindow.GRegion gregion = getClientRegion();
+        float f2 = gregion.dx;
+        if(vSB.isVisible())
+            f2 -= lookAndFeel().getVScrollBarW();
+        float f3 = f2 / f;
+        float f4 = gregion.x;
+        float f5 = f4;
+        float f6 = gregion.y;
+        com.maddox.gwindow.Column column1 = null;
+        for(int j = 0; j < columns.size(); j++)
+        {
+            column1 = (com.maddox.gwindow.Column)columns.get(j);
+            column1.setSize(column1.win.dx * f3, f1);
+            column1.setPos(f5, f6);
+            f5 += column1.win.dx;
+        }
+
+        if((column1.win.dx + column1.win.x) - f4 != f2)
+            column1.setSize((f2 - column1.win.x) + f4, f1);
+    }
+
+    public void resized()
+    {
+        getClientRegion(_clientRegion, 0.0F);
+        float f = 0.0F;
+        if(columns.size() > 0)
+        {
+            com.maddox.gwindow.Column column = (com.maddox.gwindow.Column)columns.get(0);
+            com.maddox.gwindow.GSize gsize = column.getMinSize();
+            f = gsize.dy;
+        }
+        if(bColumnsSizable)
+        {
+            float f1 = 0.0F;
+            if(!bColAlign)
+            {
+                for(int i = 0; i < columns.size(); i++)
+                {
+                    com.maddox.gwindow.Column column1 = (com.maddox.gwindow.Column)columns.get(i);
+                    f1 += column1.win.dx;
+                }
+
+            }
+            boolean flag = false;
+            boolean flag1 = false;
+            for(int j = 0; j < 2; j++)
+            {
+                float f2 = _clientRegion.dy - f;
+                if(flag1)
+                    f2 -= lookAndFeel().getHScrollBarH();
+                float f4 = _clientRegion.dx;
+                if(flag)
+                    f4 -= lookAndFeel().getVScrollBarW();
+                if(!bColAlign)
+                    flag1 = f1 > f4;
+                flag = fullClientHeight() > f2;
+            }
+
+            float f3 = _clientRegion.dy - f;
+            if(flag1)
+                f3 -= lookAndFeel().getHScrollBarH();
+            float f5 = _clientRegion.dx;
+            if(flag)
+                f5 -= lookAndFeel().getVScrollBarW();
+            if(flag)
+            {
+                vSB.setRange(0.0F, fullClientHeight(), f3, vSB.scroll, vSB.pos);
+                vSB.setSize(lookAndFeel().getVScrollBarW(), f3 + f);
+                vSB.setPos(_clientRegion.x + f5, _clientRegion.y);
+                vSB.showWindow();
+            } else
+            {
+                vSB.setPos(0.0F, false);
+                vSB.hideWindow();
+            }
+            float f6;
+            if(flag1)
+            {
+                hSB.setRange(0.0F, f1, f5, lookAndFeel().metric() / 2.0F, hSB.pos);
+                hSB.setSize(f5, lookAndFeel().getHScrollBarH());
+                hSB.setPos(_clientRegion.x, _clientRegion.y + f + f3);
+                hSB.showWindow();
+                f6 = _clientRegion.x - (float)(int)hSB.pos();
+            } else
+            {
+                hSB.setPos(0.0F, false);
+                hSB.hideWindow();
+                f6 = _clientRegion.x;
+            }
+            if(bColAlign)
+            {
+                _alignColumns();
+                endColumn.hideWindow();
+            } else
+            {
+                for(int k = 0; k < columns.size(); k++)
+                {
+                    com.maddox.gwindow.Column column2 = (com.maddox.gwindow.Column)columns.get(k);
+                    column2.setPos(f6, _clientRegion.y);
+                    column2.setSize(column2.win.dx, f);
+                    f6 += column2.win.dx;
+                }
+
+                if(f6 < f5 + _clientRegion.x && f > 0.0F)
+                {
+                    endColumn.setPos(f6, _clientRegion.y);
+                    endColumn.setSize((f5 + _clientRegion.x) - f6, f);
+                    endColumn.showWindow();
+                } else
+                {
+                    endColumn.hideWindow();
+                }
+            }
+            if(flag1 && flag)
+            {
+                button.setPos(f5 + _clientRegion.x, _clientRegion.y + f + f3);
+                button.setSize(lookAndFeel().getVScrollBarW(), lookAndFeel().getHScrollBarH());
+                button.showWindow();
+            } else
+            {
+                button.hideWindow();
+            }
+            wClient.setSize(f5, f3);
+        } else
+        {
+            if(_clientRegion.dy - f < fullClientHeight())
+            {
+                vSB.setRange(0.0F, fullClientHeight(), _clientRegion.dy - f, vSB.scroll, vSB.pos);
+                vSB.setSize(lookAndFeel().getVScrollBarW(), _clientRegion.dy);
+                vSB.setPos((_clientRegion.x + _clientRegion.dx) - lookAndFeel().getVScrollBarW(), _clientRegion.y);
+                vSB.showWindow();
+                wClient.setSize(_clientRegion.dx - lookAndFeel().getVScrollBarW(), _clientRegion.dy - f);
+            } else
+            {
+                vSB.setPos(0.0F, false);
+                vSB.hideWindow();
+                wClient.setSize(_clientRegion.dx, _clientRegion.dy - f);
+            }
+            alignColumns();
+        }
+        wClient.setPos(_clientRegion.x, _clientRegion.y + f);
+        wClient.setPosEditor();
+    }
+
+    public void afterCreated()
+    {
+        endColumn = new GWindowButton(this);
+        endColumn.bAcceptsKeyFocus = false;
+        endColumn.bDrawActive = false;
+        endColumn.bDrawOnlyUP = true;
+        button = new GWindowButton(this);
+        button.bAcceptsKeyFocus = false;
+        button.bAlwaysOnTop = true;
+        button.bDrawOnlyUP = true;
+        button.bDrawActive = false;
+        button.hideWindow();
+        hSB = new GWindowHScrollBar(this);
+        hSB.bAlwaysOnTop = true;
+        hSB.hideWindow();
+        vSB = new GWindowVScrollBar(this);
+        vSB.bAlwaysOnTop = true;
+        vSB.hideWindow();
+        wClient = new Client(this);
+        resized();
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public com.maddox.gwindow.GRegion getClientRegion(com.maddox.gwindow.GRegion gregion, float f)
+    {
+        return lookAndFeel().getClientRegion(this, gregion, f);
+    }
+
+    public GWindowTable(com.maddox.gwindow.GWindow gwindow)
+    {
+        bColumnsSizable = true;
+        bColAlign = true;
+        bRowAlign = true;
+        bSelecting = true;
+        bSelectRow = false;
+        bEditExitOnFocusExit = true;
+        bEditExitOnEnterPress = true;
+        selectRow = -1;
+        selectCol = -1;
+        columns = new ArrayList();
+        _clientRegion = new GRegion();
+        doNew(gwindow);
+    }
+
+    public GWindowTable(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3)
+    {
+        bColumnsSizable = true;
+        bColAlign = true;
+        bRowAlign = true;
+        bSelecting = true;
+        bSelectRow = false;
+        bEditExitOnFocusExit = true;
+        bEditExitOnEnterPress = true;
+        selectRow = -1;
+        selectCol = -1;
+        columns = new ArrayList();
+        _clientRegion = new GRegion();
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
+
+    public boolean bColumnsSizable;
+    public boolean bColAlign;
+    public boolean bRowAlign;
+    public boolean bSelecting;
+    public boolean bSelectRow;
+    public boolean bEditExitOnFocusExit;
+    public boolean bEditExitOnEnterPress;
+    public int selectRow;
+    public int selectCol;
+    public com.maddox.gwindow.GWindowCellEdit editor;
+    public com.maddox.gwindow.Client wClient;
+    public com.maddox.gwindow.GWindowVScrollBar vSB;
+    public com.maddox.gwindow.GWindowHScrollBar hSB;
+    public java.util.ArrayList columns;
+    public com.maddox.gwindow.GWindowButton endColumn;
+    public com.maddox.gwindow.GWindowButton button;
+    private com.maddox.gwindow.GRegion _clientRegion;
 }

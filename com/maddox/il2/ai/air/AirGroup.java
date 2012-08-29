@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AirGroup.java
+
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
@@ -7,11 +12,13 @@ import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.Chief;
 import com.maddox.il2.ai.Formation;
+import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Squadron;
 import com.maddox.il2.ai.War;
 import com.maddox.il2.ai.Way;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.Wing;
+import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.ai.ground.TgtShip;
 import com.maddox.il2.engine.Actor;
@@ -22,8 +29,6 @@ import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.D3A;
 import com.maddox.il2.objects.air.F4U;
@@ -31,17 +36,13 @@ import com.maddox.il2.objects.air.G4M2E;
 import com.maddox.il2.objects.air.I_16TYPE24DRONE;
 import com.maddox.il2.objects.air.JU_87;
 import com.maddox.il2.objects.air.MXY_7;
-import com.maddox.il2.objects.air.R_5xyz;
 import com.maddox.il2.objects.air.Scheme4;
 import com.maddox.il2.objects.air.TB_3_4M_34R_SPB;
 import com.maddox.il2.objects.air.TypeBNZFighter;
-import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.air.TypeDiveBomber;
 import com.maddox.il2.objects.air.TypeDockable;
 import com.maddox.il2.objects.air.TypeFighter;
 import com.maddox.il2.objects.air.TypeGlider;
-import com.maddox.il2.objects.air.TypeGuidedBombCarrier;
-import com.maddox.il2.objects.air.TypeHasToKG;
 import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.il2.objects.air.TypeTNBFighter;
 import com.maddox.il2.objects.bridges.Bridge;
@@ -49,1298 +50,1483 @@ import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.sounds.Voice;
-import com.maddox.il2.objects.weapons.BombGunNull;
 import com.maddox.il2.objects.weapons.BombGunPara;
 import com.maddox.il2.objects.weapons.BombGunParafrag8;
-import com.maddox.il2.objects.weapons.ParaTorpedoGun;
-import com.maddox.il2.objects.weapons.RocketGunFritzX;
-import com.maddox.il2.objects.weapons.RocketGunHS_293;
 import com.maddox.il2.objects.weapons.TorpedoGun;
 import java.io.PrintStream;
 
+// Referenced classes of package com.maddox.il2.ai.air:
+//            AirGroupList, Maneuver, Pilot
+
 public class AirGroup
 {
-  public int nOfAirc;
-  public Aircraft[] airc;
-  public Squadron sq;
-  public Way w;
-  public Vector3d Pos = new Vector3d();
-  public AirGroupList[] enemies;
-  public AirGroupList[] friends;
-  public AirGroup clientGroup;
-  public AirGroup targetGroup;
-  public AirGroup leaderGroup;
-  public AirGroup rejoinGroup;
-  public int grAttached;
-  public int gTargetPreference;
-  public int aTargetPreference;
-  public boolean enemyFighters;
-  private boolean gTargWasFound;
-  private boolean gTargDestroyed;
-  private int gTargMode;
-  private Actor gTargActor;
-  private Point3d gTargPoint;
-  private float gTargRadius;
-  private boolean aTargWasFound;
-  private boolean aTargDestroyed;
-  private boolean WeWereInGAttack;
-  private boolean WeWereInAttack;
-  public byte formationType;
-  private byte oldFType;
-  private float oldFScale;
-  private boolean oldFInterp;
-  public boolean fInterpolation;
-  private int oldEnemyNum;
-  public int timeOutForTaskSwitch;
-  public int grTask;
-  public static final int FLY_WAYPOINT = 1;
-  public static final int DEFENDING = 2;
-  public static final int ATTACK_AIR = 3;
-  public static final int ATTACK_GROUND = 4;
-  public static final int TAKEOFF = 5;
-  public static final int LANDING = 6;
-  public static final int GT_MODE_NONE = 0;
-  public static final int GT_MODE_CHIEF = 1;
-  public static final int GT_MODE_AROUND_POINT = 2;
-  private static String[] GTList = { "NO_TASK.", "FLY_WAYPOINT", "DEFENDING", "ATTACK_AIR", "ATTACK_GROUND", "TAKEOFF", "LANDING" };
 
-  private static Vector3d tmpV = new Vector3d();
-  private static Vector3d tmpV1 = new Vector3d();
-  private static Vector3d tmpV3d = new Vector3d();
-  private static Point3d tmpP = new Point3d();
-  private static Point3d tmpP3d = new Point3d();
-  private static Vector2d P1P2vector = new Vector2d();
-  private static Vector2d norm1 = new Vector2d();
-  private static Vector2d norm2 = new Vector2d();
-  private static Vector2d myPoint = new Vector2d();
-  private static Vector3f tmpVf = new Vector3f();
-
-  public String grTaskName()
-  {
-    return GTList[this.grTask];
-  }
-
-  public AirGroup() {
-    initVars();
-  }
-
-  public AirGroup(Squadron paramSquadron, Way paramWay)
-  {
-    initVars();
-    this.sq = paramSquadron;
-    this.w = paramWay;
-  }
-
-  public AirGroup(AirGroup paramAirGroup)
-  {
-    initVars();
-    if (paramAirGroup == null) return;
-    this.sq = paramAirGroup.sq;
-    if (paramAirGroup.w != null) {
-      this.w = new Way(paramAirGroup.w);
-      this.w.setCur(paramAirGroup.w.Cur());
-    } else {
-      this.w = new Way();
-      WayPoint localWayPoint = new WayPoint((float)paramAirGroup.Pos.x, (float)paramAirGroup.Pos.y, (float)paramAirGroup.Pos.z);
-      this.w.add(localWayPoint);
-    }
-    this.Pos.set(paramAirGroup.Pos);
-    int i = AirGroupList.length(paramAirGroup.enemies[0]);
-    for (int j = 0; j < i; j++)
-      AirGroupList.addAirGroup(this.enemies, 0, AirGroupList.getGroup(paramAirGroup.enemies[0], j));
-    i = AirGroupList.length(paramAirGroup.friends[0]);
-    for (j = 0; j < i; j++)
-      AirGroupList.addAirGroup(this.friends, 0, AirGroupList.getGroup(paramAirGroup.friends[0], j));
-    this.rejoinGroup = paramAirGroup;
-    this.gTargetPreference = paramAirGroup.gTargetPreference;
-    this.aTargetPreference = paramAirGroup.aTargetPreference;
-    this.enemyFighters = paramAirGroup.enemyFighters;
-    this.oldEnemyNum = paramAirGroup.oldEnemyNum;
-    if (AirGroupList.groupInList(War.Groups[0], paramAirGroup))
-      AirGroupList.addAirGroup(War.Groups, 0, this);
-    else
-      AirGroupList.addAirGroup(War.Groups, 1, this);
-  }
-
-  public void initVars()
-  {
-    this.nOfAirc = 0;
-    this.airc = new Aircraft[16];
-    this.sq = null;
-    this.w = null;
-    this.Pos = new Vector3d(0.0D, 0.0D, 0.0D);
-    this.enemies = new AirGroupList[1];
-    this.friends = new AirGroupList[1];
-    this.clientGroup = null;
-    this.targetGroup = null;
-    this.leaderGroup = null;
-    this.rejoinGroup = null;
-    this.grAttached = 0;
-    this.gTargetPreference = 0;
-    this.aTargetPreference = 9;
-    this.enemyFighters = false;
-    this.gTargWasFound = false;
-    this.gTargDestroyed = false;
-    this.gTargMode = 0;
-    this.gTargActor = null;
-    this.gTargPoint = new Point3d();
-    this.gTargRadius = 0.0F;
-    this.aTargWasFound = false;
-    this.aTargDestroyed = false;
-    this.WeWereInGAttack = false;
-    this.WeWereInAttack = false;
-    this.formationType = -1;
-    this.fInterpolation = false;
-    this.oldFType = -1; this.oldFScale = 0.0F; this.oldFInterp = false;
-    this.oldEnemyNum = 0;
-    this.timeOutForTaskSwitch = 0;
-    this.grTask = 1;
-  }
-
-  public void release()
-  {
-    for (int i = 0; i < this.nOfAirc; i++) {
-      if (this.airc[i] != null) ((Maneuver)this.airc[i].FM).Group = null;
-      this.airc[i] = null;
-    }
-    this.nOfAirc = 0;
-    this.sq = null;
-    this.w = null;
-    this.Pos = null;
-    if (this.enemies[0] != null) this.enemies[0].release();
-    if (this.friends[0] != null) this.friends[0].release();
-    this.enemies = null;
-    this.friends = null;
-    this.clientGroup = null;
-    this.targetGroup = null;
-    this.leaderGroup = null;
-    this.rejoinGroup = null;
-    this.gTargPoint = null;
-  }
-
-  public void addAircraft(Aircraft paramAircraft)
-  {
-    if (this.nOfAirc >= 16) {
-      System.out.print("Group > 16 in squadron " + this.sq.name());
-      return;
-    }
-    if (paramAircraft.getSquadron() == this.sq)
+    public java.lang.String grTaskName()
     {
-      for (i = 0; (i < this.nOfAirc) && 
-        (this.airc[i].getSquadron() == this.sq) && (this.airc[i].getWing().indexInSquadron() * 4 + this.airc[i].aircIndex() <= paramAircraft.getWing().indexInSquadron() * 4 + paramAircraft.aircIndex()); i++);
+        return GTList[grTask];
     }
 
-    int i = this.nOfAirc;
-    for (int j = this.nOfAirc - 1; j >= i; j--) {
-      this.airc[(j + 1)] = this.airc[j];
+    public AirGroup()
+    {
+        Pos = new Vector3d();
+        initVars();
     }
-    this.airc[i] = paramAircraft;
-    if (this.w != null) {
-      paramAircraft.FM.AP.way = new Way(this.w);
-      paramAircraft.FM.AP.way.setCur(this.w.Cur());
+
+    public AirGroup(com.maddox.il2.ai.Squadron squadron, com.maddox.il2.ai.Way way)
+    {
+        Pos = new Vector3d();
+        initVars();
+        sq = squadron;
+        w = way;
     }
-    this.nOfAirc += 1;
 
-    if ((paramAircraft.FM instanceof Maneuver))
-      ((Maneuver)paramAircraft.FM).Group = this;
-  }
-
-  public void delAircraft(Aircraft paramAircraft)
-  {
-    for (int i = 0; i < this.nOfAirc; i++) {
-      if (paramAircraft == this.airc[i]) {
-        ((Maneuver)this.airc[i].FM).Group = null;
-        for (int j = i; j < this.nOfAirc - 1; j++) {
-          this.airc[j] = this.airc[(j + 1)];
+    public AirGroup(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        Pos = new Vector3d();
+        initVars();
+        if(airgroup == null)
+            return;
+        sq = airgroup.sq;
+        if(airgroup.w != null)
+        {
+            w = new Way(airgroup.w);
+            w.setCur(airgroup.w.Cur());
+        } else
+        {
+            w = new Way();
+            com.maddox.il2.ai.WayPoint waypoint = new WayPoint((float)airgroup.Pos.x, (float)airgroup.Pos.y, (float)airgroup.Pos.z);
+            w.add(waypoint);
         }
-        this.nOfAirc -= 1;
-        break;
-      }
+        Pos.set(airgroup.Pos);
+        int i = com.maddox.il2.ai.air.AirGroupList.length(airgroup.enemies[0]);
+        for(int j = 0; j < i; j++)
+            com.maddox.il2.ai.air.AirGroupList.addAirGroup(enemies, 0, com.maddox.il2.ai.air.AirGroupList.getGroup(airgroup.enemies[0], j));
+
+        i = com.maddox.il2.ai.air.AirGroupList.length(airgroup.friends[0]);
+        for(int k = 0; k < i; k++)
+            com.maddox.il2.ai.air.AirGroupList.addAirGroup(friends, 0, com.maddox.il2.ai.air.AirGroupList.getGroup(airgroup.friends[0], k));
+
+        rejoinGroup = airgroup;
+        gTargetPreference = airgroup.gTargetPreference;
+        aTargetPreference = airgroup.aTargetPreference;
+        enemyFighters = airgroup.enemyFighters;
+        oldEnemyNum = airgroup.oldEnemyNum;
+        if(com.maddox.il2.ai.air.AirGroupList.groupInList(com.maddox.il2.ai.War.Groups[0], airgroup))
+            com.maddox.il2.ai.air.AirGroupList.addAirGroup(com.maddox.il2.ai.War.Groups, 0, this);
+        else
+            com.maddox.il2.ai.air.AirGroupList.addAirGroup(com.maddox.il2.ai.War.Groups, 1, this);
     }
-    if ((this.grTask == 1) || (this.grTask == 2)) setTaskAndManeuver(0);
-  }
 
-  public void changeAircraft(Aircraft paramAircraft1, Aircraft paramAircraft2)
-  {
-    for (int i = 0; i < this.nOfAirc; i++)
-      if (paramAircraft1 == this.airc[i]) {
-        ((Maneuver)paramAircraft1.FM).Group = null;
-        ((Maneuver)paramAircraft2.FM).Group = this;
-        ((Maneuver)paramAircraft2.FM).setBusy(false);
-        this.airc[i] = paramAircraft2;
-        return;
-      }
-  }
-
-  public void rejoinToGroup(AirGroup paramAirGroup)
-  {
-    if (paramAirGroup == null) return;
-    for (int i = this.nOfAirc - 1; i >= 0; i--) {
-      Aircraft localAircraft = this.airc[i];
-      delAircraft(localAircraft);
-      paramAirGroup.addAircraft(localAircraft);
+    public void initVars()
+    {
+        nOfAirc = 0;
+        airc = new com.maddox.il2.objects.air.Aircraft[16];
+        sq = null;
+        w = null;
+        Pos = new Vector3d(0.0D, 0.0D, 0.0D);
+        enemies = new com.maddox.il2.ai.air.AirGroupList[1];
+        friends = new com.maddox.il2.ai.air.AirGroupList[1];
+        clientGroup = null;
+        targetGroup = null;
+        leaderGroup = null;
+        rejoinGroup = null;
+        grAttached = 0;
+        gTargetPreference = 0;
+        aTargetPreference = 9;
+        enemyFighters = false;
+        gTargWasFound = false;
+        gTargDestroyed = false;
+        gTargMode = 0;
+        gTargActor = null;
+        gTargPoint = new Point3d();
+        gTargRadius = 0.0F;
+        aTargWasFound = false;
+        aTargDestroyed = false;
+        WeWereInGAttack = false;
+        WeWereInAttack = false;
+        formationType = -1;
+        fInterpolation = false;
+        oldFType = -1;
+        oldFScale = 0.0F;
+        oldFInterp = false;
+        oldEnemyNum = 0;
+        timeOutForTaskSwitch = 0;
+        grTask = 1;
     }
-    this.rejoinGroup = null;
-  }
 
-  public void attachGroup(AirGroup paramAirGroup)
-  {
-    if (paramAirGroup == null) return;
-    for (int i = 0; i < this.nOfAirc; i++)
-      if ((this.airc[i].FM instanceof Maneuver)) {
-        Maneuver localManeuver = (Maneuver)this.airc[i].FM;
-        if ((!(localManeuver instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver).isRealMode())) {
-          if (localManeuver.get_maneuver() == 26) return;
-          if (localManeuver.get_maneuver() == 64) return;
+    public void release()
+    {
+        for(int i = 0; i < nOfAirc; i++)
+        {
+            if(airc[i] != null)
+                ((com.maddox.il2.ai.air.Maneuver)airc[i].FM).Group = null;
+            airc[i] = null;
         }
-      }
-    this.w = null;
-    this.w = new Way(paramAirGroup.w);
-    this.w.setCur(paramAirGroup.w.Cur());
-    for (i = 0; i < this.nOfAirc; i++) {
-      this.airc[i].FM.AP.way = null;
-      this.airc[i].FM.AP.way = new Way(paramAirGroup.w);
-      this.airc[i].FM.AP.way.setCur(paramAirGroup.w.Cur());
+
+        nOfAirc = 0;
+        sq = null;
+        w = null;
+        Pos = null;
+        if(enemies[0] != null)
+            enemies[0].release();
+        if(friends[0] != null)
+            friends[0].release();
+        enemies = null;
+        friends = null;
+        clientGroup = null;
+        targetGroup = null;
+        leaderGroup = null;
+        rejoinGroup = null;
+        gTargPoint = null;
     }
-    Formation.leaderOffset(this.airc[0].FM, this.formationType, this.airc[0].FM.Offset);
-    this.leaderGroup = paramAirGroup;
-    this.leaderGroup.grAttached += 1;
-    this.grTask = 1;
-    setFormationAndScale(paramAirGroup.formationType, 1.0F, true);
-  }
 
-  public void detachGroup(AirGroup paramAirGroup)
-  {
-    if (paramAirGroup == null) return;
-    this.leaderGroup.grAttached -= 1;
-    if (this.leaderGroup.grAttached < 0) this.leaderGroup.grAttached = 0;
-    this.leaderGroup = null;
-    this.grTask = 1;
-    setTaskAndManeuver(0);
-  }
+    public void addAircraft(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(nOfAirc >= 16)
+        {
+            java.lang.System.out.print("Group > 16 in squadron " + sq.name());
+            return;
+        }
+        int i;
+        if(aircraft.getSquadron() == sq)
+            for(i = 0; i < nOfAirc; i++)
+                if(airc[i].getSquadron() != sq || airc[i].getWing().indexInSquadron() * 4 + airc[i].aircIndex() > aircraft.getWing().indexInSquadron() * 4 + aircraft.aircIndex())
+                    break;
 
-  public int numInGroup(Aircraft paramAircraft)
-  {
-    for (int i = 0; i < this.nOfAirc; i++) {
-      if (paramAircraft == this.airc[i]) {
-        return i;
-      }
+        else
+            i = nOfAirc;
+        for(int j = nOfAirc - 1; j >= i; j--)
+            airc[j + 1] = airc[j];
+
+        airc[i] = aircraft;
+        if(w != null)
+        {
+            aircraft.FM.AP.way = new Way(w);
+            aircraft.FM.AP.way.setCur(w.Cur());
+        }
+        nOfAirc++;
+        if(aircraft.FM instanceof com.maddox.il2.ai.air.Maneuver)
+            ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).Group = this;
     }
-    return -1;
-  }
 
-  public void setEnemyFighters()
-  {
-    int i = AirGroupList.length(this.enemies[0]);
-    this.enemyFighters = false;
-    for (int j = 0; j < i; j++) {
-      AirGroup localAirGroup = AirGroupList.getGroup(this.enemies[0], j);
-      if ((localAirGroup.nOfAirc > 0) && ((localAirGroup.airc[0] instanceof TypeFighter))) {
-        this.enemyFighters = true;
-        return;
-      }
+    public void delAircraft(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        for(int i = 0; i < nOfAirc; i++)
+        {
+            if(aircraft != airc[i])
+                continue;
+            ((com.maddox.il2.ai.air.Maneuver)airc[i].FM).Group = null;
+            for(int j = i; j < nOfAirc - 1; j++)
+                airc[j] = airc[j + 1];
+
+            nOfAirc--;
+            break;
+        }
+
+        if(grTask == 1 || grTask == 2)
+            setTaskAndManeuver(0);
     }
-  }
 
-  public void setFormationAndScale(byte paramByte, float paramFloat, boolean paramBoolean)
-  {
-    if ((this.oldFType == paramByte) && (this.oldFScale == paramFloat) && (this.oldFInterp == paramBoolean)) return;
-    this.fInterpolation = paramBoolean;
-    for (int i = 1; i < this.nOfAirc; i++) {
-      if ((this.airc[i] instanceof TypeGlider)) return;
-      ((Maneuver)this.airc[i].FM).formationScale = paramFloat;
-      Formation.gather(this.airc[i].FM, paramByte, tmpV);
-      if (!paramBoolean) this.airc[i].FM.Offset.set(tmpV);
-      this.formationType = ((Maneuver)this.airc[i].FM).formationType;
+    public void changeAircraft(com.maddox.il2.objects.air.Aircraft aircraft, com.maddox.il2.objects.air.Aircraft aircraft1)
+    {
+        for(int i = 0; i < nOfAirc; i++)
+            if(aircraft == airc[i])
+            {
+                ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).Group = null;
+                ((com.maddox.il2.ai.air.Maneuver)aircraft1.FM).Group = this;
+                ((com.maddox.il2.ai.air.Maneuver)aircraft1.FM).setBusy(false);
+                airc[i] = aircraft1;
+                return;
+            }
+
     }
-    if ((this.grTask == 1) || (this.grTask == 2)) setTaskAndManeuver(0);
-    this.oldFType = paramByte; this.oldFScale = paramFloat; this.oldFInterp = paramBoolean;
-  }
 
-  public void formationUpdate()
-  {
-    if (this.fInterpolation) {
-      int i = 0;
-      for (int j = 1; j < this.nOfAirc; j++)
-        if (Actor.isAlive(this.airc[j])) {
-          if ((this.airc[j] instanceof TypeGlider)) return;
-          Formation.gather(this.airc[j].FM, this.formationType, tmpV);
-          tmpV1.sub(tmpV, this.airc[j].FM.Offset);
-          float f = (float)tmpV1.length();
-          if (f != 0.0F) {
-            i = 1;
-            if (f < 0.1F) { this.airc[j].FM.Offset.set(tmpV);
+    public void rejoinToGroup(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        if(airgroup == null)
+            return;
+        for(int i = nOfAirc - 1; i >= 0; i--)
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft = airc[i];
+            delAircraft(aircraft);
+            airgroup.addAircraft(aircraft);
+        }
+
+        rejoinGroup = null;
+    }
+
+    public void attachGroup(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        if(airgroup == null)
+            return;
+        for(int i = 0; i < nOfAirc; i++)
+            if(airc[i].FM instanceof com.maddox.il2.ai.air.Maneuver)
+            {
+                com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[i].FM;
+                if(!(maneuver instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)maneuver).isRealMode())
+                {
+                    if(maneuver.get_maneuver() == 26)
+                        return;
+                    if(maneuver.get_maneuver() == 64)
+                        return;
+                }
+            }
+
+        w = null;
+        w = new Way(airgroup.w);
+        w.setCur(airgroup.w.Cur());
+        for(int j = 0; j < nOfAirc; j++)
+        {
+            airc[j].FM.AP.way = null;
+            airc[j].FM.AP.way = new Way(airgroup.w);
+            airc[j].FM.AP.way.setCur(airgroup.w.Cur());
+        }
+
+        com.maddox.il2.ai.Formation.leaderOffset(airc[0].FM, formationType, airc[0].FM.Offset);
+        leaderGroup = airgroup;
+        leaderGroup.grAttached++;
+        grTask = 1;
+        setFormationAndScale(airgroup.formationType, 1.0F, true);
+    }
+
+    public void detachGroup(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        if(airgroup == null)
+            return;
+        leaderGroup.grAttached--;
+        if(leaderGroup.grAttached < 0)
+            leaderGroup.grAttached = 0;
+        leaderGroup = null;
+        grTask = 1;
+        setTaskAndManeuver(0);
+    }
+
+    public int numInGroup(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        for(int i = 0; i < nOfAirc; i++)
+            if(aircraft == airc[i])
+                return i;
+
+        return -1;
+    }
+
+    public void setEnemyFighters()
+    {
+        int i = com.maddox.il2.ai.air.AirGroupList.length(enemies[0]);
+        enemyFighters = false;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup = com.maddox.il2.ai.air.AirGroupList.getGroup(enemies[0], j);
+            if(airgroup.nOfAirc > 0 && (airgroup.airc[0] instanceof com.maddox.il2.objects.air.TypeFighter))
+            {
+                enemyFighters = true;
+                return;
+            }
+        }
+
+    }
+
+    public void setFormationAndScale(byte byte0, float f, boolean flag)
+    {
+        if(oldFType == byte0 && oldFScale == f && oldFInterp == flag)
+            return;
+        fInterpolation = flag;
+        for(int i = 1; i < nOfAirc; i++)
+        {
+            if(airc[i] instanceof com.maddox.il2.objects.air.TypeGlider)
+                return;
+            ((com.maddox.il2.ai.air.Maneuver)airc[i].FM).formationScale = f;
+            com.maddox.il2.ai.Formation.gather(airc[i].FM, byte0, tmpV);
+            if(!flag)
+                airc[i].FM.Offset.set(tmpV);
+            formationType = ((com.maddox.il2.ai.air.Maneuver)airc[i].FM).formationType;
+        }
+
+        if(grTask == 1 || grTask == 2)
+            setTaskAndManeuver(0);
+        oldFType = byte0;
+        oldFScale = f;
+        oldFInterp = flag;
+    }
+
+    public void formationUpdate()
+    {
+        if(fInterpolation)
+        {
+            boolean flag = false;
+            for(int i = 1; i < nOfAirc; i++)
+                if(com.maddox.il2.engine.Actor.isAlive(airc[i]))
+                {
+                    if(airc[i] instanceof com.maddox.il2.objects.air.TypeGlider)
+                        return;
+                    com.maddox.il2.ai.Formation.gather(airc[i].FM, formationType, tmpV);
+                    tmpV1.sub(tmpV, airc[i].FM.Offset);
+                    float f = (float)tmpV1.length();
+                    if(f != 0.0F)
+                    {
+                        flag = true;
+                        if(f < 0.1F)
+                        {
+                            airc[i].FM.Offset.set(tmpV);
+                        } else
+                        {
+                            double d = 0.00040000000000000002D * tmpV1.length();
+                            if(d > 1.0D)
+                                d = 1.0D;
+                            tmpV1.normalize();
+                            tmpV1.scale(d);
+                            airc[i].FM.Offset.add(tmpV1);
+                        }
+                    }
+                }
+
+            if(!flag)
+                fInterpolation = false;
+            if(grTask == 1 || grTask == 2)
+                setTaskAndManeuver(0);
+        }
+    }
+
+    public boolean groupsInContact(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        for(int i = 0; i < nOfAirc; i++)
+        {
+            for(int j = 0; j < airgroup.nOfAirc; j++)
+            {
+                tmpV.sub(airc[i].FM.Loc, airgroup.airc[j].FM.Loc);
+                if(tmpV.lengthSquared() < 50000000D)
+                    return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    public boolean inCorridor(com.maddox.JGP.Point3d point3d)
+    {
+        if(w == null)
+            return true;
+        int i = w.Cur();
+        if(i == 0)
+            return true;
+        w.prev();
+        tmpP = w.curr().getP();
+        w.setCur(i);
+        tmpV.sub(w.curr().getP(), tmpP);
+        P1P2vector.set(tmpV);
+        float f = (float)P1P2vector.length();
+        if(f > 0.0001F)
+            P1P2vector.scale(1.0F / f);
+        else
+            P1P2vector.set(1.0D, 0.0D);
+        tmpV.sub(point3d, tmpP);
+        myPoint.set(tmpV);
+        if(P1P2vector.dot(myPoint) < -25000D)
+            return false;
+        norm1.set(-P1P2vector.y, P1P2vector.x);
+        float f1 = (float)norm1.dot(myPoint);
+        if(f1 > 25000F)
+            return false;
+        if(f1 < -25000F)
+            return false;
+        tmpV.sub(point3d, w.curr().getP());
+        myPoint.set(tmpV);
+        return P1P2vector.dot(myPoint) <= 25000D;
+    }
+
+    public void setGroupTask(int i)
+    {
+        grTask = i;
+        if(grTask == 1 || grTask == 2)
+        {
+            setTaskAndManeuver(0);
+        } else
+        {
+            for(int j = 0; j < nOfAirc; j++)
+                if(!((com.maddox.il2.ai.air.Maneuver)airc[j].FM).isBusy())
+                    setTaskAndManeuver(j);
+
+        }
+    }
+
+    public void dropBombs()
+    {
+        for(int i = 0; i < nOfAirc; i++)
+            if(!((com.maddox.il2.ai.air.Maneuver)airc[i].FM).isBusy())
+                ((com.maddox.il2.ai.air.Maneuver)airc[i].FM).bombsOut = true;
+
+        if(friends[0] != null)
+        {
+            int j = com.maddox.il2.ai.air.AirGroupList.length(friends[0]);
+            for(int k = 0; k < j; k++)
+            {
+                com.maddox.il2.ai.air.AirGroup airgroup = com.maddox.il2.ai.air.AirGroupList.getGroup(friends[0], k);
+                if(airgroup != null && airgroup.leaderGroup == this)
+                    airgroup.dropBombs();
+            }
+
+        }
+    }
+
+    public com.maddox.il2.objects.air.Aircraft firstOkAirc(int i)
+    {
+        for(int j = 0; j < nOfAirc; j++)
+            if(i < 0 || i >= nOfAirc || j != i && (j != i + 1 || airc[j].aircIndex() != airc[i].aircIndex() + 1))
+            {
+                com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[j].FM;
+                if((maneuver.get_task() == 7 || maneuver.get_task() == 6 || maneuver.get_task() == 4) && maneuver.isOk())
+                    return airc[j];
+            }
+
+        return null;
+    }
+
+    public boolean waitGroup(int i)
+    {
+        com.maddox.il2.objects.air.Aircraft aircraft = firstOkAirc(i);
+        com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[i].FM;
+        if(aircraft != null)
+        {
+            maneuver.airClient = aircraft.FM;
+            maneuver.set_task(1);
+            maneuver.clear_stack();
+            maneuver.set_maneuver(59);
+            return true;
+        } else
+        {
+            maneuver.set_task(3);
+            maneuver.clear_stack();
+            maneuver.set_maneuver(21);
+            return false;
+        }
+    }
+
+    public void setGTargMode(int i)
+    {
+        gTargetPreference = i;
+    }
+
+    public void setGTargMode(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor != null && com.maddox.il2.engine.Actor.isAlive(actor))
+        {
+            if((actor instanceof com.maddox.il2.objects.ships.BigshipGeneric) || (actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.ai.Chief) || (actor instanceof com.maddox.il2.objects.bridges.Bridge))
+            {
+                gTargMode = 1;
+                gTargActor = actor;
             } else
             {
-              double d = 0.0004D * tmpV1.length();
-              if (d > 1.0D) d = 1.0D;
-
-              tmpV1.normalize();
-              tmpV1.scale(d);
-              this.airc[j].FM.Offset.add(tmpV1);
-            }
-          }
-        }
-      if (i == 0) this.fInterpolation = false;
-      if ((this.grTask == 1) || (this.grTask == 2)) setTaskAndManeuver(0);
-    }
-  }
-
-  public boolean groupsInContact(AirGroup paramAirGroup)
-  {
-    for (int i = 0; i < this.nOfAirc; i++) {
-      for (int j = 0; j < paramAirGroup.nOfAirc; j++) {
-        tmpV.sub(this.airc[i].FM.Loc, paramAirGroup.airc[j].FM.Loc);
-        if (tmpV.lengthSquared() < 50000000.0D) return true;
-      }
-    }
-    return false;
-  }
-
-  public boolean inCorridor(Point3d paramPoint3d)
-  {
-    if (this.w == null) return true;
-    int i = this.w.Cur();
-    if (i == 0) return true;
-    this.w.prev();
-    tmpP = this.w.curr().getP();
-    this.w.setCur(i);
-    tmpV.sub(this.w.curr().getP(), tmpP);
-    P1P2vector.set(tmpV);
-    float f1 = (float)P1P2vector.length();
-    if (f1 > 1.0E-004F) P1P2vector.scale(1.0F / f1); else
-      P1P2vector.set(1.0D, 0.0D);
-    tmpV.sub(paramPoint3d, tmpP);
-    myPoint.set(tmpV);
-    if (P1P2vector.dot(myPoint) < -25000.0D) return false;
-    norm1.set(-P1P2vector.y, P1P2vector.x);
-    float f2 = (float)norm1.dot(myPoint);
-    if (f2 > 25000.0F) return false;
-    if (f2 < -25000.0F) return false;
-    tmpV.sub(paramPoint3d, this.w.curr().getP());
-    myPoint.set(tmpV);
-    return P1P2vector.dot(myPoint) <= 25000.0D;
-  }
-
-  public void setGroupTask(int paramInt)
-  {
-    this.grTask = paramInt;
-    if ((this.grTask == 1) || (this.grTask == 2)) setTaskAndManeuver(0);
-    else
-      for (int i = 0; i < this.nOfAirc; i++) {
-        if (((Maneuver)this.airc[i].FM).isBusy()) continue; setTaskAndManeuver(i);
-      }
-  }
-
-  public void dropBombs()
-  {
-    for (int i = 0; i < this.nOfAirc; i++) {
-      if (((Maneuver)this.airc[i].FM).isBusy()) continue; ((Maneuver)this.airc[i].FM).bombsOut = true;
-    }
-    if (this.friends[0] != null) {
-      i = AirGroupList.length(this.friends[0]);
-      for (int j = 0; j < i; j++) {
-        AirGroup localAirGroup = AirGroupList.getGroup(this.friends[0], j);
-        if ((localAirGroup == null) || (localAirGroup.leaderGroup != this)) continue; localAirGroup.dropBombs();
-      }
-    }
-  }
-
-  public Aircraft firstOkAirc(int paramInt)
-  {
-    for (int i = 0; i < this.nOfAirc; i++) {
-      if ((paramInt >= 0) && (paramInt < this.nOfAirc) && (
-        (i == paramInt) || (
-        (i == paramInt + 1) && (this.airc[i].aircIndex() == this.airc[paramInt].aircIndex() + 1))))
-        continue;
-      Maneuver localManeuver = (Maneuver)this.airc[i].FM;
-      if (((localManeuver.get_task() == 7) || (localManeuver.get_task() == 6) || (localManeuver.get_task() == 4)) && (localManeuver.isOk()))
-      {
-        return this.airc[i];
-      }
-    }
-    return null;
-  }
-
-  public boolean waitGroup(int paramInt)
-  {
-    Aircraft localAircraft = firstOkAirc(paramInt);
-    Maneuver localManeuver = (Maneuver)this.airc[paramInt].FM;
-    if (localAircraft != null) {
-      localManeuver.airClient = localAircraft.FM;
-      localManeuver.set_task(1);
-      localManeuver.clear_stack();
-      localManeuver.set_maneuver(59);
-      return true;
-    }
-    localManeuver.set_task(3);
-    localManeuver.clear_stack();
-    localManeuver.set_maneuver(21);
-    return false;
-  }
-
-  public void setGTargMode(int paramInt)
-  {
-    this.gTargetPreference = paramInt;
-  }
-
-  public void setGTargMode(Actor paramActor)
-  {
-    if ((paramActor != null) && (Actor.isAlive(paramActor))) {
-      if (((paramActor instanceof BigshipGeneric)) || ((paramActor instanceof ShipGeneric)) || ((paramActor instanceof Chief)) || ((paramActor instanceof Bridge)))
-      {
-        this.gTargMode = 1;
-        this.gTargActor = paramActor;
-      } else {
-        this.gTargMode = 2;
-        this.gTargActor = paramActor;
-        this.gTargPoint.set(paramActor.pos.getAbsPoint());
-        this.gTargRadius = 200.0F;
-        if ((paramActor instanceof BigshipGeneric)) {
-          this.gTargRadius = 20.0F;
-          setGTargMode(6);
-        }
-      }
-    }
-    else this.gTargMode = 0;
-  }
-
-  public void setGTargMode(Point3d paramPoint3d, float paramFloat)
-  {
-    this.gTargMode = 2;
-    this.gTargPoint.set(paramPoint3d);
-    this.gTargRadius = paramFloat;
-  }
-
-  public Actor setGAttackObject(int paramInt)
-  {
-    if (paramInt > this.nOfAirc - 1) return null;
-    if (paramInt < 0) return null;
-    Actor localActor = null;
-    if (this.gTargMode == 1)
-      localActor = War.GetRandomFromChief(this.airc[paramInt], this.gTargActor);
-    else if (this.gTargMode == 2)
-      localActor = War.GetNearestEnemy(this.airc[paramInt], this.gTargetPreference, this.gTargPoint, this.gTargRadius);
-    else localActor = null;
-
-    if (localActor != null) { this.gTargWasFound = true; this.gTargDestroyed = false; }
-    if ((localActor == null) && (this.gTargWasFound)) { this.gTargDestroyed = true; this.gTargWasFound = false;
-    }
-    return localActor;
-  }
-
-  public void setATargMode(int paramInt)
-  {
-    this.aTargetPreference = paramInt;
-  }
-
-  public AirGroup chooseTargetGroup()
-  {
-    if (this.enemies == null) return null;
-    int i = AirGroupList.length(this.enemies[0]);
-    Object localObject = null;
-    float f = 1.0E+012F;
-    int j = 0;
-    for (int k = 0; k < i; k++) {
-      AirGroup localAirGroup = AirGroupList.getGroup(this.enemies[0], k);
-      j = 0;
-      if ((localAirGroup != null) && (localAirGroup.nOfAirc > 0)) {
-        if (this.aTargetPreference == 9) j = 1;
-        else if ((this.aTargetPreference == 7) && ((localAirGroup.airc[0] instanceof TypeFighter))) j = 1;
-        else if ((this.aTargetPreference == 8) && (!(localAirGroup.airc[0] instanceof TypeFighter))) j = 1;
-        if (j != 0) {
-          for (int m = 0; m < localAirGroup.nOfAirc; m++) {
-            if ((!Actor.isAlive(localAirGroup.airc[m])) || (!localAirGroup.airc[m].FM.isCapableOfBMP()) || (localAirGroup.airc[m].FM.isTakenMortalDamage())) {
-              continue;
-            }
-            j = 1;
-            break;
-          }
-        }
-        if (j != 0) {
-          tmpV.sub(this.Pos, localAirGroup.Pos);
-          if (tmpV.lengthSquared() < f) {
-            localObject = localAirGroup;
-            f = (float)tmpV.lengthSquared();
-          }
-        }
-      }
-    }
-    return localObject;
-  }
-
-  public boolean somebodyAttacks()
-  {
-    int i = 0;
-    for (int j = 0; j < this.nOfAirc; j++) {
-      Maneuver localManeuver = (Maneuver)this.airc[j].FM;
-      if (((localManeuver instanceof RealFlightModel)) && (((RealFlightModel)localManeuver).isRealMode()) && (this.airc[j].aircIndex() == 0))
-      {
-        i = 1;
-        break;
-      }
-      if ((!isWingman(j)) && (localManeuver.isOk()) && (localManeuver.hasCourseWeaponBullets())) {
-        i = 1;
-        break;
-      }
-    }
-    return i;
-  }
-
-  public boolean somebodyGAttacks()
-  {
-    int i = 0;
-    for (int j = 0; j < this.nOfAirc; j++) {
-      Maneuver localManeuver = (Maneuver)this.airc[j].FM;
-      if (((localManeuver instanceof RealFlightModel)) && (((RealFlightModel)localManeuver).isRealMode()) && (this.airc[j].aircIndex() == 0))
-      {
-        i = 1;
-        break;
-      }
-      if ((localManeuver.isOk()) && (localManeuver.get_task() != 1)) {
-        i = 1;
-        break;
-      }
-    }
-    return i;
-  }
-
-  public void switchWayPoint()
-  {
-    Maneuver localManeuver = (Maneuver)this.airc[0].FM;
-    tmpV.sub(this.w.curr().getP(), localManeuver.Loc);
-    float f1 = (float)tmpV.lengthSquared();
-    int i = this.w.Cur();
-    this.w.next();
-    tmpV.sub(this.w.curr().getP(), localManeuver.Loc);
-    float f2 = (float)tmpV.lengthSquared();
-    this.w.setCur(i);
-    if (f1 > f2) {
-      String str = this.airc[0].FM.AP.way.curr().getTargetName();
-      this.airc[0].FM.AP.way.next();
-      this.w.next();
-      if ((this.airc[0].FM.AP.way.curr().Action == 0) && (this.airc[0].FM.AP.way.curr().getTarget() == null)) this.airc[0].FM.AP.way.curr().setTarget(str);
-      if (this.w.curr().getTarget() == null) this.w.curr().setTarget(str);
-    }
-  }
-
-  public boolean isWingman(int paramInt)
-  {
-    if (paramInt < 0) return false;
-    Maneuver localManeuver = (Maneuver)this.airc[paramInt].FM;
-    if (((this.airc[paramInt].aircIndex() & 0x1) != 0) && (!localManeuver.aggressiveWingman)) {
-      if (paramInt > 0) localManeuver.Leader = this.airc[(paramInt - 1)].FM; else
-        return false;
-      if ((localManeuver.Leader != null) && (this.airc[(paramInt - 1)].aircIndex() == this.airc[paramInt].aircIndex() - 1) && (this.enemyFighters) && (Actor.isAlive(this.airc[(paramInt - 1)])) && (((Maneuver)localManeuver.Leader).isOk()))
-        return true;
-    }
-    return false;
-  }
-
-  public Aircraft chooseTarget(AirGroup paramAirGroup)
-  {
-    Aircraft localAircraft = null;
-    if ((paramAirGroup != null) && (paramAirGroup.nOfAirc > 0)) localAircraft = paramAirGroup.airc[com.maddox.il2.ai.World.Rnd().nextInt(0, paramAirGroup.nOfAirc - 1)];
-    if ((localAircraft != null) && (
-      (!Actor.isAlive(localAircraft)) || (!localAircraft.FM.isCapableOfBMP()) || (localAircraft.FM.isTakenMortalDamage()))) {
-      for (int i = 0; i < paramAirGroup.nOfAirc; i++) {
-        if ((Actor.isAlive(paramAirGroup.airc[i])) && (paramAirGroup.airc[i].FM.isCapableOfBMP()) && (!paramAirGroup.airc[i].FM.isTakenMortalDamage())) {
-          localAircraft = paramAirGroup.airc[i];
-        }
-      }
-    }
-    return localAircraft;
-  }
-
-  public FlightModel setAAttackObject(int paramInt)
-  {
-    if (paramInt > this.nOfAirc - 1) return null;
-    if (paramInt < 0) return null;
-
-    Aircraft localAircraft = null;
-    AirGroup localAirGroup = this.targetGroup;
-    if ((localAirGroup == null) || (localAirGroup.nOfAirc == 0)) localAirGroup = chooseTargetGroup();
-    localAircraft = chooseTarget(localAirGroup);
-
-    if (localAircraft != null) { this.aTargWasFound = true; this.aTargDestroyed = false; }
-    if ((localAircraft == null) && (this.aTargWasFound)) { this.aTargDestroyed = true; this.aTargWasFound = false;
-    }
-    if (localAircraft != null) return localAircraft.FM;
-    return null;
-  }
-
-  public void setTaskAndManeuver(int paramInt)
-  {
-    if (paramInt > this.nOfAirc - 1) return;
-    if (paramInt < 0) return;
-    Maneuver localManeuver1 = (Maneuver)this.airc[paramInt].FM;
-    Maneuver localManeuver3;
-    Maneuver localManeuver2;
-    Maneuver localManeuver4;
-    int i;
-    int i1;
-    int k;
-    int n;
-    switch (this.grTask)
-    {
-    case 1:
-      localManeuver3 = null;
-      localManeuver2 = null;
-      localManeuver4 = null;
-      tmpV.set(0.0D, 0.0D, 0.0D);
-      for (i = 0; i < this.nOfAirc; i++) {
-        localManeuver3 = (Maneuver)this.airc[i].FM;
-        if ((this.airc[i] instanceof TypeGlider)) { localManeuver3.accurate_set_FOLLOW(); } else {
-          tmpV.add(localManeuver3.Offset);
-          if ((localManeuver3.isBusy()) && ((!(localManeuver3 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver3).isRealMode()) || (!localManeuver3.isOk())))
-            continue;
-          localManeuver3.Leader = null;
-          if ((this.leaderGroup == null) || (this.leaderGroup.nOfAirc == 0)) {
-            localManeuver3.accurate_set_task_maneuver(3, 21);
-          }
-          else if (((Maneuver)this.leaderGroup.airc[0].FM).isBusy()) {
-            localManeuver3.accurate_set_task_maneuver(3, 21);
-          } else {
-            localManeuver3.accurate_set_FOLLOW();
-            localManeuver3.followOffset.set(tmpV);
-            localManeuver3.Leader = this.leaderGroup.airc[0].FM;
-          }
-
-          tmpV.set(0.0D, 0.0D, 0.0D);
-          for (int j = i + 1; j < this.nOfAirc; j++) {
-            localManeuver2 = (Maneuver)this.airc[j].FM;
-            tmpV.add(localManeuver2.Offset);
-            if (!localManeuver2.isBusy()) {
-              localManeuver2.accurate_set_FOLLOW();
-              if ((this.airc[j] instanceof TypeGlider)) continue;
-              if (localManeuver4 == null) {
-                localManeuver2.followOffset.set(tmpV);
-                localManeuver2.Leader = localManeuver3;
-              } else {
-                localManeuver2.followOffset.set(localManeuver2.Offset);
-                localManeuver2.Leader = localManeuver4;
-              }
-            }
-            if ((localManeuver2 instanceof RealFlightModel)) {
-              if ((this.airc[j].aircIndex() & 0x1) != 0) continue; localManeuver4 = localManeuver2; } else {
-              localManeuver4 = null;
-            }
-          }
-          break;
-        }
-      }
-      break;
-    case 4:
-      if (localManeuver1.isBusy())
-        break;
-      if ((localManeuver1.target_ground == null) || (!Actor.isAlive(localManeuver1.target_ground)) || (localManeuver1.Loc.distance(localManeuver1.target_ground.pos.getAbsPoint()) > 3000.0D))
-      {
-        localManeuver1.target_ground = setGAttackObject(paramInt);
-      }if (localManeuver1.target_ground == null) {
-        if ((waitGroup(paramInt)) || (paramInt != 0)) break;
-        if (localManeuver1.AP.way.curr().Action == 3) {
-          localManeuver1.AP.way.next();
-        }
-        setGroupTask(1);
-      }
-      else
-      {
-        if ((this.airc[paramInt] instanceof TypeDockable))
-        {
-          if ((this.airc[paramInt] instanceof I_16TYPE24DRONE))
-            ((I_16TYPE24DRONE)this.airc[paramInt]).typeDockableAttemptDetach();
-          if ((this.airc[paramInt] instanceof MXY_7))
-            ((MXY_7)this.airc[paramInt]).typeDockableAttemptDetach();
-          if ((this.airc[paramInt] instanceof G4M2E))
-            ((G4M2E)this.airc[paramInt]).typeDockableAttemptDetach();
-          if ((this.airc[paramInt] instanceof TB_3_4M_34R_SPB))
-            ((TB_3_4M_34R_SPB)this.airc[paramInt]).typeDockableAttemptDetach();
-        }
-        if (((localManeuver1.AP.way.Cur() == localManeuver1.AP.way.size() - 1) && (localManeuver1.AP.way.curr().Action == 3)) || ((this.airc[paramInt] instanceof MXY_7)))
-        {
-          localManeuver1.kamikaze = true;
-          localManeuver1.set_task(7);
-          localManeuver1.clear_stack();
-          localManeuver1.set_maneuver(46);
-        }
-        else {
-          i = 1;
-          if (localManeuver1.hasRockets()) i = 0;
-          if ((localManeuver1.CT.Weapons[0] != null) && (localManeuver1.CT.Weapons[0][0] != null) && (localManeuver1.CT.Weapons[0][0].bulletMassa() > 0.05F) && (localManeuver1.CT.Weapons[0][0].countBullets() > 0))
-          {
-            i = 0;
-          }if (((i != 0) && (localManeuver1.CT.getWeaponMass() < 7.0F)) || (localManeuver1.CT.getWeaponMass() < 1.0F)) {
-            Voice.speakEndOfAmmo(this.airc[paramInt]);
-            if ((waitGroup(paramInt)) || (paramInt != 0)) break;
-            if (localManeuver1.AP.way.curr().Action == 3) {
-              localManeuver1.AP.way.next();
-            }
-            setGroupTask(1);
-          }
-          else
-          {
-            if (((localManeuver1.target_ground instanceof Prey)) && ((((Prey)localManeuver1.target_ground).HitbyMask() & 0x1) == 0))
-            {
-              float f = 0.0F;
-              for (int m = 0; m < 4; m++) {
-                if (localManeuver1.CT.Weapons[m] != null) {
-                  for (i1 = 0; i1 < localManeuver1.CT.Weapons[m].length; i1++) {
-                    if ((localManeuver1.CT.Weapons[m][i1] == null) || (localManeuver1.CT.Weapons[m][i1].countBullets() == 0) || 
-                      (localManeuver1.CT.Weapons[m][i1].bulletMassa() <= f)) continue;
-                    f = localManeuver1.CT.Weapons[m][i1].bulletMassa();
-                  }
-                }
-              }
-
-              if ((f < 0.08F) || (((localManeuver1.target_ground instanceof TgtShip)) && (f < 0.55F)))
-              {
-                localManeuver1.AP.way.next();
-                localManeuver1.set_task(1);
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(21);
-                localManeuver1.target_ground = null;
-                break;
-              }
-            }
-
-            if (localManeuver1.CT.Weapons[3] != null) {
-              for (k = 0; k < localManeuver1.CT.Weapons[3].length; k++)
-              {
-                if ((localManeuver1.CT.Weapons[3][k] == null) || ((localManeuver1.CT.Weapons[3][k] instanceof BombGunNull)) || (localManeuver1.CT.Weapons[3][k].countBullets() == 0)) {
-                  continue;
-                }
-                if ((localManeuver1.CT.Weapons[3][k] instanceof ParaTorpedoGun))
+                gTargMode = 2;
+                gTargActor = actor;
+                gTargPoint.set(actor.pos.getAbsPoint());
+                gTargRadius = 200F;
+                if(actor instanceof com.maddox.il2.objects.ships.BigshipGeneric)
                 {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(43);
-                  return;
+                    gTargRadius = 20F;
+                    setGTargMode(6);
                 }
-                if ((localManeuver1.CT.Weapons[3][k] instanceof TorpedoGun)) {
-                  if ((localManeuver1.target_ground instanceof TgtShip)) {
-                    localManeuver1.set_task(7);
-                    localManeuver1.clear_stack();
-                    if ((localManeuver1.target_ground instanceof BigshipGeneric))
-                    {
-                      BigshipGeneric localBigshipGeneric = (BigshipGeneric)localManeuver1.target_ground;
-
-                      if (((this.airc[paramInt] instanceof TypeHasToKG)) && (!localBigshipGeneric.zutiIsStatic()) && (this.airc[paramInt].FM.Skill >= 2) && (localBigshipGeneric.collisionR() > 50.0F))
-                      {
-                        localManeuver1.set_maneuver(81); return;
-                      }
-
-                      localManeuver1.set_maneuver(51); return;
-                    }
-
-                    localManeuver1.set_maneuver(51); return;
-                  }
-
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(43); return;
-                }
-
-                if (((this.airc[paramInt] instanceof TypeGuidedBombCarrier)) && ((localManeuver1.CT.Weapons[3][k] instanceof RocketGunHS_293))) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(79);
-                  return;
-                }
-                if (((this.airc[paramInt] instanceof TypeGuidedBombCarrier)) && ((localManeuver1.CT.Weapons[3][k] instanceof RocketGunFritzX))) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(80);
-                  return;
-                }
-                if ((localManeuver1.CT.Weapons[3][k] instanceof BombGunPara)) {
-                  this.w.curr().setTarget(null);
-                  localManeuver1.target_ground = null;
-                  this.grTask = 1;
-                  setTaskAndManeuver(paramInt);
-                  return;
-                }
-                if ((localManeuver1.CT.Weapons[3][k].bulletMassa() < 10.0F) && (!(localManeuver1.CT.Weapons[3][k] instanceof BombGunParafrag8))) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(52);
-                  return;
-                }
-                if (((this.airc[paramInt] instanceof TypeDiveBomber)) && (localManeuver1.Alt > 1200.0F)) {
-                  localManeuver1.set_task(7);
-                  localManeuver1.clear_stack();
-                  localManeuver1.set_maneuver(50);
-                  return;
-                }
-                if (k != localManeuver1.CT.Weapons[3].length - 1)
-                  continue;
-                localManeuver1.set_task(7);
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(43);
-                return;
-              }
-
             }
-
-            if (((localManeuver1.target_ground instanceof BridgeSegment)) && (!localManeuver1.hasRockets())) {
-              localManeuver1.set_task(1);
-              localManeuver1.clear_stack();
-              localManeuver1.set_maneuver(59);
-              localManeuver1.target_ground = null;
-            }
-            else if (((this.airc[paramInt] instanceof F4U)) && (localManeuver1.CT.Weapons[2] != null) && (localManeuver1.CT.Weapons[2][0].bulletMassa() > 100.0D) && (localManeuver1.CT.Weapons[2][0].countBullets() > 0))
-            {
-              localManeuver1.set_task(7);
-              localManeuver1.clear_stack();
-              localManeuver1.set_maneuver(47);
-            }
-            else if ((this.airc[paramInt] instanceof R_5xyz)) {
-              if (((R_5xyz)this.airc[paramInt]).strafeWithGuns)
-              {
-                localManeuver1.set_task(7);
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(43);
-              }
-              else
-              {
-                this.w.curr().setTarget(null);
-                localManeuver1.target_ground = null;
-                this.grTask = 1;
-                setTaskAndManeuver(paramInt);
-                this.grTask = 4;
-              }
-
-            }
-            else if (((this.airc[paramInt] instanceof TypeFighter)) || ((this.airc[paramInt] instanceof TypeStormovik))) {
-              localManeuver1.set_task(7);
-              localManeuver1.clear_stack();
-              localManeuver1.set_maneuver(43);
-            }
-            else {
-              this.w.curr().setTarget(null);
-              localManeuver1.target_ground = null;
-              this.grTask = 1;
-              setTaskAndManeuver(paramInt);
-              this.grTask = 4;
-            }
-          }
-        }
-      }
-      break;
-    case 3:
-      if (localManeuver1.isBusy()) break;
-      if ((!(localManeuver1 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver1).isRealMode())) {
-        localManeuver1.bombsOut = true;
-        localManeuver1.CT.dropFuelTanks();
-      }
-      if (isWingman(paramInt))
-      {
-        localManeuver1.airClient = localManeuver1.Leader;
-        localManeuver1.followOffset.set(200.0D, 0.0D, 20.0D);
-        localManeuver1.set_task(5);
-        localManeuver1.clear_stack();
-        localManeuver1.set_maneuver(65);
-      }
-      else
-      {
-        localManeuver1.airClient = null;
-        k = 1;
-        if (inCorridor(localManeuver1.Loc)) k = 0;
-        if (k != 0) {
-          n = this.w.Cur();
-          this.w.next();
-          if (inCorridor(localManeuver1.Loc)) k = 0;
-          this.w.setCur(n);
-          if (k != 0) {
-            n = this.w.Cur();
-            this.w.prev();
-            if (inCorridor(localManeuver1.Loc)) k = 0;
-            this.w.setCur(n);
-          }
-        }
-        if (k != 0) {
-          localManeuver1.set_task(3);
-          localManeuver1.clear_stack();
-          localManeuver1.set_maneuver(21);
-        }
-        else
+        } else
         {
-          if ((localManeuver1.target == null) || (!((Maneuver)localManeuver1.target).isOk()) || (localManeuver1.Loc.distance(localManeuver1.target.Loc) > 4000.0D))
-            localManeuver1.target = setAAttackObject(paramInt);
-          if ((localManeuver1.target == null) || (!localManeuver1.hasCourseWeaponBullets())) {
-            if ((waitGroup(paramInt)) || (paramInt != 0)) break;
-            setGroupTask(1);
-          }
-          else
-          {
-            localManeuver1.set_task(6);
-            if ((localManeuver1.target.actor instanceof TypeFighter)) {
-              if (((localManeuver1.actor instanceof TypeBNZFighter)) || (localManeuver1.VmaxH > localManeuver1.target.VmaxH + 30.0F) || (((localManeuver1.target.actor instanceof TypeTNBFighter)) && (!(localManeuver1.actor instanceof TypeTNBFighter))))
-              {
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(62);
-              }
-              else {
-                localManeuver1.clear_stack();
-                localManeuver1.set_maneuver(27);
-              }
-            }
-            else if ((localManeuver1.target.actor instanceof TypeStormovik))
-            {
-              ((Pilot)localManeuver1).attackStormoviks();
-            }
-            else
-            {
-              ((Pilot)localManeuver1).attackBombers();
-            }
-          }
+            gTargMode = 0;
         }
-      }
-      break;
-    case 2:
-      localManeuver3 = null;
-      localManeuver2 = null;
-      localManeuver4 = null;
-      tmpV.set(0.0D, 0.0D, 0.0D);
-      for (n = 0; n < this.nOfAirc; n++) {
-        localManeuver3 = (Maneuver)this.airc[n].FM;
-        tmpV.add(localManeuver3.Offset);
-        if ((localManeuver3.isBusy()) && (n != this.nOfAirc - 1) && ((!(localManeuver3 instanceof RealFlightModel)) || (!((RealFlightModel)localManeuver3).isRealMode())))
-          continue;
-        localManeuver3.Leader = null;
-        if ((this.clientGroup != null) && (this.clientGroup.nOfAirc > 0) && (this.clientGroup.airc[0] != null)) {
-          localManeuver3.airClient = this.clientGroup.airc[0].FM;
-          localManeuver3.accurate_set_task_maneuver(5, 59);
-        } else {
-          localManeuver3.accurate_set_task_maneuver(3, 21);
-        }
-        tmpV.set(0.0D, 0.0D, 0.0D);
-        for (i1 = n + 1; i1 < this.nOfAirc; i1++) {
-          localManeuver2 = (Maneuver)this.airc[i1].FM;
-          tmpV.add(localManeuver2.Offset);
-          if (!localManeuver2.isBusy()) {
-            localManeuver2.accurate_set_FOLLOW();
-            if (localManeuver4 == null) {
-              localManeuver2.followOffset.set(tmpV);
-              localManeuver2.Leader = localManeuver3;
-            } else {
-              localManeuver2.followOffset.set(localManeuver2.Offset);
-              localManeuver2.Leader = localManeuver4;
-            }
-          }
-          if ((localManeuver2 instanceof RealFlightModel)) {
-            if ((this.airc[i1].aircIndex() & 0x1) != 0) continue; localManeuver4 = localManeuver2; } else {
-            localManeuver4 = null;
-          }
-        }
-        break;
-      }
-
-      break;
-    case 5:
-      if (!localManeuver1.isBusy()) break; return;
-    case 6:
-      if (!localManeuver1.isBusy()) break; return;
-    default:
-      if (localManeuver1.isBusy()) return;
-      localManeuver1.set_maneuver(21);
-    }
-  }
-
-  public void update()
-  {
-    if ((this.nOfAirc == 0) || (this.airc[0] == null)) return;
-    for (int i = 1; i < this.nOfAirc; i++) {
-      if (!Actor.isAlive(this.airc[i])) {
-        delAircraft(this.airc[i]);
-        i--;
-      }
-    }
-    Maneuver localManeuver1 = (Maneuver)this.airc[0].FM;
-    if (this.leaderGroup != null) {
-      if (this.leaderGroup.nOfAirc == 0) { detachGroup(this.leaderGroup);
-      } else if (this.leaderGroup.airc[0] == null) { detachGroup(this.leaderGroup);
-      }
-      else if (this.leaderGroup.airc[0].FM.AP.way.isLanding()) {
-        detachGroup(this.leaderGroup);
-      } else {
-        localManeuver1.AP.way.setCur(this.leaderGroup.w.Cur());
-        if ((localManeuver1.get_maneuver() == 21) && (!((Maneuver)this.leaderGroup.airc[0].FM).isBusy())) {
-          setTaskAndManeuver(0);
-        }
-      }
-
     }
 
-    if (this.w == null) this.w = new Way(localManeuver1.AP.way);
-    if ((!localManeuver1.AP.way.isLanding()) && (localManeuver1.isOk())) this.w.setCur(localManeuver1.AP.way.Cur());
-    int j;
-    if (!localManeuver1.AP.way.isLanding())
-      for (j = 1; j < this.nOfAirc; j++) {
-        if ((((Maneuver)this.airc[j].FM).AP.way.isLanding()) || (((Maneuver)this.airc[j].FM).isBusy()))
-          continue;
-        ((Maneuver)this.airc[j].FM).AP.way.setCur(this.w.Cur());
-      }
-    if ((localManeuver1.AP.way.curr().isRadioSilence()) || (Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-      for (j = 0; j < this.nOfAirc; j++) ((Maneuver)this.airc[j].FM).silence = true;
-    else {
-      for (j = 0; j < this.nOfAirc; j++) ((Maneuver)this.airc[j].FM).silence = false;
-    }
-
-    this.Pos.set(localManeuver1.Loc);
-
-    if (this.formationType == -1) setFormationAndScale(0, 1.0F, true);
-
-    if (this.timeOutForTaskSwitch == 0)
+    public void setGTargMode(com.maddox.JGP.Point3d point3d, float f)
     {
-      int n;
-      Maneuver localManeuver2;
-      Object localObject;
-      switch (this.w.curr().Action) {
-      case 3:
-        j = (this.w.curr().getTarget() != null) || ((this.airc[0] instanceof TypeFighter)) || (((this.airc[0] instanceof TypeStormovik)) && ((!(this.airc[0] instanceof TypeBomber)) || (this.airc[0].FM.getAltitude() < 2500.0F))) || ((this.airc[0] instanceof D3A)) || ((this.airc[0] instanceof MXY_7)) || ((this.airc[0] instanceof JU_87)) ? 1 : 0;
-
-        if (this.grTask == 4) {
-          this.WeWereInGAttack = true;
-          bool1 = somebodyGAttacks();
-          n = 0;
-          for (int i2 = 0; i2 < this.nOfAirc; i2++) {
-            localManeuver2 = (Maneuver)this.airc[i2].FM;
-            if (localManeuver2.gattackCounter < 7) continue; n = 1;
-          }
-          if ((!bool1) || (n != 0) || (this.gTargDestroyed)) {
-            this.airc[0].FM.AP.way.next();
-            this.w.next();
-            setGroupTask(1);
-            for (i2 = 1; i2 < this.nOfAirc; i2++) {
-              localManeuver2 = (Maneuver)this.airc[i2].FM;
-              localManeuver2.push(57);
-              localManeuver2.pop();
-            }
-            setFormationAndScale(0, 1.0F, true);
-            if (n != 0)
-              for (i2 = 0; i2 < this.nOfAirc; i2++) ((Maneuver)this.airc[i2].FM).gattackCounter = 0;
-          }
-        }
-        else if (this.grTask == 3) {
-          switchWayPoint();
-          this.WeWereInGAttack = true;
-          if (AirGroupList.length(this.enemies[0]) != this.oldEnemyNum) setGroupTask(3);
-          bool1 = somebodyAttacks();
-          if ((!bool1) || (this.aTargDestroyed)) {
-            setGroupTask(1);
-            if (!bool1) this.timeOutForTaskSwitch = 90;
-            for (n = 1; n < this.nOfAirc; n++) {
-              localObject = (Maneuver)this.airc[n].FM;
-              if (!((Maneuver)localObject).isBusy()) {
-                ((Maneuver)localObject).push(57);
-                ((Maneuver)localObject).pop();
-              }
-            }
-          }
-        }
-        if ((this.grTask != 1) || (this.w.curr().Action != 3)) break;
-        this.gTargWasFound = false; this.gTargDestroyed = false;
-        this.gTargMode = 0;
-        if (j == 0) {
-          break;
-        }
-        setFormationAndScale(9, 8.0F, true);
-        if (localManeuver1.AP.getWayPointDistance() >= 5000.0F) break;
-        boolean bool1 = false;
-        if (this.w.curr().getTarget() != null) {
-          setGTargMode(this.w.curr().getTarget());
-          if (this.gTargMode != 0) {
-            localManeuver1.target_ground = setGAttackObject(0);
-            if ((localManeuver1.target_ground != null) && (localManeuver1.target_ground.distance(this.airc[0]) < 12000.0D))
-            {
-              setGroupTask(4);
-              Voice.speakBeginGattack(this.airc[0]);
-            } else if (localManeuver1.AP.getWayPointDistance() < 1500.0F) { bool1 = true; } 
-          } else {
-            bool1 = true;
-          } } else {
-          bool1 = true;
-        }if (bool1) {
-          Engine.land(); tmpP3d.set(this.w.curr().x(), this.w.curr().y(), Landscape.HQ(this.w.curr().x(), this.w.curr().y()));
-          setGTargMode(tmpP3d, 800.0F);
-          localManeuver1.target_ground = setGAttackObject(0);
-          if (localManeuver1.target_ground != null) {
-            setGroupTask(4);
-            Voice.speakBeginGattack(this.airc[0]);
-          }
-        }
-        break;
-      case 0:
-      case 2:
-        if (this.grTask == 2)
-        {
-          int k;
-          if (this.enemyFighters) {
-            k = AirGroupList.length(this.enemies[0]);
-            for (n = 0; n < k; n++) {
-              localObject = AirGroupList.getGroup(this.enemies[0], n);
-              if ((((AirGroup)localObject).nOfAirc > 0) && ((localObject.airc[0] instanceof TypeFighter))) {
-                this.targetGroup = ((AirGroup)localObject);
-                setGroupTask(3);
-                break;
-              }
-            }
-          }
-          if (this.w.Cur() >= this.w.size() - 1) {
-            setGroupTask(1);
-            setFormationAndScale(0, 1.0F, true);
-          }
-          if ((this.clientGroup == null) || (this.clientGroup.nOfAirc == 0) || (this.clientGroup.w.Cur() >= this.clientGroup.w.size() - 1) || (this.clientGroup.airc[0].FM.AP.way.isLanding()))
-          {
-            localManeuver1.AP.way.next();
-            this.w.setCur(localManeuver1.AP.way.Cur());
-            for (k = 1; k < this.nOfAirc; k++) ((Maneuver)this.airc[k].FM).AP.way.setCur(this.w.Cur());
-            setGroupTask(1);
-            setFormationAndScale(0, 1.0F, true);
-          }
-          switchWayPoint();
-        }
-        else
-        {
-          boolean bool2;
-          if (this.grTask == 3) {
-            switchWayPoint();
-            this.WeWereInGAttack = true;
-            if (AirGroupList.length(this.enemies[0]) != this.oldEnemyNum) setGroupTask(3);
-            bool2 = somebodyAttacks();
-            if ((!bool2) || (this.aTargDestroyed)) {
-              setGroupTask(1);
-              setFormationAndScale(0, 1.0F, false);
-              if (!bool2) this.timeOutForTaskSwitch = 90;
-              for (n = 1; n < this.nOfAirc; n++) {
-                localObject = (Maneuver)this.airc[n].FM;
-                if (!((Maneuver)localObject).isBusy()) {
-                  ((Maneuver)localObject).push(57);
-                  ((Maneuver)localObject).pop();
-                }
-              }
-            }
-          }
-          else
-          {
-            int i3;
-            if (this.grTask == 4) {
-              this.WeWereInGAttack = true;
-              bool2 = somebodyGAttacks();
-              n = 0;
-              for (i3 = 0; i3 < this.nOfAirc; i3++) {
-                localManeuver2 = (Maneuver)this.airc[i3].FM;
-                if (localManeuver2.gattackCounter < 7) continue; n = 1;
-              }
-              if ((!bool2) || (n != 0) || (this.gTargDestroyed)) {
-                setGroupTask(1);
-                setFormationAndScale(0, 1.0F, true);
-                for (i3 = 1; i3 < this.nOfAirc; i3++) {
-                  localManeuver2 = (Maneuver)this.airc[i3].FM;
-                  localManeuver2.push(57);
-                  localManeuver2.pop();
-                }
-                if (n != 0)
-                  for (i3 = 0; i3 < this.nOfAirc; i3++) ((Maneuver)this.airc[i3].FM).gattackCounter = 0; 
-              }
-            }
-            else {
-              if (this.grTask != 1) break;
-              if ((this.WeWereInGAttack) || (this.gTargMode != 0)) {
-                this.WeWereInGAttack = false;
-                this.gTargMode = 0;
-                setFormationAndScale(0, 1.0F, false);
-                ((Maneuver)this.airc[0].FM).WeWereInGAttack = true;
-              }
-              if (this.WeWereInAttack) {
-                this.WeWereInAttack = false;
-                setFormationAndScale(0, 1.0F, false);
-                ((Maneuver)this.airc[0].FM).WeWereInAttack = true;
-              }
-              if ((this.w.Cur() > 0) && (this.grAttached == 0) && (this.oldFType == 0)) {
-                this.w.curr().getP(tmpP);
-                tmpV.sub(tmpP, this.Pos);
-                if (tmpV.lengthSquared() < 4000000.0D) setFormationAndScale(0, 2.5F, true); else
-                  setFormationAndScale(0, 1.0F, true);
-              }
-              int m = this.w.Cur();
-              this.w.next();
-              if ((this.w.curr().Action == 2) || ((this.w.curr().Action == 3) && (((this.w.curr().getTarget() != null) && (!(this.airc[0] instanceof Scheme4))) || ((this.airc[0] instanceof TypeStormovik)) || ((this.airc[0] instanceof JU_87)))))
-              {
-                this.w.curr().getP(tmpP);
-                tmpV.sub(tmpP, this.Pos);
-                float f = (float)tmpV.length();
-                if (f < 20000.0F) setFormationAndScale(5, 8.0F, true);
-              }
-              this.w.setCur(m);
-              if (this.w.curr().getTarget() != null) {
-                Actor localActor = this.w.curr().getTargetActorRandom();
-                if ((localActor != null) && ((localActor instanceof Aircraft))) {
-                  tmpV.sub(((Aircraft)localActor).FM.Loc, this.Pos);
-                  if (tmpV.lengthSquared() < 144000000.0D) {
-                    if (localActor.getArmy() == this.airc[0].getArmy()) {
-                      if (((this.airc[0] instanceof TypeFighter)) && (!localManeuver1.hasBombs()) && (!localManeuver1.hasRockets())) {
-                        if (this.w.Cur() < this.w.size() - 2) {
-                          this.clientGroup = ((Maneuver)((Aircraft)localActor).FM).Group;
-                          setGroupTask(2);
-                          setFormationAndScale(0, 2.5F, true);
-                        }
-                      }
-                      else attachGroup(((Maneuver)((Aircraft)localActor).FM).Group);
-
-                    }
-                    else if (((this.airc[0] instanceof TypeFighter)) || ((this.airc[0] instanceof TypeStormovik))) {
-                      this.targetGroup = ((Maneuver)((Aircraft)localActor).FM).Group;
-                      setGroupTask(3);
-                    }
-                  }
-                }
-
-              }
-              else if (AirGroupList.length(this.enemies[0]) > 0) {
-                int i1 = 0;
-                if ((this.airc[0] instanceof TypeStormovik)) {
-                  i3 = AirGroupList.length(this.enemies[0]);
-                  for (int i4 = 0; i4 < i3; i4++) {
-                    AirGroup localAirGroup = AirGroupList.getGroup(this.enemies[0], i4);
-                    if ((localAirGroup != null) && (localAirGroup.nOfAirc != 0) && (!(localAirGroup.airc[0] instanceof TypeFighter))) {
-                      i1 = 1;
-                      this.targetGroup = localAirGroup;
-                      break;
-                    }
-                  }
-                  if (i1 != 0) {
-                    if (localManeuver1.hasBombs())
-                      i1 = 0;
-                    m = this.w.Cur();
-                    while ((i1 != 0) && (this.w.Cur() < this.w.size() - 1)) {
-                      if (this.w.curr().Action == 3) i1 = 0;
-                      this.w.next();
-                    }
-                    this.w.setCur(m);
-                  }
-                }
-                if ((i1 == 0) && ((this.airc[0] instanceof TypeFighter))) {
-                  for (i3 = 0; i3 < this.nOfAirc; i3++) {
-                    if (!((Maneuver)this.airc[i3].FM).canAttack()) continue; i1 = 1;
-                  }if ((i1 != 0) && (localManeuver1.CT.getWeaponMass() > 220.0F)) {
-                    i1 = 0;
-                  }
-                }
-                if (i1 != 0) setGroupTask(3);
-              }
-
-              if (this.rejoinGroup != null) rejoinToGroup(this.rejoinGroup); 
-            }
-          }
-        }
-        break;
-      case 1:
-      default:
-        this.grTask = 1;
-      }
+        gTargMode = 2;
+        gTargPoint.set(point3d);
+        gTargRadius = f;
     }
-    this.oldEnemyNum = AirGroupList.length(this.enemies[0]);
-    if (this.timeOutForTaskSwitch > 0) this.timeOutForTaskSwitch -= 1;
-  }
+
+    public com.maddox.il2.engine.Actor setGAttackObject(int i)
+    {
+        if(i > nOfAirc - 1)
+            return null;
+        if(i < 0)
+            return null;
+        com.maddox.il2.engine.Actor actor = null;
+        if(gTargMode == 1)
+            actor = com.maddox.il2.ai.War.GetRandomFromChief(airc[i], gTargActor);
+        else
+        if(gTargMode == 2)
+            actor = com.maddox.il2.ai.War.GetNearestEnemy(airc[i], gTargetPreference, gTargPoint, gTargRadius);
+        else
+            actor = null;
+        if(actor != null)
+        {
+            gTargWasFound = true;
+            gTargDestroyed = false;
+        }
+        if(actor == null && gTargWasFound)
+        {
+            gTargDestroyed = true;
+            gTargWasFound = false;
+        }
+        return actor;
+    }
+
+    public void setATargMode(int i)
+    {
+        aTargetPreference = i;
+    }
+
+    public com.maddox.il2.ai.air.AirGroup chooseTargetGroup()
+    {
+        if(enemies == null)
+            return null;
+        int i = com.maddox.il2.ai.air.AirGroupList.length(enemies[0]);
+        com.maddox.il2.ai.air.AirGroup airgroup = null;
+        float f = 1E+012F;
+        boolean flag = false;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup1 = com.maddox.il2.ai.air.AirGroupList.getGroup(enemies[0], j);
+            boolean flag1 = false;
+            if(airgroup1 != null && airgroup1.nOfAirc > 0)
+            {
+                if(aTargetPreference == 9)
+                    flag1 = true;
+                else
+                if(aTargetPreference == 7 && (airgroup1.airc[0] instanceof com.maddox.il2.objects.air.TypeFighter))
+                    flag1 = true;
+                else
+                if(aTargetPreference == 8 && !(airgroup1.airc[0] instanceof com.maddox.il2.objects.air.TypeFighter))
+                    flag1 = true;
+                if(flag1)
+                {
+                    for(int k = 0; k < airgroup1.nOfAirc; k++)
+                    {
+                        if(!com.maddox.il2.engine.Actor.isAlive(airgroup1.airc[k]) || !airgroup1.airc[k].FM.isCapableOfBMP() || airgroup1.airc[k].FM.isTakenMortalDamage())
+                            continue;
+                        flag1 = true;
+                        break;
+                    }
+
+                }
+                if(flag1)
+                {
+                    tmpV.sub(Pos, airgroup1.Pos);
+                    if(tmpV.lengthSquared() < (double)f)
+                    {
+                        airgroup = airgroup1;
+                        f = (float)tmpV.lengthSquared();
+                    }
+                }
+            }
+        }
+
+        return airgroup;
+    }
+
+    public boolean somebodyAttacks()
+    {
+        boolean flag = false;
+        for(int i = 0; i < nOfAirc; i++)
+        {
+            com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[i].FM;
+            if((maneuver instanceof com.maddox.il2.fm.RealFlightModel) && ((com.maddox.il2.fm.RealFlightModel)maneuver).isRealMode() && airc[i].aircIndex() == 0)
+            {
+                flag = true;
+                break;
+            }
+            if(isWingman(i) || !maneuver.isOk() || !maneuver.hasCourseWeaponBullets())
+                continue;
+            flag = true;
+            break;
+        }
+
+        return flag;
+    }
+
+    public boolean somebodyGAttacks()
+    {
+        boolean flag = false;
+        for(int i = 0; i < nOfAirc; i++)
+        {
+            com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[i].FM;
+            if((maneuver instanceof com.maddox.il2.fm.RealFlightModel) && ((com.maddox.il2.fm.RealFlightModel)maneuver).isRealMode() && airc[i].aircIndex() == 0)
+            {
+                flag = true;
+                break;
+            }
+            if(!maneuver.isOk() || maneuver.get_task() == 1)
+                continue;
+            flag = true;
+            break;
+        }
+
+        return flag;
+    }
+
+    public void switchWayPoint()
+    {
+        com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[0].FM;
+        tmpV.sub(w.curr().getP(), maneuver.Loc);
+        float f = (float)tmpV.lengthSquared();
+        int i = w.Cur();
+        w.next();
+        tmpV.sub(w.curr().getP(), maneuver.Loc);
+        float f1 = (float)tmpV.lengthSquared();
+        w.setCur(i);
+        if(f > f1)
+        {
+            java.lang.String s = airc[0].FM.AP.way.curr().getTargetName();
+            airc[0].FM.AP.way.next();
+            w.next();
+            if(airc[0].FM.AP.way.curr().Action == 0 && airc[0].FM.AP.way.curr().getTarget() == null)
+                airc[0].FM.AP.way.curr().setTarget(s);
+            if(w.curr().getTarget() == null)
+                w.curr().setTarget(s);
+        }
+    }
+
+    public boolean isWingman(int i)
+    {
+        if(i < 0)
+            return false;
+        com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[i].FM;
+        if((airc[i].aircIndex() & 1) != 0 && !maneuver.aggressiveWingman)
+        {
+            if(i > 0)
+                maneuver.Leader = airc[i - 1].FM;
+            else
+                return false;
+            if(maneuver.Leader != null && airc[i - 1].aircIndex() == airc[i].aircIndex() - 1 && enemyFighters && com.maddox.il2.engine.Actor.isAlive(airc[i - 1]) && ((com.maddox.il2.ai.air.Maneuver)maneuver.Leader).isOk())
+                return true;
+        }
+        return false;
+    }
+
+    public com.maddox.il2.objects.air.Aircraft chooseTarget(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        com.maddox.il2.objects.air.Aircraft aircraft = null;
+        if(airgroup != null && airgroup.nOfAirc > 0)
+            aircraft = airgroup.airc[com.maddox.il2.ai.World.Rnd().nextInt(0, airgroup.nOfAirc - 1)];
+        if(aircraft != null && (!com.maddox.il2.engine.Actor.isAlive(aircraft) || !aircraft.FM.isCapableOfBMP() || aircraft.FM.isTakenMortalDamage()))
+        {
+            for(int i = 0; i < airgroup.nOfAirc; i++)
+                if(com.maddox.il2.engine.Actor.isAlive(airgroup.airc[i]) && airgroup.airc[i].FM.isCapableOfBMP() && !airgroup.airc[i].FM.isTakenMortalDamage())
+                    aircraft = airgroup.airc[i];
+
+        }
+        return aircraft;
+    }
+
+    public com.maddox.il2.fm.FlightModel setAAttackObject(int i)
+    {
+        if(i > nOfAirc - 1)
+            return null;
+        if(i < 0)
+            return null;
+        com.maddox.il2.objects.air.Aircraft aircraft = null;
+        com.maddox.il2.ai.air.AirGroup airgroup = targetGroup;
+        if(airgroup == null || airgroup.nOfAirc == 0)
+            airgroup = chooseTargetGroup();
+        aircraft = chooseTarget(airgroup);
+        if(aircraft != null)
+        {
+            aTargWasFound = true;
+            aTargDestroyed = false;
+        }
+        if(aircraft == null && aTargWasFound)
+        {
+            aTargDestroyed = true;
+            aTargWasFound = false;
+        }
+        if(aircraft != null)
+            return aircraft.FM;
+        else
+            return null;
+    }
+
+    public void setTaskAndManeuver(int i)
+    {
+        if(i > nOfAirc - 1)
+            return;
+        if(i < 0)
+            return;
+        com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[i].FM;
+label0:
+        switch(grTask)
+        {
+        case 1: // '\001'
+            Object obj2 = null;
+            Object obj = null;
+            java.lang.Object obj4 = null;
+            tmpV.set(0.0D, 0.0D, 0.0D);
+            for(int j = 0; j < nOfAirc; j++)
+            {
+                com.maddox.il2.ai.air.Maneuver maneuver3 = (com.maddox.il2.ai.air.Maneuver)airc[j].FM;
+                if(airc[j] instanceof com.maddox.il2.objects.air.TypeGlider)
+                {
+                    maneuver3.accurate_set_FOLLOW();
+                    continue;
+                }
+                tmpV.add(maneuver3.Offset);
+                if(maneuver3.isBusy() && (!(maneuver3 instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)maneuver3).isRealMode() || !maneuver3.isOk()))
+                    continue;
+                maneuver3.Leader = null;
+                if(leaderGroup == null || leaderGroup.nOfAirc == 0)
+                    maneuver3.accurate_set_task_maneuver(3, 21);
+                else
+                if(((com.maddox.il2.ai.air.Maneuver)leaderGroup.airc[0].FM).isBusy())
+                {
+                    maneuver3.accurate_set_task_maneuver(3, 21);
+                } else
+                {
+                    maneuver3.accurate_set_FOLLOW();
+                    maneuver3.followOffset.set(tmpV);
+                    maneuver3.Leader = leaderGroup.airc[0].FM;
+                }
+                tmpV.set(0.0D, 0.0D, 0.0D);
+                for(int k = j + 1; k < nOfAirc; k++)
+                {
+                    com.maddox.il2.ai.air.Maneuver maneuver1 = (com.maddox.il2.ai.air.Maneuver)airc[k].FM;
+                    tmpV.add(maneuver1.Offset);
+                    if(!maneuver1.isBusy())
+                    {
+                        maneuver1.accurate_set_FOLLOW();
+                        if(airc[k] instanceof com.maddox.il2.objects.air.TypeGlider)
+                            continue;
+                        if(obj4 == null)
+                        {
+                            maneuver1.followOffset.set(tmpV);
+                            maneuver1.Leader = maneuver3;
+                        } else
+                        {
+                            maneuver1.followOffset.set(maneuver1.Offset);
+                            maneuver1.Leader = ((com.maddox.il2.fm.FlightModel) (obj4));
+                        }
+                    }
+                    if(maneuver1 instanceof com.maddox.il2.fm.RealFlightModel)
+                    {
+                        if((airc[k].aircIndex() & 1) == 0)
+                            obj4 = maneuver1;
+                    } else
+                    {
+                        obj4 = null;
+                    }
+                }
+
+                break;
+            }
+
+            break;
+
+        case 4: // '\004'
+            if(maneuver.isBusy())
+                break;
+            if(maneuver.target_ground == null || !com.maddox.il2.engine.Actor.isAlive(maneuver.target_ground) || maneuver.Loc.distance(maneuver.target_ground.pos.getAbsPoint()) > 3000D)
+                maneuver.target_ground = setGAttackObject(i);
+            if(maneuver.target_ground == null)
+            {
+                if(waitGroup(i) || i != 0)
+                    break;
+                if(maneuver.AP.way.curr().Action == 3)
+                    maneuver.AP.way.next();
+                setGroupTask(1);
+                break;
+            }
+            if(airc[i] instanceof com.maddox.il2.objects.air.TypeDockable)
+            {
+                if(airc[i] instanceof com.maddox.il2.objects.air.I_16TYPE24DRONE)
+                    ((com.maddox.il2.objects.air.I_16TYPE24DRONE)airc[i]).typeDockableAttemptDetach();
+                if(airc[i] instanceof com.maddox.il2.objects.air.MXY_7)
+                    ((com.maddox.il2.objects.air.MXY_7)airc[i]).typeDockableAttemptDetach();
+                if(airc[i] instanceof com.maddox.il2.objects.air.G4M2E)
+                    ((com.maddox.il2.objects.air.G4M2E)airc[i]).typeDockableAttemptDetach();
+                if(airc[i] instanceof com.maddox.il2.objects.air.TB_3_4M_34R_SPB)
+                    ((com.maddox.il2.objects.air.TB_3_4M_34R_SPB)airc[i]).typeDockableAttemptDetach();
+            }
+            if(maneuver.AP.way.Cur() == maneuver.AP.way.size() - 1 && maneuver.AP.way.curr().Action == 3 || (airc[i] instanceof com.maddox.il2.objects.air.MXY_7))
+            {
+                maneuver.kamikaze = true;
+                maneuver.set_task(7);
+                maneuver.clear_stack();
+                maneuver.set_maneuver(46);
+                break;
+            }
+            boolean flag = true;
+            if(maneuver.hasRockets())
+                flag = false;
+            if(maneuver.CT.Weapons[0] != null && maneuver.CT.Weapons[0][0] != null && maneuver.CT.Weapons[0][0].bulletMassa() > 0.05F && maneuver.CT.Weapons[0][0].countBullets() > 0)
+                flag = false;
+            if(flag && maneuver.CT.getWeaponMass() < 7F || maneuver.CT.getWeaponMass() < 1.0F)
+            {
+                com.maddox.il2.objects.sounds.Voice.speakEndOfAmmo(airc[i]);
+                if(waitGroup(i) || i != 0)
+                    break;
+                if(maneuver.AP.way.curr().Action == 3)
+                    maneuver.AP.way.next();
+                setGroupTask(1);
+                break;
+            }
+            if((maneuver.target_ground instanceof com.maddox.il2.ai.ground.Prey) && (((com.maddox.il2.ai.ground.Prey)maneuver.target_ground).HitbyMask() & 1) == 0)
+            {
+                float f = 0.0F;
+                for(int l = 0; l < 4; l++)
+                    if(maneuver.CT.Weapons[l] != null)
+                    {
+                        for(int l1 = 0; l1 < maneuver.CT.Weapons[l].length; l1++)
+                            if(maneuver.CT.Weapons[l][l1] != null && maneuver.CT.Weapons[l][l1].countBullets() != 0 && maneuver.CT.Weapons[l][l1].bulletMassa() > f)
+                                f = maneuver.CT.Weapons[l][l1].bulletMassa();
+
+                    }
+
+                if(f < 0.08F || (maneuver.target_ground instanceof com.maddox.il2.ai.ground.TgtShip) && f < 0.55F)
+                {
+                    maneuver.AP.way.next();
+                    maneuver.set_task(1);
+                    maneuver.clear_stack();
+                    maneuver.set_maneuver(21);
+                    maneuver.target_ground = null;
+                    break;
+                }
+            }
+            if(maneuver.CT.Weapons[3] != null && maneuver.CT.Weapons[3][0] != null && maneuver.CT.Weapons[3][0].countBullets() != 0)
+            {
+                if(maneuver.CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.TorpedoGun)
+                {
+                    if(maneuver.target_ground instanceof com.maddox.il2.ai.ground.TgtShip)
+                    {
+                        maneuver.set_task(7);
+                        maneuver.clear_stack();
+                        maneuver.set_maneuver(51);
+                    } else
+                    {
+                        maneuver.set_task(7);
+                        maneuver.clear_stack();
+                        maneuver.set_maneuver(43);
+                    }
+                    break;
+                }
+                if(maneuver.CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.BombGunPara)
+                {
+                    w.curr().setTarget(null);
+                    maneuver.target_ground = null;
+                    grTask = 1;
+                    setTaskAndManeuver(i);
+                    break;
+                }
+                if(maneuver.CT.Weapons[3][0].bulletMassa() < 10F && !(maneuver.CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.BombGunParafrag8))
+                {
+                    maneuver.set_task(7);
+                    maneuver.clear_stack();
+                    maneuver.set_maneuver(52);
+                    break;
+                }
+                if((airc[i] instanceof com.maddox.il2.objects.air.TypeDiveBomber) && maneuver.Alt > 1200F)
+                {
+                    maneuver.set_task(7);
+                    maneuver.clear_stack();
+                    maneuver.set_maneuver(50);
+                } else
+                {
+                    maneuver.set_task(7);
+                    maneuver.clear_stack();
+                    maneuver.set_maneuver(43);
+                }
+                break;
+            }
+            if((maneuver.target_ground instanceof com.maddox.il2.objects.bridges.BridgeSegment) && !maneuver.hasRockets())
+            {
+                maneuver.set_task(1);
+                maneuver.clear_stack();
+                maneuver.set_maneuver(59);
+                maneuver.target_ground = null;
+                break;
+            }
+            if((airc[i] instanceof com.maddox.il2.objects.air.F4U) && maneuver.CT.Weapons[2] != null && (double)maneuver.CT.Weapons[2][0].bulletMassa() > 100D && maneuver.CT.Weapons[2][0].countBullets() > 0)
+            {
+                maneuver.set_task(7);
+                maneuver.clear_stack();
+                maneuver.set_maneuver(47);
+                break;
+            }
+            if((airc[i] instanceof com.maddox.il2.objects.air.TypeFighter) || (airc[i] instanceof com.maddox.il2.objects.air.TypeStormovik))
+            {
+                maneuver.set_task(7);
+                maneuver.clear_stack();
+                maneuver.set_maneuver(43);
+            } else
+            {
+                w.curr().setTarget(null);
+                maneuver.target_ground = null;
+                grTask = 1;
+                setTaskAndManeuver(i);
+                grTask = 4;
+            }
+            break;
+
+        case 3: // '\003'
+            if(maneuver.isBusy())
+                break;
+            if(!(maneuver instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)maneuver).isRealMode())
+            {
+                maneuver.bombsOut = true;
+                maneuver.CT.dropFuelTanks();
+            }
+            if(isWingman(i))
+            {
+                maneuver.airClient = maneuver.Leader;
+                maneuver.followOffset.set(200D, 0.0D, 20D);
+                maneuver.set_task(5);
+                maneuver.clear_stack();
+                maneuver.set_maneuver(65);
+                break;
+            }
+            maneuver.airClient = null;
+            boolean flag1 = true;
+            if(inCorridor(maneuver.Loc))
+                flag1 = false;
+            if(flag1)
+            {
+                int i1 = w.Cur();
+                w.next();
+                if(inCorridor(maneuver.Loc))
+                    flag1 = false;
+                w.setCur(i1);
+                if(flag1)
+                {
+                    int j1 = w.Cur();
+                    w.prev();
+                    if(inCorridor(maneuver.Loc))
+                        flag1 = false;
+                    w.setCur(j1);
+                }
+            }
+            if(flag1)
+            {
+                maneuver.set_task(3);
+                maneuver.clear_stack();
+                maneuver.set_maneuver(21);
+                break;
+            }
+            if(maneuver.target == null || !((com.maddox.il2.ai.air.Maneuver)maneuver.target).isOk() || maneuver.Loc.distance(maneuver.target.Loc) > 4000D)
+                maneuver.target = setAAttackObject(i);
+            if(maneuver.target == null || !maneuver.hasCourseWeaponBullets())
+            {
+                if(!waitGroup(i) && i == 0)
+                    setGroupTask(1);
+                break;
+            }
+            maneuver.set_task(6);
+            if(maneuver.target.actor instanceof com.maddox.il2.objects.air.TypeFighter)
+            {
+                if((maneuver.actor instanceof com.maddox.il2.objects.air.TypeBNZFighter) || maneuver.VmaxH > maneuver.target.VmaxH + 30F || (maneuver.target.actor instanceof com.maddox.il2.objects.air.TypeTNBFighter) && !(maneuver.actor instanceof com.maddox.il2.objects.air.TypeTNBFighter))
+                {
+                    maneuver.clear_stack();
+                    maneuver.set_maneuver(62);
+                } else
+                {
+                    maneuver.clear_stack();
+                    maneuver.set_maneuver(27);
+                }
+                break;
+            }
+            if(maneuver.target.actor instanceof com.maddox.il2.objects.air.TypeStormovik)
+                ((com.maddox.il2.ai.air.Pilot)maneuver).attackStormoviks();
+            else
+                ((com.maddox.il2.ai.air.Pilot)maneuver).attackBombers();
+            break;
+
+        case 2: // '\002'
+            Object obj3 = null;
+            Object obj1 = null;
+            java.lang.Object obj5 = null;
+            tmpV.set(0.0D, 0.0D, 0.0D);
+            for(int k1 = 0; k1 < nOfAirc; k1++)
+            {
+                com.maddox.il2.ai.air.Maneuver maneuver4 = (com.maddox.il2.ai.air.Maneuver)airc[k1].FM;
+                tmpV.add(maneuver4.Offset);
+                if(!maneuver4.isBusy() || k1 == nOfAirc - 1 || (maneuver4 instanceof com.maddox.il2.fm.RealFlightModel) && ((com.maddox.il2.fm.RealFlightModel)maneuver4).isRealMode())
+                {
+                    maneuver4.Leader = null;
+                    if(clientGroup != null && clientGroup.nOfAirc > 0 && clientGroup.airc[0] != null)
+                    {
+                        maneuver4.airClient = clientGroup.airc[0].FM;
+                        maneuver4.accurate_set_task_maneuver(5, 59);
+                    } else
+                    {
+                        maneuver4.accurate_set_task_maneuver(3, 21);
+                    }
+                    tmpV.set(0.0D, 0.0D, 0.0D);
+                    for(int i2 = k1 + 1; i2 < nOfAirc; i2++)
+                    {
+                        com.maddox.il2.ai.air.Maneuver maneuver2 = (com.maddox.il2.ai.air.Maneuver)airc[i2].FM;
+                        tmpV.add(maneuver2.Offset);
+                        if(!maneuver2.isBusy())
+                        {
+                            maneuver2.accurate_set_FOLLOW();
+                            if(obj5 == null)
+                            {
+                                maneuver2.followOffset.set(tmpV);
+                                maneuver2.Leader = maneuver4;
+                            } else
+                            {
+                                maneuver2.followOffset.set(maneuver2.Offset);
+                                maneuver2.Leader = ((com.maddox.il2.fm.FlightModel) (obj5));
+                            }
+                        }
+                        if(maneuver2 instanceof com.maddox.il2.fm.RealFlightModel)
+                        {
+                            if((airc[i2].aircIndex() & 1) == 0)
+                                obj5 = maneuver2;
+                        } else
+                        {
+                            obj5 = null;
+                        }
+                    }
+
+                    break label0;
+                }
+            }
+
+            break;
+
+        case 5: // '\005'
+            if(maneuver.isBusy())
+                return;
+            break;
+
+        case 6: // '\006'
+            if(maneuver.isBusy())
+                return;
+            break;
+
+        default:
+            if(maneuver.isBusy())
+                return;
+            maneuver.set_maneuver(21);
+            break;
+        }
+    }
+
+    public void update()
+    {
+        if(nOfAirc == 0 || airc[0] == null)
+            return;
+        for(int i = 1; i < nOfAirc; i++)
+            if(!com.maddox.il2.engine.Actor.isAlive(airc[i]))
+            {
+                delAircraft(airc[i]);
+                i--;
+            }
+
+        com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)airc[0].FM;
+        if(leaderGroup != null)
+            if(leaderGroup.nOfAirc == 0)
+                detachGroup(leaderGroup);
+            else
+            if(leaderGroup.airc[0] == null)
+                detachGroup(leaderGroup);
+            else
+            if(leaderGroup.airc[0].FM.AP.way.isLanding())
+            {
+                detachGroup(leaderGroup);
+            } else
+            {
+                maneuver.AP.way.setCur(leaderGroup.w.Cur());
+                if(maneuver.get_maneuver() == 21 && !((com.maddox.il2.ai.air.Maneuver)leaderGroup.airc[0].FM).isBusy())
+                    setTaskAndManeuver(0);
+            }
+        if(w == null)
+            w = new Way(maneuver.AP.way);
+        if(!maneuver.AP.way.isLanding() && maneuver.isOk())
+            w.setCur(maneuver.AP.way.Cur());
+        if(!maneuver.AP.way.isLanding())
+        {
+            for(int j = 1; j < nOfAirc; j++)
+                if(!((com.maddox.il2.ai.air.Maneuver)airc[j].FM).AP.way.isLanding() && !((com.maddox.il2.ai.air.Maneuver)airc[j].FM).isBusy())
+                    ((com.maddox.il2.ai.air.Maneuver)airc[j].FM).AP.way.setCur(w.Cur());
+
+        }
+        if(maneuver.AP.way.curr().isRadioSilence())
+        {
+            for(int k = 0; k < nOfAirc; k++)
+                ((com.maddox.il2.ai.air.Maneuver)airc[k].FM).silence = true;
+
+        } else
+        {
+            for(int l = 0; l < nOfAirc; l++)
+                ((com.maddox.il2.ai.air.Maneuver)airc[l].FM).silence = false;
+
+        }
+        Pos.set(maneuver.Loc);
+        if(formationType == -1)
+            setFormationAndScale((byte)0, 1.0F, true);
+        if(timeOutForTaskSwitch == 0)
+            switch(w.curr().Action)
+            {
+            case 3: // '\003'
+                boolean flag = w.curr().getTarget() != null || (airc[0] instanceof com.maddox.il2.objects.air.TypeFighter) || (airc[0] instanceof com.maddox.il2.objects.air.TypeStormovik) || (airc[0] instanceof com.maddox.il2.objects.air.D3A) || (airc[0] instanceof com.maddox.il2.objects.air.MXY_7) || (airc[0] instanceof com.maddox.il2.objects.air.JU_87);
+                if(grTask == 4)
+                {
+                    WeWereInGAttack = true;
+                    boolean flag1 = somebodyGAttacks();
+                    boolean flag6 = false;
+                    for(int l2 = 0; l2 < nOfAirc; l2++)
+                    {
+                        com.maddox.il2.ai.air.Maneuver maneuver3 = (com.maddox.il2.ai.air.Maneuver)airc[l2].FM;
+                        if(maneuver3.gattackCounter >= 7)
+                            flag6 = true;
+                    }
+
+                    if(!flag1 || flag6 || gTargDestroyed)
+                    {
+                        airc[0].FM.AP.way.next();
+                        w.next();
+                        setGroupTask(1);
+                        for(int l3 = 1; l3 < nOfAirc; l3++)
+                        {
+                            com.maddox.il2.ai.air.Maneuver maneuver5 = (com.maddox.il2.ai.air.Maneuver)airc[l3].FM;
+                            maneuver5.push(57);
+                            maneuver5.pop();
+                        }
+
+                        setFormationAndScale((byte)0, 1.0F, true);
+                        if(flag6)
+                        {
+                            for(int k4 = 0; k4 < nOfAirc; k4++)
+                                ((com.maddox.il2.ai.air.Maneuver)airc[k4].FM).gattackCounter = 0;
+
+                        }
+                    }
+                } else
+                if(grTask == 3)
+                {
+                    switchWayPoint();
+                    WeWereInGAttack = true;
+                    if(com.maddox.il2.ai.air.AirGroupList.length(enemies[0]) != oldEnemyNum)
+                        setGroupTask(3);
+                    boolean flag2 = somebodyAttacks();
+                    if(!flag2 || aTargDestroyed)
+                    {
+                        setGroupTask(1);
+                        if(!flag2)
+                            timeOutForTaskSwitch = 90;
+                        for(int i2 = 1; i2 < nOfAirc; i2++)
+                        {
+                            com.maddox.il2.ai.air.Maneuver maneuver1 = (com.maddox.il2.ai.air.Maneuver)airc[i2].FM;
+                            if(!maneuver1.isBusy())
+                            {
+                                maneuver1.push(57);
+                                maneuver1.pop();
+                            }
+                        }
+
+                    }
+                }
+                if(grTask != 1 || w.curr().Action != 3)
+                    break;
+                gTargWasFound = false;
+                gTargDestroyed = false;
+                gTargMode = 0;
+                if(!flag)
+                    break;
+                setFormationAndScale((byte)5, 8F, true);
+                if(maneuver.AP.getWayPointDistance() >= 5000F)
+                    break;
+                boolean flag3 = false;
+                if(w.curr().getTarget() != null)
+                {
+                    setGTargMode(w.curr().getTarget());
+                    if(gTargMode != 0)
+                    {
+                        maneuver.target_ground = setGAttackObject(0);
+                        if(maneuver.target_ground != null && maneuver.target_ground.distance(airc[0]) < 12000D)
+                        {
+                            setGroupTask(4);
+                            com.maddox.il2.objects.sounds.Voice.speakBeginGattack(airc[0]);
+                        } else
+                        if(maneuver.AP.getWayPointDistance() < 1500F)
+                            flag3 = true;
+                    } else
+                    {
+                        flag3 = true;
+                    }
+                } else
+                {
+                    flag3 = true;
+                }
+                if(!flag3)
+                    break;
+                com.maddox.il2.engine.Engine.land();
+                tmpP3d.set(w.curr().x(), w.curr().y(), com.maddox.il2.engine.Landscape.HQ(w.curr().x(), w.curr().y()));
+                setGTargMode(tmpP3d, 800F);
+                maneuver.target_ground = setGAttackObject(0);
+                if(maneuver.target_ground != null)
+                {
+                    setGroupTask(4);
+                    com.maddox.il2.objects.sounds.Voice.speakBeginGattack(airc[0]);
+                }
+                break;
+
+            case 0: // '\0'
+            case 2: // '\002'
+                if(grTask == 2)
+                {
+                    if(enemyFighters)
+                    {
+                        int i1 = com.maddox.il2.ai.air.AirGroupList.length(enemies[0]);
+                        for(int j2 = 0; j2 < i1; j2++)
+                        {
+                            com.maddox.il2.ai.air.AirGroup airgroup = com.maddox.il2.ai.air.AirGroupList.getGroup(enemies[0], j2);
+                            if(airgroup.nOfAirc <= 0 || !(airgroup.airc[0] instanceof com.maddox.il2.objects.air.TypeFighter))
+                                continue;
+                            targetGroup = airgroup;
+                            setGroupTask(3);
+                            break;
+                        }
+
+                    }
+                    if(w.Cur() >= w.size() - 1)
+                    {
+                        setGroupTask(1);
+                        setFormationAndScale((byte)0, 1.0F, true);
+                    }
+                    if(clientGroup == null || clientGroup.nOfAirc == 0 || clientGroup.w.Cur() >= clientGroup.w.size() - 1 || clientGroup.airc[0].FM.AP.way.isLanding())
+                    {
+                        maneuver.AP.way.next();
+                        w.setCur(maneuver.AP.way.Cur());
+                        for(int j1 = 1; j1 < nOfAirc; j1++)
+                            ((com.maddox.il2.ai.air.Maneuver)airc[j1].FM).AP.way.setCur(w.Cur());
+
+                        setGroupTask(1);
+                        setFormationAndScale((byte)0, 1.0F, true);
+                    }
+                    switchWayPoint();
+                    break;
+                }
+                if(grTask == 3)
+                {
+                    switchWayPoint();
+                    WeWereInGAttack = true;
+                    if(com.maddox.il2.ai.air.AirGroupList.length(enemies[0]) != oldEnemyNum)
+                        setGroupTask(3);
+                    boolean flag4 = somebodyAttacks();
+                    if(flag4 && !aTargDestroyed)
+                        break;
+                    setGroupTask(1);
+                    setFormationAndScale((byte)0, 1.0F, false);
+                    if(!flag4)
+                        timeOutForTaskSwitch = 90;
+                    for(int k2 = 1; k2 < nOfAirc; k2++)
+                    {
+                        com.maddox.il2.ai.air.Maneuver maneuver2 = (com.maddox.il2.ai.air.Maneuver)airc[k2].FM;
+                        if(!maneuver2.isBusy())
+                        {
+                            maneuver2.push(57);
+                            maneuver2.pop();
+                        }
+                    }
+
+                    break;
+                }
+                if(grTask == 4)
+                {
+                    WeWereInGAttack = true;
+                    boolean flag5 = somebodyGAttacks();
+                    boolean flag7 = false;
+                    for(int i3 = 0; i3 < nOfAirc; i3++)
+                    {
+                        com.maddox.il2.ai.air.Maneuver maneuver4 = (com.maddox.il2.ai.air.Maneuver)airc[i3].FM;
+                        if(maneuver4.gattackCounter >= 7)
+                            flag7 = true;
+                    }
+
+                    if(flag5 && !flag7 && !gTargDestroyed)
+                        break;
+                    setGroupTask(1);
+                    setFormationAndScale((byte)0, 1.0F, true);
+                    for(int i4 = 1; i4 < nOfAirc; i4++)
+                    {
+                        com.maddox.il2.ai.air.Maneuver maneuver6 = (com.maddox.il2.ai.air.Maneuver)airc[i4].FM;
+                        maneuver6.push(57);
+                        maneuver6.pop();
+                    }
+
+                    if(!flag7)
+                        break;
+                    for(int l4 = 0; l4 < nOfAirc; l4++)
+                        ((com.maddox.il2.ai.air.Maneuver)airc[l4].FM).gattackCounter = 0;
+
+                    break;
+                }
+                if(grTask != 1)
+                    break;
+                if(WeWereInGAttack || gTargMode != 0)
+                {
+                    WeWereInGAttack = false;
+                    gTargMode = 0;
+                    setFormationAndScale((byte)0, 1.0F, false);
+                    ((com.maddox.il2.ai.air.Maneuver)airc[0].FM).WeWereInGAttack = true;
+                }
+                if(WeWereInAttack)
+                {
+                    WeWereInAttack = false;
+                    setFormationAndScale((byte)0, 1.0F, false);
+                    ((com.maddox.il2.ai.air.Maneuver)airc[0].FM).WeWereInAttack = true;
+                }
+                if(w.Cur() > 0 && grAttached == 0 && oldFType == 0)
+                {
+                    w.curr().getP(tmpP);
+                    tmpV.sub(tmpP, Pos);
+                    if(tmpV.lengthSquared() < 4000000D)
+                        setFormationAndScale((byte)0, 2.5F, true);
+                    else
+                        setFormationAndScale((byte)0, 1.0F, true);
+                }
+                int k1 = w.Cur();
+                w.next();
+                if(w.curr().Action == 2 || w.curr().Action == 3 && (w.curr().getTarget() != null && !(airc[0] instanceof com.maddox.il2.objects.air.Scheme4) || (airc[0] instanceof com.maddox.il2.objects.air.TypeStormovik) || (airc[0] instanceof com.maddox.il2.objects.air.JU_87)))
+                {
+                    w.curr().getP(tmpP);
+                    tmpV.sub(tmpP, Pos);
+                    float f = (float)tmpV.length();
+                    if(f < 20000F)
+                        setFormationAndScale((byte)5, 8F, true);
+                }
+                w.setCur(k1);
+                if(w.curr().getTarget() != null)
+                {
+                    com.maddox.il2.engine.Actor actor = w.curr().getTargetActorRandom();
+                    if(actor != null && (actor instanceof com.maddox.il2.objects.air.Aircraft))
+                    {
+                        tmpV.sub(((com.maddox.il2.objects.air.Aircraft)actor).FM.Loc, Pos);
+                        if(tmpV.lengthSquared() < 144000000D)
+                            if(actor.getArmy() == airc[0].getArmy())
+                            {
+                                if((airc[0] instanceof com.maddox.il2.objects.air.TypeFighter) && !maneuver.hasBombs() && !maneuver.hasRockets())
+                                {
+                                    if(w.Cur() < w.size() - 2)
+                                    {
+                                        clientGroup = ((com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor).FM).Group;
+                                        setGroupTask(2);
+                                        setFormationAndScale((byte)0, 2.5F, true);
+                                    }
+                                } else
+                                {
+                                    attachGroup(((com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor).FM).Group);
+                                }
+                            } else
+                            if((airc[0] instanceof com.maddox.il2.objects.air.TypeFighter) || (airc[0] instanceof com.maddox.il2.objects.air.TypeStormovik))
+                            {
+                                targetGroup = ((com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor).FM).Group;
+                                setGroupTask(3);
+                            }
+                    }
+                } else
+                if(com.maddox.il2.ai.air.AirGroupList.length(enemies[0]) > 0)
+                {
+                    boolean flag8 = false;
+                    if(airc[0] instanceof com.maddox.il2.objects.air.TypeStormovik)
+                    {
+                        int j3 = com.maddox.il2.ai.air.AirGroupList.length(enemies[0]);
+                        for(int j4 = 0; j4 < j3; j4++)
+                        {
+                            com.maddox.il2.ai.air.AirGroup airgroup1 = com.maddox.il2.ai.air.AirGroupList.getGroup(enemies[0], j4);
+                            if(airgroup1 == null || airgroup1.nOfAirc == 0 || (airgroup1.airc[0] instanceof com.maddox.il2.objects.air.TypeFighter))
+                                continue;
+                            flag8 = true;
+                            targetGroup = airgroup1;
+                            break;
+                        }
+
+                        if(flag8)
+                        {
+                            if(maneuver.hasBombs())
+                                flag8 = false;
+                            int l1 = w.Cur();
+                            for(; flag8 && w.Cur() < w.size() - 1; w.next())
+                                if(w.curr().Action == 3)
+                                    flag8 = false;
+
+                            w.setCur(l1);
+                        }
+                    }
+                    if(!flag8 && (airc[0] instanceof com.maddox.il2.objects.air.TypeFighter))
+                    {
+                        for(int k3 = 0; k3 < nOfAirc; k3++)
+                            if(((com.maddox.il2.ai.air.Maneuver)airc[k3].FM).canAttack())
+                                flag8 = true;
+
+                        if(flag8 && maneuver.CT.getWeaponMass() > 220F)
+                            flag8 = false;
+                    }
+                    if(flag8)
+                        setGroupTask(3);
+                }
+                if(rejoinGroup != null)
+                    rejoinToGroup(rejoinGroup);
+                break;
+
+            case 1: // '\001'
+            default:
+                grTask = 1;
+                break;
+            }
+        oldEnemyNum = com.maddox.il2.ai.air.AirGroupList.length(enemies[0]);
+        if(timeOutForTaskSwitch > 0)
+            timeOutForTaskSwitch--;
+    }
+
+    public int nOfAirc;
+    public com.maddox.il2.objects.air.Aircraft airc[];
+    public com.maddox.il2.ai.Squadron sq;
+    public com.maddox.il2.ai.Way w;
+    public com.maddox.JGP.Vector3d Pos;
+    public com.maddox.il2.ai.air.AirGroupList enemies[];
+    public com.maddox.il2.ai.air.AirGroupList friends[];
+    public com.maddox.il2.ai.air.AirGroup clientGroup;
+    public com.maddox.il2.ai.air.AirGroup targetGroup;
+    public com.maddox.il2.ai.air.AirGroup leaderGroup;
+    public com.maddox.il2.ai.air.AirGroup rejoinGroup;
+    public int grAttached;
+    public int gTargetPreference;
+    public int aTargetPreference;
+    public boolean enemyFighters;
+    private boolean gTargWasFound;
+    private boolean gTargDestroyed;
+    private int gTargMode;
+    private com.maddox.il2.engine.Actor gTargActor;
+    private com.maddox.JGP.Point3d gTargPoint;
+    private float gTargRadius;
+    private boolean aTargWasFound;
+    private boolean aTargDestroyed;
+    private boolean WeWereInGAttack;
+    private boolean WeWereInAttack;
+    public byte formationType;
+    private byte oldFType;
+    private float oldFScale;
+    private boolean oldFInterp;
+    public boolean fInterpolation;
+    private int oldEnemyNum;
+    public int timeOutForTaskSwitch;
+    public int grTask;
+    public static final int FLY_WAYPOINT = 1;
+    public static final int DEFENDING = 2;
+    public static final int ATTACK_AIR = 3;
+    public static final int ATTACK_GROUND = 4;
+    public static final int TAKEOFF = 5;
+    public static final int LANDING = 6;
+    public static final int GT_MODE_NONE = 0;
+    public static final int GT_MODE_CHIEF = 1;
+    public static final int GT_MODE_AROUND_POINT = 2;
+    private static java.lang.String GTList[] = {
+        "NO_TASK.", "FLY_WAYPOINT", "DEFENDING", "ATTACK_AIR", "ATTACK_GROUND", "TAKEOFF", "LANDING"
+    };
+    private static com.maddox.JGP.Vector3d tmpV = new Vector3d();
+    private static com.maddox.JGP.Vector3d tmpV1 = new Vector3d();
+    private static com.maddox.JGP.Vector3d tmpV3d = new Vector3d();
+    private static com.maddox.JGP.Point3d tmpP = new Point3d();
+    private static com.maddox.JGP.Point3d tmpP3d = new Point3d();
+    private static com.maddox.JGP.Vector2d P1P2vector = new Vector2d();
+    private static com.maddox.JGP.Vector2d norm1 = new Vector2d();
+    private static com.maddox.JGP.Vector2d norm2 = new Vector2d();
+    private static com.maddox.JGP.Vector2d myPoint = new Vector2d();
+    private static com.maddox.JGP.Vector3f tmpVf = new Vector3f();
+
 }

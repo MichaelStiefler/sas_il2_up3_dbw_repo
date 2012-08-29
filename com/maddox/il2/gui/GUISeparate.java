@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUISeparate.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
@@ -6,51 +11,58 @@ import com.maddox.gwindow.GTexRegion;
 import com.maddox.gwindow.GWindow;
 import com.maddox.il2.engine.Config;
 
-public class GUISeparate extends GWindow
+public class GUISeparate extends com.maddox.gwindow.GWindow
 {
-  static GTexRegion tex;
-  public GColor color;
 
-  private static void init()
-  {
-    if (Config.isUSE_RENDER()) {
-      if (tex != null)
-        return;
-      tex = new GTexRegion("GUI/game/basicelements.mat", 0.0F, 0.0F, 1.0F, 1.0F);
+    private static void init()
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(tex != null)
+                return;
+            tex = new GTexRegion("GUI/game/basicelements.mat", 0.0F, 0.0F, 1.0F, 1.0F);
+        }
     }
-  }
 
-  public static void draw(GWindow paramGWindow, GColor paramGColor, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    init();
-    paramGWindow.setCanvasColor(paramGColor.color);
-    paramGWindow.draw(paramFloat1, paramFloat2, paramFloat3, paramFloat4, tex);
-  }
-  public static void draw(GWindow paramGWindow, int paramInt, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4) {
-    init();
-    paramGWindow.setCanvasColor(paramInt);
-    paramGWindow.draw(paramFloat1, paramFloat2, paramFloat3, paramFloat4, tex);
-  }
+    public static void draw(com.maddox.gwindow.GWindow gwindow, com.maddox.gwindow.GColor gcolor, float f, float f1, float f2, float f3)
+    {
+        com.maddox.il2.gui.GUISeparate.init();
+        gwindow.setCanvasColor(gcolor.color);
+        gwindow.draw(f, f1, f2, f3, tex);
+    }
 
-  public void render()
-  {
-    setCanvasColor(this.color.color);
-    draw(0.0F, 0.0F, this.win.dx, this.win.dy, tex);
-  }
+    public static void draw(com.maddox.gwindow.GWindow gwindow, int i, float f, float f1, float f2, float f3)
+    {
+        com.maddox.il2.gui.GUISeparate.init();
+        gwindow.setCanvasColor(i);
+        gwindow.draw(f, f1, f2, f3, tex);
+    }
 
-  public boolean isMousePassThrough(float paramFloat1, float paramFloat2)
-  {
-    return true;
-  }
+    public void render()
+    {
+        setCanvasColor(color.color);
+        draw(0.0F, 0.0F, win.dx, win.dy, tex);
+    }
 
-  public void created() {
-    this.bAlwaysBehind = true;
-    this.bAcceptsKeyFocus = false;
-    this.bTransient = true;
-  }
+    public boolean isMousePassThrough(float f, float f1)
+    {
+        return true;
+    }
 
-  public GUISeparate(GWindow paramGWindow, int paramInt1, int paramInt2, int paramInt3) {
-    init();
-    this.color = new GColor(paramInt1, paramInt2, paramInt3);
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+    public void created()
+    {
+        bAlwaysBehind = true;
+        bAcceptsKeyFocus = false;
+        bTransient = true;
+    }
+
+    public GUISeparate(com.maddox.gwindow.GWindow gwindow, int i, int j, int k)
+    {
+        com.maddox.il2.gui.GUISeparate.init();
+        color = new GColor(i, j, k);
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
+
+    static com.maddox.gwindow.GTexRegion tex;
+    public com.maddox.gwindow.GColor color;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUICampaignStatView.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GWindow;
@@ -11,66 +16,91 @@ import com.maddox.il2.game.campaign.Campaign;
 import com.maddox.rts.RTSConf;
 import java.util.ResourceBundle;
 
-public class GUICampaignStatView extends GUICampaignStat
+// Referenced classes of package com.maddox.il2.gui:
+//            GUICampaignStat, GUIClient, GUIInfoMenu, GUIButton, 
+//            GUIStat
+
+public class GUICampaignStatView extends com.maddox.il2.gui.GUICampaignStat
 {
-  public void _enter()
-  {
-    Scores.enemyAirKill = Main.cur().campaign.enemyAirDestroyed();
-    Scores.friendlyKill = Main.cur().campaign.friendDestroyed();
-    this.completeMissions = Main.cur().campaign.completeMissions();
-    Scores.arrayEnemyGroundKill = Main.cur().campaign.enemyGroundDestroyed();
-    Scores.enemyGroundKill = 0;
-    if (Scores.arrayEnemyGroundKill != null)
-      Scores.enemyGroundKill = Scores.arrayEnemyGroundKill.length;
-    Scores.score = Main.cur().campaign.score();
-    this.awards = Main.cur().campaign.awards(Scores.score);
 
-    if (this.awards == 0) this.bViewAward.hideWindow(); else {
-      this.bViewAward.showWindow();
+    public void _enter()
+    {
+        com.maddox.il2.ai.Scores.enemyAirKill = com.maddox.il2.game.Main.cur().campaign.enemyAirDestroyed();
+        com.maddox.il2.ai.Scores.friendlyKill = com.maddox.il2.game.Main.cur().campaign.friendDestroyed();
+        completeMissions = com.maddox.il2.game.Main.cur().campaign.completeMissions();
+        com.maddox.il2.ai.Scores.arrayEnemyGroundKill = com.maddox.il2.game.Main.cur().campaign.enemyGroundDestroyed();
+        com.maddox.il2.ai.Scores.enemyGroundKill = 0;
+        if(com.maddox.il2.ai.Scores.arrayEnemyGroundKill != null)
+            com.maddox.il2.ai.Scores.enemyGroundKill = com.maddox.il2.ai.Scores.arrayEnemyGroundKill.length;
+        com.maddox.il2.ai.Scores.score = com.maddox.il2.game.Main.cur().campaign.score();
+        awards = com.maddox.il2.game.Main.cur().campaign.awards(com.maddox.il2.ai.Scores.score);
+        if(awards == 0)
+            bViewAward.hideWindow();
+        else
+            bViewAward.showWindow();
+        int i = com.maddox.il2.game.Main.cur().campaign.rank();
+        rank = "";
+        try
+        {
+            java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle("missions/campaign/" + com.maddox.il2.game.Main.cur().campaign.branch() + "/" + "rank", com.maddox.rts.RTSConf.cur.locale);
+            rank = resourcebundle.getString("" + i);
+        }
+        catch(java.lang.Exception exception) { }
+        com.maddox.il2.ai.DifficultySettings difficultysettings = new DifficultySettings();
+        difficultysettings.set(com.maddox.il2.game.Main.cur().campaign.difficulty());
+        if(difficultysettings.isRealistic())
+            diff = i18n("campstat.realistic");
+        else
+        if(difficultysettings.isNormal())
+            diff = i18n("campstat.normal");
+        else
+        if(difficultysettings.isEasy())
+            diff = i18n("campstat.easy");
+        else
+            diff = i18n("campstat.custom");
+        iArmy = com.maddox.il2.game.Main.cur().campaign.army() - 1;
+        updateScrollSizes();
+        client.activateWindow();
     }
-    int i = Main.cur().campaign.rank();
-    this.rank = "";
-    try {
-      ResourceBundle localResourceBundle = ResourceBundle.getBundle("missions/campaign/" + Main.cur().campaign.branch() + "/" + "rank", RTSConf.cur.locale);
-      this.rank = localResourceBundle.getString("" + i);
-    } catch (Exception localException) {
+
+    public void leavePop(com.maddox.il2.game.GameState gamestate)
+    {
+        com.maddox.il2.game.Main.cur().campaign = null;
+        _leave();
     }
-    DifficultySettings localDifficultySettings = new DifficultySettings();
-    localDifficultySettings.set(Main.cur().campaign.difficulty());
-    if (localDifficultySettings.isRealistic()) this.diff = i18n("campstat.realistic");
-    else if (localDifficultySettings.isNormal()) this.diff = i18n("campstat.normal");
-    else if (localDifficultySettings.isEasy()) this.diff = i18n("campstat.easy"); else
-      this.diff = i18n("campstat.custom");
-    this.iArmy = (Main.cur().campaign.army() - 1);
-    updateScrollSizes();
-    this.client.activateWindow();
-  }
-  public void leavePop(GameState paramGameState) {
-    Main.cur().campaign = null;
-    _leave();
-  }
-  protected void doRecordSave() {
-  }
-  protected void doRefly() {
-  }
-  protected void doNext() {  }
 
-  protected void doExit() { Main.stateStack().pop(); }
+    protected void doRecordSave()
+    {
+    }
 
-  protected void clientRender2()
-  {
-    GUIStat.DialogClient localDialogClient = this.dialogClient;
+    protected void doRefly()
+    {
+    }
 
-    localDialogClient.draw(localDialogClient.x1024(496.0F), localDialogClient.y1024(656.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 0, i18n("campstat.Back"));
-  }
+    protected void doNext()
+    {
+    }
 
-  public GUICampaignStatView(GWindowRoot paramGWindowRoot) {
-    super(31);
-    init(paramGWindowRoot);
-    this.infoMenu.info = i18n("campstat.info");
-    this.bViewAward = ((GUICampaignStat.WAwardButton)this.dialogClient.addControl(new GUICampaignStat.WAwardButton(this, this.dialogClient)));
-    this.bSave.hideWindow();
-    this.bNext.hideWindow();
-    this.bRefly.hideWindow();
-  }
+    protected void doExit()
+    {
+        com.maddox.il2.game.Main.stateStack().pop();
+    }
+
+    protected void clientRender2()
+    {
+        com.maddox.il2.gui.GUIStat.DialogClient dialogclient = dialogClient;
+        com.maddox.il2.gui.GUIStat.DialogClient _tmp = dialogclient;
+        dialogclient.draw(dialogclient.x1024(496F), dialogclient.y1024(656F), dialogclient.x1024(208F), dialogclient.y1024(48F), 0, i18n("campstat.Back"));
+    }
+
+    public GUICampaignStatView(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(31);
+        init(gwindowroot);
+        infoMenu.info = i18n("campstat.info");
+        bViewAward = (com.maddox.il2.gui.GUICampaignStat.WAwardButton)dialogClient.addControl(new GUICampaignStat.WAwardButton(this, dialogClient));
+        bSave.hideWindow();
+        bNext.hideWindow();
+        bRefly.hideWindow();
+    }
 }

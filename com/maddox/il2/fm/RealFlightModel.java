@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RealFlightModel.java
+
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
@@ -11,6 +16,7 @@ import com.maddox.il2.ai.ScoreCounter;
 import com.maddox.il2.ai.War;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.AirGroup;
+import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
@@ -21,1223 +27,1095 @@ import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.engine.TextScr;
 import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main3D;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.F4U;
-import com.maddox.il2.objects.air.NetAircraft.Mirror;
-import com.maddox.il2.objects.air.TypeBomber;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Time;
-import com.maddox.sound.SoundFX;
 import java.io.PrintStream;
 
-public class RealFlightModel extends Pilot
+// Referenced classes of package com.maddox.il2.fm:
+//            Autopilot, FlightModel, Autopilotage, Gear, 
+//            Controls, Squares, EnginesInterface, Motor, 
+//            Mass, AircraftState, Polares, Atmosphere, 
+//            Wind, FMMath, Arm
+
+public class RealFlightModel extends com.maddox.il2.ai.air.Pilot
 {
-  public boolean RealMode = true;
 
-  public float indSpeed = 0.0F;
-  private static int stallStringID = HUD.makeIdLog();
-  public DifficultySettings Realism;
-  Vector3d Cwl = new Vector3d();
-  Vector3d Cwr = new Vector3d();
-  Vector3d Chl = new Vector3d();
-  Vector3d Chr = new Vector3d();
-  Vector3d Cv = new Vector3d();
-  Vector3d Fwl = new Vector3d();
-  Vector3d Fwr = new Vector3d();
-  Vector3d Fhl = new Vector3d();
-  Vector3d Fhr = new Vector3d();
-  Vector3d Fv = new Vector3d();
-
-  private float superFuel = 10.0F;
-  private long lastDangerTick;
-  public float shakeLevel = 0.0F;
-  public float producedShakeLevel = 0.0F;
-
-  private float lastAcc = 1.0F;
-  private float ailerInfluence = 1.0F;
-  private float rudderInfluence = 1.0F;
-  private float oldTime;
-  private float deep;
-  private float currDeep;
-  private float indiffDnTime = 4.0F;
-  private float knockDnTime = 0.0F;
-  private float indiffUpTime = 4.0F;
-  private float knockUpTime = 0.0F;
-  private final float MAX_DN_OL = 3.5F;
-  private final float MAX_UP_OL = 0.88F;
-  public float saveDeep = 0.0F;
-  private double su26add = 0.0D;
-  private double spinCoeff = 0.0D;
-  private SoundFX structuralFX;
-  private boolean bSound = true;
-  private float rD;
-  public float Current_G_Limit = 8.0F;
-  private int cycleCounter = 0;
-  private float timeCounter = 0.0F;
-  private int gearCutCounter = 0;
-  private boolean bGearCut = false;
-  private float max_G_Cycle = 1.0F;
-  private float maxSpeed = 0.0F;
-  private float hpOld;
-  private int airborneState = 0;
-  private Point3d airborneStartPoint = new Point3d();
-
-  private Point3d TmpP = new Point3d();
-  private Vector3d Vn = new Vector3d();
-  private Vector3d TmpV = new Vector3d();
-  private Vector3d TmpVd = new Vector3d();
-  private Vector3d plAccel = new Vector3d();
-
-  public RealFlightModel(String paramString)
-  {
-    super(paramString);
-    this.AP = new Autopilot(this);
-    this.Realism = World.cur().diffCur;
-
-    this.maxSpeed = this.VmaxAllowed;
-  }
-
-  public Vector3d getW()
-  {
-    return this.RealMode ? this.W : this.Wtrue;
-  }
-
-  private void flutter()
-  {
-    if (this.Realism.Flutter_Effect)
-      ((Aircraft)this.actor).msgCollision(this.actor, "CF_D0", "CF_D0");
-  }
-
-  private void flutterDamage()
-  {
-    if (this.Realism.Flutter_Effect)
+    public RealFlightModel(java.lang.String s)
     {
-      switch (World.Rnd().nextInt(0, 29)) { case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 20:
-        str = "AroneL";
-        break;
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 21:
-        str = "AroneR";
-        break;
-      case 8:
-      case 9:
-      case 10:
-      case 22:
-        str = "VatorL";
-        break;
-      case 11:
-      case 12:
-      case 13:
-      case 23:
-        str = "VatorR";
-        break;
-      case 24:
-      case 25:
-      case 26:
-        str = "Rudder1";
-        break;
-      case 27:
-      case 28:
-      case 29:
-        str = "Rudder2";
-        break;
-      case 14:
-        str = "WingLOut";
-        break;
-      case 15:
-        str = "WingROut";
-        break;
-      case 16:
-        str = "WingLMid";
-        break;
-      case 17:
-        str = "WingRMid";
-        break;
-      case 18:
-        str = "WingLIn";
-        break;
-      case 19:
-        str = "WingRIn";
-        break;
-      default:
-        str = "CF";
-      }
-
-      String str = str + "_D0";
-      ((Aircraft)this.actor).msgCollision(this.actor, str, str);
+        super(s);
+        RealMode = true;
+        indSpeed = 0.0F;
+        Cwl = new Vector3d();
+        Cwr = new Vector3d();
+        Chl = new Vector3d();
+        Chr = new Vector3d();
+        Cv = new Vector3d();
+        Fwl = new Vector3d();
+        Fwr = new Vector3d();
+        Fhl = new Vector3d();
+        Fhr = new Vector3d();
+        Fv = new Vector3d();
+        superFuel = 10F;
+        shakeLevel = 0.0F;
+        producedShakeLevel = 0.0F;
+        lastAcc = 1.0F;
+        ailerInfluence = 1.0F;
+        rudderInfluence = 1.0F;
+        indiffDnTime = 4F;
+        knockDnTime = 0.0F;
+        indiffUpTime = 4F;
+        knockUpTime = 0.0F;
+        saveDeep = 0.0F;
+        su26add = 0.0D;
+        spinCoeff = 0.0D;
+        airborneState = 0;
+        airborneStartPoint = new Point3d();
+        TmpP = new Point3d();
+        Vn = new Vector3d();
+        TmpV = new Vector3d();
+        TmpVd = new Vector3d();
+        plAccel = new Vector3d();
+        AP = new Autopilot(this);
+        Realism = com.maddox.il2.ai.World.cur().diffCur;
     }
-  }
 
-  private void cutWing()
-  {
-    if (this.Realism.Flutter_Effect)
+    public com.maddox.JGP.Vector3d getW()
     {
-      switch (World.Rnd().nextInt(0, 8))
-      {
-      case 0:
-        str = "Tail1";
-        break;
-      case 1:
-      case 2:
-        str = "WingRMid";
-        break;
-      case 3:
-      case 4:
-        str = "WingLMid";
-        break;
-      case 5:
-      case 6:
-        str = "WingLIn";
-        break;
-      default:
-        str = "WingRIn";
-      }
-
-      String str = str + "_D0";
-      ((Aircraft)this.actor).msgCollision(this.actor, str, str);
+        return RealMode ? W : Wtrue;
     }
-  }
 
-  private void cutPart(int paramInt)
-  {
-    if (this.Realism.Flutter_Effect)
+    private void flutter()
     {
-      switch (paramInt) {
-      case 0:
-        str = "WingLOut";
-        break;
-      case 1:
-        str = "WingLMid";
-        break;
-      case 2:
-        str = "WingLIn";
-        break;
-      case 3:
-        str = "WingRIn";
-        break;
-      case 4:
-        str = "WingRMid";
-        break;
-      case 5:
-        str = "WingROut";
-        break;
-      case 6:
-        str = "Tail1";
-        break;
-      default:
-        str = "Tail1";
-      }
-
-      String str = str + "_D0";
-      ((Aircraft)this.actor).msgCollision(this.actor, str, str);
-    }
-  }
-
-  private void dangerEM()
-  {
-    if (Time.tickCounter() < this.lastDangerTick + 1L) return;
-    this.lastDangerTick = Time.tickCounter();
-    Actor localActor = War.GetNearestEnemy(this.actor, -1, 700.0F);
-    if (!(localActor instanceof Aircraft)) return;
-    Aircraft localAircraft = (Aircraft)localActor;
-    this.TmpVd.set(localAircraft.FM.Loc); this.TmpVd.sub(this.Loc); this.Or.transformInv(this.TmpVd); this.TmpVd.normalize();
-    if (this.TmpVd.x < 0.98D) return;
-    if (!(localAircraft.FM instanceof Pilot)) return;
-    Pilot localPilot = (Pilot)localAircraft.FM;
-    localPilot.setAsDanger(this.actor);
-  }
-
-  private void dangerEMAces()
-  {
-    Actor localActor = War.GetNearestEnemy(this.actor, -1, 300.0F);
-    if (!(localActor instanceof Aircraft)) return;
-    Aircraft localAircraft = (Aircraft)localActor;
-    this.TmpVd.set(localAircraft.FM.Loc); this.TmpVd.sub(this.Loc); this.Or.transformInv(this.TmpVd); this.TmpVd.normalize();
-    if (this.TmpV.x < 0.98D) return;
-    if (!(localAircraft.FM instanceof Pilot)) return;
-    Pilot localPilot = (Pilot)localAircraft.FM;
-    localPilot.setAsDanger(this.actor);
-  }
-
-  private float MulForce(float paramFloat)
-  {
-    if ((paramFloat < 40.0F) || (paramFloat > 180.0F)) return 1.0F;
-
-    return 1.0F + (70.0F - Math.abs(paramFloat - 110.0F)) * 0.04F;
-  }
-
-  public boolean isRealMode()
-  {
-    return this.RealMode;
-  }
-  public void setRealMode(boolean paramBoolean) { if (this.RealMode == paramBoolean) return;
-    this.RealMode = paramBoolean;
-    if (this.RealMode) this.AP.setStabAll(false);
-  }
-
-  private void checkAirborneState()
-  {
-    if (World.getPlayerFM() != this) return;
-    if (!Actor.isAlive(this.actor)) return;
-
-    Mission.initRadioSounds();
-
-    switch (this.airborneState) {
-    case 0:
-      if (getAltitude() - Engine.land().HQ_Air(this.Loc.x, this.Loc.y) > 40.0D) {
-        this.airborneState = 2;
-        setWasAirborne(true);
-        setStationedOnGround(false);
-        EventLog.onAirInflight((Aircraft)this.actor);
-        if (!Mission.hasRadioStations) {
-          CmdEnv.top().exec("music RAND music/inflight");
-        }
-
-      }
-      else
-      {
-        this.airborneState = 1;
-        setStationedOnGround(true);
-        if (!Mission.hasRadioStations)
-          CmdEnv.top().exec("music RAND music/takeoff");
-      }
-      setCrossCountry(false);
-      break;
-    case 1:
-      if (this.Vrel.length() > this.Vmin) {
-        setStationedOnGround(false);
-      }
-      if ((getAltitude() - Engine.land().HQ_Air(this.Loc.x, this.Loc.y) <= 40.0D) || (this.Vrel.length() <= this.Vmin * 1.15F))
-        break;
-      this.airborneState = 2;
-      setStationedOnGround(false);
-      setNearAirdrome(false);
-      setWasAirborne(true);
-      this.airborneStartPoint.set(this.Loc);
-      World.cur().scoreCounter.playerTakeoff();
-      EventLog.onAirInflight((Aircraft)this.actor);
-      if (Mission.hasRadioStations) break;
-      CmdEnv.top().exec("music RAND music/inflight"); break;
-    case 2:
-      if ((!isCrossCountry()) && (this.Loc.distance(this.airborneStartPoint) > 50000.0D)) {
-        setCrossCountry(true);
-        World.cur().scoreCounter.playerDoCrossCountry();
-      }
-      if ((!this.Gears.onGround) || (this.Vrel.length() >= 1.0D))
-        break;
-      this.airborneState = 1;
-      setStationedOnGround(true);
-      if (!Mission.hasRadioStations)
-        CmdEnv.top().exec("music RAND music/takeoff");
-      if (Airport.distToNearestAirport(this.Loc) > 1500.0D)
-      {
-        World.cur().scoreCounter.playerLanding(true);
-        setNearAirdrome(false);
-      }
-      else {
-        World.cur().scoreCounter.playerLanding(false);
-        setNearAirdrome(true);
-      }
-    }
-  }
-
-  private void initSound(Actor paramActor)
-  {
-    this.structuralFX = ((Aircraft)paramActor).newSound("models.structuralFX", false);
-    setSound(false);
-  }
-
-  private void setSound(boolean paramBoolean) {
-    this.bSound = paramBoolean;
-  }
-
-  private boolean getSound() {
-    return this.bSound;
-  }
-
-  public void update(float paramFloat)
-  {
-    if (this.actor.isNetMirror()) {
-      ((NetAircraft.Mirror)this.actor.net).fmUpdate(paramFloat);
-      return;
+        if(Realism.Flutter_Effect)
+            ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "CF_D0", "CF_D0");
     }
 
-    if (getSound()) {
-      initSound(this.actor);
-    }
-    this.V2 = (float)this.Vflow.lengthSquared();
-    this.V = (float)Math.sqrt(this.V2);
-    if (this.V * paramFloat > 5.0F) { update(paramFloat * 0.5F); update(paramFloat * 0.5F); return;
-    }
-
-    float f2 = 0.0F;
-    float f3 = 0.0F;
-    float f4 = 0.0F;
-    if (!this.RealMode) {
-      this.shakeLevel = 0.0F;
-      super.update(paramFloat);
-
-      if (isTick(44, 0)) {
-        checkAirborneState();
-      }
-      if (World.cur().diffCur.Blackouts_N_Redouts) {
-        calcOverLoad(paramFloat, false);
-      }
-      this.producedAM.set(0.0D, 0.0D, 0.0D);
-      this.producedAF.set(0.0D, 0.0D, 0.0D);
-      return;
-    }
-    moveCarrier();
-
-    decDangerAggressiveness();
-    if (this.Loc.z < -20.0D) ((Aircraft)this.actor).postEndAction(0.0D, this.actor, 4, null);
-    if ((!isOk()) && (this.Group != null)) this.Group.delAircraft((Aircraft)this.actor);
-    float f7;
-    if ((Config.isUSE_RENDER()) && 
-      (showFM) && (this.actor == Main3D.cur3D().viewActor())) {
-      f5 = (float)this.W.x / (this.CT.getAileron() * 111.111F * this.SensRoll) * this.Sq.squareWing / 0.8F;
-      if (Math.abs(f5) > 50.0F) f5 = 0.0F;
-      f6 = (float)this.W.y / (-this.CT.getElevator() * 111.111F * this.SensPitch) * this.Sq.squareWing / 0.27F;
-      if (Math.abs(f6) > 50.0F) f6 = 0.0F;
-      f7 = (float)this.W.z / ((this.AOS - this.CT.getRudder() * 12.0F) * 111.111F * this.SensYaw) * this.Sq.squareWing / 0.15F;
-      if (Math.abs(f7) > 50.0F) f7 = 0.0F;
-      TextScr.output(5, 60, "~S RUDDR = " + (int)(f7 * 100.0F) / 100.0F);
-      TextScr.output(5, 80, "~S VATOR = " + (int)(f6 * 100.0F) / 100.0F);
-      TextScr.output(5, 100, "~S AERON = " + (int)(f5 * 100.0F) / 100.0F);
-      String str = "";
-      for (int i = 0; i < this.shakeLevel * 10.5F; i++) str = str + ">";
-      TextScr.output(5, 120, "SHAKE LVL -" + this.shakeLevel);
-
-      TextScr.output(5, 670, "Pylon = " + this.M.pylonCoeff);
-      TextScr.output(5, 640, "WIND = " + (int)(this.Vwind.length() * 10.0D) / 10.0F + " " + (int)(this.Vwind.z * 10.0D) / 10.0F + " m/s");
-      TextScr.output(5, 140, "BRAKE = " + this.CT.getBrake());
-
-      i = 0;
-      TextScr.output(225, 140, "---ENGINES (" + this.EI.getNum() + ")---" + this.EI.engines[i].getStage());
-      TextScr.output(245, 120, "THTL " + (int)(100.0F * this.EI.engines[i].getControlThrottle()) + "%" + (this.EI.engines[i].getControlAfterburner() ? " (NITROS)" : ""));
-      TextScr.output(245, 100, "PROP " + (int)(100.0F * this.EI.engines[i].getControlProp()) + "%" + (this.CT.getStepControlAuto() ? " (AUTO)" : ""));
-      TextScr.output(245, 80, "MIX " + (int)(100.0F * this.EI.engines[i].getControlMix()) + "%");
-      TextScr.output(245, 60, "RAD " + (int)(100.0F * this.EI.engines[i].getControlRadiator()) + "%" + (this.CT.getRadiatorControlAuto() ? " (AUTO)" : ""));
-      TextScr.output(245, 40, "SUPC " + this.EI.engines[i].getControlCompressor() + "x");
-      TextScr.output(245, 20, "PropAoA :" + (int)Math.toDegrees(this.EI.engines[i].getPropAoA()));
-      TextScr.output(245, 0, "PropPhi :" + (int)Math.toDegrees(this.EI.engines[i].getPropPhi()));
-
-      TextScr.output(455, 120, "Cyls/Cams " + this.EI.engines[i].getCylindersOperable() + "/" + this.EI.engines[i].getCylinders());
-      TextScr.output(455, 100, "Readyness " + (int)(100.0F * this.EI.engines[i].getReadyness()) + "%");
-      TextScr.output(455, 80, "PRM " + (int)((int)(this.EI.engines[i].getRPM() * 0.02F) * 50.0F) + " rpm");
-      TextScr.output(455, 60, "Thrust " + (int)this.EI.engines[i].getEngineForce().x + " N");
-      TextScr.output(455, 40, "Fuel " + (int)(100.0F * this.M.fuel / this.M.maxFuel) + "% Nitro " + (int)(100.0F * this.M.nitro / this.M.maxNitro) + "%");
-      TextScr.output(455, 20, "MPrs " + (int)(1000.0F * this.EI.engines[i].getManifoldPressure()) + " mBar");
-
-      TextScr.output(640, 140, "---Controls---");
-      TextScr.output(640, 120, "A/C: " + (this.CT.bHasAileronControl ? "" : "AIL ") + (this.CT.bHasElevatorControl ? "" : "ELEV ") + (this.CT.bHasRudderControl ? "" : "RUD ") + (this.Gears.bIsHydroOperable ? "" : "GEAR "));
-      TextScr.output(640, 100, "ENG: " + (this.EI.engines[i].isHasControlThrottle() ? "" : "THTL ") + (this.EI.engines[i].isHasControlProp() ? "" : "PROP ") + (this.EI.engines[i].isHasControlMix() ? "" : "MIX ") + (this.EI.engines[i].isHasControlCompressor() ? "" : "SUPC ") + (this.EI.engines[i].isPropAngleDeviceOperational() ? "" : "GVRNR "));
-      TextScr.output(640, 80, "PIL: (" + (int)(this.AS.getPilotHealth(0) * 100.0F) + "%)");
-      TextScr.output(640, 60, "Sens: " + this.CT.Sensitivity);
-
-      TextScr.output(400, 500, "+");
-      TextScr.output(400, 400, "|");
-      TextScr.output((int)(400.0F + 200.0F * this.CT.AileronControl), (int)(500.0F - 200.0F * this.CT.ElevatorControl), "+");
-      TextScr.output((int)(400.0F + 200.0F * this.CT.RudderControl), 400, "|");
-
-      TextScr.output(5, 200, "AOA = " + this.AOA);
-      TextScr.output(5, 220, "Mass = " + this.M.getFullMass());
-      TextScr.output(5, 320, "AERON TR = " + this.CT.trimAileron);
-      TextScr.output(5, 300, "VATOR TR = " + this.CT.trimElevator);
-      TextScr.output(5, 280, "RUDDR TR = " + this.CT.trimRudder);
-
-      TextScr.output(245, 160, " pF = " + this.EI.engines[0].zatizeni * 100.0D + "%/hr");
-      this.hpOld = (this.hpOld * 0.95F + 0.05F * this.EI.engines[0].w * this.EI.engines[0].engineMoment / 746.0F);
-      TextScr.output(245, 180, " hp = " + this.hpOld);
-      TextScr.output(245, 200, " eMoment = " + this.EI.engines[0].engineMoment);
-      TextScr.output(245, 220, " pMoment = " + this.EI.engines[0].propMoment);
-    }
-
-    if (!this.Realism.Limited_Fuel) {
-      this.superFuel = (this.M.fuel = Math.max(this.superFuel, this.M.fuel));
-    }
-
-    this.AP.update(paramFloat);
-    ((Aircraft)this.actor).netUpdateWayPoint();
-
-    this.CT.update(paramFloat, (float)this.Vflow.x, this.EI, true);
-
-    float f5 = (float)(this.Vflow.x * this.Vflow.x) / 11000.0F; if (f5 > 1.0F) f5 = 1.0F;
-    ForceFeedback.fxSetSpringGain(f5);
-
-    if ((this.CT.saveWeaponControl[0] != 0) || (this.CT.saveWeaponControl[1] != 0) || (this.CT.saveWeaponControl[2] != 0)) {
-      dangerEM();
-    }
-    this.Wing.setFlaps(this.CT.getFlap());
-    FMupdate(paramFloat);
-    this.EI.update(paramFloat);
-
-    this.Gravity = (this.M.getFullMass() * Atmosphere.g());
-    this.M.computeFullJ(this.J, this.J0);
-
-    if (this.Realism.G_Limits) {
-      if ((this.G_ClassCoeff < 0.0F) || (!((Aircraft)this.actor instanceof TypeBomber)))
-      {
-        this.Current_G_Limit = (this.ReferenceForce / this.M.getFullMass() - this.M.pylonCoeff);
-      }
-      else
-      {
-        this.Current_G_Limit = (this.ReferenceForce / this.M.getFullMass());
-      }
-
-      setLimitLoad(this.Current_G_Limit);
-    }
-
-    if (isTick(44, 0)) {
-      this.AS.update(paramFloat * 44.0F);
-      ((Aircraft)this.actor).rareAction(paramFloat * 44.0F, true);
-      this.M.computeParasiteMass(this.CT.Weapons);
-      this.Sq.computeParasiteDrag(this.CT, this.CT.Weapons);
-      checkAirborneState();
-      putScareShpere();
-      dangerEMAces();
-      if ((this.turnOffCollisions) && (!this.Gears.onGround) && (getAltitude() - Engine.land().HQ_Air(this.Loc.x, this.Loc.y) > 30.0D)) {
-        this.turnOffCollisions = false;
-      }
-
-    }
-
-    this.Or.wrap();
-    if (this.Realism.Wind_N_Turbulence) World.wind().getVector(this.Loc, this.Vwind); else
-      this.Vwind.set(0.0D, 0.0D, 0.0D);
-    this.Vair.sub(this.Vwld, this.Vwind);
-    this.Or.transformInv(this.Vair, this.Vflow);
-
-    this.Density = Atmosphere.density((float)this.Loc.z);
-
-    this.AOA = RAD2DEG(-(float)Math.atan2(this.Vflow.z, this.Vflow.x));
-    this.AOS = RAD2DEG((float)Math.atan2(this.Vflow.y, this.Vflow.x));
-    this.indSpeed = (getSpeed() * (float)Math.sqrt(this.Density / 1.225F));
-
-    this.Mach = (this.V / Atmosphere.sonicSpeed((float)this.Loc.z));
-
-    if (this.Mach > 0.8F) this.Mach = 0.8F;
-    this.Kq = (1.0F / (float)Math.sqrt(1.0F - this.Mach * this.Mach));
-
-    this.q_ = (this.Density * this.V2 * 0.5F);
-
-    double d2 = this.Loc.z - this.Gears.screenHQ;
-    if (d2 < 0.0D) d2 = 0.0D;
-
-    float f1 = this.CT.getAileron() * 14.0F;
-    f1 = this.Arms.WING_V * (float)Math.sin(DEG2RAD(this.AOS)) + this.SensRoll * this.ailerInfluence * (1.0F - 0.1F * this.CT.getFlap()) * f1;
-
-    double d3 = 0.0D;
-    double d4 = 0.0D;
-    if (this.EI.engines[0].getType() < 2) {
-      d3 = this.EI.engines[0].addVflow;
-
-      if (this.Realism.Torque_N_Gyro_Effects) d4 = 0.5D * this.EI.engines[0].addVside;
-    }
-
-    this.Vn.set(-this.Arms.GCENTER, 0.85D * this.Arms.WING_END, -0.5D);
-    this.Vn.cross(this.W, this.Vn);
-    this.Vn.add(this.Vflow);
-    float f8 = f1 - RAD2DEG((float)Math.atan2(this.Vn.z, this.Vn.x));
-    this.Vn.x += 0.07000000000000001D * d3;
-
-    double d1 = this.Vn.lengthSquared();
-    d1 *= 0.5F * this.Density;
-
-    f5 = f1 - RAD2DEG((float)Math.atan2(this.Vn.z + 0.07000000000000001D * d4 * this.EI.getPropDirSign(), this.Vn.x));
-    float f10 = 0.015F * f1;
-    if (f10 < 0.0F) f10 *= 0.18F;
-
-    this.Cwl.x = (-d1 * (this.Wing.new_Cx(f5) + f10 + this.GearCX * this.CT.getGear() + this.radiatorCX * (this.EI.getRadiatorPos() + this.CT.getCockpitDoor()) + this.Sq.dragAirbrakeCx * this.CT.getAirBrake()));
-
-    this.Cwl.z = (d1 * this.Wing.new_Cy(f5) * this.Kq);
-
-    if (this.fmsfxCurrentType != 0) {
-      if (this.fmsfxCurrentType == 1) {
-        this.Cwl.z *= Aircraft.cvt(this.fmsfxPrevValue, 0.003F, 0.8F, 1.0F, 0.0F);
-      }
-      if (this.fmsfxCurrentType == 2) {
-        this.Cwl.z = 0.0D;
-
-        if (Time.current() >= this.fmsfxTimeDisable) {
-          doRequestFMSFX(0, 0);
-        }
-      }
-
-    }
-
-    this.Vn.set(-this.Arms.GCENTER, -this.Arms.WING_END, -0.5D);
-    this.Vn.cross(this.W, this.Vn);
-    this.Vn.add(this.Vflow);
-    float f9 = -f1 - RAD2DEG((float)Math.atan2(this.Vn.z, this.Vn.x));
-    this.Vn.x += 0.07000000000000001D * d3;
-
-    d1 = this.Vn.lengthSquared();
-    d1 *= 0.5F * this.Density;
-
-    float f6 = -f1 - RAD2DEG((float)Math.atan2(this.Vn.z - 0.07000000000000001D * d4 * this.EI.getPropDirSign(), this.Vn.x));
-    f10 = -0.015F * f1;
-    if (f10 < 0.0F) f10 *= 0.18F;
-
-    this.Cwr.x = (-d1 * (this.Wing.new_Cx(f6) + f10 + this.GearCX * this.CT.getGear() + this.radiatorCX * this.EI.getRadiatorPos() + this.Sq.dragAirbrakeCx * this.CT.getAirBrake()));
-
-    this.Cwr.z = (d1 * this.Wing.new_Cy(f6) * this.Kq);
-    if (this.fmsfxCurrentType != 0) {
-      if (this.fmsfxCurrentType == 1) {
-        this.Cwr.z *= Aircraft.cvt(this.fmsfxPrevValue, 0.003F, 0.8F, 1.0F, 0.0F);
-      }
-      if (this.fmsfxCurrentType == 3) {
-        this.Cwr.z = 0.0D;
-
-        if (Time.current() >= this.fmsfxTimeDisable) {
-          doRequestFMSFX(0, 0);
-        }
-      }
-
-    }
-
-    this.Cwl.y = (-d1 * this.Fusel.new_Cy(this.AOS));
-    this.Cwl.x -= d1 * this.Fusel.new_Cx(this.AOS);
-
-    this.Cwr.y = (-d1 * this.Fusel.new_Cy(this.AOS));
-    this.Cwr.x -= d1 * this.Fusel.new_Cx(this.AOS);
-
-    float f11 = this.Wing.get_AOA_CRYT();
-
-    double d6 = 1.0D;
-    double d7 = 0.5D + 0.4D * this.EI.getPowerOutput();
-    double d8 = 1.2D + 0.4D * this.EI.getPowerOutput();
-    if (this.spinCoeff < d7) this.spinCoeff = d7;
-    if (this.spinCoeff > d8) this.spinCoeff = d8;
-
-    f5 = f8;
-    f6 = f9;
-
-    if ((!this.Realism.Stalls_N_Spins) || (this.Gears.isUnderDeck()))
+    private void flutterDamage()
     {
-      double d5;
-      if (f5 > f6) {
-        if (this.Cwl.z < this.Cwr.z) { d5 = this.Cwl.z; this.Cwl.z = this.Cwr.z; this.Cwr.z = d5; }
-      }
-      else if (this.Cwl.z > this.Cwr.z) { d5 = this.Cwl.z; this.Cwl.z = this.Cwr.z; this.Cwr.z = d5;
-      }
-    }
-    else if ((f5 > f11) || (f6 > f11)) {
-      this.spinCoeff += 0.2D * paramFloat;
-      if ((this.Sq.squareRudders > 0.0D) && 
-        (Math.abs(this.CT.RudderControl) > 0.5D) && (this.CT.RudderControl * this.W.z > 0.0D))
-        this.spinCoeff -= 0.3D * paramFloat;
-      float f12;
-      if (f5 > f6) f12 = f5; else f12 = f6;
-      this.turbCoeff = (0.8F * (f12 - f11));
-      if (this.turbCoeff < 1.0F) this.turbCoeff = 1.0F;
-      if (this.turbCoeff > 15.0F) this.turbCoeff = 15.0F;
-      d6 = 1.0D - 0.2D * (f12 - f11);
-      if (d6 < 0.2D) d6 = 0.2D;
-      d6 /= this.turbCoeff;
-      double d10 = d1 * this.turbCoeff * this.spinCoeff;
-      float f13 = getAltitude() - (float)Engine.land().HQ_Air(this.Loc.x, this.Loc.y);
-      if (f13 < 10.0F) d10 *= 0.1F * f13;
-
-      if (f5 > f6) {
-        this.Cwr.x += 0.01999999955296516D * d10 * this.Sq.spinCxloss;
-        this.Cwl.x -= 0.25D * d10 * this.Sq.spinCxloss;
-        this.Cwr.z += 0.01999999955296516D * d10 * this.Sq.spinCyloss;
-        this.Cwl.z -= 0.1000000014901161D * d10 * this.Sq.spinCyloss;
-      } else {
-        this.Cwl.x += 0.01999999955296516D * d10 * this.Sq.spinCxloss;
-        this.Cwr.x -= 0.25D * d10 * this.Sq.spinCxloss;
-        this.Cwl.z += 0.01999999955296516D * d10 * this.Sq.spinCyloss;
-        this.Cwr.z -= 0.1000000014901161D * d10 * this.Sq.spinCyloss;
-      }
-      this.rudderInfluence = (1.0F + 0.035F * this.turbCoeff);
-    }
-    else
-    {
-      this.turbCoeff = 1.0F;
-      d6 = 1.0D;
-      this.spinCoeff -= 0.2D * paramFloat;
-      this.ailerInfluence = 1.0F;
-      this.rudderInfluence = 1.0F;
-    }
-
-    if (isTick(15, 0))
-      if (Math.abs(f5 - f6) > 5.0F)
-        ForceFeedback.fxSetSpringZero((f6 - f5) * 0.04F, 0.0F);
-      else
-        ForceFeedback.fxSetSpringZero(0.0F, 0.0F);
-    double d12;
-    if (d2 < 0.4D * this.Length) {
-      d9 = 1.0D - d2 / (0.4D * this.Length);
-      d11 = 1.0D + 0.2D * d9;
-      d12 = 1.0D + 0.2D * d9;
-      this.Cwl.z *= d11;
-      this.Cwl.x *= d12;
-      this.Cwr.z *= d11;
-      this.Cwr.x *= d12;
-    }
-
-    f1 = this.CT.getElevator() * (this.CT.getElevator() > 0.0F ? 28.0F : 20.0F);
-
-    this.Vn.set(-this.Arms.VER_STAB, 0.0D, 0.0D);
-    this.Vn.cross(this.W, this.Vn);
-    this.Vn.add(this.Vflow);
-    double d9 = Math.sqrt(this.Vn.y * this.Vn.y + this.Vn.z * this.Vn.z);
-
-    d3 = 0.0D;
-    d4 = 0.0D;
-    if (this.EI.engines[0].getType() < 2) {
-      d11 = 1.0D + 0.04D * this.Arms.RUDDER;
-      d11 = 1.0D / (d11 * d11);
-      d12 = this.Vn.x + d11 * this.EI.engines[0].addVflow;
-      if (d12 < 0.2D) d12 = 0.2D;
-      d14 = 1.0D - 1.5D * d9 / d12;
-      if (d14 < 0.0D) d14 = 0.0D;
-      d3 = d14 * d11 * this.EI.engines[0].addVflow;
-      this.Vn.x += d3;
-      d15 = Math.min(0.0011D * this.Vn.x * this.Vn.x, 1.0D);
-      if (this.Vn.x < 0.0D) d15 = 0.0D;
-
-      if (this.Realism.Torque_N_Gyro_Effects) {
-        d4 = d14 * d15 * this.EI.engines[0].addVside;
-      }
-    }
-    double d11 = this.Density * this.Vn.lengthSquared() * 0.5D;
-
-    if ((this.EI.getNum() == 1) && (this.EI.engines[0].getType() < 2)) {
-      f5 = -RAD2DEG((float)Math.atan2(this.Vn.z - 0.36D * d4 * this.EI.getPropDirSign(), this.Vn.x)) - 2.0F - 0.002F * this.V - this.SensPitch * f1;
-
-      f6 = -RAD2DEG((float)Math.atan2(this.Vn.z + 0.36D * d4 * this.EI.getPropDirSign(), this.Vn.x)) - 2.0F - 0.002F * this.V - this.SensPitch * f1;
-    }
-    else {
-      f5 = f6 = -RAD2DEG((float)Math.atan2(this.Vn.z, this.Vn.x)) - 2.0F - 0.002F * this.V - this.SensPitch * f1;
-    }
-
-    this.Chl.x = (-d11 * this.Tail.new_Cx(f5));
-    this.Chl.z = (d11 * this.Tail.new_Cy(f5));
-    this.Chr.x = (-d11 * this.Tail.new_Cx(f6));
-    this.Chr.z = (d11 * this.Tail.new_Cy(f6));
-    this.Chl.y = (this.Chr.y = 0.0D);
-
-    f1 = this.CT.getRudder() * (this.Sq.squareRudders < 0.05F ? 0.0F : 28.0F);
-
-    if (this.EI.engines[0].getType() < 2) {
-      f7 = -RAD2DEG((float)Math.atan2(this.Vn.y - 0.5D * d4 * this.EI.getPropDirSign(), this.Vn.x)) + this.SensYaw * this.rudderInfluence * f1;
-    }
-    else
-    {
-      f7 = -RAD2DEG((float)Math.atan2(this.Vn.y, this.Vn.x)) + this.SensYaw * this.rudderInfluence * f1;
-    }
-
-    this.Cv.x = (-d11 * this.Tail.new_Cx(f7));
-    this.Cv.y = (d11 * this.Tail.new_Cy(f7));
-    this.Cv.z = 0.0D;
-
-    if (!this.Realism.Stalls_N_Spins) this.Cv.y += this.Cv.y;
-
-    this.Vn.set(this.Vflow);
-    d1 = this.Density * this.Vn.lengthSquared() * 0.5D;
-
-    this.Fwl.scale(this.Sq.liftWingLIn + this.Sq.liftWingLMid + this.Sq.liftWingLOut, this.Cwl);
-    this.Fwr.scale(this.Sq.liftWingRIn + this.Sq.liftWingRMid + this.Sq.liftWingROut, this.Cwr);
-    this.Fwl.x -= d1 * (this.Sq.dragParasiteCx + this.Sq.dragProducedCx) * 0.5D;
-    this.Fwr.x -= d1 * (this.Sq.dragParasiteCx + this.Sq.dragProducedCx) * 0.5D;
-
-    this.Fhl.scale((this.Sq.liftStab + this.Sq.squareElevators) * 0.5F, this.Chl);
-    this.Fhr.scale((this.Sq.liftStab + this.Sq.squareElevators) * 0.5F, this.Chr);
-    this.Fv.scale(0.2F + this.Sq.liftKeel * 1.5F + this.Sq.squareRudders, this.Cv);
-
-    this.AF.set(this.Fwl);
-    this.AF.add(this.Fwr);
-
-    if (isNAN(this.AF)) { this.AF.set(0.0D, 0.0D, 0.0D); flutter(); if (World.cur().isDebugFM()) System.out.println("AF isNAN"); 
-    }
-    else if (this.AF.length() > this.Gravity * 50.0F) {
-      flutter();
-      if (World.cur().isDebugFM()) System.out.println("A > 50.0");
-      this.AF.normalize();
-      this.AF.scale(this.Gravity * 50.0F);
-    }
-    else
-    {
-      if (this.Realism.G_Limits)
-      {
-        if (((getOverload() > getUltimateLoad() + World.Rnd().nextFloat(0.0F, 1.0F)) || (getOverload() < this.Negative_G_Limit - World.Rnd().nextFloat(0.0F, 0.5F))) && (!this.Gears.onGround()) && (World.Rnd().nextInt(0, 100) > 98)) {
-          if (this.cutPart < 0)
-            cutWing();
-          else {
-            cutPart(this.cutPart);
-          }
-        }
-
-        if ((getOverload() > this.Current_G_Limit) || (getOverload() < this.Negative_G_Limit))
+        if(Realism.Flutter_Effect)
         {
-          float f15 = Math.abs(getOverload());
-          if (f15 > this.max_G_Cycle) {
-            this.max_G_Cycle = f15;
-          }
-          this.timeCounter += paramFloat;
-          if (this.timeCounter > 0.75F) {
-            this.cycleCounter += 1;
-            if (this.cycleCounter > 1)
+            java.lang.String s;
+            switch(com.maddox.il2.ai.World.Rnd().nextInt(0, 29))
             {
-              float f14;
-              if (getOverload() > 1.0F)
-                f14 = (this.max_G_Cycle - this.Current_G_Limit) / this.Current_G_Limit;
-              else
-                f14 = (this.max_G_Cycle + this.Negative_G_Limit) / this.Negative_G_Limit;
-              f14 *= f14;
-              setSafetyFactor(f14);
+            case 0: // '\0'
+            case 1: // '\001'
+            case 2: // '\002'
+            case 3: // '\003'
+            case 20: // '\024'
+                s = "AroneL";
+                break;
 
-              if (this.structuralFX != null) {
-                this.structuralFX.play();
-              }
-              this.VmaxAllowed = (this.maxSpeed * (getSafetyFactor() * 0.3F + 0.55F));
+            case 4: // '\004'
+            case 5: // '\005'
+            case 6: // '\006'
+            case 7: // '\007'
+            case 21: // '\025'
+                s = "AroneR";
+                break;
 
-              this.rD = World.Rnd().nextFloat();
-              if (this.rD < 0.001F) {
-                if (this.CT.bHasGearControl) {
-                  ((Aircraft)this.actor).msgCollision(this.actor, "GearR2_D0", "GearR2_D0");
-                  this.gearCutCounter += 1;
-                }
-                this.Wing.CxMin_0 += 6.0F * this.rD;
-                setSafetyFactor(250.0F * this.rD);
-                this.CT.bHasGearControl = false;
-              } else if (this.rD < 0.002F) {
-                if (this.CT.bHasGearControl) {
-                  ((Aircraft)this.actor).msgCollision(this.actor, "GearL2_D0", "GearL2_D0");
-                  this.gearCutCounter += 2;
-                }
-                this.Wing.CxMin_0 += 3.0F * this.rD;
-                setSafetyFactor(125.0F * this.rD);
-                this.CT.bHasGearControl = false;
-              } else if (this.rD < 0.0025F) {
-                if (this.CT.bHasGearControl) {
-                  this.CT.GearControl = 1.0F;
-                  ((Aircraft)this.actor).msgCollision(this.actor, "GearL2_D0", "GearL2_D0");
-                  this.CT.forceGear(1.0F);
-                  this.gearCutCounter += 2;
-                }
-                this.Wing.CxMin_0 += 3.0F * this.rD;
-                setSafetyFactor(125.0F * this.rD);
-                this.CT.bHasGearControl = false;
-              } else if (this.rD < 0.003F) {
-                if (this.CT.bHasGearControl) {
-                  this.CT.GearControl = 1.0F;
-                  ((Aircraft)this.actor).msgCollision(this.actor, "GearR2_D0", "GearR2_D0");
-                  this.CT.forceGear(1.0F);
-                  this.gearCutCounter += 1;
-                }
-                this.Wing.CxMin_0 += 3.0F * this.rD;
-                setSafetyFactor(125.0F * this.rD);
-                this.CT.bHasGearControl = false;
-              } else if (this.rD < 0.0035F) {
-                if (this.CT.bHasGearControl) {
-                  this.CT.dvGear = 1.0F;
-                  this.CT.forceGear(1.0F);
-                  this.CT.GearControl = 1.0F;
-                  ((Aircraft)this.actor).msgCollision(this.actor, "GearR2_D0", "GearR2_D0");
-                  ((Aircraft)this.actor).msgCollision(this.actor, "GearL2_D0", "GearL2_D0");
-                  this.gearCutCounter += 3;
-                }
-                this.Wing.CxMin_0 += 8.0F * this.rD;
-                setSafetyFactor(125.0F * this.rD);
-                this.CT.bHasGearControl = false;
-              } else if (this.rD < 0.04F) {
-                this.SensYaw *= 0.68F;
-              } else if (this.rD < 0.05F) {
-                this.SensPitch *= 0.68F;
-              } else if (this.rD < 0.06F) {
-                this.SensRoll *= 0.68F;
-              } else if (this.rD < 0.061F) {
-                this.CT.dropFuelTanks();
-              } else if (this.rD < 0.065F) {
-                this.CT.bHasFlapsControl = false;
-              } else if (this.rD >= 0.5F)
-              {
-                if (this.rD < 0.6F) {
-                  this.Wing.CxMin_0 += 0.011F * this.rD;
-                }
-                else if ((int)this.M.getFullMass() % 2 == 0) {
-                  this.Sq.getClass();
-                  this.Sq.liftWingROut *= (0.95F - 0.2F * this.rD);
-                  this.Wing.CxMin_0 += 0.011F * this.rD;
-                } else {
-                  this.Sq.getClass();
-                  this.Sq.liftWingLOut *= (0.95F - 0.2F * this.rD);
-                  this.Wing.CxMin_0 += 0.011F * this.rD;
-                }
-              }
+            case 8: // '\b'
+            case 9: // '\t'
+            case 10: // '\n'
+            case 22: // '\026'
+                s = "VatorL";
+                break;
+
+            case 11: // '\013'
+            case 12: // '\f'
+            case 13: // '\r'
+            case 23: // '\027'
+                s = "VatorR";
+                break;
+
+            case 24: // '\030'
+            case 25: // '\031'
+            case 26: // '\032'
+                s = "Rudder1";
+                break;
+
+            case 27: // '\033'
+            case 28: // '\034'
+            case 29: // '\035'
+                s = "Rudder2";
+                break;
+
+            case 14: // '\016'
+                s = "WingLOut";
+                break;
+
+            case 15: // '\017'
+                s = "WingROut";
+                break;
+
+            case 16: // '\020'
+                s = "WingLMid";
+                break;
+
+            case 17: // '\021'
+                s = "WingRMid";
+                break;
+
+            case 18: // '\022'
+                s = "WingLIn";
+                break;
+
+            case 19: // '\023'
+                s = "WingRIn";
+                break;
+
+            default:
+                s = "CF";
+                break;
             }
-            this.timeCounter = 0.0F;
-            this.max_G_Cycle = 1.0F;
-          }
-        } else {
-          this.timeCounter = 0.0F;
-          this.max_G_Cycle = 1.0F;
+            s = s + "_D0";
+            ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, s, s);
         }
-      }
-      else if ((getOverload() > 13.5F) && (!this.Gears.onGround()) && (World.Rnd().nextInt(0, 100) > 98)) { cutWing();
-      }
-
-      if ((this.indSpeed > 112.5F) && (World.Rnd().nextInt(0, 100) > 98))
-      {
-        if ((this.CT.getGear() >= 0.1F) && (this.CT.GearControl != 0.0F) && (!this.bGearCut)) {
-          if (!(this.actor instanceof F4U)) {
-            if ((World.Rnd().nextInt(0, 100) > 76) && (this.gearCutCounter != 1)) {
-              ((Aircraft)this.actor).msgCollision(this.actor, "GearR2_D0", "GearR2_D0");
-              this.gearCutCounter += 1;
-            }
-            if ((World.Rnd().nextInt(0, 100) > 76) && (this.gearCutCounter != 2)) {
-              ((Aircraft)this.actor).msgCollision(this.actor, "GearL2_D0", "GearL2_D0");
-              this.gearCutCounter += 2;
-            }
-          } else if (this.indSpeed > 180.0F) {
-            if ((World.Rnd().nextInt(0, 100) > 76) && (this.gearCutCounter != 1)) {
-              ((Aircraft)this.actor).msgCollision(this.actor, "GearR2_D0", "GearR2_D0");
-              this.gearCutCounter += 1;
-            }
-            if ((World.Rnd().nextInt(0, 100) > 76) && (this.gearCutCounter != 2)) {
-              ((Aircraft)this.actor).msgCollision(this.actor, "GearL2_D0", "GearL2_D0");
-              this.gearCutCounter += 2;
-            }
-          }
-        }
-        if (this.gearCutCounter > 2) {
-          this.bGearCut = true;
-          this.CT.bHasGearControl = false;
-        }
-      }
-      if ((this.indSpeed > 60.5F) && (this.CT.getWing() > 0.1F)) {
-        if ((World.Rnd().nextInt(0, 100) > 90) && (((Aircraft)this.actor).isChunkAnyDamageVisible("WingLMid")))
-          ((Aircraft)this.actor).msgCollision(this.actor, "WingLMid_D0", "WingLMid_D0");
-        if ((World.Rnd().nextInt(0, 100) > 90) && (((Aircraft)this.actor).isChunkAnyDamageVisible("WingRMid")))
-          ((Aircraft)this.actor).msgCollision(this.actor, "WingRMid_D0", "WingRMid_D0");
-      }
-      if ((this.indSpeed > 81.0F) && (this.CT.bHasFlapsControl) && (this.CT.FlapsControl > 0.21F) && ((this.indSpeed - 81.0F) * this.CT.getFlap() > 8.0F))
-      {
-        if ((World.getPlayerAircraft() == this.actor) && 
-          (this.CT.bHasFlapsControl)) HUD.log("FailedFlaps");
-
-        this.CT.bHasFlapsControl = false;
-        this.CT.FlapsControl = 0.0F;
-      }
-      if ((this.indSpeed > this.VmaxAllowed) && (World.Rnd().nextFloat(0.0F, 16.0F) < this.indSpeed - this.VmaxAllowed) && (World.Rnd().nextInt(0, 99) < 2))
-      {
-        flutterDamage();
-      }
-      if (this.indSpeed > 310.0F) {
-        if (World.cur().isDebugFM()) System.out.println("*** Sonic overspeed....");
-        flutter();
-      }
-
     }
 
-    this.AM.set(0.0D, 0.0D, 0.0D);
-
-    if (Math.abs(this.AOA) < 12.0F) {
-      f1 = this.Or.getKren();
-      if (f1 > 30.0F) f1 = 30.0F; else if (f1 < -30.0F) f1 = -30.0F;
-      f1 = (float)(f1 * (Math.min(this.Vflow.x - 50.0D, 50.0D) * 0.003000000026077032D));
-      this.AM.add(-f1 * 0.01F * this.Gravity, 0.0D, 0.0D);
-    }
-
-    if (!getOp(19)) {
-      this.AM.y += 8.0F * this.Sq.squareWing * this.Vflow.x;
-      this.AM.z += 200.0F * this.Sq.squareWing * this.EI.getPropDirSign();
-    }
-
-    double d13 = this.CT.getFlap() * 3.0D;
-    if (d13 > 1.0D) d13 = 1.0D;
-    double d14 = 0.0111D * Math.abs(this.AOA);
-    if ((this.Wing.AOACritL < this.AOA) && (this.AOA < this.Wing.AOACritH)) d14 = 0.0D;
-    else if (this.AOA >= this.Wing.AOACritH) d14 = Math.min(d14, 0.3D * (this.AOA - this.Wing.AOACritH));
-    else if (this.Wing.AOACritL <= this.AOA) d14 = Math.min(d14, 0.3D * (this.Wing.AOACritL - this.AOA));
-    double d15 = this.Arms.GCENTER + this.Arms.GC_FLAPS_SHIFT * d13 * (1.0D - d14) + this.Arms.GC_AOA_SHIFT * d14;
-
-    this.TmpV.set(-d15, this.Arms.WING_MIDDLE * (1.3D + 1.0D * Math.sin(DEG2RAD(this.AOS))), -this.Arms.GCENTER_Z);
-    this.TmpV.cross(this.TmpV, this.Fwl);
-    this.AM.add(this.TmpV);
-    this.TmpV.set(-d15, -this.Arms.WING_MIDDLE * (1.3D - 1.0D * Math.sin(DEG2RAD(this.AOS))), -this.Arms.GCENTER_Z);
-    this.TmpV.cross(this.TmpV, this.Fwr);
-    this.AM.add(this.TmpV);
-    this.AM.x += this.su26add;
-
-    this.TmpV.set(-this.Arms.HOR_STAB, 1.0D, 0.0D);
-    this.TmpV.cross(this.TmpV, this.Fhl);
-    this.AM.add(this.TmpV);
-    this.TmpV.set(-this.Arms.HOR_STAB, -1.0D, 0.0D);
-    this.TmpV.cross(this.TmpV, this.Fhr);
-    this.AM.add(this.TmpV);
-    this.TmpV.set(-this.Arms.VER_STAB, 0.0D, 1.0D);
-    this.TmpV.cross(this.TmpV, this.Fv);
-    this.AM.add(this.TmpV);
-
-    double d16 = 1.0D - 1.E-005D * this.indSpeed;
-    if (d16 < 0.8D) d16 = 0.8D;
-    this.W.scale(d16);
-
-    if (!this.Realism.Stalls_N_Spins) {
-      this.AM.y += this.AF.z * 0.5D * Math.sin(DEG2RAD(Math.abs(this.AOA)));
-    }
-
-    if (this.W.lengthSquared() > 25.0D) {
-      this.W.scale(5.0D / this.W.length());
-    }
-    if ((!this.Realism.Stalls_N_Spins) && (this.Vflow.x > 20.0D)) {
-      this.W.z += this.AOS * paramFloat;
-    }
-
-    this.AF.add(this.producedAF);
-    this.AM.add(this.producedAM);
-    this.producedAF.set(0.0D, 0.0D, 0.0D);
-    this.producedAM.set(0.0D, 0.0D, 0.0D);
-
-    this.AF.add(this.EI.producedF);
-    this.AM.add(this.EI.producedM);
-
-    if (World.cur().diffCur.Torque_N_Gyro_Effects) {
-      this.GM.set(this.EI.getGyro());
-      this.GM.scale(d6);
-      this.AM.add(this.GM);
-    }
-
-    this.GF.set(0.0D, 0.0D, 0.0D);
-    this.GM.set(0.0D, 0.0D, 0.0D);
-    if (Time.tickCounter() % 2 != 0) this.Gears.roughness = this.Gears.plateFriction(this);
-    this.Gears.ground(this, true);
-    int j = 5;
-    if ((this.GF.lengthSquared() == 0.0D) && (this.GM.lengthSquared() == 0.0D)) j = 1;
-
-    this.SummF.add(this.AF, this.GF);
-    this.ACmeter.set(this.SummF);
-    this.ACmeter.scale(1.0F / this.Gravity);
-
-    this.TmpV.set(0.0D, 0.0D, -this.Gravity);
-    this.Or.transformInv(this.TmpV);
-    this.GF.add(this.TmpV);
-
-    this.SummF.add(this.AF, this.GF);
-    this.SummM.add(this.AM, this.GM);
-    double d17 = 1.0D / this.M.mass;
-    this.LocalAccel.scale(d17, this.SummF);
-
-    if (Math.abs(getRollAcceleration()) > 50000.5F) {
-      ForceFeedback.fxPunch(this.SummM.x > 0.0D ? 0.9F : -0.9F, 0.0F, 1.0F);
-      if (World.cur().isDebugFM()) System.out.println("Punched (Axial = " + this.SummM.x + ")");
-    }
-    if (Math.abs(getOverload() - this.lastAcc) > 0.5F) {
-      ForceFeedback.fxPunch(World.Rnd().nextFloat(-0.5F, 0.5F), -0.9F, getSpeed() * 0.05F);
-      if (World.cur().isDebugFM()) System.out.println("Punched (Lat = " + Math.abs(getOverload() - this.lastAcc) + ")");
-    }
-    this.lastAcc = getOverload();
-
-    if (isNAN(this.AM)) { this.AM.set(0.0D, 0.0D, 0.0D); flutter(); if (World.cur().isDebugFM()) System.out.println("AM isNAN"); 
-    }
-    else if (this.AM.length() > this.Gravity * 150.0F) {
-      flutter();
-      if (World.cur().isDebugFM()) System.out.println("SummM > 150g");
-      this.AM.normalize();
-      this.AM.scale(this.Gravity * 150.0F);
-    }
-
-    this.dryFriction = (float)(this.dryFriction - 0.01D);
-    if (this.Gears.gearsChanged) this.dryFriction = 1.0F;
-    if (this.Gears.nOfPoiOnGr > 0) this.dryFriction += 0.02F;
-    if (this.dryFriction < 1.0F) this.dryFriction = 1.0F;
-    if (this.dryFriction > 32.0F) this.dryFriction = 32.0F;
-    float f16 = 4.0F * (0.25F - this.EI.getPowerOutput());
-    if (f16 < 0.0F) f16 = 0.0F;
-    f16 *= f16;
-    f16 *= this.dryFriction;
-    float f17 = f16 * this.M.mass * this.M.mass;
-    if ((!this.brakeShoe) && (
-      ((this.Gears.nOfPoiOnGr == 0) && (this.Gears.nOfGearsOnGr < 3)) || (f16 == 0.0F) || (this.SummM.lengthSquared() > 2.0F * f17) || (this.SummF.lengthSquared() > 80.0F * f17) || (this.W.lengthSquared() > 0.00014F * f16) || (this.Vwld.lengthSquared() > 0.09F * f16)))
+    private void cutWing()
     {
-      double d18 = 1.0D / j;
-      for (int k = 0; k < j; k++) {
-        this.SummF.add(this.AF, this.GF);
-        this.SummM.add(this.AM, this.GM);
+        if(Realism.Flutter_Effect)
+        {
+            java.lang.String s;
+            switch(com.maddox.il2.ai.World.Rnd().nextInt(0, 4))
+            {
+            case 0: // '\0'
+                s = "WingLMid";
+                break;
 
-        this.AW.x = (((this.J.y - this.J.z) * this.W.y * this.W.z + this.SummM.x) / this.J.x);
-        this.AW.y = (((this.J.z - this.J.x) * this.W.z * this.W.x + this.SummM.y) / this.J.y);
-        this.AW.z = (((this.J.x - this.J.y) * this.W.x * this.W.y + this.SummM.z) / this.J.z);
-        this.TmpV.scale(d18 * paramFloat, this.AW);
-        this.W.add(this.TmpV);
+            case 1: // '\001'
+                s = "WingRMid";
+                break;
 
-        this.Or.transform(this.W, this.Vn);
-        this.TmpV.scale(d18 * paramFloat, this.W);
-        this.Or.increment((float)(-RAD2DEG(this.TmpV.z)), (float)(-RAD2DEG(this.TmpV.y)), (float)RAD2DEG(this.TmpV.x));
+            case 2: // '\002'
+                s = "WingLIn";
+                break;
 
-        this.Or.transformInv(this.Vn, this.W);
-
-        this.TmpV.scale(d17, this.SummF);
-        this.Or.transform(this.TmpV);
-        this.Accel.set(this.TmpV);
-        this.TmpV.scale(d18 * paramFloat);
-        this.Vwld.add(this.TmpV);
-
-        this.TmpV.scale(d18 * paramFloat, this.Vwld);
-        this.TmpP.set(this.TmpV);
-        this.Loc.add(this.TmpP);
-
-        this.GF.set(0.0D, 0.0D, 0.0D);
-        this.GM.set(0.0D, 0.0D, 0.0D);
-        if (k < j - 1) {
-          this.Gears.ground(this, true);
-
-          this.TmpV.set(0.0D, 0.0D, -this.Gravity);
-          this.Or.transformInv(this.TmpV);
-          this.GF.add(this.TmpV);
+            default:
+                s = "WingRIn";
+                break;
+            }
+            s = s + "_D0";
+            ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, s, s);
         }
-
-      }
-
-      for (k = 0; k < 3; k++) {
-        this.Gears.gWheelAngles[k] = ((this.Gears.gWheelAngles[k] + (float)Math.toDegrees(Math.atan(this.Gears.gVelocity[k] * paramFloat / 0.375D))) % 360.0F);
-
-        this.Gears.gVelocity[k] *= 0.949999988079071D;
-      }
-
-      this.HM.chunkSetAngles("GearL1_D0", 0.0F, -this.Gears.gWheelAngles[0], 0.0F);
-      this.HM.chunkSetAngles("GearR1_D0", 0.0F, -this.Gears.gWheelAngles[1], 0.0F);
-      this.HM.chunkSetAngles("GearC1_D0", 0.0F, -this.Gears.gWheelAngles[2], 0.0F);
-    }
-    float f18;
-    if ((this.Leader != null) && (isTick(128, 97)) && 
-      (Actor.isAlive(this.Leader.actor)) && (!this.Gears.onGround)) {
-      f18 = (float)this.Loc.distance(this.Leader.Loc);
-      if (f18 > 3000.0F) Voice.speakDeviateBig((Aircraft)this.Leader.actor);
-      else if (f18 > 1700.0F) Voice.speakDeviateSmall((Aircraft)this.Leader.actor);
-
     }
 
-    this.shakeLevel = 0.0F;
-    if (this.Gears.onGround())
+    private void dangerEM()
     {
-      this.shakeLevel = (float)(this.shakeLevel + 30.0D * this.Gears.roughness * this.Vrel.length() / this.M.mass);
-    } else {
-      if (this.indSpeed > 10.0F) {
-        f18 = (float)Math.sin(Math.toRadians(Math.abs(this.AOA)));
-        if (f18 > 0.02F) {
-          f18 *= f18;
-          this.shakeLevel += 0.07F * (f18 - 0.0004F) * (this.indSpeed - 10.0F);
-          if ((isTick(30, 0)) && (this.shakeLevel > 0.6F)) {
-            HUD.log(stallStringID, "Stall");
-          }
-
+        if((long)com.maddox.rts.Time.tickCounter() < lastDangerTick + 1L)
+            return;
+        lastDangerTick = com.maddox.rts.Time.tickCounter();
+        com.maddox.il2.engine.Actor actor = com.maddox.il2.ai.War.GetNearestEnemy(this.actor, -1, 700F);
+        if(!(actor instanceof com.maddox.il2.objects.air.Aircraft))
+            return;
+        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)actor;
+        TmpVd.set(aircraft.FM.Loc);
+        TmpVd.sub(Loc);
+        Or.transformInv(TmpVd);
+        TmpVd.normalize();
+        if(TmpVd.x < 0.97999999999999998D)
+            return;
+        if(!(aircraft.FM instanceof com.maddox.il2.ai.air.Pilot))
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.air.Pilot pilot = (com.maddox.il2.ai.air.Pilot)aircraft.FM;
+            pilot.setAsDanger(this.actor);
+            return;
         }
-
-      }
-
-      if (this.indSpeed > 35.0F) {
-        if ((this.CT.bHasGearControl) && ((this.Gears.lgear) || (this.Gears.rgear)) && (this.CT.getGear() > 0.0F))
-          this.shakeLevel += 0.004F * this.CT.getGear() * (this.indSpeed - 35.0F);
-        if (this.CT.getFlap() > 0.0F) this.shakeLevel += 0.004F * this.CT.getFlap() * (this.indSpeed - 35.0F);
-      }
     }
 
-    if (this.indSpeed > this.VmaxAllowed * 0.8F) this.shakeLevel = (0.01F * (this.indSpeed - this.VmaxAllowed * 0.8F));
-
-    if (World.cur().diffCur.Head_Shake) {
-      this.shakeLevel += this.producedShakeLevel;
-      this.producedShakeLevel *= 0.9F;
+    private void dangerEMAces()
+    {
+        com.maddox.il2.engine.Actor actor = com.maddox.il2.ai.War.GetNearestEnemy(this.actor, -1, 300F);
+        if(!(actor instanceof com.maddox.il2.objects.air.Aircraft))
+            return;
+        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)actor;
+        TmpVd.set(aircraft.FM.Loc);
+        TmpVd.sub(Loc);
+        Or.transformInv(TmpVd);
+        TmpVd.normalize();
+        if(TmpV.x < 0.97999999999999998D)
+            return;
+        if(!(aircraft.FM instanceof com.maddox.il2.ai.air.Pilot))
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.ai.air.Pilot pilot = (com.maddox.il2.ai.air.Pilot)aircraft.FM;
+            pilot.setAsDanger(this.actor);
+            return;
+        }
     }
 
-    if (this.shakeLevel > 1.0F) this.shakeLevel = 1.0F;
-    ForceFeedback.fxShake(this.shakeLevel);
-
-    if (World.cur().diffCur.Blackouts_N_Redouts) calcOverLoad(paramFloat, true);
-  }
-
-  private void calcOverLoad(float paramFloat, boolean paramBoolean)
-  {
-    if (paramFloat > 1.0F) paramFloat = 1.0F;
-
-    if ((this.Gears.onGround()) || (!paramBoolean)) { this.plAccel.set(0.0D, 0.0D, 0.0D);
-    } else {
-      this.plAccel.set(getAccel());
-      this.plAccel.scale(0.1019999980926514D);
+    private float MulForce(float f)
+    {
+        if(f < 40F || f > 180F)
+            return 1.0F;
+        else
+            return 1.0F + (70F - java.lang.Math.abs(f - 110F)) * 0.04F;
     }
-    this.plAccel.z += 0.5D;
-    this.Or.transformInv(this.plAccel);
-    float f = -0.5F + (float)this.plAccel.z;
-    this.deep = 0.0F;
-    if (f < -0.6F) this.deep = (f + 0.6F);
-    if (f > 2.2F) this.deep = (f - 2.2F);
 
-    if (this.knockDnTime > 0.0F) this.knockDnTime -= paramFloat;
-    if (this.knockUpTime > 0.0F) this.knockUpTime -= paramFloat;
-    if (this.indiffDnTime < 4.0F) this.indiffDnTime += paramFloat;
-    if (this.indiffUpTime < 4.0F) this.indiffUpTime += 0.3F * paramFloat;
+    public boolean isRealMode()
+    {
+        return RealMode;
+    }
 
-    if (this.deep > 0.0F) {
-      if (this.indiffDnTime > 0.0F) this.indiffDnTime -= 0.8F * this.deep * paramFloat;
-      if ((this.deep > 2.3F) && (this.knockDnTime < 18.4F)) this.knockDnTime += 0.75F * this.deep * paramFloat;
-      if (this.indiffDnTime > 0.1F) {
-        this.currDeep = 0.0F;
-      } else {
-        this.currDeep = (this.deep * 0.08F * 3.5F);
-        if (this.currDeep > 0.8F) this.currDeep = 0.8F; 
-      }
+    public void setRealMode(boolean flag)
+    {
+        if(RealMode == flag)
+            return;
+        RealMode = flag;
+        if(RealMode)
+            AP.setStabAll(false);
     }
-    else if (this.deep < 0.0F) {
-      this.deep = (-this.deep);
-      if (this.deep < 0.84F) this.deep = 0.84F;
-      if (this.indiffUpTime > 0.0F) this.indiffUpTime -= 1.2F * this.deep * paramFloat;
-      if ((this.deep > 2.3F) && (this.knockUpTime < 16.1F)) this.knockUpTime += this.deep * paramFloat;
-      if (this.indiffUpTime > 0.1F)
-        this.currDeep = 0.0F;
-      else {
-        this.currDeep = (this.deep * 0.42F * 0.88F);
-      }
-      this.currDeep = (-this.currDeep);
-    } else {
-      this.currDeep = 0.0F;
-    }
-    if (this.knockUpTime > 10.809999F) this.currDeep = -0.88F;
-    if (this.knockDnTime > 14.03F) this.currDeep = 3.5F;
-    if (this.currDeep > 3.5F) this.currDeep = 3.5F;
-    if (this.currDeep < -0.88F) this.currDeep = -0.88F;
 
-    if (this.saveDeep > 0.8F) {
-      this.CT.Sensitivity = (1.0F - (this.saveDeep - 0.8F));
-      if (this.CT.Sensitivity < 0.0F) this.CT.Sensitivity = 0.0F;
-    }
-    else if (this.saveDeep < -0.4F) {
-      this.CT.Sensitivity = (1.0F + (this.saveDeep + 0.4F));
-      if (this.CT.Sensitivity < 0.0F) this.CT.Sensitivity = 0.0F; 
-    } else {
-      this.CT.Sensitivity = 1.0F;
-    }this.CT.Sensitivity *= this.AS.getPilotHealth(0);
+    private void checkAirborneState()
+    {
+        if(com.maddox.il2.ai.World.getPlayerFM() != this)
+            return;
+        if(!com.maddox.il2.engine.Actor.isAlive(actor))
+            return;
+        switch(airborneState)
+        {
+        default:
+            break;
 
-    if (this.saveDeep < this.currDeep) {
-      this.saveDeep += 0.3F * paramFloat;
-      if (this.saveDeep > this.currDeep) this.saveDeep = this.currDeep; 
-    }
-    else {
-      this.saveDeep -= 0.2F * paramFloat;
-      if (this.saveDeep < this.currDeep) this.saveDeep = this.currDeep;
-    }
-  }
+        case 0: // '\0'
+            if((double)getAltitude() - com.maddox.il2.engine.Engine.land().HQ_Air(Loc.x, Loc.y) > 40D)
+            {
+                airborneState = 2;
+                setWasAirborne(true);
+                setStationedOnGround(false);
+                com.maddox.il2.ai.EventLog.onAirInflight((com.maddox.il2.objects.air.Aircraft)actor);
+                com.maddox.rts.CmdEnv.top().exec("music RAND music/inflight");
+            } else
+            {
+                airborneState = 1;
+                setStationedOnGround(true);
+                com.maddox.rts.CmdEnv.top().exec("music RAND music/takeoff");
+            }
+            setCrossCountry(false);
+            break;
 
-  public void gunMomentum(Vector3d paramVector3d, boolean paramBoolean)
-  {
-    this.producedAM.x += paramVector3d.x;
-    this.producedAM.y += paramVector3d.y;
-    this.producedAM.z += paramVector3d.z;
-    float f = (float)paramVector3d.length() * 3.5E-005F;
-    if ((paramBoolean) && (f > 0.5F)) f *= 0.05F;
-    if (this.producedShakeLevel < f) this.producedShakeLevel = f;
-  }
+        case 1: // '\001'
+            if(Vrel.length() > (double)Vmin)
+                setStationedOnGround(false);
+            if((double)getAltitude() - com.maddox.il2.engine.Engine.land().HQ_Air(Loc.x, Loc.y) > 40D && Vrel.length() > (double)(Vmin * 1.15F))
+            {
+                airborneState = 2;
+                setStationedOnGround(false);
+                setNearAirdrome(false);
+                setWasAirborne(true);
+                airborneStartPoint.set(Loc);
+                com.maddox.il2.ai.World.cur().scoreCounter.playerTakeoff();
+                com.maddox.il2.ai.EventLog.onAirInflight((com.maddox.il2.objects.air.Aircraft)actor);
+                com.maddox.rts.CmdEnv.top().exec("music RAND music/inflight");
+            }
+            break;
+
+        case 2: // '\002'
+            if(!isCrossCountry() && Loc.distance(airborneStartPoint) > 50000D)
+            {
+                setCrossCountry(true);
+                com.maddox.il2.ai.World.cur().scoreCounter.playerDoCrossCountry();
+            }
+            if(!Gears.onGround || Vrel.length() >= 1.0D)
+                break;
+            airborneState = 1;
+            setStationedOnGround(true);
+            com.maddox.rts.CmdEnv.top().exec("music RAND music/takeoff");
+            if(com.maddox.il2.ai.Airport.distToNearestAirport(Loc) > 1500D)
+            {
+                com.maddox.il2.ai.World.cur().scoreCounter.playerLanding(true);
+                setNearAirdrome(false);
+            } else
+            {
+                com.maddox.il2.ai.World.cur().scoreCounter.playerLanding(false);
+                setNearAirdrome(true);
+            }
+            break;
+        }
+    }
+
+    public void update(float f)
+    {
+        if(actor.isNetMirror())
+        {
+            ((com.maddox.il2.objects.air.NetAircraft.Mirror)actor.net).fmUpdate(f);
+            return;
+        }
+        V2 = (float)Vflow.lengthSquared();
+        V = (float)java.lang.Math.sqrt(V2);
+        if(V * f > 5F)
+        {
+            update(f * 0.5F);
+            update(f * 0.5F);
+            return;
+        }
+        float f3 = 0.0F;
+        float f4 = 0.0F;
+        float f5 = 0.0F;
+        if(!RealMode)
+        {
+            shakeLevel = 0.0F;
+            super.update(f);
+            if(isTick(44, 0))
+                checkAirborneState();
+            if(com.maddox.il2.ai.World.cur().diffCur.Blackouts_N_Redouts)
+                calcOverLoad(f, false);
+            producedAM.set(0.0D, 0.0D, 0.0D);
+            producedAF.set(0.0D, 0.0D, 0.0D);
+            return;
+        }
+        moveCarrier();
+        decDangerAggressiveness();
+        if(Loc.z < -20D)
+            ((com.maddox.il2.objects.air.Aircraft)actor).postEndAction(0.0D, actor, 4, null);
+        if(!isOk() && Group != null)
+            Group.delAircraft((com.maddox.il2.objects.air.Aircraft)actor);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER() && com.maddox.il2.ai.air.Maneuver.showFM && actor == com.maddox.il2.game.Main3D.cur3D().viewActor())
+        {
+            float f6 = (((float)W.x / (CT.getAileron() * 111.111F * SensRoll)) * Sq.squareWing) / 0.8F;
+            if(java.lang.Math.abs(f6) > 50F)
+                f6 = 0.0F;
+            float f8 = (((float)W.y / (-CT.getElevator() * 111.111F * SensPitch)) * Sq.squareWing) / 0.27F;
+            if(java.lang.Math.abs(f8) > 50F)
+                f8 = 0.0F;
+            float f10 = (((float)W.z / ((AOS - CT.getRudder() * 12F) * 111.111F * SensYaw)) * Sq.squareWing) / 0.15F;
+            if(java.lang.Math.abs(f10) > 50F)
+                f10 = 0.0F;
+            com.maddox.il2.engine.TextScr.output(5, 60, "~S RUDDR = " + (float)(int)(f10 * 100F) / 100F);
+            com.maddox.il2.engine.TextScr.output(5, 80, "~S VATOR = " + (float)(int)(f8 * 100F) / 100F);
+            com.maddox.il2.engine.TextScr.output(5, 100, "~S AERON = " + (float)(int)(f6 * 100F) / 100F);
+            java.lang.String s = "";
+            for(int i = 0; (float)i < shakeLevel * 10.5F; i++)
+                s = s + ">";
+
+            com.maddox.il2.engine.TextScr.output(5, 120, "SHAKE LVL -" + shakeLevel);
+            com.maddox.il2.engine.TextScr.output(5, 140, "BRAKE = " + CT.getBrake());
+            int j = 0;
+            com.maddox.il2.engine.TextScr.output(225, 140, "---ENGINES (" + EI.getNum() + ")---" + EI.engines[j].getStage());
+            com.maddox.il2.engine.TextScr.output(245, 120, "THTL " + (int)(100F * EI.engines[j].getControlThrottle()) + "%" + (EI.engines[j].getControlAfterburner() ? " (NITROS)" : ""));
+            com.maddox.il2.engine.TextScr.output(245, 100, "PROP " + (int)(100F * EI.engines[j].getControlProp()) + "%" + (CT.getStepControlAuto() ? " (AUTO)" : ""));
+            com.maddox.il2.engine.TextScr.output(245, 80, "MIX " + (int)(100F * EI.engines[j].getControlMix()) + "%");
+            com.maddox.il2.engine.TextScr.output(245, 60, "RAD " + (int)(100F * EI.engines[j].getControlRadiator()) + "%" + (CT.getRadiatorControlAuto() ? " (AUTO)" : ""));
+            com.maddox.il2.engine.TextScr.output(245, 40, "SUPC " + EI.engines[j].getControlCompressor() + "x");
+            com.maddox.il2.engine.TextScr.output(245, 20, "PropAoA :" + (int)java.lang.Math.toDegrees(EI.engines[j].getPropAoA()));
+            com.maddox.il2.engine.TextScr.output(245, 0, "PropPhi :" + (int)java.lang.Math.toDegrees(EI.engines[j].getPropPhi()));
+            com.maddox.il2.engine.TextScr.output(455, 120, "Cyls/Cams " + EI.engines[j].getCylindersOperable() + "/" + EI.engines[j].getCylinders());
+            com.maddox.il2.engine.TextScr.output(455, 100, "Readyness " + (int)(100F * EI.engines[j].getReadyness()) + "%");
+            com.maddox.il2.engine.TextScr.output(455, 80, "PRM " + (int)((float)(int)(EI.engines[j].getRPM() * 0.02F) * 50F) + " rpm");
+            com.maddox.il2.engine.TextScr.output(455, 60, "Thrust " + (int)EI.engines[j].getEngineForce().x + " N");
+            com.maddox.il2.engine.TextScr.output(455, 40, "Fuel " + (int)((100F * M.fuel) / M.maxFuel) + "% Nitro " + (int)((100F * M.nitro) / M.maxNitro) + "%");
+            com.maddox.il2.engine.TextScr.output(455, 20, "MPrs " + (int)(1000F * EI.engines[j].getManifoldPressure()) + " mBar");
+            com.maddox.il2.engine.TextScr.output(640, 140, "---Controls---");
+            com.maddox.il2.engine.TextScr.output(640, 120, "A/C: " + (CT.bHasAileronControl ? "" : "AIL ") + (CT.bHasElevatorControl ? "" : "ELEV ") + (CT.bHasRudderControl ? "" : "RUD ") + (Gears.bIsHydroOperable ? "" : "GEAR "));
+            com.maddox.il2.engine.TextScr.output(640, 100, "ENG: " + (EI.engines[j].isHasControlThrottle() ? "" : "THTL ") + (EI.engines[j].isHasControlProp() ? "" : "PROP ") + (EI.engines[j].isHasControlMix() ? "" : "MIX ") + (EI.engines[j].isHasControlCompressor() ? "" : "SUPC ") + (EI.engines[j].isPropAngleDeviceOperational() ? "" : "GVRNR "));
+            com.maddox.il2.engine.TextScr.output(640, 80, "PIL: (" + (int)(AS.getPilotHealth(0) * 100F) + "%)");
+            com.maddox.il2.engine.TextScr.output(640, 60, "Sens: " + CT.Sensitivity);
+            com.maddox.il2.engine.TextScr.output(400, 500, "+");
+            com.maddox.il2.engine.TextScr.output(400, 400, "|");
+            com.maddox.il2.engine.TextScr.output((int)(400F + 200F * CT.AileronControl), (int)(500F - 200F * CT.ElevatorControl), "+");
+            com.maddox.il2.engine.TextScr.output((int)(400F + 200F * CT.RudderControl), 400, "|");
+            com.maddox.il2.engine.TextScr.output(5, 200, "AOA = " + AOA);
+            com.maddox.il2.engine.TextScr.output(5, 220, "Mass = " + M.getFullMass());
+            com.maddox.il2.engine.TextScr.output(5, 320, "AERON TR = " + CT.trimAileron);
+            com.maddox.il2.engine.TextScr.output(5, 300, "VATOR TR = " + CT.trimElevator);
+            com.maddox.il2.engine.TextScr.output(5, 280, "RUDDR TR = " + CT.trimRudder);
+        }
+        if(!Realism.Limited_Fuel)
+            superFuel = M.fuel = java.lang.Math.max(superFuel, M.fuel);
+        AP.update(f);
+        ((com.maddox.il2.objects.air.Aircraft)actor).netUpdateWayPoint();
+        CT.update(f, (float)Vflow.x, EI, true);
+        float f7 = (float)(Vflow.x * Vflow.x) / 11000F;
+        if(f7 > 1.0F)
+            f7 = 1.0F;
+        com.maddox.il2.objects.effects.ForceFeedback.fxSetSpringGain(f7);
+        if(CT.saveWeaponControl[0] || CT.saveWeaponControl[1] || CT.saveWeaponControl[2])
+            dangerEM();
+        Wing.setFlaps(CT.getFlap());
+        FMupdate(f);
+        EI.update(f);
+        Gravity = M.getFullMass() * com.maddox.il2.fm.Atmosphere.g();
+        M.computeFullJ(J, J0);
+        if(isTick(44, 0))
+        {
+            AS.update(f * 44F);
+            ((com.maddox.il2.objects.air.Aircraft)actor).rareAction(f * 44F, true);
+            M.computeParasiteMass(CT.Weapons);
+            Sq.computeParasiteDrag(CT, CT.Weapons);
+            checkAirborneState();
+            putScareShpere();
+            dangerEMAces();
+            if(turnOffCollisions && !Gears.onGround && (double)getAltitude() - com.maddox.il2.engine.Engine.land().HQ_Air(Loc.x, Loc.y) > 30D)
+                turnOffCollisions = false;
+        }
+        Or.wrap();
+        if(Realism.Wind_N_Turbulence)
+            com.maddox.il2.ai.World.wind().getVector(Loc, Vwind);
+        else
+            Vwind.set(0.0D, 0.0D, 0.0D);
+        Vair.sub(Vwld, Vwind);
+        Or.transformInv(Vair, Vflow);
+        Density = com.maddox.il2.fm.Atmosphere.density((float)Loc.z);
+        AOA = com.maddox.il2.fm.FMMath.RAD2DEG(-(float)java.lang.Math.atan2(Vflow.z, Vflow.x));
+        AOS = com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vflow.y, Vflow.x));
+        indSpeed = getSpeed() * (float)java.lang.Math.sqrt(Density / 1.225F);
+        Mach = V / com.maddox.il2.fm.Atmosphere.sonicSpeed((float)Loc.z);
+        if(Mach > 0.8F)
+            Mach = 0.8F;
+        Kq = 1.0F / (float)java.lang.Math.sqrt(1.0F - Mach * Mach);
+        q_ = Density * V2 * 0.5F;
+        double d1 = Loc.z - Gears.screenHQ;
+        if(d1 < 0.0D)
+            d1 = 0.0D;
+        float f1 = CT.getAileron() * 14F;
+        f1 = Arms.WING_V * (float)java.lang.Math.sin(com.maddox.il2.fm.FMMath.DEG2RAD(AOS)) + SensRoll * ailerInfluence * (1.0F - 0.1F * CT.getFlap()) * f1;
+        double d2 = 0.0D;
+        double d4 = 0.0D;
+        if(EI.engines[0].getType() < 2)
+        {
+            d2 = EI.engines[0].addVflow;
+            if(Realism.Torque_N_Gyro_Effects)
+                d4 = 0.5D * EI.engines[0].addVside;
+        }
+        Vn.set(-Arms.GCENTER, 0.84999999999999998D * (double)Arms.WING_END, -0.5D);
+        Vn.cross(W, Vn);
+        Vn.add(Vflow);
+        float f12 = f1 - com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z, Vn.x));
+        Vn.x += 0.070000000000000007D * d2;
+        double d = Vn.lengthSquared();
+        d *= 0.5F * Density;
+        f7 = f1 - com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z + 0.070000000000000007D * d4 * (double)EI.getPropDirSign(), Vn.x));
+        float f14 = 0.015F * f1;
+        if(f14 < 0.0F)
+            f14 *= 0.18F;
+        Cwl.x = -d * (double)(Wing.new_Cx(f7) + f14 + GearCX * CT.getGear() + radiatorCX * (EI.getRadiatorPos() + CT.getCockpitDoor()) + Sq.dragAirbrakeCx * CT.getAirBrake());
+        Cwl.z = d * (double)Wing.new_Cy(f7) * (double)Kq;
+        if(fmsfxCurrentType != 0)
+        {
+            if(fmsfxCurrentType == 1)
+                Cwl.z *= com.maddox.il2.objects.air.Aircraft.cvt(fmsfxPrevValue, 0.003F, 0.8F, 1.0F, 0.0F);
+            if(fmsfxCurrentType == 2)
+            {
+                Cwl.z = 0.0D;
+                if(com.maddox.rts.Time.current() >= fmsfxTimeDisable)
+                    doRequestFMSFX(0, 0);
+            }
+        }
+        Vn.set(-Arms.GCENTER, -Arms.WING_END, -0.5D);
+        Vn.cross(W, Vn);
+        Vn.add(Vflow);
+        float f13 = -f1 - com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z, Vn.x));
+        Vn.x += 0.070000000000000007D * d2;
+        d = Vn.lengthSquared();
+        d *= 0.5F * Density;
+        float f9 = -f1 - com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z - 0.070000000000000007D * d4 * (double)EI.getPropDirSign(), Vn.x));
+        f14 = -0.015F * f1;
+        if(f14 < 0.0F)
+            f14 *= 0.18F;
+        Cwr.x = -d * (double)(Wing.new_Cx(f9) + f14 + GearCX * CT.getGear() + radiatorCX * EI.getRadiatorPos() + Sq.dragAirbrakeCx * CT.getAirBrake());
+        Cwr.z = d * (double)Wing.new_Cy(f9) * (double)Kq;
+        if(fmsfxCurrentType != 0)
+        {
+            if(fmsfxCurrentType == 1)
+                Cwr.z *= com.maddox.il2.objects.air.Aircraft.cvt(fmsfxPrevValue, 0.003F, 0.8F, 1.0F, 0.0F);
+            if(fmsfxCurrentType == 3)
+            {
+                Cwr.z = 0.0D;
+                if(com.maddox.rts.Time.current() >= fmsfxTimeDisable)
+                    doRequestFMSFX(0, 0);
+            }
+        }
+        Cwl.y = -d * (double)Fusel.new_Cy(AOS);
+        Cwl.x -= d * (double)Fusel.new_Cx(AOS);
+        Cwr.y = -d * (double)Fusel.new_Cy(AOS);
+        Cwr.x -= d * (double)Fusel.new_Cx(AOS);
+        float f15 = Wing.get_AOA_CRYT();
+        double d7 = 1.0D;
+        double d8 = 0.5D + 0.40000000000000002D * (double)EI.getPowerOutput();
+        double d9 = 1.2D + 0.40000000000000002D * (double)EI.getPowerOutput();
+        if(spinCoeff < d8)
+            spinCoeff = d8;
+        if(spinCoeff > d9)
+            spinCoeff = d9;
+        f7 = f12;
+        f9 = f13;
+        if(!Realism.Stalls_N_Spins || Gears.isUnderDeck())
+        {
+            if(f7 > f9)
+            {
+                if(Cwl.z < Cwr.z)
+                {
+                    double d5 = Cwl.z;
+                    Cwl.z = Cwr.z;
+                    Cwr.z = d5;
+                }
+            } else
+            if(Cwl.z > Cwr.z)
+            {
+                double d6 = Cwl.z;
+                Cwl.z = Cwr.z;
+                Cwr.z = d6;
+            }
+        } else
+        if(f7 > f15 || f9 > f15)
+        {
+            spinCoeff += 0.20000000000000001D * (double)f;
+            if((double)Sq.squareRudders > 0.0D && (double)java.lang.Math.abs(CT.RudderControl) > 0.5D && (double)CT.RudderControl * W.z > 0.0D)
+                spinCoeff -= 0.29999999999999999D * (double)f;
+            float f16;
+            if(f7 > f9)
+                f16 = f7;
+            else
+                f16 = f9;
+            turbCoeff = 0.8F * (f16 - f15);
+            if(turbCoeff < 1.0F)
+                turbCoeff = 1.0F;
+            if(turbCoeff > 15F)
+                turbCoeff = 15F;
+            d7 = 1.0D - 0.20000000000000001D * (double)(f16 - f15);
+            if(d7 < 0.20000000000000001D)
+                d7 = 0.20000000000000001D;
+            d7 /= turbCoeff;
+            double d12 = d * (double)turbCoeff * spinCoeff;
+            float f17 = getAltitude() - (float)com.maddox.il2.engine.Engine.land().HQ_Air(Loc.x, Loc.y);
+            if(f17 < 10F)
+                d12 *= 0.1F * f17;
+            if(f7 > f9)
+            {
+                Cwr.x += 0.019999999552965164D * d12 * (double)Sq.spinCxloss;
+                Cwl.x -= 0.25D * d12 * (double)Sq.spinCxloss;
+                Cwr.z += 0.019999999552965164D * d12 * (double)Sq.spinCyloss;
+                Cwl.z -= 0.10000000149011612D * d12 * (double)Sq.spinCyloss;
+            } else
+            {
+                Cwl.x += 0.019999999552965164D * d12 * (double)Sq.spinCxloss;
+                Cwr.x -= 0.25D * d12 * (double)Sq.spinCxloss;
+                Cwl.z += 0.019999999552965164D * d12 * (double)Sq.spinCyloss;
+                Cwr.z -= 0.10000000149011612D * d12 * (double)Sq.spinCyloss;
+            }
+            rudderInfluence = 1.0F + 0.035F * turbCoeff;
+        } else
+        {
+            turbCoeff = 1.0F;
+            d7 = 1.0D;
+            spinCoeff -= 0.20000000000000001D * (double)f;
+            ailerInfluence = 1.0F;
+            rudderInfluence = 1.0F;
+        }
+        if(isTick(15, 0))
+            if(java.lang.Math.abs(f7 - f9) > 5F)
+                com.maddox.il2.objects.effects.ForceFeedback.fxSetSpringZero((f9 - f7) * 0.04F, 0.0F);
+            else
+                com.maddox.il2.objects.effects.ForceFeedback.fxSetSpringZero(0.0F, 0.0F);
+        if(d1 < 0.40000000000000002D * (double)Length)
+        {
+            double d10 = 1.0D - d1 / (0.40000000000000002D * (double)Length);
+            double d13 = 1.0D + 0.20000000000000001D * d10;
+            double d16 = 1.0D + 0.20000000000000001D * d10;
+            Cwl.z *= d13;
+            Cwl.x *= d16;
+            Cwr.z *= d13;
+            Cwr.x *= d16;
+        }
+        f1 = CT.getElevator() * (CT.getElevator() <= 0.0F ? 20F : 28F);
+        Vn.set(-Arms.VER_STAB, 0.0D, 0.0D);
+        Vn.cross(W, Vn);
+        Vn.add(Vflow);
+        double d11 = java.lang.Math.sqrt(Vn.y * Vn.y + Vn.z * Vn.z);
+        d2 = 0.0D;
+        d4 = 0.0D;
+        if(EI.engines[0].getType() < 2)
+        {
+            double d14 = 1.0D + 0.040000000000000001D * (double)Arms.RUDDER;
+            d14 = 1.0D / (d14 * d14);
+            double d17 = Vn.x + d14 * EI.engines[0].addVflow;
+            if(d17 < 0.20000000000000001D)
+                d17 = 0.20000000000000001D;
+            double d19 = 1.0D - (1.5D * d11) / d17;
+            if(d19 < 0.0D)
+                d19 = 0.0D;
+            double d3 = d19 * d14 * EI.engines[0].addVflow;
+            Vn.x += d3;
+            double d21 = java.lang.Math.min(0.0011000000000000001D * Vn.x * Vn.x, 1.0D);
+            if(Vn.x < 0.0D)
+                d21 = 0.0D;
+            if(Realism.Torque_N_Gyro_Effects)
+                d4 = d19 * d21 * EI.engines[0].addVside;
+        }
+        double d15 = (double)Density * Vn.lengthSquared() * 0.5D;
+        if(EI.getNum() == 1 && EI.engines[0].getType() < 2)
+        {
+            f7 = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z - 0.35999999999999999D * d4 * (double)EI.getPropDirSign(), Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
+            f9 = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z + 0.35999999999999999D * d4 * (double)EI.getPropDirSign(), Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
+        } else
+        {
+            f7 = f9 = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.z, Vn.x)) - 2.0F - 0.002F * V - SensPitch * f1;
+        }
+        Chl.x = -d15 * (double)Tail.new_Cx(f7);
+        Chl.z = d15 * (double)Tail.new_Cy(f7);
+        Chr.x = -d15 * (double)Tail.new_Cx(f9);
+        Chr.z = d15 * (double)Tail.new_Cy(f9);
+        Chl.y = Chr.y = 0.0D;
+        f1 = CT.getRudder() * (Sq.squareRudders >= 0.05F ? 28F : 0.0F);
+        float f11;
+        if(EI.engines[0].getType() < 2)
+            f11 = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.y - 0.5D * d4 * (double)EI.getPropDirSign(), Vn.x)) + SensYaw * rudderInfluence * f1;
+        else
+            f11 = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(Vn.y, Vn.x)) + SensYaw * rudderInfluence * f1;
+        Cv.x = -d15 * (double)Tail.new_Cx(f11);
+        Cv.y = d15 * (double)Tail.new_Cy(f11);
+        Cv.z = 0.0D;
+        if(!Realism.Stalls_N_Spins)
+            Cv.y += Cv.y;
+        Vn.set(Vflow);
+        d = (double)Density * Vn.lengthSquared() * 0.5D;
+        Fwl.scale(Sq.liftWingLIn + Sq.liftWingLMid + Sq.liftWingLOut, Cwl);
+        Fwr.scale(Sq.liftWingRIn + Sq.liftWingRMid + Sq.liftWingROut, Cwr);
+        Fwl.x -= d * (double)(Sq.dragParasiteCx + Sq.dragProducedCx) * 0.5D;
+        Fwr.x -= d * (double)(Sq.dragParasiteCx + Sq.dragProducedCx) * 0.5D;
+        Fhl.scale((Sq.liftStab + Sq.squareElevators) * 0.5F, Chl);
+        Fhr.scale((Sq.liftStab + Sq.squareElevators) * 0.5F, Chr);
+        Fv.scale(0.2F + Sq.liftKeel * 1.5F + Sq.squareRudders, Cv);
+        AF.set(Fwl);
+        AF.add(Fwr);
+        if(com.maddox.il2.fm.FMMath.isNAN(AF))
+        {
+            AF.set(0.0D, 0.0D, 0.0D);
+            flutter();
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("AF isNAN");
+        } else
+        if(AF.length() > (double)(Gravity * 50F))
+        {
+            flutter();
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("A > 50.0");
+            AF.normalize();
+            AF.scale(Gravity * 50F);
+        } else
+        {
+            if(getOverload() > 13.5F && !Gears.onGround() && com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 98)
+                cutWing();
+            if(indSpeed > 112.5F && com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 98 && CT.getGear() > 0.3F && CT.GearControl == 1.0F)
+                if(!(actor instanceof com.maddox.il2.objects.air.F4U))
+                {
+                    if(com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 76)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "GearR2_D0", "GearR2_D0");
+                    if(com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 76)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "GearL2_D0", "GearL2_D0");
+                } else
+                if(indSpeed > 180F)
+                {
+                    if(com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 76)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "GearR2_D0", "GearR2_D0");
+                    if(com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 76)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "GearL2_D0", "GearL2_D0");
+                }
+            if(indSpeed > 60.5F && CT.getWing() > 0.1F)
+            {
+                if(com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 90 && ((com.maddox.il2.objects.air.Aircraft)actor).isChunkAnyDamageVisible("WingLMid"))
+                    ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "WingLMid_D0", "WingLMid_D0");
+                if(com.maddox.il2.ai.World.Rnd().nextInt(0, 100) > 90 && ((com.maddox.il2.objects.air.Aircraft)actor).isChunkAnyDamageVisible("WingRMid"))
+                    ((com.maddox.il2.objects.air.Aircraft)actor).msgCollision(actor, "WingRMid_D0", "WingRMid_D0");
+            }
+            if(indSpeed > 81F && CT.bHasFlapsControl && CT.FlapsControl > 0.21F && (indSpeed - 81F) * CT.getFlap() > 8F)
+            {
+                if(com.maddox.il2.ai.World.getPlayerAircraft() == actor && CT.bHasFlapsControl)
+                    com.maddox.il2.game.HUD.log("FailedFlaps");
+                CT.bHasFlapsControl = false;
+                CT.FlapsControl = 0.0F;
+            }
+            if(indSpeed > VmaxAllowed && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 16F) < indSpeed - VmaxAllowed && com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 2)
+                flutterDamage();
+            if(indSpeed > 310F)
+            {
+                if(com.maddox.il2.ai.World.cur().isDebugFM())
+                    java.lang.System.out.println("*** Sonic overspeed....");
+                flutter();
+            }
+        }
+        AM.set(0.0D, 0.0D, 0.0D);
+        if(java.lang.Math.abs(AOA) < 12F)
+        {
+            float f2 = Or.getKren();
+            if(f2 > 30F)
+                f2 = 30F;
+            else
+            if(f2 < -30F)
+                f2 = -30F;
+            f2 = (float)((double)f2 * (java.lang.Math.min(Vflow.x - 50D, 50D) * 0.0030000000260770321D));
+            AM.add(-f2 * 0.01F * Gravity, 0.0D, 0.0D);
+        }
+        if(!getOp(19))
+        {
+            AM.y += (double)(8F * Sq.squareWing) * Vflow.x;
+            AM.z += 200F * Sq.squareWing * EI.getPropDirSign();
+        }
+        double d18 = (double)CT.getFlap() * 3D;
+        if(d18 > 1.0D)
+            d18 = 1.0D;
+        double d20 = 0.0111D * (double)java.lang.Math.abs(AOA);
+        if(Wing.AOACritL < AOA && AOA < Wing.AOACritH)
+            d20 = 0.0D;
+        else
+        if(AOA >= Wing.AOACritH)
+            d20 = java.lang.Math.min(d20, 0.29999999999999999D * (double)(AOA - Wing.AOACritH));
+        else
+        if(Wing.AOACritL <= AOA)
+            d20 = java.lang.Math.min(d20, 0.29999999999999999D * (double)(Wing.AOACritL - AOA));
+        double d22 = (double)Arms.GCENTER + (double)Arms.GC_FLAPS_SHIFT * d18 * (1.0D - d20) + (double)Arms.GC_AOA_SHIFT * d20;
+        TmpV.set(-d22, (double)Arms.WING_MIDDLE * (1.3D + 1.0D * java.lang.Math.sin(com.maddox.il2.fm.FMMath.DEG2RAD(AOS))), -Arms.GCENTER_Z);
+        TmpV.cross(TmpV, Fwl);
+        AM.add(TmpV);
+        TmpV.set(-d22, (double)(-Arms.WING_MIDDLE) * (1.3D - 1.0D * java.lang.Math.sin(com.maddox.il2.fm.FMMath.DEG2RAD(AOS))), -Arms.GCENTER_Z);
+        TmpV.cross(TmpV, Fwr);
+        AM.add(TmpV);
+        AM.x += su26add;
+        TmpV.set(-Arms.HOR_STAB, 1.0D, 0.0D);
+        TmpV.cross(TmpV, Fhl);
+        AM.add(TmpV);
+        TmpV.set(-Arms.HOR_STAB, -1D, 0.0D);
+        TmpV.cross(TmpV, Fhr);
+        AM.add(TmpV);
+        TmpV.set(-Arms.VER_STAB, 0.0D, 1.0D);
+        TmpV.cross(TmpV, Fv);
+        AM.add(TmpV);
+        double d23 = 1.0D - 1.0000000000000001E-005D * (double)indSpeed;
+        if(d23 < 0.80000000000000004D)
+            d23 = 0.80000000000000004D;
+        W.scale(d23);
+        if(!Realism.Stalls_N_Spins)
+            AM.y += AF.z * 0.5D * java.lang.Math.sin(com.maddox.il2.fm.FMMath.DEG2RAD(java.lang.Math.abs(AOA)));
+        if(W.lengthSquared() > 25D)
+            W.scale(5D / W.length());
+        if(!Realism.Stalls_N_Spins && Vflow.x > 20D)
+            W.z += AOS * f;
+        AF.add(producedAF);
+        AM.add(producedAM);
+        producedAF.set(0.0D, 0.0D, 0.0D);
+        producedAM.set(0.0D, 0.0D, 0.0D);
+        AF.add(EI.producedF);
+        AM.add(EI.producedM);
+        if(com.maddox.il2.ai.World.cur().diffCur.Torque_N_Gyro_Effects)
+        {
+            GM.set(EI.getGyro());
+            GM.scale(d7);
+            AM.add(GM);
+        }
+        GF.set(0.0D, 0.0D, 0.0D);
+        GM.set(0.0D, 0.0D, 0.0D);
+        if(com.maddox.rts.Time.tickCounter() % 2 != 0)
+            Gears.roughness = Gears.plateFriction(this);
+        Gears.ground(this, true);
+        int k = 5;
+        if(GF.lengthSquared() == 0.0D && GM.lengthSquared() == 0.0D)
+            k = 1;
+        SummF.add(AF, GF);
+        ACmeter.set(SummF);
+        ACmeter.scale(1.0F / Gravity);
+        TmpV.set(0.0D, 0.0D, -Gravity);
+        Or.transformInv(TmpV);
+        GF.add(TmpV);
+        SummF.add(AF, GF);
+        SummM.add(AM, GM);
+        double d24 = 1.0D / (double)M.mass;
+        LocalAccel.scale(d24, SummF);
+        if(java.lang.Math.abs(getRollAcceleration()) > 50000.5F)
+        {
+            com.maddox.il2.objects.effects.ForceFeedback.fxPunch(SummM.x <= 0.0D ? -0.9F : 0.9F, 0.0F, 1.0F);
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("Punched (Axial = " + SummM.x + ")");
+        }
+        if(java.lang.Math.abs(getOverload() - lastAcc) > 0.5F)
+        {
+            com.maddox.il2.objects.effects.ForceFeedback.fxPunch(com.maddox.il2.ai.World.Rnd().nextFloat(-0.5F, 0.5F), -0.9F, getSpeed() * 0.05F);
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("Punched (Lat = " + java.lang.Math.abs(getOverload() - lastAcc) + ")");
+        }
+        lastAcc = getOverload();
+        if(com.maddox.il2.fm.FMMath.isNAN(AM))
+        {
+            AM.set(0.0D, 0.0D, 0.0D);
+            flutter();
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("AM isNAN");
+        } else
+        if(AM.length() > (double)(Gravity * 150F))
+        {
+            flutter();
+            if(com.maddox.il2.ai.World.cur().isDebugFM())
+                java.lang.System.out.println("SummM > 150g");
+            AM.normalize();
+            AM.scale(Gravity * 150F);
+        }
+        dryFriction -= 0.01D;
+        if(Gears.gearsChanged)
+            dryFriction = 1.0F;
+        if(Gears.nOfPoiOnGr > 0)
+            dryFriction += 0.02F;
+        if(dryFriction < 1.0F)
+            dryFriction = 1.0F;
+        if(dryFriction > 32F)
+            dryFriction = 32F;
+        float f18 = 4F * (0.25F - EI.getPowerOutput());
+        if(f18 < 0.0F)
+            f18 = 0.0F;
+        f18 *= f18;
+        f18 *= dryFriction;
+        float f19 = f18 * M.mass * M.mass;
+        if(!brakeShoe && (Gears.nOfPoiOnGr == 0 && Gears.nOfGearsOnGr < 3 || f18 == 0.0F || SummM.lengthSquared() > (double)(2.0F * f19) || SummF.lengthSquared() > (double)(80F * f19) || W.lengthSquared() > (double)(0.00014F * f18) || Vwld.lengthSquared() > (double)(0.09F * f18)))
+        {
+            double d25 = 1.0D / (double)k;
+            for(int l = 0; l < k; l++)
+            {
+                SummF.add(AF, GF);
+                SummM.add(AM, GM);
+                AW.x = ((J.y - J.z) * W.y * W.z + SummM.x) / J.x;
+                AW.y = ((J.z - J.x) * W.z * W.x + SummM.y) / J.y;
+                AW.z = ((J.x - J.y) * W.x * W.y + SummM.z) / J.z;
+                TmpV.scale(d25 * (double)f, AW);
+                W.add(TmpV);
+                Or.transform(W, Vn);
+                TmpV.scale(d25 * (double)f, W);
+                Or.increment((float)(-com.maddox.il2.fm.FMMath.RAD2DEG(TmpV.z)), (float)(-com.maddox.il2.fm.FMMath.RAD2DEG(TmpV.y)), (float)com.maddox.il2.fm.FMMath.RAD2DEG(TmpV.x));
+                Or.transformInv(Vn, W);
+                TmpV.scale(d24, SummF);
+                Or.transform(TmpV);
+                Accel.set(TmpV);
+                TmpV.scale(d25 * (double)f);
+                Vwld.add(TmpV);
+                TmpV.scale(d25 * (double)f, Vwld);
+                TmpP.set(TmpV);
+                Loc.add(TmpP);
+                GF.set(0.0D, 0.0D, 0.0D);
+                GM.set(0.0D, 0.0D, 0.0D);
+                if(l < k - 1)
+                {
+                    Gears.ground(this, true);
+                    TmpV.set(0.0D, 0.0D, -Gravity);
+                    Or.transformInv(TmpV);
+                    GF.add(TmpV);
+                }
+            }
+
+            for(int i1 = 0; i1 < 3; i1++)
+            {
+                Gears.gWheelAngles[i1] = (Gears.gWheelAngles[i1] + (float)java.lang.Math.toDegrees(java.lang.Math.atan((Gears.gVelocity[i1] * (double)f) / 0.375D))) % 360F;
+                Gears.gVelocity[i1] *= 0.94999998807907104D;
+            }
+
+            HM.chunkSetAngles("GearL1_D0", 0.0F, -Gears.gWheelAngles[0], 0.0F);
+            HM.chunkSetAngles("GearR1_D0", 0.0F, -Gears.gWheelAngles[1], 0.0F);
+            HM.chunkSetAngles("GearC1_D0", 0.0F, -Gears.gWheelAngles[2], 0.0F);
+        }
+        if(Leader != null && isTick(128, 97) && com.maddox.il2.engine.Actor.isAlive(Leader.actor) && !Gears.onGround)
+        {
+            float f20 = (float)Loc.distance(Leader.Loc);
+            if(f20 > 3000F)
+                com.maddox.il2.objects.sounds.Voice.speakDeviateBig((com.maddox.il2.objects.air.Aircraft)Leader.actor);
+            else
+            if(f20 > 1700F)
+                com.maddox.il2.objects.sounds.Voice.speakDeviateSmall((com.maddox.il2.objects.air.Aircraft)Leader.actor);
+        }
+        shakeLevel = 0.0F;
+        if(Gears.onGround())
+        {
+            shakeLevel += (30D * Gears.roughness * Vrel.length()) / (double)M.mass;
+        } else
+        {
+            if(indSpeed > 10F)
+            {
+                float f21 = (float)java.lang.Math.sin(java.lang.Math.toRadians(java.lang.Math.abs(AOA)));
+                if(f21 > 0.02F)
+                {
+                    f21 *= f21;
+                    shakeLevel += 0.07F * (f21 - 0.0004F) * (indSpeed - 10F);
+                    if(isTick(30, 0) && shakeLevel > 0.6F)
+                        com.maddox.il2.game.HUD.log(stallStringID, "Stall");
+                }
+            }
+            if(indSpeed > 35F)
+            {
+                if(CT.bHasGearControl && (Gears.lgear || Gears.rgear) && CT.getGear() > 0.0F)
+                    shakeLevel += 0.004F * CT.getGear() * (indSpeed - 35F);
+                if(CT.getFlap() > 0.0F)
+                    shakeLevel += 0.004F * CT.getFlap() * (indSpeed - 35F);
+            }
+        }
+        if(indSpeed > VmaxAllowed * 0.8F)
+            shakeLevel = 0.01F * (indSpeed - VmaxAllowed * 0.8F);
+        if(com.maddox.il2.ai.World.cur().diffCur.Head_Shake)
+        {
+            shakeLevel += producedShakeLevel;
+            producedShakeLevel *= 0.9F;
+        }
+        if(shakeLevel > 1.0F)
+            shakeLevel = 1.0F;
+        com.maddox.il2.objects.effects.ForceFeedback.fxShake(shakeLevel);
+        if(com.maddox.il2.ai.World.cur().diffCur.Blackouts_N_Redouts)
+            calcOverLoad(f, true);
+    }
+
+    private void calcOverLoad(float f, boolean flag)
+    {
+        if(f > 1.0F)
+            f = 1.0F;
+        if(Gears.onGround() || !flag)
+        {
+            plAccel.set(0.0D, 0.0D, 0.0D);
+        } else
+        {
+            plAccel.set(getAccel());
+            plAccel.scale(0.10199999809265137D);
+        }
+        plAccel.z += 0.5D;
+        Or.transformInv(plAccel);
+        float f1 = -0.5F + (float)plAccel.z;
+        deep = 0.0F;
+        if(f1 < -0.6F)
+            deep = f1 + 0.6F;
+        if(f1 > 2.2F)
+            deep = f1 - 2.2F;
+        if(knockDnTime > 0.0F)
+            knockDnTime -= f;
+        if(knockUpTime > 0.0F)
+            knockUpTime -= f;
+        if(indiffDnTime < 4F)
+            indiffDnTime += f;
+        if(indiffUpTime < 4F)
+            indiffUpTime += 0.3F * f;
+        if(deep > 0.0F)
+        {
+            if(indiffDnTime > 0.0F)
+                indiffDnTime -= 0.8F * deep * f;
+            if(deep > 2.3F && knockDnTime < 18.4F)
+                knockDnTime += 0.75F * deep * f;
+            if(indiffDnTime > 0.1F)
+            {
+                currDeep = 0.0F;
+            } else
+            {
+                currDeep = deep * 0.08F * 3.5F;
+                if(currDeep > 0.8F)
+                    currDeep = 0.8F;
+            }
+        } else
+        if(deep < 0.0F)
+        {
+            deep = -deep;
+            if(deep < 0.84F)
+                deep = 0.84F;
+            if(indiffUpTime > 0.0F)
+                indiffUpTime -= 1.2F * deep * f;
+            if(deep > 2.3F && knockUpTime < 16.1F)
+                knockUpTime += deep * f;
+            if(indiffUpTime > 0.1F)
+                currDeep = 0.0F;
+            else
+                currDeep = deep * 0.42F * 0.88F;
+            currDeep = -currDeep;
+        } else
+        {
+            currDeep = 0.0F;
+        }
+        if(knockUpTime > 10.81F)
+            currDeep = -0.88F;
+        if(knockDnTime > 14.03F)
+            currDeep = 3.5F;
+        if(currDeep > 3.5F)
+            currDeep = 3.5F;
+        if(currDeep < -0.88F)
+            currDeep = -0.88F;
+        if(saveDeep > 0.8F)
+        {
+            CT.Sensitivity = 1.0F - (saveDeep - 0.8F);
+            if(CT.Sensitivity < 0.0F)
+                CT.Sensitivity = 0.0F;
+        } else
+        if(saveDeep < -0.4F)
+        {
+            CT.Sensitivity = 1.0F + (saveDeep + 0.4F);
+            if(CT.Sensitivity < 0.0F)
+                CT.Sensitivity = 0.0F;
+        } else
+        {
+            CT.Sensitivity = 1.0F;
+        }
+        CT.Sensitivity *= AS.getPilotHealth(0);
+        if(saveDeep < currDeep)
+        {
+            saveDeep += 0.3F * f;
+            if(saveDeep > currDeep)
+                saveDeep = currDeep;
+        } else
+        {
+            saveDeep -= 0.2F * f;
+            if(saveDeep < currDeep)
+                saveDeep = currDeep;
+        }
+    }
+
+    public void gunMomentum(com.maddox.JGP.Vector3d vector3d, boolean flag)
+    {
+        producedAM.x += vector3d.x;
+        producedAM.y += vector3d.y;
+        producedAM.z += vector3d.z;
+        float f = (float)vector3d.length() * 3.5E-005F;
+        if(flag && f > 0.5F)
+            f *= 0.05F;
+        if(producedShakeLevel < f)
+            producedShakeLevel = f;
+    }
+
+    public boolean RealMode;
+    public float indSpeed;
+    private static int stallStringID = com.maddox.il2.game.HUD.makeIdLog();
+    public com.maddox.il2.ai.DifficultySettings Realism;
+    com.maddox.JGP.Vector3d Cwl;
+    com.maddox.JGP.Vector3d Cwr;
+    com.maddox.JGP.Vector3d Chl;
+    com.maddox.JGP.Vector3d Chr;
+    com.maddox.JGP.Vector3d Cv;
+    com.maddox.JGP.Vector3d Fwl;
+    com.maddox.JGP.Vector3d Fwr;
+    com.maddox.JGP.Vector3d Fhl;
+    com.maddox.JGP.Vector3d Fhr;
+    com.maddox.JGP.Vector3d Fv;
+    private float superFuel;
+    private long lastDangerTick;
+    public float shakeLevel;
+    public float producedShakeLevel;
+    private float lastAcc;
+    private float ailerInfluence;
+    private float rudderInfluence;
+    private float oldTime;
+    private float deep;
+    private float currDeep;
+    private float indiffDnTime;
+    private float knockDnTime;
+    private float indiffUpTime;
+    private float knockUpTime;
+    private final float MAX_DN_OL = 3.5F;
+    private final float MAX_UP_OL = 0.88F;
+    public float saveDeep;
+    private double su26add;
+    private double spinCoeff;
+    private int airborneState;
+    private com.maddox.JGP.Point3d airborneStartPoint;
+    private com.maddox.JGP.Point3d TmpP;
+    private com.maddox.JGP.Vector3d Vn;
+    private com.maddox.JGP.Vector3d TmpV;
+    private com.maddox.JGP.Vector3d TmpVd;
+    private com.maddox.JGP.Vector3d plAccel;
+
 }

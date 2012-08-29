@@ -1,139 +1,152 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   VGroup.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.IniFile;
 import java.util.HashMap;
 
+// Referenced classes of package com.maddox.sound:
+//            CfgIntSound
+
 public class VGroup
-  implements CfgInt
+    implements com.maddox.rts.CfgInt
 {
-  int handle = 0;
-  int value = 7;
-  String name;
-  IniFile ini = null;
-  String sectName = null;
 
-  static HashMap map = new HashMap();
+    public VGroup(java.lang.String s, int i)
+    {
+        handle = 0;
+        value = 7;
+        ini = null;
+        sectName = null;
+        name = s;
+        value = defaultState();
+        handle = com.maddox.sound.VGroup.jniCreate(value, countStates(), i);
+        map.put(s, this);
+    }
 
-  public VGroup(String paramString, int paramInt)
-  {
-    this.name = paramString;
-    this.value = defaultState();
-    this.handle = jniCreate(this.value, countStates(), paramInt);
-    map.put(paramString, this);
-  }
+    public int firstState()
+    {
+        return 0;
+    }
 
-  public int firstState()
-  {
-    return 0;
-  }
+    public int countStates()
+    {
+        return com.maddox.sound.CfgIntSound.stdStateNames.length;
+    }
 
-  public int countStates()
-  {
-    return CfgIntSound.stdStateNames.length;
-  }
+    public int defaultState()
+    {
+        return 7;
+    }
 
-  public int defaultState()
-  {
-    return 7;
-  }
+    public java.lang.String nameState(int i)
+    {
+        return com.maddox.sound.CfgIntSound.stdStateNames[i];
+    }
 
-  public String nameState(int paramInt)
-  {
-    return CfgIntSound.stdStateNames[paramInt];
-  }
+    public boolean isEnabledState(int i)
+    {
+        return true;
+    }
 
-  public boolean isEnabledState(int paramInt)
-  {
-    return true;
-  }
+    public int get()
+    {
+        return value;
+    }
 
-  public int get()
-  {
-    return this.value;
-  }
+    public void set(int i)
+    {
+        value = i;
+        com.maddox.sound.VGroup.jniSet(handle, value);
+    }
 
-  public void set(int paramInt)
-  {
-    this.value = paramInt;
-    jniSet(this.handle, this.value);
-  }
+    public java.lang.String name()
+    {
+        return name;
+    }
 
-  public String name()
-  {
-    return this.name;
-  }
+    public boolean isPermanent()
+    {
+        return true;
+    }
 
-  public boolean isPermanent()
-  {
-    return true;
-  }
+    public boolean isEnabled()
+    {
+        return true;
+    }
 
-  public boolean isEnabled()
-  {
-    return true;
-  }
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        ini = inifile;
+        sectName = s;
+        value = inifile.get(s, name, defaultState());
+        com.maddox.sound.VGroup.jniSet(handle, value);
+    }
 
-  public void load(IniFile paramIniFile, String paramString)
-  {
-    this.ini = paramIniFile;
-    this.sectName = paramString;
-    this.value = paramIniFile.get(paramString, this.name, defaultState());
-    jniSet(this.handle, this.value);
-  }
+    public com.maddox.rts.IniFile loadedSectFile()
+    {
+        return ini;
+    }
 
-  public IniFile loadedSectFile()
-  {
-    return this.ini;
-  }
+    public java.lang.String loadedSectName()
+    {
+        return sectName;
+    }
 
-  public String loadedSectName()
-  {
-    return this.sectName;
-  }
+    public void save()
+    {
+        save(ini, sectName);
+    }
 
-  public void save()
-  {
-    save(this.ini, this.sectName);
-  }
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        inifile.set(s, name, value);
+    }
 
-  public void save(IniFile paramIniFile, String paramString)
-  {
-    paramIniFile.set(paramString, this.name, this.value);
-  }
+    public int apply()
+    {
+        return 0;
+    }
 
-  public int apply()
-  {
-    return 0;
-  }
+    public int applyStatus()
+    {
+        return 0;
+    }
 
-  public int applyStatus()
-  {
-    return 0;
-  }
+    public void applyExtends(int i)
+    {
+    }
 
-  public void applyExtends(int paramInt)
-  {
-  }
+    public void reset()
+    {
+    }
 
-  public void reset()
-  {
-  }
+    protected void finalize()
+    {
+        com.maddox.sound.VGroup.jniDestroy(handle);
+        handle = 0;
+    }
 
-  protected void finalize()
-  {
-    jniDestroy(this.handle);
-    this.handle = 0;
-  }
+    public static com.maddox.sound.VGroup get(java.lang.String s)
+    {
+        return (com.maddox.sound.VGroup)map.get(s);
+    }
 
-  public static VGroup get(String paramString)
-  {
-    return (VGroup)map.get(paramString);
-  }
+    protected static native int jniCreate(int i, int j, int k);
 
-  protected static native int jniCreate(int paramInt1, int paramInt2, int paramInt3);
+    protected static native void jniSet(int i, int j);
 
-  protected static native void jniSet(int paramInt1, int paramInt2);
+    protected static native void jniDestroy(int i);
 
-  protected static native void jniDestroy(int paramInt);
+    int handle;
+    int value;
+    java.lang.String name;
+    com.maddox.rts.IniFile ini;
+    java.lang.String sectName;
+    static java.util.HashMap map = new HashMap();
+
 }

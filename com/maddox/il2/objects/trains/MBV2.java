@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MBV2.java
+
 package com.maddox.il2.objects.trains;
 
 import com.maddox.JGP.Point3d;
@@ -19,7 +24,6 @@ import com.maddox.il2.ai.ground.Predator;
 import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
-import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Loc;
@@ -37,571 +41,617 @@ import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
 
-public class MBV2 extends Wagon
-  implements MsgCollisionRequestListener, MsgExplosionListener, MsgShotListener, Predator, HunterInterface
+// Referenced classes of package com.maddox.il2.objects.trains:
+//            Wagon, Train, WagonSpawn
+
+public class MBV2 extends com.maddox.il2.objects.trains.Wagon
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Predator, com.maddox.il2.ai.ground.HunterInterface
 {
-  private static Class cls = MBV2.class;
-  private static final int N_FIRING_DEVICES = 7;
-  private FiringDevice[] arms;
-  private static Vector3d tmpv = new Vector3d();
-  private static Point3d p1 = new Point3d();
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-
-  public static final float Rnd(float paramFloat1, float paramFloat2)
-  {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-
-  public static final float KmHourToMSec(float paramFloat) {
-    return paramFloat / 3.6F;
-  }
-
-  private static String getMeshName(int paramInt)
-  {
-    String str = "summer";
-    switch (World.cur().camouflage)
+    public class FiringDevice
     {
-    case 0:
-      break;
-    case 1:
-      str = "winter"; break;
-    }
 
-    return "3do/Trains/MBV2" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
-  }
+        private int id;
+        private com.maddox.il2.objects.weapons.Gun gun;
+        private com.maddox.il2.ai.ground.Aim aime;
+        private float headYaw;
+        private float gunPitch;
+        private com.maddox.JGP.Point3d fireOffset;
+        private com.maddox.il2.engine.Orient fireOrient;
+        public int WEAPONS_MASK;
+        public boolean TRACKING_ONLY;
+        public float ATTACK_MAX_DISTANCE;
+        public float ATTACK_MAX_RADIUS;
+        public float ATTACK_MAX_HEIGHT;
+        public int ATTACK_FAST_TARGETS;
+        public float FAST_TARGETS_ANGLE_ERROR;
+        public com.maddox.il2.ai.AnglesRange HEAD_YAW_RANGE;
+        public float HEAD_STD_YAW;
+        public float GUN_MIN_PITCH;
+        public float GUN_STD_PITCH;
+        public float GUN_MAX_PITCH;
+        public float HEAD_MAX_YAW_SPEED;
+        public float GUN_MAX_PITCH_SPEED;
+        public float DELAY_AFTER_SHOOT;
+        public float CHAINFIRE_TIME;
+        public java.lang.Class gunClass;
 
-  public static String getMeshNameForEditor()
-  {
-    return getMeshName(0);
-  }
 
-  public void destroy()
-  {
-    if (isDestroyed())
-    {
-      return;
-    }
 
-    eraseGuns();
-    super.destroy();
-  }
 
-  protected void hiddenexplode()
-  {
-    eraseGuns();
-    super.hiddenexplode();
-  }
 
-  protected void explode(Actor paramActor)
-  {
-    eraseGuns();
-    super.explode(paramActor);
-  }
 
-  private final FiringDevice GetFiringDevice(Aim paramAim)
-  {
-    for (int i = 0; i < 7; i++) {
-      if ((this.arms[i] != null) && (this.arms[i].aime == paramAim))
-        return this.arms[i];
-    }
-    System.out.println("Internal error: Can't find train gun.");
-    return null;
-  }
 
-  private void setGunAngles(FiringDevice paramFiringDevice, float paramFloat1, float paramFloat2)
-  {
-    FiringDevice.access$102(paramFiringDevice, paramFloat1);
-    FiringDevice.access$202(paramFiringDevice, paramFloat2);
-    hierMesh().chunkSetAngles("Head" + paramFiringDevice.id, paramFiringDevice.headYaw, 0.0F, 0.0F);
-    hierMesh().chunkSetAngles("Gun" + paramFiringDevice.id, -paramFiringDevice.gunPitch, 0.0F, 0.0F);
-    this.pos.inValidate(false);
-  }
 
-  private void eraseGuns()
-  {
-    if (this.arms != null)
-    {
-      for (int i = 0; i < 7; i++) {
-        if (this.arms[i] == null)
-          continue;
-        if (this.arms[i].aime != null)
-        {
-          this.arms[i].aime.forgetAll();
-          FiringDevice.access$002(this.arms[i], null);
-        }
-        if (this.arms[i].gun != null)
-        {
-          ObjState.destroy(this.arms[i].gun);
-          FiringDevice.access$402(this.arms[i], null);
-        }
-        FiringDevice.access$502(this.arms[i], null);
-        this.arms[i] = null;
-      }
 
-      this.arms = null;
-    }
-  }
 
-  protected void forgetAllAiming()
-  {
-    if (this.arms != null)
-    {
-      for (int i = 0; i < 7; i++)
-        if ((this.arms[i] != null) && (this.arms[i].aime != null))
-          this.arms[i].aime.forgetAiming();
-    }
-  }
 
-  private void fillGunProperties(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3, int paramInt3, float paramFloat4, AnglesRange paramAnglesRange, float paramFloat5, float paramFloat6, float paramFloat7, float paramFloat8, float paramFloat9, float paramFloat10, float paramFloat11, float paramFloat12)
-  {
-    this.arms[paramInt1].WEAPONS_MASK = paramInt2;
-    this.arms[paramInt1].TRACKING_ONLY = paramBoolean;
-    this.arms[paramInt1].ATTACK_MAX_DISTANCE = paramFloat1;
-    this.arms[paramInt1].ATTACK_MAX_RADIUS = paramFloat2;
-    this.arms[paramInt1].ATTACK_MAX_HEIGHT = paramFloat3;
-    this.arms[paramInt1].ATTACK_FAST_TARGETS = paramInt3;
-    this.arms[paramInt1].FAST_TARGETS_ANGLE_ERROR = paramFloat4;
-    this.arms[paramInt1].HEAD_YAW_RANGE = paramAnglesRange;
-    this.arms[paramInt1].HEAD_STD_YAW = paramFloat5;
-    this.arms[paramInt1].GUN_MIN_PITCH = paramFloat6;
-    this.arms[paramInt1].GUN_STD_PITCH = paramFloat7;
-    this.arms[paramInt1].GUN_MAX_PITCH = paramFloat8;
-    this.arms[paramInt1].HEAD_MAX_YAW_SPEED = paramFloat9;
-    this.arms[paramInt1].GUN_MAX_PITCH_SPEED = paramFloat10;
-    this.arms[paramInt1].DELAY_AFTER_SHOOT = paramFloat11;
-    this.arms[paramInt1].CHAINFIRE_TIME = paramFloat12;
-  }
 
-  public MBV2(Train paramTrain)
-  {
-    super(paramTrain, getMeshName(0), getMeshName(1));
-    this.arms = new FiringDevice[7];
-    try
-    {
-      this.life = 0.036F;
-      this.ignoreTNT = 16.0F;
-      this.killTNT = 42.0F;
-      this.bodyMaterial = 2;
-      Loc localLoc;
-      for (int i = 0; i < 3; i++) {
-        this.arms[i] = new FiringDevice();
-        FiringDevice.access$302(this.arms[i], i);
-        FiringDevice.access$402(this.arms[i], new CannonZIS3());
-        if (this.arms[i].gun == null)
-        {
-          System.out.println("Train: Gun is not created");
-        }
-        else {
-          this.arms[i].gun.set(this, "ShellStart" + i);
-          this.arms[i].gun.loadBullets(-1);
-        }
-        localLoc = new Loc();
-        hierMesh().setCurChunk("Head" + i);
-        hierMesh().getChunkLocObj(localLoc);
-        FiringDevice.access$502(this.arms[i], new Point3d());
-        localLoc.get(this.arms[i].fireOffset);
-        FiringDevice.access$602(this.arms[i], new Orient());
-        localLoc.get(this.arms[i].fireOrient);
-        FiringDevice.access$002(this.arms[i], new Aim(this, isNetMirror()));
-        try {
-          this.arms[i].gunClass = Class.forName("com.maddox.il2.objects.weapons.CannonZIS3");
-        } catch (Exception localException2) {
-        }
-      }
-      for (i = 3; i < 7; i++) {
-        this.arms[i] = new FiringDevice();
-        FiringDevice.access$302(this.arms[i], i);
-        FiringDevice.access$402(this.arms[i], new MMGunShKASt());
-        if (this.arms[i].gun == null)
-        {
-          System.out.println("Train: Gun is not created");
-        }
-        else {
-          this.arms[i].gun.set(this, "ShellStart" + i);
-          this.arms[i].gun.loadBullets(-1);
-        }
-        localLoc = new Loc();
-        hierMesh().setCurChunk("Head" + i);
-        hierMesh().getChunkLocObj(localLoc);
-        FiringDevice.access$502(this.arms[i], new Point3d());
-        localLoc.get(this.arms[i].fireOffset);
-        FiringDevice.access$602(this.arms[i], new Orient());
-        localLoc.get(this.arms[i].fireOrient);
-        FiringDevice.access$002(this.arms[i], new Aim(this, isNetMirror()));
-        try {
-          this.arms[i].gunClass = Class.forName("com.maddox.il2.objects.weapons.MMGunShKASt");
-        }
-        catch (Exception localException3)
+
+
+
+        public FiringDevice()
         {
         }
-
-      }
-
-      fillGunProperties(0, Gun.getProperties(this.arms[0].gunClass).weaponType, false, 4000.0F, 4000.0F, 4000.0F, 0, 0.0F, new AnglesRange(-138.0F, 138.0F), 0.0F, -5.0F, 0.0F, 25.0F, 7.5F, 7.5F, 9.0F, 0.0F);
-      fillGunProperties(1, Gun.getProperties(this.arms[1].gunClass).weaponType, false, 4000.0F, 4000.0F, 4000.0F, 0, 0.0F, new AnglesRange(-159.0F, 159.0F), 0.0F, -5.0F, 0.0F, 25.0F, 7.5F, 7.5F, 9.0F, 0.0F);
-      fillGunProperties(2, Gun.getProperties(this.arms[2].gunClass).weaponType, false, 4000.0F, 4000.0F, 4000.0F, 0, 0.0F, new AnglesRange(-140.0F, 140.0F), 0.0F, -5.0F, 0.0F, 25.0F, 7.5F, 7.5F, 9.0F, 0.0F);
-      fillGunProperties(3, Gun.getProperties(this.arms[3].gunClass).weaponType, false, 2200.0F, 2200.0F, 2200.0F, 1, 0.0F, new AnglesRange(-45.0F, 45.0F), 0.0F, -45.0F, 0.0F, 45.0F, 38.0F, 18.0F, 1.2F, 6.5F);
-      fillGunProperties(4, Gun.getProperties(this.arms[4].gunClass).weaponType, false, 2200.0F, 2200.0F, 2200.0F, 1, 0.0F, new AnglesRange(-45.0F, 45.0F), 0.0F, -45.0F, 0.0F, 45.0F, 38.0F, 18.0F, 1.2F, 6.5F);
-      fillGunProperties(5, Gun.getProperties(this.arms[5].gunClass).weaponType, false, 2200.0F, 2200.0F, 2200.0F, 1, 0.0F, new AnglesRange(-45.0F, 45.0F), 0.0F, -45.0F, 0.0F, 45.0F, 38.0F, 18.0F, 1.2F, 6.5F);
-      fillGunProperties(6, Gun.getProperties(this.arms[6].gunClass).weaponType, false, 2200.0F, 2200.0F, 2200.0F, 1, 0.0F, new AnglesRange(-45.0F, 45.0F), 0.0F, -45.0F, 0.0F, 45.0F, 38.0F, 18.0F, 1.2F, 6.5F);
     }
-    catch (Exception localException1)
+
+    public static class SPAWN
+        implements com.maddox.il2.objects.trains.WagonSpawn
     {
-      System.out.println(localException1.getMessage());
-      localException1.printStackTrace();
+
+        public com.maddox.il2.objects.trains.Wagon wagonSpawn(com.maddox.il2.objects.trains.Train train)
+        {
+            return new MBV2(train);
+        }
+
+        public SPAWN()
+        {
+        }
     }
-  }
 
-  void place(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    super.place(paramPoint3d1, paramPoint3d2, paramBoolean1, paramBoolean2);
-    if (this.arms == null)
-      return;
-    for (int i = 0; i < 7; i++)
-      this.arms[i].aime.tick_();
-  }
 
-  private final FiringDevice GetGunProperties(Aim paramAim)
-  {
-    for (int i = 0; i < 7; i++) {
-      if (this.arms[i].aime == paramAim)
-        return this.arms[i];
-    }
-    System.out.println("Internal error 2: Can't find ship gun.");
-    return null;
-  }
-
-  public int WeaponsMask()
-  {
-    int i = 0;
-    for (int j = 0; j < 7; j++) {
-      i |= this.arms[j].WEAPONS_MASK;
-    }
-    return i;
-  }
-
-  public float AttackMaxDistance()
-  {
-    float f = 0.0F;
-    for (int i = 0; i < 7; i++) {
-      if (this.arms[i].ATTACK_MAX_DISTANCE <= f) continue; f = this.arms[i].ATTACK_MAX_DISTANCE;
-    }
-    return f;
-  }
-
-  public float getReloadingTime(Aim paramAim)
-  {
-    for (int i = 0; i < 7; i++) {
-      if (this.arms[i].aime == paramAim) return this.arms[i].DELAY_AFTER_SHOOT;
-    }
-    return 0.0F;
-  }
-
-  public float chainFireTime(Aim paramAim)
-  {
-    float f = 0.0F;
-    for (int i = 0; i < 7; i++) {
-      if (this.arms[i].aime != paramAim) continue; f = this.arms[i].CHAINFIRE_TIME;
-    }
-    return f > 0.0F ? f * Rnd(0.75F, 1.25F) : 0.0F;
-  }
-
-  public float probabKeepSameEnemy(Actor paramActor)
-  {
-    return 0.75F;
-  }
-
-  public float minTimeRelaxAfterFight()
-  {
-    return 0.0F;
-  }
-
-  public void gunStartParking(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    int i = 0;
-    for (int j = 0; j < 7; j++) {
-      if (this.arms[j].aime != paramAim) continue; localFiringDevice = this.arms[j];
-    }
-    paramAim.setRotationForParking(localFiringDevice.headYaw, localFiringDevice.gunPitch, localFiringDevice.HEAD_STD_YAW, localFiringDevice.GUN_STD_PITCH, localFiringDevice.HEAD_YAW_RANGE, localFiringDevice.HEAD_MAX_YAW_SPEED, localFiringDevice.GUN_MAX_PITCH_SPEED);
-  }
-
-  public void gunInMove(boolean paramBoolean, Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    float f1 = paramAim.t();
-    float f2 = paramAim.anglesYaw.getDeg(f1);
-    float f3 = paramAim.anglesPitch.getDeg(f1);
-    setGunAngles(localFiringDevice, f2, f3);
-  }
-
-  public Actor findEnemy(Aim paramAim)
-  {
-    if (isNetMirror())
-      return null;
-    int i = 0;
-    for (int j = 0; j < 7; j++) {
-      if (this.arms[j].aime != paramAim) continue; i = this.arms[j].id;
-    }
-    Actor localActor = null;
-    switch (this.arms[i].ATTACK_FAST_TARGETS)
+    public static final double Rnd(double d, double d1)
     {
-    case 0:
-      NearestEnemies.set(this.arms[i].WEAPONS_MASK, -9999.9004F, KmHourToMSec(100.0F));
-      break;
-    case 1:
-      NearestEnemies.set(this.arms[i].WEAPONS_MASK);
-      break;
-    default:
-      NearestEnemies.set(this.arms[i].WEAPONS_MASK, KmHourToMSec(100.0F), 9999.9004F);
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
     }
 
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), this.arms[i].ATTACK_MAX_RADIUS, getArmy());
-    if (localActor == null)
-      return null;
-    if (!(localActor instanceof Prey))
+    public static final float Rnd(float f, float f1)
     {
-      System.out.println("trplatf4: nearest enemies: non-Prey");
-      return null;
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
     }
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    BulletProperties localBulletProperties = null;
-    if (localFiringDevice.gun.prop != null)
+
+    public static final float KmHourToMSec(float f)
     {
-      k = ((Prey)localActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
-      if (k < 0)
+        return f / 3.6F;
+    }
+
+    private static java.lang.String getMeshName(int i)
+    {
+        java.lang.String s = "summer";
+        switch(com.maddox.il2.ai.World.cur().camouflage)
+        {
+        case 1: // '\001'
+            s = "winter";
+            break;
+        }
+        return "3do/Trains/MBV2" + (i == 1 ? "_Dmg" : "") + "/" + s + "/hier.him";
+    }
+
+    public static java.lang.String getMeshNameForEditor()
+    {
+        return com.maddox.il2.objects.trains.MBV2.getMeshName(0);
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            eraseGuns();
+            super.destroy();
+            return;
+        }
+    }
+
+    protected void hiddenexplode()
+    {
+        eraseGuns();
+        super.hiddenexplode();
+    }
+
+    protected void explode(com.maddox.il2.engine.Actor actor)
+    {
+        eraseGuns();
+        super.explode(actor);
+    }
+
+    private final com.maddox.il2.objects.trains.FiringDevice GetFiringDevice(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < 7; i++)
+            if(arms[i] != null && arms[i].aime == aim)
+                return arms[i];
+
+        java.lang.System.out.println("Internal error: Can't find train gun.");
         return null;
-      localBulletProperties = localFiringDevice.gun.prop.bullet[k];
-    }
-    int k = ((Prey)localActor).chooseShotpoint(localBulletProperties);
-    if (k < 0)
-    {
-      return null;
     }
 
-    paramAim.shotpoint_idx = k;
-    return localActor;
-  }
-
-  public boolean enterToFireMode(int paramInt, Actor paramActor, float paramFloat, Aim paramAim)
-  {
-    if (!isNetMirror())
+    private void setGunAngles(com.maddox.il2.objects.trains.FiringDevice firingdevice, float f, float f1)
     {
-      FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-      send_FireCommand(localFiringDevice.id, paramActor, paramAim.shotpoint_idx, paramInt != 0 ? paramFloat : -1.0F);
-    }
-    return true;
-  }
-
-  protected void Track_Mirror(int paramInt1, Actor paramActor, int paramInt2)
-  {
-    if (IsDamaged())
-      return;
-    if (paramActor == null)
-      return;
-    if ((this.arms == null) || (this.arms[paramInt1].aime == null))
-      return;
-    if ((paramInt1 < 0) || (paramInt1 >= 7))
-    {
-      return;
+        firingdevice.headYaw = f;
+        firingdevice.gunPitch = f1;
+        hierMesh().chunkSetAngles("Head" + firingdevice.id, firingdevice.headYaw, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Gun" + firingdevice.id, -firingdevice.gunPitch, 0.0F, 0.0F);
+        pos.inValidate(false);
     }
 
-    this.arms[paramInt1].aime.passive_StartFiring(0, paramActor, paramInt2, 0.0F);
-  }
-
-  protected void Fire_Mirror(int paramInt1, Actor paramActor, int paramInt2, float paramFloat)
-  {
-    if (IsDamaged())
-      return;
-    if (paramActor == null)
-      return;
-    if ((this.arms == null) || (this.arms[paramInt1].aime == null))
-      return;
-    if ((paramInt1 < 0) || (paramInt1 >= 7))
-      return;
-    if (paramFloat <= 0.2F)
-      paramFloat = 0.2F;
-    if (paramFloat >= 15.0F)
-      paramFloat = 15.0F;
-    this.arms[paramInt1].aime.passive_StartFiring(1, paramActor, paramInt2, paramFloat);
-  }
-
-  public int targetGun(Aim paramAim, Actor paramActor, float paramFloat, boolean paramBoolean)
-  {
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isAlive()) || (paramActor.getArmy() == 0))
-      return 0;
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-
-    if ((localFiringDevice.gun instanceof CannonMidrangeGeneric))
+    private void eraseGuns()
     {
-      int i = ((Prey)paramActor).chooseBulletType(localFiringDevice.gun.prop.bullet);
-      if (i < 0)
-        return 0;
-      ((CannonMidrangeGeneric)localFiringDevice.gun).setBulletType(i);
-    }
-    boolean bool = ((Prey)paramActor).getShotpointOffset(paramAim.shotpoint_idx, p1);
-    if (!bool)
-      return 0;
-    float f1 = paramFloat * Rnd(0.8F, 1.2F);
-    if (!Aimer.Aim((BulletAimer)localFiringDevice.gun, paramActor, this, f1, p1, localFiringDevice.fireOffset))
-      return 0;
-    Point3d localPoint3d1 = new Point3d();
-    Aimer.GetPredictedTargetPosition(localPoint3d1);
-    Point3d localPoint3d2 = Aimer.GetHunterFirePoint();
-    float f2 = 0.19F;
-    double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
-    localPoint3d1.sub(localPoint3d2);
-    localPoint3d1.scale(Rnd(0.98D, 1.02D));
-    localPoint3d1.add(localPoint3d2);
-    float f5;
-    if (f1 > 0.001F)
-    {
-      Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
-      tmpv.sub(localPoint3d1, localPoint3d3);
-      double d3 = tmpv.length();
-      if (d3 > 0.001D)
-      {
-        f5 = (float)d3 / f1;
-        if (f5 > 200.0F)
-          f5 = 200.0F;
-        float f6 = f5 * 0.01F;
-        localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
-        if (d4 > 0.01D)
+        if(arms != null)
         {
-          float f7 = (float)tmpv.dot(localPoint3d3);
-          f7 /= (float)(d3 * Math.sqrt(d4));
-          f7 = (float)Math.sqrt(1.0F - f7 * f7);
-          f6 *= (0.4F + 0.6F * f7);
+            for(int i = 0; i < 7; i++)
+                if(arms[i] != null)
+                {
+                    if(arms[i].aime != null)
+                    {
+                        arms[i].aime.forgetAll();
+                        arms[i].aime = null;
+                    }
+                    if(arms[i].gun != null)
+                    {
+                        com.maddox.rts.ObjState.destroy(arms[i].gun);
+                        arms[i].gun = null;
+                    }
+                    arms[i].fireOffset = null;
+                    arms[i] = null;
+                }
+
+            arms = null;
         }
-        f6 *= 0.5F;
-        int k = Mission.curCloudsType();
-        if (k > 2)
+    }
+
+    protected void forgetAllAiming()
+    {
+        if(arms != null)
         {
-          float f8 = k <= 4 ? 800.0F : 400.0F;
-          float f9 = (float)(d1 / f8);
-          if (f9 > 1.0F)
-          {
-            if (f9 > 10.0F)
-              return 0;
-            f9 = (f9 - 1.0F) / 9.0F;
-            f6 *= (f9 + 1.0F);
-          }
+            for(int i = 0; i < 7; i++)
+                if(arms[i] != null && arms[i].aime != null)
+                    arms[i].aime.forgetAiming();
+
         }
-        if ((k >= 3) && (d2 > Mission.curCloudsHeight()))
-          f6 *= 1.25F;
-        f2 += f6;
-      }
     }
-    if (World.Sun().ToSun.z < -0.15F)
+
+    private void fillGunProperties(int i, int j, boolean flag, float f, float f1, float f2, int k, 
+            float f3, com.maddox.il2.ai.AnglesRange anglesrange, float f4, float f5, float f6, float f7, float f8, 
+            float f9, float f10, float f11)
     {
-      f3 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
-      if (f3 >= 1.0F)
-        f3 = 1.0F;
-      if (((paramActor instanceof Aircraft)) && (Time.current() - ((Aircraft)paramActor).tmSearchlighted < 1000L))
-        f3 = 0.0F;
-      f2 += 10.0F * f3;
+        arms[i].WEAPONS_MASK = j;
+        arms[i].TRACKING_ONLY = flag;
+        arms[i].ATTACK_MAX_DISTANCE = f;
+        arms[i].ATTACK_MAX_RADIUS = f1;
+        arms[i].ATTACK_MAX_HEIGHT = f2;
+        arms[i].ATTACK_FAST_TARGETS = k;
+        arms[i].FAST_TARGETS_ANGLE_ERROR = f3;
+        arms[i].HEAD_YAW_RANGE = anglesrange;
+        arms[i].HEAD_STD_YAW = f4;
+        arms[i].GUN_MIN_PITCH = f5;
+        arms[i].GUN_STD_PITCH = f6;
+        arms[i].GUN_MAX_PITCH = f7;
+        arms[i].HEAD_MAX_YAW_SPEED = f8;
+        arms[i].GUN_MAX_PITCH_SPEED = f9;
+        arms[i].DELAY_AFTER_SHOOT = f10;
+        arms[i].CHAINFIRE_TIME = f11;
     }
-    float f3 = (float)paramActor.getSpeed(null) - 10.0F;
-    float f4 = 83.333344F;
-    f3 = f3 < f4 ? f3 / f4 : 1.0F;
-    f2 += f3 * 2.0F;
-    Vector3d localVector3d = new Vector3d();
-    if (!((BulletAimer)localFiringDevice.gun).FireDirection(localPoint3d2, localPoint3d1, localVector3d)) {
-      return 0;
-    }
-    if (paramBoolean)
+
+    public MBV2(com.maddox.il2.objects.trains.Train train)
     {
-      f5 = 99999.0F;
-      d2 = 99999.0D;
+        super(train, com.maddox.il2.objects.trains.MBV2.getMeshName(0), com.maddox.il2.objects.trains.MBV2.getMeshName(1));
+        arms = new com.maddox.il2.objects.trains.FiringDevice[7];
+        try
+        {
+            life = 0.036F;
+            ignoreTNT = 16F;
+            killTNT = 42F;
+            bodyMaterial = 2;
+            for(int i = 0; i < 3; i++)
+            {
+                arms[i] = new FiringDevice();
+                arms[i].id = i;
+                arms[i].gun = new CannonZIS3();
+                if(arms[i].gun == null)
+                {
+                    java.lang.System.out.println("Train: Gun is not created");
+                } else
+                {
+                    arms[i].gun.set(this, "ShellStart" + i);
+                    arms[i].gun.loadBullets(-1);
+                }
+                com.maddox.il2.engine.Loc loc = new Loc();
+                hierMesh().setCurChunk("Head" + i);
+                hierMesh().getChunkLocObj(loc);
+                arms[i].fireOffset = new Point3d();
+                loc.get(arms[i].fireOffset);
+                arms[i].fireOrient = new Orient();
+                loc.get(arms[i].fireOrient);
+                arms[i].aime = new Aim(this, isNetMirror());
+                try
+                {
+                    arms[i].gunClass = java.lang.Class.forName("com.maddox.il2.objects.weapons.CannonZIS3");
+                }
+                catch(java.lang.Exception exception1) { }
+            }
+
+            for(int j = 3; j < 7; j++)
+            {
+                arms[j] = new FiringDevice();
+                arms[j].id = j;
+                arms[j].gun = new MMGunShKASt();
+                if(arms[j].gun == null)
+                {
+                    java.lang.System.out.println("Train: Gun is not created");
+                } else
+                {
+                    arms[j].gun.set(this, "ShellStart" + j);
+                    arms[j].gun.loadBullets(-1);
+                }
+                com.maddox.il2.engine.Loc loc1 = new Loc();
+                hierMesh().setCurChunk("Head" + j);
+                hierMesh().getChunkLocObj(loc1);
+                arms[j].fireOffset = new Point3d();
+                loc1.get(arms[j].fireOffset);
+                arms[j].fireOrient = new Orient();
+                loc1.get(arms[j].fireOrient);
+                arms[j].aime = new Aim(this, isNetMirror());
+                try
+                {
+                    arms[j].gunClass = java.lang.Class.forName("com.maddox.il2.objects.weapons.MMGunShKASt");
+                }
+                catch(java.lang.Exception exception2) { }
+            }
+
+            fillGunProperties(0, com.maddox.il2.objects.weapons.Gun.getProperties(arms[0].gunClass).weaponType, false, 4000F, 4000F, 4000F, 0, 0.0F, new AnglesRange(-138F, 138F), 0.0F, -5F, 0.0F, 25F, 7.5F, 7.5F, 9F, 0.0F);
+            fillGunProperties(1, com.maddox.il2.objects.weapons.Gun.getProperties(arms[1].gunClass).weaponType, false, 4000F, 4000F, 4000F, 0, 0.0F, new AnglesRange(-159F, 159F), 0.0F, -5F, 0.0F, 25F, 7.5F, 7.5F, 9F, 0.0F);
+            fillGunProperties(2, com.maddox.il2.objects.weapons.Gun.getProperties(arms[2].gunClass).weaponType, false, 4000F, 4000F, 4000F, 0, 0.0F, new AnglesRange(-140F, 140F), 0.0F, -5F, 0.0F, 25F, 7.5F, 7.5F, 9F, 0.0F);
+            fillGunProperties(3, com.maddox.il2.objects.weapons.Gun.getProperties(arms[3].gunClass).weaponType, false, 2200F, 2200F, 2200F, 1, 0.0F, new AnglesRange(-45F, 45F), 0.0F, -45F, 0.0F, 45F, 38F, 18F, 1.2F, 6.5F);
+            fillGunProperties(4, com.maddox.il2.objects.weapons.Gun.getProperties(arms[4].gunClass).weaponType, false, 2200F, 2200F, 2200F, 1, 0.0F, new AnglesRange(-45F, 45F), 0.0F, -45F, 0.0F, 45F, 38F, 18F, 1.2F, 6.5F);
+            fillGunProperties(5, com.maddox.il2.objects.weapons.Gun.getProperties(arms[5].gunClass).weaponType, false, 2200F, 2200F, 2200F, 1, 0.0F, new AnglesRange(-45F, 45F), 0.0F, -45F, 0.0F, 45F, 38F, 18F, 1.2F, 6.5F);
+            fillGunProperties(6, com.maddox.il2.objects.weapons.Gun.getProperties(arms[6].gunClass).weaponType, false, 2200F, 2200F, 2200F, 1, 0.0F, new AnglesRange(-45F, 45F), 0.0F, -45F, 0.0F, 45F, 38F, 18F, 1.2F, 6.5F);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
     }
-    else {
-      f5 = localFiringDevice.HEAD_MAX_YAW_SPEED;
-      d2 = localFiringDevice.GUN_MAX_PITCH_SPEED;
+
+    void place(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, boolean flag, boolean flag1)
+    {
+        super.place(point3d, point3d1, flag, flag1);
+        if(arms == null)
+            return;
+        for(int i = 0; i < 7; i++)
+            arms[i].aime.tick_();
+
     }
-    Orient localOrient = new Orient();
-    localOrient.add(this.arms[FiringDevice.access$300(localFiringDevice)].fireOrient, this.pos.getAbs().getOrient());
-    localOrient.setYPR(localOrient.getYaw(), localOrient.getPitch(), localOrient.getRoll());
 
-    int j = paramAim.setRotationForTargeting(this, localOrient, localPoint3d2, this.arms[FiringDevice.access$300(localFiringDevice)].headYaw, this.arms[FiringDevice.access$300(localFiringDevice)].gunPitch, localVector3d, f2, f1, this.arms[localFiringDevice.id].HEAD_YAW_RANGE, this.arms[localFiringDevice.id].GUN_MIN_PITCH, this.arms[localFiringDevice.id].GUN_MAX_PITCH, f5, (float)d2, 0.0F);
-    return j;
-  }
+    private final com.maddox.il2.objects.trains.FiringDevice GetGunProperties(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < 7; i++)
+            if(arms[i].aime == aim)
+                return arms[i];
 
-  public void singleShot(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!localFiringDevice.TRACKING_ONLY)
-      localFiringDevice.gun.shots(1);
-  }
+        java.lang.System.out.println("Internal error 2: Can't find ship gun.");
+        return null;
+    }
 
-  public void startFire(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!localFiringDevice.TRACKING_ONLY)
-      localFiringDevice.gun.shots(-1);
-  }
+    public int WeaponsMask()
+    {
+        int i = 0;
+        for(int j = 0; j < 7; j++)
+            i |= arms[j].WEAPONS_MASK;
 
-  public void continueFire(Aim paramAim)
-  {
-  }
+        return i;
+    }
 
-  public void stopFire(Aim paramAim)
-  {
-    FiringDevice localFiringDevice = GetFiringDevice(paramAim);
-    if (!localFiringDevice.TRACKING_ONLY)
-      localFiringDevice.gun.shots(0);
-  }
+    public float AttackMaxDistance()
+    {
+        float f = 0.0F;
+        for(int i = 0; i < 7; i++)
+            if(arms[i].ATTACK_MAX_DISTANCE > f)
+                f = arms[i].ATTACK_MAX_DISTANCE;
 
-  static
-  {
-    cls = MBV2.class;
-    Spawn.add(cls, new SPAWN());
-  }
+        return f;
+    }
 
-  public class FiringDevice
-  {
-    private int id;
-    private Gun gun;
-    private Aim aime;
-    private float headYaw;
-    private float gunPitch;
-    private Point3d fireOffset;
-    private Orient fireOrient;
-    public int WEAPONS_MASK;
-    public boolean TRACKING_ONLY;
-    public float ATTACK_MAX_DISTANCE;
-    public float ATTACK_MAX_RADIUS;
-    public float ATTACK_MAX_HEIGHT;
-    public int ATTACK_FAST_TARGETS;
-    public float FAST_TARGETS_ANGLE_ERROR;
-    public AnglesRange HEAD_YAW_RANGE;
-    public float HEAD_STD_YAW;
-    public float GUN_MIN_PITCH;
-    public float GUN_STD_PITCH;
-    public float GUN_MAX_PITCH;
-    public float HEAD_MAX_YAW_SPEED;
-    public float GUN_MAX_PITCH_SPEED;
-    public float DELAY_AFTER_SHOOT;
-    public float CHAINFIRE_TIME;
-    public Class gunClass;
+    public float getReloadingTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        for(int i = 0; i < 7; i++)
+            if(arms[i].aime == aim)
+                return arms[i].DELAY_AFTER_SHOOT;
 
-    public FiringDevice()
+        return 0.0F;
+    }
+
+    public float chainFireTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        float f = 0.0F;
+        for(int i = 0; i < 7; i++)
+            if(arms[i].aime == aim)
+                f = arms[i].CHAINFIRE_TIME;
+
+        return f <= 0.0F ? 0.0F : f * com.maddox.il2.objects.trains.MBV2.Rnd(0.75F, 1.25F);
+    }
+
+    public float probabKeepSameEnemy(com.maddox.il2.engine.Actor actor)
+    {
+        return 0.75F;
+    }
+
+    public float minTimeRelaxAfterFight()
+    {
+        return 0.0F;
+    }
+
+    public void gunStartParking(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        boolean flag = false;
+        for(int i = 0; i < 7; i++)
+            if(arms[i].aime == aim)
+                firingdevice = arms[i];
+
+        aim.setRotationForParking(firingdevice.headYaw, firingdevice.gunPitch, firingdevice.HEAD_STD_YAW, firingdevice.GUN_STD_PITCH, firingdevice.HEAD_YAW_RANGE, firingdevice.HEAD_MAX_YAW_SPEED, firingdevice.GUN_MAX_PITCH_SPEED);
+    }
+
+    public void gunInMove(boolean flag, com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        float f = aim.t();
+        float f1 = aim.anglesYaw.getDeg(f);
+        float f2 = aim.anglesPitch.getDeg(f);
+        setGunAngles(firingdevice, f1, f2);
+    }
+
+    public com.maddox.il2.engine.Actor findEnemy(com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(isNetMirror())
+            return null;
+        int i = 0;
+        for(int j = 0; j < 7; j++)
+            if(arms[j].aime == aim)
+                i = arms[j].id;
+
+        com.maddox.il2.engine.Actor actor = null;
+        switch(arms[i].ATTACK_FAST_TARGETS)
+        {
+        case 0: // '\0'
+            com.maddox.il2.ai.ground.NearestEnemies.set(arms[i].WEAPONS_MASK, -9999.9F, com.maddox.il2.objects.trains.MBV2.KmHourToMSec(100F));
+            break;
+
+        case 1: // '\001'
+            com.maddox.il2.ai.ground.NearestEnemies.set(arms[i].WEAPONS_MASK);
+            break;
+
+        default:
+            com.maddox.il2.ai.ground.NearestEnemies.set(arms[i].WEAPONS_MASK, com.maddox.il2.objects.trains.MBV2.KmHourToMSec(100F), 9999.9F);
+            break;
+        }
+        actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), arms[i].ATTACK_MAX_RADIUS, getArmy());
+        if(actor == null)
+            return null;
+        if(!(actor instanceof com.maddox.il2.ai.ground.Prey))
+        {
+            java.lang.System.out.println("trplatf4: nearest enemies: non-Prey");
+            return null;
+        }
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        com.maddox.il2.engine.BulletProperties bulletproperties = null;
+        if(firingdevice.gun.prop != null)
+        {
+            int k = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(firingdevice.gun.prop.bullet);
+            if(k < 0)
+                return null;
+            bulletproperties = firingdevice.gun.prop.bullet[k];
+        }
+        int l = ((com.maddox.il2.ai.ground.Prey)actor).chooseShotpoint(bulletproperties);
+        if(l < 0)
+        {
+            return null;
+        } else
+        {
+            aim.shotpoint_idx = l;
+            return actor;
+        }
+    }
+
+    public boolean enterToFireMode(int i, com.maddox.il2.engine.Actor actor, float f, com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(!isNetMirror())
+        {
+            com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+            send_FireCommand(firingdevice.id, actor, aim.shotpoint_idx, i == 0 ? -1F : f);
+        }
+        return true;
+    }
+
+    protected void Track_Mirror(int i, com.maddox.il2.engine.Actor actor, int j)
+    {
+        if(IsDamaged())
+            return;
+        if(actor == null)
+            return;
+        if(arms == null || arms[i].aime == null)
+            return;
+        if(i < 0 || i >= 7)
+        {
+            return;
+        } else
+        {
+            arms[i].aime.passive_StartFiring(0, actor, j, 0.0F);
+            return;
+        }
+    }
+
+    protected void Fire_Mirror(int i, com.maddox.il2.engine.Actor actor, int j, float f)
+    {
+        if(IsDamaged())
+            return;
+        if(actor == null)
+            return;
+        if(arms == null || arms[i].aime == null)
+            return;
+        if(i < 0 || i >= 7)
+            return;
+        if(f <= 0.2F)
+            f = 0.2F;
+        if(f >= 15F)
+            f = 15F;
+        arms[i].aime.passive_StartFiring(1, actor, j, f);
+    }
+
+    public int targetGun(com.maddox.il2.ai.ground.Aim aim, com.maddox.il2.engine.Actor actor, float f, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isAlive() || actor.getArmy() == 0)
+            return 0;
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(firingdevice.gun instanceof com.maddox.il2.objects.weapons.CannonMidrangeGeneric)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(firingdevice.gun.prop.bullet);
+            if(i < 0)
+                return 0;
+            ((com.maddox.il2.objects.weapons.CannonMidrangeGeneric)firingdevice.gun).setBulletType(i);
+        }
+        boolean flag1 = ((com.maddox.il2.ai.ground.Prey)actor).getShotpointOffset(aim.shotpoint_idx, p1);
+        if(!flag1)
+            return 0;
+        float f1 = f * com.maddox.il2.objects.trains.MBV2.Rnd(0.8F, 1.2F);
+        if(!com.maddox.il2.ai.Aimer.Aim((com.maddox.il2.ai.BulletAimer)firingdevice.gun, actor, this, f1, p1, firingdevice.fireOffset))
+            return 0;
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.il2.ai.Aimer.GetPredictedTargetPosition(point3d);
+        com.maddox.JGP.Point3d point3d1 = com.maddox.il2.ai.Aimer.GetHunterFirePoint();
+        float f2 = 0.19F;
+        double d = point3d.distance(point3d1);
+        double d1 = point3d.z;
+        point3d.sub(point3d1);
+        point3d.scale(com.maddox.il2.objects.trains.MBV2.Rnd(0.97999999999999998D, 1.02D));
+        point3d.add(point3d1);
+        if(f1 > 0.001F)
+        {
+            com.maddox.JGP.Point3d point3d2 = new Point3d();
+            actor.pos.getAbs(point3d2);
+            tmpv.sub(point3d, point3d2);
+            double d2 = tmpv.length();
+            if(d2 > 0.001D)
+            {
+                float f6 = (float)d2 / f1;
+                if(f6 > 200F)
+                    f6 = 200F;
+                float f8 = f6 * 0.01F;
+                point3d2.sub(point3d1);
+                double d3 = point3d2.x * point3d2.x + point3d2.y * point3d2.y + point3d2.z * point3d2.z;
+                if(d3 > 0.01D)
+                {
+                    float f9 = (float)tmpv.dot(point3d2);
+                    f9 /= (float)(d2 * java.lang.Math.sqrt(d3));
+                    f9 = (float)java.lang.Math.sqrt(1.0F - f9 * f9);
+                    f8 *= 0.4F + 0.6F * f9;
+                }
+                f8 *= 0.5F;
+                int k = com.maddox.il2.game.Mission.curCloudsType();
+                if(k > 2)
+                {
+                    float f10 = k > 4 ? 400F : 800F;
+                    float f11 = (float)(d / (double)f10);
+                    if(f11 > 1.0F)
+                    {
+                        if(f11 > 10F)
+                            return 0;
+                        f11 = (f11 - 1.0F) / 9F;
+                        f8 *= f11 + 1.0F;
+                    }
+                }
+                if(k >= 3 && d1 > (double)com.maddox.il2.game.Mission.curCloudsHeight())
+                    f8 *= 1.25F;
+                f2 += f8;
+            }
+        }
+        if(com.maddox.il2.ai.World.Sun().ToSun.z < -0.15F)
+        {
+            float f3 = (-com.maddox.il2.ai.World.Sun().ToSun.z - 0.15F) / 0.13F;
+            if(f3 >= 1.0F)
+                f3 = 1.0F;
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && com.maddox.rts.Time.current() - ((com.maddox.il2.objects.air.Aircraft)actor).tmSearchlighted < 1000L)
+                f3 = 0.0F;
+            f2 += 10F * f3;
+        }
+        float f4 = (float)actor.getSpeed(null) - 10F;
+        float f5 = 83.33334F;
+        f4 = f4 >= f5 ? 1.0F : f4 / f5;
+        f2 += f4 * 2.0F;
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        if(!((com.maddox.il2.ai.BulletAimer)firingdevice.gun).FireDirection(point3d1, point3d, vector3d))
+            return 0;
+        float f7;
+        if(flag)
+        {
+            f7 = 99999F;
+            d1 = 99999D;
+        } else
+        {
+            f7 = firingdevice.HEAD_MAX_YAW_SPEED;
+            d1 = firingdevice.GUN_MAX_PITCH_SPEED;
+        }
+        com.maddox.il2.engine.Orient orient = new Orient();
+        orient.add(arms[firingdevice.id].fireOrient, pos.getAbs().getOrient());
+        orient.setYPR(orient.getYaw(), orient.getPitch(), orient.getRoll());
+        int j = aim.setRotationForTargeting(this, orient, point3d1, arms[firingdevice.id].headYaw, arms[firingdevice.id].gunPitch, vector3d, f2, f1, arms[firingdevice.id].HEAD_YAW_RANGE, arms[firingdevice.id].GUN_MIN_PITCH, arms[firingdevice.id].GUN_MAX_PITCH, f7, (float)d1, 0.0F);
+        return j;
+    }
+
+    public void singleShot(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!firingdevice.TRACKING_ONLY)
+            firingdevice.gun.shots(1);
+    }
+
+    public void startFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!firingdevice.TRACKING_ONLY)
+            firingdevice.gun.shots(-1);
+    }
+
+    public void continueFire(com.maddox.il2.ai.ground.Aim aim)
     {
     }
-  }
 
-  public static class SPAWN
-    implements WagonSpawn
-  {
-    public Wagon wagonSpawn(Train paramTrain)
+    public void stopFire(com.maddox.il2.ai.ground.Aim aim)
     {
-      return new MBV2(paramTrain);
+        com.maddox.il2.objects.trains.FiringDevice firingdevice = GetFiringDevice(aim);
+        if(!firingdevice.TRACKING_ONLY)
+            firingdevice.gun.shots(0);
     }
-  }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private static java.lang.Class cls;
+    private static final int N_FIRING_DEVICES = 7;
+    private com.maddox.il2.objects.trains.FiringDevice arms[];
+    private static com.maddox.JGP.Vector3d tmpv = new Vector3d();
+    private static com.maddox.JGP.Point3d p1 = new Point3d();
+
+    static 
+    {
+        cls = com.maddox.il2.objects.trains.MBV2.class;
+        cls = com.maddox.il2.objects.trains.MBV2.class;
+        com.maddox.rts.Spawn.add(cls, new SPAWN());
+    }
 }

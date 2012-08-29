@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdSet.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -8,38 +13,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdSet extends Cmd
+public class CmdSet extends com.maddox.rts.Cmd
 {
-  public static final String REMOVE = "REMOVE";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (paramMap.containsKey("_$$")) {
-      List localList = (List)paramMap.get("_$$");
-      String str = (String)localList.get(0);
-      if (localList.size() > 1) {
-        StringBuffer localStringBuffer = new StringBuffer();
-        for (int i = 1; i < localList.size(); i++) {
-          if (i != 1) localStringBuffer.append(' ');
-          localStringBuffer.append(QuoteTokenizer.toToken((String)localList.get(i)));
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(map.containsKey("_$$"))
+        {
+            java.util.List list = (java.util.List)map.get("_$$");
+            java.lang.String s = (java.lang.String)list.get(0);
+            if(list.size() > 1)
+            {
+                java.lang.StringBuffer stringbuffer = new StringBuffer();
+                for(int i = 1; i < list.size(); i++)
+                {
+                    if(i != 1)
+                        stringbuffer.append(' ');
+                    stringbuffer.append(com.maddox.util.QuoteTokenizer.toToken((java.lang.String)list.get(i)));
+                }
+
+                if(cmdenv.setAtom(s, stringbuffer.toString()))
+                    return stringbuffer;
+            } else
+            if(map.containsKey("REMOVE"))
+                if(cmdenv.delAtom(s))
+                    return com.maddox.rts.CmdEnv.RETURN_OK;
+                else
+                    return null;
         }
-        if (paramCmdEnv.setAtom(str, localStringBuffer.toString()))
-          return localStringBuffer;
-      }
-      else if (paramMap.containsKey("REMOVE")) {
-        if (paramCmdEnv.delAtom(str)) return CmdEnv.RETURN_OK;
+        ERR_HARD("Bad command format");
         return null;
-      }
-
     }
 
-    ERR_HARD("Bad command format");
-    return null;
-  }
+    public CmdSet()
+    {
+        param.put("REMOVE", null);
+        _properties.put("NAME", "set");
+        _levelAccess = 2;
+    }
 
-  public CmdSet() {
-    this.param.put("REMOVE", null);
-    this._properties.put("NAME", "set");
-    this._levelAccess = 2;
-  }
+    public static final java.lang.String REMOVE = "REMOVE";
 }

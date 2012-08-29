@@ -1,10 +1,14 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Mission.java
+
 package com.maddox.il2.game;
 
 import com.maddox.JGP.Point2d;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.AirportGround;
 import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.Chief;
 import com.maddox.il2.ai.DifficultySettings;
@@ -40,8 +44,6 @@ import com.maddox.il2.engine.LandConf;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.RenderContext;
-import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Wind;
 import com.maddox.il2.game.order.OrdersTree;
 import com.maddox.il2.gui.GUI;
@@ -59,6 +61,7 @@ import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorViewPoint;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.air.Paratrooper;
 import com.maddox.il2.objects.bridges.LongBridge;
 import com.maddox.il2.objects.buildings.HouseManager;
@@ -68,19 +71,9 @@ import com.maddox.il2.objects.effects.SpritesFog;
 import com.maddox.il2.objects.effects.SunGlare;
 import com.maddox.il2.objects.effects.Zip;
 import com.maddox.il2.objects.humans.Soldier;
-import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.sounds.Voice;
+import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
-import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
-import com.maddox.il2.objects.vehicles.radios.TypeHasLorenzBlindLanding;
-import com.maddox.il2.objects.vehicles.radios.TypeHasMeacon;
-import com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke12;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke13;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke14;
-import com.maddox.il2.objects.vehicles.stationary.Smoke.Smoke15;
-import com.maddox.il2.objects.vehicles.stationary.SmokeGeneric;
 import com.maddox.rts.BackgroundTask;
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.CmdEnv;
@@ -90,7 +83,6 @@ import com.maddox.rts.HomePath;
 import com.maddox.rts.IniFile;
 import com.maddox.rts.Joy;
 import com.maddox.rts.KeyRecord;
-import com.maddox.rts.LDRres;
 import com.maddox.rts.MsgAction;
 import com.maddox.rts.MsgInvokeMethod_Object;
 import com.maddox.rts.MsgNet;
@@ -116,7 +108,6 @@ import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
 import com.maddox.rts.net.NetFileServerDef;
 import com.maddox.sound.AudioDevice;
-import com.maddox.sound.CmdMusic;
 import com.maddox.util.HashMapInt;
 import com.maddox.util.HashMapIntEntry;
 import com.maddox.util.NumberTokenizer;
@@ -126,3288 +117,2589 @@ import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
+
+// Referenced classes of package com.maddox.il2.game:
+//            Main3D, GameTrack, Main, DotRange
 
 public class Mission
-  implements Destroy
+    implements com.maddox.rts.Destroy
 {
-  public static final String DIR = "missions/";
-  public static final String DIRNET = "missions/Net/Cache/";
-  public static final float CLOUD_HEIGHT = 8000.0F;
-  private String name = null;
-  private SectFile sectFile;
-  private long sectFinger = 0L;
-  private ArrayList actors = new ArrayList();
-  private int curActor = 0;
-  private boolean bPlaying = false;
+    static class SPAWN
+        implements com.maddox.rts.NetSpawn
+    {
 
-  private int curCloudsType = 0;
-  private float curCloudsHeight = 1000.0F;
-
-  protected static int viewSet = 0;
-  protected static int iconTypes = 0;
-
-  private static HashMap respawnMap = new HashMap();
-
-  private int curYear = 0;
-  private int curMonth = 0;
-  private int curDay = 0;
-  private float curWindDirection = 0.0F;
-  private float curWindVelocity = 0.0F;
-  private float curGust = 0.0F;
-  private float curTurbulence = 0.0F;
-
-  private static ArrayList beaconsRed = new ArrayList();
-  private static ArrayList beaconsBlue = new ArrayList();
-  private static ArrayList meaconsRed = new ArrayList();
-  private static ArrayList meaconsBlue = new ArrayList();
-  private static Map hayrakeMap = new HashMap();
-  private final int HAYRAKE_CODE_LENGTH = 12;
-  public static boolean hasRadioStations = false;
-  private static boolean radioStationsLoaded = false;
-
-  private float bigShipHpDiv = 1.0F;
-  private String player;
-  private boolean _loadPlayer = false;
-  private int playerNum = 0;
-  private HashMap mapWingTakeoff;
-  private static SectFile chiefsIni;
-  private static Point3d Loc = new Point3d();
-  private static Orient Or = new Orient();
-  private static Vector3f Spd = new Vector3f();
-  private static Vector3d Spdd = new Vector3d();
-
-  private static ActorSpawnArg spawnArg = new ActorSpawnArg();
-  private static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  public static final int NET_MSG_ID_NAME = 0;
-  public static final int NET_MSG_ID_BODY = 1;
-  public static final int NET_MSG_ID_BODY_END = 2;
-  public static final int NET_MSG_ID_ACTORS = 3;
-  public static final int NET_MSG_ID_ACTORS_END = 4;
-  public static final int NET_MSG_ID_LOADED = 5;
-  public static final int NET_MSG_ID_BEGIN = 10;
-  public static final int NET_MSG_ID_TOD = 11;
-  public static final int NET_MSG_ID_START = 12;
-  public static final int NET_MSG_ID_TIME = 13;
-  public static final int NET_MSG_ID_END = 20;
-  protected NetObj net;
-  public int zutiCarrierSpawnPoints_CV2;
-  public int zutiCarrierSpawnPoints_CV9;
-  public int zutiCarrierSpawnPoints_CVE;
-  public int zutiCarrierSpawnPoints_CVL;
-  public int zutiCarrierSpawnPoints_Akagi;
-  public int zutiCarrierSpawnPoints_IJN;
-  public int zutiCarrierSpawnPoints_HMS;
-  public final boolean zutiTargets_MovingIcons = true;
-
-  public final boolean zutiTargets_ShowTargets = true;
-  public final boolean zutiIcons_ShowNeutralHB = true;
-
-  public final boolean zutiRadar_ShowAircraft = true;
-
-  public final boolean zutiRadar_ShowGroundUnits = true;
-
-  public final boolean zutiRadar_StaticIconsIfNoRadar = true;
-  public boolean zutiRadar_PlayerSideHasRadars;
-  public int zutiRadar_RefreshInterval;
-  public final boolean zutiRadar_AircraftIconsWhite = false;
-  public boolean zutiRadar_HideUnpopulatedAirstripsFromMinimap;
-  public boolean zutiRadar_EnableTowerCommunications;
-  public boolean zutiRadar_ShipsAsRadar;
-  public int zutiRadar_ShipRadar_MaxRange;
-  public int zutiRadar_ShipRadar_MinHeight;
-  public int zutiRadar_ShipRadar_MaxHeight;
-  public int zutiRadar_ShipSmallRadar_MaxRange;
-  public int zutiRadar_ShipSmallRadar_MinHeight;
-  public int zutiRadar_ShipSmallRadar_MaxHeight;
-  public boolean zutiRadar_ScoutsAsRadar;
-  public int zutiRadar_ScoutRadar_MaxRange;
-  public int zutiRadar_ScoutRadar_DeltaHeight;
-  public ArrayList ScoutsRed;
-  public ArrayList ScoutsBlue;
-  public int zutiRadar_ScoutGroundObjects_Alpha;
-  public final boolean zutiRadar_ShowRockets = true;
-  public boolean zutiRadar_EnableBigShip_Radar;
-  public boolean zutiRadar_EnableSmallShip_Radar;
-  public boolean zutiRadar_ScoutCompleteRecon;
-  public boolean zutiRadar_DisableVectoring;
-  public static boolean ZUTI_RADAR_IN_ADV_MODE;
-  private static int[] ZUTI_ICON_SIZES;
-  public static int ZUTI_ICON_SIZE;
-  public boolean zutiMisc_DisableAIRadioChatter;
-  public boolean zutiMisc_DespawnAIPlanesAfterLanding;
-  public boolean zutiMisc_HidePlayersCountOnHomeBase;
-  public boolean zutiMisc_EnableReflyOnlyIfBailedOrDied;
-  public boolean zutiMisc_DisableReflyForMissionDuration;
-  public int zutiMisc_ReflyKIADelay;
-  public int zutiMisc_MaxAllowedKIA;
-  public float zutiMisc_ReflyKIADelayMultiplier;
-  public float zutiMisc_BombsCat1_CratersVisibilityMultiplier;
-  public float zutiMisc_BombsCat2_CratersVisibilityMultiplier;
-  public float zutiMisc_BombsCat3_CratersVisibilityMultiplier;
-
-  public static float respawnTime(String paramString)
-  {
-    Object localObject = respawnMap.get(paramString);
-    if (localObject == null)
-      return 1800.0F;
-    return ((Float)localObject).floatValue();
-  }
-
-  public static boolean isPlaying() {
-    if (Main.cur() == null)
-      return false;
-    if (Main.cur().mission == null)
-      return false;
-    if (Main.cur().mission.isDestroyed())
-      return false;
-    return Main.cur().mission.bPlaying;
-  }
-
-  public static boolean isSingle() {
-    if (Main.cur().mission == null)
-      return false;
-    if (Main.cur().mission.isDestroyed())
-      return false;
-    if (Main.cur().mission.net == null)
-      return true;
-    if (Main.cur().netServerParams == null)
-      return true;
-    return Main.cur().netServerParams.isSingle();
-  }
-
-  public static boolean isNet() {
-    if (Main.cur().mission == null)
-      return false;
-    if (Main.cur().mission.isDestroyed())
-      return false;
-    if (Main.cur().mission.net == null)
-      return false;
-    if (Main.cur().netServerParams == null)
-      return false;
-    return !Main.cur().netServerParams.isSingle();
-  }
-
-  public NetChannel getNetMasterChannel() {
-    if (this.net == null) return null;
-    return this.net.masterChannel();
-  }
-
-  public static boolean isServer() {
-    return NetEnv.isServer();
-  }
-
-  public static boolean isDeathmatch() {
-    return isDogfight();
-  }
-  public static boolean isDogfight() {
-    if (Main.cur().mission == null)
-      return false;
-    if (Main.cur().mission.isDestroyed())
-      return false;
-    if (Main.cur().mission.net == null)
-      return false;
-    if (Main.cur().netServerParams == null)
-      return false;
-    return Main.cur().netServerParams.isDogfight();
-  }
-
-  public static boolean isCoop() {
-    if (Main.cur().mission == null)
-      return false;
-    if (Main.cur().mission.isDestroyed())
-      return false;
-    if (Main.cur().mission.net == null)
-      return false;
-    if (Main.cur().netServerParams == null)
-      return false;
-    return Main.cur().netServerParams.isCoop();
-  }
-
-  public static int curCloudsType() {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curCloudsType;
-  }
-  public static float curCloudsHeight() {
-    if (Main.cur().mission == null) return 1000.0F;
-    return Main.cur().mission.curCloudsHeight;
-  }
-
-  public static int curYear()
-  {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curYear;
-  }
-
-  public static int curMonth() {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curMonth;
-  }
-
-  public static int curDay() {
-    if (Main.cur().mission == null) return 0;
-    return Main.cur().mission.curDay;
-  }
-
-  public static float curWindDirection() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curWindDirection;
-  }
-
-  public static float curWindVelocity() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curWindVelocity;
-  }
-
-  public static float curGust() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curGust;
-  }
-
-  public static float curTurbulence() {
-    if (Main.cur().mission == null) return 0.0F;
-    return Main.cur().mission.curTurbulence;
-  }
-
-  public static Mission cur()
-  {
-    return Main.cur().mission;
-  }
-
-  public static void BreakP() {
-    System.out.print("");
-  }
-
-  public static void load(String paramString) throws Exception
-  {
-    load(paramString, false);
-  }
-  public static void load(String paramString, boolean paramBoolean) throws Exception {
-    load("missions/", paramString, paramBoolean);
-  }
-
-  public static void load(String paramString1, String paramString2) throws Exception {
-    load(paramString1, paramString2, false);
-  }
-  public static void load(String paramString1, String paramString2, boolean paramBoolean) throws Exception {
-    Mission localMission = new Mission();
-    if (cur() != null)
-      cur().destroy();
-    else
-      localMission.clear();
-    localMission.sectFile = new SectFile(paramString1 + paramString2);
-    localMission.load(paramString2, localMission.sectFile, paramBoolean);
-  }
-
-  public static void loadFromSect(SectFile paramSectFile) throws Exception {
-    loadFromSect(paramSectFile, false);
-  }
-  public static void loadFromSect(SectFile paramSectFile, boolean paramBoolean) throws Exception {
-    Mission localMission = new Mission();
-    String str = paramSectFile.fileName();
-    if ((str != null) && 
-      (str.toLowerCase().startsWith("missions/"))) {
-      str = str.substring("missions/".length());
-    }
-    if (cur() != null)
-      cur().destroy();
-    else
-      localMission.clear();
-    localMission.sectFile = paramSectFile;
-    localMission.load(str, localMission.sectFile, paramBoolean);
-  }
-  public String name() {
-    return this.name;
-  }
-  public SectFile sectFile() { return this.sectFile; } 
-  public long finger() {
-    return this.sectFinger;
-  }
-  public boolean isDestroyed() {
-    return this.name == null;
-  }
-
-  public void destroy() {
-    if (isDestroyed())
-      return;
-    if (this.bPlaying)
-      doEnd();
-    this.bPlaying = false;
-    clear();
-    this.name = null;
-    Main.cur().mission = null;
-    if (Main.cur().netMissionListener != null) {
-      Main.cur().netMissionListener.netMissionState(8, 0.0F, null);
-    }
-    if ((this.net != null) && (!this.net.isDestroyed()))
-      this.net.destroy();
-    this.net = null;
-  }
-
-  private void clear() {
-    if (this.net != null) {
-      doReplicateNotMissionActors(false);
-      if (this.net.masterChannel() != null)
-        doReplicateNotMissionActors(this.net.masterChannel(), false);
-    }
-    this.actors.clear();
-    beaconsRed.clear();
-    beaconsBlue.clear();
-    hasRadioStations = false;
-    radioStationsLoaded = false;
-    meaconsRed.clear();
-    meaconsBlue.clear();
-    hayrakeMap.clear();
-    this.curActor = 0;
-    Main.cur().resetGame();
-    ZutiSupportMethods.clear();
-    ZutiRadarRefresh.reset();
-    if (GUI.pad != null)
-      GUI.pad.zutiPadObjects.clear(); 
-  }
-
-  private void Mission() {
-  }
-
-  private void load(String paramString, SectFile paramSectFile, boolean paramBoolean) throws Exception {
-    if (paramBoolean)
-      BackgroundTask.execute(new BackgroundLoader(paramString, paramSectFile));
-    else
-      _load(paramString, paramSectFile, paramBoolean);
-  }
-
-  private void LOADING_STEP(float paramFloat, String paramString)
-  {
-    if ((this.net != null) && (Main.cur().netMissionListener != null)) {
-      Main.cur().netMissionListener.netMissionState(3, paramFloat, paramString);
-    }
-
-    if (!BackgroundTask.step(paramFloat, paramString))
-      throw new RuntimeException(BackgroundTask.executed().messageCancel());
-  }
-
-  private void _load(String paramString, SectFile paramSectFile, boolean paramBoolean)
-    throws Exception
-  {
-    if (GUI.pad != null) {
-      GUI.pad.zutiPadObjects.clear();
-    }
-    zutiResetMissionVariables();
-
-    AudioDevice.soundsOff();
-    if (paramString != null) System.out.println("Loading mission " + paramString + "..."); else
-      System.out.println("Loading mission ...");
-    EventLog.checkState();
-    Main.cur().missionLoading = this;
-    RTSConf.cur.time.setEnableChangePause1(false);
-    Actor.setSpawnFromMission(true);
-    try {
-      Main.cur().mission = this;
-      this.name = paramString;
-      if (this.net == null)
-        createNetObject(null, 0);
-      loadMain(paramSectFile);
-      loadRespawnTime(paramSectFile);
-      Front.loadMission(paramSectFile);
-      List localList = null;
-
-      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight()) || (Main.cur().netServerParams.isSingle()))
-      {
-        try
+        public void netSpawn(int i, com.maddox.rts.NetMsgInput netmsginput)
         {
-          localList = loadWings(paramSectFile);
-        }
-        catch (Exception localException3)
-        {
-          System.out.println("Mission error, ID_04: " + localException3.toString());
-          localException3.printStackTrace();
-        }
-        try
-        {
-          loadChiefs(paramSectFile);
-        } catch (Exception localException4) {
-          System.out.println("Mission error, ID_05: " + localException4.toString());
-        }
-      }
-      try {
-        loadHouses(paramSectFile);
-      } catch (Exception localException5) {
-        System.out.println("Mission error, ID_06.1: " + localException5.toString());
-      }
-      try {
-        loadNStationary(paramSectFile);
-      } catch (Exception localException6) {
-        System.out.println("Mission error, ID_06.2: " + localException6.toString());
-      }
-      try {
-        loadStationary(paramSectFile);
-      } catch (Exception localException7) {
-        System.out.println("Mission error, ID_06.3: " + localException7.toString());
-      }
-      try {
-        loadRocketry(paramSectFile);
-      } catch (Exception localException8) {
-        System.out.println("Mission error, ID_06.4: " + localException8.toString());
-      }
-      try {
-        loadViewPoint(paramSectFile);
-      } catch (Exception localException9) {
-        System.out.println("Mission error, ID_06.5: " + localException9.toString());
-      }
-      try
-      {
-        if (Main.cur().netServerParams.isDogfight())
-          loadBornPlaces(paramSectFile);
-      } catch (Exception localException10) {
-        System.out.println("Mission error, ID_07: " + localException10.toString());
-      }
-
-      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isDogfight()))
-      {
-        try
-        {
-          loadTargets(paramSectFile);
-        } catch (Exception localException11) {
-          System.out.println("Mission error, ID_08: " + localException11.toString());
-        }
-      }
-
-      try
-      {
-        populateBeacons();
-      } catch (Exception localException12) {
-        System.out.println("Mission error, ID_09: " + localException12.toString());
-      }
-
-      try
-      {
-        populateRunwayLights();
-      } catch (Exception localException13) {
-        System.out.println("Mission error, ID_10: " + localException13.toString());
-      }
-      if (localList != null) {
-        int i = localList.size();
-        for (int j = 0; j < i; j++) {
-          Wing localWing = (Wing)localList.get(j);
-          try
-          {
-            if (Actor.isValid(localWing))
-              localWing.setOnAirport();
-          } catch (Exception localException14) {
-          }
-        }
-      }
-    }
-    catch (Exception localException1) {
-      if ((this.net != null) && (Main.cur().netMissionListener != null)) {
-        Main.cur().netMissionListener.netMissionState(4, 0.0F, localException1.getMessage());
-      }
-
-      printDebug(localException1);
-      clear();
-      if ((this.net != null) && (!this.net.isDestroyed()))
-        this.net.destroy();
-      this.net = null;
-      Main.cur().mission = null;
-      this.name = null;
-      Actor.setSpawnFromMission(false);
-      Main.cur().missionLoading = null;
-      setTime(false);
-      throw localException1;
-    }
-    if (Config.isUSE_RENDER()) {
-      if (Actor.isValid(World.getPlayerAircraft()))
-        World.land().cubeFullUpdate((float)World.getPlayerAircraft().pos.getAbsPoint().z);
-      else
-        World.land().cubeFullUpdate(1000.0F);
-      GUI.pad.fillAirports();
-    }
-    Actor.setSpawnFromMission(false);
-    Main.cur().missionLoading = null;
-    Main.cur().missionCounter += 1;
-    setTime(!Main.cur().netServerParams.isSingle());
-    LOADING_STEP(90.0F, "task.Load_humans");
-    Paratrooper.PRELOAD();
-    LOADING_STEP(95.0F, "task.Load_humans");
-
-    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight()))
-      Soldier.PRELOAD();
-    LOADING_STEP(100.0F, "");
-    if (Main.cur().netMissionListener != null) {
-      Main.cur().netMissionListener.netMissionState(5, 0.0F, null);
-    }
-
-    if (this.net.isMirror()) {
-      try {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(4);
-        this.net.masterChannel().userState = 4;
-        this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-      } catch (Exception localException2) {
-        printDebug(localException2);
-      }
-      ((NetUser)NetEnv.host()).missionLoaded();
-    }
-    else if (Main.cur().netServerParams.isSingle()) {
-      if ((Main.cur() instanceof Main3D)) {
-        ((Main3D)Main.cur()).ordersTree.missionLoaded();
-      }
-      Main.cur().dotRangeFriendly.setDefault();
-      Main.cur().dotRangeFoe.setDefault();
-      Main.cur().dotRangeFoe.set(-1.0D, -1.0D, -1.0D, 5.0D, -1.0D, -1.0D);
-    } else {
-      ((NetUser)NetEnv.host()).replicateDotRange();
-    }
-
-    NetObj.tryReplicate(this.net, false);
-    War.cur().missionLoaded();
-
-    if (paramBoolean)
-      Main.cur().mission = this;
-  }
-
-  private void setTime(boolean paramBoolean) {
-    Time.setSpeed(1.0F);
-    Time.setSpeedReal(1.0F);
-    if (paramBoolean) {
-      RTSConf.cur.time.setEnableChangePause1(false);
-      RTSConf.cur.time.setEnableChangeSpeed(false);
-      RTSConf.cur.time.setEnableChangeTickLen(true);
-    } else {
-      RTSConf.cur.time.setEnableChangePause1(true);
-      RTSConf.cur.time.setEnableChangeSpeed(true);
-      RTSConf.cur.time.setEnableChangeTickLen(false);
-    }
-  }
-
-  private void loadZutis(SectFile paramSectFile)
-  {
-    try
-    {
-      Main.cur().mission.zutiRadar_ShipsAsRadar = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_ShipsAsRadar", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_ShipsAsRadar = true;
-      }
-      Main.cur().mission.zutiRadar_ShipRadar_MaxRange = paramSectFile.get("MDS", "MDS_Radar_ShipRadar_MaxRange", 100, 1, 99999);
-      Main.cur().mission.zutiRadar_ShipRadar_MinHeight = paramSectFile.get("MDS", "MDS_Radar_ShipRadar_MinHeight", 100, 0, 99999);
-      Main.cur().mission.zutiRadar_ShipRadar_MaxHeight = paramSectFile.get("MDS", "MDS_Radar_ShipRadar_MaxHeight", 5000, 1000, 99999);
-      Main.cur().mission.zutiRadar_ShipSmallRadar_MaxRange = paramSectFile.get("MDS", "MDS_Radar_ShipSmallRadar_MaxRange", 25, 1, 99999);
-      Main.cur().mission.zutiRadar_ShipSmallRadar_MinHeight = paramSectFile.get("MDS", "MDS_Radar_ShipSmallRadar_MinHeight", 0, 0, 99999);
-      Main.cur().mission.zutiRadar_ShipSmallRadar_MaxHeight = paramSectFile.get("MDS", "MDS_Radar_ShipSmallRadar_MaxHeight", 2000, 1000, 99999);
-
-      Main.cur().mission.zutiRadar_ScoutsAsRadar = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_ScoutsAsRadar", 0, 0, 1) == 1)
-        Main.cur().mission.zutiRadar_ScoutsAsRadar = true;
-      Main.cur().mission.zutiRadar_ScoutRadar_MaxRange = paramSectFile.get("MDS", "MDS_Radar_ScoutRadar_MaxRange", 2, 1, 99999);
-      Main.cur().mission.zutiRadar_ScoutRadar_DeltaHeight = paramSectFile.get("MDS", "MDS_Radar_ScoutRadar_DeltaHeight", 1500, 100, 99999);
-
-      Main.cur().mission.zutiRadar_ScoutCompleteRecon = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_ScoutCompleteRecon", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_ScoutCompleteRecon = true;
-      }
-      zutiLoadScouts_Red(paramSectFile);
-      zutiLoadScouts_Blue(paramSectFile);
-
-      Main.cur().mission.zutiRadar_RefreshInterval = (paramSectFile.get("MDS", "MDS_Radar_RefreshInterval", 0, 0, 99999) * 1000);
-
-      Main.cur().mission.zutiRadar_DisableVectoring = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_DisableVectoring", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_DisableVectoring = true;
-      }
-      Main.cur().mission.zutiRadar_EnableTowerCommunications = true;
-      if (paramSectFile.get("MDS", "MDS_Radar_EnableTowerCommunications", 1, 0, 1) == 0) {
-        Main.cur().mission.zutiRadar_EnableTowerCommunications = false;
-      }
-      ZUTI_RADAR_IN_ADV_MODE = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_SetRadarToAdvanceMode", 0, 0, 1) == 1) {
-        ZUTI_RADAR_IN_ADV_MODE = true;
-      }
-      Main.cur().mission.zutiRadar_HideUnpopulatedAirstripsFromMinimap = false;
-      if (paramSectFile.get("MDS", "MDS_Radar_HideUnpopulatedAirstripsFromMinimap", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiRadar_HideUnpopulatedAirstripsFromMinimap = true;
-      }
-      Main.cur().mission.zutiRadar_ScoutGroundObjects_Alpha = paramSectFile.get("MDS", "MDS_Radar_ScoutGroundObjects_Alpha", 5, 1, 11);
-
-      Main.cur().mission.zutiMisc_DisableAIRadioChatter = false;
-      if (paramSectFile.get("MDS", "MDS_Misc_DisableAIRadioChatter", 0, 0, 1) == 1)
-        Main.cur().mission.zutiMisc_DisableAIRadioChatter = true;
-      Main.cur().mission.zutiMisc_DespawnAIPlanesAfterLanding = true;
-      if (paramSectFile.get("MDS", "MDS_Misc_DespawnAIPlanesAfterLanding", 1, 0, 1) == 0)
-        Main.cur().mission.zutiMisc_DespawnAIPlanesAfterLanding = false;
-      Main.cur().mission.zutiMisc_HidePlayersCountOnHomeBase = false;
-      if (paramSectFile.get("MDS", "MDS_Misc_HidePlayersCountOnHomeBase", 0, 0, 1) == 1) {
-        Main.cur().mission.zutiMisc_HidePlayersCountOnHomeBase = true;
-      }
-
-      Main.cur().mission.zutiMisc_BombsCat1_CratersVisibilityMultiplier = paramSectFile.get("MDS", "MDS_Misc_BombsCat1_CratersVisibilityMultiplier", 1.0F, 1.0F, 99999.0F);
-      Main.cur().mission.zutiMisc_BombsCat2_CratersVisibilityMultiplier = paramSectFile.get("MDS", "MDS_Misc_BombsCat2_CratersVisibilityMultiplier", 1.0F, 1.0F, 99999.0F);
-      Main.cur().mission.zutiMisc_BombsCat3_CratersVisibilityMultiplier = paramSectFile.get("MDS", "MDS_Misc_BombsCat3_CratersVisibilityMultiplier", 1.0F, 1.0F, 99999.0F);
-
-      zutiSetShipRadars();
-    }
-    catch (Exception localException) {
-      System.out.println("Mission error, ID_11: " + localException.toString());
-    }
-  }
-
-  private void loadMain(SectFile paramSectFile)
-    throws Exception
-  {
-    int i = paramSectFile.get("MAIN", "TIMECONSTANT", 0, 0, 1);
-    World.cur().setTimeOfDayConstant(i == 1);
-    World.setTimeofDay(paramSectFile.get("MAIN", "TIME", 12.0F, 0.0F, 23.99F));
-
-    loadZutis(paramSectFile);
-
-    int j = paramSectFile.get("MAIN", "WEAPONSCONSTANT", 0, 0, 1);
-    World.cur().setWeaponsConstant(j == 1);
-
-    this.bigShipHpDiv = (1.0F / paramSectFile.get("MAIN", "ShipHP", 1.0F, 0.001F, 100.0F));
-
-    String str1 = paramSectFile.get("MAIN", "MAP");
-    if (str1 == null) {
-      throw new Exception("No MAP in mission file ");
-    }
-    String str2 = null;
-    int[] arrayOfInt = null;
-
-    SectFile localSectFile = new SectFile("maps/" + str1);
-    int k = localSectFile.sectionIndex("static");
-    if ((k >= 0) && (localSectFile.vars(k) > 0)) {
-      str2 = localSectFile.var(k, 0);
-      if ((str2 == null) || (str2.length() <= 0)) {
-        str2 = null;
-      } else {
-        str2 = HomePath.concatNames("maps/" + str1, str2);
-        arrayOfInt = Statics.readBridgesEndPoints(str2);
-      }
-    }
-
-    LOADING_STEP(0.0F, "task.Load_landscape");
-
-    int m = paramSectFile.get("SEASON", "Year", 1940, 1930, 1960);
-    int n = paramSectFile.get("SEASON", "Month", World.land().config.getDefaultMonth("maps/" + str1), 1, 12);
-    int i1 = paramSectFile.get("SEASON", "Day", 15, 1, 31);
-    setDate(m, n, i1);
-
-    World.land().LoadMap(str1, arrayOfInt, n, i1);
-
-    World.cur().setCamouflage(World.land().config.camouflage);
-    int i2;
-    if (Config.isUSE_RENDER())
-    {
-      if (Main3D.cur3D().land2D != null) {
-        if (!Main3D.cur3D().land2D.isDestroyed())
-          Main3D.cur3D().land2D.destroy();
-        Main3D.cur3D().land2D = null;
-      }
-      Object localObject = null;
-      i2 = localSectFile.sectionIndex("MAP2D");
-      if (i2 >= 0) {
-        i3 = localSectFile.vars(i2);
-        if (i3 > 0) {
-          LOADING_STEP(20.0F, "task.Load_map");
-          Main3D.cur3D().land2D = new Land2Dn(str1, World.land().getSizeX(), World.land().getSizeY());
-        }
-
-      }
-
-      if (Main3D.cur3D().land2DText == null)
-        Main3D.cur3D().land2DText = new Land2DText();
-      else
-        Main3D.cur3D().land2DText.clear();
-      int i3 = localSectFile.sectionIndex("text");
-      if ((i3 >= 0) && (localSectFile.vars(i3) > 0)) {
-        LOADING_STEP(22.0F, "task.Load_landscape_texts");
-        String str3 = localSectFile.var(i3, 0);
-        Main3D.cur3D().land2DText.load(HomePath.concatNames("maps/" + str1, str3));
-      }
-
-    }
-
-    if (str2 != null) {
-      LOADING_STEP(23.0F, "task.Load_static_objects");
-      Statics.load(str2, World.cur().statics.bridges);
-      Engine.drawEnv().staticTrimToSize();
-    }
-    Statics.trim();
-
-    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight())) {
-      try
-      {
-        World.cur().statics.loadStateBridges(paramSectFile, false);
-        World.cur().statics.loadStateHouses(paramSectFile, false);
-        World.cur().statics.loadStateBridges(paramSectFile, true);
-        World.cur().statics.loadStateHouses(paramSectFile, true);
-        checkBridgesAndHouses(paramSectFile);
-      } catch (Exception localException) {
-        System.out.println("Mission error, ID_12: " + localException.toString());
-      }
-    }
-    if (Main.cur().netServerParams.isSingle()) {
-      this.player = paramSectFile.get("MAIN", "player");
-      this.playerNum = paramSectFile.get("MAIN", "playerNum", 0, 0, 3);
-    } else {
-      this.player = null;
-    }
-    World.setMissionArmy(paramSectFile.get("MAIN", "army", 1, 1, 2));
-
-    if (Config.isUSE_RENDER())
-    {
-      Main3D.cur3D().ordersTree.setFrequency(new Boolean(true));
-    }
-
-    if (Config.isUSE_RENDER()) {
-      LOADING_STEP(29.0F, "task.Load_landscape_effects");
-      Main3D localMain3D = Main3D.cur3D();
-      i2 = paramSectFile.get("MAIN", "CloudType", 0, 0, 6);
-
-      float f1 = paramSectFile.get("MAIN", "CloudHeight", 1000.0F, 300.0F, 5000.0F);
-      createClouds(i2, f1);
-      if (!Config.cur.ini.get("game", "NoLensFlare", false)) {
-        localMain3D.sunFlareCreate();
-        localMain3D.sunFlareShow(true);
-      } else {
-        localMain3D.sunFlareShow(false);
-      }
-
-      float f2 = (str1.charAt(0) - '@') * 3.141593F;
-      f2 = paramSectFile.get("WEATHER", "WindDirection", f2, 0.0F, 359.98999F);
-
-      float f3 = 0.25F + i2 * i2 * 0.12F;
-      f3 = paramSectFile.get("WEATHER", "WindSpeed", f3, 0.0F, 15.0F);
-
-      float f4 = i2 <= 3 ? 0.0F : i2 * 2.0F;
-      f4 = paramSectFile.get("WEATHER", "Gust", f4, 0.0F, 12.0F);
-
-      float f5 = i2;
-      f5 = paramSectFile.get("WEATHER", "Turbulence", f5, 0.0F, 6.0F);
-
-      World.wind().set(f1, f2, f3, f4, f5);
-
-      for (int i4 = 0; i4 < 3; i4++) {
-        Main3D.cur3D()._lightsGlare[i4].setShow(true);
-        Main3D.cur3D()._sunGlare[i4].setShow(true);
-      }
-    }
-  }
-
-  public static void setDate(int paramInt1, int paramInt2, int paramInt3)
-  {
-    setYear(paramInt1);
-    setMonth(paramInt2);
-    setDay(paramInt3);
-  }
-
-  public static void setYear(int paramInt) {
-    if (paramInt < 1930) paramInt = 1930;
-    if (paramInt > 1960) paramInt = 1960;
-    if (cur() != null)
-      cur().curYear = paramInt;
-  }
-
-  public static void setMonth(int paramInt)
-  {
-    if (paramInt < 1) paramInt = 1;
-    if (paramInt > 12) paramInt = 12;
-    if (cur() != null)
-      cur().curMonth = paramInt;
-  }
-
-  public static void setDay(int paramInt)
-  {
-    if (paramInt < 1) paramInt = 1;
-    if (paramInt > 31) paramInt = 31;
-    if (cur() != null)
-      cur().curDay = paramInt;
-  }
-
-  public static void setWindDirection(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 359.98999F) paramFloat = 0.0F;
-    if (cur() != null)
-      cur().curWindDirection = paramFloat;
-  }
-
-  public static void setWindVelocity(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 15.0F) paramFloat = 15.0F;
-    if (cur() != null)
-      cur().curWindVelocity = paramFloat;
-  }
-
-  public static void setGust(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 12.0F) paramFloat = 12.0F;
-    if (cur() != null)
-      cur().curGust = paramFloat;
-  }
-
-  public static void setTurbulence(float paramFloat)
-  {
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 6.0F) paramFloat = 6.0F;
-    if (cur() != null)
-      cur().curTurbulence = paramFloat;
-  }
-
-  public static void createClouds(int paramInt, float paramFloat)
-  {
-    if (paramInt < 0) paramInt = 0;
-    if (paramInt > 6) paramInt = 6;
-    if (cur() != null) {
-      cur().curCloudsType = paramInt;
-      cur().curCloudsHeight = paramFloat;
-    }
-    if (!Config.isUSE_RENDER()) return;
-    Main3D localMain3D = Main3D.cur3D();
-    Camera3D localCamera3D = (Camera3D)Actor.getByName("camera");
-
-    if (localMain3D.clouds != null)
-      localMain3D.clouds.destroy();
-    localMain3D.clouds = new EffClouds(World.cur().diffCur.NewCloudsRender, paramInt, paramFloat);
-
-    if (paramInt > 5) {
-      try {
-        if (localMain3D.zip != null)
-          localMain3D.zip.destroy();
-        localMain3D.zip = new Zip(paramFloat);
-      } catch (Exception localException) {
-        System.out.println("Zip load error: " + localException);
-      }
-    }
-
-    int i = 5 - paramInt;
-    if (paramInt == 6) i = 1;
-    if (i > 4) i = 4;
-    RenderContext.cfgLandFogHaze.set(i);
-    RenderContext.cfgLandFogHaze.apply();
-    RenderContext.cfgLandFogHaze.reset();
-
-    RenderContext.cfgLandFogLow.set(0);
-    RenderContext.cfgLandFogLow.apply();
-    RenderContext.cfgLandFogLow.reset();
-
-    if (Actor.isValid(localMain3D.spritesFog))
-      localMain3D.spritesFog.destroy();
-    localMain3D.spritesFog = new SpritesFog(localCamera3D, 0.7F, 7000.0F, 7500.0F);
-  }
-  public static void setCloudsType(int paramInt) {
-    if (paramInt < 0) paramInt = 0;
-    if (paramInt > 6) paramInt = 6;
-    if (cur() != null)
-      cur().curCloudsType = paramInt;
-    if (!Config.isUSE_RENDER()) return;
-    Main3D localMain3D = Main3D.cur3D();
-    if (localMain3D.clouds != null)
-      localMain3D.clouds.setType(paramInt);
-    int i = 5 - paramInt;
-    if (paramInt == 6) i = 1;
-    if (i > 4) i = 4;
-    RenderContext.cfgLandFogHaze.set(i);
-    RenderContext.cfgLandFogHaze.apply();
-    RenderContext.cfgLandFogHaze.reset();
-
-    RenderContext.cfgLandFogLow.set(0);
-    RenderContext.cfgLandFogLow.apply();
-    RenderContext.cfgLandFogLow.reset();
-  }
-  public static void setCloudsHeight(float paramFloat) {
-    if (cur() != null)
-      cur().curCloudsHeight = paramFloat;
-    if (!Config.isUSE_RENDER()) return;
-    Main3D localMain3D = Main3D.cur3D();
-    if (localMain3D.clouds != null)
-      localMain3D.clouds.setHeight(paramFloat);
-  }
-
-  private void loadRespawnTime(SectFile paramSectFile)
-  {
-    respawnMap.clear();
-    int i = paramSectFile.sectionIndex("RespawnTime");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      String str = paramSectFile.var(i, k);
-      float f = paramSectFile.get("RespawnTime", str, 1800.0F, 20.0F, 1000000.0F);
-      respawnMap.put(str, new Float(f));
-    }
-  }
-
-  private List loadWings(SectFile paramSectFile) throws Exception {
-    int i = paramSectFile.sectionIndex("Wing");
-    if (i < 0)
-      return null;
-    if (!World.cur().diffCur.Takeoff_N_Landing)
-      prepareTakeoff(paramSectFile, !Main.cur().netServerParams.isSingle());
-    NetChannel localNetChannel = null;
-    if (!isServer())
-      localNetChannel = this.net.masterChannel();
-    int j = paramSectFile.vars(i);
-    ArrayList localArrayList = null;
-    if (j > 0)
-      localArrayList = new ArrayList(j);
-    for (int k = 0; k < j; k++) {
-      LOADING_STEP(30 + Math.round(k / j * 30.0F), "task.Load_aircraft");
-      String str = paramSectFile.var(i, k);
-      this._loadPlayer = str.equals(this.player);
-      int m = paramSectFile.get(str, "StartTime", 0);
-      if ((m > 0) && (!this._loadPlayer)) {
-        if (localNetChannel != null)
-          continue;
-        double d = m * 60L;
-        new MsgAction(0, d, new TimeOutWing(str)) {
-          public void doAction(Object paramObject) {
-            Mission.TimeOutWing localTimeOutWing = (Mission.TimeOutWing)paramObject;
-            localTimeOutWing.start();
-          }
-        };
-      }
-      else {
-        com.maddox.il2.objects.air.NetAircraft.loadingCoopPlane = (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isCoop());
-
-        Wing localWing = new Wing();
-        localWing.load(paramSectFile, str, localNetChannel);
-        if ((localNetChannel != null) && (!Main.cur().netServerParams.isCoop())) {
-          Aircraft[] arrayOfAircraft = localWing.airc;
-          for (int n = 0; n < arrayOfAircraft.length; n++) {
-            if ((!Actor.isValid(arrayOfAircraft[n])) || 
-              (arrayOfAircraft[n].net != null)) continue;
-            arrayOfAircraft[n].destroy();
-            arrayOfAircraft[n] = null;
-          }
-        }
-
-        localArrayList.add(localWing);
-        prepareSkinInWing(paramSectFile, localWing);
-      }
-    }
-    LOADING_STEP(60.0F, "task.Load_aircraft");
-    return localArrayList;
-  }
-
-  private void prepareSkinInWing(SectFile paramSectFile, Wing paramWing)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    Aircraft[] arrayOfAircraft = paramWing.airc;
-    for (int i = 0; i < arrayOfAircraft.length; i++)
-      if (Actor.isValid(arrayOfAircraft[i])) {
-        Aircraft localAircraft = arrayOfAircraft[i];
-        prepareSkinInWing(paramSectFile, localAircraft, paramWing.name(), i);
-      }
-  }
-
-  private void prepareSkinInWing(SectFile paramSectFile, Aircraft paramAircraft, String paramString, int paramInt) {
-    if (!Config.isUSE_RENDER()) return;
-    String str1;
-    String str2;
-    String str3;
-    String str4;
-    if (World.getPlayerAircraft() == paramAircraft) {
-      if (isSingle())
-        if (NetMissionTrack.isPlaying()) {
-          ((NetUser)Main.cur().netServerParams.host()).tryPrepareSkin(paramAircraft);
-          ((NetUser)Main.cur().netServerParams.host()).tryPrepareNoseart(paramAircraft);
-          ((NetUser)Main.cur().netServerParams.host()).tryPreparePilot(paramAircraft);
-        } else {
-          str1 = Property.stringValue(paramAircraft.getClass(), "keyName", null);
-          str2 = World.cur().userCfg.getSkin(str1);
-          if (str2 != null) {
-            str3 = GUIAirArming.validateFileName(str1);
-            ((NetUser)NetEnv.host()).setSkin(str3 + "/" + str2);
-            ((NetUser)NetEnv.host()).tryPrepareSkin(paramAircraft);
-          } else {
-            ((NetUser)NetEnv.host()).setSkin(null);
-          }
-
-          str3 = World.cur().userCfg.getNoseart(str1);
-          if (str3 != null) {
-            ((NetUser)NetEnv.host()).setNoseart(str3);
-            ((NetUser)NetEnv.host()).tryPrepareNoseart(paramAircraft);
-          } else {
-            ((NetUser)NetEnv.host()).setNoseart(null);
-          }
-
-          str4 = World.cur().userCfg.netPilot;
-          ((NetUser)NetEnv.host()).setPilot(str4);
-          if (str4 != null)
-            ((NetUser)NetEnv.host()).tryPreparePilot(paramAircraft);
-        }
-    }
-    else
-    {
-      str1 = paramSectFile.get(paramString, "skin" + paramInt, (String)null);
-      if (str1 != null) {
-        str2 = Aircraft.getPropertyMesh(paramAircraft.getClass(), paramAircraft.getRegiment().country());
-        str1 = GUIAirArming.validateFileName(Property.stringValue(paramAircraft.getClass(), "keyName", null)) + "/" + str1;
-
-        if (NetMissionTrack.isPlaying()) {
-          str1 = NetFilesTrack.getLocalFileName(Main.cur().netFileServerSkin, Main.cur().netServerParams.host(), str1);
-          if (str1 != null)
-            str1 = Main.cur().netFileServerSkin.alternativePath() + "/" + str1;
-        } else {
-          str1 = Main.cur().netFileServerSkin.primaryPath() + "/" + str1;
-        }
-        if (str1 != null) {
-          str3 = "PaintSchemes/Cache/" + Finger.file(0L, str1, -1);
-          Aircraft.prepareMeshSkin(str2, paramAircraft.hierMesh(), str1, str3);
-        }
-      }
-
-      str2 = paramSectFile.get(paramString, "noseart" + paramInt, (String)null);
-      String str5;
-      String str6;
-      String str7;
-      if (str2 != null) {
-        str3 = Main.cur().netFileServerNoseart.primaryPath() + "/" + str2;
-        str4 = str2.substring(0, str2.length() - 4);
-        if (NetMissionTrack.isPlaying()) {
-          str3 = NetFilesTrack.getLocalFileName(Main.cur().netFileServerNoseart, Main.cur().netServerParams.host(), str2);
-          if (str3 != null) {
-            str4 = str3.substring(0, str3.length() - 4);
-            str3 = Main.cur().netFileServerNoseart.alternativePath() + "/" + str3;
-          }
-        }
-        if (str3 != null) {
-          str5 = "PaintSchemes/Cache/Noseart0" + str4 + ".tga";
-          str6 = "PaintSchemes/Cache/Noseart0" + str4 + ".mat";
-          str7 = "PaintSchemes/Cache/Noseart1" + str4 + ".tga";
-          String str8 = "PaintSchemes/Cache/Noseart1" + str4 + ".mat";
-          if (BmpUtils.bmp8PalTo2TGA4(str3, str5, str7)) {
-            Aircraft.prepareMeshNoseart(paramAircraft.hierMesh(), str6, str8, str5, str7, null);
-          }
-        }
-      }
-      str3 = paramSectFile.get(paramString, "pilot" + paramInt, (String)null);
-      if (str3 != null) {
-        str4 = Main.cur().netFileServerPilot.primaryPath() + "/" + str3;
-        str5 = str3.substring(0, str3.length() - 4);
-        if (NetMissionTrack.isPlaying()) {
-          str4 = NetFilesTrack.getLocalFileName(Main.cur().netFileServerPilot, Main.cur().netServerParams.host(), str3);
-          if (str4 != null) {
-            str5 = str4.substring(0, str4.length() - 4);
-            str4 = Main.cur().netFileServerPilot.alternativePath() + "/" + str4;
-          }
-        }
-        if (str4 != null) {
-          str6 = "PaintSchemes/Cache/Pilot" + str5 + ".tga";
-          str7 = "PaintSchemes/Cache/Pilot" + str5 + ".mat";
-          if (BmpUtils.bmp8PalToTGA3(str4, str6))
-            Aircraft.prepareMeshPilot(paramAircraft.hierMesh(), 0, str7, str6, null);
-        }
-      }
-    }
-  }
-
-  public void prepareSkinAI(Aircraft paramAircraft) {
-    String str1 = paramAircraft.name();
-    if (str1.length() < 4) return;
-    String str2 = str1.substring(0, str1.length() - 1);
-    int i = 0;
-    try {
-      i = Integer.parseInt(str1.substring(str1.length() - 1, str1.length()));
-    } catch (Exception localException) {
-      return;
-    }
-    prepareSkinInWing(this.sectFile, paramAircraft, str2, i);
-  }
-
-  public void recordNetFiles()
-  {
-    int i = this.sectFile.sectionIndex("Wing");
-    if (i < 0)
-      return;
-    int j = this.sectFile.vars(i);
-    for (int k = 0; k < j; k++)
-      try {
-        String str1 = this.sectFile.var(i, k);
-        String str2 = this.sectFile.get(str1, "Class", (String)null);
-        Class localClass = ObjIO.classForName(str2);
-        String str3 = GUIAirArming.validateFileName(Property.stringValue(localClass, "keyName", null));
-        for (int m = 0; m < 4; m++) {
-          String str4 = this.sectFile.get(str1, "skin" + m, (String)null);
-          if (str4 != null)
-            recordNetFile(Main.cur().netFileServerSkin, str3 + "/" + str4);
-          recordNetFile(Main.cur().netFileServerNoseart, this.sectFile.get(str1, "noseart" + m, (String)null));
-          recordNetFile(Main.cur().netFileServerPilot, this.sectFile.get(str1, "pilot" + m, (String)null));
-        }
-      } catch (Exception localException) {
-        printDebug(localException);
-      }
-  }
-
-  private void recordNetFile(NetFileServerDef paramNetFileServerDef, String paramString) {
-    if (paramString == null) return;
-    String str = paramString;
-    if (NetMissionTrack.isPlaying()) {
-      str = NetFilesTrack.getLocalFileName(paramNetFileServerDef, Main.cur().netServerParams.host(), paramString);
-      if (str == null) return;
-    }
-    NetFilesTrack.recordFile(paramNetFileServerDef, (NetUser)Main.cur().netServerParams.host(), paramString, str);
-  }
-
-  public Aircraft loadAir(SectFile paramSectFile, String paramString1, String paramString2, String paramString3, int paramInt)
-    throws Exception
-  {
-    int i = !isServer() ? 1 : 0;
-
-    Class localClass = ObjIO.classForName(paramString1);
-    Aircraft localAircraft = (Aircraft)localClass.newInstance();
-
-    if ((Main.cur().netServerParams.isSingle()) && (this._loadPlayer)) {
-      if (Property.value(localClass, "cockpitClass", null) == null) {
-        throw new Exception("One of selected aircraft has no cockpit.");
-      }
-      if (this.playerNum == 0) {
-        World.setPlayerAircraft(localAircraft);
-        this._loadPlayer = false;
-      } else {
-        this.playerNum -= 1;
-      }
-    }
-    localAircraft.setName(paramString3);
-
-    int j = 0;
-    if (i != 0) {
-      j = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
-      if (j == 0)
-      {
-        localAircraft.load(paramSectFile, paramString2, paramInt, null, 0);
-      }
-      else localAircraft.load(paramSectFile, paramString2, paramInt, this.net.masterChannel(), j); 
-    }
-    else
-    {
-      localAircraft.load(paramSectFile, paramString2, paramInt, null, 0);
-    }
-
-    if (localAircraft.isSpawnFromMission()) {
-      if (this.net.isMirror()) {
-        if (j == 0) this.actors.set(this.curActor++, null); else
-          this.actors.set(this.curActor++, localAircraft);
-      }
-      else this.actors.add(localAircraft);
-
-    }
-
-    localAircraft.pos.reset();
-
-    return localAircraft;
-  }
-
-  public static void preparePlayerNumberOn(SectFile paramSectFile) {
-    UserCfg localUserCfg = World.cur().userCfg;
-    String str1 = paramSectFile.get("MAIN", "player", "");
-    if ("".equals(str1)) return;
-    String str2 = paramSectFile.get("MAIN", "playerNum", "");
-    paramSectFile.set(str1, "numberOn" + str2, localUserCfg.netNumberOn ? "1" : "0");
-  }
-
-  private void prepareTakeoff(SectFile paramSectFile, boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      int i = paramSectFile.sectionIndex("Wing");
-      if (i < 0)
-        return;
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-        prepareWingTakeoff(paramSectFile, paramSectFile.var(i, k));
-    }
-    else {
-      String str = paramSectFile.get("MAIN", "player", (String)null);
-      if (str == null)
-        return;
-      prepareWingTakeoff(paramSectFile, str);
-    }
-    this.sectFinger = paramSectFile.fingerExcludeSectPrefix("$$$");
-  }
-
-  private void prepareWingTakeoff(SectFile paramSectFile, String paramString)
-  {
-    String str1 = paramString + "_Way";
-    int i = paramSectFile.sectionIndex(str1);
-    if (i < 0) return;
-    int j = paramSectFile.vars(i);
-    if (j == 0) return;
-    ArrayList localArrayList = new ArrayList(j);
-    for (int k = 0; k < j; k++)
-      localArrayList.add(paramSectFile.line(i, k));
-    String str2 = (String)localArrayList.get(0);
-    if (!str2.startsWith("TAKEOFF")) {
-      return;
-    }
-    StringBuffer localStringBuffer = new StringBuffer("NORMFLY");
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(str2);
-    localNumberTokenizer.next((String)null);
-    double d1 = localNumberTokenizer.next(1000.0D);
-    double d2 = localNumberTokenizer.next(1000.0D);
-    WingTakeoffPos localWingTakeoffPos = new WingTakeoffPos(d1, d2);
-    Object localObject;
-    if (this.mapWingTakeoff == null) {
-      this.mapWingTakeoff = new HashMap();
-      this.mapWingTakeoff.put(localWingTakeoffPos, localWingTakeoffPos);
-    } else {
-      while (true) {
-        localObject = (WingTakeoffPos)this.mapWingTakeoff.get(localWingTakeoffPos);
-        if (localObject == null) {
-          this.mapWingTakeoff.put(localWingTakeoffPos, localWingTakeoffPos);
-          break;
-        }
-        localWingTakeoffPos.x += 200;
-      }
-    }
-    d1 = localWingTakeoffPos.x;
-    d2 = localWingTakeoffPos.y;
-
-    localStringBuffer.append(" "); localStringBuffer.append(d1);
-    localStringBuffer.append(" "); localStringBuffer.append(d2);
-
-    if (j > 1) {
-      localObject = (String)localArrayList.get(1);
-      if ((!((String)localObject).startsWith("TAKEOFF")) && (!((String)localObject).startsWith("LANDING")))
-      {
-        localNumberTokenizer = new NumberTokenizer((String)localObject);
-        localNumberTokenizer.next((String)null);
-        localNumberTokenizer.next((String)null);
-        localNumberTokenizer.next((String)null);
-        localStringBuffer.append(" ");
-        localStringBuffer.append(localNumberTokenizer.next("1000.0"));
-        localStringBuffer.append(" ");
-        localStringBuffer.append(localNumberTokenizer.next("300.0"));
-        localArrayList.set(0, localStringBuffer.toString());
-        break label476;
-      }
-    }
-    localStringBuffer.append(" 1000 300");
-    localArrayList.set(0, localStringBuffer.toString());
-
-    label476: paramSectFile.sectionClear(i);
-    for (int m = 0; m < j; m++)
-      paramSectFile.lineAdd(i, (String)localArrayList.get(m));
-  }
-
-  private void loadChiefs(SectFile paramSectFile)
-    throws Exception
-  {
-    int i = paramSectFile.sectionIndex("Chiefs");
-    if (i < 0)
-      return;
-    if (chiefsIni == null)
-    {
-      chiefsIni = new SectFile("com/maddox/il2/objects/chief.ini");
-    }
-
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      LOADING_STEP(60 + Math.round(k / j * 20.0F), "task.Load_tanks");
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-      String str1 = localNumberTokenizer.next();
-      String str2 = localNumberTokenizer.next();
-      int m = localNumberTokenizer.next(-1);
-      if (m < 0) {
-        System.out.println("Mission: Wrong chief's army [" + m + "]");
-      }
-      else {
-        Chief.new_DELAY_WAKEUP = localNumberTokenizer.next(0.0F);
-        Chief.new_SKILL_IDX = localNumberTokenizer.next(2);
-        if ((Chief.new_SKILL_IDX < 0) || (Chief.new_SKILL_IDX > 3)) {
-          System.out.println("Mission: Wrong chief's skill [" + Chief.new_SKILL_IDX + "]");
-        }
-        else {
-          Chief.new_SLOWFIRE_K = localNumberTokenizer.next(1.0F);
-          if ((Chief.new_SLOWFIRE_K < 0.5F) || (Chief.new_SLOWFIRE_K > 100.0F)) {
-            System.out.println("Mission: Wrong chief's slowfire [" + Chief.new_SLOWFIRE_K + "]");
-          }
-          else if (chiefsIni.sectionIndex(str2) < 0) {
-            System.out.println("Mission: Wrong chief's type [" + str2 + "]");
-          }
-          else
-          {
-            int n = str2.indexOf('.');
-            if (n <= 0) {
-              System.out.println("Mission: Wrong chief's type [" + str2 + "]");
+            try
+            {
+                if(com.maddox.il2.game.Main.cur().mission != null)
+                    com.maddox.il2.game.Main.cur().mission.destroy();
+                com.maddox.il2.game.Mission mission = new Mission();
+                if(com.maddox.il2.game.Mission.cur() != null)
+                    com.maddox.il2.game.Mission.cur().destroy();
+                mission.clear();
+                com.maddox.il2.game.Main.cur().mission = mission;
+                mission.createNetObject(netmsginput.channel(), i);
+                com.maddox.il2.game.Main.cur().missionLoading = mission;
             }
-            else {
-              String str3 = str2.substring(0, n);
-              String str4 = str2.substring(n + 1);
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.Mission.printDebug(exception);
+            }
+        }
 
-              String str5 = chiefsIni.get(str3, str4);
-              if (str5 == null) {
-                System.out.println("Mission: Wrong chief's type [" + str2 + "]");
-              }
-              else {
-                localNumberTokenizer = new NumberTokenizer(str5);
-                str5 = localNumberTokenizer.nextToken();
-                localNumberTokenizer.nextToken();
-                String str6 = null;
-                if (localNumberTokenizer.hasMoreTokens()) {
-                  str6 = localNumberTokenizer.nextToken();
-                }
+        SPAWN()
+        {
+        }
+    }
 
-                Class localClass = ObjIO.classForName(str5);
+    class Mirror extends com.maddox.il2.game.NetMissionObj
+    {
 
-                if (localClass == null) {
-                  System.out.println("Mission: Unknown chief's class [" + str5 + "]");
-                }
+        public Mirror(com.maddox.il2.game.Mission mission1, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(mission1, netchannel, i);
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(0);
+                postTo(netchannel, netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.Mission _tmp = mission1;
+                com.maddox.il2.game.Mission.printDebug(exception);
+            }
+        }
+    }
+
+    class Master extends com.maddox.il2.game.NetMissionObj
+    {
+
+        public Master(com.maddox.il2.game.Mission mission1)
+        {
+            super(mission1);
+            mission1.sectFinger = mission1.sectFile.fingerExcludeSectPrefix("$$$");
+        }
+    }
+
+    class NetMissionObj extends com.maddox.rts.NetObj
+        implements com.maddox.rts.NetChannelCallbackStream
+    {
+
+        private void msgCallback(com.maddox.rts.NetChannel netchannel, int i)
+        {
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(1);
+                netmsgguaranted.writeByte(i);
+                com.maddox.rts.NetMsgInput netmsginput = new NetMsgInput();
+                netmsginput.setData(netchannel, true, netmsgguaranted.data(), 0, netmsgguaranted.size());
+                com.maddox.rts.MsgNet.postReal(com.maddox.rts.Time.currentReal(), this, netmsginput);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.NetMissionObj _tmp = this;
+                com.maddox.il2.game.NetMissionObj.printDebug(exception);
+            }
+        }
+
+        public boolean netChannelCallback(com.maddox.rts.NetChannelOutStream netchanneloutstream, com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        {
+            if(!(netmsgguaranted instanceof com.maddox.rts.NetMsgSpawn)) goto _L2; else goto _L1
+_L1:
+            msgCallback(netchanneloutstream, 0);
+              goto _L3
+_L2:
+            if(!(netmsgguaranted instanceof com.maddox.rts.NetMsgDestroy)) goto _L4; else goto _L3
+_L4:
+            int i;
+            com.maddox.rts.NetMsgInput netmsginput = new NetMsgInput();
+            netmsginput.setData(netchanneloutstream, true, netmsgguaranted.data(), 0, netmsgguaranted.size());
+            i = netmsginput.readUnsignedByte();
+            i;
+            JVM INSTR lookupswitch 4: default 139
+        //                       0: 100
+        //                       2: 109
+        //                       4: 118
+        //                       12: 127;
+               goto _L5 _L6 _L7 _L8 _L9
+_L5:
+            break; /* Loop/switch isn't completed */
+_L6:
+            msgCallback(netchanneloutstream, 1);
+            break; /* Loop/switch isn't completed */
+_L7:
+            msgCallback(netchanneloutstream, 3);
+            break; /* Loop/switch isn't completed */
+_L8:
+            msgCallback(netchanneloutstream, 4);
+            break; /* Loop/switch isn't completed */
+_L9:
+            com.maddox.il2.game.Main3D.cur3D().gameTrackRecord().startKeyRecord(netmsgguaranted);
+            return false;
+            java.lang.Exception exception;
+            exception;
+            this;
+            com.maddox.il2.game.NetMissionObj.printDebug(exception);
+_L3:
+            return true;
+        }
+
+        public boolean netChannelCallback(com.maddox.rts.NetChannelInStream netchannelinstream, com.maddox.rts.NetMsgInput netmsginput)
+        {
+            try
+            {
+                int i = netmsginput.readUnsignedByte();
+                if(i == 4)
+                    netchannelinstream.setPause(true);
                 else
+                if(i == 12)
                 {
-                  Constructor localConstructor;
-                  try
-                  {
-                    Class[] arrayOfClass = new Class[6];
-                    arrayOfClass[0] = String.class;
-                    arrayOfClass[1] = Integer.TYPE;
-                    arrayOfClass[2] = SectFile.class;
-                    arrayOfClass[3] = String.class;
-                    arrayOfClass[4] = SectFile.class;
-                    arrayOfClass[5] = String.class;
-                    localConstructor = localClass.getConstructor(arrayOfClass);
-                  } catch (Exception localException1) {
-                    System.out.println("Mission: No required constructor in chief's class [" + str5 + "]");
-
-                    continue;
-                  }
-
-                  Exception localException2 = this.curActor;
-                  Object localObject;
-                  try {
-                    Object[] arrayOfObject = new Object[6];
-                    arrayOfObject[0] = str1;
-                    arrayOfObject[1] = new Integer(m);
-                    arrayOfObject[2] = chiefsIni;
-                    arrayOfObject[3] = str2;
-                    arrayOfObject[4] = paramSectFile;
-                    arrayOfObject[5] = (str1 + "_Road");
-                    localObject = localConstructor.newInstance(arrayOfObject);
-                  } catch (Exception localException3) {
-                    System.out.println("Mission: Can't create chief '" + str1 + "' [class:" + str5 + "]");
-
-                    continue;
-                  }
-
-                  if (str6 != null) {
-                    ((Actor)localObject).icon = IconDraw.get(str6);
-                  }
-                  if ((localException2 != this.curActor) && (this.net != null) && (this.net.isMirror())) {
-                    for (localException3 = localException2; localException3 < this.curActor; localException3++) {
-                      Actor localActor = (Actor)this.actors.get(localException3);
-                      if ((localActor.net == null) || (localActor.net.isMaster())) {
-                        if (Actor.isValid(localActor)) {
-                          if ((localObject instanceof ChiefGround))
-                            ((ChiefGround)localObject).Detach(localActor, localActor);
-                          localActor.destroy();
-                        }
-                        this.actors.set(localException3, null);
-                      }
+                    netchannelinstream.setGameTime();
+                    if(com.maddox.il2.game.Mission.isCoop())
+                    {
+                        com.maddox.il2.game.Main.cur().netServerParams.prepareHidenAircraft();
+                        com.maddox.il2.game.Mission.doMissionStarting();
+                        com.maddox.rts.Time.setPause(false);
                     }
-                  }
-                  if ((localObject instanceof ChiefGround))
-                    ((ChiefGround)localObject).dreamFire(true); 
+                    com.maddox.il2.game.Main3D.cur3D().gameTrackPlay().startKeyPlay();
                 }
-              }
+                netmsginput.reset();
             }
-          }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.NetMissionObj _tmp = this;
+                com.maddox.il2.game.NetMissionObj.printDebug(exception);
+            }
+            return true;
         }
-      }
-    }
-  }
 
-  public int getUnitNetIdRemote(Actor paramActor) {
-    if (this.net.isMaster()) {
-      this.actors.add(paramActor);
-      return 0;
-    }
-    Integer localInteger = (Integer)this.actors.get(this.curActor);
-    this.actors.set(this.curActor, paramActor);
-    this.curActor += 1;
-    return localInteger.intValue();
-  }
-
-  private Actor loadStationaryActor(String paramString1, String paramString2, int paramInt, double paramDouble1, double paramDouble2, float paramFloat1, float paramFloat2, String paramString3, String paramString4, String paramString5)
-  {
-    Class localClass = null;
-    try { localClass = ObjIO.classForName(paramString2);
-    } catch (Exception localException1) {
-      System.out.println("Mission: class '" + paramString2 + "' not found");
-      return null;
-    }
-    ActorSpawn localActorSpawn = (ActorSpawn)Spawn.get(localClass.getName(), false);
-    if (localActorSpawn == null) {
-      System.out.println("Mission: ActorSpawn for '" + paramString2 + "' not found");
-      return null;
-    }
-    spawnArg.clear();
-    if (paramString1 != null) {
-      if ("NONAME".equals(paramString1)) {
-        System.out.println("Mission: 'NONAME' - not valid actor name");
-        return null;
-      }
-      if (Actor.getByName(paramString1) != null) {
-        System.out.println("Mission: actor '" + paramString1 + "' alredy exist");
-        return null;
-      }
-      spawnArg.name = paramString1;
-    }
-    spawnArg.army = paramInt; spawnArg.armyExist = true;
-    spawnArg.country = paramString3;
-
-    Chief.new_DELAY_WAKEUP = 0.0F;
-    com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE = 0.0F;
-    if (paramString3 != null)
-      try {
-        Chief.new_DELAY_WAKEUP = Integer.parseInt(paramString3);
-        com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE = Chief.new_DELAY_WAKEUP;
-      }
-      catch (Exception localException2) {
-      }
-    Chief.new_SKILL_IDX = 2;
-    if (paramString4 != null) {
-      try {
-        Chief.new_SKILL_IDX = Integer.parseInt(paramString4); } catch (Exception localException3) {
-      }
-      if ((Chief.new_SKILL_IDX < 0) || (Chief.new_SKILL_IDX > 3)) {
-        System.out.println("Mission: Wrong actor skill '" + Chief.new_SKILL_IDX + "'");
-        return null;
-      }
-    }
-
-    Chief.new_SLOWFIRE_K = 1.0F;
-    if (paramString5 != null) {
-      try {
-        Chief.new_SLOWFIRE_K = Float.parseFloat(paramString5); } catch (Exception localException4) {
-      }
-      if ((Chief.new_SLOWFIRE_K < 0.5F) || (Chief.new_SLOWFIRE_K > 100.0F)) {
-        System.out.println("Mission: Wrong actor slowfire '" + Chief.new_SLOWFIRE_K + "'");
-        return null;
-      }
-    }
-
-    p.set(paramDouble1, paramDouble2, 0.0D);
-    spawnArg.point = p;
-    o.set(paramFloat1, 0.0F, 0.0F);
-    spawnArg.orient = o;
-    if (paramFloat2 > 0.0F) {
-      spawnArg.timeLenExist = true;
-      spawnArg.timeLen = paramFloat2;
-    }
-
-    spawnArg.netChannel = null;
-    spawnArg.netIdRemote = 0;
-    if (this.net.isMirror()) {
-      spawnArg.netChannel = this.net.masterChannel();
-      spawnArg.netIdRemote = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
-      if (spawnArg.netIdRemote == 0) {
-        this.actors.set(this.curActor++, null);
-        return null;
-      }
-    }
-    Actor localActor = null;
-    try {
-      localActor = localActorSpawn.actorSpawn(spawnArg);
-    } catch (Exception localException5) {
-      System.out.println(localException5.getMessage());
-      localException5.printStackTrace();
-    }
-    if (this.net.isMirror())
-      this.actors.set(this.curActor++, localActor);
-    else {
-      this.actors.add(localActor);
-    }
-    return localActor;
-  }
-
-  private void loadStationary(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("Stationary");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      LOADING_STEP(80 + Math.round(k / j * 5.0F), "task.Load_stationary_objects");
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-      loadStationaryActor(null, localNumberTokenizer.next(""), localNumberTokenizer.next(0), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0F), localNumberTokenizer.next(0.0F), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null));
-    }
-  }
-
-  private void loadNStationary(SectFile paramSectFile) {
-    int i = paramSectFile.sectionIndex("NStationary");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      LOADING_STEP(85 + Math.round(k / j * 5.0F), "task.Load_stationary_objects");
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-      loadStationaryActor(localNumberTokenizer.next(""), localNumberTokenizer.next(""), localNumberTokenizer.next(0), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0F), localNumberTokenizer.next(0.0F), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null));
-    }
-  }
-
-  private void loadRocketry(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("Rocket");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k)); if (localNumberTokenizer.hasMoreTokens()) {
-        String str1 = localNumberTokenizer.next(""); if (localNumberTokenizer.hasMoreTokens()) {
-          String str2 = localNumberTokenizer.next(""); if (localNumberTokenizer.hasMoreTokens()) {
-            int m = localNumberTokenizer.next(1, 1, 2);
-            double d1 = localNumberTokenizer.next(0.0D); if (localNumberTokenizer.hasMoreTokens()) {
-              double d2 = localNumberTokenizer.next(0.0D); if (localNumberTokenizer.hasMoreTokens()) {
-                float f1 = localNumberTokenizer.next(0.0F); if (localNumberTokenizer.hasMoreTokens()) {
-                  float f2 = localNumberTokenizer.next(0.0F);
-                  int n = localNumberTokenizer.next(1);
-                  float f3 = localNumberTokenizer.next(20.0F);
-                  Point2d localPoint2d = null;
-                  if (localNumberTokenizer.hasMoreTokens()) {
-                    localPoint2d = new Point2d(localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0D));
-                  }
-                  NetChannel localNetChannel = null;
-                  int i1 = 0;
-                  if (this.net.isMirror()) {
-                    localNetChannel = this.net.masterChannel();
-                    i1 = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
-                    if (i1 == 0) {
-                      this.actors.set(this.curActor++, null);
-                      continue;
-                    }
-                  }
-                  RocketryGeneric localRocketryGeneric = null;
-                  try {
-                    localRocketryGeneric = RocketryGeneric.New(str1, str2, localNetChannel, i1, m, d1, d2, f1, f2, n, f3, localPoint2d);
-                  }
-                  catch (Exception localException) {
-                    System.out.println(localException.getMessage());
-                    localException.printStackTrace();
-                  }
-                  if (this.net.isMirror())
-                    this.actors.set(this.curActor++, localRocketryGeneric);
-                  else
-                    this.actors.add(localRocketryGeneric); 
+        public void netChannelCallback(com.maddox.rts.NetChannelInStream netchannelinstream, com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        {
+            if(!(netmsgguaranted instanceof com.maddox.rts.NetMsgSpawn) && !(netmsgguaranted instanceof com.maddox.rts.NetMsgDestroy))
+                try
+                {
+                    com.maddox.rts.NetMsgInput netmsginput = new NetMsgInput();
+                    netmsginput.setData(netchannelinstream, true, netmsgguaranted.data(), 0, netmsgguaranted.size());
+                    int i = netmsginput.readUnsignedByte();
+                    if(i == 4)
+                        netchannelinstream.setPause(false);
                 }
-              }
-            }
-          }
+                catch(java.lang.Exception exception)
+                {
+                    com.maddox.il2.game.NetMissionObj _tmp = this;
+                    com.maddox.il2.game.NetMissionObj.printDebug(exception);
+                }
         }
-      }
-    }
-  }
 
-  private void loadHouses(SectFile paramSectFile) {
-    int i = paramSectFile.sectionIndex("Buildings");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    if (j == 0)
-      return;
-    HouseManager localHouseManager;
-    if (this.net.isMirror()) {
-      spawnArg.netChannel = this.net.masterChannel();
-      spawnArg.netIdRemote = ((Integer)(Integer)this.actors.get(this.curActor)).intValue();
-      localHouseManager = new HouseManager(paramSectFile, "Buildings", this.net.masterChannel(), ((Integer)(Integer)this.actors.get(this.curActor)).intValue());
-      this.actors.set(this.curActor++, localHouseManager);
-    } else {
-      localHouseManager = new HouseManager(paramSectFile, "Buildings", null, 0);
-      this.actors.add(localHouseManager);
-    }
-  }
-
-  private void loadBornPlaces(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("BornPlace");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    if (j == 0)
-      return;
-    if (World.cur().airdrome == null)
-      return;
-    if (World.cur().airdrome.stay == null)
-      return;
-    World.cur().bornPlaces = new ArrayList(j);
-    for (int k = 0; k < j; k++) {
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-      int m = localNumberTokenizer.next(0, 0, Army.amountNet() - 1);
-      float f1 = localNumberTokenizer.next(1000, 500, 10000);
-      double d1 = f1 * f1;
-      float f2 = localNumberTokenizer.next(0);
-      float f3 = localNumberTokenizer.next(0);
-      boolean bool1 = localNumberTokenizer.next(1) == 1;
-
-      int n = 1000;
-      int i1 = 200;
-      int i2 = 0;
-      int i3 = 0;
-      int i4 = 0;
-      int i5 = 5000;
-      int i6 = 50;
-      boolean bool2 = false;
-      boolean bool3 = false;
-      boolean bool4 = false;
-      boolean bool5 = false;
-      boolean bool6 = false;
-      boolean bool7 = false;
-      boolean bool8 = false;
-      double d2 = 3.8D;
-      boolean bool9 = false;
-
-      int i7 = 0;
-      try
-      {
-        n = localNumberTokenizer.next(1000, 0, 10000); i7++;
-        i1 = localNumberTokenizer.next(200, 0, 500); i7++;
-        i2 = localNumberTokenizer.next(0, 0, 360); i7++;
-        i3 = localNumberTokenizer.next(0, 0, 99999); i7++;
-
-        i4 = localNumberTokenizer.next(0, 0, 99999); i7++;
-        i5 = localNumberTokenizer.next(5000, 0, 99999); i7++;
-        i6 = localNumberTokenizer.next(50, 1, 99999); i7++;
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
         {
-          bool3 = true;
-          i7++;
+            com.maddox.il2.game.Mission mission = (com.maddox.il2.game.Mission)superObj();
+            mission.netInput(netmsginput);
+            return true;
         }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool4 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool5 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool7 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool8 = true;
-          i7++;
-        }
-        d2 = localNumberTokenizer.next(3.8D, 0.0D, 10.0D);
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool6 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool9 = true;
-          i7++;
-        }
-        if (localNumberTokenizer.next(0, 0, 1) == 1)
-        {
-          bool2 = true;
-          i7++;
-        }
-      }
-      catch (Exception localException2)
-      {
-        System.out.println("Mission: no air spawn entries defined for HomeBase nr. " + k + ". value index: " + i7);
-      }
 
-      int i8 = 0;
-      Point_Stay[][] arrayOfPoint_Stay = World.cur().airdrome.stay;
-
-      if (!isDogfight()) {
-        i8 = 1;
-      }
-      else {
-        for (int i9 = 0; i9 < arrayOfPoint_Stay.length; i9++)
-          if (arrayOfPoint_Stay[i9] != null) {
-            Point_Stay localPoint_Stay = arrayOfPoint_Stay[i9][(arrayOfPoint_Stay[i9].length - 1)];
-            if ((localPoint_Stay.x - f2) * (localPoint_Stay.x - f2) + (localPoint_Stay.y - f3) * (localPoint_Stay.y - f3) <= d1) {
-              i8 = 1;
-              break;
-            }
-          }
-      }
-      if (i8 == 0)
-        continue;
-      BornPlace localBornPlace = new BornPlace(f2, f3, m, f1);
-
-      localBornPlace.zutiRadarHeight_MIN = i4;
-      localBornPlace.zutiRadarHeight_MAX = i5;
-      localBornPlace.zutiRadarRange = i6;
-      localBornPlace.zutiSpawnHeight = n;
-      localBornPlace.zutiSpawnSpeed = i1;
-      localBornPlace.zutiSpawnOrient = i2;
-      localBornPlace.zutiMaxBasePilots = i3;
-      localBornPlace.zutiAirspawnIfCarrierFull = bool2;
-      localBornPlace.zutiAirspawnOnly = bool3;
-      localBornPlace.zutiDisableSpawning = bool7;
-      localBornPlace.zutiEnableFriction = bool8;
-      localBornPlace.zutiFriction = d2;
-      localBornPlace.zutiEnablePlaneLimits = bool4;
-      localBornPlace.zutiDecreasingNumberOfPlanes = bool5;
-      localBornPlace.zutiIncludeStaticPlanes = bool6;
-      localBornPlace.zutiBpIndex = k;
-      localBornPlace.zutiStaticPositionOnly = bool9;
-
-      localBornPlace.bParachute = bool1;
-      World.cur().bornPlaces.add(localBornPlace);
-
-      localBornPlace.zutiCountBornPlaceStayPoints();
-      int i11;
-      Object localObject;
-      if (this.actors != null) {
-        i10 = this.actors.size();
-        for (i11 = 0; i11 < i10; i11++) {
-          Actor localActor = (Actor)this.actors.get(i11);
-
-          if ((Actor.isValid(localActor)) && (localActor.pos != null) && (ZutiSupportMethods.isStaticActor(localActor))) {
-            localObject = localActor.pos.getAbsPoint();
-            double d3 = (((Point3d)localObject).x - f2) * (((Point3d)localObject).x - f2) + (((Point3d)localObject).y - f3) * (((Point3d)localObject).y - f3);
-            if (d3 <= d1) {
-              localActor.setArmy(localBornPlace.army);
-            }
-          }
-        }
-      }
-      int i10 = paramSectFile.sectionIndex("BornPlace" + k);
-      if (i10 >= 0) {
-        i11 = paramSectFile.vars(i10);
-        for (int i12 = 0; i12 < i11; i12++)
+        public void msgNetNewChannel(com.maddox.rts.NetChannel netchannel)
         {
-          localObject = paramSectFile.line(i10, i12);
-          StringTokenizer localStringTokenizer = new StringTokenizer((String)localObject);
-
-          ZutiAircraft localZutiAircraft = new ZutiAircraft();
-          String str1 = "";
-          int i13 = 0;
-          while (localStringTokenizer.hasMoreTokens())
-          {
-            switch (i13)
+            if(com.maddox.il2.game.Main.cur().missionLoading != null)
             {
-            case 0:
-              localZutiAircraft.setAcName(localStringTokenizer.nextToken());
-              break;
-            case 1:
-              localZutiAircraft.setMaxAllowed(Integer.valueOf(localStringTokenizer.nextToken()).intValue());
-              break;
-            default:
-              str1 = str1 + " " + localStringTokenizer.nextToken();
-            }
-
-            i13++;
-          }
-          localZutiAircraft.setLoadedWeapons(str1, false);
-          String str2 = localZutiAircraft.getAcName();
-          if (str2 == null)
-            continue;
-          str2 = str2.intern();
-          Class localClass = (Class)Property.value(str2, "airClass", null);
-
-          if (localClass == null) {
-            continue;
-          }
-          if (localBornPlace.zutiAircrafts == null) {
-            localBornPlace.zutiAircrafts = new ArrayList();
-          }
-          localBornPlace.zutiAircrafts.add(localZutiAircraft);
-        }
-
-      }
-
-      localBornPlace.zutiFillAirNames();
-
-      zutiLoadBornPlaceCountries(localBornPlace, paramSectFile, k);
-    }
-
-    try
-    {
-      zutiAssignBpToMovingCarrier(); } catch (Exception localException1) {
-      System.out.println("Mission error, ID_15: " + localException1.toString());
-    }
-  }
-
-  private void loadTargets(SectFile paramSectFile)
-  {
-    if ((Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight()))
-    {
-      int i = paramSectFile.sectionIndex("Target");
-      if (i < 0)
-        return;
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-        Target.create(paramSectFile.line(i, k));
-    }
-  }
-
-  private void loadViewPoint(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("StaticCamera");
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-      float f1 = localNumberTokenizer.next(0);
-      float f2 = localNumberTokenizer.next(0);
-      float f3 = localNumberTokenizer.next(100, 2, 10000);
-      ActorViewPoint localActorViewPoint = new ActorViewPoint();
-      World.land(); Point3d localPoint3d = new Point3d(f1, f2, f3 + Landscape.HQ_Air(f1, f2));
-      localActorViewPoint.pos.setAbs(localPoint3d); localActorViewPoint.pos.reset();
-      localActorViewPoint.dreamFire(true);
-      localActorViewPoint.setName("StaticCamera_" + k);
-      if (this.net.isMirror()) {
-        localActorViewPoint.createNetObject(this.net.masterChannel(), ((Integer)(Integer)this.actors.get(this.curActor)).intValue());
-
-        this.actors.set(this.curActor++, localActorViewPoint);
-      } else {
-        localActorViewPoint.createNetObject(null, 0);
-        this.actors.add(localActorViewPoint);
-      }
-    }
-  }
-
-  private void checkBridgesAndHouses(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sections();
-    int n;
-    int i1;
-    for (int j = 0; j < i; j++) {
-      String str1 = paramSectFile.sectionName(j);
-      Object localObject;
-      if (str1.endsWith("_Way")) {
-        m = paramSectFile.vars(j);
-        for (n = 0; n < m; n++) {
-          String str2 = paramSectFile.var(j, n);
-          if (str2.equals("GATTACK")) {
-            SharedTokenizer.set(paramSectFile.value(j, n));
-            SharedTokenizer.next((String)null);
-            SharedTokenizer.next((String)null);
-            SharedTokenizer.next((String)null);
-            SharedTokenizer.next((String)null);
-            localObject = SharedTokenizer.next((String)null);
-            if ((localObject == null) || 
-              (!((String)localObject).startsWith("Bridge"))) continue;
-            LongBridge localLongBridge1 = (LongBridge)Actor.getByName(" " + (String)localObject);
-            if ((localLongBridge1 == null) || 
-              (localLongBridge1.isAlive())) continue;
-            localLongBridge1.BeLive();
-          }
-        }
-      } else if (str1.endsWith("_Road")) {
-        m = paramSectFile.vars(j);
-        for (n = 0; n < m; n++) {
-          SharedTokenizer.set(paramSectFile.value(j, n));
-          SharedTokenizer.next((String)null);
-          i1 = (int)SharedTokenizer.next(1.0D);
-          if (i1 < 0) {
-            i1 = -i1 - 1;
-            localObject = LongBridge.getByIdx(i1);
-            if ((localObject == null) || 
-              (((LongBridge)localObject).isAlive())) continue;
-            ((LongBridge)localObject).BeLive();
-          }
-        }
-      }
-    }
-    j = paramSectFile.sectionIndex("Target");
-    if (j < 0) return;
-    int k = paramSectFile.vars(j);
-    for (int m = 0; m < k; m++) {
-      SharedTokenizer.set(paramSectFile.line(j, m));
-      n = SharedTokenizer.next(0, 0, 7);
-      if ((n != 1) && (n != 2) && (n != 6) && (n != 7))
-      {
-        continue;
-      }
-      SharedTokenizer.next(0);
-      SharedTokenizer.next(0);
-      SharedTokenizer.next(0);
-      SharedTokenizer.next(0);
-      i1 = SharedTokenizer.next(0);
-      int i2 = SharedTokenizer.next(0);
-      int i3 = SharedTokenizer.next(1000, 50, 3000);
-      int i4 = SharedTokenizer.next(0);
-      String str3 = SharedTokenizer.next(null);
-      if ((str3 != null) && (str3.startsWith("Bridge")))
-        str3 = " " + str3;
-      switch (n) {
-      case 1:
-      case 6:
-        World.cur().statics.restoreAllHouses(i1, i2, i3);
-        break;
-      case 2:
-      case 7:
-        if (str3 == null) continue;
-        LongBridge localLongBridge2 = (LongBridge)Actor.getByName(str3);
-        if ((localLongBridge2 == null) || 
-          (localLongBridge2.isAlive())) continue;
-        localLongBridge2.BeLive();
-      case 3:
-      case 4:
-      case 5:
-      }
-    }
-  }
-
-  public static void doMissionStarting()
-  {
-    ArrayList localArrayList = new ArrayList(Engine.targets());
-    int i = localArrayList.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)localArrayList.get(j);
-      if (!Actor.isValid(localActor)) continue;
-      try {
-        localActor.missionStarting();
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-    }
-  }
-
-  public static void initRadioSounds()
-  {
-    if (radioStationsLoaded)
-    {
-      return;
-    }
-
-    Aircraft localAircraft = World.getPlayerAircraft();
-    if (localAircraft != null)
-    {
-      ArrayList localArrayList = Main.cur().mission.getBeacons(localAircraft.FM.actor.getArmy());
-      if (localArrayList != null)
-      {
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Actor localActor = (Actor)localArrayList.get(i);
-          if (!(localActor instanceof TypeHasRadioStation))
-            continue;
-          hasRadioStations = true;
-          localAircraft.FM.AS.preLoadRadioStation(localActor);
-          radioStationsLoaded = true;
-          CmdMusic.setCurrentVolume(0.001F);
-          return;
-        }
-      }
-    }
-  }
-
-  public void doBegin()
-  {
-    if (this.bPlaying) return;
-
-    if (Config.isUSE_RENDER()) {
-      Main3D.cur3D().setDrawLand(true);
-      if (World.cur().diffCur.Clouds) {
-        Main3D.cur3D().bDrawClouds = true;
-        if (RenderContext.cfgSky.get() == 0) {
-          RenderContext.cfgSky.set(1);
-          RenderContext.cfgSky.apply();
-          RenderContext.cfgSky.reset();
-        }
-      } else {
-        Main3D.cur3D().bDrawClouds = false;
-      }
-      CmdEnv.top().exec("fov 70");
-      if (Main3D.cur3D().keyRecord != null) {
-        Main3D.cur3D().keyRecord.clearPrevStates();
-        Main3D.cur3D().keyRecord.clearRecorded();
-        Main3D.cur3D().keyRecord.stopRecording(false);
-        if (Main.cur().netServerParams.isSingle())
-          Main3D.cur3D().keyRecord.startRecording();
-      }
-      NetMissionTrack.countRecorded = 0;
-      if (Main3D.cur3D().guiManager != null) {
-        Main3D.cur3D().guiManager.setTimeGameActive(true);
-        GUIPad.bStartMission = true;
-      }
-
-      if (!Main.cur().netServerParams.isCoop()) {
-        doMissionStarting();
-      }
-      if (Main.cur().netServerParams.isDogfight()) {
-        Time.setPause(false);
-        RTSConf.cur.time.setEnableChangePause1(false);
-      }
-
-      CmdEnv.top().exec("music PUSH");
-      CmdEnv.top().exec("music STOP");
-      if (!Main3D.cur3D().isDemoPlaying()) {
-        ForceFeedback.startMission();
-      }
-      Joy.adapter().rePostMoves();
-
-      viewSet = Main3D.cur3D().viewSet_Get();
-      iconTypes = Main3D.cur3D().iconTypes();
-    } else {
-      doMissionStarting();
-      Time.setPause(false);
-    }
-
-    if (this.net.isMaster()) {
-      sendCmd(10);
-      doReplicateNotMissionActors(true);
-    }
-    if (Main.cur().netServerParams.isSingle()) {
-      Main.cur().netServerParams.setExtraOcclusion(false);
-      AudioDevice.soundsOn();
-    }
-    if ((Main.cur().netServerParams.isMaster()) && ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isSingle()) || (Main.cur().netServerParams.isDogfight())))
-    {
-      World.cur().targetsGuard.activate();
-    }EventLog.type(true, "Mission: " + name() + " is Playing");
-    EventLog.type("Mission BEGIN");
-
-    if (Main.cur().netServerParams != null) {
-      Main.cur().netServerParams.zutiResetServerTime();
-    }
-    this.bPlaying = true;
-    if (Main.cur().netServerParams != null)
-      Main.cur().netServerParams.USGSupdate();
-  }
-
-  public void doEnd()
-  {
-    try
-    {
-      if (!this.bPlaying) return;
-      EventLog.type("Mission END");
-
-      if (Config.isUSE_RENDER()) {
-        ForceFeedback.stopMission();
-        if (Main3D.cur3D().guiManager != null)
-          Main3D.cur3D().guiManager.setTimeGameActive(false);
-        NetMissionTrack.stopRecording();
-        if (Main3D.cur3D().keyRecord != null) {
-          if (Main3D.cur3D().keyRecord.isPlaying()) {
-            Main3D.cur3D().keyRecord.stopPlay();
-            Main3D.cur3D().guiManager.setKeyboardGameActive(true);
-            Main3D.cur3D().guiManager.setMouseGameActive(true);
-            Main3D.cur3D().guiManager.setJoyGameActive(true);
-          }
-          Main3D.cur3D().keyRecord.stopRecording(true);
-        }
-        CmdEnv.top().exec("music POP");
-        CmdEnv.top().exec("music PLAY");
-      }
-
-      RTSConf.cur.time.setEnableChangePause1(true);
-      Time.setPause(true);
-
-      if (this.net.isMaster()) {
-        sendCmd(20);
-      }
-      AudioDevice.soundsOff();
-      Voice.endSession();
-      this.bPlaying = false;
-      if (Main.cur().netServerParams != null)
-        Main.cur().netServerParams.USGSupdate();
-    }
-    catch (Exception localException) {
-      System.out.println("Mission error, ID_16: " + localException.toString());
-    }
-  }
-
-  public NetObj netObj()
-  {
-    return this.net;
-  }
-
-  private void sendCmd(int paramInt) {
-    if (this.net.isMirrored())
-      try {
-        List localList = NetEnv.channels();
-        int i = localList.size();
-        for (int j = 0; j < i; j++) {
-          NetChannel localNetChannel = (NetChannel)localList.get(j);
-          if ((localNetChannel == this.net.masterChannel()) || (!localNetChannel.isReady()) || (!localNetChannel.isMirrored(this.net)) || ((localNetChannel.userState != 4) && (localNetChannel.userState != 0)))
-          {
-            continue;
-          }
-
-          NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-          localNetMsgGuaranted.writeByte(paramInt);
-          this.net.postTo(localNetChannel, localNetMsgGuaranted);
-        }
-      } catch (Exception localException) {
-        printDebug(localException);
-      }
-  }
-
-  private void doReplicateNotMissionActors(boolean paramBoolean) {
-    if (this.net.isMirrored()) {
-      List localList = NetEnv.channels();
-      int i = localList.size();
-      for (int j = 0; j < i; j++) {
-        NetChannel localNetChannel = (NetChannel)localList.get(j);
-        if ((localNetChannel == this.net.masterChannel()) || (!localNetChannel.isReady()) || (!localNetChannel.isMirrored(this.net)))
-          continue;
-        if (paramBoolean) {
-          if (localNetChannel.userState == 4)
-            doReplicateNotMissionActors(localNetChannel, true);
-        }
-        else localNetChannel.userState = 1;
-      }
-    }
-  }
-
-  private void doReplicateNotMissionActors(NetChannel paramNetChannel, boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      paramNetChannel.userState = 0;
-
-      HashMapInt localHashMapInt = NetEnv.cur().objects;
-      HashMapIntEntry localHashMapIntEntry = localHashMapInt.nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        NetObj localNetObj = (NetObj)localHashMapIntEntry.getValue();
-        if (((localNetObj instanceof ActorNet)) && (!paramNetChannel.isMirrored(localNetObj))) {
-          ActorNet localActorNet = (ActorNet)localNetObj;
-          if ((Actor.isValid(localActorNet.actor())) && (!localActorNet.actor().isSpawnFromMission()))
-            MsgNet.postRealNewChannel(localNetObj, paramNetChannel);
-        }
-        localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
-      }
-    } else {
-      paramNetChannel.userState = 1;
-    }
-  }
-
-  private void doResvMission(NetMsgInput paramNetMsgInput) {
-    try {
-      while (paramNetMsgInput.available() > 0) {
-        int i = paramNetMsgInput.readInt();
-        if (i < 0) {
-          String str = paramNetMsgInput.read255();
-          this.sectFile.sectionAdd(str);
-        } else {
-          this.sectFile.lineAdd(i, paramNetMsgInput.read255(), paramNetMsgInput.read255());
-        }
-      }
-    } catch (Exception localException) {
-      printDebug(localException);
-      System.out.println("Bad format reseived missiion");
-    }
-  }
-
-  private void doSendMission(NetChannel paramNetChannel, int paramInt) {
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(paramInt);
-      int i = this.sectFile.sections();
-      for (int j = 0; j < i; j++) {
-        String str = this.sectFile.sectionName(j);
-        if (!str.startsWith("$$$")) {
-          if (localNetMsgGuaranted.size() >= 128) {
-            this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-            localNetMsgGuaranted = new NetMsgGuaranted();
-            localNetMsgGuaranted.writeByte(paramInt);
-          }
-          localNetMsgGuaranted.writeInt(-1);
-          localNetMsgGuaranted.write255(str);
-          int k = this.sectFile.vars(j);
-          for (int m = 0; m < k; m++) {
-            if (localNetMsgGuaranted.size() >= 128) {
-              this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-              localNetMsgGuaranted = new NetMsgGuaranted();
-              localNetMsgGuaranted.writeByte(paramInt);
-            }
-            localNetMsgGuaranted.writeInt(j);
-            localNetMsgGuaranted.write255(this.sectFile.var(j, m));
-            localNetMsgGuaranted.write255(this.sectFile.value(j, m));
-          }
-        }
-      }
-      if (localNetMsgGuaranted.size() > 1)
-        this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-      localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(paramInt + 1);
-      this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-    } catch (Exception localException) {
-      printDebug(localException);
-    }
-  }
-
-  public void replicateTimeofDay() {
-    if (!isServer()) return; try
-    {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(11);
-      localNetMsgGuaranted.writeFloat(World.getTimeofDay());
-      this.net.post(localNetMsgGuaranted);
-    }
-    catch (Exception localException)
-    {
-    }
-  }
-
-  private boolean isExistFile(String paramString)
-  {
-    int i = 0;
-    try {
-      SFSInputStream localSFSInputStream = new SFSInputStream(paramString);
-      localSFSInputStream.close();
-      i = 1; } catch (Exception localException) {
-    }
-    return i;
-  }
-
-  private void netInput(NetMsgInput paramNetMsgInput) throws IOException {
-    int i = 0;
-    if (((this.net instanceof Master)) || (paramNetMsgInput.channel() != this.net.masterChannel()))
-      i = 1;
-    boolean bool = paramNetMsgInput.channel() instanceof NetChannelStream;
-    NetMsgGuaranted localNetMsgGuaranted = null;
-    int j = paramNetMsgInput.readUnsignedByte();
-    int k;
-    switch (j) {
-    case 0:
-      paramNetMsgInput.channel().userState = 2;
-      localNetMsgGuaranted = new NetMsgGuaranted();
-      Object localObject;
-      if (i != 0) {
-        if (bool) {
-          localObject = new NetMsgGuaranted();
-          ((NetMsgGuaranted)localObject).writeByte(13);
-          ((NetMsgGuaranted)localObject).writeLong(Time.current());
-          this.net.postTo(paramNetMsgInput.channel(), (NetMsgGuaranted)localObject);
-        }
-        localNetMsgGuaranted.writeByte(0);
-        localNetMsgGuaranted.write255(this.name);
-        localNetMsgGuaranted.writeLong(this.sectFinger);
-      } else {
-        this.name = paramNetMsgInput.read255();
-        this.sectFinger = paramNetMsgInput.readLong();
-        Main.cur().netMissionListener.netMissionState(0, 0.0F, this.name);
-
-        if (!bool) {
-          ((NetUser)NetEnv.host()).setMissProp("missions/" + this.name);
-        }
-        localObject = "missions/" + this.name;
-        if ((!bool) && (isExistFile((String)localObject))) {
-          this.sectFile = new SectFile((String)localObject, 0, false);
-          if (this.sectFinger == this.sectFile.fingerExcludeSectPrefix("$$$")) {
-            localNetMsgGuaranted.writeByte(3);
-            break;
-          }
-        }
-
-        localObject = "missions/Net/Cache/" + this.sectFinger + ".mis";
-        int[] arrayOfInt = getSwTbl((String)localObject, this.sectFinger);
-        this.sectFile = new SectFile((String)localObject, 0, false, arrayOfInt);
-        if ((!bool) && (this.sectFinger == this.sectFile.fingerExcludeSectPrefix("$$$")))
-        {
-          localNetMsgGuaranted.writeByte(3);
-        }
-        else {
-          this.sectFile = new SectFile((String)localObject, 1, false, arrayOfInt);
-          this.sectFile.clear();
-          localNetMsgGuaranted.writeByte(1);
-        }
-      }
-      break;
-    case 13:
-      if (i != 0) {
-        break;
-      }
-      long l = paramNetMsgInput.readLong();
-      RTSConf.cur.time.setCurrent(l);
-      NetMissionTrack.playingStartTime = l;
-
-      break;
-    case 1:
-      if (i != 0) {
-        doSendMission(paramNetMsgInput.channel(), 1);
-      }
-      else {
-        Main.cur().netMissionListener.netMissionState(1, 0.0F, null);
-
-        doResvMission(paramNetMsgInput);
-      }
-      break;
-    case 2:
-      if (i != 0) {
-        break;
-      }
-      this.sectFile.saveFile();
-      localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(3);
-
-      break;
-    case 3:
-      if (i != 0) {
-        k = this.actors.size();
-        int m = 0;
-        while (m < k) {
-          localNetMsgGuaranted = new NetMsgGuaranted();
-          localNetMsgGuaranted.writeByte(3);
-          int n = 64;
-          while ((n-- > 0) && (m < k)) {
-            Actor localActor2 = (Actor)this.actors.get(m++);
-            if (Actor.isValid(localActor2)) localNetMsgGuaranted.writeShort(localActor2.net.idLocal()); else
-              localNetMsgGuaranted.writeShort(0);
-          }
-          this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
-        }
-        localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(4);
-        paramNetMsgInput.channel().userState = 3;
-      } else {
-        Main.cur().netMissionListener.netMissionState(2, 0.0F, null); } case 4:
-    case 5:
-    case 10:
-    case 11:
-    case 20:
-    case 12:
-      while (paramNetMsgInput.available() > 0) {
-        this.actors.add(new Integer(paramNetMsgInput.readUnsignedShort())); continue;
-
-        if (i != 0) {
-          if ((isDogfight()) || ((paramNetMsgInput.channel() instanceof NetChannelOutStream))) {
-            World.cur().statics.netBridgeSync(paramNetMsgInput.channel());
-            World.cur().statics.netHouseSync(paramNetMsgInput.channel());
-          }
-          for (k = 0; k < this.actors.size(); k++) {
-            Actor localActor1 = (Actor)this.actors.get(k);
-            if (!Actor.isValid(localActor1)) continue;
-            try {
-              NetChannel localNetChannel = paramNetMsgInput.channel();
-              localNetChannel.setMirrored(localActor1.net);
-              localActor1.netFirstUpdate(paramNetMsgInput.channel());
-            } catch (Exception localException2) {
-              printDebug(localException2);
-            }
-          }
-
-          if (Actor.isValid(World.cur().houseManager))
-            World.cur().houseManager.fullUpdateChannel(paramNetMsgInput.channel());
-          localNetMsgGuaranted = new NetMsgGuaranted();
-          if (isPlaying()) {
-            localNetMsgGuaranted.writeByte(10);
-            this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
-            localNetMsgGuaranted = new NetMsgGuaranted();
-            localNetMsgGuaranted.writeByte(11);
-            localNetMsgGuaranted.writeFloat(World.getTimeofDay());
-            this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
-            localNetMsgGuaranted = null;
-            doReplicateNotMissionActors(paramNetMsgInput.channel(), true);
-
-            trySendMsgStart(paramNetMsgInput.channel());
-          } else {
-            localNetMsgGuaranted.writeByte(5);
-            paramNetMsgInput.channel().userState = 4;
-          }
-        } else {
-          paramNetMsgInput.channel().userState = 3;
-          try {
-            load(this.name, this.sectFile, true);
-          }
-          catch (Exception localException1)
-          {
-            printDebug(localException1);
-            Main.cur().netMissionListener.netMissionState(4, 0.0F, localException1.getMessage());
-          }
-
-          if ((i == 0) || (goto 1412) || 
-            ((this.net instanceof Master)))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel())
-            break;
-          if (this.net.isMirrored()) {
-            localNetMsgGuaranted = new NetMsgGuaranted();
-            localNetMsgGuaranted.writeByte(10);
-            this.net.post(localNetMsgGuaranted);
-            localNetMsgGuaranted = null;
-          }
-          doReplicateNotMissionActors(true);
-          doReplicateNotMissionActors(paramNetMsgInput.channel(), true);
-          doBegin();
-          Main.cur().netMissionListener.netMissionState(6, 0.0F, null); break;
-
-          if ((this.net instanceof Master))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel()) break;
-          float f = paramNetMsgInput.readFloat();
-          World.setTimeofDay(f);
-          World.land().cubeFullUpdate();
-          break;
-
-          if ((this.net instanceof Master))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel())
-            break;
-          Main.cur().netMissionListener.netMissionState(7, 0.0F, null);
-
-          doReplicateNotMissionActors(false);
-          doReplicateNotMissionActors(paramNetMsgInput.channel(), false);
-          doEnd();
-          if (!this.net.isMirrored()) break;
-          localNetMsgGuaranted = new NetMsgGuaranted();
-          localNetMsgGuaranted.writeByte(20);
-          this.net.post(localNetMsgGuaranted);
-          localNetMsgGuaranted = null; break;
-
-          if ((this.net instanceof Master))
-            break;
-          if (paramNetMsgInput.channel() != this.net.masterChannel()) break;
-          Main.cur().netMissionListener.netMissionState(9, 0.0F, null); }  } case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 19:
-    }if ((localNetMsgGuaranted != null) && (localNetMsgGuaranted.size() > 0))
-      this.net.postTo(paramNetMsgInput.channel(), localNetMsgGuaranted);
-  }
-
-  public void trySendMsgStart(Object paramObject) {
-    if (isDestroyed()) return;
-    NetChannel localNetChannel = (NetChannel)paramObject;
-    if (localNetChannel.isDestroyed()) return;
-    HashMapInt localHashMapInt = RTSConf.cur.netEnv.objects;
-    HashMapIntEntry localHashMapIntEntry = null;
-    Object localObject1;
-    while ((localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry)) != null) {
-      localObject1 = (NetObj)localHashMapIntEntry.getValue();
-      if ((localObject1 != null) && (!((NetObj)localObject1).isDestroyed()) && (!((NetObj)localObject1).isCommon()) && (!localNetChannel.isMirrored((NetObj)localObject1)) && (((NetObj)localObject1).masterChannel() != localNetChannel))
-      {
-        if ((((localNetChannel instanceof NetChannelOutStream)) && (
-          ((localObject1 instanceof NetControl)) || (
-          ((localObject1 instanceof NetUser)) && (((NetObj)localObject1).isMaster()) && (NetMissionTrack.isPlaying())))) || (
-          ((localObject1 instanceof GameTrack)) && (((NetObj)localObject1).isMirror())))
-          continue;
-        Object localObject2 = ((NetObj)localObject1).superObj();
-        if (((localObject2 instanceof Destroy)) && (((Destroy)localObject2).isDestroyed()))
-          continue;
-        new MsgInvokeMethod_Object("trySendMsgStart", localNetChannel).post(72, this, 0.0D);
-        return;
-      }
-    }
-    try {
-      localObject1 = new NetMsgGuaranted();
-      ((NetMsgGuaranted)localObject1).writeByte(12);
-      this.net.postTo(localNetChannel, (NetMsgGuaranted)localObject1);
-    } catch (Exception localException) {
-      printDebug(localException);
-    }
-  }
-
-  private void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    setTime(true);
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-      doReplicateNotMissionActors(false);
-    }
-    else {
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-      doReplicateNotMissionActors(paramNetChannel, false);
-    }
-  }
-
-  protected static void printDebug(Exception paramException)
-  {
-    System.out.println(paramException.getMessage());
-    paramException.printStackTrace();
-  }
-
-  private int[] getSwTbl(String paramString, long paramLong)
-  {
-    int i = (int)paramLong;
-    int j = Finger.Int(paramString);
-    if (i < 0) i = -i;
-    if (j < 0) j = -j;
-    int k = (j + i / 7) % 16 + 15;
-    int m = (j + i / 21) % Finger.kTable.length;
-    if (k < 0)
-      k = -k % 16;
-    if (k < 10)
-      k = 10;
-    if (m < 0)
-      m = -m % Finger.kTable.length;
-    int[] arrayOfInt = new int[k];
-    for (int n = 0; n < k; n++)
-      arrayOfInt[n] = Finger.kTable[((m + n) % Finger.kTable.length)];
-    return arrayOfInt;
-  }
-
-  public ArrayList getAllActors()
-  {
-    return this.actors;
-  }
-
-  private String generateHayrakeCode(Point3d paramPoint3d)
-  {
-    double d1 = paramPoint3d.x;
-    double d2 = paramPoint3d.y;
-    long l = ()(d1 + d2);
-    Random localRandom = new Random(l);
-    byte[] arrayOfByte = new byte[12];
-    for (int i = 0; i < arrayOfByte.length; i++)
-    {
-      int j = 0;
-      while (j == 0)
-      {
-        int k = (byte)(localRandom.nextInt(26) + 65);
-        if ((k != 74) && (k != 81) && (k != 89) && (k <= 90))
-        {
-          for (int m = 0; m < arrayOfByte.length; m++)
-          {
-            if (k == arrayOfByte[m])
+                return;
+            } else
             {
-              break;
+                tryReplicate(netchannel);
+                return;
             }
-            if (m != arrayOfByte.length - 1)
-              continue;
+        }
+
+        private void tryReplicate(com.maddox.rts.NetChannel netchannel)
+        {
+            if(netchannel.isReady() && netchannel.isPublic() && netchannel != masterChannel && !netchannel.isMirrored(this) && netchannel.userState == 1)
+                try
+                {
+                    postTo(netchannel, new NetMsgSpawn(this));
+                }
+                catch(java.lang.Exception exception)
+                {
+                    com.maddox.il2.game.NetMissionObj _tmp = this;
+                    com.maddox.il2.game.NetMissionObj.printDebug(exception);
+                }
+        }
+
+        public NetMissionObj(java.lang.Object obj)
+        {
+            super(obj);
+        }
+
+        public NetMissionObj(java.lang.Object obj, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(obj, netchannel, i);
+        }
+    }
+
+    static class WingTakeoffPos
+    {
+
+        public boolean equals(java.lang.Object obj)
+        {
+            if(obj == null)
+                return false;
+            if(!(obj instanceof com.maddox.il2.game.WingTakeoffPos))
+            {
+                return false;
+            } else
+            {
+                com.maddox.il2.game.WingTakeoffPos wingtakeoffpos = (com.maddox.il2.game.WingTakeoffPos)obj;
+                return x == wingtakeoffpos.x && y == wingtakeoffpos.y;
+            }
+        }
+
+        public int hashCode()
+        {
+            return x + y;
+        }
+
+        public int x;
+        public int y;
+
+        public WingTakeoffPos(double d, double d1)
+        {
+            x = (int)(d / 100D) * 100;
+            y = (int)(d1 / 100D) * 100;
+        }
+    }
+
+    class TimeOutWing
+    {
+
+        public void start()
+        {
+            if(isDestroyed())
+                return;
+            try
+            {
+                com.maddox.il2.objects.air.NetAircraft.loadingCoopPlane = false;
+                com.maddox.il2.ai.Wing wing = new Wing();
+                wing.load(sectFile, wingName, null);
+                prepareSkinInWing(sectFile, wing);
+                wing.setOnAirport();
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.Mission.printDebug(exception);
+            }
+        }
+
+        java.lang.String wingName;
+
+        public TimeOutWing(java.lang.String s)
+        {
+            wingName = s;
+        }
+    }
+
+    public class BackgroundLoader extends com.maddox.rts.BackgroundTask
+    {
+
+        public void run()
+            throws java.lang.Exception
+        {
+            _load(_name, _in, true);
+        }
+
+        private java.lang.String _name;
+        private com.maddox.rts.SectFile _in;
+
+        public BackgroundLoader(java.lang.String s, com.maddox.rts.SectFile sectfile)
+        {
+            _name = s;
+            _in = sectfile;
+        }
+    }
+
+
+    public Mission()
+    {
+        name = null;
+        sectFinger = 0L;
+        actors = new ArrayList();
+        curActor = 0;
+        bPlaying = false;
+        curCloudsType = 0;
+        curCloudsHeight = 1000F;
+        _loadPlayer = false;
+        playerNum = 0;
+    }
+
+    public static float respawnTime(java.lang.String s)
+    {
+        java.lang.Object obj = respawnMap.get(s);
+        if(obj == null)
+            return 1800F;
+        else
+            return ((java.lang.Float)obj).floatValue();
+    }
+
+    public static boolean isPlaying()
+    {
+        if(com.maddox.il2.game.Main.cur() == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.isDestroyed())
+            return false;
+        else
+            return com.maddox.il2.game.Main.cur().mission.bPlaying;
+    }
+
+    public static boolean isSingle()
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.isDestroyed())
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.net == null)
+            return true;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return true;
+        else
+            return com.maddox.il2.game.Main.cur().netServerParams.isSingle();
+    }
+
+    public static boolean isNet()
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.isDestroyed())
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.net == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return false;
+        else
+            return !com.maddox.il2.game.Main.cur().netServerParams.isSingle();
+    }
+
+    public com.maddox.rts.NetChannel getNetMasterChannel()
+    {
+        if(net == null)
+            return null;
+        else
+            return net.masterChannel();
+    }
+
+    public static boolean isServer()
+    {
+        return com.maddox.rts.NetEnv.isServer();
+    }
+
+    public static boolean isDeathmatch()
+    {
+        return com.maddox.il2.game.Mission.isDogfight();
+    }
+
+    public static boolean isDogfight()
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.isDestroyed())
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.net == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return false;
+        else
+            return com.maddox.il2.game.Main.cur().netServerParams.isDogfight();
+    }
+
+    public static boolean isCoop()
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.isDestroyed())
+            return false;
+        if(com.maddox.il2.game.Main.cur().mission.net == null)
+            return false;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return false;
+        else
+            return com.maddox.il2.game.Main.cur().netServerParams.isCoop();
+    }
+
+    public static int curCloudsType()
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return 0;
+        else
+            return com.maddox.il2.game.Main.cur().mission.curCloudsType;
+    }
+
+    public static float curCloudsHeight()
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return 1000F;
+        else
+            return com.maddox.il2.game.Main.cur().mission.curCloudsHeight;
+    }
+
+    public static com.maddox.il2.game.Mission cur()
+    {
+        return com.maddox.il2.game.Main.cur().mission;
+    }
+
+    public static void BreakP()
+    {
+        java.lang.System.out.print("");
+    }
+
+    public static void load(java.lang.String s)
+        throws java.lang.Exception
+    {
+        com.maddox.il2.game.Mission.load(s, false);
+    }
+
+    public static void load(java.lang.String s, boolean flag)
+        throws java.lang.Exception
+    {
+        com.maddox.il2.game.Mission.load("missions/", s, flag);
+    }
+
+    public static void load(java.lang.String s, java.lang.String s1)
+        throws java.lang.Exception
+    {
+        com.maddox.il2.game.Mission.load(s, s1, false);
+    }
+
+    public static void load(java.lang.String s, java.lang.String s1, boolean flag)
+        throws java.lang.Exception
+    {
+        com.maddox.il2.game.Mission mission = new Mission();
+        if(com.maddox.il2.game.Mission.cur() != null)
+            com.maddox.il2.game.Mission.cur().destroy();
+        else
+            mission.clear();
+        mission.sectFile = new SectFile(s + s1);
+        mission.load(s1, mission.sectFile, flag);
+    }
+
+    public static void loadFromSect(com.maddox.rts.SectFile sectfile)
+        throws java.lang.Exception
+    {
+        com.maddox.il2.game.Mission.loadFromSect(sectfile, false);
+    }
+
+    public static void loadFromSect(com.maddox.rts.SectFile sectfile, boolean flag)
+        throws java.lang.Exception
+    {
+        com.maddox.il2.game.Mission mission = new Mission();
+        java.lang.String s = sectfile.fileName();
+        if(s != null && s.toLowerCase().startsWith("missions/"))
+            s = s.substring("missions/".length());
+        if(com.maddox.il2.game.Mission.cur() != null)
+            com.maddox.il2.game.Mission.cur().destroy();
+        else
+            mission.clear();
+        mission.sectFile = sectfile;
+        mission.load(s, mission.sectFile, flag);
+    }
+
+    public java.lang.String name()
+    {
+        return name;
+    }
+
+    public com.maddox.rts.SectFile sectFile()
+    {
+        return sectFile;
+    }
+
+    public long finger()
+    {
+        return sectFinger;
+    }
+
+    public boolean isDestroyed()
+    {
+        return name == null;
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        if(bPlaying)
+            doEnd();
+        bPlaying = false;
+        clear();
+        name = null;
+        com.maddox.il2.game.Main.cur().mission = null;
+        if(com.maddox.il2.game.Main.cur().netMissionListener != null)
+            com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(8, 0.0F, null);
+        if(net != null && !net.isDestroyed())
+            net.destroy();
+        net = null;
+    }
+
+    private void clear()
+    {
+        if(net != null)
+        {
+            doReplicateNotMissionActors(false);
+            if(net.masterChannel() != null)
+                doReplicateNotMissionActors(net.masterChannel(), false);
+        }
+        actors.clear();
+        curActor = 0;
+        com.maddox.il2.game.Main.cur().resetGame();
+    }
+
+    private void Mission()
+    {
+    }
+
+    private void load(java.lang.String s, com.maddox.rts.SectFile sectfile, boolean flag)
+        throws java.lang.Exception
+    {
+        if(flag)
+            com.maddox.rts.BackgroundTask.execute(new BackgroundLoader(s, sectfile));
+        else
+            _load(s, sectfile, flag);
+    }
+
+    private void LOADING_STEP(float f, java.lang.String s)
+    {
+        if(net != null && com.maddox.il2.game.Main.cur().netMissionListener != null)
+            com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(3, f, s);
+        if(!com.maddox.rts.BackgroundTask.step(f, s))
+            throw new RuntimeException(com.maddox.rts.BackgroundTask.executed().messageCancel());
+        else
+            return;
+    }
+
+    private void _load(java.lang.String s, com.maddox.rts.SectFile sectfile, boolean flag)
+        throws java.lang.Exception
+    {
+        com.maddox.sound.AudioDevice.soundsOff();
+        if(s != null)
+            java.lang.System.out.println("Loading mission " + s + "...");
+        else
+            java.lang.System.out.println("Loading mission ...");
+        com.maddox.il2.ai.EventLog.checkState();
+        com.maddox.il2.game.Main.cur().missionLoading = this;
+        com.maddox.rts.RTSConf.cur.time.setEnableChangePause1(false);
+        com.maddox.il2.engine.Actor.setSpawnFromMission(true);
+        try
+        {
+            com.maddox.il2.game.Main.cur().mission = this;
+            name = s;
+            if(net == null)
+                createNetObject(null, 0);
+            loadMain(sectfile);
+            loadRespawnTime(sectfile);
+            com.maddox.il2.ai.Front.loadMission(sectfile);
+            java.util.List list = null;
+            if(com.maddox.il2.game.Main.cur().netServerParams.isCoop() || com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+            {
+                list = loadWings(sectfile);
+                loadChiefs(sectfile);
+            }
+            loadHouses(sectfile);
+            loadNStationary(sectfile);
+            loadStationary(sectfile);
+            loadRocketry(sectfile);
+            loadViewPoint(sectfile);
+            if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+                loadBornPlaces(sectfile);
+            if(com.maddox.il2.game.Main.cur().netServerParams.isMaster() && (com.maddox.il2.game.Main.cur().netServerParams.isCoop() || com.maddox.il2.game.Main.cur().netServerParams.isSingle()))
+                loadTargets(sectfile);
+            if(list != null)
+            {
+                int i = list.size();
+                for(int j = 0; j < i; j++)
+                {
+                    com.maddox.il2.ai.Wing wing = (com.maddox.il2.ai.Wing)list.get(j);
+                    if(com.maddox.il2.engine.Actor.isValid(wing))
+                        wing.setOnAirport();
+                }
+
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            if(net != null && com.maddox.il2.game.Main.cur().netMissionListener != null)
+                com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(4, 0.0F, exception.getMessage());
+            com.maddox.il2.game.Mission.printDebug(exception);
+            clear();
+            if(net != null && !net.isDestroyed())
+                net.destroy();
+            net = null;
+            com.maddox.il2.game.Main.cur().mission = null;
+            name = null;
+            com.maddox.il2.engine.Actor.setSpawnFromMission(false);
+            com.maddox.il2.game.Main.cur().missionLoading = null;
+            setTime(false);
+            throw exception;
+        }
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(com.maddox.il2.engine.Actor.isValid(com.maddox.il2.ai.World.getPlayerAircraft()))
+                com.maddox.il2.ai.World.land().cubeFullUpdate((float)com.maddox.il2.ai.World.getPlayerAircraft().pos.getAbsPoint().z);
+            else
+                com.maddox.il2.ai.World.land().cubeFullUpdate(1000F);
+            com.maddox.il2.gui.GUI.pad.fillAirports();
+        }
+        com.maddox.il2.engine.Actor.setSpawnFromMission(false);
+        com.maddox.il2.game.Main.cur().missionLoading = null;
+        com.maddox.il2.game.Main.cur().missionCounter++;
+        setTime(!com.maddox.il2.game.Main.cur().netServerParams.isSingle());
+        LOADING_STEP(90F, "task.Load_humans");
+        com.maddox.il2.objects.air.Paratrooper.PRELOAD();
+        LOADING_STEP(95F, "task.Load_humans");
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle() || com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            com.maddox.il2.objects.humans.Soldier.PRELOAD();
+        LOADING_STEP(100F, "");
+        if(com.maddox.il2.game.Main.cur().netMissionListener != null)
+            com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(5, 0.0F, null);
+        if(net.isMirror())
+        {
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(4);
+                net.masterChannel().userState = 4;
+                net.postTo(net.masterChannel(), netmsgguaranted);
+            }
+            catch(java.lang.Exception exception1)
+            {
+                com.maddox.il2.game.Mission.printDebug(exception1);
+            }
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).missionLoaded();
+        } else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+        {
+            if(com.maddox.il2.game.Main.cur() instanceof com.maddox.il2.game.Main3D)
+                ((com.maddox.il2.game.Main3D)com.maddox.il2.game.Main.cur()).ordersTree.missionLoaded();
+            com.maddox.il2.game.Main.cur().dotRangeFriendly.setDefault();
+            com.maddox.il2.game.Main.cur().dotRangeFoe.setDefault();
+            com.maddox.il2.game.Main.cur().dotRangeFoe.set(-1D, -1D, -1D, 5D, -1D, -1D);
+        } else
+        {
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).replicateDotRange();
+        }
+        com.maddox.rts.NetObj.tryReplicate(net, false);
+        com.maddox.il2.ai.War.cur().missionLoaded();
+    }
+
+    private void setTime(boolean flag)
+    {
+        com.maddox.rts.Time _tmp = com.maddox.rts.RTSConf.cur.time;
+        com.maddox.rts.Time.setSpeed(1.0F);
+        com.maddox.rts.Time _tmp1 = com.maddox.rts.RTSConf.cur.time;
+        com.maddox.rts.Time.setSpeedReal(1.0F);
+        if(flag)
+        {
+            com.maddox.rts.RTSConf.cur.time.setEnableChangePause1(false);
+            com.maddox.rts.RTSConf.cur.time.setEnableChangeSpeed(false);
+            com.maddox.rts.RTSConf.cur.time.setEnableChangeTickLen(true);
+        } else
+        {
+            com.maddox.rts.RTSConf.cur.time.setEnableChangePause1(true);
+            com.maddox.rts.RTSConf.cur.time.setEnableChangeSpeed(true);
+            com.maddox.rts.RTSConf.cur.time.setEnableChangeTickLen(false);
+        }
+    }
+
+    private void loadMain(com.maddox.rts.SectFile sectfile)
+        throws java.lang.Exception
+    {
+        int i = sectfile.get("MAIN", "TIMECONSTANT", 0, 0, 1);
+        com.maddox.il2.ai.World.cur().setTimeOfDayConstant(i == 1);
+        com.maddox.il2.ai.World.setTimeofDay(sectfile.get("MAIN", "TIME", 12F, 0.0F, 23.99F));
+        int j = sectfile.get("MAIN", "WEAPONSCONSTANT", 0, 0, 1);
+        com.maddox.il2.ai.World.cur().setWeaponsConstant(j == 1);
+        java.lang.String s = sectfile.get("MAIN", "MAP");
+        if(s == null)
+            throw new Exception("No MAP in mission file ");
+        java.lang.String s1 = null;
+        int ai[] = null;
+        com.maddox.rts.SectFile sectfile1 = new SectFile("maps/" + s);
+        int k = sectfile1.sectionIndex("static");
+        if(k >= 0 && sectfile1.vars(k) > 0)
+        {
+            s1 = sectfile1.var(k, 0);
+            if(s1 == null || s1.length() <= 0)
+            {
+                s1 = null;
+            } else
+            {
+                s1 = com.maddox.rts.HomePath.concatNames("maps/" + s, s1);
+                ai = com.maddox.il2.objects.Statics.readBridgesEndPoints(s1);
+            }
+        }
+        LOADING_STEP(0.0F, "task.Load_landscape");
+        com.maddox.il2.ai.World.land().LoadMap(s, ai);
+        com.maddox.il2.ai.World.cur().setCamouflage(com.maddox.il2.ai.World.land().config.camouflage);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().land2D != null)
+            {
+                if(!com.maddox.il2.game.Main3D.cur3D().land2D.isDestroyed())
+                    com.maddox.il2.game.Main3D.cur3D().land2D.destroy();
+                com.maddox.il2.game.Main3D.cur3D().land2D = null;
+            }
+            Object obj = null;
+            int l = sectfile1.sectionIndex("MAP2D");
+            if(l >= 0)
+            {
+                int j1 = sectfile1.vars(l);
+                if(j1 > 0)
+                {
+                    LOADING_STEP(20F, "task.Load_map");
+                    com.maddox.il2.game.Main3D.cur3D().land2D = new Land2Dn(s, com.maddox.il2.ai.World.land().getSizeX(), com.maddox.il2.ai.World.land().getSizeY());
+                }
+            }
+            if(com.maddox.il2.game.Main3D.cur3D().land2DText == null)
+                com.maddox.il2.game.Main3D.cur3D().land2DText = new Land2DText();
+            else
+                com.maddox.il2.game.Main3D.cur3D().land2DText.clear();
+            int k1 = sectfile1.sectionIndex("text");
+            if(k1 >= 0 && sectfile1.vars(k1) > 0)
+            {
+                LOADING_STEP(22F, "task.Load_landscape_texts");
+                java.lang.String s2 = sectfile1.var(k1, 0);
+                com.maddox.il2.game.Main3D.cur3D().land2DText.load(com.maddox.rts.HomePath.concatNames("maps/" + s, s2));
+            }
+        }
+        if(s1 != null)
+        {
+            LOADING_STEP(23F, "task.Load_static_objects");
+            com.maddox.il2.objects.Statics.load(s1, com.maddox.il2.ai.World.cur().statics.bridges);
+            com.maddox.il2.engine.Engine.drawEnv().staticTrimToSize();
+        }
+        com.maddox.il2.objects.Statics.trim();
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle() || com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+        {
+            com.maddox.il2.ai.World.cur().statics.loadStateBridges(sectfile, false);
+            com.maddox.il2.ai.World.cur().statics.loadStateHouses(sectfile, false);
+            com.maddox.il2.ai.World.cur().statics.loadStateBridges(sectfile, true);
+            com.maddox.il2.ai.World.cur().statics.loadStateHouses(sectfile, true);
+            checkBridgesAndHouses(sectfile);
+        }
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+        {
+            player = sectfile.get("MAIN", "player");
+            playerNum = sectfile.get("MAIN", "playerNum", 0, 0, 3);
+        } else
+        {
+            player = null;
+        }
+        com.maddox.il2.ai.World.setMissionArmy(sectfile.get("MAIN", "army", 1, 1, 2));
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            com.maddox.il2.game.Main3D.cur3D().ordersTree.setFrequency(true);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            LOADING_STEP(29F, "task.Load_landscape_effects");
+            com.maddox.il2.game.Main3D main3d = com.maddox.il2.game.Main3D.cur3D();
+            int i1 = sectfile.get("MAIN", "CloudType", 0, 0, 6);
+            float f = sectfile.get("MAIN", "CloudHeight", 1000F, 500F, 1500F);
+            com.maddox.il2.game.Mission.createClouds(i1, f);
+            if(!com.maddox.il2.engine.Config.cur.ini.get("game", "NoLensFlare", false))
+            {
+                main3d.sunFlareCreate();
+                main3d.sunFlareShow(true);
+            } else
+            {
+                main3d.sunFlareShow(false);
+            }
+            com.maddox.il2.ai.World.wind().set(i1, f, s);
+            for(int l1 = 0; l1 < 3; l1++)
+            {
+                com.maddox.il2.game.Main3D.cur3D()._lightsGlare[l1].setShow(true);
+                com.maddox.il2.game.Main3D.cur3D()._sunGlare[l1].setShow(true);
+            }
+
+        }
+    }
+
+    public static void createClouds(int i, float f)
+    {
+        if(i < 0)
+            i = 0;
+        if(i > 6)
+            i = 6;
+        if(com.maddox.il2.game.Mission.cur() != null)
+        {
+            com.maddox.il2.game.Mission.cur().curCloudsType = i;
+            com.maddox.il2.game.Mission.cur().curCloudsHeight = f;
+        }
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.game.Main3D main3d = com.maddox.il2.game.Main3D.cur3D();
+        com.maddox.il2.engine.Camera3D camera3d = (com.maddox.il2.engine.Camera3D)com.maddox.il2.engine.Actor.getByName("camera");
+        if(main3d.clouds != null)
+            main3d.clouds.destroy();
+        main3d.clouds = new EffClouds(com.maddox.il2.ai.World.cur().diffCur.NewCloudsRender, i, f);
+        if(i > 5)
+            try
+            {
+                if(main3d.zip != null)
+                    main3d.zip.destroy();
+                main3d.zip = new Zip(f);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println("Zip load error: " + exception);
+            }
+        int j = 5 - i;
+        if(i == 6)
             j = 1;
-            arrayOfByte[i] = k;
-          }
-        }
-      }
-
+        if(j > 4)
+            j = 4;
+        com.maddox.il2.engine.RenderContext.cfgLandFogHaze.set(j);
+        com.maddox.il2.engine.RenderContext.cfgLandFogHaze.apply();
+        com.maddox.il2.engine.RenderContext.cfgLandFogHaze.reset();
+        com.maddox.il2.engine.RenderContext.cfgLandFogLow.set(0);
+        com.maddox.il2.engine.RenderContext.cfgLandFogLow.apply();
+        com.maddox.il2.engine.RenderContext.cfgLandFogLow.reset();
+        if(com.maddox.il2.engine.Actor.isValid(main3d.spritesFog))
+            main3d.spritesFog.destroy();
+        main3d.spritesFog = new SpritesFog(camera3d, 0.7F, 7000F, 7500F);
     }
 
-    String str = new String(arrayOfByte);
-    return str;
-  }
-
-  private void populateRunwayLights()
-  {
-    ArrayList localArrayList = new ArrayList();
-    World.getAirports(localArrayList);
-    for (int i = 0; i < localArrayList.size(); i++)
+    public static void setCloudsType(int i)
     {
-      if (!(localArrayList.get(i) instanceof AirportGround))
-        continue;
-      for (int j = 0; j < this.actors.size(); j++)
-      {
-        if (!(this.actors.get(j) instanceof SmokeGeneric))
-          continue;
-        if ((!(this.actors.get(j) instanceof Smoke.Smoke15)) && (!(this.actors.get(j) instanceof Smoke.Smoke14)) && (!(this.actors.get(j) instanceof Smoke.Smoke13)) && (!(this.actors.get(j) instanceof Smoke.Smoke12)))
+        if(i < 0)
+            i = 0;
+        if(i > 6)
+            i = 6;
+        if(com.maddox.il2.game.Mission.cur() != null)
+            com.maddox.il2.game.Mission.cur().curCloudsType = i;
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.game.Main3D main3d = com.maddox.il2.game.Main3D.cur3D();
+        if(main3d.clouds != null)
+            main3d.clouds.setType(i);
+        int j = 5 - i;
+        if(i == 6)
+            j = 1;
+        if(j > 4)
+            j = 4;
+        com.maddox.il2.engine.RenderContext.cfgLandFogHaze.set(j);
+        com.maddox.il2.engine.RenderContext.cfgLandFogHaze.apply();
+        com.maddox.il2.engine.RenderContext.cfgLandFogHaze.reset();
+        com.maddox.il2.engine.RenderContext.cfgLandFogLow.set(0);
+        com.maddox.il2.engine.RenderContext.cfgLandFogLow.apply();
+        com.maddox.il2.engine.RenderContext.cfgLandFogLow.reset();
+    }
+
+    public static void setCloudsHeight(float f)
+    {
+        if(com.maddox.il2.game.Mission.cur() != null)
+            com.maddox.il2.game.Mission.cur().curCloudsHeight = f;
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.game.Main3D main3d = com.maddox.il2.game.Main3D.cur3D();
+        if(main3d.clouds != null)
+            main3d.clouds.setHeight(f);
+    }
+
+    private void loadRespawnTime(com.maddox.rts.SectFile sectfile)
+    {
+        respawnMap.clear();
+        int i = sectfile.sectionIndex("RespawnTime");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
         {
-          continue;
+            java.lang.String s = sectfile.var(i, k);
+            float f = sectfile.get("RespawnTime", s, 1800F, 20F, 1000000F);
+            respawnMap.put(s, new Float(f));
         }
 
-        AirportGround localAirportGround = (AirportGround)localArrayList.get(i);
-        Actor localActor = (Actor)this.actors.get(j);
-        double d1 = localAirportGround.pos.getAbsPoint().x - localActor.pos.getAbsPoint().x;
-        double d2 = localAirportGround.pos.getAbsPoint().y - localActor.pos.getAbsPoint().y;
-        if ((Math.abs(d1) >= 2000.0D) || (Math.abs(d2) >= 2000.0D) || ((localActor.getArmy() != 1) && (localActor.getArmy() != 2)))
-          continue;
-        SmokeGeneric localSmokeGeneric = (SmokeGeneric)localActor;
-        localSmokeGeneric.setVisible(false);
-        localAirportGround.addLights(localSmokeGeneric);
-      }
-
     }
 
-    for (i = 0; i < this.actors.size(); i++)
+    private java.util.List loadWings(com.maddox.rts.SectFile sectfile)
+        throws java.lang.Exception
     {
-      if (!(this.actors.get(i) instanceof SmokeGeneric))
-        continue;
-      ((SmokeGeneric)this.actors.get(i)).setArmy(0);
-    }
-  }
-
-  private void populateBeacons()
-  {
-    ArrayList localArrayList1 = new ArrayList();
-    ArrayList localArrayList2 = new ArrayList();
-    Object localObject1;
-    Object localObject2;
-    for (int i = 0; i < this.actors.size(); i++)
-    {
-      if ((this.actors.get(i) instanceof TypeHasBeacon))
-      {
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localArrayList1.add(new Object[] { this.actors.get(i), localObject1 });
-        if ((this.actors.get(i) instanceof TypeHasLorenzBlindLanding))
+        int i = sectfile.sectionIndex("Wing");
+        if(i < 0)
+            return null;
+        if(!com.maddox.il2.ai.World.cur().diffCur.Takeoff_N_Landing)
+            prepareTakeoff(sectfile, !com.maddox.il2.game.Main.cur().netServerParams.isSingle());
+        com.maddox.rts.NetChannel netchannel = null;
+        if(!com.maddox.il2.game.Mission.isServer())
+            netchannel = net.masterChannel();
+        int j = sectfile.vars(i);
+        java.util.ArrayList arraylist = null;
+        if(j > 0)
+            arraylist = new ArrayList(j);
+        for(int k = 0; k < j; k++)
         {
-          ((Actor)this.actors.get(i)).missionStarting();
+            LOADING_STEP(30 + java.lang.Math.round(((float)k / (float)j) * 30F), "task.Load_aircraft");
+            java.lang.String s = sectfile.var(i, k);
+            _loadPlayer = s.equals(player);
+            int l = sectfile.get(s, "StartTime", 0);
+            if(l > 0 && !_loadPlayer)
+            {
+                if(netchannel == null)
+                {
+                    double d = (long)l * 60L;
+                    new com.maddox.rts.MsgAction(0, d, new TimeOutWing(s)) {
+
+                        public void doAction(java.lang.Object obj)
+                        {
+                            com.maddox.il2.game.TimeOutWing timeoutwing = (com.maddox.il2.game.TimeOutWing)obj;
+                            timeoutwing.start();
+                        }
+
+                    }
+;
+                }
+            } else
+            {
+                com.maddox.il2.objects.air.NetAircraft.loadingCoopPlane = com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isCoop();
+                com.maddox.il2.ai.Wing wing = new Wing();
+                wing.load(sectfile, s, netchannel);
+                if(netchannel != null && !com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+                {
+                    com.maddox.il2.objects.air.Aircraft aaircraft[] = wing.airc;
+                    for(int i1 = 0; i1 < aaircraft.length; i1++)
+                        if(com.maddox.il2.engine.Actor.isValid(aaircraft[i1]) && aaircraft[i1].net == null)
+                        {
+                            aaircraft[i1].destroy();
+                            aaircraft[i1] = null;
+                        }
+
+                }
+                arraylist.add(wing);
+                prepareSkinInWing(sectfile, wing);
+            }
         }
-        if ((this.actors.get(i) instanceof BigshipGeneric))
+
+        LOADING_STEP(60F, "task.Load_aircraft");
+        return arraylist;
+    }
+
+    private void prepareSkinInWing(com.maddox.rts.SectFile sectfile, com.maddox.il2.ai.Wing wing)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.objects.air.Aircraft aaircraft[] = wing.airc;
+        for(int i = 0; i < aaircraft.length; i++)
+            if(com.maddox.il2.engine.Actor.isValid(aaircraft[i]))
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft = aaircraft[i];
+                prepareSkinInWing(sectfile, aircraft, wing.name(), i);
+            }
+
+    }
+
+    private void prepareSkinInWing(com.maddox.rts.SectFile sectfile, com.maddox.il2.objects.air.Aircraft aircraft, java.lang.String s, int i)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(com.maddox.il2.ai.World.getPlayerAircraft() == aircraft)
         {
-          hayrakeMap.put((Actor)this.actors.get(i), "NDB");
+            if(com.maddox.il2.game.Mission.isSingle())
+                if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+                {
+                    ((com.maddox.il2.net.NetUser)com.maddox.il2.game.Main.cur().netServerParams.host()).tryPrepareSkin(aircraft);
+                    ((com.maddox.il2.net.NetUser)com.maddox.il2.game.Main.cur().netServerParams.host()).tryPrepareNoseart(aircraft);
+                    ((com.maddox.il2.net.NetUser)com.maddox.il2.game.Main.cur().netServerParams.host()).tryPreparePilot(aircraft);
+                } else
+                {
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(aircraft.getClass(), "keyName", null);
+                    java.lang.String s3 = com.maddox.il2.ai.World.cur().userCfg.getSkin(s1);
+                    if(s3 != null)
+                    {
+                        java.lang.String s6 = com.maddox.il2.gui.GUIAirArming.validateFileName(s1);
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setSkin(s6 + "/" + s3);
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).tryPrepareSkin(aircraft);
+                    } else
+                    {
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setSkin(null);
+                    }
+                    java.lang.String s7 = com.maddox.il2.ai.World.cur().userCfg.getNoseart(s1);
+                    if(s7 != null)
+                    {
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setNoseart(s7);
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).tryPrepareNoseart(aircraft);
+                    } else
+                    {
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setNoseart(null);
+                    }
+                    java.lang.String s11 = com.maddox.il2.ai.World.cur().userCfg.netPilot;
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setPilot(s11);
+                    if(s11 != null)
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).tryPreparePilot(aircraft);
+                }
+        } else
+        {
+            java.lang.String s2 = sectfile.get(s, "skin" + i, (java.lang.String)null);
+            if(s2 != null)
+            {
+                java.lang.String s4 = com.maddox.il2.objects.air.Aircraft.getPropertyMesh(aircraft.getClass(), aircraft.getRegiment().country());
+                s2 = com.maddox.il2.gui.GUIAirArming.validateFileName(com.maddox.rts.Property.stringValue(aircraft.getClass(), "keyName", null)) + "/" + s2;
+                if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+                {
+                    s2 = com.maddox.il2.net.NetFilesTrack.getLocalFileName(com.maddox.il2.game.Main.cur().netFileServerSkin, com.maddox.il2.game.Main.cur().netServerParams.host(), s2);
+                    if(s2 != null)
+                        s2 = com.maddox.il2.game.Main.cur().netFileServerSkin.alternativePath() + "/" + s2;
+                } else
+                {
+                    s2 = com.maddox.il2.game.Main.cur().netFileServerSkin.primaryPath() + "/" + s2;
+                }
+                if(s2 != null)
+                {
+                    java.lang.String s8 = "PaintSchemes/Cache/" + com.maddox.rts.Finger.file(0L, s2, -1);
+                    com.maddox.il2.objects.air.Aircraft.prepareMeshSkin(s4, aircraft.hierMesh(), s2, s8);
+                }
+            }
+            java.lang.String s5 = sectfile.get(s, "noseart" + i, (java.lang.String)null);
+            if(s5 != null)
+            {
+                java.lang.String s9 = com.maddox.il2.game.Main.cur().netFileServerNoseart.primaryPath() + "/" + s5;
+                java.lang.String s12 = s5.substring(0, s5.length() - 4);
+                if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+                {
+                    s9 = com.maddox.il2.net.NetFilesTrack.getLocalFileName(com.maddox.il2.game.Main.cur().netFileServerNoseart, com.maddox.il2.game.Main.cur().netServerParams.host(), s5);
+                    if(s9 != null)
+                    {
+                        s12 = s9.substring(0, s9.length() - 4);
+                        s9 = com.maddox.il2.game.Main.cur().netFileServerNoseart.alternativePath() + "/" + s9;
+                    }
+                }
+                if(s9 != null)
+                {
+                    java.lang.String s14 = "PaintSchemes/Cache/Noseart0" + s12 + ".tga";
+                    java.lang.String s16 = "PaintSchemes/Cache/Noseart0" + s12 + ".mat";
+                    java.lang.String s18 = "PaintSchemes/Cache/Noseart1" + s12 + ".tga";
+                    java.lang.String s20 = "PaintSchemes/Cache/Noseart1" + s12 + ".mat";
+                    if(com.maddox.il2.engine.BmpUtils.bmp8PalTo2TGA4(s9, s14, s18))
+                        com.maddox.il2.objects.air.Aircraft.prepareMeshNoseart(aircraft.hierMesh(), s16, s20, s14, s18, null);
+                }
+            }
+            java.lang.String s10 = sectfile.get(s, "pilot" + i, (java.lang.String)null);
+            if(s10 != null)
+            {
+                java.lang.String s13 = com.maddox.il2.game.Main.cur().netFileServerPilot.primaryPath() + "/" + s10;
+                java.lang.String s15 = s10.substring(0, s10.length() - 4);
+                if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+                {
+                    s13 = com.maddox.il2.net.NetFilesTrack.getLocalFileName(com.maddox.il2.game.Main.cur().netFileServerPilot, com.maddox.il2.game.Main.cur().netServerParams.host(), s10);
+                    if(s13 != null)
+                    {
+                        s15 = s13.substring(0, s13.length() - 4);
+                        s13 = com.maddox.il2.game.Main.cur().netFileServerPilot.alternativePath() + "/" + s13;
+                    }
+                }
+                if(s13 != null)
+                {
+                    java.lang.String s17 = "PaintSchemes/Cache/Pilot" + s15 + ".tga";
+                    java.lang.String s19 = "PaintSchemes/Cache/Pilot" + s15 + ".mat";
+                    if(com.maddox.il2.engine.BmpUtils.bmp8PalToTGA3(s13, s17))
+                        com.maddox.il2.objects.air.Aircraft.prepareMeshPilot(aircraft.hierMesh(), 0, s19, s17, null);
+                }
+            }
         }
-      }
-      else if ((this.actors.get(i) instanceof TypeHasMeacon))
-      {
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localArrayList2.add(new Object[] { this.actors.get(i), localObject1 });
-      } else {
-        if (!(this.actors.get(i) instanceof TypeHasHayRake))
-          continue;
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localObject2 = generateHayrakeCode((Point3d)localObject1);
-        localArrayList1.add(new Object[] { this.actors.get(i), localObject1 });
-        hayrakeMap.put((Actor)this.actors.get(i), localObject2);
-      }
     }
 
-    if (localArrayList1.size() == 0)
+    public void prepareSkinAI(com.maddox.il2.objects.air.Aircraft aircraft)
     {
-      return;
-    }
-    sortBeaconsList(localArrayList1);
-
-    for (i = 0; i < localArrayList1.size(); i++)
-    {
-      localObject1 = (Object[])(Object[])localArrayList1.get(i);
-      localObject2 = (Actor)localObject1[0];
-      if ((((localObject2 instanceof TypeHasRadioStation)) || (((Actor)localObject2).getArmy() == 1)) && (beaconsRed.size() < 32))
-      {
-        beaconsRed.add(localObject1[0]);
-      }
-      if (((!(localObject2 instanceof TypeHasRadioStation)) && (((Actor)localObject2).getArmy() != 2)) || (beaconsBlue.size() >= 32))
-        continue;
-      beaconsBlue.add(localObject1[0]);
-    }
-
-    for (i = 0; i < localArrayList2.size(); i++)
-    {
-      localObject1 = (Object[])(Object[])localArrayList2.get(i);
-      localObject2 = (Actor)localObject1[0];
-      if ((((Actor)localObject2).getArmy() == 1) && (meaconsRed.size() < 32))
-      {
-        meaconsRed.add(localObject1[0]);
-      } else {
-        if ((((Actor)localObject2).getArmy() != 2) || (meaconsBlue.size() >= 32))
-          continue;
-        meaconsBlue.add(localObject1[0]);
-      }
-    }
-    localArrayList1.clear();
-    localArrayList1 = null;
-    localArrayList2.clear();
-    localArrayList2 = null;
-  }
-
-  public static void addHayrakesToOrdersTree()
-  {
-    for (int i = 0; i < 10; i++)
-    {
-      Main3D.cur3D().ordersTree.addShipIDs(i, -1, null, "", "");
-    }
-
-    if (!World.cur().diffCur.RealisticNavigationInstruments) {
-      return;
-    }
-    i = 0;
-    Iterator localIterator = hayrakeMap.entrySet().iterator();
-    while ((localIterator.hasNext()) && (i < 10))
-    {
-      Map.Entry localEntry = (Map.Entry)localIterator.next();
-      Actor localActor = (Actor)localEntry.getKey();
-      if (localActor.getArmy() != World.getPlayerArmy())
-        continue;
-      String str1 = (String)localEntry.getValue();
-      String str2 = Property.stringValue(localActor.getClass(), "i18nName", "");
-      if (str2.equals(""))
-      {
+        java.lang.String s = aircraft.name();
+        if(s.length() < 4)
+            return;
+        java.lang.String s1 = s.substring(0, s.length() - 1);
+        int i = 0;
         try
         {
-          String str3 = localActor.getClass().toString().substring(localActor.getClass().toString().indexOf("$") + 1);
-          str2 = I18N.technic(str3);
+            i = java.lang.Integer.parseInt(s.substring(s.length() - 1, s.length()));
         }
-        catch (Exception localException)
+        catch(java.lang.Exception exception)
         {
+            return;
         }
-      }
-      int j = -1;
-      if (beaconsRed.contains(localActor))
-      {
-        j = beaconsRed.indexOf(localActor);
-      }
-      else if (beaconsBlue.contains(localActor))
-      {
-        j = beaconsBlue.indexOf(localActor);
-      }
+        prepareSkinInWing(sectFile, aircraft, s1, i);
+    }
 
-      if (str1.equals("NDB"))
-      {
-        Main3D.cur3D().ordersTree.addShipIDs(i, j, localActor, str2, "");
-      }
-      else
-      {
-        boolean bool = Aircraft.hasPlaneZBReceiver(World.getPlayerAircraft());
-        if (!bool)
-          continue;
-        String str4 = str1;
-        if (str1.length() == 12)
+    public void recordNetFiles()
+    {
+        if(com.maddox.il2.game.Mission.isDogfight())
+            return;
+        int i = sectFile.sectionIndex("Wing");
+        if(i < 0)
+            return;
+        int j = sectFile.vars(i);
+        for(int k = 0; k < j; k++)
+            try
+            {
+                java.lang.String s = sectFile.var(i, k);
+                java.lang.String s1 = sectFile.get(s, "Class", (java.lang.String)null);
+                java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s1);
+                java.lang.String s2 = com.maddox.il2.gui.GUIAirArming.validateFileName(com.maddox.rts.Property.stringValue(class1, "keyName", null));
+                for(int l = 0; l < 4; l++)
+                {
+                    java.lang.String s3 = sectFile.get(s, "skin" + l, (java.lang.String)null);
+                    if(s3 != null)
+                        recordNetFile(com.maddox.il2.game.Main.cur().netFileServerSkin, s2 + "/" + s3);
+                    recordNetFile(com.maddox.il2.game.Main.cur().netFileServerNoseart, sectFile.get(s, "noseart" + l, (java.lang.String)null));
+                    recordNetFile(com.maddox.il2.game.Main.cur().netFileServerPilot, sectFile.get(s, "pilot" + l, (java.lang.String)null));
+                }
+
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.Mission.printDebug(exception);
+            }
+
+    }
+
+    private void recordNetFile(com.maddox.rts.net.NetFileServerDef netfileserverdef, java.lang.String s)
+    {
+        if(s == null)
+            return;
+        java.lang.String s1 = s;
+        if(com.maddox.il2.net.NetMissionTrack.isPlaying())
         {
-          str4 = str1.substring(0, 3) + " / " + str1.substring(3, 6) + " / " + str1.substring(6, 9) + " / " + str1.substring(9, 12);
+            s1 = com.maddox.il2.net.NetFilesTrack.getLocalFileName(netfileserverdef, com.maddox.il2.game.Main.cur().netServerParams.host(), s);
+            if(s1 == null)
+                return;
         }
-        else if (str1.length() == 24)
+        com.maddox.il2.net.NetFilesTrack.recordFile(netfileserverdef, (com.maddox.il2.net.NetUser)com.maddox.il2.game.Main.cur().netServerParams.host(), s, s1);
+    }
+
+    public com.maddox.il2.objects.air.Aircraft loadAir(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2, int i)
+        throws java.lang.Exception
+    {
+        boolean flag = !com.maddox.il2.game.Mission.isServer();
+        java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s);
+        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)class1.newInstance();
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle() && _loadPlayer)
         {
-          str4 = str1.substring(0, 2) + "-" + str1.substring(2, 4) + "-" + str1.substring(4, 6) + " / " + str1.substring(6, 8) + "-" + str1.substring(8, 10) + "-" + str1.substring(10, 12) + " / " + str1.substring(12, 14) + "-" + str1.substring(14, 16) + "-" + str1.substring(16, 18) + " / " + str1.substring(18, 20) + "-" + str1.substring(20, 22) + "-" + str1.substring(22, 24);
+            if(com.maddox.rts.Property.value(class1, "cockpitClass", null) == null)
+                throw new Exception("One of selected aircraft has no cockpit.");
+            if(playerNum == 0)
+            {
+                com.maddox.il2.ai.World.setPlayerAircraft(aircraft);
+                _loadPlayer = false;
+            } else
+            {
+                playerNum--;
+            }
+        }
+        aircraft.setName(s2);
+        int j = 0;
+        if(flag)
+        {
+            j = ((java.lang.Integer)actors.get(curActor)).intValue();
+            if(j == 0)
+                aircraft.load(sectfile, s1, i, null, 0);
+            else
+                aircraft.load(sectfile, s1, i, net.masterChannel(), j);
+        } else
+        {
+            aircraft.load(sectfile, s1, i, null, 0);
+        }
+        if(aircraft.isSpawnFromMission())
+            if(net.isMirror())
+            {
+                if(j == 0)
+                    actors.set(curActor++, null);
+                else
+                    actors.set(curActor++, aircraft);
+            } else
+            {
+                actors.add(aircraft);
+            }
+        aircraft.pos.reset();
+        return aircraft;
+    }
+
+    public static void preparePlayerNumberOn(com.maddox.rts.SectFile sectfile)
+    {
+        com.maddox.il2.ai.UserCfg usercfg = com.maddox.il2.ai.World.cur().userCfg;
+        java.lang.String s = sectfile.get("MAIN", "player", "");
+        if("".equals(s))
+        {
+            return;
+        } else
+        {
+            java.lang.String s1 = sectfile.get("MAIN", "playerNum", "");
+            sectfile.set(s, "numberOn" + s1, usercfg.netNumberOn ? "1" : "0");
+            return;
+        }
+    }
+
+    private void prepareTakeoff(com.maddox.rts.SectFile sectfile, boolean flag)
+    {
+        if(flag)
+        {
+            int i = sectfile.sectionIndex("Wing");
+            if(i < 0)
+                return;
+            int j = sectfile.vars(i);
+            for(int k = 0; k < j; k++)
+                prepareWingTakeoff(sectfile, sectfile.var(i, k));
+
+        } else
+        {
+            java.lang.String s = sectfile.get("MAIN", "player", (java.lang.String)null);
+            if(s == null)
+                return;
+            prepareWingTakeoff(sectfile, s);
+        }
+        sectFinger = sectfile.fingerExcludeSectPrefix("$$$");
+    }
+
+    private void prepareWingTakeoff(com.maddox.rts.SectFile sectfile, java.lang.String s)
+    {
+        int i;
+        int j;
+        java.util.ArrayList arraylist;
+label0:
+        {
+            java.lang.String s1 = s + "_Way";
+            i = sectfile.sectionIndex(s1);
+            if(i < 0)
+                return;
+            j = sectfile.vars(i);
+            if(j == 0)
+                return;
+            arraylist = new ArrayList(j);
+            for(int k = 0; k < j; k++)
+                arraylist.add(sectfile.line(i, k));
+
+            java.lang.String s2 = (java.lang.String)arraylist.get(0);
+            if(!s2.startsWith("TAKEOFF"))
+                return;
+            java.lang.StringBuffer stringbuffer = new StringBuffer("NORMFLY");
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s2);
+            numbertokenizer.next((java.lang.String)null);
+            double d = numbertokenizer.next(1000D);
+            double d1 = numbertokenizer.next(1000D);
+            com.maddox.il2.game.WingTakeoffPos wingtakeoffpos = new WingTakeoffPos(d, d1);
+            if(mapWingTakeoff == null)
+            {
+                mapWingTakeoff = new HashMap();
+                mapWingTakeoff.put(wingtakeoffpos, wingtakeoffpos);
+            } else
+            {
+                do
+                {
+                    com.maddox.il2.game.WingTakeoffPos wingtakeoffpos1 = (com.maddox.il2.game.WingTakeoffPos)mapWingTakeoff.get(wingtakeoffpos);
+                    if(wingtakeoffpos1 == null)
+                    {
+                        mapWingTakeoff.put(wingtakeoffpos, wingtakeoffpos);
+                        break;
+                    }
+                    wingtakeoffpos.x += 200;
+                } while(true);
+            }
+            d = wingtakeoffpos.x;
+            d1 = wingtakeoffpos.y;
+            stringbuffer.append(" ");
+            stringbuffer.append(d);
+            stringbuffer.append(" ");
+            stringbuffer.append(d1);
+            if(j > 1)
+            {
+                java.lang.String s3 = (java.lang.String)arraylist.get(1);
+                if(!s3.startsWith("TAKEOFF") && !s3.startsWith("LANDING"))
+                {
+                    com.maddox.util.NumberTokenizer numbertokenizer1 = new NumberTokenizer(s3);
+                    numbertokenizer1.next((java.lang.String)null);
+                    numbertokenizer1.next((java.lang.String)null);
+                    numbertokenizer1.next((java.lang.String)null);
+                    stringbuffer.append(" ");
+                    stringbuffer.append(numbertokenizer1.next("1000.0"));
+                    stringbuffer.append(" ");
+                    stringbuffer.append(numbertokenizer1.next("300.0"));
+                    arraylist.set(0, stringbuffer.toString());
+                    break label0;
+                }
+            }
+            stringbuffer.append(" 1000 300");
+            arraylist.set(0, stringbuffer.toString());
+        }
+        sectfile.sectionClear(i);
+        for(int l = 0; l < j; l++)
+            sectfile.lineAdd(i, (java.lang.String)arraylist.get(l));
+
+    }
+
+    private void loadChiefs(com.maddox.rts.SectFile sectfile)
+        throws java.lang.Exception
+    {
+        int i = sectfile.sectionIndex("Chiefs");
+        if(i < 0)
+            return;
+        if(chiefsIni == null)
+            chiefsIni = new SectFile("com/maddox/il2/objects/chief.ini");
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            LOADING_STEP(60 + java.lang.Math.round(((float)k / (float)j) * 20F), "task.Load_tanks");
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+            java.lang.String s = numbertokenizer.next();
+            java.lang.String s1 = numbertokenizer.next();
+            int l = numbertokenizer.next(-1);
+            if(l < 0)
+            {
+                java.lang.System.out.println("Mission: Wrong chief's army [" + l + "]");
+                continue;
+            }
+            com.maddox.il2.ai.Chief.new_DELAY_WAKEUP = numbertokenizer.next(0.0F);
+            com.maddox.il2.ai.Chief.new_SKILL_IDX = numbertokenizer.next(2);
+            if(com.maddox.il2.ai.Chief.new_SKILL_IDX < 0 || com.maddox.il2.ai.Chief.new_SKILL_IDX > 3)
+            {
+                java.lang.System.out.println("Mission: Wrong chief's skill [" + com.maddox.il2.ai.Chief.new_SKILL_IDX + "]");
+                continue;
+            }
+            com.maddox.il2.ai.Chief.new_SLOWFIRE_K = numbertokenizer.next(1.0F);
+            if(com.maddox.il2.ai.Chief.new_SLOWFIRE_K < 0.5F || com.maddox.il2.ai.Chief.new_SLOWFIRE_K > 100F)
+            {
+                java.lang.System.out.println("Mission: Wrong chief's slowfire [" + com.maddox.il2.ai.Chief.new_SLOWFIRE_K + "]");
+                continue;
+            }
+            if(chiefsIni.sectionIndex(s1) < 0)
+            {
+                java.lang.System.out.println("Mission: Wrong chief's type [" + s1 + "]");
+                continue;
+            }
+            int i1 = s1.indexOf('.');
+            if(i1 <= 0)
+            {
+                java.lang.System.out.println("Mission: Wrong chief's type [" + s1 + "]");
+                continue;
+            }
+            java.lang.String s2 = s1.substring(0, i1);
+            java.lang.String s3 = s1.substring(i1 + 1);
+            java.lang.String s4 = chiefsIni.get(s2, s3);
+            if(s4 == null)
+            {
+                java.lang.System.out.println("Mission: Wrong chief's type [" + s1 + "]");
+                continue;
+            }
+            numbertokenizer = new NumberTokenizer(s4);
+            s4 = numbertokenizer.nextToken();
+            numbertokenizer.nextToken();
+            java.lang.String s5 = null;
+            if(numbertokenizer.hasMoreTokens())
+                s5 = numbertokenizer.nextToken();
+            java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s4);
+            if(class1 == null)
+            {
+                java.lang.System.out.println("Mission: Unknown chief's class [" + s4 + "]");
+                continue;
+            }
+            java.lang.reflect.Constructor constructor;
+            try
+            {
+                java.lang.Class aclass[] = new java.lang.Class[6];
+                aclass[0] = java.lang.String.class;
+                aclass[1] = java.lang.Integer.TYPE;
+                aclass[2] = com.maddox.rts.SectFile.class;
+                aclass[3] = java.lang.String.class;
+                aclass[4] = com.maddox.rts.SectFile.class;
+                aclass[5] = java.lang.String.class;
+                constructor = class1.getConstructor(aclass);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println("Mission: No required constructor in chief's class [" + s4 + "]");
+                continue;
+            }
+            int j1 = curActor;
+            java.lang.Object obj;
+            try
+            {
+                java.lang.Object aobj[] = new java.lang.Object[6];
+                aobj[0] = s;
+                aobj[1] = new Integer(l);
+                aobj[2] = chiefsIni;
+                aobj[3] = s1;
+                aobj[4] = sectfile;
+                aobj[5] = s + "_Road";
+                obj = constructor.newInstance(aobj);
+            }
+            catch(java.lang.Exception exception1)
+            {
+                java.lang.System.out.println("Mission: Can't create chief '" + s + "' [class:" + s4 + "]");
+                continue;
+            }
+            if(s5 != null)
+                ((com.maddox.il2.engine.Actor)obj).icon = com.maddox.il2.engine.IconDraw.get(s5);
+            if(j1 != curActor && net != null && net.isMirror())
+            {
+                for(int k1 = j1; k1 < curActor; k1++)
+                {
+                    com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)actors.get(k1);
+                    if(actor.net == null || actor.net.isMaster())
+                    {
+                        if(com.maddox.il2.engine.Actor.isValid(actor))
+                        {
+                            if(obj instanceof com.maddox.il2.ai.ground.ChiefGround)
+                                ((com.maddox.il2.ai.ground.ChiefGround)obj).Detach(actor, actor);
+                            actor.destroy();
+                        }
+                        actors.set(k1, null);
+                    }
+                }
+
+            }
+            if(obj instanceof com.maddox.il2.ai.ground.ChiefGround)
+                ((com.maddox.il2.ai.ground.ChiefGround)obj).dreamFire(true);
         }
 
-        Main3D.cur3D().ordersTree.addShipIDs(i, j, localActor, str2, "( " + str4 + " )");
-      }
-      i++;
     }
-  }
 
-  private void sortBeaconsList(List paramList)
-  {
-    int i = 0;
-    do
+    public int getUnitNetIdRemote(com.maddox.il2.engine.Actor actor)
     {
-      for (int j = 0; j < paramList.size() - 1; j++)
-      {
-        i = 0;
-        Object[] arrayOfObject1 = (Object[])(Object[])paramList.get(j);
-        Object[] arrayOfObject2 = (Object[])(Object[])paramList.get(j + 1);
-
-        if (((!(arrayOfObject1[0] instanceof TypeHasHayRake)) || ((arrayOfObject2[0] instanceof TypeHasHayRake))) && ((!(arrayOfObject1[0] instanceof BigshipGeneric)) || ((arrayOfObject2[0] instanceof BigshipGeneric)))) {
-          continue;
+        if(net.isMaster())
+        {
+            actors.add(actor);
+            return 0;
+        } else
+        {
+            java.lang.Integer integer = (java.lang.Integer)actors.get(curActor);
+            actors.set(curActor, actor);
+            curActor++;
+            return integer.intValue();
         }
-        Object[] arrayOfObject3 = arrayOfObject1;
-        paramList.set(j, arrayOfObject2);
-        paramList.set(j + 1, arrayOfObject3);
-        i = 1;
-      }
     }
-    while (i != 0);
-  }
 
-  public boolean hasBeacons(int paramInt)
-  {
-    if (paramInt == 1)
+    private com.maddox.il2.engine.Actor loadStationaryActor(java.lang.String s, java.lang.String s1, int i, double d, double d1, 
+            float f, float f1, java.lang.String s2, java.lang.String s3, java.lang.String s4)
     {
-      return beaconsRed.size() > 0;
-    }
-
-    if (paramInt == 2)
-    {
-      return beaconsBlue.size() > 0;
-    }
-
-    return false;
-  }
-
-  public ArrayList getBeacons(int paramInt)
-  {
-    if (paramInt == 1)
-    {
-      return beaconsRed;
-    }
-    if (paramInt == 2)
-    {
-      return beaconsBlue;
-    }
-
-    return null;
-  }
-
-  public ArrayList getMeacons(int paramInt) {
-    if (paramInt == 1)
-    {
-      return meaconsBlue;
-    }
-    if (paramInt == 2)
-    {
-      return meaconsRed;
-    }
-
-    return null;
-  }
-
-  public String getHayrakeCodeOfCarrier(Actor paramActor)
-  {
-    if (hayrakeMap.containsKey(paramActor))
-    {
-      return (String)hayrakeMap.get(paramActor);
-    }
-    return null;
-  }
-
-  private void zutiAssignBpToMovingCarrier()
-  {
-    for (int i = 0; i < this.actors.size(); i++)
-    {
-      Actor localActor = (Actor)Main.cur().mission.actors.get(i);
-      if ((!(localActor instanceof BigshipGeneric)) || (localActor.name().indexOf("_Chief") <= -1))
-        continue;
-      if ((localActor.toString().indexOf(BigshipGeneric.ZUTI_CARRIER_STRING[0]) <= -1) && (localActor.toString().indexOf(BigshipGeneric.ZUTI_CARRIER_STRING[1]) <= -1)) {
-        continue;
-      }
-      BigshipGeneric localBigshipGeneric = (BigshipGeneric)localActor;
-      if ((localActor.icon == null) && (!Main.cur().netServerParams.isMaster()))
-        continue;
-      localBigshipGeneric.zutiAssignBornPlace();
-    }
-  }
-
-  private void zutiResetMissionVariables()
-  {
-    if (ZutiSupportMethods.ZUTI_BANNED_PILOTS == null)
-      ZutiSupportMethods.ZUTI_BANNED_PILOTS = new ArrayList();
-    ZutiSupportMethods.ZUTI_BANNED_PILOTS.clear();
-
-    if (ZutiSupportMethods.ZUTI_DEAD_TARGETS == null)
-      ZutiSupportMethods.ZUTI_DEAD_TARGETS = new ArrayList();
-    ZutiSupportMethods.ZUTI_DEAD_TARGETS.clear();
-
-    if (GUI.pad != null) {
-      GUI.pad.zutiColorAirfields = true;
-    }
-
-    ZutiSupportMethods.ZUTI_KIA_COUNTER = 0;
-    ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-
-    this.zutiCarrierSpawnPoints_CV2 = 6;
-    this.zutiCarrierSpawnPoints_CV9 = 5;
-    this.zutiCarrierSpawnPoints_CVE = 2;
-    this.zutiCarrierSpawnPoints_CVL = 7;
-    this.zutiCarrierSpawnPoints_Akagi = 8;
-    this.zutiCarrierSpawnPoints_IJN = 6;
-    this.zutiCarrierSpawnPoints_HMS = 5;
-
-    this.zutiRadar_PlayerSideHasRadars = false;
-    this.zutiRadar_ShipsAsRadar = false;
-    this.zutiRadar_ShipRadar_MaxRange = 100;
-    this.zutiRadar_ShipRadar_MinHeight = 100;
-    this.zutiRadar_ShipRadar_MaxHeight = 5000;
-    this.zutiRadar_ShipSmallRadar_MaxRange = 25;
-    this.zutiRadar_ShipSmallRadar_MinHeight = 0;
-    this.zutiRadar_ShipSmallRadar_MaxHeight = 2000;
-    this.zutiRadar_ScoutsAsRadar = false;
-    this.zutiRadar_ScoutRadar_MaxRange = 2;
-    this.zutiRadar_ScoutRadar_DeltaHeight = 1500;
-    this.zutiRadar_RefreshInterval = 0;
-    this.zutiRadar_EnableTowerCommunications = true;
-    this.zutiRadar_HideUnpopulatedAirstripsFromMinimap = false;
-    ZUTI_RADAR_IN_ADV_MODE = false;
-    this.zutiRadar_ScoutGroundObjects_Alpha = 5;
-    this.ScoutsRed = new ArrayList();
-    this.ScoutsBlue = new ArrayList();
-    this.zutiRadar_ScoutCompleteRecon = false;
-
-    this.zutiRadar_EnableBigShip_Radar = true;
-    this.zutiRadar_EnableSmallShip_Radar = true;
-
-    this.zutiMisc_DisableAIRadioChatter = false;
-    this.zutiMisc_DespawnAIPlanesAfterLanding = true;
-    this.zutiMisc_HidePlayersCountOnHomeBase = false;
-    this.zutiMisc_EnableReflyOnlyIfBailedOrDied = false;
-    this.zutiMisc_DisableReflyForMissionDuration = false;
-    this.zutiMisc_ReflyKIADelay = 0;
-    this.zutiMisc_MaxAllowedKIA = 2147483647;
-    this.zutiMisc_ReflyKIADelayMultiplier = 0.0F;
-
-    if (Main.cur().netServerParams.reflyKIADelay > 0)
-    {
-      this.zutiMisc_EnableReflyOnlyIfBailedOrDied = true;
-      this.zutiMisc_ReflyKIADelay = Main.cur().netServerParams.reflyKIADelay;
-    }
-    if (Main.cur().netServerParams.reflyDisabled)
-    {
-      this.zutiMisc_DisableReflyForMissionDuration = true;
-    }
-    else if (Main.cur().netServerParams.maxAllowedKIA >= 0)
-    {
-      this.zutiMisc_EnableReflyOnlyIfBailedOrDied = true;
-      this.zutiMisc_MaxAllowedKIA = Main.cur().netServerParams.maxAllowedKIA;
-    }
-    if ((Main.cur().netServerParams.reflyKIADelayMultiplier > 0.0F) && (this.zutiMisc_ReflyKIADelay != 0))
-    {
-      this.zutiMisc_EnableReflyOnlyIfBailedOrDied = true;
-      this.zutiMisc_ReflyKIADelayMultiplier = Main.cur().netServerParams.reflyKIADelayMultiplier;
-    }
-
-    this.zutiMisc_BombsCat1_CratersVisibilityMultiplier = 1.0F;
-    this.zutiMisc_BombsCat2_CratersVisibilityMultiplier = 1.0F;
-    this.zutiMisc_BombsCat3_CratersVisibilityMultiplier = 1.0F;
-  }
-
-  private void zutiLoadBornPlaceCountries(BornPlace paramBornPlace, SectFile paramSectFile, int paramInt)
-  {
-    if (paramBornPlace == null) {
-      return;
-    }
-    if ((paramBornPlace != null) && (paramBornPlace.zutiHomeBaseCountries == null)) {
-      paramBornPlace.zutiHomeBaseCountries = new ArrayList();
-    }
-    paramBornPlace.zutiLoadAllCountries();
-
-    int i = paramSectFile.sectionIndex("BornPlaceCountries" + paramInt);
-    if (i >= 0)
-    {
-      paramBornPlace.zutiHomeBaseCountries.clear();
-      ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-      {
+        java.lang.Class class1 = null;
         try
         {
-          String str1 = paramSectFile.var(i, k);
-          String str2 = localResourceBundle.getString(str1);
-          if (!paramBornPlace.zutiHomeBaseCountries.contains(str2))
-          {
-            paramBornPlace.zutiHomeBaseCountries.add(str2);
-          }
+            class1 = com.maddox.rts.ObjIO.classForName(s1);
         }
-        catch (Exception localException)
+        catch(java.lang.Exception exception)
         {
+            java.lang.System.out.println("Mission: class '" + s1 + "' not found");
+            return null;
         }
-      }
-    }
-  }
-
-  private void zutiLoadScouts_Red(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("MDS_Scouts_Red");
-    if (i > -1)
-    {
-      if (Main.cur().mission.ScoutsRed == null)
-        Main.cur().mission.ScoutsRed = new ArrayList();
-      Main.cur().mission.ScoutsRed.clear();
-
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-      {
-        String str1 = paramSectFile.line(i, k);
-        StringTokenizer localStringTokenizer = new StringTokenizer(str1);
-        String str2 = null;
-
-        if (localStringTokenizer.hasMoreTokens())
+        com.maddox.il2.engine.ActorSpawn actorspawn = (com.maddox.il2.engine.ActorSpawn)com.maddox.rts.Spawn.get(class1.getName(), false);
+        if(actorspawn == null)
         {
-          str2 = localStringTokenizer.nextToken();
+            java.lang.System.out.println("Mission: ActorSpawn for '" + s1 + "' not found");
+            return null;
         }
-
-        if (str2 == null)
-          continue;
-        str2 = str2.intern();
-        Class localClass = (Class)Property.value(str2, "airClass", null);
-
-        Main.cur().mission.ScoutsRed.add(str2);
-      }
-    }
-  }
-
-  private void zutiLoadScouts_Blue(SectFile paramSectFile)
-  {
-    int i = paramSectFile.sectionIndex("MDS_Scouts_Blue");
-    if (i > -1)
-    {
-      if (Main.cur().mission.ScoutsBlue == null)
-        Main.cur().mission.ScoutsBlue = new ArrayList();
-      Main.cur().mission.ScoutsBlue.clear();
-
-      int j = paramSectFile.vars(i);
-      for (int k = 0; k < j; k++)
-      {
-        String str1 = paramSectFile.line(i, k);
-        StringTokenizer localStringTokenizer = new StringTokenizer(str1);
-        String str2 = null;
-
-        if (localStringTokenizer.hasMoreTokens())
+        spawnArg.clear();
+        if(s != null)
         {
-          str2 = localStringTokenizer.nextToken();
+            if("NONAME".equals(s))
+            {
+                java.lang.System.out.println("Mission: 'NONAME' - not valid actor name");
+                return null;
+            }
+            if(com.maddox.il2.engine.Actor.getByName(s) != null)
+            {
+                java.lang.System.out.println("Mission: actor '" + s + "' alredy exist");
+                return null;
+            }
+            spawnArg.name = s;
         }
-
-        if (str2 == null)
-          continue;
-        str2 = str2.intern();
-        Class localClass = (Class)Property.value(str2, "airClass", null);
-
-        Main.cur().mission.ScoutsBlue.add(str2);
-      }
-    }
-  }
-
-  private void zutiSetShipRadars()
-  {
-    if ((this.zutiRadar_ShipRadar_MaxHeight == 0) && (this.zutiRadar_ShipRadar_MaxRange == 0) && (this.zutiRadar_ShipRadar_MinHeight == 0)) {
-      this.zutiRadar_EnableBigShip_Radar = false;
-    }
-    if ((this.zutiRadar_ShipSmallRadar_MaxHeight == 0) && (this.zutiRadar_ShipSmallRadar_MaxRange == 0) && (this.zutiRadar_ShipSmallRadar_MinHeight == 0))
-      this.zutiRadar_EnableSmallShip_Radar = false;
-  }
-
-  public static int getMissionDate(boolean paramBoolean)
-  {
-    int i = 0;
-    int m;
-    int i2;
-    int i3;
-    if (Main.cur().mission == null)
-    {
-      SectFile localSectFile1 = Main.cur().currentMissionFile;
-      if (localSectFile1 == null)
-        return 0;
-      String str1 = localSectFile1.get("MAIN", "MAP");
-      m = World.land().config.getDefaultMonth("maps/" + str1);
-      int n = localSectFile1.get("SEASON", "Year", 1940, 1930, 1960);
-      int i1 = localSectFile1.get("SEASON", "Month", m, 1, 12);
-      i2 = localSectFile1.get("SEASON", "Day", 15, 1, 31);
-      i = n * 10000 + i1 * 100 + i2;
-      i3 = 19400000 + m * 100 + 15;
-      if ((paramBoolean) && (i == i3))
-        i = 0;
-    }
-    else
-    {
-      int j = curYear();
-      int k = curMonth();
-      m = curDay();
-      i = j * 10000 + k * 100 + m;
-      if (paramBoolean)
-      {
-        SectFile localSectFile2 = Main.cur().currentMissionFile;
-        if (localSectFile2 == null)
-          return 0;
-        String str2 = localSectFile2.get("MAIN", "MAP");
-        i2 = World.land().config.getDefaultMonth("maps/" + str2);
-        i3 = 19400000 + i2 * 100 + 15;
-        if (i == i3)
-          i = 0;
-      }
-    }
-    return i;
-  }
-
-  public static float BigShipHpDiv()
-  {
-    if (Main.cur().mission == null) {
-      return 1.0F;
-    }
-
-    return Main.cur().mission.bigShipHpDiv;
-  }
-
-  static
-  {
-    Spawn.add(Mission.class, new SPAWN());
-
-    ZUTI_RADAR_IN_ADV_MODE = false;
-    ZUTI_ICON_SIZES = new int[] { 8, 12, 16, 20, 24, 28, 32 };
-
-    ZUTI_ICON_SIZE = ZUTI_ICON_SIZES[4];
-  }
-
-  static class SPAWN
-    implements NetSpawn
-  {
-    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput)
-    {
-      try
-      {
-        if (Main.cur().mission != null)
+        spawnArg.army = i;
+        spawnArg.armyExist = true;
+        spawnArg.country = s2;
+        com.maddox.il2.ai.Chief.new_DELAY_WAKEUP = 0.0F;
+        com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE = 0.0F;
+        if(s2 != null)
+            try
+            {
+                com.maddox.il2.ai.Chief.new_DELAY_WAKEUP = java.lang.Integer.parseInt(s2);
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE = com.maddox.il2.ai.Chief.new_DELAY_WAKEUP;
+            }
+            catch(java.lang.Exception exception1) { }
+        com.maddox.il2.ai.Chief.new_SKILL_IDX = 2;
+        if(s3 != null)
         {
-          Main.cur().mission.destroy();
+            try
+            {
+                com.maddox.il2.ai.Chief.new_SKILL_IDX = java.lang.Integer.parseInt(s3);
+            }
+            catch(java.lang.Exception exception2) { }
+            if(com.maddox.il2.ai.Chief.new_SKILL_IDX < 0 || com.maddox.il2.ai.Chief.new_SKILL_IDX > 3)
+            {
+                java.lang.System.out.println("Mission: Wrong actor skill '" + com.maddox.il2.ai.Chief.new_SKILL_IDX + "'");
+                return null;
+            }
         }
-
-        Mission localMission = new Mission();
-        if (Mission.cur() != null)
-          Mission.cur().destroy();
-        localMission.clear();
-        Main.cur().mission = localMission;
-        localMission.createNetObject(paramNetMsgInput.channel(), paramInt);
-        Main.cur().missionLoading = localMission; } catch (Exception localException) {
-        Mission.printDebug(localException);
-      }
-    }
-  }
-
-  class Mirror extends Mission.NetMissionObj
-  {
-    public Mirror(Mission paramNetChannel, NetChannel paramInt, int arg4)
-    {
-      super(paramNetChannel, paramInt, i);
-      try {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(0);
-        postTo(paramInt, localNetMsgGuaranted); } catch (Exception localException) {
-        Mission.printDebug(localException);
-      }
-    }
-  }
-
-  class Master extends Mission.NetMissionObj
-  {
-    public Master(Mission arg2)
-    {
-      super(localObject);
-      Mission.access$402(localObject, localObject.sectFile.fingerExcludeSectPrefix("$$$"));
-    }
-  }
-
-  class NetMissionObj extends NetObj
-    implements NetChannelCallbackStream
-  {
-    private void msgCallback(NetChannel paramNetChannel, int paramInt)
-    {
-      try
-      {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted(1);
-        localNetMsgGuaranted.writeByte(paramInt);
-        NetMsgInput localNetMsgInput = new NetMsgInput();
-        localNetMsgInput.setData(paramNetChannel, true, localNetMsgGuaranted.data(), 0, localNetMsgGuaranted.size());
-        MsgNet.postReal(Time.currentReal(), this, localNetMsgInput); } catch (Exception localException) {
-        printDebug(localException);
-      }
-    }
-    public boolean netChannelCallback(NetChannelOutStream paramNetChannelOutStream, NetMsgGuaranted paramNetMsgGuaranted) {
-      if ((paramNetMsgGuaranted instanceof NetMsgSpawn))
-        msgCallback(paramNetChannelOutStream, 0);
-      else if (!(paramNetMsgGuaranted instanceof NetMsgDestroy))
+        com.maddox.il2.ai.Chief.new_SLOWFIRE_K = 1.0F;
+        if(s4 != null)
+        {
+            try
+            {
+                com.maddox.il2.ai.Chief.new_SLOWFIRE_K = java.lang.Float.parseFloat(s4);
+            }
+            catch(java.lang.Exception exception3) { }
+            if(com.maddox.il2.ai.Chief.new_SLOWFIRE_K < 0.5F || com.maddox.il2.ai.Chief.new_SLOWFIRE_K > 100F)
+            {
+                java.lang.System.out.println("Mission: Wrong actor slowfire '" + com.maddox.il2.ai.Chief.new_SLOWFIRE_K + "'");
+                return null;
+            }
+        }
+        p.set(d, d1, 0.0D);
+        spawnArg.point = p;
+        o.set(f, 0.0F, 0.0F);
+        spawnArg.orient = o;
+        if(f1 > 0.0F)
+        {
+            spawnArg.timeLenExist = true;
+            spawnArg.timeLen = f1;
+        }
+        spawnArg.netChannel = null;
+        spawnArg.netIdRemote = 0;
+        if(net.isMirror())
+        {
+            spawnArg.netChannel = net.masterChannel();
+            spawnArg.netIdRemote = ((java.lang.Integer)actors.get(curActor)).intValue();
+            if(spawnArg.netIdRemote == 0)
+            {
+                actors.set(curActor++, null);
+                return null;
+            }
+        }
+        com.maddox.il2.engine.Actor actor = null;
         try
         {
-          NetMsgInput localNetMsgInput = new NetMsgInput();
-          localNetMsgInput.setData(paramNetChannelOutStream, true, paramNetMsgGuaranted.data(), 0, paramNetMsgGuaranted.size());
-          int i = localNetMsgInput.readUnsignedByte();
-          switch (i) { case 0:
-            msgCallback(paramNetChannelOutStream, 1); break;
-          case 2:
-            msgCallback(paramNetChannelOutStream, 3); break;
-          case 4:
-            msgCallback(paramNetChannelOutStream, 4);
+            actor = actorspawn.actorSpawn(spawnArg);
+        }
+        catch(java.lang.Exception exception4)
+        {
+            java.lang.System.out.println(exception4.getMessage());
+            exception4.printStackTrace();
+        }
+        if(net.isMirror())
+            actors.set(curActor++, actor);
+        else
+            actors.add(actor);
+        return actor;
+    }
+
+    private void loadStationary(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("Stationary");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            LOADING_STEP(80 + java.lang.Math.round(((float)k / (float)j) * 5F), "task.Load_stationary_objects");
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+            loadStationaryActor(null, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0D), numbertokenizer.next(0.0D), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null));
+        }
+
+    }
+
+    private void loadNStationary(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("NStationary");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            LOADING_STEP(85 + java.lang.Math.round(((float)k / (float)j) * 5F), "task.Load_stationary_objects");
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+            loadStationaryActor(numbertokenizer.next(""), numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0D), numbertokenizer.next(0.0D), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null));
+        }
+
+    }
+
+    private void loadRocketry(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("Rocket");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+            if(!numbertokenizer.hasMoreTokens())
+                continue;
+            java.lang.String s = numbertokenizer.next("");
+            if(!numbertokenizer.hasMoreTokens())
+                continue;
+            java.lang.String s1 = numbertokenizer.next("");
+            if(!numbertokenizer.hasMoreTokens())
+                continue;
+            int l = numbertokenizer.next(1, 1, 2);
+            double d = numbertokenizer.next(0.0D);
+            if(!numbertokenizer.hasMoreTokens())
+                continue;
+            double d1 = numbertokenizer.next(0.0D);
+            if(!numbertokenizer.hasMoreTokens())
+                continue;
+            float f = numbertokenizer.next(0.0F);
+            if(!numbertokenizer.hasMoreTokens())
+                continue;
+            float f1 = numbertokenizer.next(0.0F);
+            int i1 = numbertokenizer.next(1);
+            float f2 = numbertokenizer.next(20F);
+            com.maddox.JGP.Point2d point2d = null;
+            if(numbertokenizer.hasMoreTokens())
+                point2d = new Point2d(numbertokenizer.next(0.0D), numbertokenizer.next(0.0D));
+            com.maddox.rts.NetChannel netchannel = null;
+            int j1 = 0;
+            if(net.isMirror())
+            {
+                netchannel = net.masterChannel();
+                j1 = ((java.lang.Integer)actors.get(curActor)).intValue();
+                if(j1 == 0)
+                {
+                    actors.set(curActor++, null);
+                    continue;
+                }
+            }
+            com.maddox.il2.objects.vehicles.artillery.RocketryGeneric rocketrygeneric = null;
+            try
+            {
+                rocketrygeneric = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.New(s, s1, netchannel, j1, l, d, d1, f, f1, i1, f2, point2d);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+            if(net.isMirror())
+                actors.set(curActor++, rocketrygeneric);
+            else
+                actors.add(rocketrygeneric);
+        }
+
+    }
+
+    private void loadHouses(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("Buildings");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        if(j == 0)
+            return;
+        if(net.isMirror())
+        {
+            spawnArg.netChannel = net.masterChannel();
+            spawnArg.netIdRemote = ((java.lang.Integer)actors.get(curActor)).intValue();
+            com.maddox.il2.objects.buildings.HouseManager housemanager = new HouseManager(sectfile, "Buildings", net.masterChannel(), ((java.lang.Integer)actors.get(curActor)).intValue());
+            actors.set(curActor++, housemanager);
+        } else
+        {
+            com.maddox.il2.objects.buildings.HouseManager housemanager1 = new HouseManager(sectfile, "Buildings", null, 0);
+            actors.add(housemanager1);
+        }
+    }
+
+    private void loadBornPlaces(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("BornPlace");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        if(j == 0)
+            return;
+        if(com.maddox.il2.ai.World.cur().airdrome == null)
+            return;
+        if(com.maddox.il2.ai.World.cur().airdrome.stay == null)
+            return;
+        com.maddox.il2.ai.World.cur().bornPlaces = new ArrayList(j);
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+            int l = numbertokenizer.next(0, 0, com.maddox.il2.ai.Army.amountNet() - 1);
+            float f = numbertokenizer.next(1000, 500, 10000);
+            double d = f * f;
+            float f1 = numbertokenizer.next(0);
+            float f2 = numbertokenizer.next(0);
+            boolean flag = numbertokenizer.next(1) == 1;
+            boolean flag1 = false;
+            com.maddox.il2.ai.air.Point_Stay apoint_stay[][] = com.maddox.il2.ai.World.cur().airdrome.stay;
+            for(int i1 = 0; i1 < apoint_stay.length; i1++)
+            {
+                if(apoint_stay[i1] == null)
+                    continue;
+                com.maddox.il2.ai.air.Point_Stay point_stay = apoint_stay[i1][apoint_stay[i1].length - 1];
+                if((double)((point_stay.x - f1) * (point_stay.x - f1) + (point_stay.y - f2) * (point_stay.y - f2)) > d)
+                    continue;
+                flag1 = true;
+                break;
+            }
+
+            if(flag1)
+            {
+                com.maddox.il2.net.BornPlace bornplace = new BornPlace(f1, f2, l, f);
+                bornplace.bParachute = flag;
+                com.maddox.il2.ai.World.cur().bornPlaces.add(bornplace);
+                if(actors != null)
+                {
+                    int j1 = actors.size();
+                    for(int l1 = 0; l1 < j1; l1++)
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)actors.get(l1);
+                        if(com.maddox.il2.engine.Actor.isValid(actor) && actor.pos != null)
+                        {
+                            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+                            double d1 = (point3d.x - (double)f1) * (point3d.x - (double)f1) + (point3d.y - (double)f2) * (point3d.y - (double)f2);
+                            if(d1 <= d)
+                                actor.setArmy(bornplace.army);
+                        }
+                    }
+
+                }
+                int k1 = sectfile.sectionIndex("BornPlace" + k);
+                if(k1 >= 0)
+                {
+                    int i2 = sectfile.vars(k1);
+                    for(int j2 = 0; j2 < i2; j2++)
+                    {
+                        java.lang.String s = sectfile.var(k1, j2);
+                        if(s != null)
+                        {
+                            s = s.intern();
+                            java.lang.Class class1 = (java.lang.Class)com.maddox.rts.Property.value(s, "airClass", null);
+                            if(class1 != null)
+                            {
+                                if(bornplace.airNames == null)
+                                    bornplace.airNames = new ArrayList();
+                                bornplace.airNames.add(s);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    private void loadTargets(com.maddox.rts.SectFile sectfile)
+    {
+        if(!com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+        {
+            if(!com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+                return;
+            if(!com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+                return;
+        }
+        int i = sectfile.sectionIndex("Target");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+            com.maddox.il2.ai.Target.create(sectfile.line(i, k));
+
+    }
+
+    private void loadViewPoint(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("StaticCamera");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+            float f = numbertokenizer.next(0);
+            float f1 = numbertokenizer.next(0);
+            float f2 = numbertokenizer.next(100, 2, 10000);
+            com.maddox.il2.objects.ActorViewPoint actorviewpoint = new ActorViewPoint();
+            com.maddox.JGP.Point3d point3d = new Point3d(f, f1, f2 + com.maddox.il2.ai.World.land().HQ_Air(f, f1));
+            actorviewpoint.pos.setAbs(point3d);
+            actorviewpoint.pos.reset();
+            actorviewpoint.dreamFire(true);
+            actorviewpoint.setName("StaticCamera_" + k);
+            if(net.isMirror())
+            {
+                actorviewpoint.createNetObject(net.masterChannel(), ((java.lang.Integer)actors.get(curActor)).intValue());
+                actors.set(curActor++, actorviewpoint);
+            } else
+            {
+                actorviewpoint.createNetObject(null, 0);
+                actors.add(actorviewpoint);
+            }
+        }
+
+    }
+
+    private void checkBridgesAndHouses(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = sectfile.sectionName(j);
+            if(s.endsWith("_Way"))
+            {
+                int l = sectfile.vars(j);
+                for(int k1 = 0; k1 < l; k1++)
+                {
+                    java.lang.String s1 = sectfile.var(j, k1);
+                    if(s1.equals("GATTACK"))
+                    {
+                        com.maddox.util.SharedTokenizer.set(sectfile.value(j, k1));
+                        com.maddox.util.SharedTokenizer.next((java.lang.String)null);
+                        com.maddox.util.SharedTokenizer.next((java.lang.String)null);
+                        com.maddox.util.SharedTokenizer.next((java.lang.String)null);
+                        com.maddox.util.SharedTokenizer.next((java.lang.String)null);
+                        java.lang.String s2 = com.maddox.util.SharedTokenizer.next((java.lang.String)null);
+                        if(s2 != null && s2.startsWith("Bridge"))
+                        {
+                            com.maddox.il2.objects.bridges.LongBridge longbridge1 = (com.maddox.il2.objects.bridges.LongBridge)com.maddox.il2.engine.Actor.getByName(" " + s2);
+                            if(longbridge1 != null && !longbridge1.isAlive())
+                                longbridge1.BeLive();
+                        }
+                    }
+                }
+
+            } else
+            if(s.endsWith("_Road"))
+            {
+                int i1 = sectfile.vars(j);
+                for(int l1 = 0; l1 < i1; l1++)
+                {
+                    com.maddox.util.SharedTokenizer.set(sectfile.value(j, l1));
+                    com.maddox.util.SharedTokenizer.next((java.lang.String)null);
+                    int j2 = (int)com.maddox.util.SharedTokenizer.next(1.0D);
+                    if(j2 < 0)
+                    {
+                        j2 = -j2 - 1;
+                        com.maddox.il2.objects.bridges.LongBridge longbridge = com.maddox.il2.objects.bridges.LongBridge.getByIdx(j2);
+                        if(longbridge != null && !longbridge.isAlive())
+                            longbridge.BeLive();
+                    }
+                }
+
+            }
+        }
+
+        int k = sectfile.sectionIndex("Target");
+        if(k < 0)
+            return;
+        int j1 = sectfile.vars(k);
+        for(int i2 = 0; i2 < j1; i2++)
+        {
+            com.maddox.util.SharedTokenizer.set(sectfile.line(k, i2));
+            int k2 = com.maddox.util.SharedTokenizer.next(0, 0, 7);
+            if(k2 == 1 || k2 == 2 || k2 == 6 || k2 == 7)
+            {
+                com.maddox.util.SharedTokenizer.next(0);
+                com.maddox.util.SharedTokenizer.next(0);
+                com.maddox.util.SharedTokenizer.next(0);
+                com.maddox.util.SharedTokenizer.next(0);
+                int l2 = com.maddox.util.SharedTokenizer.next(0);
+                int i3 = com.maddox.util.SharedTokenizer.next(0);
+                int j3 = com.maddox.util.SharedTokenizer.next(1000, 50, 3000);
+                int k3 = com.maddox.util.SharedTokenizer.next(0);
+                java.lang.String s3 = com.maddox.util.SharedTokenizer.next(null);
+                if(s3 != null && s3.startsWith("Bridge"))
+                    s3 = " " + s3;
+                switch(k2)
+                {
+                case 3: // '\003'
+                case 4: // '\004'
+                case 5: // '\005'
+                default:
+                    break;
+
+                case 1: // '\001'
+                case 6: // '\006'
+                    com.maddox.il2.ai.World.cur().statics.restoreAllHouses(l2, i3, j3);
+                    break;
+
+                case 2: // '\002'
+                case 7: // '\007'
+                    if(s3 == null)
+                        break;
+                    com.maddox.il2.objects.bridges.LongBridge longbridge2 = (com.maddox.il2.objects.bridges.LongBridge)com.maddox.il2.engine.Actor.getByName(s3);
+                    if(longbridge2 != null && !longbridge2.isAlive())
+                        longbridge2.BeLive();
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public static void doMissionStarting()
+    {
+        java.util.ArrayList arraylist = new ArrayList(com.maddox.il2.engine.Engine.targets());
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)arraylist.get(j);
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+                try
+                {
+                    actor.missionStarting();
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                }
+        }
+
+    }
+
+    public void doBegin()
+    {
+        if(bPlaying)
+            return;
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            com.maddox.il2.game.Main3D.cur3D().setDrawLand(true);
+            if(com.maddox.il2.ai.World.cur().diffCur.Clouds)
+            {
+                com.maddox.il2.game.Main3D.cur3D().bDrawClouds = true;
+                if(com.maddox.il2.engine.RenderContext.cfgSky.get() == 0)
+                {
+                    com.maddox.il2.engine.RenderContext.cfgSky.set(1);
+                    com.maddox.il2.engine.RenderContext.cfgSky.apply();
+                    com.maddox.il2.engine.RenderContext.cfgSky.reset();
+                }
+            } else
+            {
+                com.maddox.il2.game.Main3D.cur3D().bDrawClouds = false;
+            }
+            com.maddox.rts.CmdEnv.top().exec("fov 70");
+            if(com.maddox.il2.game.Main3D.cur3D().keyRecord != null)
+            {
+                com.maddox.il2.game.Main3D.cur3D().keyRecord.clearPrevStates();
+                com.maddox.il2.game.Main3D.cur3D().keyRecord.clearRecorded();
+                com.maddox.il2.game.Main3D.cur3D().keyRecord.stopRecording(false);
+                if(com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+                    com.maddox.il2.game.Main3D.cur3D().keyRecord.startRecording();
+            }
+            com.maddox.il2.net.NetMissionTrack.countRecorded = 0;
+            if(com.maddox.il2.game.Main3D.cur3D().guiManager != null)
+            {
+                com.maddox.il2.game.Main3D.cur3D().guiManager.setTimeGameActive(true);
+                com.maddox.il2.gui.GUIPad.bStartMission = true;
+            }
+            if(!com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+                com.maddox.il2.game.Mission.doMissionStarting();
+            if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+            {
+                com.maddox.rts.Time.setPause(false);
+                com.maddox.rts.RTSConf.cur.time.setEnableChangePause1(false);
+            }
+            com.maddox.rts.CmdEnv.top().exec("music PUSH");
+            com.maddox.rts.CmdEnv.top().exec("music STOP");
+            if(!com.maddox.il2.game.Main3D.cur3D().isDemoPlaying())
+                com.maddox.il2.objects.effects.ForceFeedback.startMission();
+            com.maddox.rts.Joy.adapter().rePostMoves();
+            viewSet = com.maddox.il2.game.Main3D.cur3D().viewSet_Get();
+            iconTypes = com.maddox.il2.game.Main3D.cur3D().iconTypes();
+        } else
+        {
+            com.maddox.il2.game.Mission.doMissionStarting();
+            com.maddox.rts.Time.setPause(false);
+        }
+        if(net.isMaster())
+        {
+            sendCmd(10);
+            doReplicateNotMissionActors(true);
+        }
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+        {
+            com.maddox.il2.game.Main.cur().netServerParams.setExtraOcclusion(false);
+            com.maddox.sound.AudioDevice.soundsOn();
+        }
+        if(com.maddox.il2.game.Main.cur().netServerParams.isMaster() && (com.maddox.il2.game.Main.cur().netServerParams.isCoop() || com.maddox.il2.game.Main.cur().netServerParams.isSingle()))
+            com.maddox.il2.ai.World.cur().targetsGuard.activate();
+        com.maddox.il2.ai.EventLog.type(true, "Mission: " + name() + " is Playing");
+        com.maddox.il2.ai.EventLog.type("Mission BEGIN");
+        bPlaying = true;
+        if(com.maddox.il2.game.Main.cur().netServerParams != null)
+            com.maddox.il2.game.Main.cur().netServerParams.USGSupdate();
+    }
+
+    public void doEnd()
+    {
+        if(!bPlaying)
+            return;
+        com.maddox.il2.ai.EventLog.type("Mission END");
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            com.maddox.il2.objects.effects.ForceFeedback.stopMission();
+            if(com.maddox.il2.game.Main3D.cur3D().guiManager != null)
+                com.maddox.il2.game.Main3D.cur3D().guiManager.setTimeGameActive(false);
+            com.maddox.il2.net.NetMissionTrack.stopRecording();
+            if(com.maddox.il2.game.Main3D.cur3D().keyRecord != null)
+            {
+                if(com.maddox.il2.game.Main3D.cur3D().keyRecord.isPlaying())
+                {
+                    com.maddox.il2.game.Main3D.cur3D().keyRecord.stopPlay();
+                    com.maddox.il2.game.Main3D.cur3D().guiManager.setKeyboardGameActive(true);
+                    com.maddox.il2.game.Main3D.cur3D().guiManager.setMouseGameActive(true);
+                    com.maddox.il2.game.Main3D.cur3D().guiManager.setJoyGameActive(true);
+                }
+                com.maddox.il2.game.Main3D.cur3D().keyRecord.stopRecording(true);
+            }
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+        }
+        com.maddox.rts.RTSConf.cur.time.setEnableChangePause1(true);
+        com.maddox.rts.Time.setPause(true);
+        if(net.isMaster())
+            sendCmd(20);
+        com.maddox.sound.AudioDevice.soundsOff();
+        com.maddox.il2.objects.sounds.Voice.endSession();
+        bPlaying = false;
+        if(com.maddox.il2.game.Main.cur().netServerParams != null)
+            com.maddox.il2.game.Main.cur().netServerParams.USGSupdate();
+    }
+
+    public com.maddox.rts.NetObj netObj()
+    {
+        return net;
+    }
+
+    private void sendCmd(int i)
+    {
+        if(net.isMirrored())
+            try
+            {
+                java.util.List list = com.maddox.rts.NetEnv.channels();
+                int j = list.size();
+                for(int k = 0; k < j; k++)
+                {
+                    com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)list.get(k);
+                    if(netchannel != net.masterChannel() && netchannel.isReady() && netchannel.isMirrored(net) && (netchannel.userState == 4 || netchannel.userState == 0))
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                        netmsgguaranted.writeByte(i);
+                        net.postTo(netchannel, netmsgguaranted);
+                    }
+                }
+
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.game.Mission.printDebug(exception);
+            }
+    }
+
+    private void doReplicateNotMissionActors(boolean flag)
+    {
+        if(net.isMirrored())
+        {
+            java.util.List list = com.maddox.rts.NetEnv.channels();
+            int i = list.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)list.get(j);
+                if(netchannel != net.masterChannel() && netchannel.isReady() && netchannel.isMirrored(net))
+                    if(flag)
+                    {
+                        if(netchannel.userState == 4)
+                            doReplicateNotMissionActors(netchannel, true);
+                    } else
+                    {
+                        netchannel.userState = 1;
+                    }
+            }
+
+        }
+    }
+
+    private void doReplicateNotMissionActors(com.maddox.rts.NetChannel netchannel, boolean flag)
+    {
+        if(flag)
+        {
+            netchannel.userState = 0;
+            com.maddox.util.HashMapInt hashmapint = com.maddox.rts.NetEnv.cur().objects;
+            for(com.maddox.util.HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry))
+            {
+                com.maddox.rts.NetObj netobj = (com.maddox.rts.NetObj)hashmapintentry.getValue();
+                if((netobj instanceof com.maddox.il2.engine.ActorNet) && !netchannel.isMirrored(netobj))
+                {
+                    com.maddox.il2.engine.ActorNet actornet = (com.maddox.il2.engine.ActorNet)netobj;
+                    if(com.maddox.il2.engine.Actor.isValid(actornet.actor()) && !actornet.actor().isSpawnFromMission())
+                        com.maddox.rts.MsgNet.postRealNewChannel(netobj, netchannel);
+                }
+            }
+
+        } else
+        {
+            netchannel.userState = 1;
+        }
+    }
+
+    private void doResvMission(com.maddox.rts.NetMsgInput netmsginput)
+    {
+        try
+        {
+            while(netmsginput.available() > 0) 
+            {
+                int i = netmsginput.readInt();
+                if(i < 0)
+                {
+                    java.lang.String s = netmsginput.read255();
+                    sectFile.sectionAdd(s);
+                } else
+                {
+                    sectFile.lineAdd(i, netmsginput.read255(), netmsginput.read255());
+                }
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.il2.game.Mission.printDebug(exception);
+            java.lang.System.out.println("Bad format reseived missiion");
+        }
+    }
+
+    private void doSendMission(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(i);
+            int j = sectFile.sections();
+            for(int k = 0; k < j; k++)
+            {
+                java.lang.String s = sectFile.sectionName(k);
+                if(!s.startsWith("$$$"))
+                {
+                    if(netmsgguaranted.size() >= 128)
+                    {
+                        net.postTo(netchannel, netmsgguaranted);
+                        netmsgguaranted = new NetMsgGuaranted();
+                        netmsgguaranted.writeByte(i);
+                    }
+                    netmsgguaranted.writeInt(-1);
+                    netmsgguaranted.write255(s);
+                    int l = sectFile.vars(k);
+                    for(int i1 = 0; i1 < l; i1++)
+                    {
+                        if(netmsgguaranted.size() >= 128)
+                        {
+                            net.postTo(netchannel, netmsgguaranted);
+                            netmsgguaranted = new NetMsgGuaranted();
+                            netmsgguaranted.writeByte(i);
+                        }
+                        netmsgguaranted.writeInt(k);
+                        netmsgguaranted.write255(sectFile.var(k, i1));
+                        netmsgguaranted.write255(sectFile.value(k, i1));
+                    }
+
+                }
+            }
+
+            if(netmsgguaranted.size() > 1)
+                net.postTo(netchannel, netmsgguaranted);
+            netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(i + 1);
+            net.postTo(netchannel, netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.il2.game.Mission.printDebug(exception);
+        }
+    }
+
+    public void replicateTimeofDay()
+    {
+        if(!com.maddox.il2.game.Mission.isServer())
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(11);
+            netmsgguaranted.writeFloat(com.maddox.il2.ai.World.getTimeofDay());
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    private boolean isExistFile(java.lang.String s)
+    {
+        boolean flag = false;
+        try
+        {
+            com.maddox.rts.SFSInputStream sfsinputstream = new SFSInputStream(s);
+            sfsinputstream.close();
+            flag = true;
+        }
+        catch(java.lang.Exception exception) { }
+        return flag;
+    }
+
+    private void netInput(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        boolean flag = false;
+        if((net instanceof com.maddox.il2.game.Master) || netmsginput.channel() != net.masterChannel())
+            flag = true;
+        boolean flag1 = netmsginput.channel() instanceof com.maddox.rts.NetChannelStream;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = null;
+        int i = netmsginput.readUnsignedByte();
+        switch(i)
+        {
+        case 6: // '\006'
+        case 7: // '\007'
+        case 8: // '\b'
+        case 9: // '\t'
+        case 14: // '\016'
+        case 15: // '\017'
+        case 16: // '\020'
+        case 17: // '\021'
+        case 18: // '\022'
+        case 19: // '\023'
+        default:
             break;
-          case 12:
-            Main3D.cur3D().gameTrackRecord().startKeyRecord(paramNetMsgGuaranted);
-            return false; }
-        } catch (Exception localException) {
-          printDebug(localException);
+
+        case 0: // '\0'
+            netmsginput.channel().userState = 2;
+            netmsgguaranted = new NetMsgGuaranted();
+            if(flag)
+            {
+                if(flag1)
+                {
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted();
+                    netmsgguaranted1.writeByte(13);
+                    netmsgguaranted1.writeLong(com.maddox.rts.Time.current());
+                    net.postTo(netmsginput.channel(), netmsgguaranted1);
+                }
+                netmsgguaranted.writeByte(0);
+                netmsgguaranted.write255(name);
+                netmsgguaranted.writeLong(sectFinger);
+                break;
+            }
+            name = netmsginput.read255();
+            sectFinger = netmsginput.readLong();
+            com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(0, 0.0F, name);
+            if(!flag1)
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setMissProp("missions/" + name);
+            java.lang.String s = "missions/" + name;
+            if(!flag1 && isExistFile(s))
+            {
+                sectFile = new SectFile(s, 0, false);
+                if(sectFinger == sectFile.fingerExcludeSectPrefix("$$$"))
+                {
+                    netmsgguaranted.writeByte(3);
+                    break;
+                }
+            }
+            s = "missions/Net/Cache/" + sectFinger + ".mis";
+            int ai[] = getSwTbl(s, sectFinger);
+            sectFile = new SectFile(s, 0, false, ai);
+            if(!flag1 && sectFinger == sectFile.fingerExcludeSectPrefix("$$$"))
+            {
+                netmsgguaranted.writeByte(3);
+            } else
+            {
+                sectFile = new SectFile(s, 1, false, ai);
+                sectFile.clear();
+                netmsgguaranted.writeByte(1);
+            }
+            break;
+
+        case 13: // '\r'
+            if(!flag)
+            {
+                long l = netmsginput.readLong();
+                com.maddox.rts.RTSConf.cur.time.setCurrent(l);
+                com.maddox.il2.net.NetMissionTrack.playingStartTime = l;
+            }
+            break;
+
+        case 1: // '\001'
+            if(flag)
+            {
+                doSendMission(netmsginput.channel(), 1);
+            } else
+            {
+                com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(1, 0.0F, null);
+                doResvMission(netmsginput);
+            }
+            break;
+
+        case 2: // '\002'
+            if(!flag)
+            {
+                sectFile.saveFile();
+                netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(3);
+            }
+            break;
+
+        case 3: // '\003'
+            if(flag)
+            {
+                int j = actors.size();
+                for(int i1 = 0; i1 < j;)
+                {
+                    netmsgguaranted = new NetMsgGuaranted();
+                    netmsgguaranted.writeByte(3);
+                    for(int j1 = 64; j1-- > 0 && i1 < j;)
+                    {
+                        com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)actors.get(i1++);
+                        if(com.maddox.il2.engine.Actor.isValid(actor1))
+                            netmsgguaranted.writeShort(actor1.net.idLocal());
+                        else
+                            netmsgguaranted.writeShort(0);
+                    }
+
+                    net.postTo(netmsginput.channel(), netmsgguaranted);
+                }
+
+                netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(4);
+                netmsginput.channel().userState = 3;
+            } else
+            {
+                com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(2, 0.0F, null);
+                for(; netmsginput.available() > 0; actors.add(new Integer(netmsginput.readUnsignedShort())));
+            }
+            break;
+
+        case 4: // '\004'
+            if(flag)
+            {
+                if(com.maddox.il2.game.Mission.isDogfight() || (netmsginput.channel() instanceof com.maddox.rts.NetChannelOutStream))
+                {
+                    com.maddox.il2.ai.World.cur().statics.netBridgeSync(netmsginput.channel());
+                    com.maddox.il2.ai.World.cur().statics.netHouseSync(netmsginput.channel());
+                }
+                for(int k = 0; k < actors.size(); k++)
+                {
+                    com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)actors.get(k);
+                    if(com.maddox.il2.engine.Actor.isValid(actor))
+                        try
+                        {
+                            com.maddox.rts.NetChannel netchannel = netmsginput.channel();
+                            netchannel.setMirrored(actor.net);
+                            actor.netFirstUpdate(netmsginput.channel());
+                        }
+                        catch(java.lang.Exception exception1)
+                        {
+                            com.maddox.il2.game.Mission.printDebug(exception1);
+                        }
+                }
+
+                if(com.maddox.il2.engine.Actor.isValid(com.maddox.il2.ai.World.cur().houseManager))
+                    com.maddox.il2.ai.World.cur().houseManager.fullUpdateChannel(netmsginput.channel());
+                netmsgguaranted = new NetMsgGuaranted();
+                if(com.maddox.il2.game.Mission.isPlaying())
+                {
+                    netmsgguaranted.writeByte(10);
+                    net.postTo(netmsginput.channel(), netmsgguaranted);
+                    netmsgguaranted = new NetMsgGuaranted();
+                    netmsgguaranted.writeByte(11);
+                    netmsgguaranted.writeFloat(com.maddox.il2.ai.World.getTimeofDay());
+                    net.postTo(netmsginput.channel(), netmsgguaranted);
+                    netmsgguaranted = null;
+                    doReplicateNotMissionActors(netmsginput.channel(), true);
+                    trySendMsgStart(netmsginput.channel());
+                } else
+                {
+                    netmsgguaranted.writeByte(5);
+                    netmsginput.channel().userState = 4;
+                }
+            } else
+            {
+                netmsginput.channel().userState = 3;
+                try
+                {
+                    load(name, sectFile, true);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    com.maddox.il2.game.Mission.printDebug(exception);
+                    com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(4, 0.0F, exception.getMessage());
+                }
+            }
+            break;
+
+        case 5: // '\005'
+            if(!flag);
+            break;
+
+        case 10: // '\n'
+            if(!(net instanceof com.maddox.il2.game.Master) && netmsginput.channel() == net.masterChannel())
+            {
+                if(net.isMirrored())
+                {
+                    netmsgguaranted = new NetMsgGuaranted();
+                    netmsgguaranted.writeByte(10);
+                    net.post(netmsgguaranted);
+                    netmsgguaranted = null;
+                }
+                doReplicateNotMissionActors(true);
+                doReplicateNotMissionActors(netmsginput.channel(), true);
+                doBegin();
+                com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(6, 0.0F, null);
+            }
+            break;
+
+        case 11: // '\013'
+            if(!(net instanceof com.maddox.il2.game.Master) && netmsginput.channel() == net.masterChannel())
+            {
+                float f = netmsginput.readFloat();
+                com.maddox.il2.ai.World.setTimeofDay(f);
+                com.maddox.il2.ai.World.land().cubeFullUpdate();
+            }
+            break;
+
+        case 20: // '\024'
+            if(!(net instanceof com.maddox.il2.game.Master) && netmsginput.channel() == net.masterChannel())
+            {
+                com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(7, 0.0F, null);
+                doReplicateNotMissionActors(false);
+                doReplicateNotMissionActors(netmsginput.channel(), false);
+                doEnd();
+                if(net.isMirrored())
+                {
+                    netmsgguaranted = new NetMsgGuaranted();
+                    netmsgguaranted.writeByte(20);
+                    net.post(netmsgguaranted);
+                    netmsgguaranted = null;
+                }
+            }
+            break;
+
+        case 12: // '\f'
+            if(!(net instanceof com.maddox.il2.game.Master) && netmsginput.channel() == net.masterChannel())
+                com.maddox.il2.game.Main.cur().netMissionListener.netMissionState(9, 0.0F, null);
+            break;
         }
-      return true;
+        if(netmsgguaranted != null && netmsgguaranted.size() > 0)
+            net.postTo(netmsginput.channel(), netmsgguaranted);
     }
 
-    public boolean netChannelCallback(NetChannelInStream paramNetChannelInStream, NetMsgInput paramNetMsgInput) {
-      try {
-        int i = paramNetMsgInput.readUnsignedByte();
-        if (i == 4) {
-          paramNetChannelInStream.setPause(true);
-        } else if (i == 12) {
-          paramNetChannelInStream.setGameTime();
-          if ((Mission.isCoop()) || (Mission.isDogfight())) {
-            Main.cur().netServerParams.prepareHidenAircraft();
-            Mission.doMissionStarting();
-            Time.setPause(false);
-          }
-          Main3D.cur3D().gameTrackPlay().startKeyPlay();
+    public void trySendMsgStart(java.lang.Object obj)
+    {
+        if(isDestroyed())
+            return;
+        com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)obj;
+        if(netchannel.isDestroyed())
+            return;
+        com.maddox.util.HashMapInt hashmapint = com.maddox.rts.RTSConf.cur.netEnv.objects;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = null; (hashmapintentry = hashmapint.nextEntry(hashmapintentry)) != null;)
+        {
+            com.maddox.rts.NetObj netobj = (com.maddox.rts.NetObj)hashmapintentry.getValue();
+            if(netobj != null && !netobj.isDestroyed() && !netobj.isCommon() && !netchannel.isMirrored(netobj) && netobj.masterChannel() != netchannel && (!(netchannel instanceof com.maddox.rts.NetChannelOutStream) || !(netobj instanceof com.maddox.rts.NetControl) && (!(netobj instanceof com.maddox.il2.net.NetUser) || !netobj.isMaster() || !com.maddox.il2.net.NetMissionTrack.isPlaying())) && (!(netobj instanceof com.maddox.il2.game.GameTrack) || !netobj.isMirror()))
+            {
+                java.lang.Object obj1 = netobj.superObj();
+                if(!(obj1 instanceof com.maddox.rts.Destroy) || !((com.maddox.rts.Destroy)obj1).isDestroyed())
+                {
+                    (new MsgInvokeMethod_Object("trySendMsgStart", netchannel)).post(72, this, 0.0D);
+                    return;
+                }
+            }
         }
-        paramNetMsgInput.reset(); } catch (Exception localException) {
-        printDebug(localException);
-      }return true;
-    }
-    public void netChannelCallback(NetChannelInStream paramNetChannelInStream, NetMsgGuaranted paramNetMsgGuaranted) {
-      if ((!(paramNetMsgGuaranted instanceof NetMsgSpawn)) && (!(paramNetMsgGuaranted instanceof NetMsgDestroy)))
-        try {
-          NetMsgInput localNetMsgInput = new NetMsgInput();
-          localNetMsgInput.setData(paramNetChannelInStream, true, paramNetMsgGuaranted.data(), 0, paramNetMsgGuaranted.size());
-          int i = localNetMsgInput.readUnsignedByte();
-          if (i == 4)
-            paramNetChannelInStream.setPause(false);
-        } catch (Exception localException) {
-          printDebug(localException);
-        }
-    }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      Mission localMission = (Mission)superObj();
-      localMission.netInput(paramNetMsgInput);
-      return true;
-    }
-    public void msgNetNewChannel(NetChannel paramNetChannel) {
-      if (Main.cur().missionLoading != null)
-        return;
-      tryReplicate(paramNetChannel);
-    }
-    private void tryReplicate(NetChannel paramNetChannel) {
-      if ((paramNetChannel.isReady()) && (paramNetChannel.isPublic()) && (paramNetChannel != this.masterChannel) && (!paramNetChannel.isMirrored(this)) && (paramNetChannel.userState == 1))
-      {
         try
         {
-          postTo(paramNetChannel, new NetMsgSpawn(this)); } catch (Exception localException) {
-          printDebug(localException);
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(12);
+            net.postTo(netchannel, netmsgguaranted);
         }
-      }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.il2.game.Mission.printDebug(exception);
+        }
     }
 
-    public NetMissionObj(Object arg2) {
-      super();
-    }
-    public NetMissionObj(Object paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  static class WingTakeoffPos
-  {
-    public int x;
-    public int y;
-
-    public WingTakeoffPos(double paramDouble1, double paramDouble2)
+    private void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
     {
-      this.x = ((int)(paramDouble1 / 100.0D) * 100);
-      this.y = ((int)(paramDouble2 / 100.0D) * 100);
+        setTime(true);
+        if(netchannel == null)
+        {
+            net = new Master(this);
+            doReplicateNotMissionActors(false);
+        } else
+        {
+            net = new Mirror(this, netchannel, i);
+            doReplicateNotMissionActors(netchannel, false);
+        }
     }
-    public boolean equals(Object paramObject) {
-      if (paramObject == null) return false;
-      if (!(paramObject instanceof WingTakeoffPos)) return false;
-      WingTakeoffPos localWingTakeoffPos = (WingTakeoffPos)paramObject;
-      return (this.x == localWingTakeoffPos.x) && (this.y == localWingTakeoffPos.y);
-    }
-    public int hashCode() { return this.x + this.y;
-    }
-  }
 
-  class TimeOutWing
-  {
-    String wingName;
-
-    public void start()
+    protected static void printDebug(java.lang.Exception exception)
     {
-      if (Mission.this.isDestroyed()) return; try
-      {
-        com.maddox.il2.objects.air.NetAircraft.loadingCoopPlane = false;
-        Wing localWing = new Wing();
-        localWing.load(Mission.this.sectFile, this.wingName, null);
-        Mission.this.prepareSkinInWing(Mission.this.sectFile, localWing);
-        localWing.setOnAirport();
-      } catch (Exception localException) {
-        Mission.printDebug(localException);
-      }
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
     }
 
-    public TimeOutWing(String arg2)
+    private int[] getSwTbl(java.lang.String s, long l)
     {
-      Object localObject;
-      this.wingName = localObject;
+        int i = (int)l;
+        int j = com.maddox.rts.Finger.Int(s);
+        if(i < 0)
+            i = -i;
+        if(j < 0)
+            j = -j;
+        int k = (j + i / 7) % 16 + 15;
+        int i1 = (j + i / 21) % com.maddox.rts.Finger.kTable.length;
+        if(k < 0)
+            k = -k % 16;
+        if(k < 10)
+            k = 10;
+        if(i1 < 0)
+            i1 = -i1 % com.maddox.rts.Finger.kTable.length;
+        int ai[] = new int[k];
+        for(int j1 = 0; j1 < k; j1++)
+            ai[j1] = com.maddox.rts.Finger.kTable[(i1 + j1) % com.maddox.rts.Finger.kTable.length];
+
+        return ai;
     }
-  }
 
-  public class BackgroundLoader extends BackgroundTask
-  {
-    private String _name;
-    private SectFile _in;
+    public static final java.lang.String DIR = "missions/";
+    public static final java.lang.String DIRNET = "missions/Net/Cache/";
+    public static final float CLOUD_HEIGHT = 8000F;
+    private java.lang.String name;
+    private com.maddox.rts.SectFile sectFile;
+    private long sectFinger;
+    private java.util.ArrayList actors;
+    private int curActor;
+    private boolean bPlaying;
+    private int curCloudsType;
+    private float curCloudsHeight;
+    protected static int viewSet = 0;
+    protected static int iconTypes = 0;
+    private static java.util.HashMap respawnMap = new HashMap();
+    private java.lang.String player;
+    private boolean _loadPlayer;
+    private int playerNum;
+    private java.util.HashMap mapWingTakeoff;
+    private static com.maddox.rts.SectFile chiefsIni;
+    private static com.maddox.JGP.Point3d Loc = new Point3d();
+    private static com.maddox.il2.engine.Orient Or = new Orient();
+    private static com.maddox.JGP.Vector3f Spd = new Vector3f();
+    private static com.maddox.JGP.Vector3d Spdd = new Vector3d();
+    private static com.maddox.il2.engine.ActorSpawnArg spawnArg = new ActorSpawnArg();
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    public static final int NET_MSG_ID_NAME = 0;
+    public static final int NET_MSG_ID_BODY = 1;
+    public static final int NET_MSG_ID_BODY_END = 2;
+    public static final int NET_MSG_ID_ACTORS = 3;
+    public static final int NET_MSG_ID_ACTORS_END = 4;
+    public static final int NET_MSG_ID_LOADED = 5;
+    public static final int NET_MSG_ID_BEGIN = 10;
+    public static final int NET_MSG_ID_TOD = 11;
+    public static final int NET_MSG_ID_START = 12;
+    public static final int NET_MSG_ID_TIME = 13;
+    public static final int NET_MSG_ID_END = 20;
+    protected com.maddox.rts.NetObj net;
 
-    public void run()
-      throws Exception
+    static 
     {
-      Mission.this._load(this._name, this._in, true);
+        com.maddox.rts.Spawn.add(com.maddox.il2.game.Mission.class, new SPAWN());
     }
-    public BackgroundLoader(String paramSectFile, SectFile arg3) {
-      this._name = paramSectFile;
-      Object localObject;
-      this._in = localObject;
-    }
-  }
+
+
+
+
+
+
+
 }

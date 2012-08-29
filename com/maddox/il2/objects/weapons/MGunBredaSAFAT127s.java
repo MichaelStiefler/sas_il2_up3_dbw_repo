@@ -1,74 +1,80 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MGunBredaSAFAT127s.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 
-public class MGunBredaSAFAT127s extends MGunAircraftGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            MGunAircraftGeneric
+
+public class MGunBredaSAFAT127s extends com.maddox.il2.objects.weapons.MGunAircraftGeneric
 {
-  public GunProperties createProperties()
-  {
-    GunProperties localGunProperties = super.createProperties();
 
-    localGunProperties.bCannon = false;
-    localGunProperties.bUseHookAsRel = true;
+    public MGunBredaSAFAT127s()
+    {
+    }
 
-    localGunProperties.fireMesh = "3DO/Effects/GunFire/12mm/mono.sim";
-    localGunProperties.fire = null;
-    localGunProperties.sprite = "3DO/Effects/GunFire/12mm/GunFlare.eff";
-    localGunProperties.smoke = null;
-    localGunProperties.shells = "3DO/Effects/GunShells/GunShells.eff";
-    localGunProperties.sound = "weapon.mgun_20_500";
-
-    localGunProperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
-    localGunProperties.emitI = 10.0F;
-    localGunProperties.emitR = 3.0F;
-    localGunProperties.emitTime = 0.03F;
-
-    localGunProperties.aimMinDist = 10.0F;
-    localGunProperties.aimMaxDist = 1000.0F;
-    localGunProperties.weaponType = -1;
-    localGunProperties.maxDeltaAngle = 0.229F;
-    localGunProperties.shotFreq = 11.666667F;
-    localGunProperties.traceFreq = 1;
-    localGunProperties.bullets = 500;
-    localGunProperties.bulletsCluster = 1;
-
-    localGunProperties.bullet = new BulletProperties[] { new BulletProperties(), new BulletProperties(), new BulletProperties() };
-
-    localGunProperties.bullet[0].massa = 0.0354F;
-    localGunProperties.bullet[0].kalibr = 0.00011968F;
-    localGunProperties.bullet[0].speed = 760.0F;
-    localGunProperties.bullet[0].power = 0.0F;
-    localGunProperties.bullet[0].powerType = 0;
-    localGunProperties.bullet[0].powerRadius = 0.0F;
-    localGunProperties.bullet[0].traceMesh = null;
-    localGunProperties.bullet[0].traceTrail = null;
-    localGunProperties.bullet[0].traceColor = 0;
-    localGunProperties.bullet[0].timeLife = 6.5F;
-
-    localGunProperties.bullet[1].massa = 0.0354F;
-    localGunProperties.bullet[1].kalibr = 0.00011968F;
-    localGunProperties.bullet[1].speed = 760.0F;
-    localGunProperties.bullet[1].power = 0.0017F;
-    localGunProperties.bullet[1].powerType = 0;
-    localGunProperties.bullet[1].powerRadius = 0.16F;
-    localGunProperties.bullet[1].traceMesh = "3do/effects/tracers/20mmRed/mono.sim";
-    localGunProperties.bullet[1].traceTrail = null;
-    localGunProperties.bullet[1].traceColor = -654311169;
-    localGunProperties.bullet[1].timeLife = 6.25F;
-
-    localGunProperties.bullet[2].massa = 0.033F;
-    localGunProperties.bullet[2].kalibr = 0.00012068F;
-    localGunProperties.bullet[2].speed = 770.0F;
-    localGunProperties.bullet[2].power = 0.0008F;
-    localGunProperties.bullet[2].powerType = 0;
-    localGunProperties.bullet[2].powerRadius = 0.16F;
-    localGunProperties.bullet[2].traceMesh = "3do/effects/tracers/20mmRed/mono.sim";
-    localGunProperties.bullet[2].traceTrail = null;
-    localGunProperties.bullet[2].traceColor = -654311169;
-    localGunProperties.bullet[2].timeLife = 6.5F;
-
-    return localGunProperties;
-  }
+    public com.maddox.il2.engine.GunProperties createProperties()
+    {
+        com.maddox.il2.engine.GunProperties gunproperties = super.createProperties();
+        gunproperties.bCannon = false;
+        gunproperties.bUseHookAsRel = true;
+        gunproperties.fireMesh = "3DO/Effects/GunFire/12mm/mono.sim";
+        gunproperties.fire = null;
+        gunproperties.sprite = "3DO/Effects/GunFire/12mm/GunFlare.eff";
+        gunproperties.smoke = null;
+        gunproperties.shells = "3DO/Effects/GunShells/GunShells.eff";
+        gunproperties.sound = "weapon.mgun_20_500";
+        gunproperties.emitColor = new Color3f(1.0F, 1.0F, 0.0F);
+        gunproperties.emitI = 10F;
+        gunproperties.emitR = 3F;
+        gunproperties.emitTime = 0.03F;
+        gunproperties.aimMinDist = 10F;
+        gunproperties.aimMaxDist = 1000F;
+        gunproperties.weaponType = -1;
+        gunproperties.maxDeltaAngle = 0.229F;
+        gunproperties.shotFreq = 8.75F;
+        gunproperties.traceFreq = 1;
+        gunproperties.bullets = 500;
+        gunproperties.bulletsCluster = 1;
+        gunproperties.bullet = (new com.maddox.il2.engine.BulletProperties[] {
+            new BulletProperties(), new BulletProperties(), new BulletProperties()
+        });
+        gunproperties.bullet[0].massa = 0.034F;
+        gunproperties.bullet[0].kalibr = 0.0001209675F;
+        gunproperties.bullet[0].speed = 760F;
+        gunproperties.bullet[0].power = 0.0F;
+        gunproperties.bullet[0].powerType = 0;
+        gunproperties.bullet[0].powerRadius = 0.0F;
+        gunproperties.bullet[0].traceMesh = null;
+        gunproperties.bullet[0].traceTrail = null;
+        gunproperties.bullet[0].traceColor = 0;
+        gunproperties.bullet[0].timeLife = 6.5F;
+        gunproperties.bullet[1].massa = 0.034F;
+        gunproperties.bullet[1].kalibr = 0.0001209675F;
+        gunproperties.bullet[1].speed = 760F;
+        gunproperties.bullet[1].power = 0.001F;
+        gunproperties.bullet[1].powerType = 0;
+        gunproperties.bullet[1].powerRadius = 0.04F;
+        gunproperties.bullet[1].traceMesh = "3DO/Effects/Tracers/20mmWhite/mono.sim";
+        gunproperties.bullet[1].traceTrail = null;
+        gunproperties.bullet[1].traceColor = 0xd2ffffff;
+        gunproperties.bullet[1].timeLife = 6.25F;
+        gunproperties.bullet[2].massa = 0.034F;
+        gunproperties.bullet[2].kalibr = 0.0001209675F;
+        gunproperties.bullet[2].speed = 760F;
+        gunproperties.bullet[2].power = 0.0F;
+        gunproperties.bullet[2].powerType = 0;
+        gunproperties.bullet[2].powerRadius = 0.0F;
+        gunproperties.bullet[2].traceMesh = "3DO/Effects/Tracers/20mmWhite/mono.sim";
+        gunproperties.bullet[2].traceTrail = "3DO/Effects/Tracers/TrailThin.eff";
+        gunproperties.bullet[2].traceColor = 0xd2ffffff;
+        gunproperties.bullet[2].timeLife = 6.5F;
+        return gunproperties;
+    }
 }

@@ -1,530 +1,773 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MessageQueue.java
+
 package com.maddox.rts;
+
+
+// Referenced classes of package com.maddox.rts:
+//            MessageException, Message, Time
 
 public final class MessageQueue
 {
-  private long stamp = 0L;
-  private Message[] array;
-  private int size = 0;
 
-  public final synchronized void put(Message paramMessage, Object paramObject1, long paramLong, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._time = paramLong; paramMessage._tickPos = paramInt; paramMessage._sender = paramObject2;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, Object paramObject1, long paramLong, int paramInt2, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._time = paramLong; paramMessage._tickPos = paramInt2; paramMessage._sender = paramObject2;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject, long paramLong, int paramInt)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject; paramMessage._time = paramLong; paramMessage._tickPos = paramInt;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, Object paramObject, long paramLong, int paramInt2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject; paramMessage._time = paramLong; paramMessage._tickPos = paramInt2;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject1, long paramLong, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._time = paramLong; paramMessage._sender = paramObject2;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage, Object paramObject1, long paramLong, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._time = paramLong; paramMessage._sender = paramObject2;
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject1, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._tickPos = paramInt; paramMessage._sender = paramObject2;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, Object paramObject1, int paramInt2, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._tickPos = paramInt2; paramMessage._sender = paramObject2;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, long paramLong, int paramInt, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong; paramMessage._tickPos = paramInt; paramMessage._sender = paramObject;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, long paramLong, int paramInt2, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong; paramMessage._tickPos = paramInt2; paramMessage._sender = paramObject;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, long paramLong, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong; paramMessage._sender = paramObject;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage, long paramLong, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong; paramMessage._sender = paramObject;
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, int paramInt, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._tickPos = paramInt; paramMessage._sender = paramObject;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, int paramInt2, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._tickPos = paramInt2; paramMessage._sender = paramObject;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, long paramLong, int paramInt)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong; paramMessage._tickPos = paramInt;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, long paramLong, int paramInt2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong; paramMessage._tickPos = paramInt2;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, long paramLong)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage, long paramLong)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._time = paramLong;
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, int paramInt)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._tickPos = paramInt;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, int paramInt2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._tickPos = paramInt2;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject, long paramLong)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject; paramMessage._time = paramLong;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage, Object paramObject, long paramLong)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject; paramMessage._time = paramLong;
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject, int paramInt)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject; paramMessage._tickPos = paramInt;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt1, Message paramMessage, Object paramObject, int paramInt2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject; paramMessage._tickPos = paramInt2;
-    paramMessage._flags = (paramInt1 & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject1, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._sender = paramObject2;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage, Object paramObject1, Object paramObject2)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject1; paramMessage._sender = paramObject2;
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject;
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage, Object paramObject)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._listener = paramObject;
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(Message paramMessage)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._flags |= 1;
-    push_heap(paramMessage);
-  }
-
-  public final synchronized void put(int paramInt, Message paramMessage)
-    throws MessageException
-  {
-    if ((paramMessage._flags & 0x1) != 0) throw new MessageException("message is busy");
-    paramMessage._flags = (paramInt & 0xFFFFFFF8 | paramMessage._flags & 0x6 | 0x1);
-    push_heap(paramMessage);
-  }
-
-  public final synchronized Message get(long paramLong)
-  {
-    if (this.size == 0)
-      return null;
-    Message localMessage = this.array[1];
-    if (localMessage._time >= paramLong)
-      return null;
-    pop_heap();
-    return localMessage;
-  }
-
-  public final synchronized Message peek(long paramLong)
-  {
-    if (this.size == 0)
-      return null;
-    Message localMessage = this.array[1];
-    if (localMessage._time >= paramLong)
-      return null;
-    return localMessage;
-  }
-
-  public final synchronized Message peekByIndex(int paramInt) {
-    if (this.size == 0)
-      return null;
-    paramInt++;
-    if (paramInt > this.size)
-      return null;
-    return this.array[paramInt];
-  }
-
-  public final synchronized void move(MessageQueue paramMessageQueue)
-  {
-    synchronized (paramMessageQueue) {
-      for (int i = 1; i <= this.size; i++) {
-        Message localMessage = this.array[i];
-        paramMessageQueue.push_heap(localMessage);
-        this.array[i] = null;
-      }
-      this.size = 0;
-    }
-  }
-
-  public final synchronized void move(MessageQueue paramMessageQueue, long paramLong)
-  {
-    synchronized (paramMessageQueue) {
-      for (int i = 1; i <= this.size; i++) {
-        Message localMessage = this.array[i];
-        localMessage._time += paramLong;
-        paramMessageQueue.push_heap(localMessage);
-        this.array[i] = null;
-      }
-      this.size = 0;
-    }
-  }
-
-  public final synchronized void moveFromNextTick(MessageQueue paramMessageQueue, boolean paramBoolean)
-  {
-    synchronized (paramMessageQueue)
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, long l, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
     {
-      int i;
-      Message localMessage;
-      if (paramBoolean)
-        for (i = 1; i <= this.size; i++) {
-          localMessage = this.array[i];
-          if ((localMessage._flags & 0x10) != 0)
-            localMessage._time = 0L;
-          else if ((localMessage._flags & 0x20) != 0)
-            localMessage._time = (Time.endReal() - 1L);
-          else {
-            localMessage._time = Time.currentReal();
-          }
-          paramMessageQueue.push_heap(localMessage);
-          this.array[i] = null;
-        }
-      else {
-        for (i = 1; i <= this.size; i++) {
-          localMessage = this.array[i];
-          if ((localMessage._flags & 0x10) != 0)
-            localMessage._time = 0L;
-          else if ((localMessage._flags & 0x20) != 0)
-            localMessage._time = (Time.tickNext() - 1L);
-          else {
-            localMessage._time = Time.current();
-          }
-          paramMessageQueue.push_heap(localMessage);
-          this.array[i] = null;
-        }
-      }
-      this.size = 0;
-    }
-  }
-
-  public final synchronized void clear()
-  {
-    for (int i = 1; i <= this.size; i++) {
-      Message localMessage = this.array[i];
-      localMessage._flags &= -2;
-      if ((localMessage._flags & 0x6) != 0)
-        localMessage.clean();
-      this.array[i] = null;
-    }
-
-    this.size = 0;
-  }
-
-  public final synchronized boolean contains(Message paramMessage)
-  {
-    return indexOf(paramMessage) >= 0;
-  }
-
-  public final synchronized boolean remove(Message paramMessage)
-  {
-    int i = indexOf(paramMessage);
-    if (i > 0) {
-      paramMessage._flags &= -2;
-      if ((paramMessage._flags & 0x6) != 0)
-        paramMessage.clean();
-      adjust_heap(i);
-      return true;
-    }
-    return false;
-  }
-
-  public final synchronized Message[] toArray()
-  {
-    Message[] arrayOfMessage = new Message[this.size];
-    System.arraycopy(this.array, 1, arrayOfMessage, 0, this.size);
-    return arrayOfMessage;
-  }
-
-  public final synchronized Message[] toArray(Message[] paramArrayOfMessage)
-  {
-    if (paramArrayOfMessage.length < this.size)
-      paramArrayOfMessage = new Message[this.size];
-    System.arraycopy(this.array, 1, paramArrayOfMessage, 0, this.size);
-    if (paramArrayOfMessage.length > this.size) {
-      paramArrayOfMessage[this.size] = null;
-    }
-    return paramArrayOfMessage;
-  }
-
-  public final synchronized int size() {
-    return this.size;
-  }
-
-  public final synchronized boolean isEmpty()
-  {
-    return this.size == 0;
-  }
-
-  public final synchronized void ensureCapacity(int paramInt)
-  {
-    int i = this.array.length - 1;
-    paramInt++;
-    if (paramInt > i) {
-      Message[] arrayOfMessage = this.array;
-      int j = i * 3 / 2 + 1;
-      if (j < paramInt)
-        j = paramInt;
-      this.array = new Message[j];
-      System.arraycopy(arrayOfMessage, 1, this.array, 1, this.size);
-    }
-  }
-
-  public MessageQueue()
-  {
-    this(10);
-  }
-
-  public MessageQueue(int paramInt)
-  {
-    this.array = new Message[paramInt + 1];
-  }
-
-  private int indexOf(Message paramMessage)
-  {
-    for (int i = 1; i <= this.size; i++) {
-      if (paramMessage == this.array[i])
-        return i;
-    }
-    return -1;
-  }
-
-  private final boolean gt(Message paramMessage1, Message paramMessage2)
-  {
-    if (paramMessage1._time > paramMessage2._time)
-      return true;
-    if (paramMessage1._time < paramMessage2._time) {
-      return false;
-    }
-    if (paramMessage1._tickPos > paramMessage2._tickPos)
-      return true;
-    if (paramMessage1._tickPos < paramMessage2._tickPos) {
-      return false;
-    }
-
-    return paramMessage1._queueStamp > paramMessage2._queueStamp;
-  }
-
-  private final void push_heap(Message paramMessage)
-  {
-    paramMessage._queueStamp = (this.stamp++);
-    ensureCapacity(++this.size);
-
-    int i = this.size;
-    int j = i / 2;
-    while ((i > 1) && (gt(this.array[j], paramMessage))) {
-      this.array[i] = this.array[j];
-      i = j;
-      j /= 2;
-    }
-    this.array[i] = paramMessage;
-  }
-
-  private final void pop_heap() {
-    adjust_heap(1);
-  }
-
-  private final void adjust_heap(int paramInt) {
-    if ((this.size > 1) && (paramInt < this.size)) {
-      Message localMessage = this.array[this.size];
-      int i = paramInt;
-      int j = i / 2;
-      int k = 1;
-      while ((i > 1) && (gt(this.array[j], localMessage))) {
-        this.array[i] = this.array[j];
-        i = j;
-        j /= 2;
-        k = 0;
-      }
-      if (k != 0) {
-        j = i * 2;
-
-        while (j < this.size)
+        if((message._flags & 1) != 0)
         {
-          int m;
-          if ((j + 1 < this.size) && (gt(this.array[j], this.array[(j + 1)])))
-            m = j + 1;
-          else {
-            m = j;
-          }
-          if (!gt(localMessage, this.array[m])) break;
-          this.array[i] = this.array[m];
-          i = m;
-          j = i * 2;
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._tickPos = i;
+            message._sender = obj1;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, long l, int j, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._tickPos = j;
+            message._sender = obj1;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, long l, int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._tickPos = i;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, long l, int j)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._tickPos = j;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, long l, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._sender = obj1;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, long l, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._sender = obj1;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._tickPos = i;
+            message._sender = obj1;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, int j, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._tickPos = j;
+            message._sender = obj1;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, long l, int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._tickPos = i;
+            message._sender = obj;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, long l, int j, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._tickPos = j;
+            message._sender = obj;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, long l, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._sender = obj;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, long l, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._sender = obj;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._tickPos = i;
+            message._sender = obj;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, int j, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._tickPos = j;
+            message._sender = obj;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, long l, int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._tickPos = i;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, long l, int j)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._tickPos = j;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, long l)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, long l)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._time = l;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._tickPos = i;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, int j)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._tickPos = j;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, long l)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, long l)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._time = l;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._tickPos = i;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, int j)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._tickPos = j;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._sender = obj1;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._sender = obj1;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._listener = obj;
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(com.maddox.rts.Message message)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._flags |= 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized void put(int i, com.maddox.rts.Message message)
+        throws com.maddox.rts.MessageException
+    {
+        if((message._flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            message._flags = i & -8 | message._flags & 6 | 1;
+            push_heap(message);
+            return;
+        }
+    }
+
+    public final synchronized com.maddox.rts.Message get(long l)
+    {
+        if(size == 0)
+            return null;
+        com.maddox.rts.Message message = array[1];
+        if(message._time >= l)
+        {
+            return null;
+        } else
+        {
+            pop_heap();
+            return message;
+        }
+    }
+
+    public final synchronized com.maddox.rts.Message peek(long l)
+    {
+        if(size == 0)
+            return null;
+        com.maddox.rts.Message message = array[1];
+        if(message._time >= l)
+            return null;
+        else
+            return message;
+    }
+
+    public final synchronized com.maddox.rts.Message peekByIndex(int i)
+    {
+        if(size == 0)
+            return null;
+        if(++i > size)
+            return null;
+        else
+            return array[i];
+    }
+
+    public final synchronized void move(com.maddox.rts.MessageQueue messagequeue)
+    {
+        synchronized(messagequeue)
+        {
+            for(int i = 1; i <= size; i++)
+            {
+                com.maddox.rts.Message message = array[i];
+                messagequeue.push_heap(message);
+                array[i] = null;
+            }
+
+            size = 0;
+        }
+    }
+
+    public final synchronized void move(com.maddox.rts.MessageQueue messagequeue, long l)
+    {
+        synchronized(messagequeue)
+        {
+            for(int i = 1; i <= size; i++)
+            {
+                com.maddox.rts.Message message = array[i];
+                message._time += l;
+                messagequeue.push_heap(message);
+                array[i] = null;
+            }
+
+            size = 0;
+        }
+    }
+
+    public final synchronized void moveFromNextTick(com.maddox.rts.MessageQueue messagequeue, boolean flag)
+    {
+        synchronized(messagequeue)
+        {
+            if(flag)
+            {
+                for(int i = 1; i <= size; i++)
+                {
+                    com.maddox.rts.Message message = array[i];
+                    if((message._flags & 0x10) != 0)
+                        message._time = 0L;
+                    else
+                    if((message._flags & 0x20) != 0)
+                        message._time = com.maddox.rts.Time.endReal() - 1L;
+                    else
+                        message._time = com.maddox.rts.Time.currentReal();
+                    messagequeue.push_heap(message);
+                    array[i] = null;
+                }
+
+            } else
+            {
+                for(int j = 1; j <= size; j++)
+                {
+                    com.maddox.rts.Message message1 = array[j];
+                    if((message1._flags & 0x10) != 0)
+                        message1._time = 0L;
+                    else
+                    if((message1._flags & 0x20) != 0)
+                        message1._time = com.maddox.rts.Time.tickNext() - 1L;
+                    else
+                        message1._time = com.maddox.rts.Time.current();
+                    messagequeue.push_heap(message1);
+                    array[j] = null;
+                }
+
+            }
+            size = 0;
+        }
+    }
+
+    public final synchronized void clear()
+    {
+        for(int i = 1; i <= size; i++)
+        {
+            com.maddox.rts.Message message = array[i];
+            message._flags &= -2;
+            if((message._flags & 6) != 0)
+                message.clean();
+            array[i] = null;
         }
 
-      }
-
-      this.array[i] = localMessage;
+        size = 0;
     }
-    this.array[(this.size--)] = null;
-  }
+
+    public final synchronized boolean contains(com.maddox.rts.Message message)
+    {
+        return indexOf(message) >= 0;
+    }
+
+    public final synchronized boolean remove(com.maddox.rts.Message message)
+    {
+        int i = indexOf(message);
+        if(i > 0)
+        {
+            message._flags &= -2;
+            if((message._flags & 6) != 0)
+                message.clean();
+            adjust_heap(i);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public final synchronized com.maddox.rts.Message[] toArray()
+    {
+        com.maddox.rts.Message amessage[] = new com.maddox.rts.Message[size];
+        java.lang.System.arraycopy(array, 1, amessage, 0, size);
+        return amessage;
+    }
+
+    public final synchronized com.maddox.rts.Message[] toArray(com.maddox.rts.Message amessage[])
+    {
+        if(amessage.length < size)
+            amessage = new com.maddox.rts.Message[size];
+        java.lang.System.arraycopy(array, 1, amessage, 0, size);
+        if(amessage.length > size)
+            amessage[size] = null;
+        return amessage;
+    }
+
+    public final synchronized int size()
+    {
+        return size;
+    }
+
+    public final synchronized boolean isEmpty()
+    {
+        return size == 0;
+    }
+
+    public final synchronized void ensureCapacity(int i)
+    {
+        int j = array.length - 1;
+        if(++i > j)
+        {
+            com.maddox.rts.Message amessage[] = array;
+            int k = (j * 3) / 2 + 1;
+            if(k < i)
+                k = i;
+            array = new com.maddox.rts.Message[k];
+            java.lang.System.arraycopy(amessage, 1, array, 1, size);
+        }
+    }
+
+    public MessageQueue()
+    {
+        this(10);
+    }
+
+    public MessageQueue(int i)
+    {
+        stamp = 0L;
+        size = 0;
+        array = new com.maddox.rts.Message[i + 1];
+    }
+
+    private int indexOf(com.maddox.rts.Message message)
+    {
+        for(int i = 1; i <= size; i++)
+            if(message == array[i])
+                return i;
+
+        return -1;
+    }
+
+    private final boolean gt(com.maddox.rts.Message message, com.maddox.rts.Message message1)
+    {
+        if(message._time > message1._time)
+            return true;
+        if(message._time < message1._time)
+            return false;
+        if(message._tickPos > message1._tickPos)
+            return true;
+        if(message._tickPos < message1._tickPos)
+            return false;
+        return message._queueStamp > message1._queueStamp;
+    }
+
+    private final void push_heap(com.maddox.rts.Message message)
+    {
+        message._queueStamp = stamp++;
+        ensureCapacity(++size);
+        int i = size;
+        for(int j = i / 2; i > 1 && gt(array[j], message); j /= 2)
+        {
+            array[i] = array[j];
+            i = j;
+        }
+
+        array[i] = message;
+    }
+
+    private final void pop_heap()
+    {
+        adjust_heap(1);
+    }
+
+    private final void adjust_heap(int i)
+    {
+        if(size > 1 && i < size)
+        {
+            com.maddox.rts.Message message = array[size];
+            int j = i;
+            int k = j / 2;
+            boolean flag;
+            for(flag = true; j > 1 && gt(array[k], message); flag = false)
+            {
+                array[j] = array[k];
+                j = k;
+                k /= 2;
+            }
+
+            if(flag)
+            {
+                for(int l = j * 2; l < size; l = j * 2)
+                {
+                    int i1;
+                    if(l + 1 < size && gt(array[l], array[l + 1]))
+                        i1 = l + 1;
+                    else
+                        i1 = l;
+                    if(!gt(message, array[i1]))
+                        break;
+                    array[j] = array[i1];
+                    j = i1;
+                }
+
+            }
+            array[j] = message;
+        }
+        array[size--] = null;
+    }
+
+    private long stamp;
+    private com.maddox.rts.Message array[];
+    private int size;
 }

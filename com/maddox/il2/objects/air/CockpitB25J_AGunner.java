@@ -1,8 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitB25J_AGunner.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Controls;
@@ -10,123 +14,143 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.Property;
 
-public class CockpitB25J_AGunner extends CockpitGunner
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitGunner, B_25J1, Aircraft, Cockpit
+
+public class CockpitB25J_AGunner extends com.maddox.il2.objects.air.CockpitGunner
 {
-  private boolean bNeedSetUp = true;
 
-  public void reflectWorldToInstruments(float paramFloat) {
-    if (this.bNeedSetUp) {
-      reflectPlaneMats();
-      reflectPlaneToModel();
-      this.bNeedSetUp = false;
-    }
-    ((B_25J1)aircraft()); if (B_25J1.bChangedPit) {
-      reflectPlaneToModel();
-      ((B_25J1)aircraft()); B_25J1.bChangedPit = false;
-    }
-
-    float f = this.fm.CT.getElevator();
-    this.mesh.chunkSetAngles("VatorL_D0", 0.0F, -30.0F * f, 0.0F);
-    this.mesh.chunkSetAngles("VatorR_D0", 0.0F, -30.0F * f, 0.0F);
-  }
-
-  protected void reflectPlaneMats()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D0o"));
-    this.mesh.materialReplace("Gloss2D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D1o"));
-    this.mesh.materialReplace("Gloss2D1o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
-  }
-
-  public void reflectCockpitState()
-  {
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0) {
-      this.mesh.chunkVisible("XGlassDamage1", true);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x20) != 0)
-      this.mesh.chunkVisible("XGlassDamage2", true);
-  }
-
-  protected void reflectPlaneToModel()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    this.mesh.chunkVisible("VatorL_D0", localHierMesh.isChunkVisible("VatorL_D0"));
-    this.mesh.chunkVisible("VatorL_D1", localHierMesh.isChunkVisible("VatorL_D1"));
-    this.mesh.chunkVisible("VatorL_CAP", localHierMesh.isChunkVisible("VatorL_CAP"));
-
-    this.mesh.chunkVisible("VatorR_D0", localHierMesh.isChunkVisible("VatorR_D0"));
-    this.mesh.chunkVisible("VatorR_D1", localHierMesh.isChunkVisible("VatorR_D1"));
-    this.mesh.chunkVisible("VatorR_CAP", localHierMesh.isChunkVisible("VatorR_CAP"));
-  }
-
-  public void moveGun(Orient paramOrient)
-  {
-    super.moveGun(paramOrient);
-    this.mesh.chunkSetAngles("TurretA", 0.0F, -paramOrient.getYaw(), 0.0F);
-    this.mesh.chunkSetAngles("TurretB", 0.0F, paramOrient.getTangage(), 0.0F);
-
-    this.mesh.chunkSetAngles("TurretC", 0.0F, cvt(paramOrient.getYaw(), -38.0F, 38.0F, -15.0F, 15.0F), 0.0F);
-    this.mesh.chunkSetAngles("TurretD", 0.0F, cvt(paramOrient.getTangage(), -43.0F, 43.0F, -10.0F, 10.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("TurretE", -paramOrient.getYaw(), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("TurretF", 0.0F, paramOrient.getTangage(), 0.0F);
-
-    this.mesh.chunkSetAngles("TurretG", -cvt(paramOrient.getYaw(), -33.0F, 33.0F, -33.0F, 33.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("TurretH", 0.0F, cvt(paramOrient.getTangage(), -10.0F, 32.0F, -10.0F, 32.0F), 0.0F);
-    resetYPRmodifier();
-    xyz[0] = cvt(Math.max(Math.abs(paramOrient.getYaw()), Math.abs(paramOrient.getTangage())), 0.0F, 20.0F, 0.0F, 0.3F);
-    this.mesh.chunkSetLocate("TurretI", xyz, ypr);
-  }
-
-  public void clipAnglesGun(Orient paramOrient) {
-    if (!isRealMode()) return;
-    if (!aiTurret().bIsOperable) {
-      paramOrient.setYPR(0.0F, 0.0F, 0.0F);
-      return;
-    }
-
-    float f1 = paramOrient.getYaw();
-    float f2 = paramOrient.getTangage();
-    if (f1 < -38.0F) f1 = -38.0F;
-    if (f1 > 38.0F) f1 = 38.0F;
-    if (f2 > 43.0F) f2 = 43.0F;
-    if (f2 < -41.0F) f2 = -41.0F;
-    paramOrient.setYPR(f1, f2, 0.0F);
-    paramOrient.wrap();
-  }
-
-  protected void interpTick() {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void reflectWorldToInstruments(float f)
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-  }
-
-  public void doGunFire(boolean paramBoolean)
-  {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
-    {
-      this.bGunFire = false;
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            reflectPlaneToModel();
+            bNeedSetUp = false;
+        }
+        com.maddox.il2.objects.air.B_25J1 _tmp = (com.maddox.il2.objects.air.B_25J1)aircraft();
+        if(com.maddox.il2.objects.air.B_25J1.bChangedPit)
+        {
+            reflectPlaneToModel();
+            com.maddox.il2.objects.air.B_25J1 _tmp1 = (com.maddox.il2.objects.air.B_25J1)aircraft();
+            com.maddox.il2.objects.air.B_25J1.bChangedPit = false;
+        }
+        float f1 = fm.CT.getElevator();
+        mesh.chunkSetAngles("VatorL_D0", 0.0F, -30F * f1, 0.0F);
+        mesh.chunkSetAngles("VatorR_D0", 0.0F, -30F * f1, 0.0F);
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-  }
 
-  public CockpitB25J_AGunner() {
-    super("3DO/Cockpit/B-25J-AGun/hier.him", "bf109");
-  }
+    protected void reflectPlaneMats()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        mesh.materialReplace("Gloss1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D0o"));
+        mesh.materialReplace("Gloss2D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D1o"));
+        mesh.materialReplace("Gloss2D1o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Matt1D0o"));
+        mesh.materialReplace("Matt1D0o", mat);
+    }
 
-  static
-  {
-    Property.set(CockpitB25J_AGunner.class, "aiTuretNum", 2);
-    Property.set(CockpitB25J_AGunner.class, "weaponControlNum", 12);
-    Property.set(CockpitB25J_AGunner.class, "astatePilotIndx", 4);
-  }
+    public void reflectCockpitState()
+    {
+        if((fm.AS.astateCockpitState & 8) != 0)
+            mesh.chunkVisible("XGlassDamage1", true);
+        if((fm.AS.astateCockpitState & 0x20) != 0)
+            mesh.chunkVisible("XGlassDamage2", true);
+    }
+
+    protected void reflectPlaneToModel()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        mesh.chunkVisible("VatorL_D0", hiermesh.isChunkVisible("VatorL_D0"));
+        mesh.chunkVisible("VatorL_D1", hiermesh.isChunkVisible("VatorL_D1"));
+        mesh.chunkVisible("VatorL_CAP", hiermesh.isChunkVisible("VatorL_CAP"));
+        mesh.chunkVisible("VatorR_D0", hiermesh.isChunkVisible("VatorR_D0"));
+        mesh.chunkVisible("VatorR_D1", hiermesh.isChunkVisible("VatorR_D1"));
+        mesh.chunkVisible("VatorR_CAP", hiermesh.isChunkVisible("VatorR_CAP"));
+    }
+
+    public void moveGun(com.maddox.il2.engine.Orient orient)
+    {
+        super.moveGun(orient);
+        mesh.chunkSetAngles("TurretA", 0.0F, -orient.getYaw(), 0.0F);
+        mesh.chunkSetAngles("TurretB", 0.0F, orient.getTangage(), 0.0F);
+        mesh.chunkSetAngles("TurretC", 0.0F, cvt(orient.getYaw(), -38F, 38F, -15F, 15F), 0.0F);
+        mesh.chunkSetAngles("TurretD", 0.0F, cvt(orient.getTangage(), -43F, 43F, -10F, 10F), 0.0F);
+        mesh.chunkSetAngles("TurretE", -orient.getYaw(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("TurretF", 0.0F, orient.getTangage(), 0.0F);
+        mesh.chunkSetAngles("TurretG", -cvt(orient.getYaw(), -33F, 33F, -33F, 33F), 0.0F, 0.0F);
+        mesh.chunkSetAngles("TurretH", 0.0F, cvt(orient.getTangage(), -10F, 32F, -10F, 32F), 0.0F);
+        resetYPRmodifier();
+        com.maddox.il2.objects.air.Cockpit.xyz[0] = cvt(java.lang.Math.max(java.lang.Math.abs(orient.getYaw()), java.lang.Math.abs(orient.getTangage())), 0.0F, 20F, 0.0F, 0.3F);
+        mesh.chunkSetLocate("TurretI", com.maddox.il2.objects.air.Cockpit.xyz, com.maddox.il2.objects.air.Cockpit.ypr);
+    }
+
+    public void clipAnglesGun(com.maddox.il2.engine.Orient orient)
+    {
+        if(!isRealMode())
+            return;
+        if(!aiTurret().bIsOperable)
+        {
+            orient.setYPR(0.0F, 0.0F, 0.0F);
+            return;
+        }
+        float f = orient.getYaw();
+        float f1 = orient.getTangage();
+        if(f < -38F)
+            f = -38F;
+        if(f > 38F)
+            f = 38F;
+        if(f1 > 43F)
+            f1 = 43F;
+        if(f1 < -41F)
+            f1 = -41F;
+        orient.setYPR(f, f1, 0.0F);
+        orient.wrap();
+    }
+
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        else
+            bGunFire = flag;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    public CockpitB25J_AGunner()
+    {
+        super("3DO/Cockpit/B-25J-AGun/hier.him", "bf109");
+        bNeedSetUp = true;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private boolean bNeedSetUp;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitB25J_AGunner.class, "aiTuretNum", 2);
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitB25J_AGunner.class, "weaponControlNum", 12);
+        com.maddox.rts.Property.set(com.maddox.il2.objects.air.CockpitB25J_AGunner.class, "astatePilotIndx", 4);
+    }
 }

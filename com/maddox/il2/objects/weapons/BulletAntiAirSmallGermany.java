@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BulletAntiAirSmallGermany.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -6,14 +11,19 @@ import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.objects.effects.Explosions;
 
-public class BulletAntiAirSmallGermany extends BulletAntiAirGeneric
-{
-  public BulletAntiAirSmallGermany(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong1, long paramLong2)
-  {
-    super(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong1 + paramLong2, -1.0F, paramLong2 != 0L);
-  }
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            BulletAntiAirGeneric
 
-  protected void explodeInAir_Effect(Point3d paramPoint3d) {
-    Explosions.AirFlak(paramPoint3d, 3);
-  }
+public class BulletAntiAirSmallGermany extends com.maddox.il2.objects.weapons.BulletAntiAirGeneric
+{
+
+    public BulletAntiAirSmallGermany(int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d, long l, long l1)
+    {
+        super(i, gungeneric, loc, vector3d, l + l1, -1F, l1 != 0L);
+    }
+
+    protected void explodeInAir_Effect(com.maddox.JGP.Point3d point3d)
+    {
+        com.maddox.il2.objects.effects.Explosions.AirFlak(point3d, 3);
+    }
 }

@@ -1,43 +1,35 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Orders.java
+
 package com.maddox.il2.game.order;
 
-import com.maddox.il2.ai.World;
-import com.maddox.il2.fm.AircraftState;
-import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.HUD;
-import com.maddox.il2.game.Main3D;
-import com.maddox.il2.game.Mission;
-import com.maddox.il2.objects.air.Aircraft;
+
+// Referenced classes of package com.maddox.il2.game.order:
+//            OrdersTree, Order
 
 public class Orders
 {
-  protected Order[] order;
-  protected Orders upOrders = null;
-  private Aircraft lastPlayer = null;
 
-  public void run()
-  {
-    if ((this.lastPlayer == null) || (World.getPlayerAircraft() != this.lastPlayer))
+    public void run()
     {
-      Mission.addHayrakesToOrdersTree();
-      this.lastPlayer = World.getPlayerAircraft();
+        if(com.maddox.il2.game.order.OrdersTree.curOrdersTree.isLocal())
+            com.maddox.il2.game.HUD.order(order);
+        com.maddox.il2.game.order.OrdersTree.curOrdersTree.cur = this;
     }
 
-    if ((this.order.length <= 7) || (!(this.order[7] instanceof OrderAnyone_Help_Me)))
+    public Orders(com.maddox.il2.game.order.Order aorder[])
     {
-      if (Main3D.cur3D().ordersTree.frequency() == null) {
-        Main3D.cur3D().ordersTree.Player.FM.AS.setBeacon(0);
-      }
+        upOrders = null;
+        order = aorder;
+        for(int i = 0; i < aorder.length; i++)
+            if(aorder[i] != null)
+                aorder[i].orders = this;
+
     }
 
-    if (OrdersTree.curOrdersTree.isLocal())
-      HUD.order(this.order);
-    OrdersTree.curOrdersTree.cur = this;
-  }
-
-  public Orders(Order[] paramArrayOfOrder) {
-    this.order = paramArrayOfOrder;
-    for (int i = 0; i < paramArrayOfOrder.length; i++)
-      if (paramArrayOfOrder[i] != null)
-        paramArrayOfOrder[i].orders = this;
-  }
+    protected com.maddox.il2.game.order.Order order[];
+    protected com.maddox.il2.game.order.Orders upOrders;
 }

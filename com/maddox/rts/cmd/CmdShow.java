@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdShow.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -11,114 +16,133 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class CmdShow extends Cmd
+public class CmdShow extends com.maddox.rts.Cmd
 {
-  public static final String AREA = "AREA";
-  public static final String HISTORY = "HISTORY";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    int i = 0;
-    String str = null;
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        boolean flag = false;
+        java.lang.String s = null;
+        Object obj = null;
+        if(map.containsKey("HISTORY"))
+        {
+            java.util.Map map1 = (java.util.Map)cmdenv.area().get("_$$$history");
+            if(map1 != null)
+            {
+                java.util.Set set = map1.keySet();
+                java.lang.Object obj2;
+                java.lang.Object obj4;
+                for(java.util.Iterator iterator = set.iterator(); iterator.hasNext(); INFO_HARD(obj2.toString() + " is " + obj4.toString()))
+                {
+                    obj2 = iterator.next();
+                    obj4 = map1.get(obj2);
+                }
 
-    CmdEnv localCmdEnv = null;
-    Object localObject1;
-    Set localSet;
-    Iterator localIterator;
-    Object localObject2;
-    if (paramMap.containsKey("HISTORY")) {
-      localObject1 = (Map)paramCmdEnv.area().get("_$$$history");
-      if (localObject1 != null) {
-        localSet = ((Map)localObject1).keySet();
-        localIterator = localSet.iterator();
-        while (localIterator.hasNext()) {
-          localObject2 = localIterator.next();
-          Object localObject3 = ((Map)localObject1).get(localObject2);
-          INFO_HARD(localObject2.toString() + " is " + localObject3.toString());
-        }
-        return CmdEnv.RETURN_OK;
-      }
-      return null;
-    }
-    List localList;
-    if (paramMap.containsKey("AREA")) {
-      localList = (List)paramMap.get("AREA");
-      if (localList.size() >= 1) {
-        str = (String)localList.get(0);
-        localCmdEnv = paramCmdEnv;
-        localObject1 = null;
-        while ((localCmdEnv != null) && (localObject1 == null)) {
-          localObject1 = localCmdEnv.atom(null, str);
-          localCmdEnv = localCmdEnv.parent();
-        }
-        if (localObject1 == null) {
-          ERR_SOFT("Area " + str + " not found");
-          return null;
-        }if (!(localObject1 instanceof Map)) {
-          ERR_SOFT("Atom " + str + " not Map");
-          return null;
-        }
-      }
-    }
-
-    if (paramMap.containsKey("_$$")) {
-      localList = (List)paramMap.get("_$$");
-    } else {
-      localList = null;
-      i = 1;
-    }
-
-    localCmdEnv = paramCmdEnv;
-    while (localCmdEnv != null) {
-      localObject1 = null;
-      if (str != null) localObject1 = (Map)localCmdEnv.atom(null, str); else {
-        localObject1 = localCmdEnv.area();
-      }
-      if (localObject1 != null) {
-        localSet = ((Map)localObject1).keySet();
-        localIterator = localSet.iterator();
-        while (localIterator.hasNext()) {
-          localObject2 = localIterator.next();
-          if (localList != null)
-          {
-            for (int j = 0; (j < localList.size()) && 
-              (!StrMath.simple((String)localList.get(j), localObject2.toString())); j++);
-            if (j == localList.size())
-              localObject2 = null;
-          }
-          if ((localObject2 != null) && (CmdEnv.validAtomName(localObject2.toString()))) {
-            Object localObject4 = ((Map)localObject1).get(localObject2);
-            if (localObject4 != null) {
-              if ((localObject4 instanceof Map))
-                INFO_HARD(localObject2.toString() + " is Map");
-              else if ((localObject4 instanceof List))
-                INFO_HARD(localObject2.toString() + " is List");
-              else if ((localObject4 instanceof CmdArea))
-                INFO_HARD(localObject2.toString() + " is Area");
-              else
-                INFO_HARD(localObject2.toString() + " is " + localObject4.toString());
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            } else
+            {
+                return null;
             }
-            else INFO_HARD(localObject2.toString() + " is NULL");
-
-            i = 1;
-          }
         }
-      }
-      localCmdEnv = localCmdEnv.parent();
+        if(map.containsKey("AREA"))
+        {
+            java.util.List list = (java.util.List)map.get("AREA");
+            if(list.size() >= 1)
+            {
+                s = (java.lang.String)list.get(0);
+                com.maddox.rts.CmdEnv cmdenv1 = cmdenv;
+                java.lang.Object obj1;
+                for(obj1 = null; cmdenv1 != null && obj1 == null; cmdenv1 = cmdenv1.parent())
+                    obj1 = cmdenv1.atom(null, s);
+
+                if(obj1 == null)
+                {
+                    ERR_SOFT("Area " + s + " not found");
+                    return null;
+                }
+                if(!(obj1 instanceof java.util.Map))
+                {
+                    ERR_SOFT("Atom " + s + " not Map");
+                    return null;
+                }
+            }
+        }
+        java.util.List list1;
+        if(map.containsKey("_$$"))
+        {
+            list1 = (java.util.List)map.get("_$$");
+        } else
+        {
+            list1 = null;
+            flag = true;
+        }
+        for(com.maddox.rts.CmdEnv cmdenv2 = cmdenv; cmdenv2 != null; cmdenv2 = cmdenv2.parent())
+        {
+            java.util.Map map2 = null;
+            if(s != null)
+                map2 = (java.util.Map)cmdenv2.atom(null, s);
+            else
+                map2 = cmdenv2.area();
+            if(map2 != null)
+            {
+                java.util.Set set1 = map2.keySet();
+                for(java.util.Iterator iterator1 = set1.iterator(); iterator1.hasNext();)
+                {
+                    java.lang.Object obj3 = iterator1.next();
+                    if(list1 != null)
+                    {
+                        int i;
+                        for(i = 0; i < list1.size(); i++)
+                            if(com.maddox.util.StrMath.simple((java.lang.String)list1.get(i), obj3.toString()))
+                                break;
+
+                        if(i == list1.size())
+                            obj3 = null;
+                    }
+                    if(obj3 != null && com.maddox.rts.CmdEnv.validAtomName(obj3.toString()))
+                    {
+                        java.lang.Object obj5 = map2.get(obj3);
+                        if(obj5 != null)
+                        {
+                            if(obj5 instanceof java.util.Map)
+                                INFO_HARD(obj3.toString() + " is Map");
+                            else
+                            if(obj5 instanceof java.util.List)
+                                INFO_HARD(obj3.toString() + " is List");
+                            else
+                            if(obj5 instanceof com.maddox.rts.CmdArea)
+                                INFO_HARD(obj3.toString() + " is Area");
+                            else
+                                INFO_HARD(obj3.toString() + " is " + obj5.toString());
+                        } else
+                        {
+                            INFO_HARD(obj3.toString() + " is NULL");
+                        }
+                        flag = true;
+                    }
+                }
+
+            }
+        }
+
+        if(flag)
+        {
+            return com.maddox.rts.CmdEnv.RETURN_OK;
+        } else
+        {
+            ERR_SOFT("Atom not found");
+            return null;
+        }
     }
 
-    if (i != 0) {
-      return CmdEnv.RETURN_OK;
+    public CmdShow()
+    {
+        param.put("AREA", null);
+        param.put("HISTORY", null);
+        _properties.put("NAME", "show");
+        _levelAccess = 2;
     }
-    ERR_SOFT("Atom not found");
-    return null;
-  }
 
-  public CmdShow()
-  {
-    this.param.put("AREA", null);
-    this.param.put("HISTORY", null);
-    this._properties.put("NAME", "show");
-    this._levelAccess = 2;
-  }
+    public static final java.lang.String AREA = "AREA";
+    public static final java.lang.String HISTORY = "HISTORY";
 }

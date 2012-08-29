@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MC_205_1.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
@@ -6,58 +11,84 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class MC_205_1 extends MC_202xyz
+// Referenced classes of package com.maddox.il2.objects.air:
+//            MC_202xyz, PaintSchemeFCSPar02, PaintSchemeFMPar01, Aircraft, 
+//            NetAircraft
+
+public class MC_205_1 extends com.maddox.il2.objects.air.MC_202xyz
 {
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, -88.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, -88.0F * paramFloat, 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearL5_D0", 0.0F, -100.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR5_D0", 0.0F, -100.0F * paramFloat, 0.0F);
+    public MC_205_1()
+    {
+    }
 
-    paramHierMesh.chunkSetAngles("GearL6_D0", 0.0F, -114.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR6_D0", 0.0F, -114.0F * paramFloat, 0.0F);
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, -88F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -88F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearL5_D0", 0.0F, -100F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR5_D0", 0.0F, -100F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, -114F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, -114F * f, 0.0F);
+        float f1 = java.lang.Math.max(-f * 1500F, -80F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.11F, 0.67F, 0.0F, -38F), 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -80F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, 0.01F, 0.09F, 0.0F, -80F), 0.0F);
+    }
 
-    float f = Math.max(-paramFloat * 1500.0F, -80.0F);
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, f, 0.0F);
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.MC_205_1.moveGear(hierMesh(), f);
+    }
 
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(paramFloat, 0.11F, 0.67F, 0.0F, -38.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, 0.0F, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(paramFloat, 0.01F, 0.09F, 0.0F, -80.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, cvt(paramFloat, 0.01F, 0.09F, 0.0F, -80.0F), 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
-  public void moveSteering(float paramFloat) {
-    if (this.FM.CT.getGear() < 0.65F) return;
-    hierMesh().chunkSetAngles("GearC3_D0", 0.0F, cvt(paramFloat, -30.0F, 30.0F, 30.0F, -30.0F), 0.0F);
-  }
+    public void moveSteering(float f)
+    {
+        if(FM.CT.getGear() < 0.65F)
+        {
+            return;
+        } else
+        {
+            hierMesh().chunkSetAngles("GearC3_D0", 0.0F, com.maddox.il2.objects.air.Aircraft.cvt(f, -30F, 30F, 30F, -30F), 0.0F);
+            return;
+        }
+    }
 
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "M.C.205");
-
-    Property.set(localClass, "meshName_it", "3DO/Plane/MC-205_I(it)/hier.him");
-    Property.set(localClass, "PaintScheme_it", new PaintSchemeFCSPar02());
-    Property.set(localClass, "meshName", "3DO/Plane/MC-205_I(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1948.5F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/MC-205.fmd");
-    Property.set(localClass, "cockpitClass", CockpitMC_205.class);
-    Property.set(localClass, "LOSElevation", 0.7898F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127siMC205 370", "MGunBredaSAFAT127siMC205 370", "MGunBredaSAFAT77k 500", "MGunBredaSAFAT77k 500" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "M.C.205");
+        com.maddox.rts.Property.set(class1, "meshName_it", "3DO/Plane/MC-205_I(it)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_it", new PaintSchemeFCSPar02());
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/MC-205_I(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/MC-205.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitMC_205.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.7898F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 1
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBredaSAFAT127si 370", "MGunBredaSAFAT127si 370", "MGunBredaSAFAT77k 500", "MGunBredaSAFAT77k 500"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

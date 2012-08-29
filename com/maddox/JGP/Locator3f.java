@@ -1,237 +1,268 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Locator3f.java
+
 package com.maddox.JGP;
 
 import java.io.PrintStream;
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Point3f, Orient3f, Vector3f, Matrix3f, 
+//            Tuple3f, Matrix4f
+
 public class Locator3f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  private Point3f P = new Point3f();
-  private Orient3f O = new Orient3f();
 
-  private static Matrix3f M3 = new Matrix3f();
+    public Locator3f()
+    {
+        P = new Point3f();
+        O = new Orient3f();
+    }
 
-  static float PI = 3.141593F;
+    public void set(float f, float f1, float f2, float f3, float f4, float f5)
+    {
+        P.set(f, f1, f2);
+        O.set(f3, f4, f5);
+    }
 
-  private static final Tuple3f tup = new Point3f();
-  private static Tuple3f P1 = new Point3f();
-  private static Orient3f O1 = new Orient3f();
-  private static final Locator3f Tmp = new Locator3f();
+    public void set(com.maddox.JGP.Locator3f locator3f)
+    {
+        P.set(locator3f.P);
+        O.set(locator3f.O);
+    }
 
-  public void set(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6)
-  {
-    this.P.set(paramFloat1, paramFloat2, paramFloat3);
-    this.O.set(paramFloat4, paramFloat5, paramFloat6);
-  }
+    public void set(com.maddox.JGP.Tuple3f tuple3f, com.maddox.JGP.Orient3f orient3f)
+    {
+        P.set(tuple3f);
+        O.set(orient3f);
+    }
 
-  public void set(Locator3f paramLocator3f)
-  {
-    this.P.set(paramLocator3f.P);
-    this.O.set(paramLocator3f.O);
-  }
+    public void set(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        P.set(tuple3f);
+    }
 
-  public void set(Tuple3f paramTuple3f, Orient3f paramOrient3f)
-  {
-    this.P.set(paramTuple3f);
-    this.O.set(paramOrient3f);
-  }
+    public void set(com.maddox.JGP.Orient3f orient3f)
+    {
+        O.set(orient3f);
+    }
 
-  public void set(Tuple3f paramTuple3f)
-  {
-    this.P.set(paramTuple3f);
-  }
+    public void set(float af[])
+    {
+        P.set(af[0], af[1], af[2]);
+        O.set(af[3], af[4], af[5]);
+    }
 
-  public void set(Orient3f paramOrient3f)
-  {
-    this.O.set(paramOrient3f);
-  }
+    public float getYaw()
+    {
+        return O.getYaw();
+    }
 
-  public void set(float[] paramArrayOfFloat)
-  {
-    this.P.set(paramArrayOfFloat[0], paramArrayOfFloat[1], paramArrayOfFloat[2]);
-    this.O.set(paramArrayOfFloat[3], paramArrayOfFloat[4], paramArrayOfFloat[5]);
-  }
+    public float getPitch()
+    {
+        return O.getPitch();
+    }
 
-  public float getYaw()
-  {
-    return this.O.getYaw();
-  }
+    public float getRoll()
+    {
+        return O.getRoll();
+    }
 
-  public float getPitch()
-  {
-    return this.O.getPitch();
-  }
+    public float getX()
+    {
+        return P.x;
+    }
 
-  public float getRoll()
-  {
-    return this.O.getRoll();
-  }
-  public float getX() { return this.P.x; } 
-  public float getY() { return this.P.y; } 
-  public float getZ() { return this.P.z; }
+    public float getY()
+    {
+        return P.y;
+    }
 
-  public void get(Tuple3f paramTuple3f) {
-    paramTuple3f.set(this.P);
-  }
-  public void get(Orient3f paramOrient3f) {
-    paramOrient3f.set(this.O);
-  }
+    public float getZ()
+    {
+        return P.z;
+    }
 
-  public void get(Tuple3f paramTuple3f, Orient3f paramOrient3f) {
-    paramTuple3f.set(this.P);
-    paramOrient3f.set(this.O);
-  }
+    public void get(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        tuple3f.set(P);
+    }
 
-  public void get(float[] paramArrayOfFloat)
-  {
-    paramArrayOfFloat[0] = this.P.x; paramArrayOfFloat[1] = this.P.y; paramArrayOfFloat[2] = this.P.z;
-    paramArrayOfFloat[3] = this.O.getYaw(); paramArrayOfFloat[4] = this.O.getPitch(); paramArrayOfFloat[5] = this.O.getRoll();
-  }
+    public void get(com.maddox.JGP.Orient3f orient3f)
+    {
+        orient3f.set(O);
+    }
 
-  public void add(Locator3f paramLocator3f1, Locator3f paramLocator3f2)
-  {
-    paramLocator3f2.transform(paramLocator3f1.P, this.P);
-    this.O.add(paramLocator3f1.O, paramLocator3f2.O);
-  }
+    public void get(com.maddox.JGP.Tuple3f tuple3f, com.maddox.JGP.Orient3f orient3f)
+    {
+        tuple3f.set(P);
+        orient3f.set(O);
+    }
 
-  public void add(Locator3f paramLocator3f)
-  {
-    add(this, paramLocator3f);
-  }
+    public void get(float af[])
+    {
+        af[0] = P.x;
+        af[1] = P.y;
+        af[2] = P.z;
+        af[3] = O.getYaw();
+        af[4] = O.getPitch();
+        af[5] = O.getRoll();
+    }
 
-  public void sub(Locator3f paramLocator3f1, Locator3f paramLocator3f2)
-  {
-    paramLocator3f2.transformInv(paramLocator3f1.P, this.P);
-    this.O.sub(paramLocator3f1.O, paramLocator3f2.O);
-  }
+    public void add(com.maddox.JGP.Locator3f locator3f, com.maddox.JGP.Locator3f locator3f1)
+    {
+        locator3f1.transform(locator3f.P, P);
+        O.add(locator3f.O, locator3f1.O);
+    }
 
-  public void sub(Locator3f paramLocator3f)
-  {
-    sub(this, paramLocator3f);
-  }
+    public void add(com.maddox.JGP.Locator3f locator3f)
+    {
+        add(this, locator3f);
+    }
 
-  public void wrap()
-  {
-    this.O.wrap();
-  }
+    public void sub(com.maddox.JGP.Locator3f locator3f, com.maddox.JGP.Locator3f locator3f1)
+    {
+        locator3f1.transformInv(locator3f.P, P);
+        O.sub(locator3f.O, locator3f1.O);
+    }
 
-  public void getMatrix(Matrix4f paramMatrix4f)
-  {
-    this.O.getMatrix(M3);
-    paramMatrix4f.set(M3);
-    paramMatrix4f.m03 = this.P.x;
-    paramMatrix4f.m13 = this.P.y;
-    paramMatrix4f.m23 = this.P.z;
-  }
+    public void sub(com.maddox.JGP.Locator3f locator3f)
+    {
+        sub(this, locator3f);
+    }
 
-  public void getOrientMatrix(Matrix3f paramMatrix3f)
-  {
-    this.O.getMatrix(paramMatrix3f);
-  }
+    public void wrap()
+    {
+        O.wrap();
+    }
 
-  public void getOrientMatrixInv(Matrix3f paramMatrix3f)
-  {
-    this.O.getMatrixInv(paramMatrix3f);
-  }
+    public void getMatrix(com.maddox.JGP.Matrix4f matrix4f)
+    {
+        O.getMatrix(M3);
+        matrix4f.set(M3);
+        matrix4f.m03 = P.x;
+        matrix4f.m13 = P.y;
+        matrix4f.m23 = P.z;
+    }
 
-  public void transform(Point3f paramPoint3f)
-  {
-    this.O.transform(paramPoint3f);
-    paramPoint3f.add(this.P);
-  }
+    public void getOrientMatrix(com.maddox.JGP.Matrix3f matrix3f)
+    {
+        O.getMatrix(matrix3f);
+    }
 
-  public void transform(Point3f paramPoint3f1, Point3f paramPoint3f2)
-  {
-    this.O.transform(paramPoint3f1, paramPoint3f2);
-    paramPoint3f2.add(this.P);
-  }
+    public void getOrientMatrixInv(com.maddox.JGP.Matrix3f matrix3f)
+    {
+        O.getMatrixInv(matrix3f);
+    }
 
-  public void transform(Vector3f paramVector3f)
-  {
-    this.O.transform(paramVector3f);
-  }
+    public void transform(com.maddox.JGP.Point3f point3f)
+    {
+        O.transform(point3f);
+        point3f.add(P);
+    }
 
-  public void transform(Vector3f paramVector3f1, Vector3f paramVector3f2)
-  {
-    this.O.transform(paramVector3f1, paramVector3f2);
-  }
+    public void transform(com.maddox.JGP.Point3f point3f, com.maddox.JGP.Point3f point3f1)
+    {
+        O.transform(point3f, point3f1);
+        point3f1.add(P);
+    }
 
-  public void transformInv(Point3f paramPoint3f)
-  {
-    paramPoint3f.sub(this.P);
-    this.O.transformInv(paramPoint3f);
-  }
+    public void transform(com.maddox.JGP.Vector3f vector3f)
+    {
+        O.transform(vector3f);
+    }
 
-  public void transformInv(Point3f paramPoint3f1, Point3f paramPoint3f2)
-  {
-    tup.sub(paramPoint3f1, this.P);
-    this.O.transformInv(tup, paramPoint3f2);
-  }
+    public void transform(com.maddox.JGP.Vector3f vector3f, com.maddox.JGP.Vector3f vector3f1)
+    {
+        O.transform(vector3f, vector3f1);
+    }
 
-  public void transformInv(Vector3f paramVector3f)
-  {
-    this.O.transformInv(paramVector3f);
-  }
+    public void transformInv(com.maddox.JGP.Point3f point3f)
+    {
+        point3f.sub(P);
+        O.transformInv(point3f);
+    }
 
-  public void transformInv(Vector3f paramVector3f1, Vector3f paramVector3f2)
-  {
-    this.O.transformInv(tup, paramVector3f2);
-  }
+    public void transformInv(com.maddox.JGP.Point3f point3f, com.maddox.JGP.Point3f point3f1)
+    {
+        tup.sub(point3f, P);
+        O.transformInv(tup, point3f1);
+    }
 
-  public final void interpolate(Locator3f paramLocator3f1, Locator3f paramLocator3f2, float paramFloat)
-  {
-    this.P.interpolate(paramLocator3f1.P, paramLocator3f2.P, paramFloat);
-    this.O.interpolate(paramLocator3f1.O, paramLocator3f2.O, paramFloat);
-  }
+    public void transformInv(com.maddox.JGP.Vector3f vector3f)
+    {
+        O.transformInv(vector3f);
+    }
 
-  public final void interpolate(Locator3f paramLocator3f, float paramFloat)
-  {
-    this.P.interpolate(paramLocator3f.P, paramFloat);
-    this.O.interpolate(paramLocator3f.O, paramFloat);
-  }
+    public void transformInv(com.maddox.JGP.Vector3f vector3f, com.maddox.JGP.Vector3f vector3f1)
+    {
+        O.transformInv(tup, vector3f1);
+    }
 
-  public int hashCode()
-  {
-    return this.P.hashCode() ^ this.O.hashCode();
-  }
+    public final void interpolate(com.maddox.JGP.Locator3f locator3f, com.maddox.JGP.Locator3f locator3f1, float f)
+    {
+        P.interpolate(locator3f.P, locator3f1.P, f);
+        O.interpolate(locator3f.O, locator3f1.O, f);
+    }
 
-  public boolean equals(Locator3f paramLocator3f)
-  {
-    return (this.P.equals(paramLocator3f.P)) && (this.O.equals(paramLocator3f.O));
-  }
+    public final void interpolate(com.maddox.JGP.Locator3f locator3f, float f)
+    {
+        P.interpolate(locator3f.P, f);
+        O.interpolate(locator3f.O, f);
+    }
 
-  public boolean epsilonEquals(Locator3f paramLocator3f, float paramFloat)
-  {
-    return (this.P.epsilonEquals(paramLocator3f.P, paramFloat)) && (this.O.epsilonEquals(paramLocator3f.O, paramFloat));
-  }
+    public int hashCode()
+    {
+        return P.hashCode() ^ O.hashCode();
+    }
 
-  public String toString()
-  {
-    return "( " + this.P + "," + this.O + " ) ";
-  }
+    public boolean equals(com.maddox.JGP.Locator3f locator3f)
+    {
+        return P.equals(locator3f.P) && O.equals(locator3f.O);
+    }
 
-  public static void main(String[] paramArrayOfString)
-  {
-    Locator3f localLocator3f1 = new Locator3f();
-    Locator3f localLocator3f2 = new Locator3f();
-    Locator3f localLocator3f3 = new Locator3f();
-    Vector3f localVector3f = new Vector3f();
+    public boolean epsilonEquals(com.maddox.JGP.Locator3f locator3f, float f)
+    {
+        return P.epsilonEquals(locator3f.P, f) && O.epsilonEquals(locator3f.O, f);
+    }
 
-    localLocator3f1.set(1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-    localLocator3f2.set(1.0F, 0.0F, 0.0F, PI / 4.0F, 0.2F, 0.3F);
-    System.out.println("Slave:" + localLocator3f1);
-    System.out.println("Master:" + localLocator3f2);
+    public java.lang.String toString()
+    {
+        return "( " + P + "," + O + " ) ";
+    }
 
-    localVector3f.set(1.0F, 1.0F, 1.0F);
-    System.out.println("v0:" + localVector3f);
-    localLocator3f2.transform(localVector3f);
-    System.out.println("v1:" + localVector3f);
-    localLocator3f2.transformInv(localVector3f);
-    System.out.println("v2:" + localVector3f);
+    public static void main(java.lang.String args[])
+    {
+        com.maddox.JGP.Locator3f locator3f = new Locator3f();
+        com.maddox.JGP.Locator3f locator3f1 = new Locator3f();
+        com.maddox.JGP.Locator3f locator3f2 = new Locator3f();
+        com.maddox.JGP.Vector3f vector3f = new Vector3f();
+        locator3f.set(1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        locator3f1.set(1.0F, 0.0F, 0.0F, PI / 4F, 0.2F, 0.3F);
+        java.lang.System.out.println("Slave:" + locator3f);
+        java.lang.System.out.println("Master:" + locator3f1);
+        vector3f.set(1.0F, 1.0F, 1.0F);
+        java.lang.System.out.println("v0:" + vector3f);
+        locator3f1.transform(vector3f);
+        java.lang.System.out.println("v1:" + vector3f);
+        locator3f1.transformInv(vector3f);
+        java.lang.System.out.println("v2:" + vector3f);
+        locator3f2.add(locator3f, locator3f1);
+        java.lang.System.out.println("Master+Slave:" + locator3f2);
+        locator3f2.sub(locator3f1);
+        java.lang.System.out.println("Master+Slave-Slave:" + locator3f2);
+    }
 
-    localLocator3f3.add(localLocator3f1, localLocator3f2);
-    System.out.println("Master+Slave:" + localLocator3f3);
-    localLocator3f3.sub(localLocator3f2);
-    System.out.println("Master+Slave-Slave:" + localLocator3f3);
-  }
+    private com.maddox.JGP.Point3f P;
+    private com.maddox.JGP.Orient3f O;
+    private static com.maddox.JGP.Matrix3f M3 = new Matrix3f();
+    static float PI = 3.141593F;
+    private static final com.maddox.JGP.Tuple3f tup = new Point3f();
+    private static com.maddox.JGP.Tuple3f P1 = new Point3f();
+    private static com.maddox.JGP.Orient3f O1 = new Orient3f();
+    private static final com.maddox.JGP.Locator3f Tmp = new Locator3f();
+
 }

@@ -1,8 +1,11 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Autopilot.java
+
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Vector3d;
-import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.Way;
 import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
@@ -11,190 +14,232 @@ import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Orientation;
 
-public class Autopilot extends AutopilotAI
+// Referenced classes of package com.maddox.il2.fm:
+//            Stabilizer, RealFlightModel, Controls, FMMath, 
+//            FlightModel
+
+public class Autopilot extends com.maddox.il2.ai.air.AutopilotAI
 {
-  private static Point3d P = new Point3d();
-  private static Orientation O = new Orientation();
-  private Stabilizer Hstab = new Stabilizer();
-  private Stabilizer Hvstab = new Stabilizer();
-  private Stabilizer Vstab = new Stabilizer();
-  private Stabilizer Sstab = new Stabilizer();
-  private float Ail;
-  private float Pw;
-  private float Ru;
 
-  Autopilot(FlightModel paramFlightModel)
-  {
-    super(paramFlightModel);
-  }
-  public boolean getWayPoint() {
-    return this.bWayPoint; } 
-  public boolean getStabAltitude() { return this.bStabAltitude; } 
-  public boolean getStabSpeed() { return this.bStabSpeed; } 
-  public boolean getStabDirection() { return this.bStabDirection;
-  }
-
-  public void setWayPoint(boolean paramBoolean)
-  {
-    super.setWayPoint(paramBoolean);
-    this.bWayPoint = paramBoolean;
-    if (!paramBoolean) return;
-    this.bStabSpeed = false;
-    this.bStabAltitude = false;
-    this.bStabDirection = false;
-
-    if (this.WWPoint != null) {
-      this.WWPoint.getP(this.WPoint);
-      this.StabSpeed = this.WWPoint.Speed;
-      this.StabAltitude = this.WPoint.z;
-    } else {
-      this.StabAltitude = 1000.0D;
-      this.StabSpeed = 80.0D;
+    Autopilot(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        super(flightmodel);
+        Hstab = new Stabilizer();
+        Hvstab = new Stabilizer();
+        Vstab = new Stabilizer();
+        Sstab = new Stabilizer();
     }
-    this.StabDirection = O.getAzimut();
-    this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
-    this.Hvstab.set((float)this.StabAltitude, this.FM.CT.PowerControl);
-  }
 
-  public void setStabAltitude(boolean paramBoolean) {
-    super.setStabAltitude(paramBoolean);
-    this.bStabAltitude = paramBoolean;
-    if (!paramBoolean) return;
-    this.bWayPoint = false;
-    this.FM.getLoc(P);
-    this.StabAltitude = P.z;
-
-    if (!this.bStabSpeed) this.StabSpeed = this.FM.getSpeed();
-
-    this.Pw = this.FM.CT.PowerControl;
-    this.Hstab.set((float)this.StabAltitude, this.FM.CT.ElevatorControl);
-    this.Hvstab.set((float)this.StabAltitude, this.FM.CT.PowerControl);
-  }
-  public void setStabAltitudeSimple(float paramFloat) {
-    super.setStabAltitude(paramFloat);
-  }
-
-  public void setStabSpeed(boolean paramBoolean)
-  {
-    super.setStabSpeed(paramBoolean);
-    this.bStabSpeed = paramBoolean;
-    if (!paramBoolean) return;
-    this.bWayPoint = false;
-    this.StabSpeed = this.FM.getSpeed();
-    this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
-  }
-
-  public void setStabSpeed(float paramFloat)
-  {
-    super.setStabSpeed(paramFloat);
-    this.bStabSpeed = true;
-    this.bWayPoint = false;
-    this.StabSpeed = (paramFloat / 3.6F);
-    this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
-  }
-
-  public void setStabDirection(boolean paramBoolean)
-  {
-    super.setStabDirection(paramBoolean);
-    this.bStabDirection = paramBoolean;
-    if (!paramBoolean) return;
-    this.bWayPoint = false;
-    O.set(this.FM.Or);
-    this.StabDirection = O.getAzimut();
-    this.Ail = this.FM.CT.AileronControl;
-    this.Sstab.set(0.0F, 0.0F);
-  }
-
-  public void setStabAll(boolean paramBoolean) {
-    super.setStabAll(paramBoolean);
-    this.bWayPoint = false;
-    setStabDirection(paramBoolean);
-    setStabAltitude(paramBoolean);
-    setStabSpeed(paramBoolean);
-    setStabDirection(paramBoolean);
-  }
-
-  public float getWayPointDistance()
-  {
-    return super.getWayPointDistance();
-  }
-
-  public void update(float paramFloat) {
-    if (!((RealFlightModel)this.FM).isRealMode()) {
-      super.update(paramFloat);
-      return;
+    public boolean getWayPoint()
+    {
+        return bWayPoint;
     }
-    this.FM.getLoc(P);
-    if (this.bWayPoint) {
-      if ((this.WWPoint != this.way.auto(P)) || (this.way.isReached(P))) {
-        this.WWPoint = this.way.auto(P);
-        this.WWPoint.getP(this.WPoint);
-        this.StabSpeed = this.WWPoint.Speed;
-        this.StabAltitude = this.WPoint.z;
-        this.Vstab.set((float)this.StabSpeed, -this.FM.CT.ElevatorControl);
-        this.Hvstab.set((float)this.StabAltitude, this.FM.CT.PowerControl);
-      }
 
-      if (World.cur().diffCur.Wind_N_Turbulence) { World.cur(); if ((!World.wind().noWind) && (this.FM.Skill > 0))
+    public boolean getStabAltitude()
+    {
+        return bStabAltitude;
+    }
+
+    public boolean getStabSpeed()
+    {
+        return bStabSpeed;
+    }
+
+    public boolean getStabDirection()
+    {
+        return bStabDirection;
+    }
+
+    public void setWayPoint(boolean flag)
+    {
+        super.setWayPoint(flag);
+        bWayPoint = flag;
+        if(!flag)
+            return;
+        bStabSpeed = false;
+        bStabAltitude = false;
+        bStabDirection = false;
+        if(WWPoint != null)
         {
-          World.cur(); World.wind().getVectorAI(this.WPoint, this.windV);
-          this.windV.scale(-1.0D);
-
-          if (this.FM.Skill == 1) {
-            this.windV.scale(0.75D);
-          }
-          this.courseV.set(this.WPoint.x - P.x, this.WPoint.y - P.y, 0.0D);
-          this.courseV.normalize();
-          this.courseV.scale(this.FM.getSpeed());
-          this.courseV.add(this.windV);
-          this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.courseV.y, this.courseV.x))); break label398;
+            WWPoint.getP(WPoint);
+            StabSpeed = WWPoint.Speed;
+            StabAltitude = WPoint.z;
+        } else
+        {
+            StabAltitude = 1000D;
+            StabSpeed = 80D;
         }
-      }
-      this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.WPoint.y - P.y, this.WPoint.x - P.x)));
-    } else {
-      this.way.auto(P);
+        StabDirection = O.getAzimut();
+        Vstab.set((float)StabSpeed, -FM.CT.ElevatorControl);
+        Hvstab.set((float)StabAltitude, FM.CT.PowerControl);
     }
-    label398: if ((this.FM.isTick(256, 0)) && (!this.FM.actor.isTaskComplete()) && (((this.way.isLast()) && (getWayPointDistance() < 1500.0F)) || (this.way.isLanding())))
+
+    public void setStabAltitude(boolean flag)
     {
-      World.onTaskComplete(this.FM.actor);
-    }
-    if ((this.bStabSpeed) || (this.bWayPoint)) {
-      this.FM.CT.ElevatorControl = (-this.Vstab.getOutput(this.FM.getSpeed()));
-      if ((this.FM.Or.getTangage() > 10.0F) && (this.FM.CT.ElevatorControl > 0.0F)) this.FM.CT.ElevatorControl = 0.0F;
-      if ((this.FM.Or.getTangage() < -10.0F) && (this.FM.CT.ElevatorControl < -0.0F)) this.FM.CT.ElevatorControl = 0.0F;
-
-      if ((this.bStabAltitude) || (this.bWayPoint)) {
-        this.Pw = this.Hvstab.getOutput(this.FM.getAltitude());
-        if (this.Pw < 0.0F) this.Pw = 0.0F;
-        this.FM.CT.setPowerControl(this.Pw);
-      }
-    } else if (this.bStabAltitude) {
-      this.FM.CT.ElevatorControl = this.Hstab.getOutput(this.FM.getAltitude());
+        super.setStabAltitude(flag);
+        bStabAltitude = flag;
+        if(!flag)
+            return;
+        bWayPoint = false;
+        FM.getLoc(P);
+        StabAltitude = P.z;
+        if(!bStabSpeed)
+            StabSpeed = FM.getSpeed();
+        Pw = FM.CT.PowerControl;
+        Hstab.set((float)StabAltitude, FM.CT.ElevatorControl);
+        Hvstab.set((float)StabAltitude, FM.CT.PowerControl);
     }
 
-    if ((this.bStabDirection) || (this.bWayPoint))
+    public void setStabAltitudeSimple(float f)
     {
-      float f2 = this.FM.Or.getAzimut();
-      float f1 = this.FM.Or.getKren();
-      f2 = (float)(f2 - this.StabDirection);
-
-      f2 = (f2 + 3600.0F) % 360.0F;
-      f1 = (f1 + 3600.0F) % 360.0F;
-      if (f2 > 180.0F) f2 -= 360.0F;
-      if (f1 > 180.0F) f1 -= 360.0F;
-
-      float f3 = this.FM.getSpeedKMH() * 0.15F + this.FM.getVertSpeed();
-      if (f3 > 70.0F) f3 = 70.0F;
-      if (f2 < -f3) f2 = -f3;
-      else if (f2 > f3) f2 = f3;
-
-      this.Ail = (-0.05F * (f2 + f1));
-      if (this.Ail > 1.0F) this.Ail = 1.0F; else if (this.Ail < -1.0F) this.Ail = -1.0F;
-      this.FM.CT.AileronControl = this.Ail;
-
-      this.Ru = (-this.FM.getAOS() * 0.2F);
-      if (this.Ru > 1.0F) this.Ru = 1.0F; else if (this.Ru < -1.0F) this.Ru = -1.0F;
-      this.FM.CT.RudderControl += this.Ru * 0.0003F;
+        super.setStabAltitude(f);
     }
-  }
+
+    public void setStabSpeed(boolean flag)
+    {
+        super.setStabSpeed(flag);
+        bStabSpeed = flag;
+        if(!flag)
+        {
+            return;
+        } else
+        {
+            bWayPoint = false;
+            StabSpeed = FM.getSpeed();
+            Vstab.set((float)StabSpeed, -FM.CT.ElevatorControl);
+            return;
+        }
+    }
+
+    public void setStabSpeed(float f)
+    {
+        super.setStabSpeed(f);
+        bStabSpeed = true;
+        bWayPoint = false;
+        StabSpeed = f / 3.6F;
+        Vstab.set((float)StabSpeed, -FM.CT.ElevatorControl);
+    }
+
+    public void setStabDirection(boolean flag)
+    {
+        super.setStabDirection(flag);
+        bStabDirection = flag;
+        if(!flag)
+        {
+            return;
+        } else
+        {
+            bWayPoint = false;
+            O.set(FM.Or);
+            StabDirection = O.getAzimut();
+            Ail = FM.CT.AileronControl;
+            Sstab.set(0.0F, 0.0F);
+            return;
+        }
+    }
+
+    public void setStabAll(boolean flag)
+    {
+        super.setStabAll(flag);
+        bWayPoint = false;
+        setStabDirection(flag);
+        setStabAltitude(flag);
+        setStabSpeed(flag);
+        setStabDirection(flag);
+    }
+
+    public float getWayPointDistance()
+    {
+        return super.getWayPointDistance();
+    }
+
+    public void update(float f)
+    {
+        if(!((com.maddox.il2.fm.RealFlightModel)FM).isRealMode())
+        {
+            super.update(f);
+            return;
+        }
+        FM.getLoc(P);
+        if(bWayPoint)
+        {
+            if(WWPoint != way.auto(P) || way.isReached(P))
+            {
+                WWPoint = way.auto(P);
+                WWPoint.getP(WPoint);
+                StabSpeed = WWPoint.Speed;
+                StabAltitude = WPoint.z;
+                Vstab.set((float)StabSpeed, -FM.CT.ElevatorControl);
+                Hvstab.set((float)StabAltitude, FM.CT.PowerControl);
+            }
+            StabDirection = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(WPoint.y - P.y, WPoint.x - P.x));
+        } else
+        {
+            way.auto(P);
+        }
+        if(FM.isTick(256, 0) && !FM.actor.isTaskComplete() && (way.isLast() && getWayPointDistance() < 1500F || way.isLanding()))
+            com.maddox.il2.ai.World.onTaskComplete(FM.actor);
+        if(bStabSpeed || bWayPoint)
+        {
+            FM.CT.ElevatorControl = -Vstab.getOutput(FM.getSpeed());
+            if(FM.Or.getTangage() > 10F && FM.CT.ElevatorControl > 0.0F)
+                FM.CT.ElevatorControl = 0.0F;
+            if(FM.Or.getTangage() < -10F && FM.CT.ElevatorControl < -0F)
+                FM.CT.ElevatorControl = 0.0F;
+            if(bStabAltitude || bWayPoint)
+            {
+                Pw = Hvstab.getOutput(FM.getAltitude());
+                if(Pw < 0.0F)
+                    Pw = 0.0F;
+                FM.CT.PowerControl = Pw;
+            }
+        } else
+        if(bStabAltitude)
+            FM.CT.ElevatorControl = Hstab.getOutput(FM.getAltitude());
+        if(bStabDirection || bWayPoint)
+        {
+            float f2 = FM.Or.getAzimut();
+            float f1 = FM.Or.getKren();
+            f2 = (float)((double)f2 - StabDirection);
+            f2 = (f2 + 3600F) % 360F;
+            f1 = (f1 + 3600F) % 360F;
+            if(f2 > 180F)
+                f2 -= 360F;
+            if(f1 > 180F)
+                f1 -= 360F;
+            float f3 = FM.getSpeedKMH() * 0.15F + FM.getVertSpeed();
+            if(f3 > 70F)
+                f3 = 70F;
+            if(f2 < -f3)
+                f2 = -f3;
+            else
+            if(f2 > f3)
+                f2 = f3;
+            Ail = -0.05F * (f2 + f1);
+            if(Ail > 1.0F)
+                Ail = 1.0F;
+            else
+            if(Ail < -1F)
+                Ail = -1F;
+            FM.CT.AileronControl = Ail;
+            Ru = -FM.getAOS() * 0.2F;
+            if(Ru > 1.0F)
+                Ru = 1.0F;
+            else
+            if(Ru < -1F)
+                Ru = -1F;
+            FM.CT.RudderControl = FM.CT.RudderControl + Ru * 0.0003F;
+        }
+    }
+
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    private static com.maddox.il2.engine.Orientation O = new Orientation();
+    private com.maddox.il2.fm.Stabilizer Hstab;
+    private com.maddox.il2.fm.Stabilizer Hvstab;
+    private com.maddox.il2.fm.Stabilizer Vstab;
+    private com.maddox.il2.fm.Stabilizer Sstab;
+    private float Ail;
+    private float Pw;
+    private float Ru;
+
 }

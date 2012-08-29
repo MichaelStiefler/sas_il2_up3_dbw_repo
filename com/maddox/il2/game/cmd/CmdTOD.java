@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdTOD.java
+
 package com.maddox.il2.game.cmd;
 
 import com.maddox.il2.ai.World;
@@ -9,31 +14,33 @@ import com.maddox.rts.CmdEnv;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CmdTOD extends Cmd
+public class CmdTOD extends com.maddox.rts.Cmd
 {
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    float f;
-    if (paramMap.containsKey("_$$")) {
-      if ((paramCmdEnv.levelAccess() == 0) || ((Mission.isDogfight()) && (Mission.isServer())))
-      {
-        f = arg(paramMap, "_$$", 0, 12.0F, 0.0F, 24.0F);
-        World.setTimeofDay(f);
-        if (Config.isUSE_RENDER())
-          World.land().cubeFullUpdate();
-        if (Mission.cur() != null)
-          Mission.cur().replicateTimeofDay();
-      }
-    } else {
-      f = World.getTimeofDay();
-      INFO_HARD("Time Of Day: " + f);
+
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(map.containsKey("_$$"))
+        {
+            if(cmdenv.levelAccess() == 0 || com.maddox.il2.game.Mission.isDogfight() && com.maddox.il2.game.Mission.isServer())
+            {
+                float f = com.maddox.rts.Cmd.arg(map, "_$$", 0, 12F, 0.0F, 24F);
+                com.maddox.il2.ai.World.setTimeofDay(f);
+                if(com.maddox.il2.engine.Config.isUSE_RENDER())
+                    com.maddox.il2.ai.World.land().cubeFullUpdate();
+                if(com.maddox.il2.game.Mission.cur() != null)
+                    com.maddox.il2.game.Mission.cur().replicateTimeofDay();
+            }
+        } else
+        {
+            float f1 = com.maddox.il2.ai.World.getTimeofDay();
+            INFO_HARD("Time Of Day: " + f1);
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
 
-    return CmdEnv.RETURN_OK;
-  }
-
-  public CmdTOD() {
-    this._properties.put("NAME", "tod");
-    this._levelAccess = 2;
-  }
+    public CmdTOD()
+    {
+        _properties.put("NAME", "tod");
+        _levelAccess = 2;
+    }
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetServerParams.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.ai.DifficultySettings;
@@ -50,1267 +55,1426 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Vector;
 
-public class NetServerParams extends NetObj
-  implements NetUpdate
+// Referenced classes of package com.maddox.il2.net:
+//            NetUser, NetMaxLag, NetMissionTrack, USGS, 
+//            GameSpy, NetMissionListener
+
+public class NetServerParams extends com.maddox.rts.NetObj
+    implements com.maddox.rts.NetUpdate
 {
-  public static final int MIN_SYNC_DELTA = 4000;
-  public static final int MAX_SYNC_DELTA = 32000;
-  public static final int MODE_DOGFIGHT = 0;
-  public static final int MODE_COOP = 1;
-  public static final int MODE_SINGLE = 2;
-  public static final int MODE_MASK = 7;
-  public static final int TYPE_LOCAL = 0;
-  public static final int TYPE_BBGC = 16;
-  public static final int TYPE_BBGC_DEMO = 32;
-  public static final int TYPE_GAMESPY = 32;
-  public static final int TYPE_USGS = 48;
-  public static final int TYPE_MASK = 48;
-  public static final int TYPE_SHIFT = 4;
-  public static final int PROTECTED = 128;
-  public static final int DEDICATED = 8;
-  public static final int SHOW_SPEED_BAR = 4096;
-  public static final int EXTRA_OCCLUSION = 8192;
-  public static final int MSG_UPDATE = 0;
-  public static final int MSG_COOP_ENTER = 1;
-  public static final int MSG_COOP_ENTER_ASK = 2;
-  public static final int MSG_SYNC = 3;
-  public static final int MSG_SYNC_ASK = 4;
-  public static final int MSG_SYNC_START = 5;
-  public static final int MSG_TIME = 6;
-  public static final int MSG_MDS_TIME = 7;
-  public static final int MSG_CHECK_BEGIN = 8;
-  public static final int MSG_CHECK_FIRST = 8;
-  public static final int MSG_CHECK_SECOND = 9;
-  public static final int MSG_CHECK_STEP = 10;
-  public static final int MSG_CHECK_END = 10;
-  private String serverName;
-  public String serverDescription;
-  private String serverPassword;
-  private NetHost host;
-  private int flags = 4096;
-  private int difficulty;
-  private int maxUsers;
-  private int autoLogDetail = 3;
-  private boolean eventlogHouse = false;
-  private int eventlogClient = -1;
-  public boolean bNGEN = false;
-  public long timeoutNGEN = 0L;
-  public boolean bLandedNGEN = false;
-
-  private float farMaxLagTime = 10.0F;
-  private float nearMaxLagTime = 2.0F;
-  private float cheaterWarningDelay = 10.0F;
-  private int cheaterWarningNum = 3;
-  private NetMsgFiltered outMsgF;
-  private int syncStamp = 0;
-  private long syncTime;
-  private long syncDelta;
-  private boolean bCheckStartSync = false;
-  private boolean bDoSync = false;
-
-  private long serverDeltaTime = 0L;
-  private long serverDeltaTime_lastUpdate = 0L;
-
-  private long serverClockOffset0 = 0L;
-  private long lastServerTime = 0L;
-
-  public boolean netStat_DisableStatistics = false;
-  public boolean netStat_ShowPilotNumber = true;
-  public boolean netStat_ShowPilotPing = true;
-  public boolean netStat_ShowPilotName = true;
-  public boolean netStat_ShowPilotScore = true;
-  public boolean netStat_ShowPilotArmy = true;
-  public boolean netStat_ShowPilotACDesignation = true;
-  public boolean netStat_ShowPilotACType = true;
-
-  public int reflyKIADelay = 0;
-  public int maxAllowedKIA = -1;
-  public float reflyKIADelayMultiplier = 0.0F;
-  public boolean reflyDisabled = false;
-
-  public boolean allowMorseAsText = true;
-
-  public boolean filterUserNames = false;
-
-  private static long previousTime = 0L;
-  private static final int ZUTI_RESYNC_INTERVAL = 2000;
-  private long previousDeltaTime = 0L;
-  private int syncCounter = 0;
-  private static boolean inSync = false;
-
-  long _lastCheckMaxLag = -1L;
-
-  private int checkRuntime = 0;
-  private long checkTimeUpdate = 0L;
-  private HashMapExt checkUsers = new HashMapExt();
-  private int checkPublicKey = 0;
-  private int checkKey = 0;
-
-  private int checkSecond2 = 0;
-
-  public static boolean isSynched()
-  {
-    if (Main.cur().netServerParams.isMaster())
-      return true;
-    return inSync;
-  }
-
-  public static long getServerTime()
-  {
-    long l1;
-    if ((Main.cur() != null) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isDogfight()))
+    private class CheckUser
     {
-      if ((NetMissionTrack.isPlaying()) || ((Main.cur().netServerParams.isMirror()) && (!Time.isPaused())))
-      {
-        l1 = Time.current() + Main.cur().netServerParams.serverDeltaTime;
-        if (l1 > previousTime)
+
+        public boolean checkInput(int i, com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
         {
-          previousTime = l1;
-          return l1;
-        }
-        return previousTime;
-      }
+            boolean flag = false;
+            switch(i)
+            {
+            case 8: // '\b'
+                if(checkKey == 0)
+                    checkKey = checkFirst(checkPublicKey);
+                flag = checkKey == netmsginput.readInt();
+                if(flag)
+                    state++;
+                break;
 
-    }
+            case 9: // '\t'
+                int j = 0;
+                if(checkRuntime == 2)
+                    j = publicKey;
+                flag = netmsginput.readInt() == checkSecond(publicKey, j);
+                if(flag)
+                    flag = netmsginput.readInt() == checkSecond2;
+                if(flag)
+                    state++;
+                break;
 
-    if (NetMissionTrack.isPlaying()) {
-      if ((Main.cur() != null) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isCoop()))
-      {
-        l1 = Time.current() - Main.cur().netServerParams.serverDeltaTime;
-        if (l1 < 0L) l1 = 0L;
-        if (l1 > Main.cur().netServerParams.lastServerTime)
-          Main.cur().netServerParams.lastServerTime = l1;
-        return Main.cur().netServerParams.lastServerTime;
-      }
-      return Time.current();
-    }
+            case 10: // '\n'
+                com.maddox.il2.objects.air.Aircraft aircraft = user.findAircraft();
+                if(com.maddox.il2.engine.Actor.isValid(aircraft))
+                {
+                    int k = com.maddox.rts.Finger.incInt(publicKey, diff);
+                    flag = netmsginput.readInt() == (int)aircraft.finger(k) + com.maddox.rts.SFSInputStream.oo;
+                    if(flag)
+                        classAircraft = aircraft.getClass();
+                    else
+                        classAircraft = null;
+                } else
+                {
+                    classAircraft = null;
+                    flag = true;
+                }
+                break;
 
-    if ((Main.cur() != null) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isCoop()) && (Main.cur().netServerParams.isMirror()) && (!Time.isPaused()) && (Main.cur().netServerParams.serverClockOffset0 != 0L))
-    {
-      l1 = Main.cur().netServerParams.masterChannel().remoteClockOffset();
-      long l2 = Time.current() - (l1 - Main.cur().netServerParams.serverClockOffset0);
-      if (l2 < 0L) l2 = 0L;
-      if (l2 > Main.cur().netServerParams.lastServerTime)
-        Main.cur().netServerParams.lastServerTime = l2;
-      return Main.cur().netServerParams.lastServerTime;
-    }
-    return Time.current();
-  }
-
-  public NetHost host() {
-    return this.host;
-  }
-  public boolean isDedicated() { return (this.flags & 0x8) != 0; } 
-  public boolean isBBGC() {
-    return (this.flags & 0x30) == 16;
-  }
-  public boolean isGAMESPY() { return (this.flags & 0x30) == 32; } 
-  public boolean isUSGS() {
-    return (this.flags & 0x30) == 48; } 
-  public int getType() { return this.flags & 0x30; } 
-  public void setType(int paramInt) {
-    this.flags = (this.flags & 0xFFFFFFCF | paramInt & 0x30);
-  }
-  public boolean isDogfight() {
-    return (this.flags & 0x7) == 0; } 
-  public boolean isCoop() { return (this.flags & 0x7) == 1; } 
-  public boolean isSingle() { return (this.flags & 0x7) == 2; } 
-  public void setMode(int paramInt) {
-    if (!isMaster())
-      return;
-    this.flags = (this.flags & 0xFFFFFFF8 | paramInt & 0x7);
-    mirrorsUpdate();
-  }
-  public boolean isShowSpeedBar() {
-    return (this.flags & 0x1000) != 0;
-  }
-  public void setShowSpeedBar(boolean paramBoolean) { if (!isMaster()) return;
-    if (paramBoolean == isShowSpeedBar()) return;
-    if (paramBoolean) this.flags |= 4096; else
-      this.flags &= -4097;
-    mirrorsUpdate(); }
-
-  public boolean isExtraOcclusion() {
-    return (this.flags & 0x2000) != 0;
-  }
-  public void setExtraOcclusion(boolean paramBoolean) { if (!isMaster()) return;
-    if (paramBoolean == isExtraOcclusion()) return;
-    if (paramBoolean) this.flags |= 8192; else
-      this.flags &= -8193;
-    synkExtraOcclusion();
-    mirrorsUpdate(); }
-
-  public void synkExtraOcclusion() {
-    if (isDedicated()) return;
-    AudioDevice.setExtraOcclusion(isExtraOcclusion());
-  }
-  public int autoLogDetail() {
-    return this.autoLogDetail;
-  }
-  public boolean eventlogHouse() {
-    return (this.eventlogHouse) && (isMaster());
-  }
-  public int eventlogClient() {
-    return this.eventlogClient;
-  }
-  public float farMaxLagTime() {
-    return this.farMaxLagTime; } 
-  public float nearMaxLagTime() { return this.nearMaxLagTime; } 
-  public float cheaterWarningDelay() { return this.cheaterWarningDelay; } 
-  public int cheaterWarningNum() { return this.cheaterWarningNum; } 
-  public int getDifficulty() {
-    return this.difficulty;
-  }
-  public void setDifficulty(int paramInt) { if (!isMaster())
-      return;
-    this.difficulty = paramInt;
-    World.cur().diffCur.set(this.difficulty);
-    setClouds();
-    mirrorsUpdate(); }
-
-  public String serverName() {
-    return this.serverName;
-  }
-  public void setServerName(String paramString) { if ((USGS.isUsed()) && (isMaster())) {
-      this.serverName = USGS.room;
-      if (this.serverName == null)
-        this.serverName = "Server";
-      return;
-    }
-
-    if (Main.cur().netGameSpy != null) {
-      this.serverName = Main.cur().netGameSpy.roomName;
-      return;
-    }
-
-    this.serverName = paramString;
-    mirrorsUpdate(); }
-
-  public boolean isProtected() {
-    return (this.flags & 0x80) != 0; } 
-  public String getPassword() { return this.serverPassword; } 
-  public void setPassword(String paramString) {
-    this.serverPassword = paramString;
-    if (this.serverPassword != null) this.flags |= 128; else
-      this.flags &= -129;
-    mirrorsUpdate();
-  }
-
-  private void setClouds() {
-    if (!Config.isUSE_RENDER()) return;
-    if (World.cur().diffCur.Clouds) {
-      Main3D.cur3D().bDrawClouds = true;
-      if (RenderContext.cfgSky.get() == 0) {
-        RenderContext.cfgSky.set(1);
-        RenderContext.cfgSky.apply();
-        RenderContext.cfgSky.reset();
-      }
-    } else {
-      Main3D.cur3D().bDrawClouds = false;
-    }
-  }
-
-  public int getMaxUsers() {
-    return this.maxUsers;
-  }
-  public void setMaxUsers(int paramInt) { if (!isMaster())
-      return;
-    this.maxUsers = paramInt;
-    mirrorsUpdate(); }
-
-  private void mirrorsUpdate()
-  {
-    USGSupdate();
-
-    if (Main.cur().netGameSpy != null) {
-      Main.cur().netGameSpy.sendStatechanged();
-    }
-    if (!isMirrored())
-      return;
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(0);
-      localNetMsgGuaranted.writeInt(this.flags);
-      localNetMsgGuaranted.writeInt(this.difficulty);
-      localNetMsgGuaranted.writeByte(this.maxUsers);
-      localNetMsgGuaranted.write255(this.serverName);
-      post(localNetMsgGuaranted); } catch (Exception localException) {
-      printDebug(localException);
-    }
-  }
-
-  public void USGSupdate() {
-    if (!isMaster()) return;
-    if (!USGS.isUsed()) return;
-    USGS.update();
-  }
-
-  public void doMissionCoopEnter()
-  {
-    Object localObject;
-    if (isMaster()) {
-      localObject = NetEnv.hosts();
-      if (((List)localObject).size() == 0) {
-        prepareHidenAircraft();
-        startCoopGame();
-        return;
-      }
-      for (int i = 0; i < ((List)localObject).size(); i++)
-        ((NetUser)((List)localObject).get(i)).syncCoopStart = -1;
-      this.bCheckStartSync = true;
-      this.syncTime = (Time.currentReal() + 32000L);
-    }
-    else if (Main.cur().netMissionListener != null) {
-      Main.cur().netMissionListener.netMissionCoopEnter();
-    }
-    if (isMirrored())
-      try {
-        localObject = new NetMsgGuaranted();
-        ((NetMsgGuaranted)localObject).writeByte(1);
-        ((NetMsgGuaranted)localObject).writeByte(this.syncStamp);
-        post((NetMsgGuaranted)localObject); } catch (Exception localException1) {
-        printDebug(localException1);
-      }
-    if (!isMaster())
-      try {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(2);
-        localNetMsgGuaranted.writeNetObj(NetEnv.host());
-        postTo(masterChannel(), localNetMsgGuaranted); } catch (Exception localException2) {
-        printDebug(localException2);
-      }
-  }
-
-  public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-    paramNetMsgInput.reset();
-    int i = paramNetMsgInput.readByte();
-    int n;
-    Object localObject;
-    switch (i) {
-    case 0:
-      int j = paramNetMsgInput.readInt();
-      int k = paramNetMsgInput.readInt();
-      int m = paramNetMsgInput.readByte();
-      this.serverName = paramNetMsgInput.read255();
-      this.flags = j;
-      this.difficulty = k;
-      this.maxUsers = m;
-      World.cur().diffCur.set(this.difficulty);
-      setClouds();
-      synkExtraOcclusion();
-      if (!isMirrored()) break;
-      post(new NetMsgGuaranted(paramNetMsgInput, 0)); break;
-    case 1:
-      this.syncStamp = paramNetMsgInput.readUnsignedByte();
-      doMissionCoopEnter();
-      break;
-    case 2:
-      if (isMaster()) {
-        NetUser localNetUser1 = (NetUser)paramNetMsgInput.readNetObj();
-        if (localNetUser1 != null)
-          localNetUser1.syncCoopStart = this.syncStamp;
-      } else {
-        postTo(masterChannel(), new NetMsgGuaranted(paramNetMsgInput, 1));
-      }
-      break;
-    case 3:
-      n = paramNetMsgInput.readUnsignedByte();
-      int i1 = paramNetMsgInput.readInt();
-      if (this.syncStamp != n) {
-        NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted();
-        localNetMsgGuaranted2.writeByte(4);
-        localNetMsgGuaranted2.writeByte(n);
-        localNetMsgGuaranted2.writeNetObj(NetEnv.host());
-        postTo(masterChannel(), localNetMsgGuaranted2);
-        this.syncStamp = n;
-        this.syncTime = (i1 + Message.currentRealTime());
-      } else {
-        long l2 = i1 + Message.currentRealTime();
-        if (this.syncTime > l2)
-          this.syncTime = l2;
-      }
-      if (isMirrored()) {
-        this.outMsgF.unLockAndClear();
-        this.outMsgF.writeByte(3);
-        this.outMsgF.writeByte(this.syncStamp);
-        this.outMsgF.writeInt((int)(this.syncTime - Time.currentReal()));
-        postReal(Time.currentReal(), this.outMsgF);
-      }
-
-      break;
-    case 4:
-      if (isMaster()) {
-        n = paramNetMsgInput.readUnsignedByte();
-        NetUser localNetUser2 = (NetUser)paramNetMsgInput.readNetObj();
-        if ((localNetUser2 != null) && (n == this.syncStamp)) {
-          localNetUser2.syncCoopStart = this.syncStamp;
-          localObject = NetEnv.hosts();
-          for (int i2 = 0; i2 < ((List)localObject).size(); i2++)
-            if (((NetUser)((List)localObject).get(i2)).syncCoopStart != this.syncStamp)
-              return true;
-          this.bDoSync = false;
-          doStartCoopGame();
-        }
-      } else {
-        postTo(masterChannel(), new NetMsgGuaranted(paramNetMsgInput, 1));
-      }
-      break;
-    case 5:
-      doStartCoopGame();
-      break;
-    case 6:
-      this.serverDeltaTime = paramNetMsgInput.readLong();
-      if (!NetMissionTrack.isRecording()) break;
-      try {
-        NetMsgGuaranted localNetMsgGuaranted1 = new NetMsgGuaranted();
-        localNetMsgGuaranted1.writeByte(6);
-        localNetMsgGuaranted1.writeLong(this.serverDeltaTime);
-        postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted1); } catch (Exception localException1) {
-        printDebug(localException1);
-      }
-
-    case 7:
-      if ((inSync) && (!NetMissionTrack.isRecording())) {
-        return true;
-      }
-      this.serverDeltaTime = (((NetUser)NetEnv.host()).ping / 2 + paramNetMsgInput.readLong() - Time.current());
-
-      long l1 = Math.abs(this.previousDeltaTime - this.serverDeltaTime);
-
-      if (l1 < 500L)
-      {
-        this.syncCounter += 1;
-        if ((this.syncCounter > 4) && (l1 < this.syncCounter * 2))
-        {
-          inSync = true;
-        }
-      }
-      else {
-        this.syncCounter = 0;
-      }this.previousDeltaTime = this.serverDeltaTime;
-
-      if (!NetMissionTrack.isRecording())
-        break;
-      try
-      {
-        localObject = new NetMsgGuaranted();
-        ((NetMsgGuaranted)localObject).writeByte(7);
-        ((NetMsgGuaranted)localObject).writeLong(this.serverDeltaTime);
-        postTo(NetMissionTrack.netChannelOut(), (NetMsgGuaranted)localObject);
-      }
-      catch (Exception localException2)
-      {
-        NetObj.printDebug(localException2);
-      }
-
-    default:
-      return checkInput(i, paramNetMsgInput);
-    }
-    return true;
-  }
-
-  public void netUpdate()
-  {
-    long l1;
-    if (!NetMissionTrack.isPlaying())
-    {
-      if ((isMaster()) && (isDogfight()))
-      {
-        l1 = Time.current();
-        if (l1 > this.serverDeltaTime_lastUpdate + 2000L)
-        {
-          this.serverDeltaTime_lastUpdate = l1;
-          try
-          {
-            NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted();
-            localNetMsgGuaranted2.writeByte(7);
-            localNetMsgGuaranted2.writeLong(this.serverDeltaTime_lastUpdate);
-            post(localNetMsgGuaranted2);
-          }
-          catch (IOException localIOException)
-          {
-            NetObj.printDebug(localIOException);
-          }
-        }
-
-      }
-
-      doCheckMaxLag();
-      if (isMaster()) {
-        checkUpdate();
-      }
-    }
-    if ((isMirror()) && (isCoop()) && (!Time.isPaused()) && (NetMissionTrack.isRecording()) && (!NetMissionTrack.isPlaying()))
-    {
-      l1 = Time.current();
-      if (l1 > this.serverDeltaTime_lastUpdate + 3000L) {
-        this.serverDeltaTime_lastUpdate = l1;
-        try {
-          NetMsgGuaranted localNetMsgGuaranted3 = new NetMsgGuaranted();
-          localNetMsgGuaranted3.writeByte(6);
-          long l2 = Main.cur().netServerParams.masterChannel().remoteClockOffset();
-          long l3 = l2 - Main.cur().netServerParams.serverClockOffset0;
-          localNetMsgGuaranted3.writeLong(l3);
-          postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted3); } catch (Exception localException3) {
-          printDebug(localException3);
-        }
-      }
-
-    }
-
-    if ((isMirror()) && (isDogfight()) && (!Time.isPaused()) && (NetMissionTrack.isRecording()) && (!NetMissionTrack.isPlaying()))
-    {
-      try
-      {
-        NetMsgGuaranted localNetMsgGuaranted1 = new NetMsgGuaranted();
-        localNetMsgGuaranted1.writeByte(7);
-        localNetMsgGuaranted1.writeLong(Time.current() + Main.cur().netServerParams.serverDeltaTime);
-        postTo(NetMissionTrack.netChannelOut(), localNetMsgGuaranted1);
-      }
-      catch (Exception localException1)
-      {
-        NetObj.printDebug(localException1);
-      }
-
-    }
-
-    if ((!this.bDoSync) && (!this.bCheckStartSync)) return;
-    if (isMaster())
-    {
-      List localList;
-      int i;
-      NetUser localNetUser;
-      if (this.bCheckStartSync) {
-        localList = NetEnv.hosts();
-        if (localList.size() == 0) {
-          prepareHidenAircraft();
-          startCoopGame();
-          this.bCheckStartSync = false;
-          return;
-        }
-        if (Time.currentReal() > this.syncTime)
-          for (i = 0; i < localList.size(); i++) {
-            localNetUser = (NetUser)localList.get(i);
-            if (localNetUser.syncCoopStart != this.syncStamp)
-              ((NetUser)NetEnv.host()).kick(localNetUser);
-          }
-        else {
-          for (i = 0; i < localList.size(); i++) {
-            localNetUser = (NetUser)localList.get(i);
-            if (localNetUser.syncCoopStart != this.syncStamp) {
-              return;
+            default:
+                return false;
             }
-          }
+            timeSended = 0L;
+            if(!flag)
+            {
+                com.maddox.rts.NetChannel netchannel = netmsginput.channel();
+                if(!netchannel.isDestroying())
+                {
+                    java.lang.String s = "Timeout ";
+                    s = s + (i - 8);
+                    netchannel.destroy(s);
+                }
+            }
+            return true;
         }
-        this.syncStamp = (this.syncStamp + 1 & 0xFF);
-        this.syncDelta = 4000L;
-        this.syncTime = (Time.currentReal() + this.syncDelta);
-        this.bCheckStartSync = false;
-        this.bDoSync = true;
-      }
-      if (NetEnv.hosts().size() == 0) {
-        prepareHidenAircraft();
-        startCoopGame();
-        this.bDoSync = false;
-        return;
-      }
-      if (Time.currentReal() > this.syncTime - this.syncDelta / 2L)
-        if (this.syncDelta < 32000L)
+
+        public void checkUpdate(long l)
         {
-          this.syncStamp = (this.syncStamp + 1 & 0xFF);
-          this.syncDelta *= 2L;
-          this.syncTime = (Time.currentReal() + this.syncDelta);
+            if(state > 10)
+                return;
+            if(timeSended != 0L)
+            {
+                if(l < timeSended + 0x249f0L)
+                    return;
+                com.maddox.rts.NetChannel netchannel = user.masterChannel();
+                if(!netchannel.isDestroying())
+                {
+                    java.lang.String s = "Timeout .";
+                    s = s + (state - 8);
+                    netchannel.destroy(s);
+                }
+                return;
+            }
+            try
+            {
+                int i = 0;
+                switch(state)
+                {
+                case 8: // '\b'
+                    i = checkPublicKey;
+                    break;
+
+                case 9: // '\t'
+                    i = publicKey = (int)(java.lang.Math.random() * 4294967295D);
+                    break;
+
+                case 10: // '\n'
+                    com.maddox.il2.objects.air.Aircraft aircraft = user.findAircraft();
+                    if(com.maddox.il2.engine.Actor.isValid(aircraft) && !aircraft.getClass().equals(classAircraft))
+                    {
+                        i = publicKey = (int)(java.lang.Math.random() * 4294967295D);
+                        diff = com.maddox.il2.ai.World.cur().diffCur.get();
+                    }
+                    break;
+                }
+                if(i != 0)
+                {
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                    netmsgguaranted.writeByte(state);
+                    netmsgguaranted.writeNetObj(user);
+                    netmsgguaranted.writeInt(i);
+                    if(state == 9)
+                        if(checkRuntime == 2)
+                            netmsgguaranted.writeInt(i);
+                        else
+                            netmsgguaranted.writeInt(0);
+                    postTo(user.masterChannel(), netmsgguaranted);
+                    timeSended = l;
+                }
+            }
+            catch(java.lang.Exception exception) { }
         }
-        else {
-          localList = NetEnv.hosts();
-          for (i = 0; i < localList.size(); i++) {
-            localNetUser = (NetUser)localList.get(i);
-            if (localNetUser.syncCoopStart != this.syncStamp)
-              ((NetUser)NetEnv.host()).kick(localNetUser);
-          }
-          this.bDoSync = false;
-          doStartCoopGame();
-          return;
+
+        public com.maddox.il2.net.NetUser user;
+        public int state;
+        public long timeSended;
+        public java.lang.Class classAircraft;
+        public int publicKey;
+        public int diff;
+
+        public CheckUser(com.maddox.il2.net.NetUser netuser)
+        {
+            state = 8;
+            timeSended = 0L;
+            classAircraft = null;
+            publicKey = 0;
+            user = netuser;
         }
-      try
-      {
-        this.outMsgF.unLockAndClear();
-        this.outMsgF.writeByte(3);
-        this.outMsgF.writeByte(this.syncStamp);
-        this.outMsgF.writeInt((int)(this.syncTime - Time.currentReal()));
-        postReal(Time.currentReal(), this.outMsgF); } catch (Exception localException2) {
-        printDebug(localException2);
-      }
-    }
-  }
-
-  public void msgNetDelChannel(NetChannel paramNetChannel) {
-    netUpdate();
-  }
-
-  private void doStartCoopGame() {
-    if (isMirrored()) {
-      try {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(5);
-        post(localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
-      }
     }
 
-    HUD.logCoopTimeStart(this.syncTime);
+    static class SPAWN
+        implements com.maddox.rts.NetSpawn
+    {
 
-    new MsgAction(64, this.syncTime, this) {
-      public void doAction(Object paramObject) {
-        if (paramObject != Main.cur().netServerParams) return;
-        NetServerParams.this.prepareHidenAircraft();
-        NetServerParams.this.startCoopGame();
-      }
-    };
-  }
+        public void netSpawn(int i, com.maddox.rts.NetMsgInput netmsginput)
+        {
+            try
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                int j = netmsginput.readInt();
+                int k = netmsginput.readInt();
+                byte byte0 = netmsginput.readByte();
+                java.lang.String s = netmsginput.read255();
+                com.maddox.il2.net.NetServerParams netserverparams = new NetServerParams(netmsginput.channel(), i, (com.maddox.rts.NetHost)netobj);
+                netserverparams.flags = j;
+                netserverparams.difficulty = k;
+                netserverparams.maxUsers = byte0;
+                netserverparams.serverName = s;
+                netserverparams.autoLogDetail = netmsginput.readByte();
+                netserverparams.farMaxLagTime = netmsginput.readFloat();
+                netserverparams.nearMaxLagTime = netmsginput.readFloat();
+                netserverparams.cheaterWarningDelay = netmsginput.readFloat();
+                netserverparams.cheaterWarningNum = netmsginput.readInt();
+                if(netmsginput.channel() instanceof com.maddox.rts.NetChannelInStream)
+                {
+                    netserverparams.difficulty = com.maddox.il2.ai.World.cur().diffCur.get();
+                    if(netmsginput.available() >= 8)
+                        netserverparams.serverDeltaTime = netmsginput.readLong();
+                    else
+                        netserverparams.serverDeltaTime = 0L;
+                } else
+                {
+                    com.maddox.il2.ai.World.cur().diffCur.set(k);
+                }
+                netserverparams.synkExtraOcclusion();
+                if(netmsginput.available() >= 4)
+                    netserverparams.eventlogClient = netmsginput.readInt();
+                else
+                    netserverparams.eventlogClient = -1;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        }
 
-  private void startCoopGame() {
-    prepareOrdersTree();
-    Mission.doMissionStarting();
-    Time.setPause(false);
-    AudioDevice.soundsOn();
-
-    if ((isMaster()) && (this.bNGEN)) {
-      if (this.timeoutNGEN > 0L)
-        startTimeoutNGEN(this.timeoutNGEN);
-      if (this.bLandedNGEN)
-        startLandedNGEN(2000L);
-    } else {
-      if (masterChannel() != null)
-        this.serverClockOffset0 = masterChannel().remoteClockOffset();
-      else
-        this.serverClockOffset0 = 0L;
-      this.lastServerTime = 0L;
-      this.serverDeltaTime_lastUpdate = -100000L;
+        SPAWN()
+        {
+        }
     }
-  }
 
-  private void startTimeoutNGEN(long paramLong) {
-    new MsgAction(0, Time.current() + paramLong, Mission.cur()) {
-      public void doAction(Object paramObject) {
-        if (Mission.cur() != paramObject) return;
-        if (!Mission.isPlaying()) return;
-        if (Main.state().id() != 49)
-          NetServerParams.this.startTimeoutNGEN(500L);
+
+    public static long getServerTime()
+    {
+        if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+            if(com.maddox.il2.game.Main.cur() != null && com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            {
+                long l = com.maddox.rts.Time.current() - com.maddox.il2.game.Main.cur().netServerParams.serverDeltaTime;
+                if(l < 0L)
+                    l = 0L;
+                if(l > com.maddox.il2.game.Main.cur().netServerParams.lastServerTime)
+                    com.maddox.il2.game.Main.cur().netServerParams.lastServerTime = l;
+                return com.maddox.il2.game.Main.cur().netServerParams.lastServerTime;
+            } else
+            {
+                return com.maddox.rts.Time.current();
+            }
+        if(com.maddox.il2.game.Main.cur() != null && com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isCoop() && com.maddox.il2.game.Main.cur().netServerParams.isMirror() && !com.maddox.rts.Time.isPaused() && com.maddox.il2.game.Main.cur().netServerParams.serverClockOffset0 != 0L)
+        {
+            long l1 = com.maddox.il2.game.Main.cur().netServerParams.masterChannel().remoteClockOffset();
+            long l2 = com.maddox.rts.Time.current() - (l1 - com.maddox.il2.game.Main.cur().netServerParams.serverClockOffset0);
+            if(l2 < 0L)
+                l2 = 0L;
+            if(l2 > com.maddox.il2.game.Main.cur().netServerParams.lastServerTime)
+                com.maddox.il2.game.Main.cur().netServerParams.lastServerTime = l2;
+            return com.maddox.il2.game.Main.cur().netServerParams.lastServerTime;
+        } else
+        {
+            return com.maddox.rts.Time.current();
+        }
+    }
+
+    public com.maddox.rts.NetHost host()
+    {
+        return host;
+    }
+
+    public boolean isDedicated()
+    {
+        return (flags & 8) != 0;
+    }
+
+    public boolean isBBGC()
+    {
+        return (flags & 0x30) == 16;
+    }
+
+    public boolean isGAMESPY()
+    {
+        return (flags & 0x30) == 32;
+    }
+
+    public boolean isUSGS()
+    {
+        return (flags & 0x30) == 48;
+    }
+
+    public int getType()
+    {
+        return flags & 0x30;
+    }
+
+    public void setType(int i)
+    {
+        flags = flags & 0xffffffcf | i & 0x30;
+    }
+
+    public boolean isDogfight()
+    {
+        return (flags & 7) == 0;
+    }
+
+    public boolean isCoop()
+    {
+        return (flags & 7) == 1;
+    }
+
+    public boolean isSingle()
+    {
+        return (flags & 7) == 2;
+    }
+
+    public void setMode(int i)
+    {
+        if(!isMaster())
+        {
+            return;
+        } else
+        {
+            flags = flags & -8 | i & 7;
+            mirrorsUpdate();
+            return;
+        }
+    }
+
+    public boolean isShowSpeedBar()
+    {
+        return (flags & 0x1000) != 0;
+    }
+
+    public void setShowSpeedBar(boolean flag)
+    {
+        if(!isMaster())
+            return;
+        if(flag == isShowSpeedBar())
+            return;
+        if(flag)
+            flags |= 0x1000;
         else
-          ((GUINetServerCMission)Main.state()).tryExit(); 
-      } } ;
-  }
-
-  private void startLandedNGEN(long paramLong) {
-    new MsgAction(0, Time.current() + paramLong, Mission.cur()) {
-      public void doAction(Object paramObject) {
-        if (Mission.cur() != paramObject) return;
-        if (!Mission.isPlaying()) return;
-        if (Main.state().id() != 49) {
-          NetServerParams.this.startLandedNGEN(2000L);
-        } else {
-          int i = 1;
-          Map.Entry localEntry = Engine.name2Actor().nextEntry(null);
-          while (localEntry != null) {
-            Actor localActor = (Actor)localEntry.getValue();
-            if (((localActor instanceof Aircraft)) && (Actor.isAlive(localActor))) {
-              Aircraft localAircraft = (Aircraft)localActor;
-              if (localAircraft.isNetPlayer()) {
-                if (!localAircraft.FM.isWasAirborne()) {
-                  i = 0;
-                  break;
-                }
-                if (!localAircraft.FM.isStationedOnGround()) {
-                  i = 0;
-                  break;
-                }
-              }
-            }
-            localEntry = Engine.name2Actor().nextEntry(localEntry);
-          }
-          if (i != 0)
-            ((GUINetServerCMission)Main.state()).tryExit();
-          else
-            NetServerParams.this.startLandedNGEN(2000L);
-        }
-      } } ;
-  }
-
-  public void prepareHidenAircraft() {
-    ArrayList localArrayList = new ArrayList();
-    Map.Entry localEntry = Engine.name2Actor().nextEntry(null);
-    while (localEntry != null) {
-      Actor localActor1 = (Actor)localEntry.getValue();
-      if (((localActor1 instanceof Aircraft)) && 
-        (localActor1.name().charAt(0) == ' ')) {
-        localArrayList.add(localActor1);
-      }
-      localEntry = Engine.name2Actor().nextEntry(localEntry);
-    }
-    Aircraft localAircraft;
-    for (int i = 0; i < localArrayList.size(); i++) {
-      localAircraft = (Aircraft)localArrayList.get(i);
-      String str = localAircraft.name().substring(1);
-      if (Actor.getByName(str) != null) {
-        localAircraft.destroy();
-      } else {
-        localAircraft.setName(str);
-        localAircraft.collide(true);
-        localAircraft.restoreLinksInCoopWing();
-      }
-    }
-    if (World.isPlayerGunner()) {
-      World.getPlayerGunner().getAircraft();
+            flags &= 0xffffefff;
+        mirrorsUpdate();
     }
 
-    if (isMaster()) return;
-
-    localEntry = Engine.name2Actor().nextEntry(null);
-    while (localEntry != null) {
-      Actor localActor2 = (Actor)localEntry.getValue();
-      if ((localActor2 instanceof Aircraft)) {
-        localAircraft = (Aircraft)localActor2;
-        if ((!localAircraft.isNetPlayer()) && (!localAircraft.isNet()))
-          localArrayList.add(localActor2);
-      }
-      localEntry = Engine.name2Actor().nextEntry(localEntry);
-    }
-    for (int j = 0; j < localArrayList.size(); j++) {
-      localAircraft = (Aircraft)localArrayList.get(j);
-      localAircraft.destroy();
-    }
-  }
-
-  private void prepareOrdersTree() {
-    if (World.isPlayerGunner())
-      World.getPlayerGunner().getAircraft();
-    else {
-      ((Main3D)Main.cur()).ordersTree.netMissionLoaded(World.getPlayerAircraft());
-    }
-    if (isMirror()) return;
-    List localList = NetEnv.hosts();
-    for (int i = 0; i < localList.size(); i++) {
-      NetUser localNetUser = (NetUser)localList.get(i);
-      localNetUser.ordersTree = new OrdersTree(false);
-      localNetUser.ordersTree.netMissionLoaded(localNetUser.findAircraft());
-    }
-  }
-
-  private void doCheckMaxLag()
-  {
-    long l = Time.real();
-    if ((this._lastCheckMaxLag > 0L) && (l - this._lastCheckMaxLag < 1000L))
-      return;
-    this._lastCheckMaxLag = l;
-    if (!Mission.isPlaying()) return;
-    Object localObject;
-    if (isMaster()) {
-      localObject = Engine.targets();
-      int i = ((List)localObject).size();
-      for (int j = 0; j < i; j++) {
-        Actor localActor = (Actor)((List)localObject).get(j);
-        if ((!(localActor instanceof Aircraft)) || 
-          (!Actor.isAlive(localActor)) || 
-          (localActor.net == null) || (localActor.net.isMaster())) continue;
-        NetUser localNetUser = ((Aircraft)localActor).netUser();
-        if (localNetUser != null) {
-          if (localNetUser.netMaxLag == null)
-            localNetUser.netMaxLag = new NetMaxLag();
-          localNetUser.netMaxLag.doServerCheck((Aircraft)localActor);
-        }
-      }
-    } else {
-      localObject = (NetUser)NetEnv.host();
-      if (((NetUser)localObject).netMaxLag == null)
-        ((NetUser)localObject).netMaxLag = new NetMaxLag();
-      ((NetUser)localObject).netMaxLag.doClientCheck();
-    }
-  }
-
-  public void destroy() {
-    super.destroy();
-    this.bCheckStartSync = false;
-    this.bDoSync = false;
-    Main.cur().netServerParams = null;
-  }
-
-  public NetServerParams() {
-    super(null);
-    this.host = NetEnv.host();
-    this.serverName = this.host.shortName();
-    Main.cur().netServerParams = this;
-    this.outMsgF = new NetMsgFiltered();
-    try { this.outMsgF.setIncludeTime(true); } catch (Exception localException) {
-    }if (!Config.isUSE_RENDER()) {
-      this.flags |= 8;
-    }
-    synkExtraOcclusion();
-    this.autoLogDetail = Config.cur.ini.get("chat", "autoLogDetail", this.autoLogDetail, 0, 3);
-    this.nearMaxLagTime = Config.cur.ini.get("MaxLag", "nearMaxLagTime", this.nearMaxLagTime, 0.1F, 30.0F);
-    this.farMaxLagTime = Config.cur.ini.get("MaxLag", "farMaxLagTime", this.farMaxLagTime, this.nearMaxLagTime, 30.0F);
-    this.cheaterWarningDelay = Config.cur.ini.get("MaxLag", "cheaterWarningDelay", this.cheaterWarningDelay, 1.0F, 30.0F);
-    this.cheaterWarningNum = Config.cur.ini.get("MaxLag", "cheaterWarningNum", this.cheaterWarningNum);
-    this.checkRuntime = Config.cur.ini.get("NET", "checkRuntime", 0, 0, 2);
-    this.eventlogHouse = Config.cur.ini.get("game", "eventlogHouse", false);
-    this.eventlogClient = Config.cur.ini.get("game", "eventlogClient", -1);
-
-    this.netStat_DisableStatistics = Config.cur.ini.get("NET", "disableNetStatStatistics", false);
-    this.netStat_ShowPilotNumber = Config.cur.ini.get("NET", "showPilotNumber", true);
-    this.netStat_ShowPilotPing = Config.cur.ini.get("NET", "showPilotPing", true);
-    this.netStat_ShowPilotName = Config.cur.ini.get("NET", "showPilotName", true);
-    this.netStat_ShowPilotScore = Config.cur.ini.get("NET", "showPilotScore", true);
-    this.netStat_ShowPilotArmy = Config.cur.ini.get("NET", "showPilotArmy", true);
-    this.netStat_ShowPilotACDesignation = Config.cur.ini.get("NET", "showPilotACDesignation", true);
-    this.netStat_ShowPilotACType = Config.cur.ini.get("NET", "showPilotACType", true);
-    this.filterUserNames = Config.cur.ini.get("NET", "filterUserNames", false);
-
-    this.reflyKIADelay = Config.cur.ini.get("NET", "reflyKIADelay", 0);
-    this.maxAllowedKIA = Config.cur.ini.get("NET", "maxAllowedKIA", -1);
-    this.reflyKIADelayMultiplier = Config.cur.ini.get("NET", "reflyKIADelayMultiplier", 0.0F);
-    this.reflyDisabled = Config.cur.ini.get("NET", "reflyDisabled", false);
-    this.allowMorseAsText = Config.cur.ini.get("NET", "allowMorseAsText", true);
-  }
-
-  public NetServerParams(NetChannel paramNetChannel, int paramInt, NetHost paramNetHost) {
-    super(null, paramNetChannel, paramInt);
-
-    previousTime = 0L;
-    this.serverDeltaTime_lastUpdate = 0L;
-    inSync = false;
-    this.syncCounter = 0;
-    this.previousDeltaTime = 0L;
-
-    this.host = paramNetHost;
-    Main.cur().netServerParams = this;
-    this.outMsgF = new NetMsgFiltered();
-    try { this.outMsgF.setIncludeTime(true); } catch (Exception localException) {
-    }
-  }
-
-  public NetMsgSpawn netReplicate(NetChannel paramNetChannel) throws IOException {
-    NetMsgSpawn localNetMsgSpawn = new NetMsgSpawn(this);
-    localNetMsgSpawn.writeNetObj(this.host);
-    localNetMsgSpawn.writeInt(this.flags);
-    localNetMsgSpawn.writeInt(this.difficulty);
-    localNetMsgSpawn.writeByte(this.maxUsers);
-    localNetMsgSpawn.write255(this.serverName);
-    localNetMsgSpawn.writeByte(this.autoLogDetail);
-    localNetMsgSpawn.writeFloat(this.farMaxLagTime);
-    localNetMsgSpawn.writeFloat(this.nearMaxLagTime);
-    localNetMsgSpawn.writeFloat(this.cheaterWarningDelay);
-    localNetMsgSpawn.writeInt(this.cheaterWarningNum);
-
-    localNetMsgSpawn.writeBoolean(this.netStat_DisableStatistics);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotNumber);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotPing);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotName);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotScore);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotArmy);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotACDesignation);
-    localNetMsgSpawn.writeBoolean(this.netStat_ShowPilotACType);
-    localNetMsgSpawn.writeBoolean(this.filterUserNames);
-
-    localNetMsgSpawn.writeInt(this.reflyKIADelay);
-    localNetMsgSpawn.writeInt(this.maxAllowedKIA);
-    localNetMsgSpawn.writeFloat(this.reflyKIADelayMultiplier);
-    localNetMsgSpawn.writeBoolean(this.reflyDisabled);
-    localNetMsgSpawn.writeBoolean(this.allowMorseAsText);
-
-    if (((paramNetChannel instanceof NetChannelOutStream)) && (isCoop())) {
-      if (NetMissionTrack.isPlaying()) {
-        localNetMsgSpawn.writeLong(this.serverDeltaTime);
-      } else {
-        long l1 = 0L;
-        if (isMirror()) {
-          long l2 = Main.cur().netServerParams.masterChannel().remoteClockOffset();
-          l1 = l2 - Main.cur().netServerParams.serverClockOffset0;
-        }
-        localNetMsgSpawn.writeLong(l1);
-      }
-    }
-    localNetMsgSpawn.writeInt(this.eventlogClient);
-    return localNetMsgSpawn;
-  }
-
-  private int crcSFSFile(String paramString, int paramInt)
-  {
-    try
+    public boolean isExtraOcclusion()
     {
-      SFSInputStream localSFSInputStream = new SFSInputStream(Finger.LongFN(0L, paramString));
-      paramInt = localSFSInputStream.crc(paramInt);
-      localSFSInputStream.close();
-    } catch (Exception localException) {
-      printDebug(localException);
-      return 0;
-    }
-    return paramInt;
-  }
-
-  private int checkFirst(int paramInt)
-  {
-    if (paramInt != 0) {
-      long l = Finger.file(paramInt, MainWin32.GetCDDrive("jvm.dll"), -1);
-      l = Finger.file(l, MainWin32.GetCDDrive("java.dll"), -1);
-      l = Finger.file(l, MainWin32.GetCDDrive("net.dll"), -1);
-      l = Finger.file(l, MainWin32.GetCDDrive("verify.dll"), -1);
-      l = Finger.file(l, MainWin32.GetCDDrive("zip.dll"), -1);
-      l = Finger.file(l, "lib/rt.jar", -1);
-      ArrayList localArrayList = Main.cur().airClasses;
-      for (int i = 0; i < localArrayList.size(); i++) {
-        Class localClass = (Class)localArrayList.get(i);
-        l = FlightModelMain.finger(l, Property.stringValue(localClass, "FlightModel", null));
-      }
-      l = Statics.getShipsFile().finger(l);
-      l = Statics.getTechnicsFile().finger(l);
-      l = Statics.getBuildingsFile().finger(l);
-
-      paramInt = (int)l;
+        return (flags & 0x2000) != 0;
     }
 
-    return paramInt;
-  }
+    public void setExtraOcclusion(boolean flag)
+    {
+        if(!isMaster())
+            return;
+        if(flag == isExtraOcclusion())
+            return;
+        if(flag)
+            flags |= 0x2000;
+        else
+            flags &= 0xffffdfff;
+        synkExtraOcclusion();
+        mirrorsUpdate();
+    }
 
-  private int checkSecond(int paramInt1, int paramInt2)
-  {
-    this.checkSecond2 = paramInt2;
-    try {
-      ClassLoader localClassLoader = getClass().getClassLoader();
-      Field[] arrayOfField = ClassLoader.class.getDeclaredFields();
-      Field localField = null;
-      for (int i = 0; i < arrayOfField.length; i++) {
-        if ("classes".equals(arrayOfField[i].getName())) {
-          localField = arrayOfField[i];
-          break;
+    public void synkExtraOcclusion()
+    {
+        if(isDedicated())
+        {
+            return;
+        } else
+        {
+            com.maddox.sound.AudioDevice.setExtraOcclusion(isExtraOcclusion());
+            return;
         }
-      }
-      Vector localVector = (Vector)CLASS.field(localClassLoader, localField);
-      for (int j = 0; j < localVector.size(); j++) {
-        Class localClass = (Class)localVector.get(j);
-        arrayOfField = localClass.getDeclaredFields();
-        if (arrayOfField != null) {
-          for (int k = 0; k < arrayOfField.length; k++)
-            paramInt1 = Finger.incInt(paramInt1, arrayOfField[k].getName());
+    }
+
+    public int autoLogDetail()
+    {
+        return autoLogDetail;
+    }
+
+    public boolean eventlogHouse()
+    {
+        return eventlogHouse && isMaster();
+    }
+
+    public int eventlogClient()
+    {
+        return eventlogClient;
+    }
+
+    public float farMaxLagTime()
+    {
+        return farMaxLagTime;
+    }
+
+    public float nearMaxLagTime()
+    {
+        return nearMaxLagTime;
+    }
+
+    public float cheaterWarningDelay()
+    {
+        return cheaterWarningDelay;
+    }
+
+    public int cheaterWarningNum()
+    {
+        return cheaterWarningNum;
+    }
+
+    public int getDifficulty()
+    {
+        return difficulty;
+    }
+
+    public void setDifficulty(int i)
+    {
+        if(!isMaster())
+        {
+            return;
+        } else
+        {
+            difficulty = i;
+            com.maddox.il2.ai.World.cur().diffCur.set(difficulty);
+            setClouds();
+            mirrorsUpdate();
+            return;
         }
-        Method[] arrayOfMethod = localClass.getDeclaredMethods();
-        if (arrayOfMethod != null) {
-          for (int m = 0; m < arrayOfMethod.length; m++)
-            paramInt1 = Finger.incInt(paramInt1, arrayOfMethod[m].getName());
+    }
+
+    public java.lang.String serverName()
+    {
+        return serverName;
+    }
+
+    public void setServerName(java.lang.String s)
+    {
+        if(com.maddox.il2.net.USGS.isUsed() && isMaster())
+        {
+            serverName = com.maddox.il2.net.USGS.room;
+            if(serverName == null)
+                serverName = "Server";
+            return;
         }
-        if (this.checkSecond2 != 0)
-          paramInt2 = CLASS.method(localClass, paramInt2);
-      }
-    }
-    catch (Exception localException) {
-    }
-    this.checkSecond2 = paramInt2;
-
-    return paramInt1;
-  }
-
-  private boolean CheckUserInput(int paramInt, NetMsgInput paramNetMsgInput)
-    throws IOException
-  {
-    int i;
-    int j;
-    switch (paramInt) {
-    case 8:
-      i = checkFirst(paramNetMsgInput.readInt());
-      break;
-    case 9:
-      i = checkSecond(paramNetMsgInput.readInt(), paramNetMsgInput.readInt());
-      break;
-    case 10:
-      i = paramNetMsgInput.readInt();
-      localObject = (NetUser)NetEnv.host();
-      Aircraft localAircraft = ((NetUser)localObject).findAircraft();
-      if (!Actor.isValid(localAircraft)) break;
-      i = Finger.incInt(i, World.cur().diffCur.get());
-      j = (int)localAircraft.finger(i) + SFSInputStream.oo; break;
-    default:
-      return false;
-    }
-    Object localObject = new NetMsgGuaranted();
-    ((NetMsgGuaranted)localObject).writeByte(paramInt);
-    ((NetMsgGuaranted)localObject).writeNetObj(NetEnv.host());
-    ((NetMsgGuaranted)localObject).writeInt(j);
-    if (paramInt == 9)
-      ((NetMsgGuaranted)localObject).writeInt(this.checkSecond2);
-    postTo(paramNetMsgInput.channel(), (NetMsgGuaranted)localObject);
-    return true;
-  }
-
-  private boolean checkInput(int paramInt, NetMsgInput paramNetMsgInput)
-    throws IOException
-  {
-    NetUser localNetUser = (NetUser)paramNetMsgInput.readNetObj();
-    Object localObject;
-    if (isMaster()) {
-      localObject = (CheckUser)this.checkUsers.get(localNetUser);
-      if (localObject != null)
-        return ((CheckUser)localObject).checkInput(paramInt, paramNetMsgInput);
-    } else {
-      if (NetEnv.host() == localNetUser) {
-        return CheckUserInput(paramInt, paramNetMsgInput);
-      }
-
-      paramNetMsgInput.reset();
-      localObject = new NetMsgGuaranted();
-      ((NetMsgGuaranted)localObject).writeMsg(paramNetMsgInput, 1);
-
-      if (paramNetMsgInput.channel() == masterChannel())
-        postTo(localNetUser.masterChannel(), (NetMsgGuaranted)localObject);
-      else {
-        postTo(masterChannel(), (NetMsgGuaranted)localObject);
-      }
-      return true;
+        if(com.maddox.il2.game.Main.cur().netGameSpy != null)
+        {
+            serverName = com.maddox.il2.game.Main.cur().netGameSpy.roomName;
+            return;
+        } else
+        {
+            serverName = s;
+            mirrorsUpdate();
+            return;
+        }
     }
 
-    return false;
-  }
-
-  private void checkUpdate() {
-    if (isSingle())
-      return;
-    long l = Time.currentReal();
-    if (l < this.checkTimeUpdate)
-      return;
-    this.checkTimeUpdate = (l + 1000L);
-
-    List localList = NetEnv.hosts();
-    int i = localList.size();
-    Object localObject;
-    for (int j = 0; j < i; j++) {
-      localObject = (NetUser)localList.get(j);
-      if (!this.checkUsers.containsKey(localObject)) {
-        this.checkUsers.put(localObject, new CheckUser((NetUser)localObject));
-      }
+    public boolean isProtected()
+    {
+        return (flags & 0x80) != 0;
     }
 
-    if (i != this.checkUsers.size()) {
-      while (true) {
-        j = 0;
-        localObject = this.checkUsers.nextEntry(null);
-        while (localObject != null) {
-          NetUser localNetUser = (NetUser)((Map.Entry)localObject).getKey();
-          if (localNetUser.isDestroyed()) {
-            this.checkUsers.remove(localNetUser);
-            j = 1;
+    public java.lang.String getPassword()
+    {
+        return serverPassword;
+    }
+
+    public void setPassword(java.lang.String s)
+    {
+        serverPassword = s;
+        if(serverPassword != null)
+            flags |= 0x80;
+        else
+            flags &= 0xffffff7f;
+        mirrorsUpdate();
+    }
+
+    private void setClouds()
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(com.maddox.il2.ai.World.cur().diffCur.Clouds)
+        {
+            com.maddox.il2.game.Main3D.cur3D().bDrawClouds = true;
+            if(com.maddox.il2.engine.RenderContext.cfgSky.get() == 0)
+            {
+                com.maddox.il2.engine.RenderContext.cfgSky.set(1);
+                com.maddox.il2.engine.RenderContext.cfgSky.apply();
+                com.maddox.il2.engine.RenderContext.cfgSky.reset();
+            }
+        } else
+        {
+            com.maddox.il2.game.Main3D.cur3D().bDrawClouds = false;
+        }
+    }
+
+    public int getMaxUsers()
+    {
+        return maxUsers;
+    }
+
+    public void setMaxUsers(int i)
+    {
+        if(!isMaster())
+        {
+            return;
+        } else
+        {
+            maxUsers = i;
+            mirrorsUpdate();
+            return;
+        }
+    }
+
+    private void mirrorsUpdate()
+    {
+        USGSupdate();
+        if(com.maddox.il2.game.Main.cur().netGameSpy != null)
+            com.maddox.il2.game.Main.cur().netGameSpy.sendStatechanged();
+        if(!isMirrored())
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(0);
+            netmsgguaranted.writeInt(flags);
+            netmsgguaranted.writeInt(difficulty);
+            netmsgguaranted.writeByte(maxUsers);
+            netmsgguaranted.write255(serverName);
+            post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.NetObj.printDebug(exception);
+        }
+    }
+
+    public void USGSupdate()
+    {
+        if(!isMaster())
+            return;
+        if(!com.maddox.il2.net.USGS.isUsed())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.net.USGS.update();
+            return;
+        }
+    }
+
+    public void doMissionCoopEnter()
+    {
+        if(isMaster())
+        {
+            java.util.List list = com.maddox.rts.NetEnv.hosts();
+            if(list.size() == 0)
+            {
+                prepareHidenAircraft();
+                startCoopGame();
+                return;
+            }
+            for(int i = 0; i < list.size(); i++)
+                ((com.maddox.il2.net.NetUser)list.get(i)).syncCoopStart = -1;
+
+            bCheckStartSync = true;
+            syncTime = com.maddox.rts.Time.currentReal() + 32000L;
+        } else
+        if(com.maddox.il2.game.Main.cur().netMissionListener != null)
+            com.maddox.il2.game.Main.cur().netMissionListener.netMissionCoopEnter();
+        if(isMirrored())
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(1);
+                netmsgguaranted.writeByte(syncStamp);
+                post(netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        if(!isMaster())
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted();
+                netmsgguaranted1.writeByte(2);
+                netmsgguaranted1.writeNetObj(com.maddox.rts.NetEnv.host());
+                postTo(masterChannel(), netmsgguaranted1);
+            }
+            catch(java.lang.Exception exception1)
+            {
+                com.maddox.rts.NetObj.printDebug(exception1);
+            }
+    }
+
+    public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        netmsginput.reset();
+        byte byte0 = netmsginput.readByte();
+        switch(byte0)
+        {
+        case 0: // '\0'
+            int i = netmsginput.readInt();
+            int j = netmsginput.readInt();
+            int k = netmsginput.readByte();
+            serverName = netmsginput.read255();
+            flags = i;
+            difficulty = j;
+            maxUsers = k;
+            com.maddox.il2.ai.World.cur().diffCur.set(difficulty);
+            setClouds();
+            synkExtraOcclusion();
+            if(isMirrored())
+                post(new NetMsgGuaranted(netmsginput, 0));
             break;
-          }
-          localObject = this.checkUsers.nextEntry((Map.Entry)localObject);
+
+        case 1: // '\001'
+            syncStamp = netmsginput.readUnsignedByte();
+            doMissionCoopEnter();
+            break;
+
+        case 2: // '\002'
+            if(isMaster())
+            {
+                com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)netmsginput.readNetObj();
+                if(netuser != null)
+                    netuser.syncCoopStart = syncStamp;
+            } else
+            {
+                postTo(masterChannel(), new NetMsgGuaranted(netmsginput, 1));
+            }
+            break;
+
+        case 3: // '\003'
+            int l = netmsginput.readUnsignedByte();
+            int j1 = netmsginput.readInt();
+            if(syncStamp != l)
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted();
+                netmsgguaranted1.writeByte(4);
+                netmsgguaranted1.writeByte(l);
+                netmsgguaranted1.writeNetObj(com.maddox.rts.NetEnv.host());
+                postTo(masterChannel(), netmsgguaranted1);
+                syncStamp = l;
+                syncTime = (long)j1 + com.maddox.rts.Message.currentRealTime();
+            } else
+            {
+                long l1 = (long)j1 + com.maddox.rts.Message.currentRealTime();
+                if(syncTime > l1)
+                    syncTime = l1;
+            }
+            if(isMirrored())
+            {
+                outMsgF.unLockAndClear();
+                outMsgF.writeByte(3);
+                outMsgF.writeByte(syncStamp);
+                outMsgF.writeInt((int)(syncTime - com.maddox.rts.Time.currentReal()));
+                postReal(com.maddox.rts.Time.currentReal(), outMsgF);
+            }
+            break;
+
+        case 4: // '\004'
+            if(isMaster())
+            {
+                int i1 = netmsginput.readUnsignedByte();
+                com.maddox.il2.net.NetUser netuser1 = (com.maddox.il2.net.NetUser)netmsginput.readNetObj();
+                if(netuser1 == null || i1 != syncStamp)
+                    break;
+                netuser1.syncCoopStart = syncStamp;
+                java.util.List list = com.maddox.rts.NetEnv.hosts();
+                for(int k1 = 0; k1 < list.size(); k1++)
+                    if(((com.maddox.il2.net.NetUser)list.get(k1)).syncCoopStart != syncStamp)
+                        return true;
+
+                bDoSync = false;
+                doStartCoopGame();
+            } else
+            {
+                postTo(masterChannel(), new NetMsgGuaranted(netmsginput, 1));
+            }
+            break;
+
+        case 5: // '\005'
+            doStartCoopGame();
+            break;
+
+        case 6: // '\006'
+            serverDeltaTime = netmsginput.readLong();
+            if(!com.maddox.il2.net.NetMissionTrack.isRecording())
+                break;
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(6);
+                netmsgguaranted.writeLong(serverDeltaTime);
+                postTo(com.maddox.il2.net.NetMissionTrack.netChannelOut(), netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+            break;
+
+        default:
+            return checkInput(byte0, netmsginput);
         }
-        if (j == 0) {
-          break;
-        }
-      }
+        return true;
     }
-    Map.Entry localEntry = this.checkUsers.nextEntry(null);
-    while (localEntry != null) {
-      if ((this.checkPublicKey == 0) && (this.checkRuntime >= 1))
-        this.checkPublicKey = (int)(Math.random() * 4294967295.0D);
-      localObject = (CheckUser)localEntry.getValue();
-      ((CheckUser)localObject).checkUpdate(l);
-      localEntry = this.checkUsers.nextEntry(localEntry);
-    }
-  }
 
-  public void zutiResetServerTime()
-  {
-    this.serverDeltaTime = 0L;
-    this.serverDeltaTime_lastUpdate = 0L;
-    inSync = false;
-    this.syncCounter = 0;
-    this.previousDeltaTime = 0L;
-    previousTime = 0L;
-  }
-
-  static
-  {
-    Spawn.add(NetServerParams.class, new SPAWN());
-  }
-
-  private class CheckUser
-  {
-    public NetUser user;
-    public int state = 8;
-    public long timeSended = 0L;
-    public Class classAircraft = null;
-    public int publicKey = 0;
-    public int diff;
-
-    public boolean checkInput(int paramInt, NetMsgInput paramNetMsgInput)
-      throws IOException
+    public void netUpdate()
     {
-      int i = 0;
-      Object localObject;
-      switch (paramInt) {
-      case 8:
-        if (NetServerParams.this.checkKey == 0)
-          NetServerParams.access$1502(NetServerParams.this, NetServerParams.this.checkFirst(NetServerParams.this.checkPublicKey));
-        i = NetServerParams.this.checkKey == paramNetMsgInput.readInt() ? 1 : 0;
-        if (i == 0) break;
-        this.state += 1; break;
-      case 9:
-        int j = 0;
-        if (NetServerParams.this.checkRuntime == 2)
-          j = this.publicKey;
-        i = paramNetMsgInput.readInt() == NetServerParams.this.checkSecond(this.publicKey, j) ? 1 : 0;
-        if (i != 0)
-          i = paramNetMsgInput.readInt() == NetServerParams.this.checkSecond2 ? 1 : 0;
-        if (i == 0) break;
-        this.state += 1; break;
-      case 10:
-        localObject = this.user.findAircraft();
-        if (Actor.isValid((Actor)localObject)) {
-          int k = Finger.incInt(this.publicKey, this.diff);
-          i = paramNetMsgInput.readInt() == (int)((Aircraft)localObject).finger(k) + SFSInputStream.oo ? 1 : 0;
-          if (i != 0)
-            this.classAircraft = localObject.getClass();
-          else
-            this.classAircraft = null;
-        } else {
-          this.classAircraft = null;
-          i = 1;
+        if(!com.maddox.il2.net.NetMissionTrack.isPlaying())
+        {
+            doCheckMaxLag();
+            if(isMaster())
+                checkUpdate();
         }
-        break;
-      default:
-        return false;
-      }
-      this.timeSended = 0L;
-      if (i == 0) {
-        NetChannel localNetChannel = paramNetMsgInput.channel();
-        if (!localNetChannel.isDestroying()) {
-          localObject = "Timeout ";
-          localObject = (String)localObject + (paramInt - 8);
-          localNetChannel.destroy((String)localObject);
+        if(isMirror() && isCoop() && !com.maddox.rts.Time.isPaused() && com.maddox.il2.net.NetMissionTrack.isRecording() && !com.maddox.il2.net.NetMissionTrack.isPlaying())
+        {
+            long l = com.maddox.rts.Time.current();
+            if(l > serverDeltaTime_lastUpdate + 3000L)
+            {
+                serverDeltaTime_lastUpdate = l;
+                try
+                {
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                    netmsgguaranted.writeByte(6);
+                    long l1 = com.maddox.il2.game.Main.cur().netServerParams.masterChannel().remoteClockOffset();
+                    long l2 = l1 - com.maddox.il2.game.Main.cur().netServerParams.serverClockOffset0;
+                    netmsgguaranted.writeLong(l2);
+                    postTo(com.maddox.il2.net.NetMissionTrack.netChannelOut(), netmsgguaranted);
+                }
+                catch(java.lang.Exception exception1)
+                {
+                    com.maddox.rts.NetObj.printDebug(exception1);
+                }
+            }
         }
-      }
-      return true;
+        if(!bDoSync && !bCheckStartSync)
+            return;
+        if(isMaster())
+        {
+            if(bCheckStartSync)
+            {
+                java.util.List list = com.maddox.rts.NetEnv.hosts();
+                if(list.size() == 0)
+                {
+                    prepareHidenAircraft();
+                    startCoopGame();
+                    bCheckStartSync = false;
+                    return;
+                }
+                if(com.maddox.rts.Time.currentReal() > syncTime)
+                {
+                    for(int i = 0; i < list.size(); i++)
+                    {
+                        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)list.get(i);
+                        if(netuser.syncCoopStart != syncStamp)
+                            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).kick(netuser);
+                    }
+
+                } else
+                {
+                    for(int j = 0; j < list.size(); j++)
+                    {
+                        com.maddox.il2.net.NetUser netuser1 = (com.maddox.il2.net.NetUser)list.get(j);
+                        if(netuser1.syncCoopStart != syncStamp)
+                            return;
+                    }
+
+                }
+                syncStamp = syncStamp + 1 & 0xff;
+                syncDelta = 4000L;
+                syncTime = com.maddox.rts.Time.currentReal() + syncDelta;
+                bCheckStartSync = false;
+                bDoSync = true;
+            }
+            if(com.maddox.rts.NetEnv.hosts().size() == 0)
+            {
+                prepareHidenAircraft();
+                startCoopGame();
+                bDoSync = false;
+                return;
+            }
+            if(com.maddox.rts.Time.currentReal() > syncTime - syncDelta / 2L)
+                if(syncDelta < 32000L)
+                {
+                    syncStamp = syncStamp + 1 & 0xff;
+                    syncDelta *= 2L;
+                    syncTime = com.maddox.rts.Time.currentReal() + syncDelta;
+                } else
+                {
+                    java.util.List list1 = com.maddox.rts.NetEnv.hosts();
+                    for(int k = 0; k < list1.size(); k++)
+                    {
+                        com.maddox.il2.net.NetUser netuser2 = (com.maddox.il2.net.NetUser)list1.get(k);
+                        if(netuser2.syncCoopStart != syncStamp)
+                            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).kick(netuser2);
+                    }
+
+                    bDoSync = false;
+                    doStartCoopGame();
+                    return;
+                }
+            try
+            {
+                outMsgF.unLockAndClear();
+                outMsgF.writeByte(3);
+                outMsgF.writeByte(syncStamp);
+                outMsgF.writeInt((int)(syncTime - com.maddox.rts.Time.currentReal()));
+                postReal(com.maddox.rts.Time.currentReal(), outMsgF);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        }
     }
 
-    public void checkUpdate(long paramLong) {
-      if (this.state > 10)
-        return;
-      Object localObject;
-      if (this.timeSended != 0L) {
-        if (paramLong < this.timeSended + 150000L)
-          return;
-        NetChannel localNetChannel = this.user.masterChannel();
-        if (!localNetChannel.isDestroying()) {
-          localObject = "Timeout .";
-          localObject = (String)localObject + (this.state - 8);
-          localNetChannel.destroy((String)localObject);
-        }
-        return;
-      }
-      try
-      {
-        int i = 0;
-        switch (this.state) {
-        case 8:
-          i = NetServerParams.this.checkPublicKey;
-          break;
-        case 9:
-          i = this.publicKey = (int)(Math.random() * 4294967295.0D);
-          break;
-        case 10:
-          localObject = this.user.findAircraft();
-          if ((!Actor.isValid((Actor)localObject)) || 
-            (localObject.getClass().equals(this.classAircraft))) break;
-          i = this.publicKey = (int)(Math.random() * 4294967295.0D);
-          this.diff = World.cur().diffCur.get();
-        }
+    public void msgNetDelChannel(com.maddox.rts.NetChannel netchannel)
+    {
+        netUpdate();
+    }
 
-        if (i != 0) {
-          localObject = new NetMsgGuaranted();
-          ((NetMsgGuaranted)localObject).writeByte(this.state);
-          ((NetMsgGuaranted)localObject).writeNetObj(this.user);
-          ((NetMsgGuaranted)localObject).writeInt(i);
-          if (this.state == 9) {
-            if (NetServerParams.this.checkRuntime == 2)
-              ((NetMsgGuaranted)localObject).writeInt(i);
+    private void doStartCoopGame()
+    {
+        if(isMirrored())
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(5);
+                post(netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        com.maddox.il2.game.HUD.logCoopTimeStart(syncTime);
+        new com.maddox.rts.MsgAction(64, syncTime, this) {
+
+            public void doAction(java.lang.Object obj)
+            {
+                if(obj != com.maddox.il2.game.Main.cur().netServerParams)
+                {
+                    return;
+                } else
+                {
+                    prepareHidenAircraft();
+                    startCoopGame();
+                    return;
+                }
+            }
+
+        }
+;
+    }
+
+    private void startCoopGame()
+    {
+        prepareOrdersTree();
+        com.maddox.il2.game.Mission.doMissionStarting();
+        com.maddox.rts.Time.setPause(false);
+        com.maddox.sound.AudioDevice.soundsOn();
+        if(isMaster() && bNGEN)
+        {
+            if(timeoutNGEN > 0L)
+                startTimeoutNGEN(timeoutNGEN);
+            if(bLandedNGEN)
+                startLandedNGEN(2000L);
+        } else
+        {
+            if(masterChannel() != null)
+                serverClockOffset0 = masterChannel().remoteClockOffset();
             else
-              ((NetMsgGuaranted)localObject).writeInt(0);
-          }
-          NetServerParams.this.postTo(this.user.masterChannel(), (NetMsgGuaranted)localObject);
-          this.timeSended = paramLong;
+                serverClockOffset0 = 0L;
+            lastServerTime = 0L;
+            serverDeltaTime_lastUpdate = 0xfffffffffffe7960L;
         }
-      }
-      catch (Exception localException)
-      {
-      }
     }
 
-    public CheckUser(NetUser arg2)
+    private void startTimeoutNGEN(long l)
     {
-      Object localObject;
-      this.user = localObject;
+        new com.maddox.rts.MsgAction(0, com.maddox.rts.Time.current() + l, com.maddox.il2.game.Mission.cur()) {
+
+            public void doAction(java.lang.Object obj)
+            {
+                if(com.maddox.il2.game.Mission.cur() != obj)
+                    return;
+                if(!com.maddox.il2.game.Mission.isPlaying())
+                    return;
+                if(com.maddox.il2.game.Main.state().id() != 49)
+                    startTimeoutNGEN(500L);
+                else
+                    ((com.maddox.il2.gui.GUINetServerCMission)com.maddox.il2.game.Main.state()).tryExit();
+            }
+
+        }
+;
     }
-  }
 
-  static class SPAWN
-    implements NetSpawn
-  {
-    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput)
+    private void startLandedNGEN(long l)
     {
-      try
-      {
-        NetObj localNetObj = paramNetMsgInput.readNetObj();
-        int i = paramNetMsgInput.readInt();
-        int j = paramNetMsgInput.readInt();
-        int k = paramNetMsgInput.readByte();
-        String str = paramNetMsgInput.read255();
-        NetServerParams localNetServerParams = new NetServerParams(paramNetMsgInput.channel(), paramInt, (NetHost)localNetObj);
-        NetServerParams.access$302(localNetServerParams, i);
-        NetServerParams.access$402(localNetServerParams, j);
-        NetServerParams.access$502(localNetServerParams, k);
-        NetServerParams.access$602(localNetServerParams, str);
-        NetServerParams.access$702(localNetServerParams, paramNetMsgInput.readByte());
-        NetServerParams.access$802(localNetServerParams, paramNetMsgInput.readFloat());
-        NetServerParams.access$902(localNetServerParams, paramNetMsgInput.readFloat());
-        NetServerParams.access$1002(localNetServerParams, paramNetMsgInput.readFloat());
-        NetServerParams.access$1102(localNetServerParams, paramNetMsgInput.readInt());
+        new com.maddox.rts.MsgAction(0, com.maddox.rts.Time.current() + l, com.maddox.il2.game.Mission.cur()) {
 
-        if ((!NetMissionTrack.isPlaying()) || (NetMissionTrack.playingOriginalVersion() > 102)) {
-          localNetServerParams.netStat_DisableStatistics = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotNumber = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotPing = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotName = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotScore = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotArmy = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotACDesignation = paramNetMsgInput.readBoolean();
-          localNetServerParams.netStat_ShowPilotACType = paramNetMsgInput.readBoolean();
-          localNetServerParams.filterUserNames = paramNetMsgInput.readBoolean();
+            public void doAction(java.lang.Object obj)
+            {
+                if(com.maddox.il2.game.Mission.cur() != obj)
+                    return;
+                if(!com.maddox.il2.game.Mission.isPlaying())
+                    return;
+                if(com.maddox.il2.game.Main.state().id() != 49)
+                {
+                    startLandedNGEN(2000L);
+                } else
+                {
+                    boolean flag = true;
+                    for(java.util.Map.Entry entry = com.maddox.il2.engine.Engine.name2Actor().nextEntry(null); entry != null; entry = com.maddox.il2.engine.Engine.name2Actor().nextEntry(entry))
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getValue();
+                        if(!(actor instanceof com.maddox.il2.objects.air.Aircraft) || !com.maddox.il2.engine.Actor.isAlive(actor))
+                            continue;
+                        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)actor;
+                        if(!aircraft.isNetPlayer())
+                            continue;
+                        if(!aircraft.FM.isWasAirborne())
+                        {
+                            flag = false;
+                            break;
+                        }
+                        if(aircraft.FM.isStationedOnGround())
+                            continue;
+                        flag = false;
+                        break;
+                    }
 
-          localNetServerParams.reflyKIADelay = paramNetMsgInput.readInt();
-          localNetServerParams.maxAllowedKIA = paramNetMsgInput.readInt();
-          localNetServerParams.reflyKIADelayMultiplier = paramNetMsgInput.readFloat();
-          localNetServerParams.reflyDisabled = paramNetMsgInput.readBoolean();
-          localNetServerParams.allowMorseAsText = paramNetMsgInput.readBoolean();
+                    if(flag)
+                        ((com.maddox.il2.gui.GUINetServerCMission)com.maddox.il2.game.Main.state()).tryExit();
+                    else
+                        startLandedNGEN(2000L);
+                }
+            }
+
+        }
+;
+    }
+
+    public void prepareHidenAircraft()
+    {
+        java.util.ArrayList arraylist = new ArrayList();
+        for(java.util.Map.Entry entry = com.maddox.il2.engine.Engine.name2Actor().nextEntry(null); entry != null; entry = com.maddox.il2.engine.Engine.name2Actor().nextEntry(entry))
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getValue();
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && actor.name().charAt(0) == ' ')
+                arraylist.add(actor);
         }
 
-        if ((paramNetMsgInput.channel() instanceof NetChannelInStream)) {
-          NetServerParams.access$402(localNetServerParams, World.cur().diffCur.get());
-          if (paramNetMsgInput.available() >= 8)
-            NetServerParams.access$1202(localNetServerParams, paramNetMsgInput.readLong());
-          else
-            NetServerParams.access$1202(localNetServerParams, 0L);
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)arraylist.get(i);
+            java.lang.String s = aircraft.name().substring(1);
+            if(com.maddox.il2.engine.Actor.getByName(s) != null)
+            {
+                aircraft.destroy();
+            } else
+            {
+                aircraft.setName(s);
+                aircraft.collide(true);
+                aircraft.restoreLinksInCoopWing();
+            }
         }
-        else {
-          World.cur().diffCur.set(j);
+
+        if(com.maddox.il2.ai.World.isPlayerGunner())
+            com.maddox.il2.ai.World.getPlayerGunner().getAircraft();
+        if(isMaster())
+            return;
+        for(java.util.Map.Entry entry1 = com.maddox.il2.engine.Engine.name2Actor().nextEntry(null); entry1 != null; entry1 = com.maddox.il2.engine.Engine.name2Actor().nextEntry(entry1))
+        {
+            com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)entry1.getValue();
+            if(actor1 instanceof com.maddox.il2.objects.air.Aircraft)
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft1 = (com.maddox.il2.objects.air.Aircraft)actor1;
+                if(!aircraft1.isNetPlayer() && !aircraft1.isNet())
+                    arraylist.add(actor1);
+            }
         }
-        localNetServerParams.synkExtraOcclusion();
-        if (paramNetMsgInput.available() >= 4)
-          NetServerParams.access$1302(localNetServerParams, paramNetMsgInput.readInt());
+
+        for(int j = 0; j < arraylist.size(); j++)
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft2 = (com.maddox.il2.objects.air.Aircraft)arraylist.get(j);
+            aircraft2.destroy();
+        }
+
+    }
+
+    private void prepareOrdersTree()
+    {
+        if(com.maddox.il2.ai.World.isPlayerGunner())
+            com.maddox.il2.ai.World.getPlayerGunner().getAircraft();
         else
-          NetServerParams.access$1302(localNetServerParams, -1);
-      } catch (Exception localException) {
-        NetServerParams.access$1400(localException);
-      }
+            ((com.maddox.il2.game.Main3D)com.maddox.il2.game.Main.cur()).ordersTree.netMissionLoaded(com.maddox.il2.ai.World.getPlayerAircraft());
+        if(isMirror())
+            return;
+        java.util.List list = com.maddox.rts.NetEnv.hosts();
+        for(int i = 0; i < list.size(); i++)
+        {
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)list.get(i);
+            netuser.ordersTree = new OrdersTree(false);
+            netuser.ordersTree.netMissionLoaded(netuser.findAircraft());
+        }
+
     }
-  }
+
+    private void doCheckMaxLag()
+    {
+        long l = com.maddox.rts.Time.real();
+        if(_lastCheckMaxLag > 0L && l - _lastCheckMaxLag < 1000L)
+            return;
+        _lastCheckMaxLag = l;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        if(isMaster())
+        {
+            java.util.List list = com.maddox.il2.engine.Engine.targets();
+            int i = list.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(j);
+                if((actor instanceof com.maddox.il2.objects.air.Aircraft) && com.maddox.il2.engine.Actor.isAlive(actor) && !actor.net.isMaster())
+                {
+                    com.maddox.il2.net.NetUser netuser1 = ((com.maddox.il2.objects.air.Aircraft)actor).netUser();
+                    if(netuser1 != null)
+                    {
+                        if(netuser1.netMaxLag == null)
+                            netuser1.netMaxLag = new NetMaxLag();
+                        netuser1.netMaxLag.doServerCheck((com.maddox.il2.objects.air.Aircraft)actor);
+                    }
+                }
+            }
+
+        } else
+        {
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+            if(netuser.netMaxLag == null)
+                netuser.netMaxLag = new NetMaxLag();
+            netuser.netMaxLag.doClientCheck();
+        }
+    }
+
+    public void destroy()
+    {
+        super.destroy();
+        bCheckStartSync = false;
+        bDoSync = false;
+        com.maddox.il2.game.Main.cur().netServerParams = null;
+    }
+
+    public NetServerParams()
+    {
+        super(null);
+        flags = 4096;
+        autoLogDetail = 3;
+        eventlogHouse = false;
+        eventlogClient = -1;
+        bNGEN = false;
+        timeoutNGEN = 0L;
+        bLandedNGEN = false;
+        farMaxLagTime = 10F;
+        nearMaxLagTime = 2.0F;
+        cheaterWarningDelay = 10F;
+        cheaterWarningNum = 3;
+        syncStamp = 0;
+        bCheckStartSync = false;
+        bDoSync = false;
+        serverDeltaTime = 0L;
+        serverDeltaTime_lastUpdate = 0L;
+        serverClockOffset0 = 0L;
+        lastServerTime = 0L;
+        _lastCheckMaxLag = -1L;
+        checkRuntime = 0;
+        checkTimeUpdate = 0L;
+        checkUsers = new HashMapExt();
+        checkPublicKey = 0;
+        checkKey = 0;
+        checkSecond2 = 0;
+        host = com.maddox.rts.NetEnv.host();
+        serverName = host.shortName();
+        com.maddox.il2.game.Main.cur().netServerParams = this;
+        outMsgF = new NetMsgFiltered();
+        try
+        {
+            outMsgF.setIncludeTime(true);
+        }
+        catch(java.lang.Exception exception) { }
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            flags |= 8;
+        synkExtraOcclusion();
+        autoLogDetail = com.maddox.il2.engine.Config.cur.ini.get("chat", "autoLogDetail", autoLogDetail, 0, 3);
+        nearMaxLagTime = com.maddox.il2.engine.Config.cur.ini.get("MaxLag", "nearMaxLagTime", nearMaxLagTime, 0.1F, 30F);
+        farMaxLagTime = com.maddox.il2.engine.Config.cur.ini.get("MaxLag", "farMaxLagTime", farMaxLagTime, nearMaxLagTime, 30F);
+        cheaterWarningDelay = com.maddox.il2.engine.Config.cur.ini.get("MaxLag", "cheaterWarningDelay", cheaterWarningDelay, 1.0F, 30F);
+        cheaterWarningNum = com.maddox.il2.engine.Config.cur.ini.get("MaxLag", "cheaterWarningNum", cheaterWarningNum);
+        checkRuntime = com.maddox.il2.engine.Config.cur.ini.get("NET", "checkRuntime", 0, 0, 2);
+        eventlogHouse = com.maddox.il2.engine.Config.cur.ini.get("game", "eventlogHouse", false);
+        eventlogClient = com.maddox.il2.engine.Config.cur.ini.get("game", "eventlogClient", -1);
+    }
+
+    public NetServerParams(com.maddox.rts.NetChannel netchannel, int i, com.maddox.rts.NetHost nethost)
+    {
+        super(null, netchannel, i);
+        flags = 4096;
+        autoLogDetail = 3;
+        eventlogHouse = false;
+        eventlogClient = -1;
+        bNGEN = false;
+        timeoutNGEN = 0L;
+        bLandedNGEN = false;
+        farMaxLagTime = 10F;
+        nearMaxLagTime = 2.0F;
+        cheaterWarningDelay = 10F;
+        cheaterWarningNum = 3;
+        syncStamp = 0;
+        bCheckStartSync = false;
+        bDoSync = false;
+        serverDeltaTime = 0L;
+        serverDeltaTime_lastUpdate = 0L;
+        serverClockOffset0 = 0L;
+        lastServerTime = 0L;
+        _lastCheckMaxLag = -1L;
+        checkRuntime = 0;
+        checkTimeUpdate = 0L;
+        checkUsers = new HashMapExt();
+        checkPublicKey = 0;
+        checkKey = 0;
+        checkSecond2 = 0;
+        host = nethost;
+        com.maddox.il2.game.Main.cur().netServerParams = this;
+        outMsgF = new NetMsgFiltered();
+        try
+        {
+            outMsgF.setIncludeTime(true);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    public com.maddox.rts.NetMsgSpawn netReplicate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgSpawn netmsgspawn = new NetMsgSpawn(this);
+        netmsgspawn.writeNetObj(host);
+        netmsgspawn.writeInt(flags);
+        netmsgspawn.writeInt(difficulty);
+        netmsgspawn.writeByte(maxUsers);
+        netmsgspawn.write255(serverName);
+        netmsgspawn.writeByte(autoLogDetail);
+        netmsgspawn.writeFloat(farMaxLagTime);
+        netmsgspawn.writeFloat(nearMaxLagTime);
+        netmsgspawn.writeFloat(cheaterWarningDelay);
+        netmsgspawn.writeInt(cheaterWarningNum);
+        if((netchannel instanceof com.maddox.rts.NetChannelOutStream) && isCoop())
+            if(com.maddox.il2.net.NetMissionTrack.isPlaying())
+            {
+                netmsgspawn.writeLong(serverDeltaTime);
+            } else
+            {
+                long l = 0L;
+                if(isMirror())
+                {
+                    long l1 = com.maddox.il2.game.Main.cur().netServerParams.masterChannel().remoteClockOffset();
+                    l = l1 - com.maddox.il2.game.Main.cur().netServerParams.serverClockOffset0;
+                }
+                netmsgspawn.writeLong(l);
+            }
+        netmsgspawn.writeInt(eventlogClient);
+        return netmsgspawn;
+    }
+
+    private int crcSFSFile(java.lang.String s, int i)
+    {
+        try
+        {
+            com.maddox.rts.SFSInputStream sfsinputstream = new SFSInputStream(com.maddox.rts.Finger.LongFN(0L, s));
+            i = sfsinputstream.crc(i);
+            sfsinputstream.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.rts.NetObj.printDebug(exception);
+            return 0;
+        }
+        return i;
+    }
+
+    private int checkFirst(int i)
+    {
+        if(i != 0)
+        {
+            long l = com.maddox.rts.Finger.file(i, com.maddox.rts.MainWin32.GetCDDrive("jvm.dll"), -1);
+            l = com.maddox.rts.Finger.file(l, com.maddox.rts.MainWin32.GetCDDrive("java.dll"), -1);
+            l = com.maddox.rts.Finger.file(l, com.maddox.rts.MainWin32.GetCDDrive("net.dll"), -1);
+            l = com.maddox.rts.Finger.file(l, com.maddox.rts.MainWin32.GetCDDrive("verify.dll"), -1);
+            l = com.maddox.rts.Finger.file(l, com.maddox.rts.MainWin32.GetCDDrive("zip.dll"), -1);
+            l = com.maddox.rts.Finger.file(l, "lib/rt.jar", -1);
+            java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+            for(int j = 0; j < arraylist.size(); j++)
+            {
+                java.lang.Class class1 = (java.lang.Class)arraylist.get(j);
+                l = com.maddox.il2.fm.FlightModelMain.finger(l, com.maddox.rts.Property.stringValue(class1, "FlightModel", null));
+            }
+
+            l = com.maddox.il2.objects.Statics.getShipsFile().finger(l);
+            l = com.maddox.il2.objects.Statics.getTechnicsFile().finger(l);
+            l = com.maddox.il2.objects.Statics.getBuildingsFile().finger(l);
+            i = (int)l;
+        }
+        return i;
+    }
+
+    private int checkSecond(int i, int j)
+    {
+        checkSecond2 = j;
+        try
+        {
+            java.lang.ClassLoader classloader = getClass().getClassLoader();
+            java.lang.reflect.Field afield[] = (java.lang.ClassLoader.class).getDeclaredFields();
+            java.lang.reflect.Field field = null;
+            for(int k = 0; k < afield.length; k++)
+            {
+                if(!"classes".equals(afield[k].getName()))
+                    continue;
+                field = afield[k];
+                break;
+            }
+
+            java.util.Vector vector = (java.util.Vector)com.maddox.rts.CLASS.field(classloader, field);
+            for(int l = 0; l < vector.size(); l++)
+            {
+                java.lang.Class class1 = (java.lang.Class)vector.get(l);
+                java.lang.reflect.Field afield1[] = class1.getDeclaredFields();
+                if(afield1 != null)
+                {
+                    for(int i1 = 0; i1 < afield1.length; i1++)
+                        i = com.maddox.rts.Finger.incInt(i, afield1[i1].getName());
+
+                }
+                java.lang.reflect.Method amethod[] = class1.getDeclaredMethods();
+                if(amethod != null)
+                {
+                    for(int j1 = 0; j1 < amethod.length; j1++)
+                        i = com.maddox.rts.Finger.incInt(i, amethod[j1].getName());
+
+                }
+                if(checkSecond2 != 0)
+                    j = com.maddox.rts.CLASS.method(class1, j);
+            }
+
+        }
+        catch(java.lang.Exception exception) { }
+        checkSecond2 = j;
+        return i;
+    }
+
+    private boolean CheckUserInput(int i, com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int j;
+        switch(i)
+        {
+        case 8: // '\b'
+            j = checkFirst(netmsginput.readInt());
+            break;
+
+        case 9: // '\t'
+            j = checkSecond(netmsginput.readInt(), netmsginput.readInt());
+            break;
+
+        case 10: // '\n'
+            j = netmsginput.readInt();
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+            com.maddox.il2.objects.air.Aircraft aircraft = netuser.findAircraft();
+            if(com.maddox.il2.engine.Actor.isValid(aircraft))
+            {
+                j = com.maddox.rts.Finger.incInt(j, com.maddox.il2.ai.World.cur().diffCur.get());
+                j = (int)aircraft.finger(j) + com.maddox.rts.SFSInputStream.oo;
+            }
+            break;
+
+        default:
+            return false;
+        }
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(i);
+        netmsgguaranted.writeNetObj(com.maddox.rts.NetEnv.host());
+        netmsgguaranted.writeInt(j);
+        if(i == 9)
+            netmsgguaranted.writeInt(checkSecond2);
+        postTo(netmsginput.channel(), netmsgguaranted);
+        return true;
+    }
+
+    private boolean checkInput(int i, com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)netmsginput.readNetObj();
+        if(isMaster())
+        {
+            java.lang.Object obj = (com.maddox.il2.net.CheckUser)checkUsers.get(netuser);
+            if(obj != null)
+                return ((com.maddox.il2.net.CheckUser) (obj)).checkInput(i, netmsginput);
+            else
+                return false;
+        }
+        if(com.maddox.rts.NetEnv.host() == netuser)
+            return CheckUserInput(i, netmsginput);
+        netmsginput.reset();
+        obj = new NetMsgGuaranted();
+        ((com.maddox.rts.NetMsgGuaranted) (obj)).writeMsg(netmsginput, 1);
+        if(netmsginput.channel() == masterChannel())
+            postTo(netuser.masterChannel(), ((com.maddox.rts.NetMsgGuaranted) (obj)));
+        else
+            postTo(masterChannel(), ((com.maddox.rts.NetMsgGuaranted) (obj)));
+        return true;
+    }
+
+    private void checkUpdate()
+    {
+        if(isSingle())
+            return;
+        long l = com.maddox.rts.Time.currentReal();
+        if(l < checkTimeUpdate)
+            return;
+        checkTimeUpdate = l + 1000L;
+        java.util.List list = com.maddox.rts.NetEnv.hosts();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)list.get(j);
+            if(!checkUsers.containsKey(netuser))
+                checkUsers.put(netuser, new CheckUser(netuser));
+        }
+
+        boolean flag;
+        if(i != checkUsers.size())
+            do
+            {
+                flag = false;
+                for(java.util.Map.Entry entry1 = checkUsers.nextEntry(null); entry1 != null; entry1 = checkUsers.nextEntry(entry1))
+                {
+                    com.maddox.il2.net.NetUser netuser1 = (com.maddox.il2.net.NetUser)entry1.getKey();
+                    if(!netuser1.isDestroyed())
+                        continue;
+                    checkUsers.remove(netuser1);
+                    flag = true;
+                    break;
+                }
+
+            } while(flag);
+        for(java.util.Map.Entry entry = checkUsers.nextEntry(null); entry != null; entry = checkUsers.nextEntry(entry))
+        {
+            if(checkPublicKey == 0 && checkRuntime >= 1)
+                checkPublicKey = (int)(java.lang.Math.random() * 4294967295D);
+            com.maddox.il2.net.CheckUser checkuser = (com.maddox.il2.net.CheckUser)entry.getValue();
+            checkuser.checkUpdate(l);
+        }
+
+    }
+
+    public static final int MIN_SYNC_DELTA = 4000;
+    public static final int MAX_SYNC_DELTA = 32000;
+    public static final int MODE_DOGFIGHT = 0;
+    public static final int MODE_COOP = 1;
+    public static final int MODE_SINGLE = 2;
+    public static final int MODE_MASK = 7;
+    public static final int TYPE_LOCAL = 0;
+    public static final int TYPE_BBGC = 16;
+    public static final int TYPE_BBGC_DEMO = 32;
+    public static final int TYPE_GAMESPY = 32;
+    public static final int TYPE_USGS = 48;
+    public static final int TYPE_MASK = 48;
+    public static final int TYPE_SHIFT = 4;
+    public static final int PROTECTED = 128;
+    public static final int DEDICATED = 8;
+    public static final int SHOW_SPEED_BAR = 4096;
+    public static final int EXTRA_OCCLUSION = 8192;
+    public static final int MSG_UPDATE = 0;
+    public static final int MSG_COOP_ENTER = 1;
+    public static final int MSG_COOP_ENTER_ASK = 2;
+    public static final int MSG_SYNC = 3;
+    public static final int MSG_SYNC_ASK = 4;
+    public static final int MSG_SYNC_START = 5;
+    public static final int MSG_TIME = 6;
+    public static final int MSG_CHECK_BEGIN = 8;
+    public static final int MSG_CHECK_FIRST = 8;
+    public static final int MSG_CHECK_SECOND = 9;
+    public static final int MSG_CHECK_STEP = 10;
+    public static final int MSG_CHECK_END = 10;
+    private java.lang.String serverName;
+    public java.lang.String serverDescription;
+    private java.lang.String serverPassword;
+    private com.maddox.rts.NetHost host;
+    private int flags;
+    private int difficulty;
+    private int maxUsers;
+    private int autoLogDetail;
+    private boolean eventlogHouse;
+    private int eventlogClient;
+    public boolean bNGEN;
+    public long timeoutNGEN;
+    public boolean bLandedNGEN;
+    private float farMaxLagTime;
+    private float nearMaxLagTime;
+    private float cheaterWarningDelay;
+    private int cheaterWarningNum;
+    private com.maddox.rts.NetMsgFiltered outMsgF;
+    private int syncStamp;
+    private long syncTime;
+    private long syncDelta;
+    private boolean bCheckStartSync;
+    private boolean bDoSync;
+    private long serverDeltaTime;
+    private long serverDeltaTime_lastUpdate;
+    private long serverClockOffset0;
+    private long lastServerTime;
+    long _lastCheckMaxLag;
+    private int checkRuntime;
+    private long checkTimeUpdate;
+    private com.maddox.util.HashMapExt checkUsers;
+    private int checkPublicKey;
+    private int checkKey;
+    private int checkSecond2;
+
+    static 
+    {
+        com.maddox.rts.Spawn.add(com.maddox.il2.net.NetServerParams.class, new SPAWN());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

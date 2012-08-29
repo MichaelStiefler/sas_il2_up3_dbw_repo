@@ -1,87 +1,93 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Tuple3b.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
 public abstract class Tuple3b
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public byte x;
-  public byte y;
-  public byte z;
 
-  public Tuple3b(byte paramByte1, byte paramByte2, byte paramByte3)
-  {
-    this.x = paramByte1;
-    this.y = paramByte2;
-    this.z = paramByte3;
-  }
+    public Tuple3b(byte byte0, byte byte1, byte byte2)
+    {
+        x = byte0;
+        y = byte1;
+        z = byte2;
+    }
 
-  public Tuple3b(byte[] paramArrayOfByte)
-  {
-    this.x = paramArrayOfByte[0];
-    this.y = paramArrayOfByte[1];
-    this.z = paramArrayOfByte[2];
-  }
+    public Tuple3b(byte abyte0[])
+    {
+        x = abyte0[0];
+        y = abyte0[1];
+        z = abyte0[2];
+    }
 
-  public Tuple3b(Tuple3b paramTuple3b)
-  {
-    this.x = paramTuple3b.x;
-    this.y = paramTuple3b.y;
-    this.z = paramTuple3b.z;
-  }
+    public Tuple3b(com.maddox.JGP.Tuple3b tuple3b)
+    {
+        x = tuple3b.x;
+        y = tuple3b.y;
+        z = tuple3b.z;
+    }
 
-  public Tuple3b()
-  {
-    this.x = 0;
-    this.y = 0;
-    this.z = 0;
-  }
+    public Tuple3b()
+    {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
 
-  public final void set(Tuple3b paramTuple3b)
-  {
-    this.x = paramTuple3b.x;
-    this.y = paramTuple3b.y;
-    this.z = paramTuple3b.z;
-  }
+    public final void set(com.maddox.JGP.Tuple3b tuple3b)
+    {
+        x = tuple3b.x;
+        y = tuple3b.y;
+        z = tuple3b.z;
+    }
 
-  public final void set(byte[] paramArrayOfByte)
-  {
-    this.x = paramArrayOfByte[0];
-    this.y = paramArrayOfByte[1];
-    this.z = paramArrayOfByte[2];
-  }
+    public final void set(byte abyte0[])
+    {
+        x = abyte0[0];
+        y = abyte0[1];
+        z = abyte0[2];
+    }
 
-  public final void get(byte[] paramArrayOfByte)
-  {
-    paramArrayOfByte[0] = this.x;
-    paramArrayOfByte[1] = this.y;
-    paramArrayOfByte[2] = this.z;
-  }
+    public final void get(byte abyte0[])
+    {
+        abyte0[0] = x;
+        abyte0[1] = y;
+        abyte0[2] = z;
+    }
 
-  public final void get(Tuple3b paramTuple3b)
-  {
-    paramTuple3b.x = this.x;
-    paramTuple3b.y = this.y;
-    paramTuple3b.z = this.z;
-  }
+    public final void get(com.maddox.JGP.Tuple3b tuple3b)
+    {
+        tuple3b.x = x;
+        tuple3b.y = y;
+        tuple3b.z = z;
+    }
 
-  public int hashCode()
-  {
-    return this.x | this.y << 8 | this.z << 16;
-  }
+    public int hashCode()
+    {
+        return x | y << 8 | z << 16;
+    }
 
-  public boolean equals(Tuple3b paramTuple3b)
-  {
-    return (paramTuple3b != null) && (this.x == paramTuple3b.x) && (this.y == paramTuple3b.y) && (this.z == paramTuple3b.z);
-  }
+    public boolean equals(com.maddox.JGP.Tuple3b tuple3b)
+    {
+        return tuple3b != null && x == tuple3b.x && y == tuple3b.y && z == tuple3b.z;
+    }
 
-  public boolean equals(Object paramObject)
-  {
-    return (paramObject != null) && ((paramObject instanceof Tuple3b)) && (equals((Tuple3b)paramObject));
-  }
+    public boolean equals(java.lang.Object obj)
+    {
+        return obj != null && (obj instanceof com.maddox.JGP.Tuple3b) && equals((com.maddox.JGP.Tuple3b)obj);
+    }
 
-  public String toString()
-  {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ")";
-  }
+    public java.lang.String toString()
+    {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
+    public byte x;
+    public byte y;
+    public byte z;
 }

@@ -1,102 +1,120 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AirGroupList.java
+
 package com.maddox.il2.ai.air;
+
+
+// Referenced classes of package com.maddox.il2.ai.air:
+//            AirGroup
 
 public class AirGroupList
 {
-  public AirGroup G;
-  AirGroupList next;
 
-  public AirGroupList()
-  {
-    this.G = null;
-    this.next = null;
-  }
-
-  public AirGroupList(AirGroup paramAirGroup)
-  {
-    this.G = paramAirGroup;
-    this.next = null;
-  }
-
-  public void release()
-  {
-    AirGroupList localAirGroupList = this;
-    while (localAirGroupList != null) {
-      localAirGroupList.G = null;
-      if (localAirGroupList.next != null) { localAirGroupList = localAirGroupList.next; continue; }
-      localAirGroupList = null;
+    public AirGroupList()
+    {
+        G = null;
+        next = null;
     }
-  }
 
-  public static void addAirGroup(AirGroupList[] paramArrayOfAirGroupList, int paramInt, AirGroup paramAirGroup)
-  {
-    if (paramArrayOfAirGroupList[paramInt] == null) {
-      paramArrayOfAirGroupList[paramInt] = new AirGroupList(paramAirGroup);
-      return;
+    public AirGroupList(com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        G = airgroup;
+        next = null;
     }
-    AirGroupList localAirGroupList = paramArrayOfAirGroupList[paramInt];
-    while (localAirGroupList.next != null) localAirGroupList = localAirGroupList.next;
-    localAirGroupList.next = new AirGroupList(paramAirGroup);
-  }
 
-  public static void delAirGroup(AirGroupList[] paramArrayOfAirGroupList, int paramInt, AirGroup paramAirGroup)
-  {
-    AirGroupList localAirGroupList1 = paramArrayOfAirGroupList[paramInt];
-    AirGroupList localAirGroupList2 = null;
-    while (localAirGroupList1 != null) {
-      if (localAirGroupList1.G == paramAirGroup) {
-        localAirGroupList1.G = null;
-        if (localAirGroupList2 == null) paramArrayOfAirGroupList[paramInt] = localAirGroupList1.next; else
-          localAirGroupList2.next = localAirGroupList1.next;
-        localAirGroupList1.next = null;
-        return;
-      }
-      localAirGroupList2 = localAirGroupList1;
-      localAirGroupList1 = localAirGroupList1.next;
-    }
-  }
+    public void release()
+    {
+        for(com.maddox.il2.ai.air.AirGroupList airgrouplist = this; airgrouplist != null;)
+        {
+            airgrouplist.G = null;
+            if(airgrouplist.next != null)
+                airgrouplist = airgrouplist.next;
+            else
+                airgrouplist = null;
+        }
 
-  public static int length(AirGroupList paramAirGroupList)
-  {
-    if (paramAirGroupList == null) return 0;
-    AirGroupList localAirGroupList = paramAirGroupList;
-    int i = 0;
-    while (localAirGroupList != null) {
-      localAirGroupList = localAirGroupList.next;
-      i++;
     }
-    return i;
-  }
 
-  public static AirGroup getGroup(AirGroupList paramAirGroupList, int paramInt)
-  {
-    if (paramAirGroupList == null) return null;
-    AirGroupList localAirGroupList = paramAirGroupList;
-    int i = 0;
-    while (localAirGroupList != null) {
-      if (i == paramInt) return localAirGroupList.G;
-      localAirGroupList = localAirGroupList.next;
-      i++;
+    public static void addAirGroup(com.maddox.il2.ai.air.AirGroupList aairgrouplist[], int i, com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        if(aairgrouplist[i] == null)
+        {
+            aairgrouplist[i] = new AirGroupList(airgroup);
+            return;
+        }
+        com.maddox.il2.ai.air.AirGroupList airgrouplist;
+        for(airgrouplist = aairgrouplist[i]; airgrouplist.next != null; airgrouplist = airgrouplist.next);
+        airgrouplist.next = new AirGroupList(airgroup);
     }
-    return null;
-  }
 
-  public static boolean groupInList(AirGroupList paramAirGroupList, AirGroup paramAirGroup)
-  {
-    if (paramAirGroupList == null) return false;
-    AirGroupList localAirGroupList = paramAirGroupList;
-    while (localAirGroupList != null) {
-      if (localAirGroupList.G == paramAirGroup) return true;
-      localAirGroupList = localAirGroupList.next;
-    }
-    return false;
-  }
+    public static void delAirGroup(com.maddox.il2.ai.air.AirGroupList aairgrouplist[], int i, com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        com.maddox.il2.ai.air.AirGroupList airgrouplist = aairgrouplist[i];
+        com.maddox.il2.ai.air.AirGroupList airgrouplist1 = null;
+        for(; airgrouplist != null; airgrouplist = airgrouplist.next)
+        {
+            if(airgrouplist.G == airgroup)
+            {
+                airgrouplist.G = null;
+                if(airgrouplist1 == null)
+                    aairgrouplist[i] = airgrouplist.next;
+                else
+                    airgrouplist1.next = airgrouplist.next;
+                airgrouplist.next = null;
+                return;
+            }
+            airgrouplist1 = airgrouplist;
+        }
 
-  public static void update(AirGroupList paramAirGroupList)
-  {
-    AirGroupList localAirGroupList = paramAirGroupList;
-    while (localAirGroupList != null) {
-      localAirGroupList.G.update();
-      localAirGroupList = localAirGroupList.next;
     }
-  }
+
+    public static int length(com.maddox.il2.ai.air.AirGroupList airgrouplist)
+    {
+        if(airgrouplist == null)
+            return 0;
+        com.maddox.il2.ai.air.AirGroupList airgrouplist1 = airgrouplist;
+        int i;
+        for(i = 0; airgrouplist1 != null; i++)
+            airgrouplist1 = airgrouplist1.next;
+
+        return i;
+    }
+
+    public static com.maddox.il2.ai.air.AirGroup getGroup(com.maddox.il2.ai.air.AirGroupList airgrouplist, int i)
+    {
+        if(airgrouplist == null)
+            return null;
+        com.maddox.il2.ai.air.AirGroupList airgrouplist1 = airgrouplist;
+        for(int j = 0; airgrouplist1 != null; j++)
+        {
+            if(j == i)
+                return airgrouplist1.G;
+            airgrouplist1 = airgrouplist1.next;
+        }
+
+        return null;
+    }
+
+    public static boolean groupInList(com.maddox.il2.ai.air.AirGroupList airgrouplist, com.maddox.il2.ai.air.AirGroup airgroup)
+    {
+        if(airgrouplist == null)
+            return false;
+        for(com.maddox.il2.ai.air.AirGroupList airgrouplist1 = airgrouplist; airgrouplist1 != null; airgrouplist1 = airgrouplist1.next)
+            if(airgrouplist1.G == airgroup)
+                return true;
+
+        return false;
+    }
+
+    public static void update(com.maddox.il2.ai.air.AirGroupList airgrouplist)
+    {
+        for(com.maddox.il2.ai.air.AirGroupList airgrouplist1 = airgrouplist; airgrouplist1 != null; airgrouplist1 = airgrouplist1.next)
+            airgrouplist1.G.update();
+
+    }
+
+    public com.maddox.il2.ai.air.AirGroup G;
+    com.maddox.il2.ai.air.AirGroupList next;
 }

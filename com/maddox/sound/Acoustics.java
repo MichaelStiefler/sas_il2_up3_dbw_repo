@@ -1,203 +1,261 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Acoustics.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.SectFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Acoustics extends BaseObject
+// Referenced classes of package com.maddox.sound:
+//            BaseObject, AcousticsGeometry, Reverb, ReverbFX, 
+//            AcousticsPreset, SoundListener, AudioDevice, ReverbFXRoom
+
+public class Acoustics extends com.maddox.sound.BaseObject
 {
-  protected AcousticsPreset prs = null;
-  protected int handle = 0;
-  protected int rcaps = 0;
-  protected int envNum = 0;
-  protected HashMap objects = null;
-  protected Reverb[] reverbs = null;
-  protected float eaxMix = -1.0F;
-  protected float occlusion = 0.0F;
-  protected float occlLF = 0.0F;
-  protected float obstruction = 0.0F;
-  protected float obstrLF = 0.0F;
-  protected float eaxRoom = 0.0F;
 
-  public ReverbFXRoom globFX = null;
-  private static final String cmn = "common";
-
-  public Acoustics(String paramString)
-  {
-    this.prs = AcousticsPreset.get(paramString);
-    if (this.prs.ini != null) {
-      this.handle = jniCreate();
-      load(this.prs.ini);
+    public Acoustics(java.lang.String s)
+    {
+        prs = null;
+        handle = 0;
+        rcaps = 0;
+        envNum = 0;
+        objects = null;
+        reverbs = null;
+        eaxMix = -1F;
+        occlusion = 0.0F;
+        occlLF = 0.0F;
+        obstruction = 0.0F;
+        obstrLF = 0.0F;
+        eaxRoom = 0.0F;
+        globFX = null;
+        prs = com.maddox.sound.AcousticsPreset.get(s);
+        if(prs.ini != null)
+        {
+            handle = com.maddox.sound.Acoustics.jniCreate();
+            load(prs.ini);
+        }
+        prs.list.add(this);
+        if(com.maddox.sound.SoundListener.acc == null)
+            com.maddox.sound.SoundListener.setAcoustics(this);
     }
-    this.prs.list.add(this);
-    if (SoundListener.acc == null) SoundListener.setAcoustics(this);
-  }
 
-  public Acoustics(AcousticsPreset paramAcousticsPreset)
-  {
-    if (enabled) {
-      this.handle = jniCreate();
-      load(paramAcousticsPreset.ini);
+    public Acoustics(com.maddox.sound.AcousticsPreset acousticspreset)
+    {
+        prs = null;
+        handle = 0;
+        rcaps = 0;
+        envNum = 0;
+        objects = null;
+        reverbs = null;
+        eaxMix = -1F;
+        occlusion = 0.0F;
+        occlLF = 0.0F;
+        obstruction = 0.0F;
+        obstrLF = 0.0F;
+        eaxRoom = 0.0F;
+        globFX = null;
+        if(com.maddox.sound.BaseObject.enabled)
+        {
+            handle = com.maddox.sound.Acoustics.jniCreate();
+            load(acousticspreset.ini);
+        }
+        if(com.maddox.sound.SoundListener.acc == null)
+            com.maddox.sound.SoundListener.setAcoustics(this);
     }
-    if (SoundListener.acc == null) SoundListener.setAcoustics(this);
-  }
 
-  public int getEnvNum()
-  {
-    return this.envNum;
-  }
-
-  public void setParent(Acoustics paramAcoustics)
-  {
-    jniSetParent(this.handle, paramAcoustics.handle);
-  }
-
-  public void setPosition(double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    jniSetPosition(this.handle, paramDouble1, paramDouble2, paramDouble3);
-  }
-
-  public void setVelocity(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    jniSetVelocity(this.handle, paramFloat1, paramFloat2, paramFloat3);
-  }
-
-  public void setOrientation(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6)
-  {
-    jniSetOrientation(this.handle, paramFloat1, paramFloat2, paramFloat3, paramFloat4, paramFloat5, paramFloat6);
-  }
-
-  public float getControl(int paramInt)
-  {
-    return jniGetControl(this.handle, paramInt);
-  }
-
-  public void setControl(int paramInt, float paramFloat)
-  {
-    jniSetControl(this.handle, paramInt, paramFloat);
-  }
-
-  public AcousticsGeometry getObject(String paramString)
-  {
-    return this.objects == null ? null : (AcousticsGeometry)this.objects.get(paramString);
-  }
-
-  public void add(AcousticsGeometry paramAcousticsGeometry)
-  {
-    if (this.objects == null) this.objects = new HashMap();
-    this.objects.put(paramAcousticsGeometry.name, paramAcousticsGeometry);
-  }
-
-  public void add(Reverb paramReverb)
-  {
-    if (this.reverbs == null) {
-      this.reverbs = new Reverb[4];
-      for (int i = 0; i < 4; i++) this.reverbs[i] = null;
+    public int getEnvNum()
+    {
+        return envNum;
     }
-    this.reverbs[paramReverb.getEngine()] = paramReverb;
-  }
 
-  public boolean load(SectFile paramSectFile)
-  {
-    if (!enabled) return true;
-    if (!paramSectFile.sectionExist("common")) {
-      errmsg("invalid acoustics preset format.");
-      return false;
+    public void setParent(com.maddox.sound.Acoustics acoustics)
+    {
+        com.maddox.sound.Acoustics.jniSetParent(handle, acoustics.handle);
     }
-    this.envNum = paramSectFile.get("common", "envnum", 0);
 
-    this.eaxMix = paramSectFile.get("common", "eaxMix", -1.0F);
-    this.occlusion = paramSectFile.get("common", "occlusion", 0.0F);
-    this.occlLF = paramSectFile.get("common", "occlLF", 0.0F);
-    this.obstruction = paramSectFile.get("common", "obstruction", 0.0F);
-    this.obstrLF = paramSectFile.get("common", "obstrLF", 0.0F);
-    this.eaxRoom = paramSectFile.get("common", "eaxRoom", 0.0F);
-
-    jniSetup(this.handle, this.envNum);
-    jniSetEAX(this.handle, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
-    boolean bool = paramSectFile.get("common", "hcontrol", false);
-    Reverb localReverb;
-    if (paramSectFile.sectionExist("eax1")) {
-      localReverb = new Reverb(0);
-      if (bool) localReverb.rfx = new ReverbFX(localReverb);
-      if (!localReverb.load(paramSectFile)) return false;
-      add(localReverb);
+    public void setPosition(double d, double d1, double d2)
+    {
+        com.maddox.sound.Acoustics.jniSetPosition(handle, d, d1, d2);
     }
-    if (paramSectFile.sectionExist("eax2")) {
-      localReverb = new Reverb(1);
-      if (bool) localReverb.rfx = new ReverbFX(localReverb);
-      if (!localReverb.load(paramSectFile)) return false;
-      add(localReverb);
+
+    public void setVelocity(float f, float f1, float f2)
+    {
+        com.maddox.sound.Acoustics.jniSetVelocity(handle, f, f1, f2);
     }
-    return true;
-  }
 
-  public boolean save()
-  {
-    return save(this.prs.ini);
-  }
-
-  public boolean save(SectFile paramSectFile)
-  {
-    paramSectFile.set("common", "envnum", this.envNum);
-    for (int i = 0; i < this.reverbs.length; i++) {
-      if (this.reverbs[i] == null) continue; this.reverbs[i].save(paramSectFile);
+    public void setOrientation(float f, float f1, float f2, float f3, float f4, float f5)
+    {
+        com.maddox.sound.Acoustics.jniSetOrientation(handle, f, f1, f2, f3, f4, f5);
     }
-    paramSectFile.saveFile();
-    return true;
-  }
 
-  protected void finalize() throws Throwable
-  {
-    if (this.handle != 0) jniDestroy(this.handle);
-    super.finalize();
-  }
-
-  protected void flush(float paramFloat)
-  {
-    if (this.reverbs != null) {
-      int i = AudioDevice.getAcousticsCaps();
-      Reverb localReverb;
-      if (((i & 0x4) != 0) && (this.reverbs[1] != null)) {
-        localReverb = this.reverbs[1];
-        localReverb.apply();
-        if (localReverb.rfx != null) localReverb.rfx.tick(paramFloat);
-        if (this.globFX != null) this.globFX.tick(localReverb);
-
-      }
-      else if (((i & 0x8) != 0) && (this.reverbs[2] != null)) {
-        localReverb = this.reverbs[2];
-        localReverb.apply();
-        if (localReverb.rfx != null) localReverb.rfx.tick(paramFloat);
-        if (this.globFX != null) this.globFX.tick(localReverb);
-
-      }
-      else if (((i & 0x2) != 0) && (this.reverbs[0] != null)) {
-        localReverb = this.reverbs[0];
-        localReverb.apply();
-        if (localReverb.rfx != null) localReverb.rfx.tick(paramFloat);
-        if (this.globFX != null) this.globFX.tick(localReverb);
-      }
+    public float getControl(int i)
+    {
+        return com.maddox.sound.Acoustics.jniGetControl(handle, i);
     }
-  }
 
-  protected static native int jniCreate();
+    public void setControl(int i, float f)
+    {
+        com.maddox.sound.Acoustics.jniSetControl(handle, i, f);
+    }
 
-  protected static native void jniDestroy(int paramInt);
+    public com.maddox.sound.AcousticsGeometry getObject(java.lang.String s)
+    {
+        return objects != null ? (com.maddox.sound.AcousticsGeometry)objects.get(s) : null;
+    }
 
-  protected static native void jniSetParent(int paramInt1, int paramInt2);
+    public void add(com.maddox.sound.AcousticsGeometry acousticsgeometry)
+    {
+        if(objects == null)
+            objects = new HashMap();
+        objects.put(acousticsgeometry.name, acousticsgeometry);
+    }
 
-  protected static native void jniSetup(int paramInt1, int paramInt2);
+    public void add(com.maddox.sound.Reverb reverb)
+    {
+        if(reverbs == null)
+        {
+            reverbs = new com.maddox.sound.Reverb[4];
+            for(int i = 0; i < 4; i++)
+                reverbs[i] = null;
 
-  protected static native void jniSetEAX(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6);
+        }
+        reverbs[reverb.getEngine()] = reverb;
+    }
 
-  protected static native void jniSetPosition(int paramInt, double paramDouble1, double paramDouble2, double paramDouble3);
+    public boolean load(com.maddox.rts.SectFile sectfile)
+    {
+        if(!com.maddox.sound.BaseObject.enabled)
+            return true;
+        if(!sectfile.sectionExist("common"))
+        {
+            errmsg("invalid acoustics preset format.");
+            return false;
+        }
+        envNum = sectfile.get("common", "envnum", 0);
+        eaxMix = sectfile.get("common", "eaxMix", -1F);
+        occlusion = sectfile.get("common", "occlusion", 0.0F);
+        occlLF = sectfile.get("common", "occlLF", 0.0F);
+        obstruction = sectfile.get("common", "obstruction", 0.0F);
+        obstrLF = sectfile.get("common", "obstrLF", 0.0F);
+        eaxRoom = sectfile.get("common", "eaxRoom", 0.0F);
+        com.maddox.sound.Acoustics.jniSetup(handle, envNum);
+        com.maddox.sound.Acoustics.jniSetEAX(handle, eaxMix, occlusion, occlLF, eaxRoom, obstruction, obstrLF);
+        boolean flag = sectfile.get("common", "hcontrol", false);
+        if(sectfile.sectionExist("eax1"))
+        {
+            com.maddox.sound.Reverb reverb = new Reverb(0);
+            if(flag)
+                reverb.rfx = new ReverbFX(reverb);
+            if(!reverb.load(sectfile))
+                return false;
+            add(reverb);
+        }
+        if(sectfile.sectionExist("eax2"))
+        {
+            com.maddox.sound.Reverb reverb1 = new Reverb(1);
+            if(flag)
+                reverb1.rfx = new ReverbFX(reverb1);
+            if(!reverb1.load(sectfile))
+                return false;
+            add(reverb1);
+        }
+        return true;
+    }
 
-  protected static native void jniSetVelocity(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3);
+    public boolean save()
+    {
+        return save(prs.ini);
+    }
 
-  protected static native void jniSetOrientation(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6);
+    public boolean save(com.maddox.rts.SectFile sectfile)
+    {
+        sectfile.set("common", "envnum", envNum);
+        for(int i = 0; i < reverbs.length; i++)
+            if(reverbs[i] != null)
+                reverbs[i].save(sectfile);
 
-  protected static native float jniGetControl(int paramInt1, int paramInt2);
+        sectfile.saveFile();
+        return true;
+    }
 
-  protected static native void jniSetControl(int paramInt1, int paramInt2, float paramFloat);
+    protected void finalize()
+        throws java.lang.Throwable
+    {
+        if(handle != 0)
+            com.maddox.sound.Acoustics.jniDestroy(handle);
+        super.finalize();
+    }
+
+    protected void flush(float f)
+    {
+        if(reverbs != null)
+        {
+            int i = com.maddox.sound.AudioDevice.getAcousticsCaps();
+            if((i & 4) != 0 && reverbs[1] != null)
+            {
+                com.maddox.sound.Reverb reverb = reverbs[1];
+                reverb.apply();
+                if(reverb.rfx != null)
+                    reverb.rfx.tick(f);
+                if(globFX != null)
+                    globFX.tick(reverb);
+            } else
+            if((i & 8) != 0 && reverbs[2] != null)
+            {
+                com.maddox.sound.Reverb reverb1 = reverbs[2];
+                reverb1.apply();
+                if(reverb1.rfx != null)
+                    reverb1.rfx.tick(f);
+                if(globFX != null)
+                    globFX.tick(reverb1);
+            } else
+            if((i & 2) != 0 && reverbs[0] != null)
+            {
+                com.maddox.sound.Reverb reverb2 = reverbs[0];
+                reverb2.apply();
+                if(reverb2.rfx != null)
+                    reverb2.rfx.tick(f);
+                if(globFX != null)
+                    globFX.tick(reverb2);
+            }
+        }
+    }
+
+    protected static native int jniCreate();
+
+    protected static native void jniDestroy(int i);
+
+    protected static native void jniSetParent(int i, int j);
+
+    protected static native void jniSetup(int i, int j);
+
+    protected static native void jniSetEAX(int i, float f, float f1, float f2, float f3, float f4, float f5);
+
+    protected static native void jniSetPosition(int i, double d, double d1, double d2);
+
+    protected static native void jniSetVelocity(int i, float f, float f1, float f2);
+
+    protected static native void jniSetOrientation(int i, float f, float f1, float f2, float f3, float f4, float f5);
+
+    protected static native float jniGetControl(int i, int j);
+
+    protected static native void jniSetControl(int i, int j, float f);
+
+    protected com.maddox.sound.AcousticsPreset prs;
+    protected int handle;
+    protected int rcaps;
+    protected int envNum;
+    protected java.util.HashMap objects;
+    protected com.maddox.sound.Reverb reverbs[];
+    protected float eaxMix;
+    protected float occlusion;
+    protected float occlLF;
+    protected float obstruction;
+    protected float obstrLF;
+    protected float eaxRoom;
+    public com.maddox.sound.ReverbFXRoom globFX;
+    private static final java.lang.String cmn = "common";
 }

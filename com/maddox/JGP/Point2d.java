@@ -1,63 +1,72 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Point2d.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
-public class Point2d extends Tuple2d
-  implements Serializable, Cloneable
+// Referenced classes of package com.maddox.JGP:
+//            Tuple2d, Point2f, Tuple2f
+
+public class Point2d extends com.maddox.JGP.Tuple2d
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Point2d(double paramDouble1, double paramDouble2)
-  {
-    super(paramDouble1, paramDouble2);
-  }
 
-  public Point2d(double[] paramArrayOfDouble)
-  {
-    super(paramArrayOfDouble);
-  }
+    public Point2d(double d, double d1)
+    {
+        super(d, d1);
+    }
 
-  public Point2d(Point2d paramPoint2d)
-  {
-    super(paramPoint2d);
-  }
+    public Point2d(double ad[])
+    {
+        super(ad);
+    }
 
-  public Point2d(Point2f paramPoint2f)
-  {
-    super(paramPoint2f);
-  }
+    public Point2d(com.maddox.JGP.Point2d point2d)
+    {
+        super(point2d);
+    }
 
-  public Point2d(Tuple2d paramTuple2d)
-  {
-    super(paramTuple2d);
-  }
+    public Point2d(com.maddox.JGP.Point2f point2f)
+    {
+        super(point2f);
+    }
 
-  public Point2d(Tuple2f paramTuple2f)
-  {
-    super(paramTuple2f);
-  }
+    public Point2d(com.maddox.JGP.Tuple2d tuple2d)
+    {
+        super(tuple2d);
+    }
 
-  public Point2d()
-  {
-  }
+    public Point2d(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        super(tuple2f);
+    }
 
-  public final double distanceSquared(Point2d paramPoint2d)
-  {
-    double d1 = this.x - paramPoint2d.x;
-    double d2 = this.y - paramPoint2d.y;
-    return d1 * d1 + d2 * d2;
-  }
+    public Point2d()
+    {
+    }
 
-  public final double distance(Point2d paramPoint2d)
-  {
-    return Math.sqrt(distanceSquared(paramPoint2d));
-  }
+    public final double distanceSquared(com.maddox.JGP.Point2d point2d)
+    {
+        double d = x - point2d.x;
+        double d1 = y - point2d.y;
+        return d * d + d1 * d1;
+    }
 
-  public final double distanceL1(Point2d paramPoint2d)
-  {
-    return Math.abs(this.x - paramPoint2d.x) + Math.abs(this.y - paramPoint2d.y);
-  }
+    public final double distance(com.maddox.JGP.Point2d point2d)
+    {
+        return java.lang.Math.sqrt(distanceSquared(point2d));
+    }
 
-  public final double distanceLinf(Point2d paramPoint2d)
-  {
-    return Math.max(Math.abs(this.x - paramPoint2d.x), Math.abs(this.y - paramPoint2d.y));
-  }
+    public final double distanceL1(com.maddox.JGP.Point2d point2d)
+    {
+        return java.lang.Math.abs(x - point2d.x) + java.lang.Math.abs(y - point2d.y);
+    }
+
+    public final double distanceLinf(com.maddox.JGP.Point2d point2d)
+    {
+        return java.lang.Math.max(java.lang.Math.abs(x - point2d.x), java.lang.Math.abs(y - point2d.y));
+    }
 }

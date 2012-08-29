@@ -1,6 +1,13 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetUpdate.java
+
 package com.maddox.rts;
 
-public abstract interface NetUpdate
+
+public interface NetUpdate
 {
-  public abstract void netUpdate();
+
+    public abstract void netUpdate();
 }

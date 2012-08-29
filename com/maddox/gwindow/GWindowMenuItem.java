@@ -1,91 +1,138 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowMenuItem.java
+
 package com.maddox.gwindow;
 
 import java.io.PrintStream;
 
-public class GWindowMenuItem extends GWindow
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GWindowMenu, GCaption, GWindowLookAndFeel, 
+//            GRegion, GSize
+
+public class GWindowMenuItem extends com.maddox.gwindow.GWindow
 {
-  public GWindowMenu subMenu;
-  public boolean bEnable = true;
-  public boolean bChecked = false;
-  public GCaption cap;
-  public String toolTip;
 
-  public GWindowMenu menu()
-  {
-    return (GWindowMenu)this.parentWindow; } 
-  public GWindowMenu subMenu() { return this.subMenu; }
+    public com.maddox.gwindow.GWindowMenu menu()
+    {
+        return (com.maddox.gwindow.GWindowMenu)parentWindow;
+    }
 
-  public void execute() {
-    System.out.println("execute GWindowMenuItem: " + this.cap.caption);
-  }
+    public com.maddox.gwindow.GWindowMenu subMenu()
+    {
+        return subMenu;
+    }
 
-  public void mouseEnter() {
-    super.mouseEnter();
-    if (this.bEnable)
-      menu().setSelected(this); 
-  }
+    public void execute()
+    {
+        java.lang.System.out.println("execute GWindowMenuItem: " + cap.caption);
+    }
 
-  public void checkEnabling() {
-  }
+    public void mouseEnter()
+    {
+        super.mouseEnter();
+        if(bEnable)
+            menu().setSelected(this);
+    }
 
-  public void windowShown() {
-    checkEnabling();
-    super.windowShown();
-  }
+    public void checkEnabling()
+    {
+    }
 
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if ((!paramBoolean) && (paramInt == 0) && (this.bEnable) && (menu().selected == this))
-      menu().doExecute(this);
-  }
+    public void windowShown()
+    {
+        checkEnabling();
+        super.windowShown();
+    }
 
-  public void select()
-  {
-    activateWindow();
-    if (this.subMenu == null) return;
-    lAF().soundPlay("MenuPoolDown");
-    this.subMenu.setPos(this.win.dx, 0.0F);
-    this.subMenu.activateWindow();
-  }
-  public void unSelect() {
-    if (this.subMenu == null) return;
-    lAF().soundPlay("MenuCloseUp");
-    this.subMenu.setSelected(null);
-    this.subMenu.hideWindow();
-  }
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        super.mouseButton(i, flag, f, f1);
+        if(!flag && i == 0 && bEnable && menu().selected == this)
+            menu().doExecute(this);
+    }
 
-  public void keyboardKey(int paramInt, boolean paramBoolean) {
-    menu().keyboardKey(paramInt, paramBoolean);
-  }
-  public void keyboardChar(char paramChar) {
-    menu().keyboardChar(paramChar);
-  }
+    public void select()
+    {
+        activateWindow();
+        if(subMenu == null)
+        {
+            return;
+        } else
+        {
+            lAF().soundPlay("MenuPoolDown");
+            subMenu.setPos(win.dx, 0.0F);
+            subMenu.activateWindow();
+            return;
+        }
+    }
 
-  public void render() {
-    lookAndFeel().render(this);
-  }
-  public GSize getMinSize(GSize paramGSize) {
-    return lookAndFeel().getMinSize(this, paramGSize);
-  }
-  public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    return lookAndFeel().getClientRegion(this, paramGRegion, paramFloat);
-  }
+    public void unSelect()
+    {
+        if(subMenu == null)
+        {
+            return;
+        } else
+        {
+            lAF().soundPlay("MenuCloseUp");
+            subMenu.setSelected(null);
+            subMenu.hideWindow();
+            return;
+        }
+    }
 
-  public void resolutionChanged() {
-    if ((this.cap != null) && (this.cap.offsetHotKey > 0))
-      this.cap.offsetHotKey = -1;
-    if (this.subMenu != null)
-      this.subMenu.resolutionChanged();
-    getMinSize();
-  }
+    public void keyboardKey(int i, boolean flag)
+    {
+        menu().keyboardKey(i, flag);
+    }
 
-  public void created() {
-    super.created();
-  }
+    public void keyboardChar(char c)
+    {
+        menu().keyboardChar(c);
+    }
 
-  public GWindowMenuItem(GWindowMenu paramGWindowMenu, String paramString1, String paramString2) {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    doNew(paramGWindowMenu, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        return lookAndFeel().getMinSize(this, gsize);
+    }
+
+    public com.maddox.gwindow.GRegion getClientRegion(com.maddox.gwindow.GRegion gregion, float f)
+    {
+        return lookAndFeel().getClientRegion(this, gregion, f);
+    }
+
+    public void resolutionChanged()
+    {
+        if(cap != null && cap.offsetHotKey > 0)
+            cap.offsetHotKey = -1;
+        if(subMenu != null)
+            subMenu.resolutionChanged();
+        getMinSize();
+    }
+
+    public void created()
+    {
+        super.created();
+    }
+
+    public GWindowMenuItem(com.maddox.gwindow.GWindowMenu gwindowmenu, java.lang.String s, java.lang.String s1)
+    {
+        bEnable = true;
+        bChecked = false;
+        cap = new GCaption(s);
+        toolTip = s1;
+        doNew(gwindowmenu, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
+
+    public com.maddox.gwindow.GWindowMenu subMenu;
+    public boolean bEnable;
+    public boolean bChecked;
+    public com.maddox.gwindow.GCaption cap;
+    public java.lang.String toolTip;
 }

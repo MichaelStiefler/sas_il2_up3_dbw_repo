@@ -1,18 +1,37 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   EffSmokeTrail.java
+
 package com.maddox.il2.engine;
 
-public class EffSmokeTrail extends Eff3D
+
+// Referenced classes of package com.maddox.il2.engine:
+//            Eff3D, EffSmokeTrailActor, GObj, Loc, 
+//            Eff3DActor
+
+public class EffSmokeTrail extends com.maddox.il2.engine.Eff3D
 {
-  protected Eff3DActor NewActor(Loc paramLoc)
-  {
-    return new EffSmokeTrailActor(this, paramLoc);
-  }
-  protected EffSmokeTrail() {
-    this.cppObj = cNew(); } 
-  private native int cNew();
 
-  public EffSmokeTrail(int paramInt) { this.cppObj = paramInt; }
+    protected com.maddox.il2.engine.Eff3DActor NewActor(com.maddox.il2.engine.Loc loc)
+    {
+        return new EffSmokeTrailActor(this, loc);
+    }
 
-  static {
-    GObj.loadNative();
-  }
+    protected EffSmokeTrail()
+    {
+        cppObj = cNew();
+    }
+
+    private native int cNew();
+
+    public EffSmokeTrail(int i)
+    {
+        cppObj = i;
+    }
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

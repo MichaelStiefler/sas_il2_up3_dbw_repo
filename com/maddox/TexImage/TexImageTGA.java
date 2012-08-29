@@ -1,259 +1,357 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TexImageTGA.java
+
 package com.maddox.TexImage;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
+// Referenced classes of package com.maddox.TexImage:
+//            TexImage
+
 class TexImageTGA
 {
-  byte IDLength;
-  byte ColorMapType;
-  byte ImageType;
-  byte[] ColorMapSpec = new byte[5];
-  short ImgOriginX;
-  short ImgOriginY;
-  short ImgWidth;
-  short ImgHeight;
-  byte PixelDepth;
-  byte ImgDescript;
 
-  public final void Load(InputStream paramInputStream, TexImage paramTexImage)
-    throws Exception
-  {
-    this.IDLength = (byte)paramInputStream.read();
-    this.ColorMapType = (byte)paramInputStream.read();
-    this.ImageType = (byte)paramInputStream.read();
-    paramInputStream.read(this.ColorMapSpec);
-    this.ImgOriginX = (short)paramInputStream.read();
-    this.ImgOriginX = (short)(this.ImgOriginX | (short)paramInputStream.read() << 8);
-    this.ImgOriginY = (short)paramInputStream.read();
-    this.ImgOriginY = (short)(this.ImgOriginY | (short)paramInputStream.read() << 8);
-    this.ImgWidth = (short)paramInputStream.read();
-    this.ImgWidth = (short)(this.ImgWidth | (short)paramInputStream.read() << 8);
-    this.ImgHeight = (short)paramInputStream.read();
-    this.ImgHeight = (short)(this.ImgHeight | (short)paramInputStream.read() << 8);
-    this.PixelDepth = (byte)paramInputStream.read();
-    this.ImgDescript = (byte)paramInputStream.read();
-
-    int i = this.ImgDescript & 0xF;
-
-    if (i > 8) throw new Exception("Too much Alpha bits");
-    for (; this.IDLength > 0; this.IDLength = (byte)(this.IDLength - 1)) paramInputStream.read();
-
-    switch (this.ImageType) { case 2:
-    case 3:
-      break;
-    case 1:
-      if (this.ColorMapType == 1) break;
-    default:
-      throw new Exception("This TGA file type not supported");
+    TexImageTGA()
+    {
+        ColorMapSpec = new byte[5];
     }
 
-    int j = 0;
-    switch (this.PixelDepth) {
-    case 8:
-      if (this.ImageType == 1) {
-        j = 6400;
-        if ((this.ColorMapSpec[0] == 0) && (this.ColorMapSpec[1] == 0) && (this.ColorMapSpec[2] == 0) && (this.ColorMapSpec[3] == 1));
-        switch (this.ColorMapSpec[4]) {
-        case 24:
-          paramTexImage.BytesPerEntry = 3;
-          paramTexImage.Palette = new byte[768];
-          paramInputStream.read(paramTexImage.Palette);
-          SwapPal(paramTexImage.Palette);
-          break;
-        case 32:
-          paramTexImage.BytesPerEntry = 4;
-          paramTexImage.Palette = new byte[1024];
-          paramInputStream.read(paramTexImage.Palette);
-          SwapPal(paramTexImage.Palette);
-          break;
+    public final void Load(java.io.InputStream inputstream, com.maddox.TexImage.TexImage teximage)
+        throws java.lang.Exception
+    {
+        IDLength = (byte)inputstream.read();
+        ColorMapType = (byte)inputstream.read();
+        ImageType = (byte)inputstream.read();
+        inputstream.read(ColorMapSpec);
+        ImgOriginX = (short)inputstream.read();
+        ImgOriginX |= (short)inputstream.read() << 8;
+        ImgOriginY = (short)inputstream.read();
+        ImgOriginY |= (short)inputstream.read() << 8;
+        ImgWidth = (short)inputstream.read();
+        ImgWidth |= (short)inputstream.read() << 8;
+        ImgHeight = (short)inputstream.read();
+        ImgHeight |= (short)inputstream.read() << 8;
+        PixelDepth = (byte)inputstream.read();
+        ImgDescript = (byte)inputstream.read();
+        int i = ImgDescript & 0xf;
+        if(i > 8)
+            throw new Exception("Too much Alpha bits");
+        for(; IDLength > 0; IDLength--)
+            inputstream.read();
+
+        switch(ImageType)
+        {
+        case 2: // '\002'
+        case 3: // '\003'
+            break;
+
+        case 1: // '\001'
+            if(ColorMapType == 1)
+                break;
+            // fall through
+
         default:
-          throw new Exception("Palette entry size must be 24 or 32 bits");
-
-          throw new Exception("Invalid number of palette entries");
+            throw new Exception("This TGA file type not supported");
         }
-      }
-      else {
-        switch (i) { case 0:
-          j = 6409; break;
-        case 8:
-          j = 6406; }
-      }
-      break;
-    case 16:
-      switch (i) { case 0:
-        j = 32848; break;
-      case 1:
-        j = 32855; break;
-      case 4:
-        j = 32854;
-      case 2:
-      case 3: } break;
-    case 24:
-      if (i != 0) break; j = 6407; break;
-    case 32:
-      if (i != 8) break; j = 6408;
-    }
-    if (j == 0) throw new Exception("This TGA file type not supported");
-    paramTexImage.type = j;
-    paramTexImage.sx = this.ImgWidth;
-    paramTexImage.sy = this.ImgHeight;
-    paramTexImage.BPP = (this.PixelDepth + 7 >> 3);
+        int j = 0;
+        switch(PixelDepth)
+        {
+        case 8: // '\b'
+            if(ImageType == 1)
+            {
+                j = 6400;
+                if(ColorMapSpec[0] == 0 && ColorMapSpec[1] == 0 && ColorMapSpec[2] == 0 && ColorMapSpec[3] == 1)
+                    switch(ColorMapSpec[4])
+                    {
+                    case 24: // '\030'
+                        teximage.BytesPerEntry = 3;
+                        teximage.Palette = new byte[768];
+                        inputstream.read(teximage.Palette);
+                        SwapPal(teximage.Palette);
+                        break;
 
-    int k = this.ImgWidth * this.ImgHeight * (this.PixelDepth + 7 >> 3);
-    int m = this.ImgWidth * (this.PixelDepth + 7 >> 3);
-    paramTexImage.image = new byte[this.ImgHeight * m];
-    int n;
-    if ((this.ImgDescript & 0x20) != 0)
-      for (n = 0; n < this.ImgHeight; n++)
-        paramInputStream.read(paramTexImage.image, n * paramTexImage.sx * paramTexImage.BPP, paramTexImage.sx * paramTexImage.BPP);
-    else {
-      for (n = this.ImgHeight - 1; n >= 0; n--)
-        paramInputStream.read(paramTexImage.image, n * paramTexImage.sx * paramTexImage.BPP, paramTexImage.sx * paramTexImage.BPP);
-    }
-    this.ImgDescript = (byte)(this.ImgDescript & 0xFFFFFFDF);
-    if (this.ImageType == 2) SwapRB(paramTexImage); 
-  }
+                    case 32: // ' '
+                        teximage.BytesPerEntry = 4;
+                        teximage.Palette = new byte[1024];
+                        inputstream.read(teximage.Palette);
+                        SwapPal(teximage.Palette);
+                        break;
 
-  public final void Save(OutputStream paramOutputStream, TexImage paramTexImage) throws Exception
-  {
-    if (paramTexImage.BytesPerEntry != 0) {
-      throw new Exception("Paletted TGA file save not supported");
-    }
+                    default:
+                        throw new Exception("Palette entry size must be 24 or 32 bits");
+                    }
+                else
+                    throw new Exception("Invalid number of palette entries");
+            } else
+            {
+                switch(i)
+                {
+                case 0: // '\0'
+                    j = 6409;
+                    break;
 
-    this.IDLength = 0;
-    this.ColorMapType = 0;
-    this.ImageType = (byte)(paramTexImage.BPP == 1 ? 3 : 2);
-    this.ImgOriginX = 0;
-    this.ImgOriginY = 0;
-    this.ImgWidth = (short)paramTexImage.sx;
-    this.ImgHeight = (short)paramTexImage.sy;
-    this.PixelDepth = (byte)(paramTexImage.BPP * 8);
-    this.ImgDescript = 0;
-    switch (paramTexImage.type) { case 6408:
-      this.ImgDescript = 8; break;
-    case 32854:
-      this.ImgDescript = 4; break;
-    case 32855:
-      this.ImgDescript = 1; break;
-    case 32856:
-      this.ImgDescript = 8;
-    }
-    paramOutputStream.write(this.IDLength);
-    paramOutputStream.write(this.ColorMapType);
-    paramOutputStream.write(this.ImageType);
-    paramOutputStream.write(this.ColorMapSpec);
-    paramOutputStream.write(this.ImgOriginX); paramOutputStream.write(this.ImgOriginX >> 8);
-    paramOutputStream.write(this.ImgOriginY); paramOutputStream.write(this.ImgOriginY >> 8);
-    paramOutputStream.write(this.ImgWidth); paramOutputStream.write(this.ImgWidth >> 8);
-    paramOutputStream.write(this.ImgHeight); paramOutputStream.write(this.ImgHeight >> 8);
-    paramOutputStream.write(this.PixelDepth);
-    paramOutputStream.write(this.ImgDescript);
-    if (this.ImageType == 2) SwapRB(paramTexImage);
-    for (int i = this.ImgHeight - 1; i >= 0; i--)
-      paramOutputStream.write(paramTexImage.image, i * paramTexImage.sx * paramTexImage.BPP, paramTexImage.sx * paramTexImage.BPP);
-    if (this.ImageType == 2) SwapRB(paramTexImage);
-  }
-
-  private void SwapY(TexImage paramTexImage)
-  {
-    int i = 0; for (int j = paramTexImage.sy - 1; i < j; j--) {
-      for (int k = 0; k < paramTexImage.sx; k++) {
-        int m = paramTexImage.image(k, i);
-        paramTexImage.image(k, i, paramTexImage.image(k, j));
-        paramTexImage.image(k, j, m);
-      }
-      i++;
-    }
-  }
-
-  private void SwapPal(byte[] paramArrayOfByte)
-  {
-    int i;
-    switch (paramArrayOfByte.length) { case 1024:
-      i = 4; break;
-    case 768:
-      i = 3; break;
-    default:
-      return;
-    }
-    for (int j = 0; j < 256 * i; j += i) {
-      int k = paramArrayOfByte[j]; paramArrayOfByte[j] = paramArrayOfByte[(j + 2)]; paramArrayOfByte[(j + 2)] = k;
-    }
-  }
-
-  private void SwapRB(TexImage paramTexImage)
-  {
-    int i;
-    int j;
-    switch (paramTexImage.type) {
-    case 6407:
-    case 32849:
-      i = paramTexImage.sx * 3;
-      for (j = 0; j < paramTexImage.sy; ) {
-        for (k = 0; k < i; k += 3) {
-          m = paramTexImage.image(k, j);
-          paramTexImage.image(k, j, paramTexImage.image(k + 2, j));
-          paramTexImage.image(k + 2, j, m);
-        }
-        j++; continue;
-
-        i = paramTexImage.sx * 4;
-        for (j = 0; j < paramTexImage.sy; ) {
-          for (k = 0; k < i; k += 4) {
-            m = paramTexImage.image(k, j);
-            paramTexImage.image(k, j, paramTexImage.image(k + 2, j));
-            paramTexImage.image(k + 2, j, m);
-          }
-          j++; continue;
-
-          i = paramTexImage.sx * 2;
-          for (j = 0; j < paramTexImage.sy; ) {
-            for (k = 0; k < i; k += 2) {
-              n = (byte)(paramTexImage.image(k + 1, j) >> 3 & 0x1F);
-              i1 = (byte)(paramTexImage.image(k, j) << 3);
-              paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xE0);
-              paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
-              paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0x7);
-              paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
-            }
-            j++; continue;
-
-            i = paramTexImage.sx * 2;
-            for (j = 0; j < paramTexImage.sy; ) {
-              for (k = 0; k < i; k += 2) {
-                n = (byte)(paramTexImage.image(k + 1, j) >> 4 & 0xF);
-                i1 = (byte)(paramTexImage.image(k, j) << 4);
-                paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xF0);
-                paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
-                paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0xF);
-                paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
-              }
-              j++; continue;
-
-              i = paramTexImage.sx * 2;
-              for (j = 0; j < paramTexImage.sy; j++)
-                for (k = 0; k < i; k += 2) {
-                  n = (byte)(paramTexImage.image(k + 1, j) >> 2 & 0x1F);
-                  i1 = (byte)(paramTexImage.image(k, j) << 2 & 0x7C);
-                  paramTexImage.image(k, j, paramTexImage.image(k, j) & 0xE0);
-                  paramTexImage.image(k, j, paramTexImage.image(k, j) | n);
-                  paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) & 0x83);
-                  paramTexImage.image(k + 1, j, paramTexImage.image(k + 1, j) | i1);
+                case 8: // '\b'
+                    j = 6406;
+                    break;
                 }
             }
-          }
+            break;
+
+        case 16: // '\020'
+            switch(i)
+            {
+            case 0: // '\0'
+                j = 32848;
+                break;
+
+            case 1: // '\001'
+                j = 32855;
+                break;
+
+            case 4: // '\004'
+                j = 32854;
+                break;
+            }
+            break;
+
+        case 24: // '\030'
+            if(i == 0)
+                j = 6407;
+            break;
+
+        case 32: // ' '
+            if(i == 8)
+                j = 6408;
+            break;
         }
-      }
-    case 6408:
-    case 32856:
-    case 32848:
-    case 32854:
-    case 32855:
+        if(j == 0)
+            throw new Exception("This TGA file type not supported");
+        teximage.type = j;
+        teximage.sx = ImgWidth;
+        teximage.sy = ImgHeight;
+        teximage.BPP = PixelDepth + 7 >> 3;
+        int k = ImgWidth * ImgHeight * (PixelDepth + 7 >> 3);
+        int l = ImgWidth * (PixelDepth + 7 >> 3);
+        teximage.image = new byte[ImgHeight * l];
+        if((ImgDescript & 0x20) != 0)
+        {
+            for(int i1 = 0; i1 < ImgHeight; i1++)
+                inputstream.read(teximage.image, i1 * teximage.sx * teximage.BPP, teximage.sx * teximage.BPP);
+
+        } else
+        {
+            for(int j1 = ImgHeight - 1; j1 >= 0; j1--)
+                inputstream.read(teximage.image, j1 * teximage.sx * teximage.BPP, teximage.sx * teximage.BPP);
+
+        }
+        ImgDescript &= 0xdf;
+        if(ImageType == 2)
+            SwapRB(teximage);
     }
-    int k;
-    int m;
-    int n;
-    int i1;
-  }
+
+    public final void Save(java.io.OutputStream outputstream, com.maddox.TexImage.TexImage teximage)
+        throws java.lang.Exception
+    {
+        if(teximage.BytesPerEntry != 0)
+            throw new Exception("Paletted TGA file save not supported");
+        IDLength = 0;
+        ColorMapType = 0;
+        ImageType = (byte)(teximage.BPP != 1 ? 2 : 3);
+        ImgOriginX = 0;
+        ImgOriginY = 0;
+        ImgWidth = (short)teximage.sx;
+        ImgHeight = (short)teximage.sy;
+        PixelDepth = (byte)(teximage.BPP * 8);
+        ImgDescript = 0;
+        switch(teximage.type)
+        {
+        case 6408: 
+            ImgDescript = 8;
+            break;
+
+        case 32854: 
+            ImgDescript = 4;
+            break;
+
+        case 32855: 
+            ImgDescript = 1;
+            break;
+
+        case 32856: 
+            ImgDescript = 8;
+            break;
+        }
+        outputstream.write(IDLength);
+        outputstream.write(ColorMapType);
+        outputstream.write(ImageType);
+        outputstream.write(ColorMapSpec);
+        outputstream.write(ImgOriginX);
+        outputstream.write(ImgOriginX >> 8);
+        outputstream.write(ImgOriginY);
+        outputstream.write(ImgOriginY >> 8);
+        outputstream.write(ImgWidth);
+        outputstream.write(ImgWidth >> 8);
+        outputstream.write(ImgHeight);
+        outputstream.write(ImgHeight >> 8);
+        outputstream.write(PixelDepth);
+        outputstream.write(ImgDescript);
+        if(ImageType == 2)
+            SwapRB(teximage);
+        for(int i = ImgHeight - 1; i >= 0; i--)
+            outputstream.write(teximage.image, i * teximage.sx * teximage.BPP, teximage.sx * teximage.BPP);
+
+        if(ImageType == 2)
+            SwapRB(teximage);
+    }
+
+    private void SwapY(com.maddox.TexImage.TexImage teximage)
+    {
+        int i = 0;
+        for(int j = teximage.sy - 1; i < j; j--)
+        {
+            for(int k = 0; k < teximage.sx; k++)
+            {
+                byte byte0 = teximage.image(k, i);
+                teximage.image(k, i, teximage.image(k, j));
+                teximage.image(k, j, byte0);
+            }
+
+            i++;
+        }
+
+    }
+
+    private void SwapPal(byte abyte0[])
+    {
+        byte byte0;
+        switch(abyte0.length)
+        {
+        case 1024: 
+            byte0 = 4;
+            break;
+
+        case 768: 
+            byte0 = 3;
+            break;
+
+        default:
+            return;
+        }
+        for(int i = 0; i < 256 * byte0; i += byte0)
+        {
+            byte byte1 = abyte0[i];
+            abyte0[i] = abyte0[i + 2];
+            abyte0[i + 2] = byte1;
+        }
+
+    }
+
+    private void SwapRB(com.maddox.TexImage.TexImage teximage)
+    {
+        switch(teximage.type)
+        {
+        default:
+            break;
+
+        case 6407: 
+        case 32849: 
+            int i = teximage.sx * 3;
+            for(int j1 = 0; j1 < teximage.sy; j1++)
+            {
+                for(int k2 = 0; k2 < i; k2 += 3)
+                {
+                    byte byte0 = teximage.image(k2, j1);
+                    teximage.image(k2, j1, teximage.image(k2 + 2, j1));
+                    teximage.image(k2 + 2, j1, byte0);
+                }
+
+            }
+
+            break;
+
+        case 6408: 
+        case 32856: 
+            int j = teximage.sx * 4;
+            for(int k1 = 0; k1 < teximage.sy; k1++)
+            {
+                for(int l2 = 0; l2 < j; l2 += 4)
+                {
+                    byte byte1 = teximage.image(l2, k1);
+                    teximage.image(l2, k1, teximage.image(l2 + 2, k1));
+                    teximage.image(l2 + 2, k1, byte1);
+                }
+
+            }
+
+            break;
+
+        case 32848: 
+            int k = teximage.sx * 2;
+            for(int l1 = 0; l1 < teximage.sy; l1++)
+            {
+                for(int i3 = 0; i3 < k; i3 += 2)
+                {
+                    byte byte2 = (byte)(teximage.image(i3 + 1, l1) >> 3 & 0x1f);
+                    byte byte5 = (byte)(teximage.image(i3, l1) << 3);
+                    teximage.image(i3, l1, teximage.image(i3, l1) & 0xe0);
+                    teximage.image(i3, l1, teximage.image(i3, l1) | byte2);
+                    teximage.image(i3 + 1, l1, teximage.image(i3 + 1, l1) & 7);
+                    teximage.image(i3 + 1, l1, teximage.image(i3 + 1, l1) | byte5);
+                }
+
+            }
+
+            break;
+
+        case 32854: 
+            int l = teximage.sx * 2;
+            for(int i2 = 0; i2 < teximage.sy; i2++)
+            {
+                for(int j3 = 0; j3 < l; j3 += 2)
+                {
+                    byte byte3 = (byte)(teximage.image(j3 + 1, i2) >> 4 & 0xf);
+                    byte byte6 = (byte)(teximage.image(j3, i2) << 4);
+                    teximage.image(j3, i2, teximage.image(j3, i2) & 0xf0);
+                    teximage.image(j3, i2, teximage.image(j3, i2) | byte3);
+                    teximage.image(j3 + 1, i2, teximage.image(j3 + 1, i2) & 0xf);
+                    teximage.image(j3 + 1, i2, teximage.image(j3 + 1, i2) | byte6);
+                }
+
+            }
+
+            break;
+
+        case 32855: 
+            int i1 = teximage.sx * 2;
+            for(int j2 = 0; j2 < teximage.sy; j2++)
+            {
+                for(int k3 = 0; k3 < i1; k3 += 2)
+                {
+                    byte byte4 = (byte)(teximage.image(k3 + 1, j2) >> 2 & 0x1f);
+                    byte byte7 = (byte)(teximage.image(k3, j2) << 2 & 0x7c);
+                    teximage.image(k3, j2, teximage.image(k3, j2) & 0xe0);
+                    teximage.image(k3, j2, teximage.image(k3, j2) | byte4);
+                    teximage.image(k3 + 1, j2, teximage.image(k3 + 1, j2) & 0x83);
+                    teximage.image(k3 + 1, j2, teximage.image(k3 + 1, j2) | byte7);
+                }
+
+            }
+
+            break;
+        }
+    }
+
+    byte IDLength;
+    byte ColorMapType;
+    byte ImageType;
+    byte ColorMapSpec[];
+    short ImgOriginX;
+    short ImgOriginY;
+    short ImgWidth;
+    short ImgHeight;
+    byte PixelDepth;
+    byte ImgDescript;
 }

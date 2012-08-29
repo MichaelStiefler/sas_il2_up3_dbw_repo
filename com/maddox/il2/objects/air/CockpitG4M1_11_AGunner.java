@@ -1,8 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitG4M1_11_AGunner.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.HierMesh;
-import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
@@ -10,127 +14,147 @@ import com.maddox.il2.fm.Turret;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class CockpitG4M1_11_AGunner extends CockpitGunner
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitGunner, Aircraft
+
+public class CockpitG4M1_11_AGunner extends com.maddox.il2.objects.air.CockpitGunner
 {
-  private boolean bNeedSetUp = true;
 
-  private float cockPos = 0.0F;
-  private float a2 = 0.0F;
-
-  protected boolean doFocusEnter()
-  {
-    if (super.doFocusEnter()) {
-      aircraft().hierMesh().chunkVisible("Turret2E_D0", false);
-      return true;
-    }
-    return false;
-  }
-
-  protected void doFocusLeave() {
-    if (!isFocused()) return;
-    aircraft().hierMesh().chunkVisible("Turret2E_D0", aircraft().isChunkAnyDamageVisible("Tail1_D"));
-    super.doFocusLeave();
-  }
-
-  protected void reflectPlaneMats()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Matt1D0o"));
-    this.mesh.materialReplace("Matt1D0o", localMat);
-  }
-
-  public void moveGun(Orient paramOrient)
-  {
-    super.moveGun(paramOrient);
-    float f1 = -paramOrient.getYaw();
-    float f2 = paramOrient.getTangage();
-    this.mesh.chunkSetAngles("Turret2A", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("Turret2B", 0.0F, f2, 0.0F);
-
-    if ((Math.abs(f1) > 2.0F) || (Math.abs(f2) > 2.0F)) {
-      this.a2 = (float)Math.toDegrees(Math.atan2(f1, f2));
-      this.a2 *= cvt(f2, 0.0F, 55.0F, 1.0F, 0.75F);
-    }
-
-    if (f1 < -33.0F) {
-      f1 = -33.0F;
-    }
-    if (f1 > 33.0F) {
-      f1 = 33.0F;
-    }
-    if (f2 < -23.0F) {
-      f2 = -23.0F;
-    }
-    if (f2 > 33.0F) {
-      f2 = 33.0F;
-    }
-    this.mesh.chunkSetAngles("Turret2C", 0.0F, f1, 0.0F);
-    this.mesh.chunkSetAngles("Turret2D", 0.0F, f2, 0.0F);
-  }
-
-  public void clipAnglesGun(Orient paramOrient) {
-    if (!isRealMode()) return;
-    if (!aiTurret().bIsOperable) {
-      paramOrient.setYPR(0.0F, 0.0F, 0.0F);
-      return;
-    }
-    float f1 = paramOrient.getYaw(); float f2 = paramOrient.getTangage();
-    if (f1 < -45.0F) f1 = -45.0F;
-    if (f1 > 45.0F) f1 = 45.0F;
-    if (f2 > 25.0F) f2 = 25.0F;
-    if (f2 < -45.0F) f2 = -45.0F;
-    paramOrient.setYPR(f1, f2, 0.0F);
-    paramOrient.wrap();
-  }
-
-  protected void interpTick() {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    protected boolean doFocusEnter()
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
+        if(super.doFocusEnter())
+        {
+            aircraft().hierMesh().chunkVisible("Turret2E_D0", false);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
 
-    this.cockPos = (0.5F * this.cockPos + 0.5F * this.a2);
-    this.mesh.chunkSetAngles("Turret2E", 0.0F, this.cockPos, 0.0F);
-
-    this.mesh.chunkSetAngles("Rudder1_D0", 0.0F, -30.0F * this.fm.CT.getRudder(), 0.0F);
-    this.mesh.chunkSetAngles("VatorL_D0", 0.0F, -30.0F * this.fm.CT.getElevator(), 0.0F);
-    this.mesh.chunkSetAngles("VatorR_D0", 0.0F, -30.0F * this.fm.CT.getElevator(), 0.0F);
-  }
-
-  public void doGunFire(boolean paramBoolean)
-  {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    protected void doFocusLeave()
     {
-      this.bGunFire = false;
+        if(!isFocused())
+        {
+            return;
+        } else
+        {
+            aircraft().hierMesh().chunkVisible("Turret2E_D0", aircraft().isChunkAnyDamageVisible("Tail1_D"));
+            super.doFocusLeave();
+            return;
+        }
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-  }
 
-  public CockpitG4M1_11_AGunner() {
-    super("3DO/Cockpit/G4M1-11-AGun/hier.him", "he111");
-  }
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    if (this.bNeedSetUp) {
-      reflectPlaneMats();
-      this.bNeedSetUp = false;
+    protected void reflectPlaneMats()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        mesh.materialReplace("Gloss1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Matt1D0o"));
+        mesh.materialReplace("Matt1D0o", mat);
     }
-  }
 
-  public void reflectCockpitState()
-  {
-  }
+    public void moveGun(com.maddox.il2.engine.Orient orient)
+    {
+        super.moveGun(orient);
+        float f = -orient.getYaw();
+        float f1 = orient.getTangage();
+        mesh.chunkSetAngles("Turret2A", 0.0F, f, 0.0F);
+        mesh.chunkSetAngles("Turret2B", 0.0F, f1, 0.0F);
+        if(java.lang.Math.abs(f) > 2.0F || java.lang.Math.abs(f1) > 2.0F)
+        {
+            a2 = (float)java.lang.Math.toDegrees(java.lang.Math.atan2(f, f1));
+            a2 *= cvt(f1, 0.0F, 55F, 1.0F, 0.75F);
+        }
+        if(f < -33F)
+            f = -33F;
+        if(f > 33F)
+            f = 33F;
+        if(f1 < -23F)
+            f1 = -23F;
+        if(f1 > 33F)
+            f1 = 33F;
+        mesh.chunkSetAngles("Turret2C", 0.0F, f, 0.0F);
+        mesh.chunkSetAngles("Turret2D", 0.0F, f1, 0.0F);
+    }
 
-  static
-  {
-    Property.set(CLASS.THIS(), "aiTuretNum", 1);
-    Property.set(CLASS.THIS(), "weaponControlNum", 11);
-    Property.set(CLASS.THIS(), "astatePilotIndx", 6);
-  }
+    public void clipAnglesGun(com.maddox.il2.engine.Orient orient)
+    {
+        if(!isRealMode())
+            return;
+        if(!aiTurret().bIsOperable)
+        {
+            orient.setYPR(0.0F, 0.0F, 0.0F);
+            return;
+        }
+        float f = orient.getYaw();
+        float f1 = orient.getTangage();
+        if(f < -45F)
+            f = -45F;
+        if(f > 45F)
+            f = 45F;
+        if(f1 > 25F)
+            f1 = 25F;
+        if(f1 < -45F)
+            f1 = -45F;
+        orient.setYPR(f, f1, 0.0F);
+        orient.wrap();
+    }
+
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+        cockPos = 0.5F * cockPos + 0.5F * a2;
+        mesh.chunkSetAngles("Turret2E", 0.0F, cockPos, 0.0F);
+        mesh.chunkSetAngles("Rudder1_D0", 0.0F, -30F * fm.CT.getRudder(), 0.0F);
+        mesh.chunkSetAngles("VatorL_D0", 0.0F, -30F * fm.CT.getElevator(), 0.0F);
+        mesh.chunkSetAngles("VatorR_D0", 0.0F, -30F * fm.CT.getElevator(), 0.0F);
+    }
+
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        else
+            bGunFire = flag;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
+
+    public CockpitG4M1_11_AGunner()
+    {
+        super("3DO/Cockpit/G4M1-11-AGun/hier.him", "he111");
+        bNeedSetUp = true;
+        cockPos = 0.0F;
+        a2 = 0.0F;
+    }
+
+    public void reflectWorldToInstruments(float f)
+    {
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            bNeedSetUp = false;
+        }
+    }
+
+    public void reflectCockpitState()
+    {
+    }
+
+    private boolean bNeedSetUp;
+    private float cockPos;
+    private float a2;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.rts.CLASS.THIS(), "aiTuretNum", 1);
+        com.maddox.rts.Property.set(com.maddox.rts.CLASS.THIS(), "weaponControlNum", 11);
+        com.maddox.rts.Property.set(com.maddox.rts.CLASS.THIS(), "astatePilotIndx", 6);
+    }
 }

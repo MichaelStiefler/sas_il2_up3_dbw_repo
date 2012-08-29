@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombStarthilfe109500.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Vector3d;
@@ -12,64 +17,83 @@ import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombStarthilfe109500 extends Bomb
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bomb
+
+public class BombStarthilfe109500 extends com.maddox.il2.objects.weapons.Bomb
 {
-  private Chute chute = null;
-  private boolean bOnChute = false;
-  private static Orient or = new Orient();
-  private static Orient or_ = new Orient(0.0F, 0.0F, 0.0F);
-  private static Vector3d v3d = new Vector3d();
-  private float ttcurTM;
 
-  protected boolean haveSound()
-  {
-    return false;
-  }
-  public void start() {
-    super.start();
-    this.ttcurTM = World.Rnd().nextFloat(0.5F, 3.5F);
-  }
-
-  public void interpolateTick() {
-    super.interpolateTick();
-
-    if (this.bOnChute) {
-      this.pos.getAbs(or);
-      or.interpolate(or_, 0.4F);
-      this.pos.setAbs(or);
-      getSpeed(v3d);
-      v3d.scale(0.997D);
-      if (v3d.z < -5.0D) {
-        v3d.z += 1.1F * Time.tickConstLenFs();
-      }
-      setSpeed(v3d);
-    } else if (this.curTm > this.ttcurTM) {
-      this.bOnChute = true;
-      this.chute = new Chute(this);
-      this.chute.collide(false);
-      setMesh("3DO/Arms/Starthilfe109-500Chuted/mono.sim");
+    public BombStarthilfe109500()
+    {
+        chute = null;
+        bOnChute = false;
     }
-  }
 
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2) {
-    if ((paramActor instanceof ActorLand)) {
-      if (this.chute != null) {
-        this.chute.landing();
-      }
-      postDestroy();
-      return;
+    protected boolean haveSound()
+    {
+        return false;
     }
-    super.msgCollision(paramActor, paramString1, paramString2);
-  }
 
-  static {
-    Class localClass = CLASS.THIS();
-    Property.set(localClass, "mesh", "3DO/Arms/Starthilfe109-500/mono.sim");
-    Property.set(localClass, "radius", 0.1F);
-    Property.set(localClass, "power", 0.0F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.7F);
-    Property.set(localClass, "massa", 0.9F);
-    Property.set(localClass, "sound", "weapon.bomb_phball");
-  }
+    public void start()
+    {
+        super.start();
+        ttcurTM = com.maddox.il2.ai.World.Rnd().nextFloat(0.5F, 3.5F);
+    }
+
+    public void interpolateTick()
+    {
+        super.interpolateTick();
+        if(bOnChute)
+        {
+            pos.getAbs(or);
+            or.interpolate(or_, 0.4F);
+            pos.setAbs(or);
+            getSpeed(v3d);
+            v3d.scale(0.997D);
+            if(v3d.z < -5D)
+                v3d.z += 1.1F * com.maddox.rts.Time.tickConstLenFs();
+            setSpeed(v3d);
+        } else
+        if(curTm > ttcurTM)
+        {
+            bOnChute = true;
+            chute = new Chute(this);
+            chute.collide(false);
+            setMesh("3DO/Arms/Starthilfe109-500Chuted/mono.sim");
+        }
+    }
+
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(actor instanceof com.maddox.il2.objects.ActorLand)
+        {
+            if(chute != null)
+                chute.landing();
+            postDestroy();
+            return;
+        } else
+        {
+            super.msgCollision(actor, s, s1);
+            return;
+        }
+    }
+
+    private com.maddox.il2.objects.air.Chute chute;
+    private boolean bOnChute;
+    private static com.maddox.il2.engine.Orient or = new Orient();
+    private static com.maddox.il2.engine.Orient or_ = new Orient(0.0F, 0.0F, 0.0F);
+    private static com.maddox.JGP.Vector3d v3d = new Vector3d();
+    private float ttcurTM;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/Starthilfe109-500/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 0.1F);
+        com.maddox.rts.Property.set(class1, "power", 0.0F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.7F);
+        com.maddox.rts.Property.set(class1, "massa", 0.9F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bomb_phball");
+    }
 }

@@ -1,21 +1,41 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   StaticUnitInPackedForm.java
+
 package com.maddox.il2.ai.ground;
 
-public class StaticUnitInPackedForm extends UnitInPackedFormGeneric
+
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            UnitInPackedFormGeneric
+
+public class StaticUnitInPackedForm extends com.maddox.il2.ai.ground.UnitInPackedFormGeneric
 {
-  private float x;
-  private float y;
-  private float yaw;
 
-  public float X()
-  {
-    return this.x; } 
-  public float Y() { return this.y; } 
-  public float Yaw() { return this.yaw; }
+    public float X()
+    {
+        return x;
+    }
 
-  public StaticUnitInPackedForm(int paramInt1, int paramInt2, int paramInt3, float paramFloat1, float paramFloat2, float paramFloat3) {
-    super(paramInt1, paramInt2, paramInt3);
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.yaw = paramFloat3;
-  }
+    public float Y()
+    {
+        return y;
+    }
+
+    public float Yaw()
+    {
+        return yaw;
+    }
+
+    public StaticUnitInPackedForm(int i, int j, int k, float f, float f1, float f2)
+    {
+        super(i, j, k);
+        x = f;
+        y = f1;
+        yaw = f2;
+    }
+
+    private float x;
+    private float y;
+    private float yaw;
 }

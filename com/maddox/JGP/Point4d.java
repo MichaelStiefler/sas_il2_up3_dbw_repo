@@ -1,73 +1,82 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Point4d.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
-public class Point4d extends Tuple4d
-  implements Serializable, Cloneable
+// Referenced classes of package com.maddox.JGP:
+//            Tuple4d, Point4f, Tuple4f
+
+public class Point4d extends com.maddox.JGP.Tuple4d
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Point4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
-  {
-    super(paramDouble1, paramDouble2, paramDouble3, paramDouble4);
-  }
 
-  public Point4d(double[] paramArrayOfDouble)
-  {
-    super(paramArrayOfDouble);
-  }
+    public Point4d(double d, double d1, double d2, double d3)
+    {
+        super(d, d1, d2, d3);
+    }
 
-  public Point4d(Point4f paramPoint4f)
-  {
-    super(paramPoint4f);
-  }
+    public Point4d(double ad[])
+    {
+        super(ad);
+    }
 
-  public Point4d(Point4d paramPoint4d)
-  {
-    super(paramPoint4d);
-  }
+    public Point4d(com.maddox.JGP.Point4f point4f)
+    {
+        super(point4f);
+    }
 
-  public Point4d(Tuple4d paramTuple4d)
-  {
-    super(paramTuple4d);
-  }
+    public Point4d(com.maddox.JGP.Point4d point4d)
+    {
+        super(point4d);
+    }
 
-  public Point4d(Tuple4f paramTuple4f)
-  {
-    super(paramTuple4f);
-  }
+    public Point4d(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        super(tuple4d);
+    }
 
-  public Point4d()
-  {
-  }
+    public Point4d(com.maddox.JGP.Tuple4f tuple4f)
+    {
+        super(tuple4f);
+    }
 
-  public final double distanceSquared(Point4d paramPoint4d)
-  {
-    double d1 = this.x - paramPoint4d.x;
-    double d2 = this.y - paramPoint4d.y;
-    double d3 = this.z - paramPoint4d.z;
-    double d4 = this.z - paramPoint4d.w;
-    return (float)(d1 * d1 + d2 * d2 + d3 * d3 + d4 * d4);
-  }
+    public Point4d()
+    {
+    }
 
-  public final double distance(Point4d paramPoint4d)
-  {
-    return Math.sqrt(distanceSquared(paramPoint4d));
-  }
+    public final double distanceSquared(com.maddox.JGP.Point4d point4d)
+    {
+        double d = x - point4d.x;
+        double d1 = y - point4d.y;
+        double d2 = z - point4d.z;
+        double d3 = z - point4d.w;
+        return (double)(float)(d * d + d1 * d1 + d2 * d2 + d3 * d3);
+    }
 
-  public final double distanceL1(Point4d paramPoint4d)
-  {
-    return Math.abs(this.x - paramPoint4d.x) + Math.abs(this.y - paramPoint4d.y) + Math.abs(this.z - paramPoint4d.z) + Math.abs(this.w - paramPoint4d.w);
-  }
+    public final double distance(com.maddox.JGP.Point4d point4d)
+    {
+        return java.lang.Math.sqrt(distanceSquared(point4d));
+    }
 
-  public final double distanceLinf(Point4d paramPoint4d)
-  {
-    return Math.max(Math.max(Math.abs(this.x - paramPoint4d.x), Math.abs(this.y - paramPoint4d.y)), Math.max(Math.abs(this.z - paramPoint4d.z), Math.abs(this.w - paramPoint4d.w)));
-  }
+    public final double distanceL1(com.maddox.JGP.Point4d point4d)
+    {
+        return java.lang.Math.abs(x - point4d.x) + java.lang.Math.abs(y - point4d.y) + java.lang.Math.abs(z - point4d.z) + java.lang.Math.abs(w - point4d.w);
+    }
 
-  public final void project(Point4d paramPoint4d)
-  {
-    paramPoint4d.x /= paramPoint4d.w;
-    paramPoint4d.y /= paramPoint4d.w;
-    paramPoint4d.z /= paramPoint4d.w;
-    this.w = 1.0D;
-  }
+    public final double distanceLinf(com.maddox.JGP.Point4d point4d)
+    {
+        return java.lang.Math.max(java.lang.Math.max(java.lang.Math.abs(x - point4d.x), java.lang.Math.abs(y - point4d.y)), java.lang.Math.max(java.lang.Math.abs(z - point4d.z), java.lang.Math.abs(w - point4d.w)));
+    }
+
+    public final void project(com.maddox.JGP.Point4d point4d)
+    {
+        x = point4d.x / point4d.w;
+        y = point4d.y / point4d.w;
+        z = point4d.z / point4d.w;
+        w = 1.0D;
+    }
 }

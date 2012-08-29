@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TB_3_4M_34R.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Explosion;
@@ -6,7 +11,9 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
@@ -15,332 +22,484 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class TB_3_4M_34R extends TB_3
+// Referenced classes of package com.maddox.il2.objects.air:
+//            TB_3, PaintSchemeBMPar00, NetAircraft, Aircraft
+
+public class TB_3_4M_34R extends com.maddox.il2.objects.air.TB_3
 {
-  public static boolean bChangedPit = false;
 
-  public float fSightCurAltitude = 300.0F;
-  public float fSightCurSpeed = 50.0F;
-
-  protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
-  {
-    super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
-  }
-
-  protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
-    super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true;
-  }
-
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1]; float f3 = Math.abs(f1);
-    switch (paramInt) {
-    case 0:
-      if (f2 < -47.0F) {
-        f2 = -47.0F;
-        bool = false;
-      }
-      if (f2 > 47.0F) {
-        f2 = 47.0F;
-        bool = false;
-      }
-
-      if (f3 < 147.0F) {
-        if (f2 < 0.5964912F * f3 - 117.68421F) {
-          f2 = 0.5964912F * f3 - 117.68421F;
-          bool = false;
-        }
-      } else if (f3 < 157.0F) {
-        if (f2 < 0.3F * f3 - 74.099998F) {
-          f2 = 0.3F * f3 - 74.099998F;
-          bool = false;
-        }
-      }
-      else if (f2 < 0.217391F * f3 - 61.130436F) {
-        f2 = 0.217391F * f3 - 61.130436F;
-        bool = false;
-      }
-
-      if (f3 < 110.0F) break;
-      if (f3 < 115.0F) {
-        if ((f2 >= -5.0F) || (f2 <= -20.0F)) break;
-        bool = false;
-      }
-      else if (f3 < 160.0F) {
-        if (f2 >= -5.0F) break;
-        bool = false;
-      }
-      else {
-        if (f2 >= 15.0F) break;
-        bool = false; } break;
-    case 1:
-      if (f2 < -47.0F) {
-        f2 = -47.0F;
-        bool = false;
-      }
-      if (f2 > 47.0F) {
-        f2 = 47.0F;
-        bool = false;
-      }
-
-      if (f1 < -38.0F) {
-        if (f2 < -32.0F) {
-          f2 = -32.0F;
-          bool = false;
-        }
-      } else if (f1 < -16.0F) {
-        if (f2 < 0.5909091F * f1 - 9.545455F) {
-          f2 = 0.5909091F * f1 - 9.545455F;
-          bool = false;
-        }
-      } else if (f1 < 35.0F) {
-        if (f2 < -19.0F) {
-          f2 = -19.0F;
-          bool = false;
-        }
-      } else if (f1 < 44.0F) {
-        if (f2 < -3.111111F * f1 + 89.888885F) {
-          f2 = -3.111111F * f1 + 89.888885F;
-          bool = false;
-        }
-      } else if (f1 < 139.0F) {
-        if (f2 < -47.0F) {
-          f2 = -47.0F;
-          bool = false;
-        }
-      } else if (f1 < 150.0F) {
-        if (f2 < 1.363636F * f1 - 236.54546F) {
-          f2 = 1.363636F * f1 - 236.54546F;
-          bool = false;
-        }
-      }
-      else if (f2 < -32.0F) {
-        f2 = -32.0F;
-        bool = false;
-      }
-
-      if (f1 < -175.7F) {
-        if (f2 >= 80.800003F) break;
-        bool = false;
-      }
-      else if (f1 < -82.0F) {
-        if (f2 >= -16.0F) break;
-        bool = false;
-      }
-      else if (f1 < 24.0F) {
-        if (f2 >= 0.0F) break;
-        bool = false;
-      }
-      else if (f1 < 32.0F) {
-        if (f2 >= -8.3F) break;
-        bool = false;
-      }
-      else if (f1 < 80.0F) {
-        if (f2 >= 0.0F) break;
-        bool = false;
-      }
-      else if (f1 < 174.0F) {
-        if (f2 >= 0.5F * f1 - 87.0F) break;
-        bool = false;
-      }
-      else if (f1 < 178.7F) {
-        if (f2 >= 0.0F) break;
-        bool = false;
-      }
-      else {
-        if (f2 >= 80.800003F) break;
-        bool = false; } break;
-    case 2:
-      if (f2 < -47.0F) {
-        f2 = -47.0F;
-        bool = false;
-      }
-      if (f2 > 47.0F) {
-        f2 = 47.0F;
-        bool = false;
-      }
-      if (f1 < -90.0F) {
-        bool = false;
-      }
-      if (f1 <= 90.0F) break;
-      bool = false;
+    public TB_3_4M_34R()
+    {
+        fSightCurAltitude = 300F;
+        fSightCurSpeed = 50F;
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
-    return bool;
-  }
+    protected void nextDMGLevel(java.lang.String s, int i, com.maddox.il2.engine.Actor actor)
+    {
+        super.nextDMGLevel(s, i, actor);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    if (paramBoolean) {
-      for (int i = 0; i < 4; i++) {
-        if ((this.FM.AS.astateEngineStates[i] > 3) && (this.FM.EI.engines[i].getReadyness() < 0.1F)) {
-          this.FM.AS.repairEngine(i);
-        }
-      }
-      for (i = 0; i < 4; i++) {
-        if ((this.FM.AS.astateTankStates[i] <= 3) || (this.FM.AS.astatePilotStates[4] >= 50.0F) || (this.FM.AS.astatePilotStates[7] >= 50.0F) || (World.Rnd().nextFloat() >= 0.1F))
+    protected void nextCUTLevel(java.lang.String s, int i, com.maddox.il2.engine.Actor actor)
+    {
+        super.nextCUTLevel(s, i, actor);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
+
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        float f2 = java.lang.Math.abs(f);
+        switch(i)
         {
-          continue;
+        default:
+            break;
+
+        case 0: // '\0'
+            if(f1 < -47F)
+            {
+                f1 = -47F;
+                flag = false;
+            }
+            if(f1 > 47F)
+            {
+                f1 = 47F;
+                flag = false;
+            }
+            if(f2 < 147F)
+            {
+                if(f1 < 0.5964912F * f2 - 117.6842F)
+                {
+                    f1 = 0.5964912F * f2 - 117.6842F;
+                    flag = false;
+                }
+            } else
+            if(f2 < 157F)
+            {
+                if(f1 < 0.3F * f2 - 74.1F)
+                {
+                    f1 = 0.3F * f2 - 74.1F;
+                    flag = false;
+                }
+            } else
+            if(f1 < 0.2173913F * f2 - 61.13044F)
+            {
+                f1 = 0.2173913F * f2 - 61.13044F;
+                flag = false;
+            }
+            if(f2 >= 110F)
+                if(f2 < 115F)
+                {
+                    if(f1 < -5F && f1 > -20F)
+                        flag = false;
+                } else
+                if(f2 < 160F)
+                {
+                    if(f1 < -5F)
+                        flag = false;
+                } else
+                if(f1 < 15F)
+                    flag = false;
+            break;
+
+        case 1: // '\001'
+            if(f1 < -47F)
+            {
+                f1 = -47F;
+                flag = false;
+            }
+            if(f1 > 47F)
+            {
+                f1 = 47F;
+                flag = false;
+            }
+            if(f < -38F)
+            {
+                if(f1 < -32F)
+                {
+                    f1 = -32F;
+                    flag = false;
+                }
+            } else
+            if(f < -16F)
+            {
+                if(f1 < 0.5909091F * f - 9.545455F)
+                {
+                    f1 = 0.5909091F * f - 9.545455F;
+                    flag = false;
+                }
+            } else
+            if(f < 35F)
+            {
+                if(f1 < -19F)
+                {
+                    f1 = -19F;
+                    flag = false;
+                }
+            } else
+            if(f < 44F)
+            {
+                if(f1 < -3.111111F * f + 89.88889F)
+                {
+                    f1 = -3.111111F * f + 89.88889F;
+                    flag = false;
+                }
+            } else
+            if(f < 139F)
+            {
+                if(f1 < -47F)
+                {
+                    f1 = -47F;
+                    flag = false;
+                }
+            } else
+            if(f < 150F)
+            {
+                if(f1 < 1.363636F * f - 236.5455F)
+                {
+                    f1 = 1.363636F * f - 236.5455F;
+                    flag = false;
+                }
+            } else
+            if(f1 < -32F)
+            {
+                f1 = -32F;
+                flag = false;
+            }
+            if(f < -175.7F)
+            {
+                if(f1 < 80.8F)
+                    flag = false;
+                break;
+            }
+            if(f < -82F)
+            {
+                if(f1 < -16F)
+                    flag = false;
+                break;
+            }
+            if(f < 24F)
+            {
+                if(f1 < 0.0F)
+                    flag = false;
+                break;
+            }
+            if(f < 32F)
+            {
+                if(f1 < -8.3F)
+                    flag = false;
+                break;
+            }
+            if(f < 80F)
+            {
+                if(f1 < 0.0F)
+                    flag = false;
+                break;
+            }
+            if(f < 174F)
+            {
+                if(f1 < 0.5F * f - 87F)
+                    flag = false;
+                break;
+            }
+            if(f < 178.7F)
+            {
+                if(f1 < 0.0F)
+                    flag = false;
+                break;
+            }
+            if(f1 < 80.8F)
+                flag = false;
+            break;
+
+        case 2: // '\002'
+            if(f1 < -47F)
+            {
+                f1 = -47F;
+                flag = false;
+            }
+            if(f1 > 47F)
+            {
+                f1 = 47F;
+                flag = false;
+            }
+            if(f < -90F)
+                flag = false;
+            if(f > 90F)
+                flag = false;
+            break;
         }
-        this.FM.AS.repairTank(i);
-      }
-    }
-  }
-
-  public void update(float paramFloat)
-  {
-    super.update(paramFloat);
-    hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -this.FM.Gears.gWheelAngles[0], 0.0F);
-    hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -this.FM.Gears.gWheelAngles[1], 0.0F);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    setExplosion(paramExplosion);
-    if ((paramExplosion.chunkName != null) && 
-      ((paramExplosion.chunkName.startsWith("Wing")) || (paramExplosion.chunkName.startsWith("Tail"))) && (paramExplosion.chunkName.endsWith("D3")) && (paramExplosion.power < 0.014F)) {
-      return;
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
     }
 
-    super.msgExplosion(paramExplosion);
-  }
+    public void rareAction(float f, boolean flag)
+    {
+        super.rareAction(f, flag);
+        if(flag)
+        {
+            for(int i = 0; i < 4; i++)
+                if(FM.AS.astateEngineStates[i] > 3 && FM.EI.engines[i].getReadyness() < 0.1F)
+                    FM.AS.repairEngine(i);
 
-  public boolean typeBomberToggleAutomation()
-  {
-    return false;
-  }
+            for(int j = 0; j < 4; j++)
+                if(FM.AS.astateTankStates[j] > 3 && (float)FM.AS.astatePilotStates[4] < 50F && (float)FM.AS.astatePilotStates[7] < 50F && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.1F)
+                    FM.AS.repairTank(j);
 
-  public void typeBomberAdjDistanceReset() {
-  }
-
-  public void typeBomberAdjDistancePlus() {
-  }
-
-  public void typeBomberAdjDistanceMinus() {
-  }
-
-  public void typeBomberAdjSideslipReset() {
-  }
-
-  public void typeBomberAdjSideslipPlus() {
-  }
-
-  public void typeBomberAdjSideslipMinus() {
-  }
-
-  public void typeBomberAdjAltitudeReset() {
-    this.fSightCurAltitude = 300.0F;
-  }
-
-  public void typeBomberAdjAltitudePlus() {
-    this.fSightCurAltitude += 50.0F;
-    if (this.fSightCurAltitude > 5000.0F) {
-      this.fSightCurAltitude = 5000.0F;
+        }
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
-  }
 
-  public void typeBomberAdjAltitudeMinus() {
-    this.fSightCurAltitude -= 50.0F;
-    if (this.fSightCurAltitude < 300.0F) {
-      this.fSightCurAltitude = 300.0F;
+    public void update(float f)
+    {
+        super.update(f);
+        hierMesh().chunkSetAngles("GearL3_D0", 0.0F, -FM.Gears.gWheelAngles[0], 0.0F);
+        hierMesh().chunkSetAngles("GearR3_D0", 0.0F, -FM.Gears.gWheelAngles[1], 0.0F);
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
-  }
 
-  public void typeBomberAdjSpeedReset() {
-    this.fSightCurSpeed = 50.0F;
-  }
-
-  public void typeBomberAdjSpeedPlus() {
-    this.fSightCurSpeed += 5.0F;
-    if (this.fSightCurSpeed > 350.0F) {
-      this.fSightCurSpeed = 350.0F;
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        setExplosion(explosion);
+        if(explosion.chunkName != null && (explosion.chunkName.startsWith("Wing") || explosion.chunkName.startsWith("Tail")) && explosion.chunkName.endsWith("D3") && explosion.power < 0.014F)
+        {
+            return;
+        } else
+        {
+            super.msgExplosion(explosion);
+            return;
+        }
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fSightCurSpeed) });
-  }
 
-  public void typeBomberAdjSpeedMinus() {
-    this.fSightCurSpeed -= 5.0F;
-    if (this.fSightCurSpeed < 50.0F) {
-      this.fSightCurSpeed = 50.0F;
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fSightCurSpeed) });
-  }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    paramNetMsgGuaranted.writeFloat(this.fSightCurAltitude);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurSpeed);
-  }
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-    this.fSightCurAltitude = paramNetMsgInput.readFloat();
-    this.fSightCurSpeed = paramNetMsgInput.readFloat();
-  }
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-  static
-  {
-    Class localClass = TB_3_4M_34R.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "TB-3");
-    Property.set(localClass, "meshName", "3DO/Plane/TB-3-4M-34R/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar00());
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1933.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/TB-3-4M-34R.fmd");
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitTB_3.class, CockpitTB_3_Bombardier3.class, CockpitTB_3_NGunner.class, CockpitTB_3_TGunner3.class, CockpitTB_3_RGunner.class });
+    public void typeBomberAdjAltitudeReset()
+    {
+        fSightCurAltitude = 300F;
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 10, 10, 11, 11, 12, 12, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalDev05", "_ExternalDev06", "_ExternalDev07", "_ExternalDev08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_BombSpawn01", "_BombSpawn02" });
+    public void typeBomberAdjAltitudePlus()
+    {
+        fSightCurAltitude += 50F;
+        if(fSightCurAltitude > 5000F)
+            fSightCurAltitude = 5000F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new java.lang.Object[] {
+            new Integer((int)fSightCurAltitude)
+        });
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    public void typeBomberAdjAltitudeMinus()
+    {
+        fSightCurAltitude -= 50F;
+        if(fSightCurAltitude < 300F)
+            fSightCurAltitude = 300F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new java.lang.Object[] {
+            new Integer((int)fSightCurAltitude)
+        });
+    }
 
-    weaponsRegister(localClass, "14fab50", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB50 7", "BombGunFAB50 7" });
+    public void typeBomberAdjSpeedReset()
+    {
+        fSightCurSpeed = 50F;
+    }
 
-    weaponsRegister(localClass, "28fab50", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB50 14", "BombGunFAB50 14" });
+    public void typeBomberAdjSpeedPlus()
+    {
+        fSightCurSpeed += 5F;
+        if(fSightCurSpeed > 350F)
+            fSightCurSpeed = 350F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new java.lang.Object[] {
+            new Integer((int)fSightCurSpeed)
+        });
+    }
 
-    weaponsRegister(localClass, "14fab100", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB100 7", "BombGunFAB100 7" });
+    public void typeBomberAdjSpeedMinus()
+    {
+        fSightCurSpeed -= 5F;
+        if(fSightCurSpeed < 50F)
+            fSightCurSpeed = 50F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new java.lang.Object[] {
+            new Integer((int)fSightCurSpeed)
+        });
+    }
 
-    weaponsRegister(localClass, "28fab100", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunFAB100 14", "BombGunFAB100 14" });
+    public void typeBomberUpdate(float f)
+    {
+    }
 
-    weaponsRegister(localClass, "8fab250", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", null, null, null, null, null, null, null, null, null, null });
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        netmsgguaranted.writeFloat(fSightCurAltitude);
+        netmsgguaranted.writeFloat(fSightCurSpeed);
+    }
 
-    weaponsRegister(localClass, "4fab500", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", null, null });
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        fSightCurAltitude = netmsginput.readFloat();
+        fSightCurSpeed = netmsginput.readFloat();
+    }
 
-    weaponsRegister(localClass, "4fab50028fab100", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB100 14", "BombGunFAB100 14" });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponsRegister(localClass, "4fab5004fab250", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", null, null, null, null, null, null, null, null, null, null });
+    public static boolean bChangedPit = false;
+    public float fSightCurAltitude;
+    public float fSightCurSpeed;
 
-    weaponsRegister(localClass, "8fab500", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", null, null, null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2fab10002fab500", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", null, null });
-
-    weaponsRegister(localClass, "2fab10002fab50028fab50", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB50 14", "BombGunFAB50 14" });
-
-    weaponsRegister(localClass, "2fab10002fab50014fab100", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB100 7", "BombGunFAB100 7" });
-
-    weaponsRegister(localClass, "2fab10002fab50020fab100", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB100 10", "BombGunFAB100 10" });
-
-    weaponsRegister(localClass, "2fab10004fab50014fab50", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, "PylonPE8_FAB250", "PylonPE8_FAB250", null, null, null, null, "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "PylonDer16TB3Fake", "PylonDer16TB3Fake", null, null, "BombGunFAB1000", "BombGunFAB1000", null, null, "BombGunFAB50 7", "BombGunFAB50 7" });
-
-    weaponsRegister(localClass, "2fab10004fab25020fab100", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, "PylonPE8_FAB250", "PylonPE8_FAB250", null, null, null, null, "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "PylonDer16TB3Fake", "PylonDer16TB3Fake", null, null, "BombGunFAB1000", "BombGunFAB1000", null, null, "BombGunFAB100 10", "BombGunFAB100 10" });
-
-    weaponsRegister(localClass, "4fab1000", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", null, null });
-
-    weaponsRegister(localClass, "4fab100014fab50", new String[] { "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB50 7", "BombGunFAB50 7" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.TB_3_4M_34R.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "TB-3");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/TB-3-4M-34R/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar00());
+        com.maddox.rts.Property.set(class1, "yearService", 1933F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/TB-3-4M-34R.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitTB_3.class, com.maddox.il2.objects.air.CockpitTB_3_Bombardier3.class, com.maddox.il2.objects.air.CockpitTB_3_NGunner.class, com.maddox.il2.objects.air.CockpitTB_3_TGunner3.class, com.maddox.il2.objects.air.CockpitTB_3_RGunner.class
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            10, 10, 11, 11, 12, 12, 9, 9, 9, 9, 
+            3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 
+            9, 9, 3, 3, 3, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", 
+            "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalDev05", "_ExternalDev06", 
+            "_ExternalDev07", "_ExternalDev08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_BombSpawn01", "_BombSpawn02"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "14fab50", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, "BombGunFAB50 7", "BombGunFAB50 7"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "28fab50", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, "BombGunFAB50 14", "BombGunFAB50 14"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "14fab100", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, "BombGunFAB100 7", "BombGunFAB100 7"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "28fab100", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, "BombGunFAB100 14", "BombGunFAB100 14"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "8fab250", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", 
+            "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", null, null, 
+            null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4fab500", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4fab50028fab100", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB100 14", "BombGunFAB100 14"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4fab5004fab250", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", 
+            "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", null, null, 
+            null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "8fab500", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", "PylonPE8_FAB250", 
+            "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", null, null, 
+            null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab10002fab500", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab10002fab50028fab50", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB50 14", "BombGunFAB50 14"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab10002fab50014fab100", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB100 7", "BombGunFAB100 7"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab10002fab50020fab100", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB500", "BombGunFAB500", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB100 10", "BombGunFAB100 10"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab10004fab50014fab50", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, "PylonPE8_FAB250", "PylonPE8_FAB250", 
+            null, null, null, null, "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "BombGunFAB500", "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            null, null, "BombGunFAB1000", "BombGunFAB1000", null, null, "BombGunFAB50 7", "BombGunFAB50 7"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2fab10004fab25020fab100", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, "PylonPE8_FAB250", "PylonPE8_FAB250", 
+            null, null, null, null, "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "BombGunFAB250", "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            null, null, "BombGunFAB1000", "BombGunFAB1000", null, null, "BombGunFAB100 10", "BombGunFAB100 10"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4fab1000", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4fab100014fab50", new java.lang.String[] {
+            "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", "MGunDA762t 1196", "MGunDA762t4d 1156", null, null, null, null, 
+            null, null, null, null, null, null, null, null, "PylonDer16TB3Fake", "PylonDer16TB3Fake", 
+            "PylonDer16TB3Fake", "PylonDer16TB3Fake", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB1000", "BombGunFAB50 7", "BombGunFAB50 7"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null
+        });
+    }
 }

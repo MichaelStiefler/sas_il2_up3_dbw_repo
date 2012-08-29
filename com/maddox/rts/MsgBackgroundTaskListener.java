@@ -1,10 +1,20 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgBackgroundTaskListener.java
+
 package com.maddox.rts;
 
-public abstract interface MsgBackgroundTaskListener
+
+// Referenced classes of package com.maddox.rts:
+//            BackgroundTask
+
+public interface MsgBackgroundTaskListener
 {
-  public abstract void msgBackgroundTaskStarted(BackgroundTask paramBackgroundTask);
 
-  public abstract void msgBackgroundTaskStep(BackgroundTask paramBackgroundTask);
+    public abstract void msgBackgroundTaskStarted(com.maddox.rts.BackgroundTask backgroundtask);
 
-  public abstract void msgBackgroundTaskStoped(BackgroundTask paramBackgroundTask);
+    public abstract void msgBackgroundTaskStep(com.maddox.rts.BackgroundTask backgroundtask);
+
+    public abstract void msgBackgroundTaskStoped(com.maddox.rts.BackgroundTask backgroundtask);
 }

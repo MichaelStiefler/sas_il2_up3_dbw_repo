@@ -1,133 +1,168 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Plane3d.java
+
 package com.maddox.JGP;
 
 import java.io.PrintStream;
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Vector3d, Line3d, JGPException, Point3d, 
+//            NSolved
+
 public class Plane3d
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Vector3d N = new Vector3d();
-  public double D;
 
-  public Plane3d()
-  {
-    this.N.x = (this.N.y = this.N.z = 0.5773502588272095D);
-    this.D = 0.0D;
-  }
-
-  public Plane3d(Plane3d paramPlane3d) {
-    this.N.x = paramPlane3d.N.x; this.N.y = paramPlane3d.N.y; this.N.z = paramPlane3d.N.z;
-    this.D = paramPlane3d.D;
-  }
-
-  public Plane3d(Point3d paramPoint3d1, Point3d paramPoint3d2, Point3d paramPoint3d3)
-  {
-    set(paramPoint3d1, paramPoint3d2, paramPoint3d3);
-  }
-
-  public Plane3d(Vector3d paramVector3d, Point3d paramPoint3d)
-  {
-    this.N.normalize(paramVector3d);
-    this.D = (-this.N.dot(paramPoint3d));
-  }
-
-  public final void set(Plane3d paramPlane3d) {
-    this.N.x = paramPlane3d.N.x; this.N.y = paramPlane3d.N.y; this.N.z = paramPlane3d.N.z;
-    this.D = paramPlane3d.D;
-  }
-
-  public final void set(Point3d paramPoint3d1, Point3d paramPoint3d2, Point3d paramPoint3d3)
-  {
-    double d1 = paramPoint3d2.x - paramPoint3d1.x; double d4 = paramPoint3d3.x - paramPoint3d1.x;
-    double d2 = paramPoint3d2.y - paramPoint3d1.y; double d5 = paramPoint3d3.y - paramPoint3d1.y;
-    double d3 = paramPoint3d2.z - paramPoint3d1.z; double d6 = paramPoint3d3.z - paramPoint3d1.z;
-
-    this.N.x = (d2 * d6 - d5 * d3);
-    this.N.y = (d4 * d3 - d1 * d6);
-    this.N.z = (d1 * d5 - d4 * d3);
-    this.N.normalize();
-    this.D = (-this.N.dot(paramPoint3d1));
-  }
-
-  public final void set(Vector3d paramVector3d, Point3d paramPoint3d)
-  {
-    this.N.normalize(paramVector3d);
-    this.D = (-this.N.dot(paramPoint3d));
-  }
-
-  public final double deviation(Point3d paramPoint3d)
-  {
-    return this.N.dot(paramPoint3d) + this.D;
-  }
-
-  public final double distance(Point3d paramPoint3d)
-  {
-    return Math.abs(this.N.dot(paramPoint3d) + this.D);
-  }
-
-  public final Line3d cross(Plane3d paramPlane3d)
-    throws JGPException
-  {
-    Line3d localLine3d = new Line3d();
-    localLine3d.A.cross(this.N, paramPlane3d.N);
-    try { localLine3d.A.normalize();
-    } catch (RuntimeException localRuntimeException1) {
-      throw new JGPException("Can't make a line from parallel planes");
-    }
-
-    double[] arrayOfDouble = { this.N.x, this.N.y, this.N.z, -this.D, paramPlane3d.N.x, paramPlane3d.N.y, paramPlane3d.N.z, -paramPlane3d.D, localLine3d.A.x, localLine3d.A.y, localLine3d.A.z, 0.0D };
-    try
+    public Plane3d()
     {
-      localLine3d.P0 = NSolved.Solve3d(arrayOfDouble);
-    } catch (RuntimeException localRuntimeException2) {
-      throw new JGPException("Making a line from planes: some error");
+        N = new Vector3d();
+        N.x = N.y = N.z = 0.57735025882720947D;
+        D = 0.0D;
     }
-    return localLine3d;
-  }
 
-  public final Point3d cross(Line3d paramLine3d)
-    throws JGPException
-  {
-    Point3d localPoint3d = new Point3d(paramLine3d.A);
-    localPoint3d.scale((this.N.dot(paramLine3d.P0) + this.D) / this.N.dot(paramLine3d.A));
-    localPoint3d.sub(paramLine3d.P0, localPoint3d);
-    return localPoint3d;
-  }
+    public Plane3d(com.maddox.JGP.Plane3d plane3d)
+    {
+        N = new Vector3d();
+        N.x = plane3d.N.x;
+        N.y = plane3d.N.y;
+        N.z = plane3d.N.z;
+        D = plane3d.D;
+    }
 
-  public final double cos(Plane3d paramPlane3d)
-  {
-    return this.N.dot(paramPlane3d.N);
-  }
+    public Plane3d(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, com.maddox.JGP.Point3d point3d2)
+    {
+        N = new Vector3d();
+        set(point3d, point3d1, point3d2);
+    }
 
-  public final double cos(Line3d paramLine3d)
-  {
-    return this.N.dot(paramLine3d.A);
-  }
+    public Plane3d(com.maddox.JGP.Vector3d vector3d, com.maddox.JGP.Point3d point3d)
+    {
+        N = new Vector3d();
+        N.normalize(vector3d);
+        D = -N.dot(point3d);
+    }
 
-  public String toString()
-  {
-    return "( " + this.N.x + "," + this.N.y + "," + this.N.z + ", " + this.D + " )";
-  }
+    public final void set(com.maddox.JGP.Plane3d plane3d)
+    {
+        N.x = plane3d.N.x;
+        N.y = plane3d.N.y;
+        N.z = plane3d.N.z;
+        D = plane3d.D;
+    }
 
-  public static void main(String[] paramArrayOfString) throws JGPException
-  {
-    Point3d localPoint3d1 = new Point3d(0.0D, 0.0D, 0.0D);
-    Point3d localPoint3d2 = new Point3d(1.0D, 0.0D, 0.0D);
-    Point3d localPoint3d3 = new Point3d(0.0D, 1.0D, 0.0D);
-    Point3d localPoint3d4 = new Point3d(0.0D, 0.0D, 1.0D);
-    Plane3d localPlane3d1 = new Plane3d(localPoint3d1, localPoint3d2, localPoint3d3);
-    Plane3d localPlane3d2 = new Plane3d(localPoint3d2, localPoint3d4, localPoint3d3);
+    public final void set(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, com.maddox.JGP.Point3d point3d2)
+    {
+        double d = point3d1.x - point3d.x;
+        double d3 = point3d2.x - point3d.x;
+        double d1 = point3d1.y - point3d.y;
+        double d4 = point3d2.y - point3d.y;
+        double d2 = point3d1.z - point3d.z;
+        double d5 = point3d2.z - point3d.z;
+        N.x = d1 * d5 - d4 * d2;
+        N.y = d3 * d2 - d * d5;
+        N.z = d * d4 - d3 * d2;
+        N.normalize();
+        D = -N.dot(point3d);
+    }
 
-    System.out.println("Plane1: " + localPlane3d1);
-    System.out.println("Plane2: " + localPlane3d2);
+    public final void set(com.maddox.JGP.Vector3d vector3d, com.maddox.JGP.Point3d point3d)
+    {
+        N.normalize(vector3d);
+        D = -N.dot(point3d);
+    }
 
-    System.out.println("Point: " + localPoint3d1 + "\n");
-    System.out.println("Distance: " + localPlane3d2.distance(localPoint3d1) + "\n");
-    System.out.println("PL1.cross(PL1):");
-    try { localPlane3d1.cross(localPlane3d1); } catch (RuntimeException localRuntimeException) {
-      System.out.println(localRuntimeException.getMessage());
-    }System.out.println("PL1.cross(PL2):");
-    Line3d localLine3d = localPlane3d1.cross(localPlane3d2);
-    System.out.println("Line: " + localLine3d);
-  }
+    public final double deviation(com.maddox.JGP.Point3d point3d)
+    {
+        return N.dot(point3d) + D;
+    }
+
+    public final double distance(com.maddox.JGP.Point3d point3d)
+    {
+        return java.lang.Math.abs(N.dot(point3d) + D);
+    }
+
+    public final com.maddox.JGP.Line3d cross(com.maddox.JGP.Plane3d plane3d)
+        throws com.maddox.JGP.JGPException
+    {
+        com.maddox.JGP.Line3d line3d = new Line3d();
+        line3d.A.cross(N, plane3d.N);
+        try
+        {
+            line3d.A.normalize();
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            throw new JGPException("Can't make a line from parallel planes");
+        }
+        double ad[] = {
+            N.x, N.y, N.z, -D, plane3d.N.x, plane3d.N.y, plane3d.N.z, -plane3d.D, line3d.A.x, line3d.A.y, 
+            line3d.A.z, 0.0D
+        };
+        try
+        {
+            line3d.P0 = com.maddox.JGP.NSolved.Solve3d(ad);
+        }
+        catch(java.lang.RuntimeException runtimeexception1)
+        {
+            throw new JGPException("Making a line from planes: some error");
+        }
+        return line3d;
+    }
+
+    public final com.maddox.JGP.Point3d cross(com.maddox.JGP.Line3d line3d)
+        throws com.maddox.JGP.JGPException
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d(line3d.A);
+        point3d.scale((N.dot(line3d.P0) + D) / N.dot(line3d.A));
+        point3d.sub(line3d.P0, point3d);
+        return point3d;
+    }
+
+    public final double cos(com.maddox.JGP.Plane3d plane3d)
+    {
+        return N.dot(plane3d.N);
+    }
+
+    public final double cos(com.maddox.JGP.Line3d line3d)
+    {
+        return N.dot(line3d.A);
+    }
+
+    public java.lang.String toString()
+    {
+        return "( " + N.x + "," + N.y + "," + N.z + ", " + D + " )";
+    }
+
+    public static void main(java.lang.String args[])
+        throws com.maddox.JGP.JGPException
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d(0.0D, 0.0D, 0.0D);
+        com.maddox.JGP.Point3d point3d1 = new Point3d(1.0D, 0.0D, 0.0D);
+        com.maddox.JGP.Point3d point3d2 = new Point3d(0.0D, 1.0D, 0.0D);
+        com.maddox.JGP.Point3d point3d3 = new Point3d(0.0D, 0.0D, 1.0D);
+        com.maddox.JGP.Plane3d plane3d = new Plane3d(point3d, point3d1, point3d2);
+        com.maddox.JGP.Plane3d plane3d1 = new Plane3d(point3d1, point3d3, point3d2);
+        java.lang.System.out.println("Plane1: " + plane3d);
+        java.lang.System.out.println("Plane2: " + plane3d1);
+        java.lang.System.out.println("Point: " + point3d + "\n");
+        java.lang.System.out.println("Distance: " + plane3d1.distance(point3d) + "\n");
+        java.lang.System.out.println("PL1.cross(PL1):");
+        try
+        {
+            plane3d.cross(plane3d);
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            java.lang.System.out.println(runtimeexception.getMessage());
+        }
+        java.lang.System.out.println("PL1.cross(PL2):");
+        com.maddox.JGP.Line3d line3d = plane3d.cross(plane3d1);
+        java.lang.System.out.println("Line: " + line3d);
+    }
+
+    public com.maddox.JGP.Vector3d N;
+    public double D;
 }

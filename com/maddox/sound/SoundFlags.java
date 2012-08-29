@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SoundFlags.java
+
 package com.maddox.sound;
 
 import com.maddox.il2.engine.Config;
@@ -6,73 +11,137 @@ import com.maddox.rts.CfgTools;
 import com.maddox.rts.IniFile;
 
 public class SoundFlags
-  implements CfgFlags
+    implements com.maddox.rts.CfgFlags
 {
-  IniFile ini = null;
-  String sect = null;
-  int value = 0;
 
-  public String name()
-  {
-    return null; } 
-  public int firstFlag() { return 0; } 
-  public int countFlags() { return 0; } 
-  public String nameFlag(int paramInt) { return null; } 
-  public boolean defaultFlag(int paramInt) { return false; } 
-  public boolean isPermanentFlag(int paramInt) { return true; }
+    public SoundFlags()
+    {
+        ini = null;
+        sect = null;
+        value = 0;
+    }
 
-  public boolean isEnabledFlag(int paramInt) {
-    if (Config.cur != null) return Config.cur.isSoundUse();
-    return true;
-  }
-  public boolean get(int paramInt) {
-    return (this.value & 1 << paramInt) != 0;
-  }
-  public void set(int paramInt, boolean paramBoolean) {
-    paramInt = 1 << paramInt;
-    if (paramBoolean) this.value |= paramInt; else
-      this.value &= (paramInt ^ 0xFFFFFFFF); 
-  }
-  public int applyStatus(int paramInt) {
-    return 0; } 
-  public boolean isPermanent() { return true; }
+    public java.lang.String name()
+    {
+        return null;
+    }
 
-  public boolean isEnabled() {
-    if (Config.cur != null) return Config.cur.isSoundUse();
-    return true;
-  }
-  public void load(IniFile paramIniFile, String paramString) {
-    this.ini = paramIniFile;
-    this.sect = paramString;
-    CfgTools.load(this, paramIniFile, paramString);
-  }
-  public IniFile loadedSectFile() {
-    return this.ini;
-  }
-  public String loadedSectName() {
-    return this.sect;
-  }
-  public void save() {
-    save(this.ini, this.sect);
-  }
-  public void save(IniFile paramIniFile, String paramString) {
-    CfgTools.save(false, this, paramIniFile, paramString);
-  }
-  public int apply() {
-    return 0;
-  }
-  public int apply(int paramInt) {
-    return 0;
-  }
-  public int applyStatus() {
-    return 0;
-  }
+    public int firstFlag()
+    {
+        return 0;
+    }
 
-  public void applyExtends(int paramInt)
-  {
-  }
+    public int countFlags()
+    {
+        return 0;
+    }
 
-  public void reset()
-  {
-  }
+    public java.lang.String nameFlag(int i)
+    {
+        return null;
+    }
+
+    public boolean defaultFlag(int i)
+    {
+        return false;
+    }
+
+    public boolean isPermanentFlag(int i)
+    {
+        return true;
+    }
+
+    public boolean isEnabledFlag(int i)
+    {
+        if(com.maddox.il2.engine.Config.cur != null)
+            return com.maddox.il2.engine.Config.cur.isSoundUse();
+        else
+            return true;
+    }
+
+    public boolean get(int i)
+    {
+        return (value & 1 << i) != 0;
+    }
+
+    public void set(int i, boolean flag)
+    {
+        i = 1 << i;
+        if(flag)
+            value |= i;
+        else
+            value &= ~i;
+    }
+
+    public int applyStatus(int i)
+    {
+        return 0;
+    }
+
+    public boolean isPermanent()
+    {
+        return true;
+    }
+
+    public boolean isEnabled()
+    {
+        if(com.maddox.il2.engine.Config.cur != null)
+            return com.maddox.il2.engine.Config.cur.isSoundUse();
+        else
+            return true;
+    }
+
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        ini = inifile;
+        sect = s;
+        com.maddox.rts.CfgTools.load(this, inifile, s);
+    }
+
+    public com.maddox.rts.IniFile loadedSectFile()
+    {
+        return ini;
+    }
+
+    public java.lang.String loadedSectName()
+    {
+        return sect;
+    }
+
+    public void save()
+    {
+        save(ini, sect);
+    }
+
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.save(false, this, inifile, s);
+    }
+
+    public int apply()
+    {
+        return 0;
+    }
+
+    public int apply(int i)
+    {
+        return 0;
+    }
+
+    public int applyStatus()
+    {
+        return 0;
+    }
+
+    public void applyExtends(int i)
+    {
+    }
+
+    public void reset()
+    {
+    }
+
+    com.maddox.rts.IniFile ini;
+    java.lang.String sect;
+    int value;
 }
