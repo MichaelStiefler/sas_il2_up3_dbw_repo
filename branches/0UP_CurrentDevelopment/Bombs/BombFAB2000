@@ -1,0 +1,7 @@
+mesh S 3DO/Arms/FAB-2000/mono.sim
+kalibr D 0.7300000190734863
+power D 1025.0
+radius D 300.0
+massa D 2000.0
+sound S weapon.bomb_big
+powerType L 0

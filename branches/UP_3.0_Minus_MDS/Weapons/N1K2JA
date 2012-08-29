@@ -1,0 +1,10 @@
+default,1 MGunType99No2s 200,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250, , , , , , 
+1x400dt,1 MGunType99No2s 200,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250, , , , ,9 PylonN1K1PLN1 -12345,9 FuelTankGun_TankN1K1 -12345
+20mmx900,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250, , , , , , 
+20mmx900+1x400dt,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250, , , , ,9 PylonN1K1PLN1 -12345,9 FuelTankGun_TankN1K1 -12345
+20mmx900+2x60,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250,3 BombGun60kgJ 1,3 BombGun60kgJ 1, , , , 
+20mmx900+4x60,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250,3 BombGun60kgJ 1,3 BombGun60kgJ 1,3 BombGun60kgJ 1,3 BombGun60kgJ 1, , 
+20mmx900+2x100,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250,3 BombGun100kgJ 1,3 BombGun100kgJ 1, , , , 
+20mmx900+4x100,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250,3 BombGun100kgJ 1,3 BombGun100kgJ 1,3 BombGun100kgJ 1,3 BombGun100kgJ 1, , 
+20mmx900+2x250,1 MGunType99No2s 250,0 MGunType99No2s 200,0 MGunType99No2s 200,1 MGunType99No2s 250,3 BombGun250kgJ 1,3 BombGun250kgJ 1, , , , 
+none, , , , , , , , , , 

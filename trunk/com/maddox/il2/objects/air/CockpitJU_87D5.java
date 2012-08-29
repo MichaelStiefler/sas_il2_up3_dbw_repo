@@ -1,0 +1,352 @@
+package com.maddox.il2.objects.air;
+
+import com.maddox.JGP.Point3d;
+import com.maddox.JGP.Vector3f;
+import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.engine.ActorDraw;
+import com.maddox.il2.engine.ActorPos;
+import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.engine.Hook;
+import com.maddox.il2.engine.HookNamed;
+import com.maddox.il2.engine.InterpolateRef;
+import com.maddox.il2.engine.LightPoint;
+import com.maddox.il2.engine.LightPointActor;
+import com.maddox.il2.engine.Loc;
+import com.maddox.il2.engine.Orientation;
+import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Mass;
+import com.maddox.il2.fm.Motor;
+import com.maddox.il2.fm.Pitot;
+import com.maddox.il2.objects.weapons.Gun;
+import com.maddox.rts.Time;
+import com.maddox.sound.SoundFX;
+import com.maddox.util.HashMapExt;
+
+public class CockpitJU_87D5 extends CockpitPilot
+{
+  protected SoundFX buzzerFX;
+  private Gun[] gun = { null, null };
+  private Variables setOld = new Variables(null);
+  private Variables setNew = new Variables(null);
+  private Variables setTmp;
+  private LightPointActor light1;
+  private LightPointActor light2;
+  private float pictAiler = 0.0F;
+  private float pictElev = 0.0F;
+  private boolean bNeedSetUp = true;
+  private boolean bG1 = false;
+  public Vector3f w = new Vector3f();
+
+  private static final float[] speedometerScale = { 0.0F, -12.333333F, 18.5F, 37.0F, 62.5F, 90.0F, 110.5F, 134.0F, 158.5F, 186.0F, 212.5F, 238.5F, 265.0F, 289.5F, 315.0F, 339.5F, 346.0F, 346.0F };
+
+  private static final float[] rpmScale = { 0.0F, 11.25F, 54.0F, 111.0F, 171.5F, 229.5F, 282.5F, 334.0F, 342.5F, 342.5F };
+
+  private static final float[] fuelScale = { 0.0F, 11.5F, 24.5F, 46.5F, 67.0F, 88.0F };
+
+  private static final float[] temperatureScale = { 0.0F, 15.5F, 35.0F, 50.0F, 65.0F, 79.0F, 92.0F, 117.5F, 141.5F, 178.5F, 222.5F, 261.5F, 329.0F, 340.0F };
+
+  protected float waypointAzimuth()
+  {
+    return waypointAzimuthInvertMinus(30.0F);
+  }
+
+  public CockpitJU_87D5()
+  {
+    super("3DO/Cockpit/Ju-87D-5/hier.him", "bf109");
+    this.setNew.dimPosition = (this.setOld.dimPosition = 1.0F);
+    this.cockpitDimControl = (!this.cockpitDimControl);
+
+    HookNamed localHookNamed = new HookNamed(this.mesh, "LAMPHOOK1");
+    Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+    localHookNamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), localLoc);
+    this.light1 = new LightPointActor(new LightPoint(), localLoc.getPoint());
+    this.light1.light.setColor(126.0F, 232.0F, 245.0F);
+    this.light1.light.setEmit(0.0F, 0.0F);
+    this.pos.base().draw.lightMap().put("LAMPHOOK1", this.light1);
+
+    localHookNamed = new HookNamed(this.mesh, "LAMPHOOK2");
+    localLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+    localHookNamed.computePos(this, new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F), localLoc);
+    this.light2 = new LightPointActor(new LightPoint(), localLoc.getPoint());
+    this.light2.light.setColor(126.0F, 232.0F, 245.0F);
+    this.light2.light.setEmit(0.0F, 0.0F);
+    this.pos.base().draw.lightMap().put("LAMPHOOK2", this.light2);
+
+    this.cockpitNightMats = new String[] { "87DClocks1", "87DClocks2", "87DClocks3", "87DClocks4", "87DClocks5", "87DPlanks2", "Signs" };
+    setNightMats(false);
+
+    interpPut(new Interpolater(), null, Time.current(), null);
+
+    this.buzzerFX = aircraft().newSound("models.buzzthru", false);
+    AircraftLH.printCompassHeading = true;
+  }
+
+  public void reflectWorldToInstruments(float paramFloat)
+  {
+    if (this.fm == null) return;
+    if (this.bNeedSetUp) {
+      reflectPlaneMats();
+      this.bNeedSetUp = false;
+    }
+    if ((this.gun[0] == null) && (!this.bNeedSetUp)) {
+      if (this.bG1) {
+        this.gun[0] = ((Aircraft)this.fm.actor).getGunByHookName("_CANNON01");
+        this.gun[1] = ((Aircraft)this.fm.actor).getGunByHookName("_CANNON02");
+      } else {
+        this.gun[0] = ((Aircraft)this.fm.actor).getGunByHookName("_MGUN01");
+        this.gun[1] = ((Aircraft)this.fm.actor).getGunByHookName("_MGUN02");
+      }
+    }
+
+    resetYPRmodifier();
+    xyz[2] = (-(10.27825F * (float)Math.tan(Math.toRadians(this.setNew.alpha))));
+    if (xyz[2] < -2.2699F) {
+      xyz[2] = -2.2699F;
+    }
+    this.mesh.chunkSetLocate("Z_Z_RETICLE1", xyz, ypr);
+
+    this.mesh.chunkSetAngles("zAlt1", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 10000.0F, 0.0F, 3600.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zAlt2", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 10000.0F, 0.0F, -360.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zAltCtr1", ((JU_87)aircraft()).fDiveRecoveryAlt * 360.0F / 6000.0F, 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zAltCtr2", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 6000.0F, 0.0F, 360.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("Z_ReviTinter", cvt(interp(this.setNew.dimPosition, this.setOld.dimPosition, paramFloat), 0.0F, 1.0F, 0.0F, 130.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("Z_ReviTint", cvt(interp(this.setNew.dimPosition, this.setOld.dimPosition, paramFloat), 0.0F, 1.0F, 0.0F, 40.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zBoost1", cvt(this.fm.EI.engines[0].getManifoldPressure(), 0.6F, 1.8F, 0.0F, 332.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zSpeed", floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 800.0F, 0.0F, 16.0F), speedometerScale), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zRPM1", floatindex(cvt(this.fm.EI.engines[0].getRPM(), 0.0F, 4000.0F, 0.0F, 8.0F), rpmScale), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zFuel1", floatindex(cvt(this.fm.M.fuel / 0.72F, 0.0F, 250.0F, 0.0F, 5.0F), fuelScale), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zOilTemp1", cvt(this.fm.EI.engines[0].tOilOut, 0.0F, 120.0F, 0.0F, 120.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zFuelPrs1", cvt(this.fm.M.fuel > 1.0F ? 0.26F : 0.0F, 0.0F, 3.0F, 0.0F, 135.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zOilPrs1", cvt(1.0F + 0.05F * this.fm.EI.engines[0].tOilOut, 0.0F, 15.0F, 0.0F, 135.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zTurnBank", cvt(this.setNew.turn, -0.23562F, 0.23562F, 30.0F, -30.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zBall", cvt(getBall(6.0D), -6.0F, 6.0F, -10.0F, 10.0F), 0.0F, 0.0F);
+
+    if (useRealisticNavigationInstruments())
+    {
+      this.mesh.chunkSetAngles("zRepeater", this.setNew.azimuth.getDeg(paramFloat) - this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("zCompass", 0.0F, this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F);
+    }
+    else
+    {
+      this.mesh.chunkSetAngles("zCompass", 0.0F, this.setNew.azimuth.getDeg(paramFloat), 0.0F);
+      this.mesh.chunkSetAngles("zRepeater", this.setNew.waypointAzimuth.getDeg(paramFloat * 0.1F), 0.0F, 0.0F);
+    }
+
+    this.mesh.chunkSetAngles("zCompassOil2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zCompassOil1", this.fm.Or.getTangage(), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zCompassOil3", this.fm.Or.getKren(), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zVSI", cvt(this.setNew.vspeed, -15.0F, 15.0F, -135.0F, 135.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zwatertemp", cvt(this.fm.EI.engines[0].tOilOut, 0.0F, 120.0F, 0.0F, 100.0F), 0.0F, 0.0F);
+
+    if (this.bG1) {
+      if (this.gun[0] != null) {
+        this.mesh.chunkSetAngles("Z_AmmoCounter1", cvt(this.gun[0].countBullets(), 0.0F, 50.0F, 15.0F, 0.0F), 0.0F, 0.0F);
+      }
+      if (this.gun[1] != null)
+        this.mesh.chunkSetAngles("Z_AmmoCounter2", cvt(this.gun[1].countBullets(), 0.0F, 50.0F, 15.0F, 0.0F), 0.0F, 0.0F);
+    }
+    else {
+      if (this.gun[0] != null) {
+        this.mesh.chunkSetAngles("Z_AmmoCounter1", cvt(this.gun[0].countBullets(), 0.0F, 500.0F, 15.0F, 0.0F), 0.0F, 0.0F);
+      }
+      if (this.gun[1] != null) {
+        this.mesh.chunkSetAngles("Z_AmmoCounter2", cvt(this.gun[1].countBullets(), 0.0F, 500.0F, 15.0F, 0.0F), 0.0F, 0.0F);
+      }
+    }
+
+    this.mesh.chunkSetAngles("zHour", cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zMinute", cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkSetAngles("zColumn1", (this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.fm.CT.AileronControl) * 15.0F, 0.0F, (this.pictElev = 0.85F * this.pictElev + 0.15F * this.fm.CT.ElevatorControl) * 10.0F);
+
+    this.mesh.chunkSetAngles("zPedalL", -this.fm.CT.getRudder() * 10.0F, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zPedalR", this.fm.CT.getRudder() * 10.0F, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zThrottle1", interp(this.setNew.throttle, this.setOld.throttle, paramFloat) * 80.0F, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zPitch1", (this.fm.CT.getStepControl() >= 0.0F ? this.fm.CT.getStepControl() : interp(this.setNew.throttle, this.setOld.throttle, paramFloat)) * 45.0F, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zFlaps1", 55.0F * this.fm.CT.FlapsControl, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zPipka1", 60.0F * this.fm.CT.AirBrakeControl, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zBrake1", 46.5F * this.fm.CT.AirBrakeControl, 0.0F, 0.0F);
+    resetYPRmodifier();
+    if (this.fm.EI.engines[0].getControlCompressor() > 0) {
+      xyz[0] = 0.155F;
+      ypr[2] = 22.0F;
+    }
+    this.mesh.chunkSetLocate("zBoostCrank1", xyz, ypr);
+
+    this.mesh.chunkSetAngles("zproppitch1", cvt(this.setNew.beaconDirection, -45.0F, 45.0F, 20.0F, -20.0F), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zproppitch2", cvt(this.setNew.beaconRange, 0.0F, 1.0F, -20.0F, 20.0F), 0.0F, 0.0F);
+
+    this.mesh.chunkVisible("AFN2_RED", isOnBlindLandingMarker());
+  }
+
+  public void toggleDim()
+  {
+    this.cockpitDimControl = (!this.cockpitDimControl);
+  }
+
+  public void toggleLight()
+  {
+    this.cockpitLightControl = (!this.cockpitLightControl);
+    if (this.cockpitLightControl) {
+      this.light1.light.setEmit(0.005F, 0.5F);
+      this.light2.light.setEmit(0.005F, 0.5F);
+      setNightMats(true);
+    } else {
+      this.light1.light.setEmit(0.0F, 0.0F);
+      this.light2.light.setEmit(0.0F, 0.0F);
+      setNightMats(false);
+    }
+  }
+
+  public void reflectCockpitState()
+  {
+    if (((this.fm.AS.astateCockpitState & 0x4) != 0) || ((this.fm.AS.astateCockpitState & 0x8) != 0))
+    {
+      this.mesh.chunkVisible("Z_Holes1_D1", true);
+      this.mesh.chunkVisible("Z_Holes2_D1", true);
+    }
+    if (((this.fm.AS.astateCockpitState & 0x10) != 0) || ((this.fm.AS.astateCockpitState & 0x20) != 0))
+    {
+      this.mesh.chunkVisible("Z_Holes1_D1", true);
+      this.mesh.chunkVisible("Z_Holes2_D1", true);
+    }
+    if (((this.fm.AS.astateCockpitState & 0x1) != 0) || ((this.fm.AS.astateCockpitState & 0x2) != 0))
+    {
+      this.mesh.chunkVisible("Revi_D0", false);
+      this.mesh.chunkVisible("Z_ReviTint", false);
+      this.mesh.chunkVisible("Z_ReviTinter", false);
+      this.mesh.chunkVisible("Z_Z_RETICLE", false);
+      this.mesh.chunkVisible("Z_Z_MASK", false);
+      this.mesh.chunkVisible("Revi_D1", true);
+      if (this.bG1)
+        this.mesh.chunkVisible("Z_Holes3G_D1", true);
+      else {
+        this.mesh.chunkVisible("Z_Holes3D_D1", true);
+      }
+    }
+    if (((this.fm.AS.astateCockpitState & 0x40) == 0) || 
+      ((this.fm.AS.astateCockpitState & 0x80) != 0))
+      this.mesh.chunkVisible("Z_OilSplats_D1", true);
+  }
+
+  protected void reflectPlaneMats()
+  {
+    if ((Actor.isValid(this.fm.actor)) && ((this.fm.actor instanceof JU_87G1))) {
+      this.mesh.chunkVisible("ARMOR", true);
+      this.bG1 = true;
+    }
+  }
+
+  class Interpolater extends InterpolateRef
+  {
+    Interpolater()
+    {
+    }
+
+    public boolean tick()
+    {
+      CockpitJU_87D5.this.fm = World.getPlayerFM();
+      if (CockpitJU_87D5.this.fm != null) {
+        if (CockpitJU_87D5.this.bNeedSetUp) {
+          CockpitJU_87D5.this.reflectPlaneMats();
+          CockpitJU_87D5.access$102(CockpitJU_87D5.this, false);
+        }
+        CockpitJU_87D5.access$202(CockpitJU_87D5.this, CockpitJU_87D5.this.setOld); CockpitJU_87D5.access$302(CockpitJU_87D5.this, CockpitJU_87D5.this.setNew); CockpitJU_87D5.access$402(CockpitJU_87D5.this, CockpitJU_87D5.this.setTmp);
+
+        CockpitJU_87D5.this.setNew.altimeter = CockpitJU_87D5.this.fm.getAltitude();
+        if (CockpitJU_87D5.this.cockpitDimControl) {
+          if (CockpitJU_87D5.this.setNew.dimPosition > 0.0F) CockpitJU_87D5.this.setNew.dimPosition = (CockpitJU_87D5.this.setOld.dimPosition - 0.05F);
+        }
+        else if (CockpitJU_87D5.this.setNew.dimPosition < 1.0F) CockpitJU_87D5.this.setNew.dimPosition = (CockpitJU_87D5.this.setOld.dimPosition + 0.05F);
+
+        CockpitJU_87D5.this.setNew.throttle = ((10.0F * CockpitJU_87D5.this.setOld.throttle + CockpitJU_87D5.this.fm.CT.PowerControl) / 11.0F);
+
+        float f1 = CockpitJU_87D5.this.waypointAzimuth();
+        if (CockpitJU_87D5.this.useRealisticNavigationInstruments())
+        {
+          CockpitJU_87D5.this.setNew.waypointAzimuth.setDeg(f1 - 90.0F);
+          CockpitJU_87D5.this.setOld.waypointAzimuth.setDeg(f1 - 90.0F);
+        }
+        else
+        {
+          CockpitJU_87D5.this.setNew.waypointAzimuth.setDeg(CockpitJU_87D5.this.setOld.waypointAzimuth.getDeg(0.1F), f1 - CockpitJU_87D5.this.setOld.azimuth.getDeg(1.0F));
+        }
+        CockpitJU_87D5.this.setNew.azimuth.setDeg(CockpitJU_87D5.this.setOld.azimuth.getDeg(1.0F), CockpitJU_87D5.this.fm.Or.azimut());
+
+        CockpitJU_87D5.this.w.set(CockpitJU_87D5.this.fm.getW());
+        CockpitJU_87D5.this.fm.Or.transform(CockpitJU_87D5.this.w);
+        CockpitJU_87D5.this.setNew.turn = ((12.0F * CockpitJU_87D5.this.setOld.turn + CockpitJU_87D5.this.w.z) / 13.0F);
+
+        CockpitJU_87D5.this.setNew.vspeed = ((499.0F * CockpitJU_87D5.this.setOld.vspeed + CockpitJU_87D5.this.fm.getVertSpeed()) / 500.0F);
+        if (CockpitJU_87D5.this.buzzerFX != null) {
+          if ((CockpitJU_87D5.this.fm.Loc.z < ((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveRecoveryAlt) && (((JU_87)(JU_87)CockpitJU_87D5.this.fm.actor).diveMechStage == 1))
+            CockpitJU_87D5.this.buzzerFX.play();
+          else if (CockpitJU_87D5.this.buzzerFX.isPlaying()) {
+            CockpitJU_87D5.this.buzzerFX.stop();
+          }
+        }
+
+        float f2 = ((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveRecoveryAlt;
+        float f3 = -(((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveVelocity * 0.27777F * (float)Math.sin(Math.toRadians(((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveAngle))) * 0.1019F;
+        f3 += (float)Math.sqrt(f3 * f3 + 2.0F * f2 * 0.1019F);
+        float f4 = ((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveVelocity * 0.27777F * (float)Math.cos(Math.toRadians(((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveAngle));
+        float f5 = f4 * f3 + 10.0F - 10.0F;
+        CockpitJU_87D5.this.setNew.alpha = (90.0F - ((JU_87D5)CockpitJU_87D5.this.aircraft()).fDiveAngle - (float)Math.toDegrees(Math.atan(f5 / f2)));
+
+        CockpitJU_87D5.this.setNew.beaconDirection = ((10.0F * CockpitJU_87D5.this.setOld.beaconDirection + CockpitJU_87D5.this.getBeaconDirection()) / 11.0F);
+        CockpitJU_87D5.this.setNew.beaconRange = ((10.0F * CockpitJU_87D5.this.setOld.beaconRange + CockpitJU_87D5.this.getBeaconRange()) / 11.0F);
+      }
+
+      return true;
+    }
+  }
+
+  private class Variables
+  {
+    float altimeter;
+    float throttle;
+    float dimPosition;
+    AnglesFork azimuth;
+    AnglesFork waypointAzimuth;
+    float turn;
+    float beaconDirection;
+    float beaconRange;
+    float vspeed;
+    float alpha;
+    private final CockpitJU_87D5 this$0;
+
+    private Variables()
+    {
+      this.this$0 = this$1;
+
+      this.azimuth = new AnglesFork();
+      this.waypointAzimuth = new AnglesFork();
+    }
+
+    Variables(CockpitJU_87D5.1 arg2)
+    {
+      this();
+    }
+  }
+}

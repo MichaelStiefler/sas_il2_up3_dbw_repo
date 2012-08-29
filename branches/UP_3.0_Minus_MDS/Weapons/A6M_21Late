@@ -1,0 +1,8 @@
+default,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100, , , , , , , 
+1xdt,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100,9 FuelTankGun_Tank0 1, , , , , , 
+2x30,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100, , , ,9 PylonA6MPLN4 1,9 PylonA6MPLN4 1,3 BombGun30kgJ2 1,3 BombGun30kgJ2 1
+1xdt+2x30,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100,9 FuelTankGun_Tank0 1, , ,9 PylonA6MPLN4 1,9 PylonA6MPLN4 1,3 BombGun30kgJ2 1,3 BombGun30kgJ2 1
+2xType3,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100, , , ,9 PylonA6MPLN4 1,9 PylonA6MPLN4 1,3 BombGunType3AntiAir 1,3 BombGunType3AntiAir 1
+1xdt+2xType3,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100,9 FuelTankGun_Tank0 1, , ,9 PylonA6MPLN4 1,9 PylonA6MPLN4 1,3 BombGunType3AntiAir 1,3 BombGunType3AntiAir 1
+2x60,0 MGunMG15spzl 680,0 MGunMG15spzl 680,1 MGunType99No2s 100,1 MGunType99No2s 100, , , ,9 PylonA6MPLN2 1,9 PylonA6MPLN2 1,3 BombGun60kgJ2 1,3 BombGun60kgJ2 1
+none, , , , , , , , , , , 

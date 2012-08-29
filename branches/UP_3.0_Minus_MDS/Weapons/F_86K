@@ -1,0 +1,5 @@
+default,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132, , , , , , , , , , 
+2x200dt,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,9 PylonF86_Outboard 1,9 PylonF86_Outboard 1,9 FuelTankGun_200galL 1,9 FuelTankGun_200galR 1, , , , , , 
+2xAIM9B,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132, , , , ,9 PylonF86_Sidewinder 1,2 RocketGunAIM9B 1,2 RocketGunNull 1,9 PylonF86_Sidewinder 1,2 RocketGunAIM9B 1,2 RocketGunNull 1
+2xAIM9B+2x200dt,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,0 MGunColtMk12ki 132,9 PylonF86_Outboard 1,9 PylonF86_Outboard 1,9 FuelTankGun_200galL 1,9 FuelTankGun_200galR 1,9 PylonF86_Sidewinder 1,2 RocketGunAIM9B 1,2 RocketGunNull 1,9 PylonF86_Sidewinder 1,2 RocketGunAIM9B 1,2 RocketGunNull 1
+none, , , , , , , , , , , , , , 

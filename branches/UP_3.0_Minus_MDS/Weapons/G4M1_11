@@ -1,0 +1,16 @@
+default,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , , 
+50x15,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun15kgJ 25,3 BombGun15kgJ 25, 
+16x50,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun50kgJ 8,3 BombGun50kgJ 8, 
+16x50inc,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun50kgIncJ 8,3 BombGun50kgIncJ 8, 
+12x60,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun60kgJ 6,3 BombGun60kgJ 6, 
+8x100,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun100kgJ 4,3 BombGun100kgJ 4, 
+1x250,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , ,3 BombGun250kgJ 1
+2x250,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun250kgJ 1,3 BombGun250kgJ 1, 
+3x250,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun250kgJ 1,3 BombGun250kgJ 2, 
+1x500,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , ,3 BombGun500kgJ 1
+1x5002x250,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500,3 BombGun500kgJ 1,3 BombGun250kgJ 2, 
+1x600,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , ,3 BombGun600kgJ 1
+1x800,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , ,3 BombGun800kgJ 1
+1xtyp91,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , ,3 BombGunTorpType91 1
+1xtyp91_late,10 MGunBrowning303t 500,11 MGunType99No1t 250,12 MGunBrowning303t 500,13 MGunBrowning303t 500,14 MGunBrowning303t 500, , ,3 BombGunTorpType91late 1
+none, , , , , , , , 

@@ -1,0 +1,11 @@
+default,10 MGunMG15t 1050,11 MGunMG15t 750, , , , , , , , , , , , , 
+18xPara,10 MGunMG15t 1050,11 MGunMG15t 750,3 BombGunPara 18, , , , , , , , , , , , 
+10xSC50,10 MGunMG15t 1050,11 MGunMG15t 750, , , , , , , , , ,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1
+20xSC50,10 MGunMG15t 1050,11 MGunMG15t 750, , , ,3 BombGunSC50 5,3 BombGunNull 1, , ,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1
+30xSC50,10 MGunMG15t 1050,11 MGunMG15t 750, ,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1
+2xSC250,10 MGunMG15t 1050,11 MGunMG15t 750, , , , , , , , , ,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1
+2xSC250_10xSC50,10 MGunMG15t 1050,11 MGunMG15t 750, , , ,3 BombGunSC250 1,3 BombGunNull 1, , ,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1
+2xSC250_20xSC50,10 MGunMG15t 1050,11 MGunMG15t 750, ,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1
+4xSC250,10 MGunMG15t 1050,11 MGunMG15t 750, , , ,3 BombGunSC250 1,3 BombGunNull 1, , ,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1
+4xSC250_10xSC50,10 MGunMG15t 1050,11 MGunMG15t 750, ,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC250 1,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1,3 BombGunSC50 5,3 BombGunNull 1
+none, , , , , , , , , , , , , , , 

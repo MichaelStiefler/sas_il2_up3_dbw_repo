@@ -1,0 +1,4 @@
+external L 1
+sound S weapon.bombgun
+shotFreq D 3.0
+bullets L 1

@@ -1,0 +1,4658 @@
+;moveType VEHICLE
+;moveType TROOPER
+;moveType SHIP
+;moveType TRAIN
+
+[Infantry]
+ moveType TROOPER
+
+;-----Russia
+ 1-RusInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 2-RusInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 3-RusInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 4-RusInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 12-RusInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat  ;----------------------------------------added
+
+ 1-RusSMGInfantry   ai.ground.ChiefGround 1 icons/Infantry.mat
+ 2-RusSMGInfantry   ai.ground.ChiefGround 1 icons/Infantry.mat
+ 3-RusSMGInfantry   ai.ground.ChiefGround 1 icons/Infantry.mat
+ 4-RusSMGInfantry   ai.ground.ChiefGround 1 icons/Infantry.mat
+
+;-----Allied
+ 1-USInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 2-USInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 3-USInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 4-USInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 12-USInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat ;----------------------------------------added
+ 
+ 1-GBInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 2-GBInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 3-GBInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 4-GBInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat
+ 12-GBInfantry      ai.ground.ChiefGround 1 icons/Infantry.mat ;----------------------------------------added
+
+;-----Germany
+ 1-AxisInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 2-AxisInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 3-AxisInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 4-AxisInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+
+ 1-AxisPnzrInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 2-AxisPnzrInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 3-AxisPnzrInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 4-AxisPnzrInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 12-AxisPnzrInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat ;---------------------------------------added
+ 
+;-----japan
+ 1-JapInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 2-JapInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 3-JapInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 4-JapInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat
+ 12-IJInfantry      ai.ground.ChiefGround 2 icons/Infantry.mat ;---------------------------------------added
+
+[Armor]
+ moveType VEHICLE
+
+;---- USSR
+;Tanks
+ 1-BT7      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-BT7      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-BT7      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-BT7      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-HotchkissH35	ai.ground.ChiefGround 1 icons/tank.mat 
+ 2-HotchkissH35	ai.ground.ChiefGround 1 icons/tank.mat
+ 3-HotchkissH35	ai.ground.ChiefGround 1 icons/tank.mat
+ 4-HotchkissH35	ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-RenaultR35	ai.ground.ChiefGround 1 icons/tank.mat
+ 2-RenaultR35	ai.ground.ChiefGround 1 icons/tank.mat
+ 3-RenaultR35	ai.ground.ChiefGround 1 icons/tank.mat
+ 4-RenaultR35	ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T40S     ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T40S     ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T40S     ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T40S     ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T60      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T60      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T60      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T60      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-7TP      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-7TP      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-7TP      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-7TP      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-M3A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M3A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M3A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+ 4-M3A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-M5A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M5A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M5A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+ 4-M5A1Stuart     ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T70M     ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T70M     ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T70M     ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T70M     ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T26_Early ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T26_Early ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T26_Early ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T26_Early ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T26_Late ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T26_Late ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T26_Late ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T26_Late ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-VickersMKVI ai.ground.ChiefGround 1 icons/tank.mat
+ 2-VickersMKVI ai.ground.ChiefGround 1 icons/tank.mat
+ 3-VickersMKVI ai.ground.ChiefGround 1 icons/tank.mat
+ 4-VickersMKVI ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-Crusader ai.ground.ChiefGround 1 icons/tank.mat
+ 2-Crusader ai.ground.ChiefGround 1 icons/tank.mat
+ 3-Crusader ai.ground.ChiefGround 1 icons/tank.mat
+ 4-Crusader ai.ground.ChiefGround 1 icons/tank.mat
+ 12-Crusader ai.ground.ChiefGround 1 icons/tank.mat ;---------------------------------------added
+
+ 1-ValentineII ai.ground.ChiefGround 1 icons/tank.mat
+ 2-ValentineII ai.ground.ChiefGround 1 icons/tank.mat
+ 3-ValentineII ai.ground.ChiefGround 1 icons/tank.mat
+ 4-ValentineII ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-MatildaMkII_UK ai.ground.ChiefGround 1 icons/tank.mat
+ 2-MatildaMkII_UK ai.ground.ChiefGround 1 icons/tank.mat
+ 3-MatildaMkII_UK ai.ground.ChiefGround 1 icons/tank.mat
+ 4-MatildaMkII_UK ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-MatildaMkII_AU ai.ground.ChiefGround 1 icons/tank.mat
+ 2-MatildaMkII_AU ai.ground.ChiefGround 1 icons/tank.mat
+ 3-MatildaMkII_AU ai.ground.ChiefGround 1 icons/tank.mat
+ 4-MatildaMkII_AU ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-Bishop ai.ground.ChiefGround 1 icons/tank.mat
+ 2-Bishop ai.ground.ChiefGround 1 icons/tank.mat
+ 3-Bishop ai.ground.ChiefGround 1 icons/tank.mat
+ 4-Bishop ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-ChurchillMkIVA ai.ground.ChiefGround 1 icons/tank.mat
+ 2-ChurchillMkIVA ai.ground.ChiefGround 1 icons/tank.mat
+ 3-ChurchillMkIVA ai.ground.ChiefGround 1 icons/tank.mat
+ 4-ChurchillMkIVA ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-ChurchillMkVII ai.ground.ChiefGround 1 icons/tank.mat
+ 2-ChurchillMkVII ai.ground.ChiefGround 1 icons/tank.mat
+ 3-ChurchillMkVII ai.ground.ChiefGround 1 icons/tank.mat
+ 4-ChurchillMkVII ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-CromwellMkIV ai.ground.ChiefGround 1 icons/tank.mat
+ 2-CromwellMkIV ai.ground.ChiefGround 1 icons/tank.mat
+ 3-CromwellMkIV ai.ground.ChiefGround 1 icons/tank.mat
+ 4-CromwellMkIV ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-ChallengerMkI ai.ground.ChiefGround 1 icons/tank.mat
+ 2-ChallengerMkI ai.ground.ChiefGround 1 icons/tank.mat
+ 3-ChallengerMkI ai.ground.ChiefGround 1 icons/tank.mat
+ 4-ChallengerMkI ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-CometMkI ai.ground.ChiefGround 1 icons/tank.mat
+ 2-CometMkI ai.ground.ChiefGround 1 icons/tank.mat
+ 3-CometMkI ai.ground.ChiefGround 1 icons/tank.mat
+ 4-CometMkI ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-M4A2     ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M4A2     ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M4A2     ai.ground.ChiefGround 1 icons/tank.mat
+ 4-M4A2     ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-M4A2_US  ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M4A2_US  ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M4A2_US  ai.ground.ChiefGround 1 icons/tank.mat
+ 4-M4A2_US  ai.ground.ChiefGround 1 icons/tank.mat
+ 12-M4A2_US  ai.ground.ChiefGround 1 icons/tank.mat ;.........ffb
+
+
+ 1-M4A2_76W ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M4A2_76W ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M4A2_76W ai.ground.ChiefGround 1 icons/tank.mat
+ 4-M4A2_76W ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-M4A2_76W_US ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M4A2_76W_US ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M4A2_76W_US ai.ground.ChiefGround 1 icons/tank.mat
+ 4-M4A2_76W_US ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-SomuaS35  ai.ground.ChiefGround 1 icons/tank.mat
+ 2-SomuaS35  ai.ground.ChiefGround 1 icons/tank.mat
+ 3-SomuaS35  ai.ground.ChiefGround 1 icons/tank.mat
+ 4-SomuaS35  ai.ground.ChiefGround 1 icons/tank.mat	
+
+ 1-T34      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T34      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T34      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T34      ai.ground.ChiefGround 1 icons/tank.mat
+ 12-T34      ai.ground.ChiefGround 1 icons/tank.mat ;................ffb
+
+
+ 1-T34_85   ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T34_85   ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T34_85   ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T34_85   ai.ground.ChiefGround 1 icons/tank.mat
+ 10-T34_85   ai.ground.ChiefGround 1 icons/tank.mat ;...................ffb
+
+ 1-T28      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T28      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T28      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T28      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-KV1      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-KV1      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-KV1      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-KV1      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-IS2      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-IS2      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-IS2      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-IS2      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T35      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T35      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T35      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T35      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-IS3      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-IS3      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-IS3      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-IS3      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-T44      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-T44      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-T44      ai.ground.ChiefGround 1 icons/tank.mat
+ 4-T44      ai.ground.ChiefGround 1 icons/tank.mat
+
+;SPG
+ 1-ZSU-37      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-M3Lee       ai.ground.ChiefGround 1 icons/tank.mat
+ 2-M3Lee       ai.ground.ChiefGround 1 icons/tank.mat
+ 3-M3Lee       ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-SU-76M      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-SU-76M      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-SU-76M      ai.ground.ChiefGround 1 icons/tank.mat
+ 8-SU-76M      ai.ground.ChiefGround 1 icons/tank.mat ;---------------------------------------added
+
+ 1-SU-85       ai.ground.ChiefGround 1 icons/tank.mat
+ 2-SU-85       ai.ground.ChiefGround 1 icons/tank.mat
+ 3-SU-85       ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-SU-100      ai.ground.ChiefGround 1 icons/tank.mat
+ 2-SU-100      ai.ground.ChiefGround 1 icons/tank.mat
+ 3-SU-100      ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-ISU-152     ai.ground.ChiefGround 1 icons/tank.mat
+ 2-ISU-152     ai.ground.ChiefGround 1 icons/tank.mat
+ 3-ISU-152     ai.ground.ChiefGround 1 icons/tank.mat
+
+ 1-CrusaderAAA	ai.ground.ChiefGround 1 icons/tank.mat
+
+
+;---- Vermacht
+;Tanks
+ 1-PzIIF  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIIF  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIIF  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIIF  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_35  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_35  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_35  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_35  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_35Ro  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_35Ro  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_35Ro  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_35Ro  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_35Sl  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_35Sl  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_35Sl  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_35Sl  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_38  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_38  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_38  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_38  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_38Sl  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_38Sl  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_38Sl  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_38Sl  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_40  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_40  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_40  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_40  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-LT_40MG  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-LT_40MG  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-LT_40MG  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-LT_40MG  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Fiat_M13  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Fiat_M13  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Fiat_M13  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-Fiat_M13  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Fiat_M15  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Fiat_M15  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Fiat_M15  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-Fiat_M15  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-HaGo  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-HaGo  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-HaGo  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-HaGo  ai.ground.ChiefGround 2 icons/tank.mat
+ 12xType_95_Ha-Go  ai.ground.ChiefGround 2 icons/tank.mat ;---------------------------------------added
+
+ 1-HaGoRadio  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-HaGoRadio  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-HaGoRadio  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-HaGoRadio  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-ChiHa  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-ChiHa  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-ChiHa  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-ChiHa  ai.ground.ChiefGround 2 icons/tank.mat
+ 12xType_97_Chi-Ha  ai.ground.ChiefGround 2 icons/tank.mat ;---------------------------------------added
+
+ 1-ChiHa_alt  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-ChiHa_alt  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-ChiHa_alt  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-ChiHa_alt  ai.ground.ChiefGround 2 icons/tank.mat
+
+
+ 1-PzIIIG  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIIIG  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIIIG  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIIIG  ai.ground.ChiefGround 2 icons/tank.mat
+ 15-PzIIIG  ai.ground.ChiefGround 2 icons/tank.mat ;.................ffb
+
+ 1-PzIIIJ  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIIIJ  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIIIJ  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIIIJ  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-PzIIIM  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIIIM  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIIIM  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIIIM  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-PzIIIN  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIIIN  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIIIN  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIIIN  ai.ground.ChiefGround 2 icons/tank.mat
+ 8-PzIIIN  ai.ground.ChiefGround 2 icons/tank.mat ;.....................ffb
+
+
+ 1-TuranI  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-TuranI  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-TuranI  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-TuranI  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-TuranII ai.ground.ChiefGround 2 icons/tank.mat
+ 2-TuranII ai.ground.ChiefGround 2 icons/tank.mat
+ 3-TuranII ai.ground.ChiefGround 2 icons/tank.mat
+ 4-TuranII ai.ground.ChiefGround 2 icons/tank.mat
+
+
+ 1-PzIVE   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIVE   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIVE   ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIVE   ai.ground.ChiefGround 2 icons/tank.mat
+ 8-PzIVE   ai.ground.ChiefGround 2 icons/tank.mat ;.....................ffb
+
+ 1-PzIVF   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIVF   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIVF   ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIVF   ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-PzIVF2  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIVF2  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIVF2  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIVF2  ai.ground.ChiefGround 2 icons/tank.mat
+ 9-PzIVF2  ai.ground.ChiefGround 2 icons/tank.mat ;......................ffb
+
+ 1-PzIVJ   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzIVJ   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzIVJ   ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzIVJ   ai.ground.ChiefGround 2 icons/tank.mat
+ 12-PzIVJ   ai.ground.ChiefGround 2 icons/tank.mat ;......................ffb
+
+
+ 1-PzVA    ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzVA    ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzVA    ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzVA    ai.ground.ChiefGround 2 icons/tank.mat
+ 6-PzVA    ai.ground.ChiefGround 2 icons/tank.mat ;..........................ffb
+
+
+ 1-PzVIE   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzVIE   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzVIE   ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzVIE   ai.ground.ChiefGround 2 icons/tank.mat
+ 6-PzVIE   ai.ground.ChiefGround 2 icons/tank.mat ;..........................ffb
+
+
+ 1-PzVIB   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzVIB   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzVIB   ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzVIB   ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-PzV_II  ai.ground.ChiefGround 2 icons/tank.mat
+ 2-PzV_II  ai.ground.ChiefGround 2 icons/tank.mat
+ 3-PzV_II  ai.ground.ChiefGround 2 icons/tank.mat
+ 4-PzV_II  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Maus    ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Maus    ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Maus    ai.ground.ChiefGround 2 icons/tank.mat
+ 4-Maus    ai.ground.ChiefGround 2 icons/tank.mat
+
+;SPG
+ 1-ZrinyiII    ai.ground.ChiefGround 2 icons/tank.mat
+ 2-ZrinyiII    ai.ground.ChiefGround 2 icons/tank.mat
+ 3-ZrinyiII    ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Fiat_M40    ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Fiat_M40    ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Fiat_M40    ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Fiat_M42    ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Fiat_M42    ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Fiat_M42    ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Hetzer      ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Hetzer      ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Hetzer      ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-StuGIIIG    ai.ground.ChiefGround 2 icons/tank.mat
+ 2-StuGIIIG    ai.ground.ChiefGround 2 icons/tank.mat
+ 3-StuGIIIG    ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-StuGIV      ai.ground.ChiefGround 2 icons/tank.mat
+ 2-StuGIV      ai.ground.ChiefGround 2 icons/tank.mat
+ 3-StuGIV      ai.ground.ChiefGround 2 icons/tank.mat
+ 8-StuGIV      ai.ground.ChiefGround 2 icons/tank.mat ;---------------------------------------added
+ 
+ 1-MarderIII   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-MarderIII   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-MarderIII   ai.ground.ChiefGround 2 icons/tank.mat
+ 8-MarderIII   ai.ground.ChiefGround 2 icons/tank.mat ;---------------------------------------added
+
+ 1-Ferdinand   ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Ferdinand   ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Ferdinand   ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Jagdpanther ai.ground.ChiefGround 2 icons/tank.mat
+ 2-Jagdpanther ai.ground.ChiefGround 2 icons/tank.mat
+ 3-Jagdpanther ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Karl_600mm  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Nimrod      ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Wirbelwind  ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-Coelian     ai.ground.ChiefGround 2 icons/tank.mat
+
+ 1-HoRo        ai.ground.ChiefGround 2 icons/tank.mat
+ 2-HoRo        ai.ground.ChiefGround 2 icons/tank.mat
+ 3-HoRo        ai.ground.ChiefGround 2 icons/tank.mat
+
+[Vehicles]
+ moveType VEHICLE
+
+ GAZ67                  ai.ground.ChiefGround 1 icons/car.mat
+ GAZ67t                 ai.ground.ChiefGround 1 icons/car.mat
+ GAZ_M1                 ai.ground.ChiefGround 1 icons/car.mat
+ WillisMB               ai.ground.ChiefGround 1 icons/car.mat
+ WillisMB_US            ai.ground.ChiefGround 1 icons/car.mat
+ WillisMBt              ai.ground.ChiefGround 1 icons/car.mat
+ WillisMBt_US           ai.ground.ChiefGround 1 icons/car.mat
+ WillisMBtc_US          ai.ground.ChiefGround 1 icons/car.mat
+
+ ZIS5_PC                ai.ground.ChiefGround 1 icons/car.mat
+ 2-ZIS5_PC                ai.ground.ChiefGround 1 icons/car.mat
+ 3-ZIS5_PC                ai.ground.ChiefGround 1 icons/car.mat
+ 4-ZIS5_PC                ai.ground.ChiefGround 1 icons/car.mat
+
+ ZIS5_AA                ai.ground.ChiefGround 1 icons/car.mat
+
+ ZIS6_fuel              ai.ground.ChiefGround 1 icons/car.mat
+ 2-ZIS6_fuel              ai.ground.ChiefGround 1 icons/car.mat
+ 3-ZIS6_fuel              ai.ground.ChiefGround 1 icons/car.mat
+ 4-ZIS6_fuel              ai.ground.ChiefGround 1 icons/car.mat
+
+ M3A1_APC               ai.ground.ChiefGround 1 icons/car.mat
+ 2-M3A1_APC               ai.ground.ChiefGround 1 icons/car.mat
+ 3-M3A1_APC               ai.ground.ChiefGround 1 icons/car.mat
+ 4-M3A1_APC               ai.ground.ChiefGround 1 icons/car.mat
+
+ M16                    ai.ground.ChiefGround 1 icons/car.mat
+ M16_US                 ai.ground.ChiefGround 1 icons/car.mat
+
+ M3_75mm_GMC            ai.ground.ChiefGround 1 icons/car.mat
+ 2-M3_75mm_GMC            ai.ground.ChiefGround 1 icons/car.mat
+ 3-M3_75mm_GMC            ai.ground.ChiefGround 1 icons/car.mat
+ 4-M3_75mm_GMC            ai.ground.ChiefGround 1 icons/car.mat
+
+ Chevrolet_flatbed_US   ai.ground.ChiefGround 1 icons/car.mat
+ 2-Chevrolet_flatbed_US   ai.ground.ChiefGround 1 icons/car.mat
+ 3-Chevrolet_flatbed_US   ai.ground.ChiefGround 1 icons/car.mat
+ 4-Chevrolet_flatbed_US   ai.ground.ChiefGround 1 icons/car.mat
+
+ Chevrolet_medic_US     ai.ground.ChiefGround 1 icons/car.mat
+ Chevrolet_radio_US     ai.ground.ChiefGround 1 icons/car.mat
+
+ DiamondT_US            ai.ground.ChiefGround 1 icons/car.mat
+ 2-DiamondT_US            ai.ground.ChiefGround 1 icons/car.mat
+ 3-DiamondT_US            ai.ground.ChiefGround 1 icons/car.mat
+ 4-DiamondT_US            ai.ground.ChiefGround 1 icons/car.mat
+
+ M3_Halftrack           ai.ground.ChiefGround 1 icons/car.mat
+ 2-M3_Halftrack           ai.ground.ChiefGround 1 icons/car.mat
+ 3-M3_Halftrack           ai.ground.ChiefGround 1 icons/car.mat
+ 4-M3_Halftrack           ai.ground.ChiefGround 1 icons/car.mat
+
+ M3_Halftrack_ppl       ai.ground.ChiefGround 1 icons/car.mat
+ 2-M3_Halftrack_ppl       ai.ground.ChiefGround 1 icons/car.mat
+ 3-M3_Halftrack_ppl       ai.ground.ChiefGround 1 icons/car.mat
+ 4-M3_Halftrack_ppl       ai.ground.ChiefGround 1 icons/car.mat
+
+ Tractor_US             ai.ground.ChiefGround 1 icons/car.mat
+ DUKW                   ai.ground.ChiefGround 1 icons/car.mat
+ Bulldozer_US           ai.ground.ChiefGround 1 icons/car.mat
+ Bus_US                 ai.ground.ChiefGround 1 icons/car.mat
+ GAZ_55                 ai.ground.ChiefGround 1 icons/car.mat
+ GAZ_Bus                ai.ground.ChiefGround 1 icons/car.mat
+
+ Bus_NAAFI              ai.ground.ChiefGround 1 icons/car.mat
+ RAF_Bus                ai.ground.ChiefGround 1 icons/car.mat
+ US_Bus                 ai.ground.ChiefGround 1 icons/car.mat
+
+ FireTender             ai.ground.ChiefGround 1 icons/car.mat
+ FireEngine             ai.ground.ChiefGround 1 icons/car.mat
+
+ BlueCivilTruck         ai.ground.ChiefGround 1 icons/car.mat
+ BrownCivilTruck        ai.ground.ChiefGround 1 icons/car.mat
+
+ BeigeCar               ai.ground.ChiefGround 1 icons/car.mat
+ BlueCar                ai.ground.ChiefGround 1 icons/car.mat
+ Limosine               ai.ground.ChiefGround 1 icons/car.mat
+ 
+ GAZ_AA                 ai.ground.ChiefGround 1 icons/car.mat
+ 2-GAZ_AA                 ai.ground.ChiefGround 1 icons/car.mat
+ 3-GAZ_AA                 ai.ground.ChiefGround 1 icons/car.mat
+ 4-GAZ_AA                 ai.ground.ChiefGround 1 icons/car.mat
+
+ GAZ_AAA                ai.ground.ChiefGround 1 icons/car.mat
+ 2-GAZ_AAA                ai.ground.ChiefGround 1 icons/car.mat
+ 3-GAZ_AAA                ai.ground.ChiefGround 1 icons/car.mat
+ 4-GAZ_AAA                ai.ground.ChiefGround 1 icons/car.mat
+
+ MaximeGAZ              ai.ground.ChiefGround 1 icons/car.mat
+ Motorcycle             ai.ground.ChiefGround 1 icons/car.mat
+
+ BA_64        ai.ground.ChiefGround 1 icons/car.mat
+ 2-BA_64        ai.ground.ChiefGround 1 icons/car.mat
+ 3-BA_64        ai.ground.ChiefGround 1 icons/car.mat
+ 4-BA_64        ai.ground.ChiefGround 1 icons/car.mat
+
+ BA_10        ai.ground.ChiefGround 1 icons/car.mat
+ 2-BA_10        ai.ground.ChiefGround 1 icons/car.mat
+ 3-BA_10        ai.ground.ChiefGround 1 icons/car.mat
+ 4-BA_10        ai.ground.ChiefGround 1 icons/car.mat
+
+ BA_6         ai.ground.ChiefGround 1 icons/car.mat
+ 2-BA_6         ai.ground.ChiefGround 1 icons/car.mat
+ 3-BA_6         ai.ground.ChiefGround 1 icons/car.mat
+ 4-BA_6         ai.ground.ChiefGround 1 icons/car.mat
+
+ FAIM         ai.ground.ChiefGround 1 icons/car.mat
+ 2-FAIM         ai.ground.ChiefGround 1 icons/car.mat
+ 3-FAIM         ai.ground.ChiefGround 1 icons/car.mat
+ 4-FAIM         ai.ground.ChiefGround 1 icons/car.mat
+
+ LVT_2        ai.ground.ChiefGround 1 icons/car.mat
+ 2-LVT_2        ai.ground.ChiefGround 1 icons/car.mat
+ 3-LVT_2        ai.ground.ChiefGround 1 icons/car.mat
+ 4-LVT_2        ai.ground.ChiefGround 1 icons/car.mat
+
+ M8_Greyhound ai.ground.ChiefGround 1 icons/car.mat
+ 2-M8_Greyhound ai.ground.ChiefGround 1 icons/car.mat
+ 3-M8_Greyhound ai.ground.ChiefGround 1 icons/car.mat
+ 4-M8_Greyhound ai.ground.ChiefGround 1 icons/car.mat
+
+
+ BikeBMW        ai.ground.ChiefGround 2 icons/car.mat
+ Kettenkrad     ai.ground.ChiefGround 2 icons/car.mat
+ VW82t          ai.ground.ChiefGround 2 icons/car.mat
+ OpelKadett     ai.ground.ChiefGround 2 icons/car.mat
+ Kurogane       ai.ground.ChiefGround 2 icons/car.mat
+
+ Truck_Fiat      ai.ground.ChiefGround 2 icons/car.mat
+ 2-Truck_Fiat    ai.ground.ChiefGround 2 icons/car.mat
+ 3-Truck_Fiat    ai.ground.ChiefGround 2 icons/car.mat
+ 4-Truck_Fiat    ai.ground.ChiefGround 2 icons/car.mat
+
+ HoHa           ai.ground.ChiefGround 2 icons/car.mat
+ 2-HoHa           ai.ground.ChiefGround 2 icons/car.mat
+ 3-HoHa           ai.ground.ChiefGround 2 icons/car.mat
+ 4-HoHa           ai.ground.ChiefGround 2 icons/car.mat
+
+ Truck_Type94   ai.ground.ChiefGround 2 icons/car.mat
+ 2-Truck_Type94   ai.ground.ChiefGround 2 icons/car.mat
+ 3-Truck_Type94   ai.ground.ChiefGround 2 icons/car.mat
+ 4-Truck_Type94   ai.ground.ChiefGround 2 icons/car.mat
+
+ OpelBlitz36S   ai.ground.ChiefGround 2 icons/car.mat
+ 2-OpelBlitz36S   ai.ground.ChiefGround 2 icons/car.mat
+ 3-OpelBlitz36S   ai.ground.ChiefGround 2 icons/car.mat
+ 4-OpelBlitz36S   ai.ground.ChiefGround 2 icons/car.mat
+
+ OpelBlitz6700A    ai.ground.ChiefGround 2 icons/car.mat
+ 2-OpelBlitz6700A    ai.ground.ChiefGround 2 icons/car.mat
+ 3-OpelBlitz6700A    ai.ground.ChiefGround 2 icons/car.mat
+ 4-OpelBlitz6700A    ai.ground.ChiefGround 2 icons/car.mat
+
+ OpelBlitz6700A_fuel    ai.ground.ChiefGround 2 icons/car.mat
+ 2-OpelBlitz6700A_fuel    ai.ground.ChiefGround 2 icons/car.mat
+ 3-OpelBlitz6700A_fuel    ai.ground.ChiefGround 2 icons/car.mat
+ 4-OpelBlitz6700A_fuel    ai.ground.ChiefGround 2 icons/car.mat
+
+ OpelBlitzMaultierAA    ai.ground.ChiefGround 2 icons/car.mat
+
+ SdKfz251       ai.ground.ChiefGround 2 icons/car.mat
+ 2-SdKfz251       ai.ground.ChiefGround 2 icons/car.mat
+ 3-SdKfz251       ai.ground.ChiefGround 2 icons/car.mat
+ 4-SdKfz251       ai.ground.ChiefGround 2 icons/car.mat
+
+ DemagD7        ai.ground.ChiefGround 2 icons/car.mat
+ 2-DemagD7        ai.ground.ChiefGround 2 icons/car.mat
+ 3-DemagD7        ai.ground.ChiefGround 2 icons/car.mat
+ 4-DemagD7        ai.ground.ChiefGround 2 icons/car.mat
+
+ DemagFlak      ai.ground.ChiefGround 2 icons/car.mat
+
+ SdKfz6         ai.ground.ChiefGround 2 icons/car.mat
+ 2-SdKfz6         ai.ground.ChiefGround 2 icons/car.mat
+ 3-SdKfz6         ai.ground.ChiefGround 2 icons/car.mat
+ 4-SdKfz6         ai.ground.ChiefGround 2 icons/car.mat
+
+ SdKfz6Flak37   ai.ground.ChiefGround 2 icons/car.mat
+
+ Tatra_OA30     ai.ground.ChiefGround 2 icons/car.mat
+ 2-Tatra_OA30     ai.ground.ChiefGround 2 icons/car.mat
+ 3-Tatra_OA30     ai.ground.ChiefGround 2 icons/car.mat
+ 4-Tatra_OA30     ai.ground.ChiefGround 2 icons/car.mat
+
+ Bicycle        ai.ground.ChiefGround 2 icons/car.mat
+
+
+ RussiaCarsColumnA  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnB  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnC  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnD  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnE  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnF  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnG  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnH  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnI  ai.ground.ChiefGround 1 icons/car.mat
+ RussiaCarsColumnJ  ai.ground.ChiefGround 1 icons/car.mat ;---------------------------------------added
+
+ USACarsColumnA     ai.ground.ChiefGround 1 icons/car.mat
+ USACarsColumnB     ai.ground.ChiefGround 1 icons/car.mat
+ USACarsColumnC     ai.ground.ChiefGround 1 icons/car.mat
+ USACarsColumnD     ai.ground.ChiefGround 1 icons/car.mat
+ USACarsColumnE     ai.ground.ChiefGround 1 icons/car.mat
+ USACarsColumnF     ai.ground.ChiefGround 1 icons/car.mat
+ USACarsColumnG     ai.ground.ChiefGround 1 icons/car.mat ;---------------------------------------added
+ USACarsColumnH     ai.ground.ChiefGround 1 icons/car.mat ;---------------------------------------added
+
+ GermanyCarsColumnA ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnB ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnC ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnD ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnE ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnF ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnG ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnH ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnI ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnJ ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnK ai.ground.ChiefGround 2 icons/car.mat
+ GermanyCarsColumnL ai.ground.ChiefGround 2 icons/car.mat ;---------------------------------------added
+ GermanyCarsColumnM ai.ground.ChiefGround 2 icons/car.mat ;---------------------------------------added
+ GermanyCarsColumnN ai.ground.ChiefGround 2 icons/car.mat ;---------------------------------------added
+
+ ItalyCarsColumnA   ai.ground.ChiefGround 2 icons/car.mat
+ ItalyCarsColumnB   ai.ground.ChiefGround 2 icons/car.mat
+ ItalyCarsColumnC   ai.ground.ChiefGround 2 icons/car.mat
+ ItalyCarsColumnD   ai.ground.ChiefGround 2 icons/car.mat ;---------------------------------------added
+
+ JapanCarsColumnA   ai.ground.ChiefGround 2 icons/car.mat
+ JapanCarsColumnB   ai.ground.ChiefGround 2 icons/car.mat
+ JapanCarsColumnC   ai.ground.ChiefGround 2 icons/car.mat
+ JapanCarsColumnD   ai.ground.ChiefGround 2 icons/car.mat
+ JapanCarsColumnE   ai.ground.ChiefGround 2 icons/car.mat
+ JapanCarsColumnF   ai.ground.ChiefGround 2 icons/car.mat ;---------------------------------------added
+
+[Trains]
+ moveType TRAIN
+
+ USSR_FuelTrain/AA             objects.trains.Train 1 icons/train.mat
+ USSR_CargoTrain               objects.trains.Train 1 icons/train.mat
+ USSR_CargoTrain/AA            objects.trains.Train 1 icons/train.mat
+ USSR_CargoTrainA              objects.trains.Train 1 icons/train.mat
+ USSR_CargoTrainA/AA           objects.trains.Train 1 icons/train.mat
+ USSR_CargoFuelTrain           objects.trains.Train 1 icons/train.mat
+ USSR_EquipmentATrain/AA       objects.trains.Train 1 icons/train.mat
+ USSR_EquipmentBTrain/AA       objects.trains.Train 1 icons/train.mat
+ USSR_EquipmentCTrain/AA       objects.trains.Train 1 icons/train.mat
+ USSR_CivilTrain               objects.trains.Train 1 icons/train.mat
+ USSR_CommandStaffTrain/AA     objects.trains.Train 1 icons/train.mat
+ USSR_MBV2                     objects.trains.Train 1 icons/train.mat
+ USSR_MBV2/AA                  objects.trains.Train 1 icons/train.mat
+
+ Germany_FuelTrain/AA          objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrain            objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrain/AA         objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrainA           objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrainA/AA        objects.trains.Train 2 icons/train.mat
+ Germany_CargoFuelTrain        objects.trains.Train 2 icons/train.mat
+ Germany_EquipmentATrain/AA    objects.trains.Train 2 icons/train.mat
+ Germany_EquipmentBTrain/AA    objects.trains.Train 2 icons/train.mat
+ Germany_EquipmentCTrain/AA    objects.trains.Train 2 icons/train.mat
+ Germany_CivilTrain            objects.trains.Train 2 icons/train.mat
+ Germany_CommandStaffTrain/AA  objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrainLong        objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrainMixed       objects.trains.Train 2 icons/train.mat
+ Germany_CargoTrainMunitions  objects.trains.Train 2 icons/train.mat ;---------------------------------------added
+ Germany_electric            objects.trains.Train 2 icons/train.mat
+
+[Ships]
+ moveType SHIP
+
+ G5                    ships.Ship$G5                      1 icons/shipDestroyer.mat
+ MO4                   ships.Ship$MO4                     1 icons/shipDestroyer.mat
+ BBK_1942              ships.Ship$BBK_1942                1 icons/shipDestroyer.mat
+ BBK1124_1943          ships.Ship$BBK1124_1943            1 icons/shipDestroyer.mat   // FIXME: use specific icon
+ Destroyer_USSR_Type7    ships.Ship$Destroyer_USSR_Type7    1 icons/shipDestroyer.mat
+ Destroyer_USSR_Type7_44 ships.Ship$Destroyer_USSR_Type7_44 1 icons/shipDestroyer.mat
+ Aurora                ships.Ship$Aurora                  1 icons/shipDestroyer.mat
+ Marat                 ships.Ship$Marat                   1 icons/shipDestroyer.mat
+ Kirov                 ships.Ship$Kirov                   1 icons/shipDestroyer.mat
+ Tashkent              ships.Ship$Tashkent                1 icons/shipDestroyer.mat
+ Tral                  ships.Ship$Tral                    1 icons/shipDestroyer.mat
+ Tramp                 ships.Ship$Tramp                   1 icons/shipDestroyer.mat
+ Tanker                ships.Ship$Tanker                  1 icons/shipDestroyer.mat
+ Shuka                 ships.Ship$Shuka                   1 icons/shipDestroyer.mat
+ ShukaP                ships.Ship$ShukaP                  1 icons/shipDestroyer.mat
+
+ GrafZeppelin          ships.Ship$GrafZeppelin     2 icons/shipDestroyer.mat
+ PeterStrasser         ships.Ship$PeterStrasser    2 icons/shipDestroyer.mat
+ Aquila                ships.Ship$Aquila           2 icons/shipDestroyer.mat
+
+ USSLexingtonCV2       ships.Ship$USSLexingtonCV2         1 icons/shipDestroyer.mat
+ USSSaratogaCV3        ships.Ship$USSSaratogaCV3          1 icons/shipDestroyer.mat
+ USSCVGeneric          ships.Ship$USSCVGeneric            1 icons/shipDestroyer.mat
+ USSBelleauWoodCVL24   ships.Ship$USSBelleauWoodCVL24 1 icons/shipDestroyer.mat
+ USSPrincetonCVL23     ships.Ship$USSPrincetonCVL23   1 icons/shipDestroyer.mat
+ USSSanJacintoCVL30    ships.Ship$USSSanJacintoCVL30  1 icons/shipDestroyer.mat
+ USSBBGeneric          ships.Ship$USSBBGeneric            1 icons/shipDestroyer.mat
+ USSIndianapolisCA35   ships.Ship$USSIndianapolisCA35     1 icons/shipDestroyer.mat
+ USSGreenlingSS213_Srf ships.Ship$USSGreenlingSS213_Srf   1 icons/shipDestroyer.mat
+ USSGreenlingSS213_Sub ships.Ship$USSGreenlingSS213_Sub   1 icons/shipDestroyer.mat
+ USSGatoSS212_Srf      ships.Ship$USSGatoSS212_Srf        1 icons/shipDestroyer.mat
+ USSGatoSS212_Sub      ships.Ship$USSGatoSS212_Sub        1 icons/shipDestroyer.mat
+ USSWardDD139          ships.Ship$USSWardDD139            1 icons/shipDestroyer.mat
+ USSDentDD116          ships.Ship$USSDentDD116            1 icons/shipDestroyer.mat
+ USSFletcherDD445      ships.Ship$USSFletcherDD445        1 icons/shipDestroyer.mat
+ USSOBannonDD450       ships.Ship$USSOBannonDD450         1 icons/shipDestroyer.mat
+ USSKiddDD661          ships.Ship$USSKiddDD661            1 icons/shipDestroyer.mat
+ USSMcKean             ships.Ship$USSMcKean           1 icons/shipDestroyer.mat
+ USSCasablancaCVE55    ships.Ship$USSCasablancaCVE55      1 icons/shipDestroyer.mat
+ USSKitkunBayCVE71     ships.Ship$USSKitkunBayCVE71       1 icons/shipDestroyer.mat
+ USSShamrockBayCVE84   ships.Ship$USSShamrockBayCVE84     1 icons/shipDestroyer.mat
+ USSHoustonCA30        ships.Ship$USSHoustonCA30  1 icons/shipDestroyer.mat
+ USSChesterCA27        ships.Ship$USSChesterCA27  1 icons/shipDestroyer.mat
+ USSPortlandCA33       ships.Ship$USSPortlandCA33 1 icons/shipDestroyer.mat
+ USSEssexCV9           ships.Ship$USSEssexCV9             1 icons/shipDestroyer.mat
+ USSYorktownCV10_1944  ships.Ship$USSYorktownCV10_1944 1 icons/shipDestroyer.mat
+ USSIntrepidCV11       ships.Ship$USSIntrepidCV11         1 icons/shipDestroyer.mat
+ USSIntrepidCV11_1944  ships.Ship$USSIntrepidCV11_1944 1 icons/shipDestroyer.mat
+ USSHornetCV12_1944    ships.Ship$USSHornetCV12_1944  1 icons/shipDestroyer.mat
+ USSFranklinCV13_1943  ships.Ship$USSFranklinCV13_1943 1 icons/shipDestroyer.mat
+ USSFranklinCV13_1944  ships.Ship$USSFranklinCV13_1944 1 icons/shipDestroyer.mat
+ USSTiconderogaCV14_1944 ships.Ship$USSTiconderogaCV14_1944 1 icons/shipDestroyer.mat
+ USSLexingtonCV16      ships.Ship$USSLexingtonCV16    1 icons/shipDestroyer.mat
+ USSBunkerHillCV17_1944 ships.Ship$USSBunkerHillCV17_1944 1 icons/shipDestroyer.mat
+ USSWaspCV18_1944      ships.Ship$USSWaspCV18_1944    1 icons/shipDestroyer.mat
+ USSHancockCV19_1944   ships.Ship$USSHancockCV19_1944 1 icons/shipDestroyer.mat
+ USSGenericCV9ClassMS21 ships.Ship$USSGenericCV9ClassMS21 1 icons/shipDestroyer.mat
+ USSValleyForgeCV45    ships.Ship$USSValleyForgeCV45 1 icons/shipDestroyer.mat
+ USSBoxerCV21          ships.Ship$USSBoxerCV21    1 icons/shipDestroyer.mat
+ LVT_2WAT              ships.Ship$LVT_2WAT                1 icons/shipDestroyer.mat
+ DUKW_WAT              ships.Ship$DUKW_WAT                1 icons/shipDestroyer.mat
+ LCVP                  ships.Ship$LCVP                    1 icons/shipDestroyer.mat
+
+ HMSFormidableCV       ships.Ship$HMSFormidableCV   1 icons/shipDestroyer.mat
+ HMSIndomitableCV      ships.Ship$HMSIndomitableCV  1 icons/shipDestroyer.mat
+ HMSIllustriousCV      ships.Ship$HMSIllustriousCV        1 icons/shipDestroyer.mat
+ HMSPoWBB              ships.Ship$HMSPoWBB                1 icons/shipDestroyer.mat
+ HMSKingGeorgeVBB      ships.Ship$HMSKingGeorgeVBB        1 icons/shipDestroyer.mat
+ HMSDukeOfYorkBB       ships.Ship$HMSDukeOfYorkBB         1 icons/shipDestroyer.mat
+ HMSWarspite   	       ships.Ship$HMSWarspite	  1 icons/shipDestroyer.mat
+ HMSCossack   	       ships.Ship$HMSCossack	  1 icons/shipDestroyer.mat
+ HMSMatabele   	       ships.Ship$HMSMatabele	  1 icons/shipDestroyer.mat
+ HMSNubian   	       ships.Ship$HMSNubian  	  1 icons/shipDestroyer.mat
+ HMSTartar   	       ships.Ship$HMSTartar 	  1 icons/shipDestroyer.mat
+ HMSFiji   	       ships.Ship$HMSFiji                1 icons/shipDestroyer.mat
+ HMSJupiter   	       ships.Ship$HMSJupiter	  1 icons/shipDestroyer.mat
+ HMASNapier   	       ships.Ship$HMASNapier	  1 icons/shipDestroyer.mat
+ HMSJavelin  	       ships.Ship$HMSJavelin	  1 icons/shipDestroyer.mat
+ HMSKipling  	       ships.Ship$HMSKipling	  1 icons/shipDestroyer.mat
+
+ MAS501                ships.Ship$MAS501                  2 icons/shipDestroyer.mat
+ S80                   ships.Ship$S80                     2 icons/shipDestroyer.mat
+ MFP                   ships.Ship$MFP                     2 icons/shipDestroyer.mat
+ MFP2                  ships.Ship$MFP2                    2 icons/shipDestroyer.mat
+ Murgesku              ships.Ship$Murgesku                2 icons/shipDestroyer.mat
+ MBoat                 ships.Ship$MBoat                   2 icons/shipDestroyer.mat
+ Niobe                 ships.Ship$Niobe                   2 icons/shipDestroyer.mat
+ NiobeWithBeacon       ships.Ship$NiobeWithBeacon                   2 icons/shipDestroyer.mat
+ Illmarinen            ships.Ship$Illmarinen              2 icons/shipDestroyer.mat
+ Vainamoinen           ships.Ship$Vainamoinen             2 icons/shipDestroyer.mat
+ Tirpitz               ships.Ship$Tirpitz                 2 icons/shipDestroyer.mat
+ Bismarck              ships.Ship$Bismarck                2 icons/shipDestroyer.mat
+ Submarine             ships.Ship$Submarine               2 icons/shipDestroyer.mat
+ SubmarineP            ships.Ship$SubmarineP              2 icons/shipDestroyer.mat
+ SubTypeVIIC_Srf       ships.Ship$SubTypeVIIC_Srf         2 icons/shipDestroyer.mat
+ SubTypeVIIC_SrfWithBeacon ships.Ship$SubTypeVIIC_SrfWithBeacon         2 icons/shipDestroyer.mat
+ SubTypeVIIC_Sub       ships.Ship$SubTypeVIIC_Sub         2 icons/shipDestroyer.mat
+ PAM                   ships.Ship$PAM                     2 icons/shipDestroyer.mat
+
+ IJNHiryuCV            ships.Ship$IJNHiryuCV          2 icons/shipDestroyer.mat
+ IJNKagaCV             ships.Ship$IJNKagaCV           2 icons/shipDestroyer.mat
+ IJNSoryuCV            ships.Ship$IJNSoryuCV          2 icons/shipDestroyer.mat
+ IJNCVLgeneric         ships.Ship$IJNCVLGeneric       2 icons/shipDestroyer.mat
+ IJNAkagiCV            ships.Ship$IJNAkagiCV              2 icons/shipDestroyer.mat
+ IJNShokakuCV          ships.Ship$IJNShokakuCV            2 icons/shipDestroyer.mat
+ IJNZuikakuCV          ships.Ship$IJNZuikakuCV            2 icons/shipDestroyer.mat
+ IJNRyujoCV            ships.Ship$IJNRyujoCV           2 icons/shipDestroyer.mat
+ IJNCVGeneric          ships.Ship$IJNCVGeneric            2 icons/shipDestroyer.mat
+ IJNBBGeneric          ships.Ship$IJNBBGeneric            2 icons/shipDestroyer.mat
+ IJNAkizukiDD42        ships.Ship$IJNAkizukiDD42          2 icons/shipDestroyer.mat
+ IJNAmatsukazeDD41     ships.Ship$IJNAmatsukazeDD41       2 icons/shipDestroyer.mat
+ IJNArashiDD41         ships.Ship$IJNArashiDD41           2 icons/shipDestroyer.mat
+ IJNKageroDD41         ships.Ship$IJNKageroDD41           2 icons/shipDestroyer.mat
+ IJNNowakiDD41         ships.Ship$IJNNowakiDD41           2 icons/shipDestroyer.mat
+ IJNYukikazeDD41       ships.Ship$IJNYukikazeDD41         2 icons/shipDestroyer.mat
+ IJNAmatsukazeDD43     ships.Ship$IJNAmatsukazeDD43       2 icons/shipDestroyer.mat
+ IJNAmatsukazeDD43WithBeacon ships.Ship$IJNAmatsukazeDD43WithBeacon       2 icons/shipDestroyer.mat
+ IJNNowakiDD43         ships.Ship$IJNNowakiDD43           2 icons/shipDestroyer.mat
+ IJNYukikazeDD43       ships.Ship$IJNYukikazeDD43         2 icons/shipDestroyer.mat
+ IJNAmatsukazeDD45     ships.Ship$IJNAmatsukazeDD45       2 icons/shipDestroyer.mat
+ IJNYukikazeDD45       ships.Ship$IJNYukikazeDD45         2 icons/shipDestroyer.mat
+ IJNFishJunk           ships.Ship$IJNFishJunk             2 icons/shipDestroyer.mat
+ IJNFishJunkA          ships.Ship$IJNFishJunkA            2 icons/shipDestroyer.mat
+ DaihatsuLC            ships.Ship$DaihatsuLC              2 icons/shipDestroyer.mat
+ HMSColossusCV         ships.Ship$HMSColossusCV	          1 icons/shipDestroyer.mat
+
+ Littorio              ships.Ship$Littorio            2 icons/shipDestroyer.mat
+ Italia0               ships.Ship$Italia0             2 icons/shipDestroyer.mat
+ Italia1               ships.Ship$Italia1             2 icons/shipDestroyer.mat
+ Soldati	       ships.Ship$Soldati             2 icons/shipDestroyer.mat
+
+ RwyCon                ships.Ship$RwyCon                  1 icons/shipDestroyer.mat
+ RwySteel              ships.Ship$RwySteel                1 icons/shipDestroyer.mat
+ RwySteelLow           ships.Ship$RwySteelLow             1 icons/shipDestroyer.mat
+ RwyTransp             ships.Ship$RwyTransp               1 icons/shipDestroyer.mat
+ RwyTranspWide         ships.Ship$RwyTranspWide           1 icons/shipDestroyer.mat
+
+ Destroyer0            ships.Ship$Destroyer0          1 icons/shipDestroyer.mat
+ Destroyer1            ships.Ship$Destroyer1          1 icons/shipDestroyer.mat
+ Destroyer2            ships.Ship$Destroyer2          2 icons/shipDestroyer.mat
+ DestroyerKM           ships.Ship$DestroyerKM    	  2 icons/shipDestroyer.mat
+ DestroyerRN   	       ships.Ship$DestroyerRN   	  1 icons/shipDestroyer.mat
+ DestroyerDmg          ships.Ship$DestroyerDmg        1 icons/shipDestroyer.mat
+
+ MAS501UNE             ships.Ship$MAS501UNE           1 icons/shipDestroyer.mat
+ MAS501UNP             ships.Ship$MAS501UNP           1 icons/shipDestroyer.mat
+ MAS501RN              ships.Ship$MAS501RN            1 icons/shipDestroyer.mat
+ MAS501JP              ships.Ship$MAS501JP            2 icons/shipDestroyer.mat
+ MFPIT                 ships.Ship$MFPIT               2 icons/shipDestroyer.mat
+ MFPT                  ships.Ship$MFPT                2 icons/shipDestroyer.mat
+
+ Carrier1              ships.Ship$Carrier1           1 icons/shipDestroyer.mat
+
+
+ TroopTrans0           ships.Ship$TroopTrans0         1 icons/shipDestroyer.mat
+ TroopTrans1           ships.Ship$TroopTrans1         1 icons/shipDestroyer.mat
+ TroopTrans2           ships.Ship$TroopTrans2         1 icons/shipDestroyer.mat
+ TroopTrans3           ships.Ship$TroopTrans3         1 icons/shipDestroyer.mat
+ Barge0                ships.Ship$Barge0              2 icons/shipDestroyer.mat
+ Barge1                ships.Ship$Barge1              2 icons/shipDestroyer.mat
+ Boat                  ships.Ship$Boat                2 icons/shipDestroyer.mat
+ Boat1                 ships.Ship$Boat1               2 icons/shipDestroyer.mat
+ Fisherman             ships.Ship$Fisherman           2 icons/shipDestroyer.mat
+ Fisherman1            ships.Ship$Fisherman           2 icons/shipDestroyer.mat
+ Fisherman2            ships.Ship$Fisherman           2 icons/shipDestroyer.mat
+
+ Tanker0               ships.Ship$Tanker0             1 icons/shipDestroyer.mat
+ Tanker1               ships.Ship$Tanker1             1 icons/shipDestroyer.mat
+ Tanker2               ships.Ship$Tanker2             1 icons/shipDestroyer.mat
+ TankerDmg             ships.Ship$TankerDmg           1 icons/shipDestroyer.mat
+
+ HospitalShip          ships.Ship$HospitalShip        1 icons/shipDestroyer.mat
+
+ Transport1            ships.Ship$Transport1          1 icons/shipDestroyer.mat
+ Transport2            ships.Ship$Transport2          1 icons/shipDestroyer.mat
+ Transport3            ships.Ship$Transport3          2 icons/shipDestroyer.mat
+ Transport4            ships.Ship$Transport4          1 icons/shipDestroyer.mat
+ Transport5            ships.Ship$Transport5          2 icons/shipDestroyer.mat
+ Transport6            ships.Ship$Transport6          2 icons/shipDestroyer.mat
+ Transport7            ships.Ship$Transport7          2 icons/shipDestroyer.mat
+ TransDmg              ships.Ship$TransDmg            2 icons/shipDestroyer.mat
+
+// Flakiten & Asheshouse Ship Pack
+
+ HospitalShip2	     	ships.Ship$Hospital_2	   1 icons/shipDestroyer.mat
+ LCM_1      		ships.Ship$LCM_1		   1 icons/shipDestroyer.mat
+ LCM_2		     	ships.Ship$LCM_2         	   1 icons/shipDestroyer.mat
+ LCM_3		     	ships.Ship$LCM_3		   1 icons/shipDestroyer.mat
+ LCVP_1	    	     	ships.Ship$LCVP_1              1 icons/shipDestroyer.mat
+ LCVP_2      	     	ships.Ship$LCVP_2              1 icons/shipDestroyer.mat
+ LSD_1                 	ships.Ship$LSD_1		   1 icons/shipDestroyer.mat
+ LST_1                 	ships.Ship$LST_1		   1 icons/shipDestroyer.mat
+ LST_3 		     	ships.Ship$LST_3		   1 icons/shipDestroyer.mat
+ IceBreaker_1          	ships.Ship$Icebreaker_1	   1 icons/shipDestroyer.mat
+ ColdWarSubmarine	ships.Ship$Sub_Coldwar	   1 icons/shipDestroyer.mat
+
+/////////////////////////
+//End of Ship
+/////////////////////////
+
+ IIbfinlandP           ships.Ship$IIbfinlandP      2 icons/shipDestroyer.mat
+ IIbfinland            ships.Ship$IIbfinland       2 icons/shipDestroyer.mat
+ IICU12P               ships.Ship$IICU12P          2 icons/shipDestroyer.mat
+ IICU12                ships.Ship$IICU12           2 icons/shipDestroyer.mat
+ IICU3P                ships.Ship$IICU3P           2 icons/shipDestroyer.mat
+ IICU3                 ships.Ship$IICU3            2 icons/shipDestroyer.mat
+ IICU57P               ships.Ship$IICU57P          2 icons/shipDestroyer.mat
+ IICU57                ships.Ship$IICU57           2 icons/shipDestroyer.mat
+ 
+ VIICRO500_Sub         ships.Ship$VIICRO500_Sub   2 icons/shipDestroyer.mat
+ VIICRO500_Srf         ships.Ship$VIICRO500_Srf   2 icons/shipDestroyer.mat
+ VIICswordfish_Sub     ships.Ship$VIICswordfish_Sub   2 icons/shipDestroyer.mat
+ VIICswordfish_Srf     ships.Ship$VIICswordfish_Srf   2 icons/shipDestroyer.mat
+ VIICU124_Sub          ships.Ship$VIICU124_Sub   2 icons/shipDestroyer.mat
+ VIICU124_Srf          ships.Ship$VIICU124_Srf   2 icons/shipDestroyer.mat
+ VIICU564_Sub          ships.Ship$VIICU564_Sub     2 icons/shipDestroyer.mat
+ VIICU564_Srf          ships.Ship$VIICU564_Srf     2 icons/shipDestroyer.mat
+ VIICwinter_Sub        ships.Ship$VIICwinter_Sub     2 icons/shipDestroyer.mat
+ VIICwinter_Srf        ships.Ship$VIICwinter_Srf     2 icons/shipDestroyer.mat 
+
+ USSBesugo_Sub         ships.Ship$USSBesugo_Sub   1 icons/shipDestroyer.mat
+ USSBesugo_Srf         ships.Ship$USSBesugo_Srf   1 icons/shipDestroyer.mat
+ USSNautilus_Sub       ships.Ship$USSNautilus_Sub   1 icons/shipDestroyer.mat
+ USSNautilus_Srf       ships.Ship$USSNautilus_Srf   1 icons/shipDestroyer.mat
+ USSPermit_Sub         ships.Ship$USSPermit_Sub   1 icons/shipDestroyer.mat
+ USSPermit_Srf         ships.Ship$USSPermit_Srf   1 icons/shipDestroyer.mat
+ USSSpot_Sub           ships.Ship$USSSpot_Sub     1 icons/shipDestroyer.mat
+ USSSpot_Srf           ships.Ship$USSSpot_Srf     1 icons/shipDestroyer.mat
+
+ FortGeorge            ships.Ship$FortGeorge          1 icons/shipDestroyer.mat
+ RedCanyon             ships.Ship$RedCanyon           1 icons/shipDestroyer.mat 
+ WhiteRiver            ships.Ship$WhiteRiver          1 icons/shipDestroyer.mat
+
+ SetsuMaru             ships.Ship$SetsuMaru         2 icons/shipDestroyer.mat
+ TakatsuMaru             ships.Ship$TakatsuMaru         2 icons/shipDestroyer.mat
+ HokokuMaru             ships.Ship$HokokuMaru         2 icons/shipDestroyer.mat
+ KMHansa             ships.Ship$KMHansa         2 icons/shipDestroyer.mat
+ Janssens             ships.Ship$Janssens         2 icons/shipDestroyer.mat
+ LSSimonBenson             ships.Ship$LSSimonBenson         1 icons/shipDestroyer.mat
+ MSAtenfels             ships.Ship$MSAtenfels         1 icons/shipDestroyer.mat
+ LSHuddell             ships.Ship$LSHuddell         1 icons/shipDestroyer.mat
+
+ Apanui            ships.Ship$Apanui                1 icons/shipDestroyer.mat
+ Awanui            ships.Ship$Awanui                1 icons/shipDestroyer.mat
+ Holmlea           ships.Ship$Holmlea               1 icons/shipDestroyer.mat
+ MalaysianQueen    ships.Ship$MalaysianQueen        1 icons/shipDestroyer.mat
+ Mapito            ships.Ship$Mapito                1 icons/shipDestroyer.mat
+ Mararoa           ships.Ship$Mararoa               1 icons/shipDestroyer.mat
+ SeawayPrincess    ships.Ship$SeawayPrincess        1 icons/shipDestroyer.mat
+ Speedwell         ships.Ship$Speedwell             1 icons/shipDestroyer.mat
+ Sumatra           ships.Ship$Sumatra               1 icons/shipDestroyer.mat
+ Zephyr            ships.Ship$Zephyr                1 icons/shipDestroyer.mat
+ germantrawlerA    ships.Ship$germantrawlerA        2 icons/shipDestroyer.mat
+
+;============================================================
+
+[Ships.G5]
+ com.maddox.il2.objects.ships.Ship$G5
+
+[Ships.MO4]
+ com.maddox.il2.objects.ships.Ship$MO4
+
+[Ships.BBK_1942]
+ com.maddox.il2.objects.ships.Ship$BBK_1942
+
+[Ships.BBK1124_1943]
+ com.maddox.il2.objects.ships.Ship$BBK1124_1943
+
+[Ships.Destroyer_USSR_Type7]
+ com.maddox.il2.objects.ships.Ship$Destroyer_USSR_Type7
+
+[Ships.Destroyer_USSR_Type7_44]
+ com.maddox.il2.objects.ships.Ship$Destroyer_USSR_Type7_44
+
+[Ships.Aurora]
+ com.maddox.il2.objects.ships.Ship$Aurora
+
+[Ships.Marat]
+ com.maddox.il2.objects.ships.Ship$Marat
+
+[Ships.Kirov]
+ com.maddox.il2.objects.ships.Ship$Kirov
+
+[Ships.Tashkent]
+ com.maddox.il2.objects.ships.Ship$Tashkent
+
+[Ships.Tral]
+ com.maddox.il2.objects.ships.Ship$Tral
+
+[Ships.Tramp]
+ com.maddox.il2.objects.ships.Ship$Tramp
+
+[Ships.Tanker]
+ com.maddox.il2.objects.ships.Ship$Tanker
+
+[Ships.Shuka]
+ com.maddox.il2.objects.ships.Ship$Shuka
+
+[Ships.ShukaP]
+ com.maddox.il2.objects.ships.Ship$ShukaP
+
+;============================================================
+
+[Ships.USSLexingtonCV2]
+ com.maddox.il2.objects.ships.Ship$USSLexingtonCV2
+
+[Ships.USSSaratogaCV3]
+ com.maddox.il2.objects.ships.Ship$USSSaratogaCV3
+
+[Ships.USSCVGeneric]
+ com.maddox.il2.objects.ships.Ship$USSCVGeneric
+
+[Ships.USSBBGeneric]
+ com.maddox.il2.objects.ships.Ship$USSBBGeneric
+
+[Ships.USSIndianapolisCA35]
+ com.maddox.il2.objects.ships.Ship$USSIndianapolisCA35
+
+[Ships.USSGreenlingSS213_Srf]
+ com.maddox.il2.objects.ships.Ship$USSGreenlingSS213_Srf
+
+[Ships.USSGreenlingSS213_Sub]
+ com.maddox.il2.objects.ships.Ship$USSGreenlingSS213_Sub
+
+[Ships.USSGatoSS212_Srf]
+ com.maddox.il2.objects.ships.Ship$USSGatoSS212_Srf
+
+[Ships.USSGatoSS212_Sub]
+ com.maddox.il2.objects.ships.Ship$USSGatoSS212_Sub
+
+[Ships.USSWardDD139]
+ com.maddox.il2.objects.ships.Ship$USSWardDD139
+
+[Ships.USSMcKean]
+ com.maddox.il2.objects.ships.Ship$USSMcKean
+
+[Ships.USSDentDD116]
+ com.maddox.il2.objects.ships.Ship$USSDentDD116
+
+[Ships.USSFletcherDD445]
+ com.maddox.il2.objects.ships.Ship$USSFletcherDD445
+
+[Ships.USSOBannonDD450]
+ com.maddox.il2.objects.ships.Ship$USSOBannonDD450
+
+[Ships.USSKiddDD661]
+ com.maddox.il2.objects.ships.Ship$USSKiddDD661
+
+[Ships.USSHoustonCA30]
+ com.maddox.il2.objects.ships.Ship$USSHoustonCA30
+
+[Ships.USSChesterCA27]
+ com.maddox.il2.objects.ships.Ship$USSChesterCA27
+
+[Ships.USSPortlandCA33]
+ com.maddox.il2.objects.ships.Ship$USSPortlandCA33
+
+[Ships.USSBelleauWoodCVL24]
+ com.maddox.il2.objects.ships.Ship$USSBelleauWoodCVL24
+
+[Ships.USSPrincetonCVL23]
+ com.maddox.il2.objects.ships.Ship$USSPrincetonCVL23
+
+[Ships.USSSanJacintoCVL30]
+ com.maddox.il2.objects.ships.Ship$USSSanJacintoCVL30
+
+[Ships.USSCasablancaCVE55]
+ com.maddox.il2.objects.ships.Ship$USSCasablancaCVE55
+
+[Ships.USSKitkunBayCVE71]
+ com.maddox.il2.objects.ships.Ship$USSKitkunBayCVE71
+
+[Ships.USSShamrockBayCVE84]
+ com.maddox.il2.objects.ships.Ship$USSShamrockBayCVE84
+
+[Ships.USSEssexCV9]
+ com.maddox.il2.objects.ships.Ship$USSEssexCV9
+
+[Ships.USSIntrepidCV11]
+ com.maddox.il2.objects.ships.Ship$USSIntrepidCV11
+
+[Ships.USSBunkerHillCV17_1944]
+ com.maddox.il2.objects.ships.Ship$USSBunkerHillCV17_1944
+
+[Ships.USSFranklinCV13_1943]
+ com.maddox.il2.objects.ships.Ship$USSFranklinCV13_1943
+
+[Ships.USSFranklinCV13_1944]
+ com.maddox.il2.objects.ships.Ship$USSFranklinCV13_1944
+
+[Ships.USSGenericCV9ClassMS21]
+ com.maddox.il2.objects.ships.Ship$USSGenericCV9ClassMS21 
+
+[Ships.USSHancockCV19_1944]
+ com.maddox.il2.objects.ships.Ship$USSHancockCV19_1944
+
+[Ships.USSHornetCV12_1944]
+ com.maddox.il2.objects.ships.Ship$USSHornetCV12_1944
+
+[Ships.USSIntrepidCV11_1944]
+ com.maddox.il2.objects.ships.Ship$USSIntrepidCV11_1944
+
+[Ships.USSLexingtonCV16]
+ com.maddox.il2.objects.ships.Ship$USSLexingtonCV16
+
+[Ships.USSTiconderogaCV14_1944]
+ com.maddox.il2.objects.ships.Ship$USSTiconderogaCV14_1944
+
+[Ships.USSWaspCV18_1944]
+ com.maddox.il2.objects.ships.Ship$USSWaspCV18_1944
+
+[Ships.USSYorktownCV10_1944]
+ com.maddox.il2.objects.ships.Ship$USSYorktownCV10_1944
+
+[Ships.USSBoxerCV21]
+ com.maddox.il2.objects.ships.Ship$USSBoxerCV21
+
+[Ships.USSValleyForgeCV45]
+ com.maddox.il2.objects.ships.Ship$USSValleyForgeCV45
+
+[Ships.LVT_2WAT]
+ com.maddox.il2.objects.ships.Ship$LVT_2WAT
+
+[Ships.DUKW_WAT]
+ com.maddox.il2.objects.ships.Ship$DUKW_WAT
+
+[Ships.LCVP]
+ com.maddox.il2.objects.ships.Ship$LCVP
+
+;============================================================
+
+[Ships.HMSIllustriousCV]
+ com.maddox.il2.objects.ships.Ship$HMSIllustriousCV
+
+[Ships.HMSPoWBB]
+ com.maddox.il2.objects.ships.Ship$HMSPoWBB
+
+[Ships.HMSKingGeorgeVBB]
+ com.maddox.il2.objects.ships.Ship$HMSKingGeorgeVBB
+
+[Ships.HMSDukeOfYorkBB]
+ com.maddox.il2.objects.ships.Ship$HMSDukeOfYorkBB
+
+[Ships.HMSWarspite]
+ com.maddox.il2.objects.ships.Ship$HMSWarspite
+
+[Ships.HMSCossack]
+ com.maddox.il2.objects.ships.Ship$HMSCossack
+ 
+[Ships.HMSMatabele]
+ com.maddox.il2.objects.ships.Ship$HMSMatabele
+
+[Ships.HMSNubian]
+ com.maddox.il2.objects.ships.Ship$HMSNubian
+
+[Ships.HMSTartar]
+ com.maddox.il2.objects.ships.Ship$HMSTartar
+
+[Ships.HMSFormidableCV]
+ com.maddox.il2.objects.ships.Ship$HMSFormidableCV
+
+[Ships.HMSIndomitableCV]
+ com.maddox.il2.objects.ships.Ship$HMSIndomitableCV
+
+[Ships.HMSFiji]
+ com.maddox.il2.objects.ships.Ship$HMSFiji
+
+[Ships.HMSJupiter]
+ com.maddox.il2.objects.ships.Ship$HMSJupiter
+
+[Ships.HMASNapier]
+ com.maddox.il2.objects.ships.Ship$HMASNapier
+
+[Ships.HMSJavelin]
+ com.maddox.il2.objects.ships.Ship$HMSJavelin
+
+[Ships.HMSKipling]
+ com.maddox.il2.objects.ships.Ship$HMSKipling
+
+;============================================================
+
+[Ships.MAS501]
+ com.maddox.il2.objects.ships.Ship$MAS501
+
+[Ships.S80]
+ com.maddox.il2.objects.ships.Ship$S80
+
+[Ships.MFP]
+ com.maddox.il2.objects.ships.Ship$MFP
+
+[Ships.MFP2]
+ com.maddox.il2.objects.ships.Ship$MFP2
+
+[Ships.Murgesku]
+ com.maddox.il2.objects.ships.Ship$Murgesku
+
+[Ships.MBoat]
+ com.maddox.il2.objects.ships.Ship$MBoat
+
+[Ships.Niobe]
+ com.maddox.il2.objects.ships.Ship$Niobe
+
+[Ships.NiobeWithBeacon]
+ com.maddox.il2.objects.ships.Ship$NiobeWithBeacon
+
+[Ships.Illmarinen]
+ com.maddox.il2.objects.ships.Ship$Illmarinen
+
+[Ships.Vainamoinen]
+ com.maddox.il2.objects.ships.Ship$Vainamoinen
+
+[Ships.Tirpitz]
+ com.maddox.il2.objects.ships.Ship$Tirpitz
+
+[Ships.Bismarck]
+ com.maddox.il2.objects.ships.Ship$Bismarck
+
+[Ships.Submarine]
+ com.maddox.il2.objects.ships.Ship$Submarine
+
+[Ships.SubmarineP]
+ com.maddox.il2.objects.ships.Ship$SubmarineP
+
+[Ships.SubTypeVIIC_Srf]
+ com.maddox.il2.objects.ships.Ship$SubTypeVIIC_Srf
+
+[Ships.SubTypeVIIC_SrfWithBeacon]
+ com.maddox.il2.objects.ships.Ship$SubTypeVIIC_SrfWithBeacon
+
+[Ships.SubTypeVIIC_Sub]
+ com.maddox.il2.objects.ships.Ship$SubTypeVIIC_Sub
+
+[Ships.PAM]
+ com.maddox.il2.objects.ships.Ship$PAM
+
+[Ships.GrafZeppelin]
+ com.maddox.il2.objects.ships.Ship$GrafZeppelin
+ 
+[Ships.PeterStrasser]
+ com.maddox.il2.objects.ships.Ship$PeterStrasser
+
+[Ships.Aquila]
+ com.maddox.il2.objects.ships.Ship$Aquila
+
+;============================================================
+
+[Ships.IJNAkagiCV]
+ com.maddox.il2.objects.ships.Ship$IJNAkagiCV
+
+[Ships.IJNShokakuCV]
+ com.maddox.il2.objects.ships.Ship$IJNShokakuCV
+
+[Ships.IJNZuikakuCV]
+ com.maddox.il2.objects.ships.Ship$IJNZuikakuCV
+
+[Ships.IJNHiryuCV]
+ com.maddox.il2.objects.ships.Ship$IJNHiryuCV
+
+[Ships.IJNKagaCV]
+ com.maddox.il2.objects.ships.Ship$IJNKagaCV
+
+[Ships.IJNSoryuCV]
+ com.maddox.il2.objects.ships.Ship$IJNSoryuCV
+
+[Ships.IJNRyujoCV]
+ com.maddox.il2.objects.ships.Ship$IJNRyujoCV
+
+[Ships.IJNCVLGeneric]
+ com.maddox.il2.objects.ships.Ship$IJNCVLGeneric
+
+[Ships.IJNCVGeneric]
+ com.maddox.il2.objects.ships.Ship$IJNCVGeneric
+
+[Ships.IJNBBGeneric]
+ com.maddox.il2.objects.ships.Ship$IJNBBGeneric
+
+[Ships.IJNAkizukiDD42]
+ com.maddox.il2.objects.ships.Ship$IJNAkizukiDD42
+
+[Ships.IJNAmatsukazeDD41]
+ com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD41
+
+[Ships.IJNArashiDD41]
+ com.maddox.il2.objects.ships.Ship$IJNArashiDD41
+
+[Ships.IJNKageroDD41]
+ com.maddox.il2.objects.ships.Ship$IJNKageroDD41
+
+[Ships.IJNNowakiDD41]
+ com.maddox.il2.objects.ships.Ship$IJNNowakiDD41
+
+[Ships.IJNYukikazeDD41]
+ com.maddox.il2.objects.ships.Ship$IJNYukikazeDD41
+
+[Ships.IJNAmatsukazeDD43]
+ com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD43
+
+[Ships.IJNAmatsukazeDD43WithBeacon]
+ com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD43WithBeacon
+
+[Ships.IJNNowakiDD43]
+ com.maddox.il2.objects.ships.Ship$IJNNowakiDD43
+
+[Ships.IJNYukikazeDD43]
+ com.maddox.il2.objects.ships.Ship$IJNYukikazeDD43
+
+[Ships.IJNAmatsukazeDD45]
+ com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD45
+
+[Ships.IJNYukikazeDD45]
+ com.maddox.il2.objects.ships.Ship$IJNYukikazeDD45
+
+[Ships.IJNFishJunk]
+ com.maddox.il2.objects.ships.Ship$IJNFishJunk
+
+[Ships.IJNFishJunkA]
+ com.maddox.il2.objects.ships.Ship$IJNFishJunkA
+
+[Ships.DaihatsuLC]
+ com.maddox.il2.objects.ships.Ship$DaihatsuLC
+
+[Ships.HMSColossusCV]
+ com.maddox.il2.objects.ships.Ship$HMSColossusCV
+
+;============================================================
+
+[Ships.Littorio]
+ com.maddox.il2.objects.ships.Ship$Littorio
+
+[Ships.Italia0]
+ com.maddox.il2.objects.ships.Ship$Italia0
+ 
+[Ships.Italia1]
+ com.maddox.il2.objects.ships.Ship$Italia1
+
+[Ships.Soldati]
+ com.maddox.il2.objects.ships.Ship$Soldati
+
+;============================================================
+
+[Ships.RwyCon]
+ com.maddox.il2.objects.ships.Ship$RwyCon
+
+[Ships.RwySteel]
+ com.maddox.il2.objects.ships.Ship$RwySteel
+
+[Ships.RwySteelLow]
+ com.maddox.il2.objects.ships.Ship$RwySteelLow
+
+[Ships.RwyTransp]
+ com.maddox.il2.objects.ships.Ship$RwyTransp
+
+[Ships.RwyTranspWide]
+ com.maddox.il2.objects.ships.Ship$RwyTranspWide
+
+[Ships.RwyTranspSqr]
+ com.maddox.il2.objects.ships.Ship$RwyTranspSqr
+
+;============================================================
+
+[Ships.TroopTrans0]
+ com.maddox.il2.objects.ships.Ship$TroopTrans0
+
+[Ships.TroopTrans1]
+ com.maddox.il2.objects.ships.Ship$TroopTrans1
+
+[Ships.TroopTrans2]
+ com.maddox.il2.objects.ships.Ship$TroopTrans2
+
+[Ships.TroopTrans3]
+ com.maddox.il2.objects.ships.Ship$TroopTrans3
+ 
+[Ships.Transport1]
+ com.maddox.il2.objects.ships.Ship$Transport1
+
+[Ships.Transport2]
+ com.maddox.il2.objects.ships.Ship$Transport2
+
+[Ships.Transport3]
+ com.maddox.il2.objects.ships.Ship$Transport3
+
+[Ships.Transport4]
+ com.maddox.il2.objects.ships.Ship$Transport4
+ 
+[Ships.Transport5]
+ com.maddox.il2.objects.ships.Ship$Transport5
+ 
+[Ships.Transport6]
+ com.maddox.il2.objects.ships.Ship$Transport6
+ 
+[Ships.Transport7]
+ com.maddox.il2.objects.ships.Ship$Transport7
+
+[Ships.TransDmg]
+ com.maddox.il2.objects.ships.Ship$TransDmg
+ 
+[Ships.TransWreck]
+ com.maddox.il2.objects.ships.Ship$TransWreck
+ 
+[Ships.Tanker0]
+ com.maddox.il2.objects.ships.Ship$Tanker0
+
+[Ships.Tanker1]
+ com.maddox.il2.objects.ships.Ship$Tanker1
+
+[Ships.Tanker2]
+ com.maddox.il2.objects.ships.Ship$Tanker2
+
+[Ships.TankerDmg]
+ com.maddox.il2.objects.ships.Ship$TankerDmg
+ 
+[Ships.Boat1]
+ com.maddox.il2.objects.ships.Ship$Boat1
+ 
+[Ships.Boat]
+ com.maddox.il2.objects.ships.Ship$Boat
+ 
+[Ships.Barge0]
+ com.maddox.il2.objects.ships.Ship$Barge0
+ 
+[Ships.Barge1]
+ com.maddox.il2.objects.ships.Ship$Barge1
+
+[Ships.HospitalShip]
+ com.maddox.il2.objects.ships.Ship$HospitalShip
+ 
+[Ships.MFPIT]
+ com.maddox.il2.objects.ships.Ship$MFPIT
+ 
+[Ships.MFPT]
+ com.maddox.il2.objects.ships.Ship$MFPT
+
+[Ships.DLCWreck]
+ com.maddox.il2.objects.ships.Ship$DLCWreck
+
+[Ships.LCVPWreck]
+ com.maddox.il2.objects.ships.Ship$LCVPWreck 
+
+[Ships.SmallWreck]
+ com.maddox.il2.objects.ships.Ship$SmallWreck
+
+[Ships.DestroyerRN]
+ com.maddox.il2.objects.ships.Ship$DestroyerRN
+
+[Ships.DestroyerKM]
+ com.maddox.il2.objects.ships.Ship$DestroyerKM
+ 
+[Ships.Destroyer0]
+ com.maddox.il2.objects.ships.Ship$Destroyer0
+
+[Ships.Destroyer1]
+ com.maddox.il2.objects.ships.Ship$Destroyer1
+
+[Ships.Destroyer2]
+ com.maddox.il2.objects.ships.Ship$Destroyer2
+
+[Ships.DestroyerDmg]
+ com.maddox.il2.objects.ships.Ship$DestroyerDmg
+ 
+[Ships.DestroyerWreck]
+ com.maddox.il2.objects.ships.Ship$DestroyerWreck
+ 
+[Ships.MAS501JP]
+ com.maddox.il2.objects.ships.Ship$MAS501JP
+
+[Ships.MAS501RN]
+ com.maddox.il2.objects.ships.Ship$MAS501RN
+
+[Ships.MAS501UNP]
+ com.maddox.il2.objects.ships.Ship$MAS501UNP
+
+[Ships.MAS501UNE]
+ com.maddox.il2.objects.ships.Ship$MAS501UNE
+
+[Ships.Carrier1]
+ com.maddox.il2.objects.ships.Ship$Carrier1
+ 
+[Ships.Fisherman]
+ com.maddox.il2.objects.ships.Ship$Fisherman
+
+[Ships.Fisherman1]
+ com.maddox.il2.objects.ships.Ship$Fisherman1
+
+[Ships.Fisherman2]
+ com.maddox.il2.objects.ships.Ship$Fisherman2
+
+;============================================================
+
+// Flakiten & Asheshouse Ship Pack
+
+[Ships.HospitalShip2]
+ com.maddox.il2.objects.ships.Ship$Hospital_2
+
+[Ships.LCM_1]
+ com.maddox.il2.objects.ships.Ship$LCM_1
+
+[Ships.LCM_2]
+ com.maddox.il2.objects.ships.Ship$LCM_2
+
+[Ships.LCM_3]
+ com.maddox.il2.objects.ships.Ship$LCM_3
+
+[Ships.LCVP_1]
+ com.maddox.il2.objects.ships.Ship$LCVP_1
+
+[Ships.LCVP_2]
+ com.maddox.il2.objects.ships.Ship$LCVP_2
+
+[Ships.LSD_1]
+ com.maddox.il2.objects.ships.Ship$LSD_1
+
+[Ships.LST_1]
+ com.maddox.il2.objects.ships.Ship$LST_1
+
+[Ships.LST_3]
+ com.maddox.il2.objects.ships.Ship$LST_3
+
+[Ships.IceBreaker_1]
+ com.maddox.il2.objects.ships.Ship$Icebreaker_1
+
+[Ships.ColdWarSubmarine]
+ com.maddox.il2.objects.ships.Ship$Sub_Coldwar
+
+[Ships.IIbfinland]
+ com.maddox.il2.objects.ships.Ship$IIbfinland
+
+[Ships.IIbfinlandP]
+ com.maddox.il2.objects.ships.Ship$IIbfinlandP
+
+[Ships.IICU12]
+ com.maddox.il2.objects.ships.Ship$IICU12
+
+[Ships.IICU12P]
+ com.maddox.il2.objects.ships.Ship$IICU12P
+ 
+[Ships.IICU3]
+ com.maddox.il2.objects.ships.Ship$IICU3
+
+[Ships.IICU3P]
+ com.maddox.il2.objects.ships.Ship$IICU3P 
+ 
+[Ships.IICU57]
+ com.maddox.il2.objects.ships.Ship$IICU57
+
+[Ships.IICU57P]
+ com.maddox.il2.objects.ships.Ship$IICU57P
+
+[Ships.VIICRO500_Srf]
+ com.maddox.il2.objects.ships.Ship$VIICRO500_Srf
+
+[Ships.VIICRO500_Sub]
+ com.maddox.il2.objects.ships.Ship$VIICRO500_Sub
+
+[Ships.VIICswordfish_Srf]
+ com.maddox.il2.objects.ships.Ship$VIICswordfish_Srf
+
+[Ships.VIICswordfish_Sub]
+ com.maddox.il2.objects.ships.Ship$VIICswordfish_Sub
+ 
+[Ships.VIICU124_Srf]
+ com.maddox.il2.objects.ships.Ship$VIICU124_Srf
+
+[Ships.VIICU124_Sub]
+ com.maddox.il2.objects.ships.Ship$VIICU124_Sub 
+ 
+[Ships.VIICU564_Srf]
+ com.maddox.il2.objects.ships.Ship$VIICU564_Srf
+
+[Ships.VIICU564_Sub]
+ com.maddox.il2.objects.ships.Ship$VIICU564_Sub
+ 
+[Ships.VIICwinter_Srf]
+ com.maddox.il2.objects.ships.Ship$VIICwinter_Srf
+
+[Ships.VIICwinter_Sub]
+ com.maddox.il2.objects.ships.Ship$VIICwinter_Sub
+
+ [Ships.USSBesugo_Srf]
+ com.maddox.il2.objects.ships.Ship$USSBesugo_Srf
+
+[Ships.USSBesugo_Sub]
+ com.maddox.il2.objects.ships.Ship$USSBesugo_Sub
+
+[Ships.USSNautilus_Srf]
+ com.maddox.il2.objects.ships.Ship$USSNautilus_Srf
+
+[Ships.USSNautilus_Sub]
+ com.maddox.il2.objects.ships.Ship$USSNautilus_Sub
+ 
+[Ships.USSPermit_Srf]
+ com.maddox.il2.objects.ships.Ship$USSPermit_Srf
+
+[Ships.USSPermit_Sub]
+ com.maddox.il2.objects.ships.Ship$USSPermit_Sub 
+ 
+[Ships.USSSpot_Srf]
+ com.maddox.il2.objects.ships.Ship$USSSpot_Srf
+
+[Ships.USSSpot_Sub]
+ com.maddox.il2.objects.ships.Ship$USSSpot_Sub
+
+[Ships.FortGeorge]
+ com.maddox.il2.objects.ships.Ship$FortGeorge
+
+[Ships.RedCanyon]
+ com.maddox.il2.objects.ships.Ship$RedCanyon
+
+[Ships.WhiteRiver]
+ com.maddox.il2.objects.ships.Ship$WhiteRiver
+
+[Ships.SetsuMaru]
+ com.maddox.il2.objects.ships.Ship$SetsuMaru
+
+[Ships.TakatsuMaru]
+ com.maddox.il2.objects.ships.Ship$TakatsuMaru
+
+[Ships.HokokuMaru]
+ com.maddox.il2.objects.ships.Ship$HokokuMaru 
+
+[Ships.KMHansa]
+ com.maddox.il2.objects.ships.Ship$KMHansa
+
+[Ships.MSAtenfels]
+ com.maddox.il2.objects.ships.Ship$MSAtenfels 
+
+[Ships.Janssens]
+ com.maddox.il2.objects.ships.Ship$Janssens 
+
+[Ships.LSSimonBenson]
+ com.maddox.il2.objects.ships.Ship$LSSimonBenson 
+
+[Ships.LSHuddell]
+ com.maddox.il2.objects.ships.Ship$LSHuddell 
+
+[Ships.Apanui]
+ com.maddox.il2.objects.ships.Ship$Apanui
+
+[Ships.Awanui]
+ com.maddox.il2.objects.ships.Ship$Awanui
+ 
+[Ships.Holmlea]
+ com.maddox.il2.objects.ships.Ship$Holmlea
+ 
+[Ships.MalaysianQueen]
+ com.maddox.il2.objects.ships.Ship$MalaysianQueen
+ 
+[Ships.Mapito]
+ com.maddox.il2.objects.ships.Ship$Mapito
+ 
+[Ships.Mararoa]
+ com.maddox.il2.objects.ships.Ship$Mararoa
+
+[Ships.SeawayPrincess]
+ com.maddox.il2.objects.ships.Ship$SeawayPrincess 
+ 
+[Ships.Speedwell]
+ com.maddox.il2.objects.ships.Ship$Speedwell
+
+[Ships.Sumatra]
+ com.maddox.il2.objects.ships.Ship$Sumatra
+
+[Ships.Zephyr]
+ com.maddox.il2.objects.ships.Ship$Zephyr
+ 
+[Ships.germantrawlerA]
+ com.maddox.il2.objects.ships.Ship$germantrawlerA
+
+;============================================================
+
+;----  Axis 
+
+[Infantry.1-AxisInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantry
+[Infantry.2-AxisInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantryNW
+[Infantry.3-AxisInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantry
+[Infantry.4-AxisInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisBazooka
+
+[Infantry.1-AxisPnzrInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisPnzrInfantry
+[Infantry.2-AxisPnzrInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisPnzrInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisSMGInfantry
+[Infantry.3-AxisPnzrInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisPnzrInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisBazooka
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisSMGInfantry
+[Infantry.4-AxisPnzrInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisPnzrInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisPnzrInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisBazooka
+ [Infantry.12-AxisPnzrInfantry] ;---------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisPnzrInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$AxisSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ 
+;----  japan
+[Infantry.1-JapInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+[Infantry.2-JapInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantryNW
+[Infantry.3-JapInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+[Infantry.4-JapInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantryNW
+ [Infantry.12-IJInfantry] ;---------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$JapInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+
+;----  Russia
+[Infantry.1-RusInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+[Infantry.2-RusInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantryNW
+[Infantry.3-RusInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+[Infantry.4-RusInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusBazooka
+ [Infantry.12-RusInfantry] ;---------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+
+[Infantry.1-RusSMGInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+[Infantry.2-RusSMGInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+[Infantry.3-RusSMGInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+[Infantry.4-RusSMGInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusSMGInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$RusBazooka
+
+;----  Western Allies
+[Infantry.1-USInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantry
+[Infantry.2-USInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantryNW
+[Infantry.3-USInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$USBazooka
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantryNW
+[Infantry.4-USInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$USBazooka
+[Infantry.12-USInfantry] ;---------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$USInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+
+[Infantry.1-GBInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+[Infantry.2-GBInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantryNW
+[Infantry.3-GBInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+[Infantry.4-GBInfantry]
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBBazooka
+ [Infantry.12-GBInfantry]  ;---------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantry
+ com.maddox.il2.objects.vehicles.tanks.Tank$GBInfantryNW
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+
+;============================================================
+
+;---- Vermacht
+[Armor.1-PzIIF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+[Armor.2-PzIIF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+[Armor.3-PzIIF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+[Armor.4-PzIIF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+
+[Armor.1-LT_35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+[Armor.2-LT_35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+[Armor.3-LT_35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+[Armor.4-LT_35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35
+
+[Armor.1-LT_35Ro]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+[Armor.2-LT_35Ro]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+[Armor.3-LT_35Ro]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+[Armor.4-LT_35Ro]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Ro
+
+[Armor.1-LT_35Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+[Armor.2-LT_35Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+[Armor.3-LT_35Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+[Armor.4-LT_35Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_35Sl
+
+[Armor.1-LT_38]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+[Armor.2-LT_38]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+[Armor.3-LT_38]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+[Armor.4-LT_38]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38
+
+[Armor.1-LT_38Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+[Armor.2-LT_38Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+[Armor.3-LT_38Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+[Armor.4-LT_38Sl]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_38Sl
+
+[Armor.1-LT_40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+[Armor.2-LT_40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+[Armor.3-LT_40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+[Armor.4-LT_40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40
+
+[Armor.1-LT_40MG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+[Armor.2-LT_40MG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+[Armor.3-LT_40MG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+[Armor.4-LT_40MG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$LT_40MG
+
+[Armor.1-Fiat_M13]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+[Armor.2-Fiat_M13]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+[Armor.3-Fiat_M13]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+[Armor.4-Fiat_M13]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M13
+
+[Armor.1-Fiat_M15]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+[Armor.2-Fiat_M15]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+[Armor.3-Fiat_M15]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+[Armor.4-Fiat_M15]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+
+[Armor.1-HaGo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+[Armor.2-HaGo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+[Armor.3-HaGo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+[Armor.4-HaGo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+[Armor.12xType_95_Ha-Go];-----------------------------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+
+[Armor.1-HaGoRadio]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+[Armor.2-HaGoRadio]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+[Armor.3-HaGoRadio]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+[Armor.4-HaGoRadio]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+
+[Armor.1-ChiHa]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+[Armor.2-ChiHa]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+[Armor.3-ChiHa]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+[Armor.4-ChiHa]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+[Armor.12xType_97_Chi-Ha];-----------------------------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa
+
+[Armor.1-ChiHa_alt]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+[Armor.2-ChiHa_alt]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+[Armor.3-ChiHa_alt]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+[Armor.4-ChiHa_alt]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChiHa_alt
+
+
+[Armor.1-PzIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+[Armor.2-PzIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+[Armor.3-PzIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+[Armor.4-PzIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+[Armor.15-PzIIIG] ;...............................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIG
+
+
+[Armor.1-PzIIIJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+[Armor.2-PzIIIJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+[Armor.3-PzIIIJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+[Armor.4-PzIIIJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+
+[Armor.1-PzIIIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+[Armor.2-PzIIIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+[Armor.3-PzIIIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+[Armor.4-PzIIIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+
+[Armor.1-PzIIIN]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+[Armor.2-PzIIIN]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+[Armor.3-PzIIIN]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+[Armor.4-PzIIIN]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+[Armor.8-PzIIIN] ;...........................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+
+[Armor.1-TuranI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+[Armor.2-TuranI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+[Armor.3-TuranI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+[Armor.4-TuranI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranI
+
+[Armor.1-TuranII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+[Armor.2-TuranII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+[Armor.3-TuranII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+[Armor.4-TuranII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+ com.maddox.il2.objects.vehicles.tanks.Tank$TuranII
+
+
+[Armor.1-PzIVE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+[Armor.2-PzIVE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+[Armor.3-PzIVE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+[Armor.4-PzIVE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+[Armor.8-PzIVE] ;.........................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+
+[Armor.1-PzIVF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+[Armor.2-PzIVF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+[Armor.3-PzIVF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+[Armor.4-PzIVF]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+
+[Armor.1-PzIVF2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+[Armor.2-PzIVF2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+[Armor.3-PzIVF2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+[Armor.4-PzIVF2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+[Armor.9-PzIVF2] ;..........................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIN
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIIJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+
+[Armor.1-PzIVJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+[Armor.2-PzIVJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+[Armor.3-PzIVJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+[Armor.4-PzIVJ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+[Armor.12-PzIVJ] ;.....................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVJ
+
+
+[Armor.1-PzVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+[Armor.2-PzVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+[Armor.3-PzVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+[Armor.4-PzVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+[Armor.6-PzVA] ;...........................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVA
+
+
+[Armor.1-PzVIE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+[Armor.2-PzVIE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+[Armor.3-PzVIE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+[Armor.4-PzVIE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+[Armor.6-PzVIE] ;............................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIE
+
+
+[Armor.1-PzVIB]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+[Armor.2-PzVIB]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+[Armor.3-PzVIB]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+[Armor.4-PzVIB]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzVIB
+
+[Armor.1-PzV_II]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+[Armor.2-PzV_II]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+[Armor.3-PzV_II]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+[Armor.4-PzV_II]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzV_II
+
+[Armor.1-Maus]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+[Armor.2-Maus]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+[Armor.3-Maus]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+[Armor.4-Maus]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+ com.maddox.il2.objects.vehicles.tanks.Tank$Maus
+
+;---- USSR
+[Armor.1-BT7]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+[Armor.2-BT7]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+[Armor.3-BT7]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+[Armor.4-BT7]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+ com.maddox.il2.objects.vehicles.tanks.Tank$BT7
+
+[Armor.1-HotchkissH35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+[Armor.2-HotchkissH35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+[Armor.3-HotchkissH35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+[Armor.4-HotchkissH35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+ com.maddox.il2.objects.vehicles.tanks.Tank$HotchkissH35
+
+[Armor.1-RenaultR35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+[Armor.2-RenaultR35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+[Armor.3-RenaultR35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+[Armor.4-RenaultR35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+ com.maddox.il2.objects.vehicles.tanks.Tank$RenaultR35
+
+[Armor.1-T40S]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+[Armor.2-T40S]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+[Armor.3-T40S]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+[Armor.4-T40S]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+ com.maddox.il2.objects.vehicles.tanks.Tank$T40S
+
+
+[Armor.1-T60]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+[Armor.2-T60]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+[Armor.3-T60]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+[Armor.4-T60]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+ com.maddox.il2.objects.vehicles.tanks.Tank$T60
+
+[Armor.1-7TP]
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+[Armor.2-7TP]
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+[Armor.3-7TP]
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+[Armor.4-7TP]
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+ com.maddox.il2.objects.vehicles.tanks.Tank$_7TP
+
+[Armor.1-M3A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+[Armor.2-M3A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+[Armor.3-M3A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+[Armor.4-M3A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1Stuart
+
+[Armor.1-M5A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+[Armor.2-M5A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+[Armor.3-M5A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+[Armor.4-M5A1Stuart]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+ com.maddox.il2.objects.vehicles.tanks.Tank$M5A1Stuart
+
+[Armor.1-T70M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+[Armor.2-T70M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+[Armor.3-T70M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+[Armor.4-T70M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+ com.maddox.il2.objects.vehicles.tanks.Tank$T70M
+
+[Armor.1-T26_Early]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+[Armor.2-T26_Early]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+[Armor.3-T26_Early]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+[Armor.4-T26_Early]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Early
+
+[Armor.1-T26_Late]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+[Armor.2-T26_Late]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+[Armor.3-T26_Late]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+[Armor.4-T26_Late]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+ com.maddox.il2.objects.vehicles.tanks.Tank$T26_Late
+
+[Armor.1-VickersMKVI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+[Armor.2-VickersMKVI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+[Armor.3-VickersMKVI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+[Armor.4-VickersMKVI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+ com.maddox.il2.objects.vehicles.tanks.Tank$VickersMKVI
+
+[Armor.1-Crusader]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+[Armor.2-Crusader]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+[Armor.3-Crusader]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+[Armor.4-Crusader]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ [Armor.12-Crusader] ;-----------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+ com.maddox.il2.objects.vehicles.tanks.Tank$Crusader
+
+[Armor.1-ValentineII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+[Armor.2-ValentineII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+[Armor.3-ValentineII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+[Armor.4-ValentineII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ValentineII
+
+
+[Armor.1-MatildaMkII_UK]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+[Armor.2-MatildaMkII_UK]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+[Armor.3-MatildaMkII_UK]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+[Armor.4-MatildaMkII_UK]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_UK
+
+[Armor.1-MatildaMkII_AU]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+[Armor.2-MatildaMkII_AU]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+[Armor.3-MatildaMkII_AU]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+[Armor.4-MatildaMkII_AU]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+[Armor.12-MatildaMkII_AU];-----------------------------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+ com.maddox.il2.objects.vehicles.tanks.Tank$MatildaMkII_AU
+[Armor.1-Bishop]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+[Armor.2-Bishop]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+[Armor.3-Bishop]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+[Armor.4-Bishop]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+ com.maddox.il2.objects.vehicles.tanks.Tank$Bishop
+
+[Armor.1-ChurchillMkIVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+[Armor.2-ChurchillMkIVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+[Armor.3-ChurchillMkIVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+[Armor.4-ChurchillMkIVA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkIVA
+
+[Armor.1-ChurchillMkVII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+[Armor.2-ChurchillMkVII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+[Armor.3-ChurchillMkVII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+[Armor.4-ChurchillMkVII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChurchillMkVII
+
+[Armor.1-CromwellMkIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+[Armor.2-CromwellMkIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+[Armor.3-CromwellMkIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+[Armor.4-CromwellMkIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$CromwellMkIV
+
+[Armor.1-CometMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+[Armor.2-CometMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+[Armor.3-CometMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+[Armor.4-CometMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$CometMkI
+
+[Armor.1-ChallengerMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+[Armor.2-ChallengerMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+[Armor.3-ChallengerMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+[Armor.4-ChallengerMkI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+ com.maddox.il2.objects.vehicles.tanks.Tank$ChallengerMkI
+
+[Armor.1-M4A2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+[Armor.2-M4A2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+[Armor.3-M4A2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+[Armor.4-M4A2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2
+
+[Armor.1-M4A2_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+[Armor.2-M4A2_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+[Armor.3-M4A2_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+[Armor.4-M4A2_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+[Armor.12-M4A2_US] ;.......................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_US
+
+[Armor.1-M4A2_76W]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+[Armor.2-M4A2_76W]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+[Armor.3-M4A2_76W]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+[Armor.4-M4A2_76W]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W
+
+[Armor.1-M4A2_76W_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+[Armor.2-M4A2_76W_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+[Armor.3-M4A2_76W_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+[Armor.4-M4A2_76W_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+
+[Armor.1-SomuaS35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+[Armor.2-SomuaS35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+[Armor.3-SomuaS35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+[Armor.4-SomuaS35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+ com.maddox.il2.objects.vehicles.tanks.Tank$SomuaS35
+
+[Armor.1-T34]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+[Armor.2-T34]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+[Armor.3-T34]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+[Armor.4-T34]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+[Armor.12-T34] ;...........................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34
+
+
+[Armor.1-T34_85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+[Armor.2-T34_85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+[Armor.3-T34_85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+[Armor.4-T34_85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+[Armor.10-T34_85] ;..........................................................................ffb
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+
+[Armor.1-T28]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+[Armor.2-T28]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+[Armor.3-T28]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+[Armor.4-T28]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+ com.maddox.il2.objects.vehicles.tanks.Tank$T28
+
+
+[Armor.1-KV1]
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+[Armor.2-KV1]
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+[Armor.3-KV1]
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+[Armor.4-KV1]
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+ com.maddox.il2.objects.vehicles.tanks.Tank$KV1
+
+
+[Armor.1-IS2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+[Armor.2-IS2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+[Armor.3-IS2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+[Armor.4-IS2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS2
+
+[Armor.1-T35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+[Armor.2-T35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+[Armor.3-T35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+[Armor.4-T35]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+ com.maddox.il2.objects.vehicles.tanks.Tank$T35
+
+[Armor.1-IS3]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+[Armor.2-IS3]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+[Armor.3-IS3]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+[Armor.4-IS3]
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+ com.maddox.il2.objects.vehicles.tanks.Tank$IS3
+
+[Armor.1-T44]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+[Armor.2-T44]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+[Armor.3-T44]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+[Armor.4-T44]
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+ com.maddox.il2.objects.vehicles.tanks.Tank$T44
+
+;============================================================
+;---- Hungary
+[Armor.1-ZrinyiII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZrinyiII
+[Armor.2-ZrinyiII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZrinyiII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZrinyiII
+[Armor.3-ZrinyiII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZrinyiII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZrinyiII
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZrinyiII
+
+;---- Italy
+[Armor.1-Fiat_M40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M40
+[Armor.2-Fiat_M40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M40
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M40
+[Armor.3-Fiat_M40]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M40
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M40
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M40
+
+[Armor.1-Fiat_M42]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+[Armor.2-Fiat_M42]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+[Armor.3-Fiat_M42]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+
+;---- Germany
+[Armor.1-Hetzer]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Hetzer
+[Armor.2-Hetzer]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Hetzer
+ com.maddox.il2.objects.vehicles.tanks.Tank$Hetzer
+[Armor.3-Hetzer]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Hetzer
+ com.maddox.il2.objects.vehicles.tanks.Tank$Hetzer
+ com.maddox.il2.objects.vehicles.tanks.Tank$Hetzer
+
+[Armor.1-StuGIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIIIG
+[Armor.2-StuGIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIIIG
+[Armor.3-StuGIIIG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIIIG
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIIIG
+
+[Armor.1-StuGIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+[Armor.2-StuGIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+[Armor.3-StuGIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+[Armor.8-StuGIV]
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+
+[Armor.1-MarderIII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+[Armor.2-MarderIII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+[Armor.3-MarderIII]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ [Armor.8-MarderIII] ;--------------------------------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+ com.maddox.il2.objects.vehicles.tanks.Tank$MarderIII
+
+[Armor.1-Ferdinand]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Ferdinand
+[Armor.2-Ferdinand]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Ferdinand
+ com.maddox.il2.objects.vehicles.tanks.Tank$Ferdinand
+[Armor.3-Ferdinand]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Ferdinand
+ com.maddox.il2.objects.vehicles.tanks.Tank$Ferdinand
+ com.maddox.il2.objects.vehicles.tanks.Tank$Ferdinand
+
+[Armor.1-Jagdpanther]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Jagdpanther
+[Armor.2-Jagdpanther]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Jagdpanther
+ com.maddox.il2.objects.vehicles.tanks.Tank$Jagdpanther
+[Armor.3-Jagdpanther]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Jagdpanther
+ com.maddox.il2.objects.vehicles.tanks.Tank$Jagdpanther
+ com.maddox.il2.objects.vehicles.tanks.Tank$Jagdpanther
+
+[Armor.1-Karl_600mm]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Karl_600mm
+
+[Armor.1-Nimrod]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Nimrod
+
+[Armor.1-Wirbelwind]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Wirbelwind
+
+[Armor.1-Coelian]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Coelian
+
+[Armor.1-HoRo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo
+
+[Armor.2-HoRo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo_MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo
+
+[Armor.3-HoRo]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo_MG
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo
+
+;---- Russia
+[Armor.1-ZSU-37]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZSU37
+
+[Armor.1-M3Lee]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3Lee
+[Armor.2-M3Lee]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3Lee
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3Lee
+[Armor.3-M3Lee]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3Lee
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3Lee
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3Lee
+
+[Armor.1-SU-76M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+[Armor.2-SU-76M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+[Armor.3-SU-76M]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ [Armor.8-SU-76M];---------------------------------------------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU76M
+
+[Armor.1-SU-85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU85
+[Armor.2-SU-85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU85
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU85
+[Armor.3-SU-85]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU85
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU85
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU85
+
+[Armor.1-SU-100]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU100
+[Armor.2-SU-100]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU100
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU100
+[Armor.3-SU-100]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU100
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU100
+ com.maddox.il2.objects.vehicles.tanks.Tank$SU100
+
+[Armor.1-ISU-152]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ISU152
+[Armor.2-ISU-152]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ISU152
+ com.maddox.il2.objects.vehicles.tanks.Tank$ISU152
+[Armor.3-ISU-152]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ISU152
+ com.maddox.il2.objects.vehicles.tanks.Tank$ISU152
+ com.maddox.il2.objects.vehicles.tanks.Tank$ISU152
+
+[Armor.1-CrusaderAAA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$CrusaderAAA
+
+;============================================================
+;---- USSR
+[Vehicles.GAZ67]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67
+[Vehicles.GAZ67t]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+[Vehicles.GAZ_M1]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_M1
+[Vehicles.WillisMB]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMB
+[Vehicles.WillisMB_US]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMB_US
+[Vehicles.WillisMBt]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBt
+[Vehicles.WillisMBt_US]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBt_US
+[Vehicles.WillisMBtc_US]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+[Vehicles.ZIS5_PC]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+[Vehicles.2-ZIS5_PC]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+[Vehicles.3-ZIS5_PC]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+[Vehicles.4-ZIS5_PC]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+[Vehicles.ZIS5_AA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZIS5_AA
+[Vehicles.ZIS6_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+[Vehicles.2-ZIS6_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+[Vehicles.3-ZIS6_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+[Vehicles.4-ZIS6_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+[Vehicles.M3A1_APC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+[Vehicles.2-M3A1_APC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+[Vehicles.3-M3A1_APC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+[Vehicles.4-M3A1_APC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+[Vehicles.M16]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M16
+[Vehicles.M16_US]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M16_US
+[Vehicles.M3_75mm_GMC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+[Vehicles.2-M3_75mm_GMC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+[Vehicles.3-M3_75mm_GMC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+[Vehicles.4-M3_75mm_GMC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3_75mm_GMC
+[Vehicles.Chevrolet_flatbed_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+[Vehicles.2-Chevrolet_flatbed_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+[Vehicles.3-Chevrolet_flatbed_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+[Vehicles.4-Chevrolet_flatbed_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+[Vehicles.Chevrolet_medic_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_medic_US
+[Vehicles.Chevrolet_radio_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_radio_US
+[Vehicles.DiamondT_US]
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+[Vehicles.2-DiamondT_US]
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+[Vehicles.3-DiamondT_US]
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+[Vehicles.4-DiamondT_US]
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+[Vehicles.M3_Halftrack]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+[Vehicles.2-M3_Halftrack]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+[Vehicles.3-M3_Halftrack]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+[Vehicles.4-M3_Halftrack]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+[Vehicles.M3_Halftrack_ppl]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+[Vehicles.2-M3_Halftrack_ppl]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+[Vehicles.3-M3_Halftrack_ppl]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+[Vehicles.4-M3_Halftrack_ppl]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+[Vehicles.Tractor_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Tractor_US
+[Vehicles.DUKW]
+ com.maddox.il2.objects.vehicles.cars.Car$DUKW
+[Vehicles.Bulldozer_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Bulldozer_US
+[Vehicles.Bus_US]
+ com.maddox.il2.objects.vehicles.cars.Car$Bus_US
+[Vehicles.GAZ_55]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_55
+[Vehicles.GAZ_Bus]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_Bus
+[Vehicles.GAZ_AA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+[Vehicles.2-GAZ_AA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+[Vehicles.3-GAZ_AA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+[Vehicles.4-GAZ_AA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+[Vehicles.GAZ_AAA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+[Vehicles.2-GAZ_AAA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+[Vehicles.3-GAZ_AAA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+[Vehicles.4-GAZ_AAA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+[Vehicles.MaximeGAZ]
+ com.maddox.il2.objects.vehicles.tanks.Tank$MaximeGAZ
+[Vehicles.Motorcycle]
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+[Vehicles.Bus_NAAFI]
+ com.maddox.il2.objects.vehicles.cars.Car$Bus_NAAFI
+[Vehicles.RAF_Bus]
+ com.maddox.il2.objects.vehicles.cars.Car$RAF_Bus
+[Vehicles.US_Bus]
+ com.maddox.il2.objects.vehicles.cars.Car$US_Bus
+[Vehicles.FireTender]
+ com.maddox.il2.objects.vehicles.cars.Car$Citerne_POMP
+[Vehicles.FireEngine]
+ com.maddox.il2.objects.vehicles.cars.Car$Fourgon_POMP
+[Vehicles.BlueCivilTruck]
+ com.maddox.il2.objects.vehicles.cars.Car$GuyOtterBl
+[Vehicles.BrownCivilTruck]
+ com.maddox.il2.objects.vehicles.cars.Car$GuyOtterBr
+[Vehicles.BeigeCar]
+ com.maddox.il2.objects.vehicles.cars.Car$Voit2P_Beige
+[Vehicles.BlueCar]
+ com.maddox.il2.objects.vehicles.cars.Car$Voit4P_Bleue
+[Vehicles.Limosine]
+ com.maddox.il2.objects.vehicles.cars.Car$Voit4P_Noire_R
+
+[Vehicles.BikeBMW]
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+[Vehicles.Kettenkrad]
+ com.maddox.il2.objects.vehicles.cars.Car$Kettenkrad
+[Vehicles.VW82t]
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+[Vehicles.OpelKadett]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelKadett
+[Vehicles.Kurogane]
+ com.maddox.il2.objects.vehicles.cars.Car$Kurogane
+[Vehicles.HoHa]
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+[Vehicles.2-HoHa]
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+[Vehicles.3-HoHa]
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+[Vehicles.4-HoHa]
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+[Vehicles.Truck_Type94]
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+[Vehicles.2-Truck_Type94]
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+[Vehicles.3-Truck_Type94]
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+[Vehicles.4-Truck_Type94]
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+[Vehicles.Truck_Fiat]
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+[Vehicles.2-Truck_Fiat]
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+[Vehicles.3-Truck_Fiat]
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+[Vehicles.4-Truck_Fiat]
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+[Vehicles.OpelBlitz36S]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+[Vehicles.2-OpelBlitz36S]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+[Vehicles.3-OpelBlitz36S]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+[Vehicles.4-OpelBlitz36S]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+[Vehicles.OpelBlitz6700A]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+[Vehicles.2-OpelBlitz6700A]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+[Vehicles.3-OpelBlitz6700A]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+[Vehicles.4-OpelBlitz6700A]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+[Vehicles.OpelBlitz6700A_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+[Vehicles.2-OpelBlitz6700A_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+[Vehicles.3-OpelBlitz6700A_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+[Vehicles.4-OpelBlitz6700A_fuel]
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+[Vehicles.OpelBlitzMaultierAA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+[Vehicles.SdKfz251]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+[Vehicles.2-SdKfz251]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+[Vehicles.3-SdKfz251]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+[Vehicles.4-SdKfz251]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+[Vehicles.DemagD7]
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+[Vehicles.2-DemagD7]
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+[Vehicles.3-DemagD7]
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+[Vehicles.4-DemagD7]
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+[Vehicles.DemagFlak]
+ com.maddox.il2.objects.vehicles.tanks.Tank$DemagFlak
+[Vehicles.SdKfz6]
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+[Vehicles.2-SdKfz6]
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+[Vehicles.3-SdKfz6]
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+[Vehicles.4-SdKfz6]
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+[Vehicles.SdKfz6Flak37]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz6Flak37
+[Vehicles.Tatra_OA30]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+[Vehicles.2-Tatra_OA30]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+[Vehicles.3-Tatra_OA30]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+[Vehicles.4-Tatra_OA30]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+[Vehicles.Bicycle]
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+
+[Vehicles.BA_64]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+[Vehicles.2-BA_64]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+[Vehicles.3-BA_64]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+[Vehicles.4-BA_64]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_64
+[Vehicles.BA_10]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+[Vehicles.2-BA_10]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+[Vehicles.3-BA_10]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+[Vehicles.4-BA_10]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_10
+[Vehicles.BA_6]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+[Vehicles.2-BA_6]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+[Vehicles.3-BA_6]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+[Vehicles.4-BA_6]
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+ com.maddox.il2.objects.vehicles.tanks.Tank$BA_6
+[Vehicles.FAIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+[Vehicles.2-FAIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+[Vehicles.3-FAIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+[Vehicles.4-FAIM]
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+ com.maddox.il2.objects.vehicles.tanks.Tank$FAIM
+[Vehicles.LVT_2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+[Vehicles.2-LVT_2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+[Vehicles.3-LVT_2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+[Vehicles.4-LVT_2]
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+ com.maddox.il2.objects.vehicles.tanks.Tank$LVT_2
+[Vehicles.M8_Greyhound]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+[Vehicles.2-M8_Greyhound]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+[Vehicles.3-M8_Greyhound]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+[Vehicles.4-M8_Greyhound]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+ com.maddox.il2.objects.vehicles.tanks.Tank$M8_Greyhound
+[Vehicles.HoRo_MG]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo_MG
+
+[Vehicles.TestColumnGermany]
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+
+[Vehicles.GermanyCarsColumnA]
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_medic
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_radio
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+
+[Vehicles.GermanyCarsColumnB]
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+
+[Vehicles.GermanyCarsColumnC]
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIIF
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.cars.Car$OpelKadett
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.tanks.Tank$DemagFlak
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+
+[Vehicles.GermanyCarsColumnD]
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.cars.Car$RSO
+ com.maddox.il2.objects.vehicles.cars.Car$RSO
+
+[Vehicles.GermanyCarsColumnE]
+ com.maddox.il2.objects.vehicles.cars.Car$VW82
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.tanks.Tank$OpelBlitzMaultierAA
+
+[Vehicles.GermanyCarsColumnF]
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+ com.maddox.il2.objects.vehicles.cars.Car$Bicycle
+
+[Vehicles.GermanyCarsColumnG] ;..........................................................ffb
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz6Flak37
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.tanks.Tank$DemagFlak
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$Kettenkrad
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+
+[Vehicles.GermanyCarsColumnH]
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+
+[Vehicles.GermanyCarsColumnI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+ com.maddox.il2.objects.vehicles.tanks.Tank$SdKfz251
+
+[Vehicles.GermanyCarsColumnJ]
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+
+[Vehicles.GermanyCarsColumnK]
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ 
+ [Vehicles.GermanyCarsColumnL] ;..........................................................added
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$DemagD7
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.tanks.Tank$DemagFlak
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.cars.Car$Kettenkrad
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz36S
+ com.maddox.il2.objects.vehicles.cars.Car$BikeBMW
+ 
+ [Vehicles.GermanyCarsColumnM]  ;-------------------------------------added
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$DemagFlak
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_radio
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ 
+ [Vehicles.GermanyCarsColumnN]  ;-------------------------------------added
+ com.maddox.il2.objects.vehicles.cars.Car$VW82t
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$PzIVF2
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$StuGIV
+ com.maddox.il2.objects.vehicles.tanks.Tank$DemagFlak
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitz6700A_radio
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$SdKfz6
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+ com.maddox.il2.objects.vehicles.cars.Car$OpelBlitzMaultier
+
+[Vehicles.ItalyCarsColumnA]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.cars.Car$Voit2P_Beige
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M15
+
+[Vehicles.ItalyCarsColumnB]
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.cars.Car$Voit2P_Beige
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+
+[Vehicles.ItalyCarsColumnC]
+ com.maddox.il2.objects.vehicles.cars.Car$Voit2P_Beige
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ 
+ [Vehicles.ItalyCarsColumnD] ;---------------------------------------------added
+ com.maddox.il2.objects.vehicles.tanks.Tank$Tatra_OA30
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.tanks.Tank$Fiat_M42
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Camion_SK
+ com.maddox.il2.objects.vehicles.cars.Car$Voit2P_Beige
+
+[Vehicles.JapanCarsColumnA]
+ com.maddox.il2.objects.vehicles.cars.Car$Kurogane
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+
+[Vehicles.JapanCarsColumnB]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HoRo_MG
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Kurogane
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+
+[Vehicles.JapanCarsColumnC]
+ com.maddox.il2.objects.vehicles.cars.Car$Kurogane
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+
+[Vehicles.JapanCarsColumnD]
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+
+[Vehicles.JapanCarsColumnE]
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.cars.Car$HoHa
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Kurogane
+ 
+ [Vehicles.JapanCarsColumnF] ;-------------------------------------added
+ com.maddox.il2.objects.vehicles.cars.Car$Kurogane
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGo
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.cars.Car$Truck_Type94
+ com.maddox.il2.objects.vehicles.tanks.Tank$HaGoRadio
+
+[Vehicles.RussiaCarsColumnA]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_medic
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_medic
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZIS5_AA
+
+[Vehicles.RussiaCarsColumnB]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMB
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+
+[Vehicles.RussiaCarsColumnC]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_M1
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZIS5_AA
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_radio
+
+[Vehicles.RussiaCarsColumnD]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+ com.maddox.il2.objects.vehicles.cars.Car$Katyusha
+ com.maddox.il2.objects.vehicles.cars.Car$Katyusha
+ com.maddox.il2.objects.vehicles.cars.Car$Katyusha
+ com.maddox.il2.objects.vehicles.cars.Car$Katyusha
+ com.maddox.il2.objects.vehicles.cars.Car$Katyusha
+ com.maddox.il2.objects.vehicles.cars.Car$Katyusha
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS5_PC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+
+[Vehicles.RussiaCarsColumnE]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBt
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerRocket
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerRocket
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerRocket
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerRocket
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerRocket
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerRocket
+ com.maddox.il2.objects.vehicles.tanks.Tank$ZIS5_AA
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+
+[Vehicles.RussiaCarsColumnF]
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+ com.maddox.il2.objects.vehicles.cars.Car$Motorcycle
+
+[Vehicles.RussiaCarsColumnG]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$MaximeGAZ
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.tanks.Tank$MaximeGAZ
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AAA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+
+[Vehicles.RussiaCarsColumnH]
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ67t
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+ com.maddox.il2.objects.vehicles.cars.Car$GAZ_AA
+
+[Vehicles.RussiaCarsColumnI]
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ 
+ [Vehicles.RussiaCarsColumnJ] ;-----------------------------------------------added
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMB
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$T34_85
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$ZIS6_fuel
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+
+[Vehicles.USACarsColumnA]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMB_US
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_medic_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_medic_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M16_US
+
+[Vehicles.USACarsColumnB]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+
+[Vehicles.USACarsColumnC]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBt_US
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBt_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M16_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_radio_US
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+
+[Vehicles.USACarsColumnD] ;.....................................................................ffb
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M16_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+
+[Vehicles.USACarsColumnE]
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBt_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+
+[Vehicles.USACarsColumnF]
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack
+
+ [Vehicles.USACarsColumnG] ;...................................................................added
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$DiamondT_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$Chevrolet_flatbed_US
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+ 
+ [Vehicles.USACarsColumnH] ;..........................................added
+ com.maddox.il2.objects.vehicles.cars.Car$WillisMBtc_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M4A2_76W_US
+ com.maddox.il2.objects.vehicles.tanks.Tank$M3A1_APC
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$M3_Halftrack_ppl
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+ com.maddox.il2.objects.vehicles.cars.Car$StudebeckerTruck
+
+;============================================================
+[Trains.Germany_FuelTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+
+[Trains.Germany_CargoTrain]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+
+[Trains.Germany_CargoTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+
+[Trains.Germany_CargoTrainA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+
+[Trains.Germany_CargoTrainA/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+
+[Trains.Germany_CargoFuelTrain]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+
+[Trains.Germany_EquipmentATrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.Germany_EquipmentBTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.Germany_EquipmentCTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.Germany_CivilTrain]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+
+[Trains.Germany_CommandStaffTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.Germany_CargoTrainLong] ;.........................................ffb
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ 
+[Trains.Germany_CargoTrainMixed] ;.............................................ffb
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.LocomotiveVerm
+
+ [Trains.Germany_CargoTrainMunitions] ;................................added 
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.LocomotiveVerm
+ com.maddox.il2.objects.trains.LocomotiveTrailorVerm
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+
+[Trains.Germany_electric]
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+
+;---------------------------------------------------------
+
+[Trains.USSR_FuelTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+
+[Trains.USSR_CargoTrain]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+
+[Trains.USSR_CargoTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+ com.maddox.il2.objects.trains.Cargo2
+
+[Trains.USSR_CargoTrainA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+
+[Trains.USSR_CargoTrainA/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+
+[Trains.USSR_CargoFuelTrain]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.Cargo
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+ com.maddox.il2.objects.trains.OilTank
+
+[Trains.USSR_EquipmentATrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform3
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.USSR_EquipmentBTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform2
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.USSR_EquipmentCTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform1
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.USSR_CivilTrain]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+
+[Trains.USSR_CommandStaffTrain/AA]
+ com.maddox.il2.objects.trains.LocomotiveUSSR
+ com.maddox.il2.objects.trains.LocomotiveTrailorUSSR
+ com.maddox.il2.objects.trains.Platform4
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Passenger
+ com.maddox.il2.objects.trains.Platform4
+
+[Trains.USSR_MBV2]
+ com.maddox.il2.objects.trains.MBV2
+
+[Trains.USSR_MBV2/AA]
+ com.maddox.il2.objects.trains.MBV2AA
+
+; eof

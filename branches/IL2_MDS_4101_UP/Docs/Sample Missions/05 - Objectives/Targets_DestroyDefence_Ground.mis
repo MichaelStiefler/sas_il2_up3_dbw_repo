@@ -1,0 +1,155 @@
+[MAIN]
+  MAP Net8Islands/load_v2.ini
+  TIME 12.0
+  CloudType 0
+  CloudHeight 1000.0
+  army 1
+  playerNum 0
+[MDS]
+  ZutiCarrierSpawnPoints_CV2 6
+  ZutiCarrierSpawnPoints_CV9 5
+  ZutiCarrierSpawnPoints_CVE 2
+  ZutiCarrierSpawnPoints_CVL 7
+  ZutiCarrierSpawnPoints_Akagi 8
+  ZutiCarrierSpawnPoints_IJN 6
+  ZutiCarrierSpawnPoints_HMS 5
+  ZutiNextMission_RedWon
+  ZutiNextMission_BlueWon
+  ZutiNextMission_Difficulty
+  ZutiNextMission_LoadDelay 60
+  ZutiNextMission_Enable 0
+  ZutiTargets_MovingIcons 1
+  ZutiNextMission_Enable 0
+  ZutiTargets_ShowTargets 1
+  ZutiIcons_IconsSize 4
+  ZutiIcons_ShowNeutralHB 0
+  ZutiRadar_SetRadarToAdvanceMode 0
+  ZutiRadar_ShowAircraft 1
+  ZutiRadar_ShowGroundUnits 0
+  ZutiRadar_ShowRockets 1
+  ZutiRadar_StaticIconsIfNoRadar 0
+  ZutiRadar_AircraftIconsWhite 0
+  ZutiRadar_RefreshInterval 0
+  ZutiRadar_EnableTowerCommunications 1
+  ZutiRadar_ShipsAsRadar 0
+  ZutiRadar_ShipRadar_MaxRange 100
+  ZutiRadar_ShipRadar_MinHeight 100
+  ZutiRadar_ShipRadar_MaxHeight 5000
+  ZutiRadar_ShipSmallRadar_MaxRange 25
+  ZutiRadar_ShipSmallRadar_MinHeight 0
+  ZutiRadar_ShipSmallRadar_MaxHeight 2000
+  ZutiRadar_ScoutsAsRadar 0
+  ZutiRadar_ScoutRadar_MaxRange 2
+  ZutiRadar_ScoutRadar_DeltaHeight 1500
+  ZutiRadar_HideUnpopulatedAirstripsFromMinimap 0
+  ZutiRadar_ScoutGroundObjects_Alpha 5
+  ZutiRadar_ShowPlayerAircraft 1
+  ZutiRadar_ScoutCompleteRecon 0
+  ZutiHud_DisableHudStatistics 0
+  ZutiHud_ShowPilotNumber 0
+  ZutiHud_ShowPilotPing 1
+  ZutiHud_ShowPilotName 1
+  ZutiHud_ShowPilotScore 1
+  ZutiHud_ShowPilotArmy 1
+  ZutiHud_ShowPilotACDesignation 0
+  ZutiHud_ShowPilotACType 1
+  ZutiMisc_DisableAIRadioChatter 0
+  ZutiMisc_DespawnAIPlanesAfterLanding 1
+  ZutiMisc_HidePlayersCountOnHomeBase 0
+  ZutiMisc_EnableReflyOnlyIfBailedOrDied 0
+  ZutiMisc_DisableReflyForMissionDuration 0
+  ZutiMisc_ReflyKIADelay 15
+  ZutiMisc_MaxAllowedKIA 10
+  ZutiMisc_ReflyKIADelayMultiplier 2.0
+  ZutiMisc_BombsCat1_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat2_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat3_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat4_CratersVisibilityMultiplier 1.0
+  ZutiMisc_EnableAIAirborneMulticrew 1
+  ZutiMisc_EnableInstructor 0
+  ZutiReload_OneMgCannonRearmSecond 10
+  ZutiReload_OneBombFTankTorpedoeRearmSeconds 25
+  ZutiReload_OneRocketRearmSeconds 20
+  ZutiReload_GallonsLitersPerSecond 3
+  ZutiReload_OneWeaponRepairSeconds 3
+  ZutiReload_FlapsRepairSeconds 30
+  ZutiReload_EngineRepairSeconds 90
+  ZutiReload_OneControlCableRepairSeconds 15
+  ZutiReload_OneFuelOilTankRepairSeconds 20
+  ZutiReload_LoadoutChangePenaltySeconds 30
+  ZutiReload_CockpitRepairSeconds 30
+  ZutiReload_ReloadOnlyIfFuelTanksExist 0
+  ZutiReload_ReloadOnlyIfAmmoBoxesExist 0
+  ZutiReload_RepairOnlyIfWorkshopExist 0
+  ZutiReload_OnlyHomeBaseSpecificLoadouts 1
+  ZutiDrop_OverFriendlyHomeBase 0
+  ZutiDrop_OverEnemyHomeBase 0
+  ZutiDrop_OverNeutralHomeBase 0
+  ZutiDrop_OverFriendlyFrictionArea 0
+  ZutiDrop_OverEnemyFrictionArea 1
+  ZutiDrop_OverDestroyGroundArea 1
+  ZutiDrop_OverDefenceGroundArea 1
+  ZutiDrop_MinHeight 0
+  ZutiDrop_MaxHeight 10000
+[RespawnTime]
+  Bigship 1800
+  Ship 1800
+  Aeroanchored 1800
+  Artillery 1800
+  Searchlight 1800
+[Chiefs]
+  0_Chief Ships.IJNYukikazeDD43 2 0 2 1.0
+  1_Chief Armor.4-T40S 1
+  2_Chief Armor.4-T40S 1
+  3_Chief Ships.USSLexingtonCV2 1 0 2 1.0
+[0_Chief_Road]
+  12884.62 18478.88 120.00 0 2 9.131389617919922
+  13024.13 20048.43 120.00 0 4 9.131389617919922
+  13198.00 20198.00 120.00
+  13300.00 20801.100 120.00
+  13215.97 20868.10 120.00 0 4 9.131389617919922
+  13202.00 20998.00 120.00
+  12598.00 21100.00 120.00
+  12535.83 21007.61 120.00 0 5 9.131389617919922
+  12402.00 21001.100 120.00
+  11100.00 19700.00 120.00
+  10900.00 18998.00 120.00
+  10983.73 18845.11 120.00
+[1_Chief_Road]
+  12098.74 19025.76 120.00 0 3 2.0833334922790527
+  12202.00 19201.100 120.00
+  12398.08 19280.51 120.00 0 2 2.0833334922790527
+  12398.08 19621.23 120.00 0 2 2.0833334922790527
+  12296.17 19767.73 120.00
+[2_Chief_Road]
+  12464.95 20232.65 120.00 0 4 2.0833334922790527
+  12598.00 20398.00 120.00
+  12802.00 20601.100 120.00
+  12888.47 20707.13 120.00
+[3_Chief_Road]
+  7745.79 21423.57 120.00 0 3 8.809722900390625
+  7700.00 22700.00 120.00
+  8020.27 23070.45 120.00 0 4 8.809722900390625
+  8700.00 23500.00 120.00
+  10100.00 23500.00 120.00
+  10545.47 23070.45 120.00 0 3 8.809722900390625
+  10900.00 22700.00 120.00
+  11368.91 21149.10 120.00 0 2 8.809722900390625
+  10312.17 19762.98 120.00
+[NStationary]
+[Buildings]
+  0_bld House$AirdromeRadar1 1 36058.14 44099.68 360.00
+  1_bld House$AirdromeRadar1 1 10193.06 10959.91 360.00
+[Target]
+  0 0 0 0 500 13390 18531 0 0 0_Chief 12884 18478
+  5 0 0 0 750 12531 20213 0 0 2_Chief 12464 20232
+  5 0 0 0 250 12063 19162 0 0 1_Chief 12098 19025
+[BornPlace]
+  1 3000 10879 10937 1 1000 200 0 0 0 0 5000 50 0 0 0 0 0 3.8 0 0 100 0
+  2 3000 36266 43847 1 1000 200 0 0 0 0 5000 50 0 0 0 0 0 3.8 0 0 100 0
+[MDS_BornPlace_10879_10937_RRR]
+  0 10 25 20 30 1 0 3 0 90 15 30 3 30 20 0
+[MDS_BornPlace_36266_43847_RRR]
+  0 10 25 20 30 1 0 3 0 90 15 30 3 30 20 0
+[Bridge]
+[House]

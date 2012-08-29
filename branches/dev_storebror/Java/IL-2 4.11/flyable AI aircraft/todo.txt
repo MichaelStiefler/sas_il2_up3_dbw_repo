@@ -1,0 +1,90 @@
+This is going to be a longer one and mostly not related to 4.11 directly, but as there is no other bug report thread I will post it here.
+
+As we all are now required to fly with more attention to our engines and temperatures,
+I noticed some things with instruments whereupon I (briefly) checked all cockpits.
+
+The results:
+
+A20:
+- Carb Air Temp needles are free floating in the instruments (no attachment to a shaft)
+
+F4F / Fm2:
+- Oil Pressure runs counter clockwise
+- Fuel Pressure remains low
+
+F6F:
+- Underbelly cowl flap "opens" to the inside
+- Fuel Pressure gauge works as fuel quantity gauge (on that note I didn't find a dedicated fuel gauge)
+- Oil Pressure goes off the limit all the way to maximum indicatable by the instrument
+
+I-250:
+- Free floating needles for Oil and Coolant Temperatures
+- Oxigen Quantity needle missing
+
+IL-10:
+- Oil and Coolant Temperature needles free floating
+
+P-38:
+- Fuel needles flicker against each other when overlapping
+
+P-51:
+- Free floating RPM needle
+- Compass needles flicker against each other when overlapping
+- Altimeter needles free floating
+- Carb Air Temp needle free floating
+
+Pe-2 (110 + 350) + Pe-3 bis:
+- Missing needle for Air Pressure
+
+SBD:
+- Oil and Fuel Pressure too high
+
+Yak:
+- Fuel Pressure needle low and not moving when engine runs
+- (Yak-1B only) Fuel Pressure needle on the wrond side (ccw)
+
+A6M:
+- Fuel Pressure needle not moving when engine runs
+- Oil Pressure goes all the way to max indicatable
+- Oxygen Quantity 0 (maybe intended this way)
+
+Bf109:
+- Fuel Pressure low and not moving when engine runs
+
+D3A:
+- Fuel Pressure low and not moving when engine runs
+- Oil Pressure goes all the way to max indicatable
+- Orange lever to the left is translucent from the top, looks like its placed upside down, the bottom wouldn't matter to be translucent
+
+Fw190:
+- Fuel Pressure low and not moving when engine runs
+- (A-4, -5, -6) MG warning lights are lit until nose ammo is empty (maybe correct, but in my eyes a warning light should indicate the other way around)
+
+He111:
+- Fuel Pressure low and not moving when engines run
+- Oil Pressure goes all the way to max indicatable
+- Bombsight elevation indicator on the LotFe runs the wrong direction (indicates 60° when bombsight actually faces straight downwards)
+
+Hurricane Mk.I:
+- No needle for Oil pressure
+- Fuel Pressure moves with boost (maybe intended this way)
+
+Ju87:
+- Fuel Pressure low and not moving when engine runs
+
+Ju88:
+- Oil Pressure goes all the way to max indicatable
+
+Mc202:
+- Manifold Pressure needle rotates aroung the wrong axis (Y axis instead of Z axis (Z pointing out the instrument))
+
+Ta152:
+- Fuel Pressure low and not moving when engine runs
+
+
+It may be quite likely that I simply misunderstand how some instruments work or what they are supposed to indicate (quantity wise).
+Or if some things fall under the advise "please don't go by cockpit gauges, they aren't always accurate".
+Please correct me if things in here are wrong either way !
+
+Good day everyone !
+Last edited by -=MadCat=-; Yesterday at 11:22 PM. 

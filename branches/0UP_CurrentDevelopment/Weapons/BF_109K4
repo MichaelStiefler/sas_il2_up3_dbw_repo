@@ -1,0 +1,7 @@
+default,0 MGunMG131si 300,0 MGunMG131si 300, ,1 MGunMK108ki 65, , , , , , , , , , , , , 
+R1-SC250,0 MGunMG131si 300,0 MGunMG131si 300, ,1 MGunMK108ki 65, , , , ,9 PylonETC900 -12345, , , ,3 BombGunSC250 1, , , , 
+R1-SC500,0 MGunMG131si 300,0 MGunMG131si 300, ,1 MGunMK108ki 65, , , , ,9 PylonETC900 -12345, , , ,3 BombGunSC500 1, , , , 
+R3-DROPTANK,0 MGunMG131si 300,0 MGunMG131si 300, ,1 MGunMK108ki 65, , , , ,9 PylonETC900 -12345,9 FuelTankGun_Type_D -12345, , , , , , , 
+R5-MK108,0 MGunMG131si 300,0 MGunMG131si 300,0 MGunMK108ki 65, , , ,1 MGunMK108kh 60,1 MGunMK108kh 60, , ,9 PylonMk108 -12345,9 PylonMk108 -12345, , , , , 
+R6-MG151-20,0 MGunMG131si 300,0 MGunMG131si 300,0 MGunMK108ki 65, ,1 MGunMG15120MGkh 135,1 MGunMG15120MGkh 135, , , , ,9 PylonMG15120 -12345,9 PylonMG15120 -12345, , , , , 
+none, , , , , , , , , , , , , , , , , 

@@ -1,0 +1,146 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   JU_52_3MG5E.java
+
+package com.maddox.il2.objects.air;
+
+import com.maddox.JGP.Point3d;
+import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.Shot;
+import com.maddox.il2.ai.World;
+import com.maddox.il2.engine.ActorPos;
+import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Gear;
+import com.maddox.rts.Property;
+
+// Referenced classes of package com.maddox.il2.objects.air:
+//            JU_52, PaintSchemeBMPar02, TypeTransport, TypeSailPlane, 
+//            NetAircraft, Aircraft
+
+public class JU_52_3MG5E extends com.maddox.il2.objects.air.JU_52
+    implements com.maddox.il2.objects.air.TypeTransport, com.maddox.il2.objects.air.TypeSailPlane
+{
+
+    public JU_52_3MG5E()
+    {
+        tmpp = new Point3d();
+    }
+
+    public void update(float f)
+    {
+        super.update(f);
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j < 2; j++)
+                if(FM.Gears.clpGearEff[i][j] != null)
+                {
+                    tmpp.set(((com.maddox.JGP.Tuple3d) (FM.Gears.clpGearEff[i][j].pos.getAbsPoint())));
+                    tmpp.z = 0.01D;
+                    FM.Gears.clpGearEff[i][j].pos.setAbs(tmpp);
+                    FM.Gears.clpGearEff[i][j].pos.reset();
+                }
+
+        }
+
+    }
+
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        if(af[0] < -50F)
+        {
+            af[0] = -50F;
+            flag = false;
+        } else
+        if(af[0] > 50F)
+        {
+            af[0] = 50F;
+            flag = false;
+        }
+        float f = java.lang.Math.abs(af[0]);
+        if(f < 20F)
+        {
+            if(af[1] < -1F)
+            {
+                af[1] = -1F;
+                flag = false;
+            }
+        } else
+        if(af[1] < -5F)
+        {
+            af[1] = -5F;
+            flag = false;
+        }
+        if(af[1] > 45F)
+        {
+            af[1] = 45F;
+            flag = false;
+        }
+        return flag;
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        setShot(shot);
+        if(shot.chunkName.startsWith("WingLIn") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 0, 1);
+        if(shot.chunkName.startsWith("WingRIn") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 1, 1);
+        if(shot.chunkName.startsWith("Engine1") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitEngine(shot.initiator, 0, 1);
+        if(shot.chunkName.startsWith("Engine2") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitEngine(shot.initiator, 1, 1);
+        if(FM.AS.astateEngineStates[0] > 2 && FM.AS.astateEngineStates[1] > 2)
+            FM.setCapableOfBMP(false, shot.initiator);
+        super.msgShot(shot);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        java.lang.Class class1;
+        try
+        {
+            class1 = java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+        return class1;
+    }
+
+    private com.maddox.JGP.Point3d tmpp;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.JU_52_3MG5E.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/Ju-52_3mg5e.fmd");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3do/plane/Ju-52_3mg5e/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "Ju-52");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeBMPar02())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1938.5F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitJU525E.class, com.maddox.il2.objects.air.CockpitJU525E_GunnerOpen.class
+        })));
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            10, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_BombSpawn01"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG15t 250", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "18xPara", new java.lang.String[] {
+            "MGunMG15t 250", "BombGunPara 18"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null
+        });
+    }
+}

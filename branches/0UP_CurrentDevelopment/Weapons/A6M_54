@@ -1,0 +1,8 @@
+default,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125, , , , , , , , , , , , , , , , , 
+2x150dt,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125, , , ,9 FuelTankGun_Tank0Underwing 1,9 FuelTankGun_Tank0Underwing 1, , , , , , , , , , , , 
+1xwdt4s,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125,9 FuelTankGun_Tank0Centre 1, , , , , , , , , , , , , , , , 
+10xtype3,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125, , , , , ,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,9 PylonA6MPLN5L 1,9 PylonA6MPLN5R 1
+1xwdt4s+10xtype3,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125,9 FuelTankGun_Tank0Centre 1, , , , ,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,2 RocketGunType3Mk27_2 1,9 PylonA6MPLN5L 1,9 PylonA6MPLN5R 1
+1x250,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125, ,9 PylonA6MPLN1 1,3 BombGun250kg 1, , , , , , , , , , , , , , 
+2x150dt+1x250,0 MGunMG131s 240,0 MGunMG131s 240,1 MGunType99No2s 125,1 MGunType99No2s 125, ,9 PylonA6MPLN1 1,3 BombGun250kg 1,9 FuelTankGun_Tank0Underwing 1,9 FuelTankGun_Tank0Underwing 1, , , , , , , , , , , , 
+none, , , , , , , , , , , , , , , , , , , , , 

@@ -1,0 +1,8 @@
+default,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120, , , , , , 
+1x500,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120, , , , ,9 PylonSpitC 1,3 BombGun500lbsE 1
+2x250,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120,9 PylonSpitL 1,9 PylonSpitR 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+2x250dt30,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120,9 PylonSpitL 1,9 PylonSpitR 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1,9 FuelTankGun_TankSpit30 1, 
+2x250dt45,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120,9 PylonSpitL 1,9 PylonSpitR 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1,9 FuelTankGun_TankSpit45 1, 
+1x30dt,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120, , , , ,9 FuelTankGun_TankSpit30 1, 
+1x45dt,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,0 MGunBrowning303k 350,1 MGunHispanoMkIki 120,1 MGunHispanoMkIki 120, , , , ,9 FuelTankGun_TankSpit45 1, 
+none, , , , , , , , , , , , 

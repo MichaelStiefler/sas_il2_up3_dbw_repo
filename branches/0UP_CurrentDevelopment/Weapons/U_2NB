@@ -1,0 +1,8 @@
+default, , , , , , 
+2ao10, ,3 BombGunAO10 1,3 BombGunAO10 1, , , 
+4ao10, ,3 BombGunAO10 1,3 BombGunAO10 1,3 BombGunAO10 1,3 BombGunAO10 1, 
+2fab50, ,3 BombGunFAB50 1,3 BombGunFAB50 1, , , 
+4fab50, ,3 BombGunFAB50 1,3 BombGunFAB50 1,3 BombGunFAB50 1,3 BombGunFAB50 1, 
+2fab100, ,3 BombGunFAB100 1,3 BombGunFAB100 1, , , 
+2fab50_2fab100, ,3 BombGunFAB100 1,3 BombGunFAB100 1,3 BombGunFAB50 1,3 BombGunFAB50 1, 
+none, , , , , , 
