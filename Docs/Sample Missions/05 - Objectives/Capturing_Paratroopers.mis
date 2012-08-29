@@ -1,0 +1,150 @@
+[MAIN]
+  MAP Empty1a/load.ini
+  TIME 12.0
+  CloudType 0
+  CloudHeight 1000.0
+  army 1
+  playerNum 0
+[MDS]
+  ZutiCarrierSpawnPoints_CV2 6
+  ZutiCarrierSpawnPoints_CV9 5
+  ZutiCarrierSpawnPoints_CVE 2
+  ZutiCarrierSpawnPoints_CVL 7
+  ZutiCarrierSpawnPoints_Akagi 8
+  ZutiCarrierSpawnPoints_IJN 6
+  ZutiCarrierSpawnPoints_HMS 5
+  ZutiNextMission_RedWon
+  ZutiNextMission_BlueWon
+  ZutiNextMission_Difficulty
+  ZutiNextMission_LoadDelay 60
+  ZutiNextMission_Enable 0
+  ZutiTargets_MovingIcons 1
+  ZutiNextMission_Enable 0
+  ZutiTargets_ShowTargets 1
+  ZutiIcons_IconsSize 4
+  ZutiIcons_ShowNeutralHB 0
+  ZutiRadar_SetRadarToAdvanceMode 1
+  ZutiRadar_ShowAircraft 1
+  ZutiRadar_ShowGroundUnits 1
+  ZutiRadar_ShowRockets 1
+  ZutiRadar_StaticIconsIfNoRadar 0
+  ZutiRadar_AircraftIconsWhite 0
+  ZutiRadar_RefreshInterval 2
+  ZutiRadar_EnableTowerCommunications 1
+  ZutiRadar_ShipsAsRadar 0
+  ZutiRadar_ShipRadar_MaxRange 100
+  ZutiRadar_ShipRadar_MinHeight 100
+  ZutiRadar_ShipRadar_MaxHeight 5000
+  ZutiRadar_ShipSmallRadar_MaxRange 25
+  ZutiRadar_ShipSmallRadar_MinHeight 0
+  ZutiRadar_ShipSmallRadar_MaxHeight 2000
+  ZutiRadar_ScoutsAsRadar 1
+  ZutiRadar_ScoutRadar_MaxRange 2
+  ZutiRadar_ScoutRadar_DeltaHeight 3000
+  ZutiRadar_HideUnpopulatedAirstripsFromMinimap 0
+  ZutiRadar_ScoutGroundObjects_Alpha 1
+  ZutiRadar_ShowPlayerAircraft 1
+  ZutiRadar_ScoutCompleteRecon 0
+  ZutiHud_DisableHudStatistics 0
+  ZutiHud_ShowPilotNumber 0
+  ZutiHud_ShowPilotPing 1
+  ZutiHud_ShowPilotName 1
+  ZutiHud_ShowPilotScore 1
+  ZutiHud_ShowPilotArmy 1
+  ZutiHud_ShowPilotACDesignation 0
+  ZutiHud_ShowPilotACType 1
+  ZutiMisc_DisableAIRadioChatter 0
+  ZutiMisc_DespawnAIPlanesAfterLanding 1
+  ZutiMisc_HidePlayersCountOnHomeBase 0
+  ZutiMisc_EnableReflyOnlyIfBailedOrDied 0
+  ZutiMisc_DisableReflyForMissionDuration 0
+  ZutiMisc_ReflyKIADelay 15
+  ZutiMisc_MaxAllowedKIA 10
+  ZutiMisc_ReflyKIADelayMultiplier 2.0
+  ZutiMisc_BombsCat1_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat2_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat3_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat4_CratersVisibilityMultiplier 1.0
+  ZutiMisc_EnableAIAirborneMulticrew 1
+  ZutiMisc_EnableInstructor 0
+  ZutiReload_OneMgCannonRearmSecond 10
+  ZutiReload_OneBombFTankTorpedoeRearmSeconds 25
+  ZutiReload_OneRocketRearmSeconds 20
+  ZutiReload_GallonsLitersPerSecond 3
+  ZutiReload_OneWeaponRepairSeconds 3
+  ZutiReload_FlapsRepairSeconds 30
+  ZutiReload_EngineRepairSeconds 90
+  ZutiReload_OneControlCableRepairSeconds 15
+  ZutiReload_OneFuelOilTankRepairSeconds 20
+  ZutiReload_LoadoutChangePenaltySeconds 30
+  ZutiReload_CockpitRepairSeconds 30
+  ZutiReload_ReloadOnlyIfFuelTanksExist 0
+  ZutiReload_ReloadOnlyIfAmmoBoxesExist 0
+  ZutiReload_RepairOnlyIfWorkshopExist 0
+  ZutiReload_OnlyHomeBaseSpecificLoadouts 1
+  ZutiDrop_OverFriendlyHomeBase 0
+  ZutiDrop_OverEnemyHomeBase 0
+  ZutiDrop_OverNeutralHomeBase 0
+  ZutiDrop_OverFriendlyFrictionArea 0
+  ZutiDrop_OverEnemyFrictionArea 1
+  ZutiDrop_OverDestroyGroundArea 1
+  ZutiDrop_OverDefenceGroundArea 1
+  ZutiDrop_MinHeight 0
+  ZutiDrop_MaxHeight 10000
+[MDS_Scouts_Red]
+  A-20C
+[RespawnTime]
+  Bigship 1800
+  Ship 1800
+  Aeroanchored 1800
+  Artillery 1800
+  Searchlight 1800
+[MDS_Objectives]
+  ZutiObjective_RedArmor 0
+  zutiObjective_RedTrains 0
+  ZutiObjective_RedVehicles 0
+  ZutiObjective_RedShipsM 0
+  ZutiObjective_RedAircraftM 0
+  ZutiObjective_RedShipsS 0
+  ZutiObjective_RedAircraftS 0
+  ZutiObjective_RedArtillery 0
+  ZutiObjective_RedStationary 0
+  ZutiObjective_RedRockets 0
+  ZutiObjective_RedHomeBases 0
+  ZutiObjective_BlueArmor 0
+  zutiObjective_BlueTrains 0
+  ZutiObjective_BlueVehicles 0
+  ZutiObjective_BlueShipsM 0
+  ZutiObjective_BlueAircraftM 0
+  ZutiObjective_BlueShipsS 0
+  ZutiObjective_BlueAircraftS 0
+  ZutiObjective_BlueArtillery 0
+  ZutiObjective_BlueStationary 0
+  ZutiObjective_BlueRockets 0
+  ZutiObjective_BlueHomeBases 1
+[Wing]
+  r0100
+[r0100]
+  Planes 4
+  Skill 1
+  Class air.C_47
+  Fuel 40
+  weapons 28xPara
+[r0100_Way]
+  NORMFLY 18867.53 21693.51 500.00 300.00 &0
+  GATTACK 19158.44 20363.64 500.00 300.00 &0
+  NORMFLY 21693.51 10888.31 500.00 300.00 &0
+[NStationary]
+[Buildings]
+[BornPlace]
+  1 3000 6444 9105 1 1000 200 0 0 1 0 5000 50 0 0 0 0 0 3.8 0 0 999 0
+  2 3000 20486 17346 1 1000 200 0 0 1 0 5000 50 0 0 0 0 0 3.8 0 0 40 0
+[MDS_BornPlace_6444_9105_RRR]
+  0 10 25 20 30 1 0 3 0 90 15 30 3 30 20 0
+[MDS_BornPlace_20486_17346_RRR]
+  0 10 25 20 30 1 0 3 0 90 15 30 3 30 20 0
+[Bridge]
+[House]
+[FrontMarker]
+  FrontMarker0 6797.93 9483.94 1
+  FrontMarker1 20327.46 17011.40 2

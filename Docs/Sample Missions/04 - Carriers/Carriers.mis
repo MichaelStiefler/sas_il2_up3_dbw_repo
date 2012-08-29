@@ -1,0 +1,117 @@
+[MAIN]
+  MAP Net8Islands/load_v2.ini
+  TIME 12.0
+  CloudType 0
+  CloudHeight 1000.0
+  army 1
+  playerNum 0
+[MDSSection_Radar]
+  ZutiRadar_RefreshInterval 0
+  ZutiRadar_ShipsAsRadar 0
+  ZutiRadar_ShipRadar_MaxRange 100
+  ZutiRadar_ShipRadar_MinHeight 100
+  ZutiRadar_ShipRadar_MaxHeight 5000
+  ZutiRadar_ShipSmallRadar_MaxRange 25
+  ZutiRadar_ShipSmallRadar_MinHeight 0
+  ZutiRadar_ShipSmallRadar_MaxHeight 2000
+  ZutiRadar_ScoutsAsRadar 0
+  ZutiRadar_ScoutRadar_MaxRange 2
+  ZutiRadar_ScoutRadar_DeltaHeight 1500
+  ZutiRadar_ScoutGroundObjects_Alpha 5
+  ZutiRadar_ScoutCompleteRecon 0
+  ZutiRadar_SetRadarToAdvanceMode 0
+[MDSSection_MapIcons]
+  ZutiIcons_MovingIcons 0
+  ZutiIcons_ShowTargets 1
+  ZutiIcons_IconsSize 4
+  ZutiIcons_ShowNeutralHB 0
+  ZutiIcons_ShowAircraft 0
+  ZutiIcons_ShowGroundUnits 0
+  ZutiIcons_ShowRockets 0
+  ZutiIcons_StaticIconsIfNoRadar 0
+  ZutiIcons_AircraftIconsWhite 0
+  ZutiIcons_ShowPlayerAircraft 1
+  ZutiIcons_HideUnpopulatedAirstripsFromMinimap 0
+[MDSSection_RRR]
+  ZutiReload_OneMgCannonRearmSecond 10
+  ZutiReload_OneBombFTankTorpedoeRearmSeconds 25
+  ZutiReload_OneRocketRearmSeconds 20
+  ZutiReload_GallonsLitersPerSecond 3
+  ZutiReload_OneWeaponRepairSeconds 3
+  ZutiReload_FlapsRepairSeconds 30
+  ZutiReload_EngineRepairSeconds 90
+  ZutiReload_OneControlCableRepairSeconds 15
+  ZutiReload_OneFuelOilTankRepairSeconds 20
+  ZutiReload_LoadoutChangePenaltySeconds 30
+  ZutiReload_CockpitRepairSeconds 30
+  ZutiReload_ReloadOnlyIfFuelTanksExist 0
+  ZutiReload_ReloadOnlyIfAmmoBoxesExist 0
+  ZutiReload_RepairOnlyIfWorkshopExist 0
+  ZutiReload_OnlyHomeBaseSpecificLoadouts 1
+[MDSSection_NextMission]
+  ZutiNextMission_RedWon
+  ZutiNextMission_BlueWon
+  ZutiNextMission_Difficulty
+  ZutiNextMission_LoadDelay 60
+  ZutiNextMission_Enable 0
+  ZutiNextMission_Enable 0
+[MDSSection_HUD]
+  ZutiHud_DisableHudStatistics 0
+  ZutiHud_ShowPilotNumber 0
+  ZutiHud_ShowPilotPing 1
+  ZutiHud_ShowPilotName 1
+  ZutiHud_ShowPilotScore 1
+  ZutiHud_ShowPilotArmy 1
+  ZutiHud_ShowPilotACDesignation 0
+  ZutiHud_ShowPilotACType 1
+[MDSSection_Craters]
+  ZutiCraters_BombsCat1_CratersVisibilityMultiplier 1.0
+  ZutiCraters_BombsCat2_CratersVisibilityMultiplier 1.0
+  ZutiCraters_BombsCat3_CratersVisibilityMultiplier 1.0
+  ZutiCraters_BombsCat4_CratersVisibilityMultiplier 1.0
+[MDSSection_AirDrops]
+  ZutiDrop_OverFriendlyHomeBase 0
+  ZutiDrop_OverEnemyHomeBase 0
+  ZutiDrop_OverNeutralHomeBase 0
+  ZutiDrop_OverFriendlyFrictionArea 0
+  ZutiDrop_OverEnemyFrictionArea 1
+  ZutiDrop_OverDestroyGroundArea 1
+  ZutiDrop_OverDefenceGroundArea 1
+  ZutiDrop_MinHeight 0
+  ZutiDrop_MaxHeight 10000
+[MDSSection_Miscellaneous]
+  ZutiMisc_EnableTowerCommunications 1
+  ZutiMisc_DisableAIRadioChatter 0
+  ZutiMisc_DespawnAIPlanesAfterLanding 1
+  ZutiMisc_HidePlayersCountOnHomeBase 0
+  ZutiMisc_EnableReflyOnlyIfBailedOrDied 0
+  ZutiMisc_DisableReflyForMissionDuration 0
+  ZutiMisc_ReflyKIADelay 15
+  ZutiMisc_MaxAllowedKIA 10
+  ZutiMisc_ReflyKIADelayMultiplier 2.0
+  ZutiMisc_EnableAIAirborneMulticrew 0
+  ZutiMisc_EnableInstructor 0
+[RespawnTime]
+  Bigship 1800
+  Ship 1800
+  Aeroanchored 1800
+  Artillery 1800
+  Searchlight 1800
+[Chiefs]
+  0_Chief Ships.USSLexingtonCV2 1 0 2 1.0
+  1_Chief Ships.HMSIllustriousCV 1 0 2 1.0
+[0_Chief_Road]
+  19372.44 22868.47 120.00 0 2 8.809722900390625
+  26835.95 22646.38 120.00
+[1_Chief_Road]
+  25144.75 27951.83 120.00 0 2 7.845277786254883
+  26969.54 24395.35 120.00
+[Buildings]
+[BornPlace]
+  1 3000 25144 27961 1 1000 200 0 0 0 0 5000 50 0 0 0 0 0 3.8 0 0 100 0 5 0
+  0 3000 19372 22878 1 1000 200 0 0 0 0 5000 50 0 0 0 0 0 3.8 0 0 100 0 6 0
+  1 1050 12051 19529 1 1000 200 0 0 0 0 5000 50 0 0 0 0 0 3.8 0 0 100 0 0 1
+[MDS_STDBornPlace_SpawnPlaces]
+  12425.761815890619 20040.86095381678 2.0400195121765137 360.0 0.6817931532859802 0.0
+[Bridge]
+[House]

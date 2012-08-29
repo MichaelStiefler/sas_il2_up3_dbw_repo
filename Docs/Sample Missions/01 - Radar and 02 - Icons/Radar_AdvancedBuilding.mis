@@ -1,0 +1,142 @@
+[MAIN]
+  MAP Net8Islands/load.ini
+  TIME 12.0
+  CloudType 0
+  CloudHeight 1000.0
+  army 1
+  playerNum 0
+[MDS]
+  ZutiCarrierSpawnPoints_CV2 6
+  ZutiCarrierSpawnPoints_CV9 5
+  ZutiCarrierSpawnPoints_CVE 2
+  ZutiCarrierSpawnPoints_CVL 7
+  ZutiCarrierSpawnPoints_Akagi 8
+  ZutiCarrierSpawnPoints_IJN 6
+  ZutiCarrierSpawnPoints_HMS 5
+  ZutiNextMission_RedWon
+  ZutiNextMission_BlueWon
+  ZutiNextMission_Difficulty
+  ZutiNextMission_LoadDelay 60
+  ZutiNextMission_Enable 0
+  ZutiTargets_MovingIcons 1
+  ZutiNextMission_Enable 0
+  ZutiTargets_ShowTargets 1
+  ZutiIcons_IconsSize 4
+  ZutiIcons_ShowNeutralHB 0
+  ZutiRadar_SetRadarToAdvanceMode 1
+  ZutiRadar_ShowAircraft 1
+  ZutiRadar_ShowGroundUnits 1
+  ZutiRadar_ShowRockets 1
+  ZutiRadar_StaticIconsIfNoRadar 0
+  ZutiRadar_AircraftIconsWhite 0
+  ZutiRadar_RefreshInterval 0
+  ZutiRadar_EnableTowerCommunications 1
+  ZutiRadar_ShipsAsRadar 0
+  ZutiRadar_ShipRadar_MaxRange 100
+  ZutiRadar_ShipRadar_MinHeight 100
+  ZutiRadar_ShipRadar_MaxHeight 5000
+  ZutiRadar_ShipSmallRadar_MaxRange 25
+  ZutiRadar_ShipSmallRadar_MinHeight 0
+  ZutiRadar_ShipSmallRadar_MaxHeight 2000
+  ZutiRadar_ScoutsAsRadar 0
+  ZutiRadar_ScoutRadar_MaxRange 2
+  ZutiRadar_ScoutRadar_DeltaHeight 1500
+  ZutiRadar_HideUnpopulatedAirstripsFromMinimap 0
+  ZutiRadar_ScoutGroundObjects_Alpha 6
+  ZutiRadar_ShowPlayerAircraft 1
+  ZutiRadar_ScoutCompleteRecon 0
+  ZutiHud_DisableHudStatistics 0
+  ZutiHud_ShowPilotNumber 0
+  ZutiHud_ShowPilotPing 1
+  ZutiHud_ShowPilotName 1
+  ZutiHud_ShowPilotScore 1
+  ZutiHud_ShowPilotArmy 1
+  ZutiHud_ShowPilotACDesignation 0
+  ZutiHud_ShowPilotACType 1
+  ZutiMisc_DisableAIRadioChatter 0
+  ZutiMisc_DespawnAIPlanesAfterLanding 1
+  ZutiMisc_HidePlayersCountOnHomeBase 0
+  ZutiMisc_EnableReflyOnlyIfBailedOrDied 0
+  ZutiMisc_DisableReflyForMissionDuration 0
+  ZutiMisc_ReflyKIADelay 15
+  ZutiMisc_MaxAllowedKIA 10
+  ZutiMisc_ReflyKIADelayMultiplier 2.0
+  ZutiMisc_BombsCat1_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat2_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat3_CratersVisibilityMultiplier 1.0
+  ZutiMisc_BombsCat4_CratersVisibilityMultiplier 1.0
+  ZutiMisc_EnableAIAirborneMulticrew 0
+  ZutiMisc_EnableInstructor 0
+  ZutiReload_OneMgCannonRearmSecond 10
+  ZutiReload_OneBombFTankTorpedoeRearmSeconds 25
+  ZutiReload_OneRocketRearmSeconds 20
+  ZutiReload_GallonsLitersPerSecond 3
+  ZutiReload_OneWeaponRepairSeconds 3
+  ZutiReload_FlapsRepairSeconds 30
+  ZutiReload_EngineRepairSeconds 90
+  ZutiReload_OneControlCableRepairSeconds 15
+  ZutiReload_OneFuelOilTankRepairSeconds 20
+  ZutiReload_LoadoutChangePenaltySeconds 30
+  ZutiReload_CockpitRepairSeconds 30
+  ZutiReload_ReloadOnlyIfFuelTanksExist 0
+  ZutiReload_ReloadOnlyIfAmmoBoxesExist 0
+  ZutiReload_RepairOnlyIfWorkshopExist 0
+  ZutiReload_OnlyHomeBaseSpecificLoadouts 1
+  ZutiDrop_OverFriendlyHomeBase 0
+  ZutiDrop_OverEnemyHomeBase 0
+  ZutiDrop_OverNeutralHomeBase 0
+  ZutiDrop_OverFriendlyFrictionArea 0
+  ZutiDrop_OverEnemyFrictionArea 1
+  ZutiDrop_OverDestroyGroundArea 1
+  ZutiDrop_OverDefenceGroundArea 1
+  ZutiDrop_MinHeight 0
+  ZutiDrop_MaxHeight 10000
+[MDS_Scouts_Red]
+  A-20C
+[MDS_Scouts_Blue]
+  Ar-234B-2
+[RespawnTime]
+  Bigship 1800
+  Ship 1800
+  Aeroanchored 1800
+  Artillery 1800
+  Searchlight 1800
+[Wing]
+  g0101
+  g0100
+[g0101]
+  Planes 1
+  Skill 1
+  Class air.AR_234B2
+  Fuel 40
+  weapons none
+[g0101_Way]
+  NORMFLY 8091.19 30905.70 2100.00 845.00 &0
+  NORMFLY 13728.50 39593.78 2300.00 300.00 &0
+  NORMFLY 24605.18 46159.59 2500.00 300.00 &0
+  NORMFLY 34818.65 48679.79 2700.00 300.00 &0
+  NORMFLY 50735.75 49873.58 3000.00 845.00 &0
+[g0100]
+  Planes 1
+  Skill 1
+  Class air.AR_234B2
+  Fuel 100
+  weapons default
+[g0100_Way]
+  NORMFLY 16779.27 8290.15 2000.00 800.00 &0
+  NORMFLY 862.18 15253.88 2000.00 800.00 &0
+[NStationary]
+[Buildings]
+  0_bld House$AirdromeRadar1 1 36456.07 44527.67 360.00
+  1_bld House$AirdromeRadar1 1 11050.10 10609.59 360.00
+[Target]
+  0 0 0 0 500 18237 10875 0 0 g0100 16779 8290
+[BornPlace]
+  1 3000 10879 10937 1 1000 200 0 0 0 1000 3000 3 0 0 0 0 0 3.8 0 0 100 0
+  1 2550 36266 43847 1 1000 200 0 0 0 2350 2550 30 0 0 0 0 0 3.8 0 0 100 0
+[MDS_BornPlace_10879_10937_RRR]
+  0 10 25 20 30 1 0 3 0 90 15 30 3 30 20 0
+[MDS_BornPlace_36266_43847_RRR]
+  0 10 25 20 30 1 0 3 0 90 15 30 3 30 20 0
+[Bridge]
+[House]
