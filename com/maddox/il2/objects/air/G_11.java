@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   G_11.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
@@ -6,97 +11,148 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class G_11 extends Scheme0
-  implements TypeGlider, TypeTransport, TypeBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Scheme0, PaintSchemeBMPar02, TypeGlider, TypeTransport, 
+//            TypeBomber, NetAircraft, PaintScheme, Aircraft
+
+public class G_11 extends com.maddox.il2.objects.air.Scheme0
+    implements com.maddox.il2.objects.air.TypeGlider, com.maddox.il2.objects.air.TypeTransport, com.maddox.il2.objects.air.TypeBomber
 {
-  public void doMurderPilot(int paramInt)
-  {
-    switch (paramInt) {
-    case 0:
-      hierMesh().chunkVisible("Pilot1_D0", false);
-      hierMesh().chunkVisible("Pilot1_D1", true);
-      hierMesh().chunkVisible("Head1_D0", false);
+
+    public G_11()
+    {
     }
-  }
 
-  public boolean typeBomberToggleAutomation()
-  {
-    return false;
-  }
+    public void doMurderPilot(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            hierMesh().chunkVisible("Pilot1_D0", false);
+            hierMesh().chunkVisible("Pilot1_D1", true);
+            hierMesh().chunkVisible("Head1_D0", false);
+            break;
+        }
+    }
 
-  public void typeBomberAdjDistanceReset()
-  {
-  }
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeBomberAdjDistancePlus()
-  {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-  public void typeBomberAdjDistanceMinus()
-  {
-  }
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-  public void typeBomberAdjSideslipReset()
-  {
-  }
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-  public void typeBomberAdjSideslipPlus() {
-  }
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-  public void typeBomberAdjSideslipMinus() {
-  }
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-  public void typeBomberAdjAltitudeReset() {
-  }
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-  public void typeBomberAdjAltitudePlus() {
-  }
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
 
-  public void typeBomberAdjAltitudeMinus() {
-  }
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
 
-  public void typeBomberAdjSpeedReset() {
-  }
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
 
-  public void typeBomberAdjSpeedPlus() {
-  }
+    public void typeBomberAdjSpeedReset()
+    {
+    }
 
-  public void typeBomberAdjSpeedMinus() {
-  }
+    public void typeBomberAdjSpeedPlus()
+    {
+    }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public void typeBomberAdjSpeedMinus()
+    {
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public void typeBomberUpdate(float f)
+    {
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-  static {
-    Class localClass = G_11.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "G-11");
-    Property.set(localClass, "meshName", "3DO/Plane/G-11/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
-    Property.set(localClass, "originCountry", PaintScheme.countryRussia);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        java.lang.Class class1;
+        try
+        {
+            class1 = java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+        return class1;
+    }
 
-    Property.set(localClass, "yearService", 1936.0F);
-    Property.set(localClass, "yearExpired", 1948.0F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/G-11.fmd");
-
-    Property.set(localClass, "gliderString", "3DO/Arms/TowString/mono.sim");
-    Property.set(localClass, "gliderStringLength", 160.0F);
-    Property.set(localClass, "gliderStringKx", 30.0F);
-    Property.set(localClass, "gliderStringFactor", 1.8F);
-
-    weaponTriggersRegister(localClass, new int[] { 3 });
-    weaponHooksRegister(localClass, new String[] { "_BombSpawn01" });
-
-    weaponsRegister(localClass, "default", new String[] { null });
-
-    weaponsRegister(localClass, "none", new String[] { null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.G_11.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "G-11");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3DO/Plane/G-11/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeBMPar02())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "originCountry", com.maddox.il2.objects.air.PaintScheme.countryRussia);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1936F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1948F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/G-11.fmd");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "gliderString", "3DO/Arms/TowString/mono.sim");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "gliderStringLength", 160F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "gliderStringKx", 30F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "gliderStringFactor", 1.8F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitG_11.class
+        })));
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_BombSpawn01"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null
+        });
+    }
 }

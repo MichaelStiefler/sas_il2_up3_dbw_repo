@@ -1,40 +1,187 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   R_5.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.CLASS;
+import com.maddox.rts.NetMsgGuaranted;
+import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import java.io.IOException;
+import java.io.PrintStream;
 
-public class R_5 extends R_5xyz
+// Referenced classes of package com.maddox.il2.objects.air:
+//            R_5xyz, PaintSchemeFCSPar08, TypeBomber, NetAircraft, 
+//            Aircraft
+
+public class R_5 extends com.maddox.il2.objects.air.R_5xyz
+    implements com.maddox.il2.objects.air.TypeBomber
 {
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "R-5");
-    Property.set(localClass, "meshName", "3do/plane/R-5/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFCSPar08());
-    Property.set(localClass, "yearService", 1931.0F);
-    Property.set(localClass, "yearExpired", 1944.0F);
-    Property.set(localClass, "FlightModel", "FlightModels/R-5.fmd");
-    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 10, 10, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9 });
 
-    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_ExternalBomb24", "_ExternalBomb25", "_ExternalBomb26", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05" });
+    public R_5()
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-    weaponsRegister(localClass, "Gunpods", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", null, null, null });
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
 
-    weaponsRegister(localClass, "Gunpods+8x10+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
 
-    weaponsRegister(localClass, "Gunpods+16x10+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "Gunpods+4x50+2x50", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
+    public void typeBomberAdjVelocityReset()
+    {
+    }
 
-    weaponsRegister(localClass, "8x50+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
+    public void typeBomberAdjVelocityPlus()
+    {
+    }
 
-    weaponsRegister(localClass, "2x100+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
+    public void typeBomberAdjVelocityMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "2x100+2x50+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
+    public void typeBomberAdjDiveAngleReset()
+    {
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    public void typeBomberAdjDiveAnglePlus()
+    {
+    }
+
+    public void typeBomberAdjDiveAngleMinus()
+    {
+    }
+
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
+
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
+
+    protected void mydebug(java.lang.String s)
+    {
+        java.lang.System.out.println(s);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        try
+        {
+            return java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        try
+        {
+            return java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "R-5");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3do/plane/R-5/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeFCSPar08())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1931F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1944F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitI_16TYPE6.class
+        })));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/R-5.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 10, 10, 0, 0, 0, 0, 3, 3, 3, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3, 3, 3, 9, 9, 9, 9, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", 
+            "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", 
+            "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", 
+            "_ExternalBomb24", "_ExternalBomb25", "_ExternalBomb26", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "Gunpods", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "Gunpods+8x10+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", null, "BombGunAO10S 1", 
+            null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", 
+            null, "BombGunAO10S 1", null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "Gunpods+16x10+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", 
+            "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", 
+            "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "Gunpods+4x50+2x50", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "8x50+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", 
+            "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x100+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, 
+            null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2x100+2x50+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, 
+            null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null
+        });
+    }
 }

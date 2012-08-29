@@ -1,61 +1,208 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   IL_4_DB3B.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.il2.ai.Shot;
+import com.maddox.il2.game.AircraftHotKeys;
+import com.maddox.il2.game.HUD;
+import com.maddox.rts.NetMsgGuaranted;
+import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
+import java.io.IOException;
 
-public class IL_4_DB3B extends IL_4
-  implements TypeBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            IL_4, PaintSchemeBMPar00, TypeBomber, NetAircraft
+
+public class IL_4_DB3B extends com.maddox.il2.objects.air.IL_4
+    implements com.maddox.il2.objects.air.TypeBomber
 {
-  protected void hitBone(String paramString, Shot paramShot, Point3d paramPoint3d)
-  {
-    if (paramString.startsWith("xxarmor")) {
-      return;
+
+    public IL_4_DB3B()
+    {
+        fSightCurAltitude = 300F;
+        fSightCurSpeed = 50F;
     }
-    super.hitBone(paramString, paramShot, paramPoint3d);
-  }
 
-  static
-  {
-    Class localClass = IL_4_DB3B.class;
-    new NetAircraft.SPAWN(localClass);
+    protected void hitBone(java.lang.String s, com.maddox.il2.ai.Shot shot, com.maddox.JGP.Point3d point3d)
+    {
+        if(!s.startsWith("xxarmor"))
+            super.hitBone(s, shot, point3d);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "DB-3");
-    Property.set(localClass, "meshName", "3DO/Plane/DB-3B/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar00());
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-    Property.set(localClass, "yearService", 1936.0F);
-    Property.set(localClass, "yearExpired", 1948.0F);
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/DB-3B.fmd");
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_BombSpawn01", "_BombSpawn02" });
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null, null, null, null, null, null });
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-    weaponsRegister(localClass, "10fab50", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null, null, null, null, "BombGunFAB50 5", "BombGunFAB50 5" });
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-    weaponsRegister(localClass, "10fab100", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null, null, null, null, "BombGunFAB100 5", "BombGunFAB100 5" });
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "3fab250", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB250", "BombGunNull", "BombGunFAB250", "BombGunFAB250", null, null });
+    public void typeBomberAdjAltitudeReset()
+    {
+        fSightCurAltitude = 300F;
+    }
 
-    weaponsRegister(localClass, "3fab25010fab50", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB250", "BombGunNull", "BombGunFAB250", "BombGunFAB250", "BombGunFAB50 5", "BombGunFAB50 5" });
+    public void typeBomberAdjAltitudePlus()
+    {
+        fSightCurAltitude += 50F;
+        if(fSightCurAltitude > 5000F)
+            fSightCurAltitude = 5000F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new java.lang.Object[] {
+            new Integer((int)fSightCurAltitude)
+        });
+    }
 
-    weaponsRegister(localClass, "3fab25010fab100", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB250", "BombGunNull", "BombGunFAB250", "BombGunFAB250", "BombGunFAB100 5", "BombGunFAB100 5" });
+    public void typeBomberAdjAltitudeMinus()
+    {
+        fSightCurAltitude -= 50F;
+        if(fSightCurAltitude < 300F)
+            fSightCurAltitude = 300F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new java.lang.Object[] {
+            new Integer((int)fSightCurAltitude)
+        });
+    }
 
-    weaponsRegister(localClass, "1fab500", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", null, null, null, null, null });
+    public void typeBomberAdjSpeedReset()
+    {
+        fSightCurSpeed = 50F;
+    }
 
-    weaponsRegister(localClass, "1fab5002fab250", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", "BombGunNull", "BombGunFAB250", "BombGunFAB250", null, null });
+    public void typeBomberAdjSpeedPlus()
+    {
+        fSightCurSpeed += 5F;
+        if(fSightCurSpeed > 350F)
+            fSightCurSpeed = 350F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new java.lang.Object[] {
+            new Integer((int)fSightCurSpeed)
+        });
+    }
 
-    weaponsRegister(localClass, "3fab500", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", "BombGunNull", "BombGunFAB500", "BombGunFAB500", null, null });
+    public void typeBomberAdjSpeedMinus()
+    {
+        fSightCurSpeed -= 5F;
+        if(fSightCurSpeed < 50F)
+            fSightCurSpeed = 50F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new java.lang.Object[] {
+            new Integer((int)fSightCurSpeed)
+        });
+    }
 
-    weaponsRegister(localClass, "3fab50010fab50", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", "BombGunNull", "BombGunFAB500", "BombGunFAB500", "BombGunFAB50 5", "BombGunFAB50 5" });
+    public void typeBomberUpdate(float f)
+    {
+    }
 
-    weaponsRegister(localClass, "1fab1000", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB1000", null, null, null, null, null });
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        netmsgguaranted.writeFloat(fSightCurAltitude);
+        netmsgguaranted.writeFloat(fSightCurSpeed);
+    }
 
-    weaponsRegister(localClass, "1fab100010fab50", new String[] { "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB1000", "BombGunNull", null, null, "BombGunFAB50 5", "BombGunFAB50 5" });
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        fSightCurAltitude = netmsginput.readFloat();
+        fSightCurSpeed = netmsginput.readFloat();
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null });
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        try
+        {
+            return java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
+    public float fSightCurAltitude;
+    public float fSightCurSpeed;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.IL_4_DB3B.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "DB-3");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3DO/Plane/DB-3B/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeBMPar00())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1936F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1948F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/DB-3B.fmd");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitDB3B.class, com.maddox.il2.objects.air.CockpitDB3B_Bombardier.class, com.maddox.il2.objects.air.CockpitDB3B_FGunner.class, com.maddox.il2.objects.air.CockpitDB3B_TGunner.class, com.maddox.il2.objects.air.CockpitDB3B_BGunner.class
+        })));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "LOSElevation", 0.73425F);
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponTriggersRegister(class1, new int[] {
+            10, 11, 12, 3, 3, 3, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_BombSpawn01", "_BombSpawn02"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "10fab50", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null, null, null, null, "BombGunFAB50 5", "BombGunFAB50 5"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "10fab100", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", null, null, null, null, "BombGunFAB100 5", "BombGunFAB100 5"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "3fab250", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB250", "BombGunNull", "BombGunFAB250", "BombGunFAB250", null, null
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "3fab25010fab50", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB250", "BombGunNull", "BombGunFAB250", "BombGunFAB250", "BombGunFAB50 5", "BombGunFAB50 5"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "3fab25010fab100", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB250", "BombGunNull", "BombGunFAB250", "BombGunFAB250", "BombGunFAB100 5", "BombGunFAB100 5"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "1fab500", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "1fab5002fab250", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", "BombGunNull", "BombGunFAB250", "BombGunFAB250", null, null
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "3fab500", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", "BombGunNull", "BombGunFAB500", "BombGunFAB500", null, null
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "3fab50010fab50", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB500", "BombGunNull", "BombGunFAB500", "BombGunFAB500", "BombGunFAB50 5", "BombGunFAB50 5"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "1fab1000", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB1000", null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "1fab100010fab50", new java.lang.String[] {
+            "MGunShKASt 1200", "MGunShKASt 1200", "MGunShKASt 1200", "BombGunFAB1000", "BombGunNull", null, null, "BombGunFAB50 5", "BombGunFAB50 5"
+        });
+        com.maddox.il2.objects.air.IL_4_DB3B.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null
+        });
+    }
 }

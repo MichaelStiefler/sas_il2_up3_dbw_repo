@@ -1,0 +1,43 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   ASV.java
+
+package com.maddox.il2.objects.vehicles.stationary;
+
+
+// Referenced classes of package com.maddox.il2.objects.vehicles.stationary:
+//            ASVGeneric
+
+public abstract class ASV
+{
+    public static class ASVUnit extends com.maddox.il2.objects.vehicles.stationary.ASVGeneric
+    {
+
+        public ASVUnit()
+        {
+        }
+    }
+
+
+    public ASV()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        try
+        {
+            return java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
+    static 
+    {
+        new ASVGeneric.SPAWN(com.maddox.il2.objects.vehicles.stationary.ASV$ASVUnit.class);
+    }
+}

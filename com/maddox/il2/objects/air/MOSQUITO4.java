@@ -1,119 +1,312 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   MOSQUITO4.java
+
 package com.maddox.il2.objects.air;
 
+import com.maddox.il2.ai.BulletEmitter;
+import com.maddox.il2.engine.Orientation;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
-import com.maddox.rts.CLASS;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class MOSQUITO4 extends MOSQUITO
-  implements TypeBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            MOSQUITO, PaintSchemeFMPar04, PaintSchemeFMPar06, TypeBomber, 
+//            Aircraft, NetAircraft
+
+public class MOSQUITO4 extends com.maddox.il2.objects.air.MOSQUITO
+    implements com.maddox.il2.objects.air.TypeBomber
 {
-  public float fSightCurAltitude = 300.0F;
-  public float fSightCurSpeed = 50.0F;
 
-  public boolean typeBomberToggleAutomation() {
-    return false;
-  }
-
-  public void typeBomberAdjDistanceReset() {
-  }
-
-  public void typeBomberAdjDistancePlus() {
-  }
-
-  public void typeBomberAdjDistanceMinus() {
-  }
-
-  public void typeBomberAdjSideslipReset() {
-  }
-
-  public void typeBomberAdjSideslipPlus() {
-  }
-
-  public void typeBomberAdjSideslipMinus() {
-  }
-
-  public void typeBomberAdjAltitudeReset() {
-    this.fSightCurAltitude = 300.0F;
-  }
-
-  public void typeBomberAdjAltitudePlus() {
-    this.fSightCurAltitude += 50.0F;
-    if (this.fSightCurAltitude > 5000.0F) {
-      this.fSightCurAltitude = 5000.0F;
+    public MOSQUITO4()
+    {
+        calibDistance = 0.0F;
+        bSightAutomation = false;
+        bSightBombDump = false;
+        fSightCurDistance = 0.0F;
+        fSightCurForwardAngle = 0.0F;
+        fSightCurSideslip = 0.0F;
+        fSightCurAltitude = 3000F;
+        fSightCurSpeed = 200F;
+        fSightCurReadyness = 0.0F;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
-  }
 
-  public void typeBomberAdjAltitudeMinus() {
-    this.fSightCurAltitude -= 50.0F;
-    if (this.fSightCurAltitude < 300.0F) {
-      this.fSightCurAltitude = 300.0F;
+    private static final float toMeters(float f)
+    {
+        return 0.3048F * f;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
-  }
 
-  public void typeBomberAdjSpeedReset() {
-    this.fSightCurSpeed = 50.0F;
-  }
-
-  public void typeBomberAdjSpeedPlus() {
-    this.fSightCurSpeed += 5.0F;
-    if (this.fSightCurSpeed > 350.0F) {
-      this.fSightCurSpeed = 350.0F;
+    private static final float toMetersPerSecond(float f)
+    {
+        return 0.4470401F * f;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fSightCurSpeed) });
-  }
 
-  public void typeBomberAdjSpeedMinus() {
-    this.fSightCurSpeed -= 5.0F;
-    if (this.fSightCurSpeed < 50.0F) {
-      this.fSightCurSpeed = 50.0F;
+    public boolean typeBomberToggleAutomation()
+    {
+        bSightAutomation = !bSightAutomation;
+        bSightBombDump = false;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAutomation" + (bSightAutomation ? "ON" : "OFF"));
+        return bSightAutomation;
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fSightCurSpeed) });
-  }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+        fSightCurDistance = 0.0F;
+        fSightCurForwardAngle = 0.0F;
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    paramNetMsgGuaranted.writeFloat(this.fSightCurAltitude);
-    paramNetMsgGuaranted.writeFloat(this.fSightCurSpeed);
-  }
+    public void typeBomberAdjDistancePlus()
+    {
+        fSightCurForwardAngle++;
+        if(fSightCurForwardAngle > 85F)
+            fSightCurForwardAngle = 85F;
+        fSightCurDistance = com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new java.lang.Object[] {
+            new Integer((int)fSightCurForwardAngle)
+        });
+        if(bSightAutomation)
+            typeBomberToggleAutomation();
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-    this.fSightCurAltitude = paramNetMsgInput.readFloat();
-    this.fSightCurSpeed = paramNetMsgInput.readFloat();
-  }
+    public void typeBomberAdjDistanceMinus()
+    {
+        fSightCurForwardAngle--;
+        if(fSightCurForwardAngle < 0.0F)
+            fSightCurForwardAngle = 0.0F;
+        fSightCurDistance = com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new java.lang.Object[] {
+            new Integer((int)fSightCurForwardAngle)
+        });
+        if(bSightAutomation)
+            typeBomberToggleAutomation();
+    }
 
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
+    public void typeBomberAdjSideslipReset()
+    {
+        fSightCurSideslip = 0.0F;
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Mosquito");
-    Property.set(localClass, "meshName", "3DO/Plane/Mosquito_B_MkIV(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar04());
-    Property.set(localClass, "meshName_gb", "3DO/Plane/Mosquito_B_MkIV(GB)/hier.him");
-    Property.set(localClass, "PaintScheme_gb", new PaintSchemeFMPar06());
+    public void typeBomberAdjSideslipPlus()
+    {
+        fSightCurSideslip += 0.1F;
+        if(fSightCurSideslip > 3F)
+            fSightCurSideslip = 3F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new java.lang.Object[] {
+            new Integer((int)(fSightCurSideslip * 10F))
+        });
+    }
 
-    Property.set(localClass, "yearService", 1941.0F);
-    Property.set(localClass, "yearExpired", 1946.5F);
+    public void typeBomberAdjSideslipMinus()
+    {
+        fSightCurSideslip -= 0.1F;
+        if(fSightCurSideslip < -3F)
+            fSightCurSideslip = -3F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new java.lang.Object[] {
+            new Integer((int)(fSightCurSideslip * 10F))
+        });
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Mosquito-BMkIV.fmd");
+    public void typeBomberAdjAltitudeReset()
+    {
+        fSightCurAltitude = 3000F;
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_Clip04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04" });
+    public void typeBomberAdjAltitudePlus()
+    {
+        fSightCurAltitude += 50F;
+        if(fSightCurAltitude > 50000F)
+            fSightCurAltitude = 50000F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new java.lang.Object[] {
+            new Integer((int)fSightCurAltitude)
+        });
+        fSightCurDistance = com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+    }
 
-    weaponsRegister(localClass, "default", new String[] { null, null, null, null, null });
+    public void typeBomberAdjAltitudeMinus()
+    {
+        fSightCurAltitude -= 50F;
+        if(fSightCurAltitude < 1000F)
+            fSightCurAltitude = 1000F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new java.lang.Object[] {
+            new Integer((int)fSightCurAltitude)
+        });
+        fSightCurDistance = com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+    }
 
-    weaponsRegister(localClass, "4x250", new String[] { null, "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1" });
+    public void typeBomberAdjSpeedReset()
+    {
+        fSightCurSpeed = 200F;
+    }
 
-    weaponsRegister(localClass, "4x500", new String[] { null, "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1" });
+    public void typeBomberAdjSpeedPlus()
+    {
+        fSightCurSpeed += 10F;
+        if(fSightCurSpeed > 450F)
+            fSightCurSpeed = 450F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeedMPH", new java.lang.Object[] {
+            new Integer((int)fSightCurSpeed)
+        });
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null });
-  }
+    public void typeBomberAdjSpeedMinus()
+    {
+        fSightCurSpeed -= 10F;
+        if(fSightCurSpeed < 100F)
+            fSightCurSpeed = 100F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeedMPH", new java.lang.Object[] {
+            new Integer((int)fSightCurSpeed)
+        });
+    }
+
+    public void typeBomberUpdate(float f)
+    {
+        if((double)java.lang.Math.abs(FM.Or.getKren()) > 4.5D)
+        {
+            fSightCurReadyness -= 0.0666666F * f;
+            if(fSightCurReadyness < 0.0F)
+                fSightCurReadyness = 0.0F;
+        }
+        if(fSightCurReadyness < 1.0F)
+            fSightCurReadyness += 0.0333333F * f;
+        else
+        if(bSightAutomation)
+        {
+            fSightCurDistance -= com.maddox.il2.objects.air.MOSQUITO4.toMetersPerSecond(fSightCurSpeed) * f;
+            if(fSightCurDistance < 0.0F)
+            {
+                fSightCurDistance = 0.0F;
+                typeBomberToggleAutomation();
+            }
+            fSightCurForwardAngle = (float)java.lang.Math.toDegrees(java.lang.Math.atan(fSightCurDistance / com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude)));
+            calibDistance = com.maddox.il2.objects.air.MOSQUITO4.toMetersPerSecond(fSightCurSpeed) * floatindex(com.maddox.il2.objects.air.Aircraft.cvt(com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude), 0.0F, 7000F, 0.0F, 7F), calibrationScale);
+            if((double)fSightCurDistance < (double)calibDistance + (double)com.maddox.il2.objects.air.MOSQUITO4.toMetersPerSecond(fSightCurSpeed) * java.lang.Math.sqrt(com.maddox.il2.objects.air.MOSQUITO4.toMeters(fSightCurAltitude) * 0.2038736F))
+                bSightBombDump = true;
+            if(bSightBombDump)
+                if(FM.isTick(3, 0))
+                {
+                    if(FM.CT.Weapons[3] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
+                    {
+                        FM.CT.WeaponControl[3] = true;
+                        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
+                    }
+                } else
+                {
+                    FM.CT.WeaponControl[3] = false;
+                }
+        }
+    }
+
+    protected float floatindex(float f, float af[])
+    {
+        int i = (int)f;
+        if(i >= af.length - 1)
+            return af[af.length - 1];
+        if(i < 0)
+            return af[0];
+        if(i == 0)
+        {
+            if(f > 0.0F)
+                return af[0] + f * (af[1] - af[0]);
+            else
+                return af[0];
+        } else
+        {
+            return af[i] + (f % (float)i) * (af[i + 1] - af[i]);
+        }
+    }
+
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        netmsgguaranted.writeByte((bSightAutomation ? 1 : 0) | (bSightBombDump ? 2 : 0));
+        netmsgguaranted.writeFloat(fSightCurDistance);
+        netmsgguaranted.writeByte((int)fSightCurForwardAngle);
+        netmsgguaranted.writeByte((int)((fSightCurSideslip + 3F) * 33.33333F));
+        netmsgguaranted.writeFloat(fSightCurAltitude);
+        netmsgguaranted.writeByte((int)(fSightCurSpeed / 2.5F));
+        netmsgguaranted.writeByte((int)(fSightCurReadyness * 200F));
+    }
+
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int i = netmsginput.readUnsignedByte();
+        bSightAutomation = (i & 1) != 0;
+        bSightBombDump = (i & 2) != 0;
+        fSightCurDistance = netmsginput.readFloat();
+        fSightCurForwardAngle = netmsginput.readUnsignedByte();
+        fSightCurSideslip = -3F + (float)netmsginput.readUnsignedByte() / 33.33333F;
+        fSightCurAltitude = netmsginput.readFloat();
+        fSightCurSpeed = (float)netmsginput.readUnsignedByte() * 2.5F;
+        fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        try
+        {
+            return java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
+    public static boolean bChangedPit = false;
+    private float calibDistance;
+    private boolean bSightAutomation;
+    private boolean bSightBombDump;
+    private float fSightCurDistance;
+    public float fSightCurForwardAngle;
+    public float fSightCurSideslip;
+    public float fSightCurAltitude;
+    public float fSightCurSpeed;
+    public float fSightCurReadyness;
+    public float fSightSetForwardAngle;
+    static final float calibrationScale[] = {
+        0.0F, 0.2F, 0.4F, 0.66F, 0.86F, 1.05F, 1.2F, 1.6F
+    };
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.MOSQUITO4.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "Mosquito");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3DO/Plane/Mosquito_B_MkIV(Multi1)/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeFMPar04())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName_gb", "3DO/Plane/Mosquito_B_MkIV(GB)/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme_gb", ((java.lang.Object) (new PaintSchemeFMPar06())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1941F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1946.5F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/Mosquito-BMkIV.fmd");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitMosquito4.class, com.maddox.il2.objects.air.CockpitMOSQUITO4_Bombardier.class
+        })));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "LOSElevation", 0.76315F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 3, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_Clip04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4x250", new java.lang.String[] {
+            null, "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1", "BombGun250lbsE 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "4x500", new java.lang.String[] {
+            null, "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1", "BombGun500lbsE 1"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null
+        });
+    }
 }

@@ -1,83 +1,151 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   ME_210CA1.java
+
 package com.maddox.il2.objects.air;
 
+import com.maddox.il2.engine.Actor;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class ME_210CA1 extends ME_210
-  implements TypeFighter, TypeBNZFighter, TypeStormovik, TypeStormovikArmored, TypeDiveBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            ME_210, PaintSchemeFMPar05, TypeFighter, TypeBNZFighter, 
+//            TypeStormovik, TypeStormovikArmored, TypeDiveBomber, NetAircraft, 
+//            Aircraft
+
+public class ME_210CA1 extends com.maddox.il2.objects.air.ME_210
+    implements com.maddox.il2.objects.air.TypeFighter, com.maddox.il2.objects.air.TypeBNZFighter, com.maddox.il2.objects.air.TypeStormovik, com.maddox.il2.objects.air.TypeStormovikArmored, com.maddox.il2.objects.air.TypeDiveBomber
 {
-  public boolean typeDiveBomberToggleAutomation()
-  {
-    return false;
-  }
 
-  public void typeDiveBomberAdjAltitudeReset()
-  {
-  }
+    public ME_210CA1()
+    {
+    }
 
-  public void typeDiveBomberAdjAltitudePlus()
-  {
-  }
+    protected void nextDMGLevel(java.lang.String s, int i, com.maddox.il2.engine.Actor actor)
+    {
+        super.nextDMGLevel(s, i, actor);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public void typeDiveBomberAdjAltitudeMinus()
-  {
-  }
+    protected void nextCUTLevel(java.lang.String s, int i, com.maddox.il2.engine.Actor actor)
+    {
+        super.nextCUTLevel(s, i, actor);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public void typeDiveBomberAdjVelocityReset()
-  {
-  }
+    public boolean typeDiveBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeDiveBomberAdjVelocityPlus() {
-  }
+    public void typeDiveBomberAdjAltitudeReset()
+    {
+    }
 
-  public void typeDiveBomberAdjVelocityMinus() {
-  }
+    public void typeDiveBomberAdjAltitudePlus()
+    {
+    }
 
-  public void typeDiveBomberAdjDiveAngleReset() {
-  }
+    public void typeDiveBomberAdjAltitudeMinus()
+    {
+    }
 
-  public void typeDiveBomberAdjDiveAnglePlus() {
-  }
+    public void typeDiveBomberAdjVelocityReset()
+    {
+    }
 
-  public void typeDiveBomberAdjDiveAngleMinus() {
-  }
+    public void typeDiveBomberAdjVelocityPlus()
+    {
+    }
 
-  public void typeDiveBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public void typeDiveBomberAdjVelocityMinus()
+    {
+    }
 
-  public void typeDiveBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeDiveBomberAdjDiveAngleReset()
+    {
+    }
 
-  static {
-    Class localClass = ME_210CA1.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeDiveBomberAdjDiveAnglePlus()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Me-210");
-    Property.set(localClass, "meshName", "3DO/Plane/Me-210Ca-1/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar05());
+    public void typeDiveBomberAdjDiveAngleMinus()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    public void typeDiveBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Me-210Ca-1.fmd");
+    public void typeDiveBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 10, 10, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03" });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        java.lang.Class class1;
+        try
+        {
+            class1 = java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+        return class1;
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", null, null, null });
+    public static boolean bChangedPit = false;
 
-    weaponsRegister(localClass, "2sc250", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunSC250", "BombGunSC250", null });
-
-    weaponsRegister(localClass, "2ab250", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunAB250", "BombGunAB250", null });
-
-    weaponsRegister(localClass, "2sc500", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunSC500", "BombGunSC500", null });
-
-    weaponsRegister(localClass, "2ab500", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunAB500", "BombGunAB500", null });
-
-    weaponsRegister(localClass, "2sd500", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunSD500", "BombGunSD500", null });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.ME_210CA1.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "Me-210");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3DO/Plane/Me-210Ca-1/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeFMPar05())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1943F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/Me-210Ca-1.fmd");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitME_210CA1.class
+        })));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "LOSElevation", 0.66895F);
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 1, 10, 10, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03"
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", null, null, null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2sc250", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunSC250", "BombGunSC250", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2ab250", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunAB250", "BombGunAB250", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2sc500", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunSC500", "BombGunSC500", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2ab500", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunAB500", "BombGunAB500", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "2sd500", new java.lang.String[] {
+            "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "BombGunSD500", "BombGunSD500", null
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null
+        });
+    }
 }

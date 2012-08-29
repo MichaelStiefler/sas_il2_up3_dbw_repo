@@ -1,0 +1,7 @@
+mesh S 3DO/Arms/100kgBombJ/mono.sim
+kalibr D 0.3199999928474426
+power D 50.0
+radius D 55.0
+massa D 100.0
+sound S weapon.bomb_mid
+powerType L 0

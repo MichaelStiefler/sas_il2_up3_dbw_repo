@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames safe 
+// Source File Name:   Fulmar1.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.CLASS;
@@ -6,74 +11,134 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class Fulmar1 extends Fulmar
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Fulmar, PaintSchemeFMPar02, PaintSchemeBMPar02f, PaintSchemeFMPar02f, 
+//            NetAircraft
+
+public class Fulmar1 extends com.maddox.il2.objects.air.Fulmar
 {
-  public boolean typeBomberToggleAutomation()
-  {
-    return false;
-  }
-  public void typeBomberAdjDistanceReset() {
-  }
-  public void typeBomberAdjDistancePlus() {
-  }
-  public void typeBomberAdjDistanceMinus() {
-  }
-  public void typeBomberAdjSideslipReset() {
-  }
-  public void typeBomberAdjSideslipPlus() {
-  }
-  public void typeBomberAdjSideslipMinus() {
-  }
-  public void typeBomberAdjAltitudeReset() {
-  }
-  public void typeBomberAdjAltitudePlus() {
-  }
-  public void typeBomberAdjAltitudeMinus() {
-  }
-  public void typeBomberAdjSpeedReset() {
-  }
-  public void typeBomberAdjSpeedPlus() {
-  }
-  public void typeBomberAdjSpeedMinus() {
-  }
 
-  public void typeBomberUpdate(float paramFloat) {
-  }
+    public Fulmar1()
+    {
+    }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public boolean typeBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeBomberAdjDistanceReset()
+    {
+    }
 
-  static {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "Fulmar");
+    public void typeBomberAdjDistancePlus()
+    {
+    }
 
-    Property.set(localClass, "meshName", "3DO/Plane/Fulmar1(multi)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar02());
+    public void typeBomberAdjDistanceMinus()
+    {
+    }
 
-    Property.set(localClass, "meshName_gb", "3DO/Plane/Fulmar1(gb)/hier.him");
-    Property.set(localClass, "PaintScheme_gb", new PaintSchemeBMPar02f());
+    public void typeBomberAdjSideslipReset()
+    {
+    }
 
-    Property.set(localClass, "meshName_rn", "3DO/Plane/Fulmar1(gb)/hier.him");
-    Property.set(localClass, "PaintScheme_rn", new PaintSchemeFMPar02f());
+    public void typeBomberAdjSideslipPlus()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1936.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
-    Property.set(localClass, "FlightModel", "FlightModels/FulmarMkI.fmd");
+    public void typeBomberAdjSideslipMinus()
+    {
+    }
 
-    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 9 });
+    public void typeBomberAdjAltitudeReset()
+    {
+    }
 
-    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01" });
+    public void typeBomberAdjAltitudePlus()
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", null, null, null });
+    public void typeBomberAdjAltitudeMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "2x250lb", new String[] { "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "BombGun250lbsE 1", "BombGun250lbsE 1", null });
+    public void typeBomberAdjSpeedReset()
+    {
+    }
 
-    weaponsRegister(localClass, "1xDropTank", new String[] { "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", "MGunBrowning303k 750", null, null, "FuelTankGun_Tank60gal 1" });
+    public void typeBomberAdjSpeedPlus()
+    {
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null });
-  }
+    public void typeBomberAdjSpeedMinus()
+    {
+    }
+
+    public void typeBomberUpdate(float f)
+    {
+    }
+
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
+
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        try
+        {
+            return java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "iconFar_shortClassName", "Fulmar");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName", "3DO/Plane/Fulmar1(multi)/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme", ((java.lang.Object) (new PaintSchemeFMPar02())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName_gb", "3DO/Plane/Fulmar1(gb)/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme_gb", ((java.lang.Object) (new PaintSchemeBMPar02f())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "meshName_rn", "3DO/Plane/Fulmar1(gb)/hier.him");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "PaintScheme_rn", ((java.lang.Object) (new PaintSchemeFMPar02f())));
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearService", 1936F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "FlightModel", "FlightModels/FulmarMkI.fmd");
+        com.maddox.rts.Property.set(((java.lang.Object) (class1)), "cockpitClass", ((java.lang.Object) (((java.lang.Object) (com.maddox.il2.objects.air.CockpitFulmar.class)))));
+        com.maddox.il2.objects.air.Fulmar1.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 
+            9
+        });
+        com.maddox.il2.objects.air.Fulmar1.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_ExternalBomb01", "_ExternalBomb02", 
+            "_ExternalDev01"
+        });
+        com.maddox.il2.objects.air.Fulmar1.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", null, null, 
+            null
+        });
+        com.maddox.il2.objects.air.Fulmar1.weaponsRegister(class1, "2x250lb", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "BombGun250lbsE 1", "BombGun250lbsE 1", 
+            null
+        });
+        com.maddox.il2.objects.air.Fulmar1.weaponsRegister(class1, "1xDropTank", new java.lang.String[] {
+            "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", "MGunBrowning303k 350", null, null, 
+            "FuelTankGun_Tank60gal 1"
+        });
+        com.maddox.il2.objects.air.Fulmar1.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null
+        });
+    }
 }

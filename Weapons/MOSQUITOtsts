@@ -1,0 +1,24 @@
+default,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23, , , , 
+default_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23, , , , 
+default_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23, , , , 
+DropTanks,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23, , ,9 FuelTankGun_Tank100galtsetse 1,9 FuelTankGun_Tank100galtsetse 1
+DropTanks_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23, , ,9 FuelTankGun_Tank100galtsetse 1,9 FuelTankGun_Tank100galtsetse 1
+DropTanks_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23, , ,9 FuelTankGun_Tank100galtsetse 1,9 FuelTankGun_Tank100galtsetse 1
+2x250,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+2x250_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+2x250_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+2x500,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23,3 BombGun500lbsE 1,3 BombGun500lbsE 1, , 
+2x500_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23,3 BombGun500lbsE 1,3 BombGun500lbsE 1, , 
+2x500_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23,3 BombGun500lbsE 1,3 BombGun500lbsE 1, , 
+Less_MG,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23, , , , 
+Less_MG_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23, , , , 
+Less_MG_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23, , , , 
+Less_MG_DropTanks,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23, , ,9 FuelTankGun_Tank100galtsetse 1,9 FuelTankGun_Tank100galtsetse 1
+Less_MG_DropTanks_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23, , ,9 FuelTankGun_Tank100galtsetse 1,9 FuelTankGun_Tank100galtsetse 1
+Less_MG_DropTanks_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23, , ,9 FuelTankGun_Tank100galtsetse 1,9 FuelTankGun_Tank100galtsetse 1
+L2x250,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+L2x250_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+L2x250_MIX,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57MIX 23,3 BombGun250lbsE 1,3 BombGun250lbsE 1, , 
+L2x500,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57AP 23,3 BombGun500lbsE 1,3 BombGun500lbsE 1, , 
+L2x500_HE,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,0 MGunBrowning303kipzl 1000,1 MGunMolins_57HE 23,3 BombGun500lbsE 1,3 BombGun500lbsE 1, , 
+none, , , , , , , , , 

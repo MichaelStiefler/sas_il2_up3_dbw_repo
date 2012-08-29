@@ -1,0 +1,23 @@
+default, , , , , ,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiRedND, ,3 BombGunTIRed 1,3 BombGunTIRed 1,3 BombGunTIRed 2,3 BombGunTIRed 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiGreenND, ,3 BombGunTIGreen 1,3 BombGunTIGreen 1,3 BombGunTIGreen 2,3 BombGunTIGreen 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiBlueND, ,3 BombGunTIBlue 1,3 BombGunTIBlue 1,3 BombGunTIBlue 2,3 BombGunTIBlue 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiYellowND, ,3 BombGunTIYellow 1,3 BombGunTIYellow 1,3 BombGunTIYellow 2,3 BombGunTIYellow 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiOrangeND, ,3 BombGunTIOrange 1,3 BombGunTIOrange 1,3 BombGunTIOrange 2,3 BombGunTIOrange 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiPinkND, ,3 BombGunTIPink 1,3 BombGunTIPink 1,3 BombGunTIPink 2,3 BombGunTIPink 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiRed, ,3 BombGunTIRed 1,3 BombGunTIRed 1,3 BombGunTIRed 2,3 BombGunTIRed 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiGreen, ,3 BombGunTIGreen 1,3 BombGunTIGreen 1,3 BombGunTIGreen 2,3 BombGunTIGreen 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiBlue, ,3 BombGunTIBlue 1,3 BombGunTIBlue 1,3 BombGunTIBlue 2,3 BombGunTIBlue 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiYellow, ,3 BombGunTIYellow 1,3 BombGunTIYellow 1,3 BombGunTIYellow 2,3 BombGunTIYellow 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiOrange, ,3 BombGunTIOrange 1,3 BombGunTIOrange 1,3 BombGunTIOrange 2,3 BombGunTIOrange 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+TiPink, ,3 BombGunTIPink 1,3 BombGunTIPink 1,3 BombGunTIPink 2,3 BombGunTIPink 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+4x250ND, ,3 BombGun250lbsE 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+6x250ND, ,3 BombGun250lbsE 1,3 BombGun250lbsE 1,3 BombGun250lbsE 2,3 BombGun250lbsE 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+4x500ND, ,3 BombGun500lbsE 1,3 BombGun500lbsE 1,3 BombGun500lbsE 1,3 BombGun500lbsE 1,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+6x500ND, ,3 BombGun500lbsE 1,3 BombGun500lbsE 1,3 BombGun500lbsE 2,3 BombGun500lbsE 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+1xhc4000ND, ,3 BombGunHC4000 1, , , ,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+4x250, ,3 BombGun250lbsE 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1,3 BombGun250lbsE 1,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+6x250, ,3 BombGun250lbsE 1,3 BombGun250lbsE 1,3 BombGun250lbsE 2,3 BombGun250lbsE 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+4x500, ,3 BombGun500lbsE 1,3 BombGun500lbsE 1,3 BombGun500lbsE 1,3 BombGun500lbsE 1,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+6x500, ,3 BombGun500lbsE 1,3 BombGun500lbsE 1,3 BombGun500lbsE 2,3 BombGun500lbsE 2,9 FuelTankGun_Tank100gal 1,9 FuelTankGun_Tank100gal 1
+none, , , , , , , 

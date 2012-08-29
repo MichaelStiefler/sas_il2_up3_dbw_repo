@@ -1,0 +1,629 @@
+[AIR]
+
+
+A-20DB7           air.A_20B 1                                   usa01 SUMMER
+A-20C             air.A_20C 1                                   usa01 SUMMER
+A-20BostonMkIII   air.A_20B3 1                                  usa01 SUMMER
+A-20BostonMkIIIS  air.A_20B3S 1                                 usa01 SUMMER
+A-20G             air.A_20G 1                                   usa01 DESERT 
+AD-4              air.AD4 1                             NOINFO  usa01 DESERT
+A-1H              air.A1H 1                             NOINFO  usa01 DESERT
+A-1H_Tanker       air.A1H_Tanker 1                      NOINFO  usa01 DESERT
+A-1J              air.A1J 1                             NOINFO  usa01 DESERT
+B-17D             air.B_17D 1                           NOINFO  usa01 DESERT 
+B-17E             air.B_17E 1                           NOINFO  usa01 DESERT 
+B-17F             air.B_17F 1                           NOINFO  usa01 DESERT 
+B-17G             air.B_17G 1                                   usa01 DESERT 
+B-24J-100-CF      air.B_24J100 1                                usa01 SUMMER 
+B-29              air.B_29 1                            NOINFO  usa01 SUMMER 
+B-29-SP           air.B_29SP 1                          NOINFO  usa01 SUMMER
+KB_29P            air.KB_29P 1                          NOINFO  usa01 SUMMER
+B-25C-25NA        air.B_25C25 1                         NOINFO  usa01 SUMMER 
+B-25D-5NC         air.B_25D5 1                          NOINFO  usa01 SUMMER 
+B-25D-20NC        air.B_25D20 1                         NOINFO  usa01 SUMMER 
+B-25G-1NA         air.B_25G1 1                          NOINFO  usa01 DESERT 
+B-25H-1NA         air.B_25H1 1                          NOINFO  usa01 DESERT 
+B-25J-1NA         air.B_25J1 1                          NOINFO  usa01 SUMMER
+B-25J-15NA        air.B_25J15 1                         NOINFO  usa01 SUMMER 
+B-25J-22NA        air.B_25J22 1                         NOINFO  usa01 SUMMER 
+FaireyBattle      air.BattleMkII 1                      NOINFO  gb01  SUMMER 
+BeaufighterMkIF   air.BEAUMKIF 1                        NOINFO  gb01  SUMMER
+BeaufighterMkI    air.BEAUMKI 1                         NOINFO  gb01  SUMMER
+BeaufighterMkX    air.BEAU10 1                          NOINFO  gb01  SUMMER
+BeaufighterMk21   air.BEAU21 1                                  gb01  DESERT 
+BlenheimMkI       air.BLENHEIM1 2                               f01   WINTER
+BlenheimMkIF      air.BLENHEIM1F 1                      NOINFO  gb01  SUMMER
+BlenheimMkIV      air.BLENHEIM4 1                               gb01  DESERT
+BlenheimMkIVF     air.BLENHEIM4F 1                              gb01  DESERT
+BI-1              air.BI_1 1                                    r01   SUMMER
+BI-6              air.BI_6 1                                    r01   SUMMER
+BuffaloMkI        air.F2A_B339 1                        NOINFO  gb01  SUMMER
+Bell47            air.BELL_47 1                         NOINFO  usa01 SUMMER
+C-47              air.C_47 1                                    usa01 DESERT
+AC-47             air.AC_47 1                           NOINFO  usa01 DESERT
+CW-21             air.CW_21 1                           NOINFO  du01  SUMMER
+DXXI_DK           air.DXXI_DK 1                         NOINFO  r01   SUMMER
+DXXI_DU           air.DXXI_DU 1                         NOINFO  du01  SUMMER
+DB-3b             air.IL_4_DB3B 1                       NOINFO  r01   SUMMER 
+DB-3M             air.IL_4_DB3M 1                               r01   WINTER 
+DB-3T             air.IL_4_DB3T 1                       NOINFO  r01   SUMMER 
+DB-3F             air.IL_4_DB3F 1                       NOINFO  r01   SUMMER 
+F2A-2             air.F2A2 1                                    usa01 DESERT 
+F4F-3             air.F4F3 1                                    usa01 DESERT 
+F4F-4             air.F4F4 1                            NOINFO  usa01 DESERT 
+FM-2              air.F4F_FM2 1                                 usa01 DESERT 
+F4U-1A            air.F4U1A 1                                   usa01 DESERT 
+F4U-1C            air.F4U1C 1                                   usa01 DESERT 
+F4U-1D            air.F4U1D 1                                   usa01 DESERT 
+CorsairMkI        air.F4UCORSAIR1 1                     NOINFO  gb01  DESERT
+CorsairMkII       air.F4UCORSAIR2 1                     NOINFO  gb01  DESERT
+CorsairMkIV       air.F4UCORSAIR4 1                     NOINFO  gb01  DESERT
+F6F-3_Early       air.F6F3Early 1                               usa01 DESERT
+F6F-3             air.F6F3 1                                    usa01 DESERT
+F6F-5             air.F6F5 1                                    usa01 DESERT
+F9F2_Panther      air.F9F2 1                            NOINFO  usa01 SUMMER
+F-80A             air.F_80A 1                           NOINFO  usa01 SUMMER
+F-80C             air.F_80C 1                           NOINFO  usa01 SUMMER 
+F84G1_ThunderJet  air.F84G1 1                           NOINFO  usa01 SUMMER
+F84G2_ThunderJet  air.F84G2 1                           NOINFO  usa01 SUMMER 
+F84G3_ThunderJet  air.F84G3  1                          NOINFO  usa01 SUMMER
+F-86A5            air.F_86A5 1                                  usa01 SUMMER
+F-86E10           air.F_86E_10                          NOINFO  usa01 SUMMER
+F-86F25E          air.F_86F_25E 1                               usa01 SUMMER
+F-86F25L          air.F_86F_25L 1                               usa01 SUMMER
+F-86F30           air.F_86F_30                          NOINFO  usa01 SUMMER
+F-86F40           air.F_86F_40                          NOINFO  usa01 SUMMER
+F-86K             air.F_86K                             NOINFO  usa01 SUMMER
+SabreMk31         air.CAC_Sabre_Mk31 1                  NOINFO  usa01 SUMMER
+SabreMk32         air.CAC_Sabre_Mk32 1                  NOINFO  usa01 SUMMER
+FJ3M_Fury         air.FJ_3M 1                           NOINFO  usa01 SUMMER
+FulmarMkI         air.Fulmar1 1                         NOINFO  gb01  SUMMER
+G-11              air.G_11 1                   NOQUICK          r01   SUMMER
+GladiatorMkI      air.GLADIATOR1 2                              f01   SUMMER 
+GladiatorMkII     air.GLADIATOR2 2                      NOINFO  f01   SUMMER 
+SeaGladiatorMkII  air.SEAGLADIATOR2 1                NOINFO  gb01  DESERT
+HalifaxBMkIII     air.HalifaxBMkIII 1                   NOINFO  gb01  SUMMER
+HurricaneMkIearly air.HurricaneMkIvroeg                 NOINFO  gb01  SUMMER
+HurricaneMkI      air.HurricaneMkIa 2                           f01   WINTER 
+HurricaneMkI_BoB  air.HurricaneMkI_BoB 2                        gb01  SUMMER 
+HurricaneMkIb     air.HurricaneMkIb 2                           gb01  SUMMER
+HurricaneMkIIa    air.HurricaneMkIIa 1                          gb01  SUMMER
+HurricaneMkIIb    air.HurricaneMkIIb 1                          gb01  SUMMER
+HurricaneMkIIbMod air.HurricaneMkIIbMod 1                       gb01  SUMMER
+HurricaneMkIIc    air.HurricaneMkIIc 1                          gb01  SUMMER
+HurricaneMkIId    air.HurricaneMkIId 1                  NOINFO  gb01  DESERT
+HurricaneMkIV     air.HurricaneMkIV 1                   NOINFO  gb01  DESERT
+SeaHurricaneMkIb  air.SeaHurricaneMkIb 1                NOINFO  gb01  SUMMER
+SeaHurricaneMkIIc air.SeaHurricaneMkIIc 1               NOINFO  gb01  SUMMER
+H19D              air.H19D 1                            NOINFO  usa01 SUMMER
+HRS3              air.HRS3 1                            NOINFO  usa01 SUMMER
+I-15_m22          air.I_15_m22 1                        NOINFO  r01   SUMMER
+I-15_m25          air.I_15_m25 1                        NOINFO  r01   SUMMER
+I-15bis           air.I_15BIS 1                         NOINFO  r01   SUMMER
+I-15bis_Skis      air.I_15BIS_SKIS 1                    NOINFO  r01   WINTER
+I-153M62          air.I_153_M62 1                               r01   SUMMER
+I-153P            air.I_153P 1                          NOINFO  r01   SUMMER
+I-153_2BS         air.I_153_2BS 1                       NOINFO  r01   SUMMER
+I-153_2SHKAS_BS   air.I_153_2SHKAS_BS 1                 NOINFO  r01   SUMMER 
+UTI-4             air.UTI_4 1                                   r01   SUMMER
+I-16type5         air.I_16TYPE5  1                      NOINFO  r01   SUMMER
+I-16type5_SPB     air.I_16TYPE5_SPB  1                  NOINFO  r01   SUMMER
+I-16type5_Skis    air.I_16TYPE5_SKIS  1                 NOINFO  r01   WINTER
+I-16type6         air.I_16TYPE6  1                      NOINFO  r01   SUMMER
+I-16type6_Skis    air.I_16TYPE6_SKIS  1                 NOINFO  r01   WINTER
+I-16type10        air.I_16TYPE10 1                      NOINFO  r01   SUMMER
+I-16type10WC      air.I_16TYPE10WC 1                    NOINFO  r01   SUMMER
+I-16type17        air.I_16TYPE17 1                      NOINFO  r01   SUMMER
+I-16type18        air.I_16TYPE18 1                              r01   SUMMER
+I-16type18-BS     air.I_16TYPE18_BS 1                   NOINFO  r01   SUMMER
+I-16type24        air.I_16TYPE24 1                              r01   SUMMER
+I-16type24_SPB    air.I_16TYPE24DRONE 1                 NOINFO  r01   SUMMER
+I-16type27        air.I_16TYPE27 1                      NOINFO  r01   SUMMER
+I-16type28        air.I_16TYPE28 1                              r01   SUMMER
+I-16type29        air.I_16TYPE29 1                              r01   SUMMER
+UTI-4B            air.UTI_4B 1                                  r01   SUMMER
+I-185M-71         air.I_185M71 1                        NOINFO  r01   SUMMER 
+I-185M-82A        air.I_185M82A 1                       NOINFO  r01   SUMMER 
+I-250             air.I_250 1                                   r01   SUMMER 
+Il-2_1940_Early   air.IL_2_1940Early 1                          r01   SUMMER 
+Il-2_1940_Late    air.IL_2_1940Late 1                           r01   WINTER 
+Il-2_1941_Early   air.IL_2_1941Early 1                          r01   SUMMER 
+Il-2_1941_Late    air.IL_2_1941Late 1                           r01   SUMMER 
+Il-2I             air.IL_2I 1                                   r01   SUMMER 
+Il-2M_Early       air.IL_2MEarly 1                              r01   WINTER 
+Il-2M_Late        air.IL_2MLate 1                               r01   WINTER 
+Il-2T             air.IL_2T 1                                   r01   WINTER 
+Il-2_3            air.IL_2Type3 1                               r01   DESERT 
+Il-2_M3           air.IL_2Type3M 1                              r01   SUMMER 
+Il-4              air.IL_4_IL4 1                                r01   SUMMER 
+Il-10             air.IL_10 1                                   r01   SUMMER
+L-5_Sentinel      air.L_5 1                             NOINFO  usa01 SUMMER
+L-5_Sentinel_Float air.L_5_Float 1                      NOINFO  usa01 SUMMER
+LaGG-3series1     air.LAGG_3SERIES1 1                           r01   SUMMER
+LaGG-3series4     air.LAGG_3SERIES4 1                           r01   SUMMER 
+LaGG-3series29    air.LAGG_3SERIES29 1                  NOINFO  r01   SUMMER 
+LaGG-3series35    air.LAGG_3SERIES35 1                  NOINFO  r01   WINTER 
+LaGG-3IT          air.LAGG_3IT 1                                r01   SUMMER 
+LaGG-3series66    air.LAGG_3SERIES66 1                          r01   SUMMER 
+LaGG-3RD          air.LAGG_3RD 1                        NOINFO  r01   SUMMER 
+Lagg-5            air.Lagg_5 1                          NOINFO  r01   SUMMER
+La-5              air.LA_5 1                                    r01   SUMMER 
+La-5F             air.LA_5F 1                                   r01   WINTER 
+La-5FN            air.LA_5FN 1                                  r01   SUMMER 
+La-7              air.LA_7 1                                    r01   SUMMER 
+La-73xB20         air.LA_7B20 1                                 r01   SUMMER 
+La-7R             air.LA_7R 1                                   r01   SUMMER 
+Li-2              air.LI_2 1                                    r01   SUMMER
+Lancaster         air.LANCASTER 1                       NOINFO  gb01  SUMMER
+Magister          air.MagisterM14A                      NOINFO  gb01  SUMMER
+MBR-2-AM-34       air.MBR_2AM34 1                               r01   SUMMER 
+MiG-3             air.MIG_3EARLY 1                              r01   SUMMER 
+MiG-3ud           air.MIG_3UD 1                                 r01   WINTER 
+MiG-3-2xUB        air.MIG_3UB 1                                 r01   WINTER 
+MiG-3-2xShVAK     air.MIG_3SHVAK 1                              r01   WINTER 
+MiG-3-AM-38       air.MIG_3AM38 1                               r01   WINTER 
+MiG-3U            air.MIG_3U 1                                  r01   SUMMER 
+MiG-9protoF-2     air.MIG_9_I_300 1                             r01   SUMMER 
+MiG-9FS           air.MIG_9FS 1                                 r01   SUMMER 
+MiG-15(bis)       air.Mig_15bis 1                               r01   SUMMER
+MiG-15(bis)late   air.Mig_15bislate 1                           r01   SUMMER
+MiG-15SB          air.MiG_15SB 1                        NOINFO  r01   SUMMER
+MiG-17A           air.Mig_17A                           NOINFO  r01   SUMMER
+MiG-17F           air.Mig_17F 1                                 r01   SUMMER
+MiG-17AS          air.Mig_17AS                          NOINFO  r01   SUMMER
+MiG-17PF          air.Mig_17PF                          NOINFO  r01   SUMMER
+MosquitoBMkIV     air.MOSQUITO4 1                       NOINFO  gb01  SUMMER
+MosquitoFBMkVI    air.MOSQUITO6 1                       NOINFO  gb01  SUMMER
+MosquitoFBMkVICC  air.MOSQUITO6CC 1                     NOINFO  gb01  SUMMER
+MosquitoBMkXVI    air.MOSQUITO16 1                      NOINFO  gb01  SUMMER
+MosquitoFBMkXVIII air.MOSQUITOtsts 1                    NOINFO  gb01  SUMMER
+MosquitoNFMkII    air.MOSQUITO2NF 1                     NOINFO  gb01  SUMMER
+Criquet           air.MS_502 1                          NOINFO  gb01  SUMMER
+P_11c             air.P_11C 1                                   pl01  SUMMER 
+P2V5_Neptune      air.P2V5 1                            NOINFO  r01   SUMMER
+P-26              air.P_26 1                            NOINFO  usa01 SUMMER
+P-36A-3           air.P_36A3 1                                  usa01 DESERT 
+P-36A-4           air.P_36A4 1                                  usa01 DESERT 
+MohawkIII_BoB     air.MohawkIII_BoB 1                   NOINFO  gb01  DESERT 
+P-38E             air.P_38E 1                                   usa01 DESERT
+P-38F-1-LO        air.P_38F1LO 1                                usa01 DESERT
+P-38G-5-LO        air.P_38G5LO 1                                usa01 DESERT
+P-38G-10-LO       air.P_38G10LO 1                               usa01 DESERT
+P-38G-15-LO       air.P_38G15LO 1                               usa01 DESERT
+P-38H-5-LO        air.P_38H5LO 1                                usa01 DESERT
+P-38J             air.P_38J 1                                   usa01 DESERT 
+P-38J-10-LO       air.P_38J10LO 1                               usa01 DESERT
+P-38J-15-LO       air.P_38J15LO 1                               usa01 DESERT
+P-38J-25-LO       air.P_38J25LO 1                               usa01 DESERT
+P-38L             air.P_38L 1                                   usa01 DESERT 
+P-38L-5-LO        air.P_38L5LO 1                                usa01 DESERT
+P-38L_Late        air.P_38LLate 1                       NOINFO  usa01 DESERT 
+P-38DroopSnoot    air.P_38DroopSnoot 1                          usa01 SUMMER
+P-38M             air.P_38M 1                           NOINFO  usa01 SUMMER
+P-400             air.P_400 1                                   usa01 SUMMER 
+P-39D1            air.P_39D1 1                                  usa01 SUMMER 
+P-39D2            air.P_39D2 1                                  usa01 SUMMER 
+P-39N1            air.P_39N 1                                   usa01 SUMMER 
+P-39Q-1           air.P_39Q1 1                                  usa01 SUMMER 
+P-39Q-10          air.P_39Q10 1                                 usa01 SUMMER 
+Hawk81A-2         air.P_40SUKAISVOLOCHHAWKA2 1          NOINFO  usa01 DESERT 
+P-40B             air.P_40SUKAISVOLOCHB 1                       usa01 DESERT 
+P-40C             air.P_40SUKAISVOLOCHC 1                       usa01 DESERT 
+TomahawkMkIIa     air.P_40SUKAISVOLOCH2A 1              NOINFO  usa01 DESERT 
+TomahawkMkIIb     air.P_40SUKAISVOLOCH2B 1              NOINFO  usa01 DESERT 
+P-40E             air.P_40E 1                                   usa01 DESERT 
+P-40E-M-105       air.P_40EM105 1                               r01   WINTER 
+P-40M             air.P_40M 1                                   usa01 SUMMER 
+P-47B15           air.P_47B 1                           NOINFO  usa01 SUMMER
+P-47D-10          air.P_47D10 1                                 usa01 DESERT 
+P-47D-22          air.P_47D22 1                         NOINFO  usa01 DESERT 
+P-47D-27          air.P_47D27 1                                 usa01 DESERT 
+P-47D             air.P_47D 1                           NOINFO  usa01 DESERT 
+P-51A             air.P_51A 1                           NOINFO  usa01 SUMMER  
+MustangMkI        air.MustangMkI 1                      NOINFO  gb01  SUMMER
+P-51B-NA          air.P_51B 1                                   usa01 DESERT
+P-51B-10NA        air.P_51B10 1                         NOINFO  usa01 DESERT
+P-51C-NT          air.P_51C 1                                   usa01 DESERT
+P-51D-5NT         air.P_51D5NT 1                        NOINFO  usa01 DESERT 
+P-51D-20NA        air.P_51D20NA 1                               usa01 SUMMER 
+P-51D-20NT        air.P_51D20NT                                 usa01 SUMMER
+P-51D-25NA        air.P_51D25NA                                 usa01 SUMMER 
+P-51D-30NA        air.P_51D30NA                                 usa01 SUMMER
+F-51D-30NA        air.F_51D30NA                                 usa01 SUMMER
+MustangIII        air.P_51CM 1                          NOINFO  gb01  SUMMER
+P-63C             air.P_63C 1                                   usa01 DESERT 
+PBY               air.PBY 1                                     usa01 DESERT
+PBN-1             air.PBN1 1                                    usa01 DESERT
+Pe-2series1       air.PE_2SERIES1 1                             r01   SUMMER
+Pe-2series32      air.PE_2SERIES32 1                            r01   SUMMER
+Pe-2series84      air.PE_2SERIES84 1                            r01   WINTER
+Pe-2series110     air.PE_2SERIES110 1                           r01   SUMMER
+Pe-2series206     air.PE_2SERIES206 1                           r01   SUMMER
+Pe-2series359     air.PE_2SERIES359 1                           r01   WINTER
+Pe-3series1       air.PE_3SERIES1 1                             r01   SUMMER
+Pe-3M             air.PE_3M 1                                   r01   WINTER
+Pe-3bis           air.PE_3BIS 1                                 r01   WINTER
+Pe-8              air.PE_8 1                                    r01   SUMMER
+PZL37B            air.PZL37B 1                                  pl01  SUMMER
+PZL23B            air.PZL23B 1                                  pl01  SUMMER
+PZL42             air.PZL42 1                                   pl01  SUMMER
+R-5               air.R_5 1                                     r01   SUMMER
+R-5_skis          air.R_5_SKIS 1                                r01   SUMMER
+R-10              air.R_10 1                                    r01   SUMMER
+RWD_8             air.RWD_8 1                           NOINFO  pl01  SUMMER
+RWD-10            air.RWD_10 1                                  pl01  SUMMER
+SB_2M-100A        air.SB_2M100A 1                               r01   SUMMER 
+SB_2M-103         air.SB_2M103 1                                r01   SUMMER 
+SBD-3             air.SBD3 1                                    usa01 DESERT 
+SBD-5             air.SBD5 1                            NOINFO  usa01 DESERT 
+S-199             air.S_199 2                           NOINFO  g01   SUMMER
+SeafireMkI        air.SEAFIRE1 1                        NOINFO  1830sq SUMMER
+SeafireMkII       air.SEAFIRE2C 1                       NOINFO  1830sq SUMMER
+SeafireMkII4xH    air.SEAFIRE2C4 1                      NOINFO  1830sq SUMMER
+SeafireMkII45     air.SEAFIRE245 1                      NOINFO  1830sq DESERT
+SeafireMkII50     air.SEAFIRE250 1                      NOINFO  1830sq DESERT
+SeafireMkIII      air.SEAFIRE3 1                                1830sq DESERT
+SeafireFMkIII     air.SEAFIRE3F 1                       NOINFO  1830sq DESERT
+SeafireMkXV       air.SEAFIRE15 1                       NOINFO  gb01  DESERT
+SeaFuryMkI        air.SeaFuryMkI 1                      NOINFO  gb01  SUMMER
+SeaFury_MkX       air.SeaFury_MkX 1                     NOINFO  gb01  SUMMER
+SpitfireMkIearly  air.SPITFIRE1vroeg 1                  NOINFO  gb01  SUMMER
+SpitfireMkI       air.SPITFIRE1 1                       NOINFO  gb01  SUMMER
+SpitfireMkIb      air.SPITFIRE1B 1                      NOINFO  gb01  SUMMER
+SpitfireMkIIa     air.SPITFIRE2A 1                      NOINFO  gb01  SUMMER
+SpitfireMkIIb     air.SPITFIRE2B 1                      NOINFO  gb01  SUMMER
+SpitfireMkVa      air.SPITFIRE5A 1                      NOINFO  gb01  SUMMER
+SpitfireMkVb      air.SPITFIRE5B 1                              gb01  SUMMER
+SpitfireMkVb12lbs air.SPITFIRE5B12LBS 1                 NOINFO  gb01  SUMMER
+SpitfireMkVb16lbs air.SPITFIRE5B16LBS 1                 NOINFO  gb01  SUMMER
+SpitfireMkVbCLP   air.SPITFIRE5BCLP 1                   NOINFO  gb01  SUMMER 
+SpitfireMkVbLF    air.SPITFIRE5BLF 1                    NOINFO  gb01  SUMMER 
+SpitfireMkVbLFCLP air.SPITFIRE5BLFCLP 1                 NOINFO  gb01  SUMMER
+SpitfireMkVbM4616lbs  air.SPITFIRE5BM4616LBS 1          NOINFO  gb01  SUMMER
+SpitfireMkVc      air.SPITFIRE5C2 1                     NOINFO  gb01  SUMMER
+SpitfireMkVc16lbs air.SPITFIRE5C216LBS 1                NOINFO  gb01  SUMMER
+SpitfireMkVc4xH   air.SPITFIRE5C4 1                     NOINFO  gb01  SUMMER
+SpitfireMkVIII    air.SPITFIRE8 1                       NOINFO  gb01  DESERT
+SpitfireMkVIIICLP air.SPITFIRE8CLP 1                    NOINFO  gb01  DESERT
+SpitfireMkIXcM61  air.SPITFIRE9M61 1                    NOINFO  gb01  SUMMER
+SpitfireMkIXcM63  air.SPITFIRE9M63 1                    NOINFO  gb01  SUMMER
+SpitfireMkIXc     air.SPITFIRE9C 1                      NOINFO  gb01  SUMMER
+SpitfireMkIXcCLP  air.SPITFIRE9CCLP 1                   NOINFO  gb01  SUMMER
+SpitfireMkIXcHF   air.SPITFIRE9CHF 1                    NOINFO  gb01  SUMMER
+SpitfireMkIXe     air.SPITFIRE9E 1                      NOINFO  gb01  SUMMER
+SpitfireMkIXeCLP  air.SPITFIRE9ECLP 1                   NOINFO  gb01  SUMMER
+SpitfireMkIXeHF   air.SPITFIRE9EHF 1                    NOINFO  gb01  SUMMER
+SpitfireMkIX25lbs air.SPITFIRE925LBS 1                  NOINFO  gb01  SUMMER
+SpitfireMkIX25lbsCLP air.SPITFIRE925LBSCW 1             NOINFO  gb01  SUMMER
+SPITXIIearly      air.SPITFIREXIIclpearly 1             NOINFO  gb01  SUMMER
+SpitfireMkXII     air.SPITFIRE12 1                      NOINFO  gb01  DESERT
+SpitfireMkXIVC    air.SPITFIRE14C 1                     NOINFO  gb01  DESERT 
+SpitfireMkLFXIVE  air.SPITFIRELF14E 1                   NOINFO  gb01  DESERT 
+SpitfireMkXVIe    air.SPITFIRE16E 1                     NOINFO  gb01  SUMMER
+SpitfireMkXVIeCLP air.SPITFIRE16ECLP 1                  NOINFO  gb01  SUMMER
+SpitfireMkXVIe25  air.SPITFIRE16E25 1                   NOINFO  gb01  SUMMER
+SpitfireMkXVIeCLP25 air.SPITFIRE16ECLP25 1              NOINFO  gb01  SUMMER
+Su-2              air.SU_2 1                            NOINFO  r01   SUMMER
+Su-26             air.SU_26M2 1                         NOINFO  r01   SUMMER
+SwordfishMkI      air.Swordfish1 1                      NOINFO  gb01  SUMMER
+T6_Texan          air.AT6 1                             NOINFO  usa01 DESERT
+SNJ_5C            air.SNJ_5C 1                          NOINFO  usa01 DESERT
+TB-3_4M-17        air.TB_3_4M_17 1                              r01   SUMMER 
+TB-3_4M-34R       air.TB_3_4M_34R 1                     NOINFO  r01   SUMMER 
+TB-3_4M-34R_SPB   air.TB_3_4M_34R_SPB 1                 NOINFO  r01   SUMMER 
+TBF-1             air.TBF1 1                                    usa01 DESERT 
+TBF-1C            air.TBF1C 1                                   usa01 DESERT
+TBM1              air.TBM1 1                                    usa01 DESERT
+TBM-3             air.TBM3 1                                    usa01 DESERT
+AvengerMkIII      air.TBM3AVENGER3 1                    NOINFO  gb01  DESERT
+TempestFBMkII     air.TEMPESTFB2 1                      NOINFO  gb01  SUMMER
+TempestMkV        air.TEMPEST5 1                        NOINFO  gb01  SUMMER 
+TempestMkV11Lbs   air.TEMPEST511LBS 1                   NOINFO  gb01  SUMMER
+TempestMkV13Lbs   air.TEMPEST513LBS 1                   NOINFO  gb01  SUMMER
+U-2TM             air.U_2TM 1                           NOINFO  r01   SUMMER
+Tu-2S             air.TU_2S 1                                   r01   SUMMER
+Tu-4              air.TU_4 1                            NOINFO  r01   SUMMER 
+TyphoonMkIB       air.TYPHOON1B 1                       NOINFO  gb01  SUMMER 
+TyphoonMkIBLate   air.TYPHOON1BLate 1                   NOINFO  gb01  SUMMER
+U-2NB             air.U_2NB 1                           NOINFO  r01   SUMMER
+U-2UT             air.U_2UT 1                           NOINFO  r01   SUMMER
+U-2VS             air.U_2VS 1                                   r01   SUMMER
+U-2VS(SHKAS)      air.U_2VS_shkas 1                     NOINFO  r01   SUMMER
+Yak-1             air.YAK_1 1                                   r01   SUMMER
+Yak-1B            air.YAK_1B 1                                  r01   SUMMER
+Yak-3             air.YAK_3 1                                   r01   SUMMER
+Yak-3P            air.YAK_3P 1                          NOINFO  r01   SUMMER
+Yak-3VK-107       air.YAK_3VK107 1                              r01   SUMMER
+Yak-3R            air.YAK_3R 1                                  r01   SUMMER
+Yak-7A            air.YAK_7A 1                          NOINFO  r01   WINTER
+Yak-7B            air.YAK_7B 1                                  r01   WINTER
+Yak-7BPF          air.YAK_7BPF 1                        NOINFO  r01   WINTER
+Yak-7-37          air.Yak_7_37 1                        NOINFO  r01   WINTER
+Yak-7DI           air.Yak_7DI 1                         NOINFO  r01   WINTER
+Yak-7R            air.Yak_7R 1                          NOINFO  r01   WINTER
+Yak-7UTI          air.YAK_7UTI 1                        NOINFO  r01   SUMMER
+Yak-7V            air.YAK_7V 1                           NOINFO r01   WINTER
+Yak-9-Early       air.YAK_9_Early 1                     NOINFO  r01   SUMMER
+Yak-9             air.YAK_9  1                                  r01   WINTER 
+Yak-9B            air.YAK_9B 1                          NOINFO  r01   SUMMER 
+Yak-9D            air.YAK_9D 1                                  r01   SUMMER 
+Yak-9M            air.YAK_9M 1                          NOINFO  r01   SUMMER 
+Yak-9K            air.YAK_9K 1                                  r01   SUMMER 
+Yak-9P            air.YAK_9P 1                          NOINFO  r01   WINTER 
+Yak-9T            air.YAK_9T 1                                  r01   SUMMER
+Yak-9T-20         air.YAK_9T_20 1                       NOINFO  r01   SUMMER
+Yak-9U            air.YAK_9U 1                                  r01   SUMMER 
+Yak-9U-Late       air.Yak_9U_Late 1                     NOINFO  r01   SUMMER
+Yak-9UVK-107      air.Yak_9UVK_107 1                    NOINFO  r01   SUMMER
+Yak-9UT           air.YAK_9UT 1                         NOINFO  r01   SUMMER 
+Yak-9UT-NS45      air.YAK_9UT_NS45 1                    NOINFO  r01   SUMMER
+Yak-15            air.YAK_15 1                                  r01   SUMMER 
+P-80A             air.P_80A 1                                   usa01 SUMMER 
+Jeep              air.JEEP 2                    NOQUICK  NOINFO usa01 SUMMER
+                                                                            
+                                                                            
+A5M4              air.A5M4 2                                    ja01  DESERT 
+A6M2              air.A6M2 2                                    ja01  DESERT 
+A6M2-21           air.A6M2_21 2                         NOINFO  ja01  DESERT 
+A6M-21Late        air.A6M_21Late 2                              ja01  DESERT 
+A6M-21LateFM      air.A6M_21LateFM 2                            ja01  DESERT 
+A6M2-N            air.A6M2N 2                                   ja01  DESERT 
+A6M-NLate         air.A6M_NLate 2                       NOINFO  ja01  DESERT 
+A6M-22            air.A6M_22 2                          NOINFO  Ja01  DESERT 
+A6M-22-Ko         air.A6M_22ko 2                        NOINFO  ja01  DESERT 
+A6M-22Kai         air.A6M_22Kai 2                       NOINFO  ja01  DESERT 
+A6M3              air.A6M3 2                            NOINFO  ja01  DESERT 
+A6M-32FM          air.A6M_32FM 2                        NOINFO  ja01  DESERT 
+A6M-52Early       air.A6M_52Early 2                     NOINFO  ja01  DESERT 
+A6M5              air.A6M5 2                            NOINFO  ja01  DESERT 
+A6M5a             air.A6M5A 2                                   ja01  DESERT 
+A6M5b             air.A6M5B 2                           NOINFO  ja01  DESERT 
+A6M5c             air.A6M5C 2                           NOINFO  ja01  DESERT 
+A6M-52NF          air.A6M_52NF 2                        NOINFO  ja01  DESERT 
+A6M7_Model62      air.A6M7_62 2                         NOINFO  ja01  DESERT
+A6M7_Model63      air.A6M7_63 2                         NOINFO  ja01  DESERT
+A6M-54            air.A6M_54 2                          NOINFO  ja01  DESERT 
+Ar-196A-3         air.AR_196A3 2                                g01   SUMMER
+Ar-196T0          air.AR_196T0 2                        NOINFO  g01   SUMMER
+Ar-234B-2         air.AR_234B2 2                                g01   SUMMER
+Ar-234B-2NJ       air.AR_234B2NJ 2                      NOINFO  g01   SUMMER
+B5N2              air.B5N2 2                                    ja01  DESERT
+B6N2              air.B6N2 2                                    ja01  SUMMER
+B-239             air.F2A_B239 2                                f01   WINTER
+AviaB534          air.AVIA_B534 2                       NOINFO  g01   SUMMER
+Bf-109B-1         air.BF_109B1 2                                g01   SUMMER
+Bf-109B-2         air.BF_109B2 2                                g01   SUMMER
+Bf-109C-1         air.BF_109C1 2                                g01   SUMMER
+Bf-109D-1         air.BF_109D1 2                                g01   SUMMER
+Bf-109D-1Late     air.BF_109D1L 2                               g01   SUMMER
+Bf-109E-1         air.BF_109E1 2                        NOINFO  g01   SUMMER
+Bf-109E-3         air.BF_109E3 2                        NOINFO  g01   SUMMER
+Bf-109E-4         air.BF_109E4 2                                g01   SUMMER
+Bf-109E-4/B       air.BF_109E4B 2                               g01   SUMMER
+Bf-109E-4N        air.BF_109E4N 2                               g01   SUMMER
+Bf-109E-7         air.BF_109E7 2                                g01   SUMMER 
+Bf-109E-7Z        air.BF_109E7NZ 2                              g01   SUMMER
+Bf-109E-7N        air.BF_109E7N 2                               g01   SUMMER
+Bf-109T           air.BF_109T 2                         NOINFO  g01   DESERT
+Bf-109F-0         air.BF_109F0 2                                g01   WINTER
+Bf-109F-1         air.BF_109F1 2                                g01   WINTER
+Bf-109F-2         air.BF_109F2 2                                g01   WINTER
+Bf-109F-2U        air.BF_109F2U 2                               g01   WINTER
+Bf-109F-3         air.BF_109F3 2                                g01   WINTER
+BF-109F-4_1.3ATA  air.BF_109F413ATA 2                           g01   SUMMER
+Bf-109F-4         air.BF_109F4 2                                g01   WINTER
+Bf-109F-4MSTL     air.BF_109F4MSTL 2           NOQUICK  NOINFO  g01   SUMMER
+Bf-109F-4Z        air.BF_109F4Z 2                               g01   WINTER
+Bf-109G-1         air.BF_109G1 2                        NOINFO  g01   SUMMER
+Bf-109G-2         air.BF_109G2 2                                g01   SUMMER
+Bf-109G-3         air.BF_109G3 2                        NOINFO  g01   SUMMER
+Bf-109G-4         air.BF_109G4 2                        NOINFO  g01   SUMMER
+Bf-109G-5         air.BF_109G5 2                        NOINFO  g01   SUMMER
+Bf-109G-5AS       air.BF_109G5AS 2                      NOINFO  g01   SUMMER
+Bf-109G-6         air.BF_109G6 2                                g01   SUMMER
+Bf-109G-6_Erla    air.BF_109G6Erla 2                    NOINFO  g01   SUMMER
+Bf-109G-6_Mid     air.BF_109G6Mid 2                     NOINFO  g01   SUMMER
+Bf-109G-6_Late    air.BF_109G6Late 2                    NOINFO  g01   SUMMER
+Bf-109G-6AS       air.BF_109G6AS 2                              g01   SUMMER
+Bf-109G-10        air.BF_109G10 2                               g01   SUMMER
+Bf-109G-10_Erla   air.BF_109G10Erla 2                           g01   SUMMER
+Bf-109G-10C3      air.BF_109G10C3 2                             g01   SUMMER
+Bf-109G-14        air.BF_109G14 2                               g01   SUMMER
+Bf-109G-14AS      air.BF_109G14AS 2                             g01   SUMMER
+Bf-109K-4         air.BF_109K4 2                                g01   SUMMER 
+Bf-109K-4C3       air.BF_109K4C3 2                      NOINFO  g01   SUMMER
+Bf-109K-6         air.BF_109K6 2                                g01   SUMMER
+Bf-109K-14        air.BF_109K14 2                               g01   SUMMER
+Bf-109Z           air.BF_109Z 2                                 g01   SUMMER
+Bf-110C-1         air.BF_110C1 2                                g01   SUMMER
+Bf-110C-4         air.BF_110C4 2                                g01   SUMMER
+Bf-110C-4B        air.BF_110C4B 2                               g01   SUMMER
+Bf-110C-7         air.BF_110C7 2                                g01   SUMMER
+Bf-110D-3         air.BF_110D3 2                                g01   SUMMER
+Bf-110E-1         air.BF_110E1 2                                g01   SUMMER
+Bf-110F-2         air.BF_110F2 2                                g01   SUMMER
+Bf-110G-2         air.BF_110G2 2                                g01   SUMMER
+BF-110-G4         air.BF_110G4 2                        NOINFO  g01   SUMMER
+CantZ1007bis      air.CantZ1007bis 2                            i01   SUMMER
+CR-32quater       air.CR_32quater 2                             i01   SUMMER
+CR_42             air.CR_42 2                                   h01   SUMMER
+DXXI_SARJA3_EARLY air.DXXI_SARJA3_EARLY 2               NOINFO  f01   WINTER
+DXXI_SARJA3_LATE  air.DXXI_SARJA3_LATE  2               NOINFO  f01   SUMMER
+DXXI_SARJA4       air.DXXI_SARJA4  2                    NOINFO  f01   SUMMER
+D3A1              air.D3A1 2                                    ja01  DESERT 
+D3A2              air.D3A2 2                                    ja01  DESERT
+Do-217K-1         air.Do217_K1 2                        NOINFO  g01   SUMMER
+Do-217K-2         air.Do217_K2 2                        NOINFO  g01   SUMMER
+Do-335A-0         air.DO_335A0 2                        NOINFO  g01   SUMMER
+Do-335V-13        air.DO_335V13 2                       NOINFO  g01   SUMMER
+Fi-156            air.FI_156 2                                  g01   SUMMER 
+Fw-189A-2         air.FW_189A2 2                                g01   SUMMER 
+Fw-190A-2         air.FW_190A2 2                        NOINFO  g01   SUMMER
+Fw-190A-3         air.FW_190A3 2                        NOINFO  g01   SUMMER
+Fw-190A-4         air.FW_190A4 2                                g01   SUMMER 
+Fw-190A-5         air.FW_190A5 2                                g01   SUMMER 
+Fw-190A-5165ATA   air.FW_190A5165ATA 2                  NOINFO  g01   SUMMER 
+Fw-190A-5U14      air.FW_190A5U14 2                     NOINFO  g01   SUMMER
+Fw-190A-6         air.FW_190A6 2                        NOINFO  g01   SUMMER 
+Fw-190A-7         air.FW_190A7 2                        NOINFO  g01   SUMMER
+Fw-190A-7STURM    air.FW_190A7STURM 2                   NOINFO  g01   SUMMER
+Fw-190A-8         air.FW_190A8 2                                g01   SUMMER 
+Fw-190A-8Mistel   air.FW_190A8MSTL 2           NOQUICK  NOINFO  g01   SUMMER 
+Fw-190A-9         air.FW_190A9 2                                g01   SUMMER 
+Fw-190D-9         air.FW_190D9 2                                g01   SUMMER 
+Fw-190D-9_Late    air.FW_190D9LATE 2                    NOINFO  g01   SUMMER 
+Fw-190D-11        air.FW_190D11 2                       NOINFO  g01   SUMMER
+Fw-190D-13        air.FW_190D13 2                       NOINFO  g01   SUMMER
+Fw-190D-15        air.FW_190D15 2                       NOINFO  g01   SUMMER 
+Fw-190F-1         air.FW_190F1 2                                g01   SUMMER 
+Fw-190F-2         air.FW_190F2 2                                g01   SUMMER 
+Fw-190F-3         air.FW_190F3 2                                g01   SUMMER 
+Fw-190F-8         air.FW_190F8 2                                g01   SUMMER 
+Fw-190F-8/PB      air.FW_190F8PB 2                              g01   SUMMER
+Fw-190G-1         air.FW_190G1 2                                g01   SUMMER 
+Fw-190G-2         air.FW_190G2 2                                g01   SUMMER 
+Fw-190G-3         air.FW_190G3 2                                g01   SUMMER 
+Fw-190G-8         air.FW_190G8 2                                g01   SUMMER 
+FW-200C-3U4       air.FW_200C3U4 2                              g01   SUMMER 
+G_50              air.G50 2                                     f01   SUMMER 
+G-55_ss0          air.G_55_ss0 2                       NOINFO   i01   SUMMER 
+G-55_ss0-Late     air.G_55_ss0_Late 2                  NOINFO   i01   SUMMER
+G-55              air.G_55 2                           NOINFO   i01   SUMMER 
+G-55-Late         air.G_55_Late 2                      NOINFO   i01   SUMMER  
+G4M1_11           air.G4M1_11 2                                 ja01  DESERT 
+G4M2E             air.G4M2E 2                          NOINFO   ja01  DESERT 
+Go-229A-1         air.GO_229A1 2                                g01   SUMMER 
+H8K1              air.H8K1 2                                    ja01  DESERT 
+He45              air.He45                              NOINFO  i01   SUMMER
+He51C-1           air.He51C                             NOINFO  i01   SUMMER
+He-111P-2         air.HE_111P2 2                        NOINFO  g01   SUMMER
+He-111H-2         air.HE_111H2 2                                g01   SUMMER 
+He-111H-6         air.HE_111H6 2                                g01   WINTER 
+He-111H-12        air.HE_111H12 2                               g01   SUMMER
+He-111H-21        air.HE_111H21 2                               g01   WINTER 
+He-111Z           air.HE_111Z 2                                 g01   WINTER 
+He-162A-2         air.HE_162A2 2                                g01   SUMMER 
+He-162C           air.HE_162C 2                                 g01   SUMMER 
+He-162B           air.HE_162B 2                         NOINFO  g01   SUMMER 
+He-219Uhu         air.HE_219UHU 2                       NOINFO  g01   SUMMER
+He-L-IIIB2        air.HE_LERCHE3 2                      NOINFO  g01   SUMMER 
+Hs-123            air.HS123 2                                   g01   SUMMER 
+Hs-129B-2         air.HS_129B2 2                                g01   SUMMER 
+Hs-129B-3/Wa      air.HS_129B3Wa 2                              g01   SUMMER 
+I-153_fin         air.I_153_fin 2                       NOINFO  f01   SUMMER
+IAR80             air.IAR_80 2                                  ro01  SUMMER 
+IAR81a            air.IAR_81A 2                                 ro01  SUMMER 
+IAR81c            air.IAR_81C 2                         NOINFO  ro01  SUMMER 
+J2M3              air.J2M3 2                                    ja01  DESERT 
+J2M5              air.J2M5 2                                    ja01  DESERT 
+J2M5_kai          air.J2M5_kai 2                        NOINFO  ja01  DESERT
+J8A               air.GLADIATOR1J8A 2                   NOINFO  ja01  DESERT 
+Ju-52/3mg3e       air.JU_52_3MG3E 2                     NOINFO  g01   WINTER 
+Ju-52/3mg4e       air.JU_52_3MG4E 2                             g01   WINTER
+Ju-52/3mg5e       air.JU_52_3MG5E 2                     NOINFO  g01   WINTER
+Ju-87B-1          air.JU_87B1 2                         NOINFO  g01   SUMMER
+Ju-87R-1          air.JU_87R1 2                         NOINFO  g01   SUMMER
+Ju-87B-2          air.JU_87B2 2                                 g01   SUMMER 
+Ju-87R-2          air.JU_87R2 2                         NOINFO  g01   SUMMER
+Ju-87C            air.JU_87C 2                          NOINFO  g01   SUMMER 
+Ju-87D-1          air.JU_87D1 2                         NOINFO  g01   SUMMER
+Ju-87D-3          air.JU_87D3 2                                 g01   SUMMER 
+Ju-87D-5          air.JU_87D5 2                         NOINFO  g01   SUMMER 
+Ju-87D-7          air.JU_87D7 2                         NOINFO  g01   SUMMER
+Ju-87D-8          air.JU_87D8 2                         NOINFO  g01   SUMMER
+Ju-87G-1          air.JU_87G1 2                                 g01   WINTER 
+Ju-87G-2          air.JU_87G2 2                         NOINFO  g01   WINTER
+Ju-88A-4          air.JU_88A4 2                                 g01   WINTER 
+Ju-88A-4_Torp     air.JU_88A4torp 2                             g01   WINTER 
+Ju-88A-17         air.JU_88A17 2                                g01   WINTER
+Ju-88C-6          air.JU_88C6 2                                 g01   SUMMER
+Ju-88C-6NJ        air.JU_88C6NJ 2                               g01   SUMMER
+Ju-88Mistel       air.JU_88MSTL 2               NOQUICK         g01   SUMMER
+Ki-21-I           air.KI_21_I 2                                 ja01  SUMMER
+Ki-21-II          air.KI_21_II 2                                ja01  SUMMER
+Ki-27-Ko          air.KI_27_KO 2                                ja01  SUMMER
+Ki-27-Otsu        air.KI_27_OTSU 2                      NOINFO  ja01  SUMMER
+Ki-43-Ia          air.KI_43_IA 2                                ja01  DESERT
+Ki-43-Ib          air.KI_43_IB 2                        NOINFO  ja01  DESERT
+Ki-43-Ic          air.KI_43_IC 2                        NOINFO  ja01  DESERT
+Ki-43-II          air.KI_43_II 2                        NOINFO  ja01  DESERT
+Ki-43-II-Kai      air.KI_43_IIKAI 2                     NOINFO  ja01  DESERT
+Ki-43-III-Ko      air.KI_43_IIIKO 2                     NOINFO  ja01  DESERT 
+Ki-44-II-Ko       air.KI_44_IIKO 2                      NOINFO  ja01  SUMMER
+Ki-46-Otsu        air.KI_46_OTSU 2                              ja01  DESERT 
+Ki-46-Otsu-Hei    air.KI_46_OTSUHEI 2                   NOINFO  ja01  DESERT 
+Ki-46-Recce       air.KI_46_RECCE 2                     NOINFO  ja01  DESERT 
+Ki-61-I-Ko        air.KI_61_IKO 2                               ja01  DESERT 
+Ki-61-I-Hei       air.KI_61_IHEI 2                      NOINFO  ja01  DESERT 
+Ki-61-I-Otsu      air.KI_61_IOTSU 2                     NOINFO  ja01  DESERT 
+Ki-84-Ia          air.KI_84_IA 2                                ja01  DESERT 
+Ki-84-Ib          air.KI_84_IB 2                        NOINFO  ja01  DESERT 
+Ki-84-Ic          air.KI_84_IC 2                                ja01  DESERT 
+Ki-100-I-Ko       air.KI_100_IKO 2                      NOINFO  ja01  DESERT 
+L2D               air.L2D 2                                     ja01  DESERT
+MC-200series1     air.MC_200_1 2                        NOINFO  i01   SUMMER 
+MC-200series3     air.MC_200_3 2                        NOINFO  i01   SUMMER 
+MC-200series7     air.MC_200_7 2                        NOINFO  i01   SUMMER 
+MC-200series7FB   air.MC_200_7FB 2                      NOINFO  i01   SUMMER 
+MC-202            air.MC_202 2                                  i01   SUMMER 
+MC-202_III        air.MC_202_3 2                        NOINFO  i01   SUMMER 
+MC-202_VII        air.MC_202_7 2                        NOINFO  i01   SUMMER 
+MC-202_XII        air.MC_202_12 2                       NOINFO  i01   SUMMER 
+MC-205_I          air.MC_205_1 2                        NOINFO  i01   SUMMER 
+MC-205_III        air.MC_205_3 2                        NOINFO  i01   SUMMER 
+Me-163B-1a        air.ME_163B1A 2                               g01   SUMMER 
+Me-210Ca-1        air.ME_210CA1 2                               g01   SUMMER 
+Me-210Ca-1ZSTR    air.ME_210CA1ZSTR 2                           g01   SUMMER
+ME-410-A          air.ME_410A 2                         NOINFO  g01   SUMMER
+ME-410-B          air.ME_410B 2                         NOINFO  g01   SUMMER
+ME-410-D          air.ME_410D 2                         NOINFO  g01   SUMMER
+ME-410-DNJ        air.ME_410DNJ 2                       NOINFO  g01   SUMMER
+Me-262V-3         air.ME_262V3 2                                g01   SUMMER
+Me-262A-1a        air.ME_262A1A 2                               g01   SUMMER 
+Me-262A-1aU4      air.ME_262A1AU4 2                     NOINFO  g01   SUMMER 
+Me-262A-2a        air.ME_262A2A 2                               g01   SUMMER 
+Me-262B-1a        air.ME_262A2NJ 2                              g01   SUMMER
+Me-262HG-II       air.ME_262HGII 2                              g01   SUMMER
+Me-321            air.ME_321 2                  NOQUICK         g01   SUMMER
+Me-323            air.ME_323 2                                  g01   SUMMER 
+MS406             air.MS406 2                                   f01   WINTER 
+MS410             air.MS410 2                                   f01   WINTER 
+MS-Morko          air.MSMORKO 2                                 f01   WINTER 
+MXY-7-11          air.MXY_7 2                           NOINFO  ja01  DESERT
+N1K1-J            air.N1K1J 2                                   ja01  DESERT 
+N1K1-Ja           air.N1K1JA 2                          NOINFO  ja01  DESERT 
+N1K2-Ja           air.N1K2JA 2                                  ja01  DESERT 
+N1K3-A            air.N1K3A 2                           NOINFO  ja01  DESERT 
+N1K3-J            air.N1K3J 2                           NOINFO  ja01  DESERT
+N1K4-J            air.N1K4J 2                           NOINFO  ja01  DESERT  
+N1K               air.N1KS 2                                    in01  SUMMER
+P_11f             air.P_11F 2                           NOINFO  ro01  SUMMER
+RE-2000           air.RE_2000 2                         NOINFO  i01   SUMMER 
+RE-2002           air.RE_2002 2                                 i01   SUMMER
+SM-79             air.SM79i 2                           NOINFO  i01   SUMMER
+S-328             air.LetovS_328 2                      NOINFO  g01   SUMMER
+Ta-152C1          air.TA_152C1 2                        NOINFO  g01   SUMMER
+Ta-152C3          air.TA_152C3 2                        NOINFO  g01   SUMMER
+Ta-152C           air.TA_152C 2                         NOINFO  g01   SUMMER 
+Ta-152H-1         air.TA_152H1 2                                g01   SUMMER 
+Ta-183            air.TA_183 2                                  g01   SUMMER 
+Wagen             air.WAGEN 2                  NOQUICK  NOINFO  g01   SUMMER
+
+
+Durand_Yak-9T               air.YAK_9TALBERT 1 NOINFO
+Safonovs_I-16_24            air.I_16TYPE24SAFONOV 1 NOINFO
+Pokryshkins_MiG-3           air.MIG_3POKRYSHKIN 1 NOINFO
+Pokryshkins_P-39N1          air.P_39NPOKRYSHKIN 1 NOINFO
+Rechkalovs_P-39Q15          air.P_39Q15RECHKALOV 1 NOINFO
+Kojedubs_La-7               air.LA_7KOJEDUB 1 NOINFO
+
+
+Graf_Bf-109G-6              air.BF_109G6GRAF 2 NOINFO
+Hartmann_Bf-109G-6          air.BF_109G6HARTMANN 2 NOINFO
+Hans_Rudels_Ju-87G-2        air.JU_87G2RUDEL 2 NOINFO
+Heppes_Bf-109G-6            air.BF_109G6HEPPES 2 NOINFO
+Kovacs_Bf-109G-6            air.BF_109G6KOVACS 2 NOINFO
+Molnar_Bf-109G-6            air.BF_109G6MOLNAR 2 NOINFO
+Fabian_Bf-109G-10           air.BF_109G10FABIAN 2 NOINFO
+Nowotnys_Me-262A-1a         air.ME_262A1ANOWOTNY 2 NOINFO
+Sarvanto_DXXI               air.DXXI_SARJA3_SARVANTO 2 NOINFO

@@ -1,0 +1,9 @@
+default, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , , , , , , , , , , , , , 
+4xAO10, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , ,3 BombGunAO10 1,3 BombGunAO10 1,3 BombGunAO10 1,3 BombGunAO10 1, , , , , , , , 
+2xAO10_2xFAB50, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , ,3 BombGunAO10 1,3 BombGunAO10 1,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345, , , , , , , , 
+2xFAB50, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , , , ,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345, , , , , , , , 
+4xFAB50, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , ,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345, , , , , , , , 
+2xFAB100, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , , , ,3 BombGunFAB100 -12345,3 BombGunFAB100 -12345, , , , , , , , 
+2xFAB50_2xFAB100, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750, , , , , , , , ,3 BombGunFAB50 -12345,3 BombGunFAB50 -12345,3 BombGunFAB100 -12345,3 BombGunFAB100 -12345, , , , , , , , 
+8xRS82, ,1 MGunUBsi 200,0 MGunShKASsi 750,0 MGunShKASsi 750,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345,2 RocketGunRS82 -12345, , , , ,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345,9 PylonRO_82_1 -12345
+none, , , , , , , , , , , , , , , , , , , , , , , , 
