@@ -153,13 +153,13 @@ public class CockpitTA_152C extends CockpitPilot
     {
       if (useRealisticNavigationInstruments())
       {
-        this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.azimuth.getDeg(paramFloat) + this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
-        this.mesh.chunkSetAngles("RepeaterOuter", this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
+        this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.azimuth.getDeg(f) + this.setNew.waypointAzimuth.getDeg(f), 0.0F, 0.0F);
+        this.mesh.chunkSetAngles("RepeaterOuter", this.setNew.waypointAzimuth.getDeg(f), 0.0F, 0.0F);
       }
       else
       {
-        this.mesh.chunkSetAngles("RepeaterOuter", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
-        this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.waypointAzimuth.getDeg(paramFloat * 0.1F), 0.0F, 0.0F);
+        this.mesh.chunkSetAngles("RepeaterOuter", this.setNew.azimuth.getDeg(f), 0.0F, 0.0F);
+        this.mesh.chunkSetAngles("RepeaterPlane", -this.setNew.waypointAzimuth.getDeg(f * 0.1F), 0.0F, 0.0F);
       }
 
     }

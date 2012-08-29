@@ -186,33 +186,33 @@ public class HE_111H6 extends HE_111
     weaponTriggersRegister(localClass, new int[] { 10, 11, 12, 13, 14, 15, 3, 3, 3, 3 });
     weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", null, null, null, null });
+    weaponsRegister(localClass, "default", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", null, null, null, null });
 
-    weaponsRegister(localClass, "4xSD250", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSD500", "BombGunSD500", null, null });
+    weaponsRegister(localClass, "4xSD250", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSD500", "BombGunSD500", null, null });
 
-    weaponsRegister(localClass, "4xSC500", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC500", "BombGunSC500", null, null });
+    weaponsRegister(localClass, "4xSC500", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC500", "BombGunSC500", null, null });
 
-    weaponsRegister(localClass, "4xAB500", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunAB500", "BombGunAB500", null, null });
+    weaponsRegister(localClass, "4xAB500", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunAB500", "BombGunAB500", null, null });
 
-    weaponsRegister(localClass, "1SC1000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC1000", null, null, null });
+    weaponsRegister(localClass, "1SC1000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC1000", null, null, null });
 
-    weaponsRegister(localClass, "2SC1000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC1000", "BombGunSC1000", null, null });
+    weaponsRegister(localClass, "2SC1000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC1000", "BombGunSC1000", null, null });
 
-    weaponsRegister(localClass, "2PC1600", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunPC1600", null, null, null });
+    weaponsRegister(localClass, "2PC1600", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunPC1600", null, null, null });
 
-    weaponsRegister(localClass, "1SC1800", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC1800", null, null, null });
+    weaponsRegister(localClass, "1SC1800", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC1800", null, null, null });
 
-    weaponsRegister(localClass, "2SC2000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunSC2000", null, null, null });
+    weaponsRegister(localClass, "2SC2000", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunSC2000", null, null, null });
 
-    weaponsRegister(localClass, "2xTorp", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpF5BheavyL", "BombGunTorpF5BheavyR", null, null });
+    weaponsRegister(localClass, "2xTorp", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunTorpF5BheavyL", "BombGunTorpF5BheavyR", null, null });
 
-    weaponsRegister(localClass, "2xTorp_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpF5BheavyL", "BombGunNull", "BombGunNull", "BombGunTorpF5BheavyR" });
+    weaponsRegister(localClass, "2xTorp_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunTorpF5BheavyL", "BombGunNull", "BombGunNull", "BombGunTorpF5BheavyR" });
 
-    weaponsRegister(localClass, "2xTorp_LTW", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpFiumeL", "BombGunTorpFiumeR", null, null });
+    weaponsRegister(localClass, "2xTorp_LTW", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunTorpFiumeL", "BombGunTorpFiumeR", null, null });
 
-    weaponsRegister(localClass, "2xTorp_LTW_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpFiumeL", "BombGunNull", "BombGunNull", "BombGunTorpFiumeR" });
+    weaponsRegister(localClass, "2xTorp_LTW_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunTorpFiumeL", "BombGunNull", "BombGunNull", "BombGunTorpFiumeR" });
 
-    weaponsRegister(localClass, "2xTorp_Practice_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG17t 750", "BombGunTorpLTF5PracticeL", "BombGunNull", "BombGunNull", "BombGunTorpLTF5PracticeR" });
+    weaponsRegister(localClass, "2xTorp_Practice_spread", new String[] { "MGunMGFFt 250", "MGunMG15t 1000", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "MGunMG15t 750", "BombGunTorpLTF5PracticeL", "BombGunNull", "BombGunNull", "BombGunTorpLTF5PracticeR" });
 
     weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }

@@ -178,7 +178,7 @@ public class CockpitDXXI_SARJA3_LATE extends CockpitPilot
 
     this.mesh.chunkSetAngles("Z_aileron_rods", -f1 / 14.0F, 0.0F, 0.0F);
 
-    f1 = 12.0F * (this.pictElev = 0.85F * this.pictElev + 0.2F * this.fm.CT.ElevatorControl) + 2.0F;
+    f1 = 14.0F * (this.pictElev = 0.85F * this.pictElev + 0.2F * this.fm.CT.ElevatorControl);
 
     this.mesh.chunkSetAngles("Z_Stick", f1, 0.0F, 0.0F);
 
@@ -344,7 +344,7 @@ public class CockpitDXXI_SARJA3_LATE extends CockpitPilot
     {
       f1 = this.fm.CT.getBrake();
 
-      this.mesh.chunkSetAngles("Z_break_handle", f1 * 12.0F + 12.0F, 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_break_handle", f1 * 20.0F, 0.0F, 0.0F);
 
       this.mesh.chunkSetAngles("Z_Need_breakpressureR", cvt(f1 + f1 * this.fm.CT.getRudder(), 0.0F, 1.5F, 0.0F, 148.0F), 0.0F, 0.0F);
 

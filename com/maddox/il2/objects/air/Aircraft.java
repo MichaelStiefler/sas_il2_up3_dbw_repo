@@ -1773,7 +1773,7 @@ public abstract class Aircraft extends NetAircraft
 
   public void destroy()
   {
-    if ((isAlive()) && (Mission.isPlaying()) && (name().charAt(0) != ' ') && (this.FM != null)) {
+    if ((isAlive()) && (Mission.isPlaying()) && (name().charAt(0) != ' ')) {
       Front.checkAircraftCaptured(this);
       World.onActorDied(this, World.remover);
     }
@@ -3147,7 +3147,6 @@ public abstract class Aircraft extends NetAircraft
             }
             if ((!(localObject2 instanceof PylonRO_WfrGr21)) && (!(localObject2 instanceof PylonRO_WfrGr21Dual)))
               continue;
-            ((Pylon)localObject2).destroy();
             this.FM.CT.Weapons[i][j] = GunEmpty.get();
             localObject2 = GunEmpty.get();
           }

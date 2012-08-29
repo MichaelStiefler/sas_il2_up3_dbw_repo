@@ -254,7 +254,7 @@ public class DServer extends Main
 
   public static void main(String[] paramArrayOfString)
   {
-    System.out.println("IL2 FB dedicated server v4.10.1m");
+    System.out.println("IL2 FB dedicated server v4.10m");
 
     args = paramArrayOfString;
 

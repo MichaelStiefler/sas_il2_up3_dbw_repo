@@ -496,6 +496,6 @@ public class JU_88A4 extends JU_88NEW
 
     weaponsRegister(localClass, "2xLT350", new String[] { "MGunMG81t 375", "MGunMG81t 1200", "MGunMG81t 1200", "MGunMG81t 750", "MGunMG81t 750", "BombGunTorpFFF 1", "BombGunTorpFFF1 1", "BombGunNull 1", "BombGunNull 1", null, null });
 
-    weaponsRegister(localClass, "none", new String[] { "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", null, null, null, null, null, null });
+    weaponsRegister(localClass, "none", new String[] { "MGunMG81t 000", "MGunMG81t 000", "MGunMG81t 000", null, null, null, null, null, null, null, null });
   }
 }

@@ -2,7 +2,6 @@ package com.maddox.il2.objects.sounds;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
-import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorMeshDraw;
@@ -14,9 +13,6 @@ import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.RealFlightModel;
-import com.maddox.il2.game.HUD;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.objects.air.TypeSailPlane;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
@@ -419,8 +415,6 @@ public class SndAircraft extends ActorHMesh
       else
       {
         this.morseSequence = null;
-        if (World.cur().showMorseAsText)
-          HUD.training("");
       }
     }
   }
@@ -580,100 +574,6 @@ public class SndAircraft extends ActorHMesh
       case 64: }  } return arrayOfInt;
   }
 
-  private static String getMorseString(int paramInt)
-  {
-    switch (paramInt)
-    {
-    case 0:
-      return "Morse: A  · —";
-    case 1:
-      return "Morse: B  — · · ·";
-    case 2:
-      return "Morse: C  — · — ·";
-    case 3:
-      return "Morse: D  — · ·";
-    case 4:
-      return "Morse: E  ·";
-    case 5:
-      return "Morse: F  · · — ·";
-    case 6:
-      return "Morse: G  — — ·";
-    case 7:
-      return "Morse: H  · · · ·";
-    case 8:
-      return "Morse: I  · ·";
-    case 9:
-      return "Morse: J  · — — —";
-    case 10:
-      return "Morse: K  — · —";
-    case 11:
-      return "Morse: L  · — · ·";
-    case 12:
-      return "Morse: M  — —";
-    case 13:
-      return "Morse: N  — ·";
-    case 14:
-      return "Morse: O  — — —";
-    case 15:
-      return "Morse: P  · — — ·";
-    case 16:
-      return "Morse: Q  — — · —";
-    case 17:
-      return "Morse: R  · — ·";
-    case 18:
-      return "Morse: S  · · ·";
-    case 19:
-      return "Morse: T  —";
-    case 20:
-      return "Morse: U  · · —";
-    case 21:
-      return "Morse: V  · · · —";
-    case 22:
-      return "Morse: W  · — —";
-    case 23:
-      return "Morse: X  — · · —";
-    case 24:
-      return "Morse: Y  — · — —";
-    case 25:
-      return "Morse: Z  — — · ·";
-    case 45:
-      return "Morse: <hyphen>   — · · · · —";
-    case 43:
-      return "Morse: .  · — · — · —";
-    case 42:
-      return "Morse: ,  — — · · — —";
-    case 44:
-      return "Morse: ?  · · — — · ·";
-    case 46:
-      return "";
-    case 32:
-      return "Morse: 1  · — — — —";
-    case 33:
-      return "Morse: 2  · · — — —";
-    case 34:
-      return "Morse: 3  · · · — —";
-    case 35:
-      return "Morse: 4  · · · · —";
-    case 36:
-      return "Morse: 5  · · · · ·";
-    case 37:
-      return "Morse: 6  — · · · ·";
-    case 38:
-      return "Morse: 7  — — · · ·";
-    case 39:
-      return "Morse: 8  — — — · ·";
-    case 40:
-      return "Morse: 9  — — — — ·";
-    case 41:
-      return "Morse: 0  — — — — —";
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31: } return "";
-  }
-
   public void playChatMsgAsMorse(String paramString)
   {
     if ((isMorseSequencePlaying()) || (paramString == null))
@@ -726,23 +626,8 @@ public class SndAircraft extends ActorHMesh
     this.morseSequence = null;
   }
 
-  private void showMorseAsText(int paramInt)
-  {
-    if (!World.cur().showMorseAsText)
-      return;
-    if ((Main.cur().netServerParams != null) && (!Main.cur().netServerParams.isSingle()) && (!Main.cur().netServerParams.allowMorseAsText)) {
-      return;
-    }
-    if (((paramInt >= 0) && (paramInt <= 25)) || ((paramInt >= 32) && (paramInt <= 46)))
-    {
-      HUD.training(getMorseString(paramInt));
-    }
-  }
-
   protected void playMorseEffect(int paramInt, boolean paramBoolean, float paramFloat)
   {
-    if ((paramBoolean) && (paramFloat >= 0.1F))
-      showMorseAsText(paramInt);
     SoundFX localSoundFX;
     if (paramInt < 32)
     {

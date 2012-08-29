@@ -2,7 +2,6 @@ package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorDraw;
@@ -116,9 +115,9 @@ public class CockpitTB_3 extends CockpitPilot
       this.mesh.chunkSetAngles("Z_RPM" + (i + 1), 0.0F, floatindex(cvt(this.fm.EI.engines[i].getRPM(), 400.0F, 2400.0F, 2.0F, 13.0F), engineRPMScale), 0.0F);
     }
 
-    this.mesh.chunkSetAngles("Z_RPK1", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -30.0F, 30.0F), 0.0F);
+    this.mesh.chunkSetAngles("Z_RPK1", 0.0F, cvt(interp(this.setNew.waypointAzimuth, this.setOld.waypointAzimuth, paramFloat), -25.0F, 25.0F, 30.0F, -30.0F), 0.0F);
 
-    this.mesh.chunkSetAngles("Z_RPK2", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -30.0F, 30.0F), 0.0F);
+    this.mesh.chunkSetAngles("Z_RPK2", 0.0F, cvt(interp(this.setNew.waypointAzimuth, this.setOld.waypointAzimuth, paramFloat), -25.0F, 25.0F, 30.0F, -30.0F), 0.0F);
 
     this.mesh.chunkSetAngles("Z_Minute1", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360.0F), 0.0F);
 
@@ -227,11 +226,11 @@ public class CockpitTB_3 extends CockpitPilot
 
         if (CockpitTB_3.this.useRealisticNavigationInstruments())
         {
-          CockpitTB_3.this.setNew.waypointAzimuth.setDeg(CockpitTB_3.this.setOld.waypointAzimuth.getDeg(1.0F), CockpitTB_3.this.getBeaconDirection());
+          CockpitTB_3.this.setNew.waypointAzimuth = ((10.0F * CockpitTB_3.this.setOld.waypointAzimuth + CockpitTB_3.this.getBeaconDirection()) / 11.0F);
         }
         else
         {
-          CockpitTB_3.this.setNew.waypointAzimuth.setDeg(CockpitTB_3.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitTB_3.this.waypointAzimuth() - CockpitTB_3.this.fm.Or.azimut());
+          CockpitTB_3.this.setNew.waypointAzimuth = ((10.0F * CockpitTB_3.this.setOld.waypointAzimuth + (CockpitTB_3.this.waypointAzimuth() - CockpitTB_3.this.setOld.azimuth)) / 11.0F);
         }
 
         CockpitTB_3.this.setNew.vspeed = ((199.0F * CockpitTB_3.this.setOld.vspeed + CockpitTB_3.this.fm.getVertSpeed()) / 200.0F);
@@ -246,15 +245,13 @@ public class CockpitTB_3 extends CockpitPilot
     float altimeter;
     float azimuth;
     float vspeed;
-    AnglesFork waypointAzimuth;
+    float waypointAzimuth;
     private final CockpitTB_3 this$0;
 
     private Variables()
     {
       this.this$0 = this$1;
       this.throttle = new float[] { 0.0F, 0.0F, 0.0F, 0.0F };
-
-      this.waypointAzimuth = new AnglesFork();
     }
 
     Variables(CockpitTB_3.1 arg2)

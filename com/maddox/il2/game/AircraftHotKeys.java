@@ -1148,18 +1148,12 @@ public class AircraftHotKeys
       toTrackSign(paramInt);
       return;
     case 139:
-      if (World.cur().diffCur.RealisticNavigationInstruments)
-      {
-        this.bAAircraft.beaconPlus();
-        toTrackSign(paramInt);
-      }
+      this.bAAircraft.beaconPlus();
+      toTrackSign(paramInt);
       return;
     case 140:
-      if (World.cur().diffCur.RealisticNavigationInstruments)
-      {
-        this.bAAircraft.beaconMinus();
-        toTrackSign(paramInt);
-      }
+      this.bAAircraft.beaconMinus();
+      toTrackSign(paramInt);
       return;
     }
 

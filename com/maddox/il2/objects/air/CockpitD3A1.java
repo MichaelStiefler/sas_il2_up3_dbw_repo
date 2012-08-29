@@ -150,7 +150,7 @@ public class CockpitD3A1 extends CockpitPilot
 
     this.mesh.chunkSetAngles("Z_Altimeter1", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 30000.0F, 0.0F, 21600.0F), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("Z_Altimeter2", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 30000.0F, 0.0F, 2160.0F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(0.539957F * Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 340.0F, 0.0F, 17.0F), speedometerScale), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("Z_Speedometer1", floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 340.0F, 0.0F, 17.0F), speedometerScale), 0.0F, 0.0F);
 
     this.mesh.chunkSetAngles("Z_Compass1", cvt(-this.fm.Or.getKren(), -45.0F, 45.0F, -45.0F, 45.0F), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("Z_Compass2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);

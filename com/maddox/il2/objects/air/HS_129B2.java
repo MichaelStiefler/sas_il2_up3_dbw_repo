@@ -8,7 +8,6 @@ import com.maddox.il2.engine.Mat;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Squares;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.il2.objects.weapons.MGunBK374Hs129;
 import com.maddox.il2.objects.weapons.MGunMK101s_Hs129;
@@ -31,8 +30,6 @@ public class HS_129B2 extends HS_129
 
   private void customization()
   {
-    if (!Mission.isSingle())
-      return;
     int i = hierMesh().chunkFindCheck("cf_D0");
     int j = hierMesh().materialFindInChunk("Gloss1D0o", i);
     Mat localMat = hierMesh().material(j);
@@ -149,46 +146,46 @@ public class HS_129B2 extends HS_129
     Property.set(localClass, "FlightModel", "FlightModels/Hs-129B-2.fmd");
     Property.set(localClass, "cockpitClass", CockpitHS_129B2.class);
 
-    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 1, 9, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9 });
+    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 1, 1, 1, 9, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 9, 9 });
 
-    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_HEAVYCANNON01", "_ExternalDev01", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalDev02", "_ExternalDev03" });
+    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_HEAVYCANNON01", "_ExternalDev01", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_ExternalBomb01", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalDev02", "_ExternalDev03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "R4-1xSC250", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC250", null, null, null, null, null, null, null, null, null, null, "BombGunSC250 1", null, null, null });
+    weaponsRegister(localClass, "R4-1xSC250", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC250", null, null, null, null, "BombGunSC250 1", null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xSC250_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC250", null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC250 1", "BombGunNull 0", "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "1xSC250_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC250", null, null, null, null, "BombGunSC250 1", null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "R4-2xCS50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, null, null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "R4-2xCS50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "R4-4xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, null, null, null, null });
+    weaponsRegister(localClass, "R4-4xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, null, null });
 
-    weaponsRegister(localClass, "4xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", null, null, null, null, null, null });
+    weaponsRegister(localClass, "4xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", null, null, null, null });
 
-    weaponsRegister(localClass, "6xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "6xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "4xSC50_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunAB23 1", "BombGunAB23 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "4xSC50_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHs129BombRackC4x50", null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunAB23 1", "BombGunAB23 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "R3-4xMG17", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHS129MG17S", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "R3-4xMG17", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHS129MG17S", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "4xMG17_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHS129MG17S", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "4xMG17_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHS129MG17S", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "4xMG17_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHS129MG17S", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "4xMG17_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, null, "PylonHS129MG17S", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", "MGunMG17k 1000", null, null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "R2-1xMk101", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", "MGunMK101s_Hs129 30", null, null, "PylonHS129MK101", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "R2-1xMk101", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", "MGunMK101s_Hs129 30", null, null, "PylonHS129MK101", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xMk101_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", "MGunMK101s_Hs129 30", null, null, "PylonHS129MK101", null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "1xMk101_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", "MGunMK101s_Hs129 30", null, null, "PylonHS129MK101", null, null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "1xMk101_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", "MGunMK101s_Hs129 30", null, null, "PylonHS129MK101", null, null, null, null, null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "1xMk101_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", "MGunMK101s_Hs129 30", null, null, "PylonHS129MK101", null, null, null, null, null, null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "1xMk103", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, "MGunMK103s_Hs129 80", null, "PylonHS129MK103", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "1xMk103", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, "MGunMK103s_Hs129 80", null, "PylonHS129MK103", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xMk103_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, "MGunMK103s_Hs129 80", null, "PylonHS129MK103", null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "1xMk103_2xSC50", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, "MGunMK103s_Hs129 80", null, "PylonHS129MK103", null, null, null, null, null, null, null, null, null, "BombGunSC50 1", "BombGunSC50 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "1xMk103_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, "MGunMK103s_Hs129 80", null, "PylonHS129MK103", null, null, null, null, null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", null, null, "PylonHs129BombRackL", "PylonHs129BombRackR" });
+    weaponsRegister(localClass, "1xMk103_2xAB23", new String[] { "MGunMG17ki 1000", "MGunMG17ki 1000", "MGunMG15120ki 250", "MGunMG15120ki 250", null, "MGunMK103s_Hs129 80", null, "PylonHS129MK103", null, null, null, null, null, null, null, null, null, "BombGunAB23 1", "BombGunAB23 1", "PylonHs129BombRackL", "PylonHs129BombRackR" });
 
-    weaponsRegister(localClass, "Wa-1xBK37", new String[] { null, null, "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, "MGunBK374Hs129 12", "PylonHS129BK37", null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "Wa-1xBK37", new String[] { null, null, "MGunMG15120ki 250", "MGunMG15120ki 250", null, null, "MGunBK374Hs129 12", "PylonHS129BK37", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

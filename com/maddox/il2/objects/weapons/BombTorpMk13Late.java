@@ -7,7 +7,7 @@ public class BombTorpMk13Late extends Torpedo
   static
   {
     Class localClass = BombTorpMk13Late.class;
-    Property.set(localClass, "mesh", "3DO/Arms/Mk13_LATE_new/mono.sim");
+    Property.set(localClass, "mesh", "3DO/Arms/Mk13_Torpedo/mono.sim");
     Property.set(localClass, "radius", 90.800003F);
     Property.set(localClass, "power", 181.89999F);
     Property.set(localClass, "powerType", 0);
@@ -18,10 +18,12 @@ public class BombTorpMk13Late extends Torpedo
     Property.set(localClass, "traveltime", 333.95361F);
     Property.set(localClass, "startingspeed", 0.0F);
     Property.set(localClass, "impactAngleMin", 20.0F);
-    Property.set(localClass, "impactAngleMax", 42.0F);
+    Property.set(localClass, "impactAngleMax", 35.0F);
+    Property.set(localClass, "impactSpeed", 68.0F);
+    Property.set(localClass, "armingTime", 3.0F);
     Property.set(localClass, "impactSpeed", 170.0F);
     Property.set(localClass, "armingTime", 4.0F);
-    Property.set(localClass, "dropAltitude", 200.0F);
+    Property.set(localClass, "dropAltitude", 180.0F);
     Property.set(localClass, "dropSpeed", 400.0F);
   }
 }

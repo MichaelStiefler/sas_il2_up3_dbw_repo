@@ -28,7 +28,7 @@ public class BombGun extends Interpolate
   protected int shotStep;
   protected float bombDelay = 0.0F;
   protected SoundFX sound;
-  protected long armingTime = 2000L;
+  protected long armingTime = 2400L;
 
   protected float bulletMassa = 0.048F;
   private int curShotStep;
@@ -217,7 +217,6 @@ public class BombGun extends Interpolate
         this.bomb.visibilityAsBase(true);
       this.bomb.pos.setUpdateEnable(false);
       this.bomb.delayExplosion = this.bombDelay;
-
       this.bomb.armingTime = this.armingTime;
     } catch (Exception localException) {
     }

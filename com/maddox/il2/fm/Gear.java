@@ -484,8 +484,7 @@ public class Gear
             for (k = 0; k < 3; k++) this.gVelocity[k] = 0.0D;
             this.onGround = true;
             this.FM.canChangeBrakeShoe = true;
-          }
-          else {
+          } else {
             this.FM.brakeShoe = false;
           }
         }
@@ -496,21 +495,11 @@ public class Gear
         }
 
       }
-      else if ((this.nOfGearsOnGr == 3) && (this.nP == 3) && (this.FM.Vrel.lengthSquared() < 1.5D)) {
-        this.FM.brakeShoeLoc.set(this.FM.actor.pos.getCurrent());
-        this.FM.Vrel.set(0.0D, 0.0D, 0.0D);
-        for (k = 0; k < 3; k++) this.gVelocity[k] = 0.0D;
 
-        this.FM.canChangeBrakeShoe = true;
-        this.onGround = true;
-        if (this.FM.brakeShoe) {
-          this.FM.GF.set(0.0D, 0.0D, 0.0D);
-          this.FM.GM.set(0.0D, 0.0D, 0.0D);
-          this.FM.Vwld.set(0.0D, 0.0D, 0.0D);
-        }
+    }
 
-      }
-
+    if ((this.nOfGearsOnGr == 3) && (this.nP == 3) && (this.FM.Vrel.lengthSquared() < 1.5D)) {
+      this.FM.canChangeBrakeShoe = true;
     }
 
     if (!this.bIsMaster) return;

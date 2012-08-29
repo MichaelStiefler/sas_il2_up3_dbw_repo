@@ -129,9 +129,9 @@ public class CockpitYP_80 extends CockpitPilot
     this.mesh.chunkSetAngles("Z_Climb1", floatindex(cvt(this.setNew.vspeed, -30.48F, 30.48F, 0.0F, 12.0F), variometerScale), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("Z_Oxypres1", 142.5F, 0.0F, 0.0F);
 
-    this.mesh.chunkSetAngles("Z_Compass3", 90.0F + this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("Z_Compass3", 90.0F + this.setNew.azimuth.getDeg(f), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("Z_Compass2", this.setNew.waypointAzimuth.getDeg(0.1F), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("Z_Compass1", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("Z_Compass1", this.setNew.azimuth.getDeg(f), 0.0F, 0.0F);
 
     this.mesh.chunkSetAngles("Z_TurnBank1", cvt(this.w.z, -0.23562F, 0.23562F, 22.5F, -22.5F), 0.0F, 0.0F);
     this.w.set(this.fm.getW());

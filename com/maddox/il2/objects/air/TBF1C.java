@@ -76,9 +76,7 @@ public class TBF1C extends TBF
 
     weaponsRegister(localClass, "1x2000", new String[] { "MGunBrowning50kWF 600", "MGunBrowning50kWF 600", "MGunBrowning50t 400", "MGunBrowning303t 500", null, null, null, null, null, null, null, null, "BombGun2000lbs", null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1xmk13", new String[] { "MGunBrowning50kWF 600", "MGunBrowning50kWF 600", "MGunBrowning50t 400", "MGunBrowning303t 500", null, null, null, null, null, null, null, null, "BombGunTorpMk13a", null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "1xmk13_late", new String[] { "MGunBrowning50kWF 600", "MGunBrowning50kWF 600", "MGunBrowning50t 400", "MGunBrowning303t 500", null, null, null, null, null, null, null, null, "BombGunTorpMk13a_late", null, null, null, null, null, null });
+    weaponsRegister(localClass, "1xmk13", new String[] { "MGunBrowning50kWF 600", "MGunBrowning50kWF 600", "MGunBrowning50t 400", "MGunBrowning303t 500", null, null, null, null, null, null, null, null, "BombGunTorpMk13", null, null, null, null, null, null });
 
     weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }

@@ -12,7 +12,6 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
-import com.maddox.il2.fm.Turret;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
@@ -667,12 +666,12 @@ public abstract class PE_2 extends Scheme2a
     case 0:
       break;
     case 1:
-      this.FM.turret[0].setHealth(paramFloat);
+      this.FM.turret[0].bIsOperable = false;
       break;
     case 2:
-      this.FM.turret[1].setHealth(paramFloat);
-      this.FM.turret[2].setHealth(paramFloat);
-      this.FM.turret[3].setHealth(paramFloat);
+      this.FM.turret[1].bIsOperable = false;
+      this.FM.turret[2].bIsOperable = false;
+      this.FM.turret[3].bIsOperable = false;
     }
   }
 

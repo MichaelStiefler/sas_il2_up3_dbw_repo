@@ -122,40 +122,19 @@ public class ZutiRadarObject
 
   public static boolean isPlayerArmyScout(Actor paramActor, int paramInt)
   {
-    if ((paramActor == null) || (!(paramActor instanceof SndAircraft)) || (paramActor.getArmy() != paramInt))
+    if ((paramActor == null) || (!(paramActor instanceof SndAircraft)) || (paramActor.getArmy() != paramInt)) {
       return false;
-    ArrayList localArrayList;
-    String str1;
-    int i;
-    int j;
-    String str2;
-    if (paramInt == 1)
+    }
+    ArrayList localArrayList = Main.cur().mission.ScoutsRed;
+    String str1 = Property.stringValue(((Aircraft)paramActor).getClass(), "keyName");
+    int i = localArrayList.size();
+    for (int j = 0; j < i; j++)
     {
-      localArrayList = Main.cur().mission.ScoutsRed;
-      str1 = Property.stringValue(((Aircraft)paramActor).getClass(), "keyName");
-      i = localArrayList.size();
-      for (j = 0; j < i; j++)
-      {
-        str2 = (String)localArrayList.get(j);
-        if (str1.indexOf(str2) != -1)
-          return true;
+      String str2 = (String)localArrayList.get(j);
+      if (str1.indexOf(str2) != -1) {
+        return true;
       }
     }
-    else
-    {
-      localArrayList = Main.cur().mission.ScoutsBlue;
-      str1 = Property.stringValue(((Aircraft)paramActor).getClass(), "keyName");
-      i = localArrayList.size();
-      for (j = 0; j < i; j++)
-      {
-        str2 = (String)localArrayList.get(j);
-        if (str1.indexOf(str2) != -1)
-        {
-          return true;
-        }
-      }
-    }
-
     return false;
   }
 }

@@ -278,6 +278,6 @@ public class JU_88A17 extends JU_88NEW
 
     weaponsRegister(localClass, "2xPractice_Torp_spread", new String[] { "MGunMG81t 375", "MGunMG81t 1200", "MGunMG81t 1200", "BombGunTorpLTF5PracticeL 1", "BombGunNull 1", "BombGunNull 1", "BombGunTorpLTF5PracticeR 1", "MGunMGFFt 180" });
 
-    weaponsRegister(localClass, "none", new String[] { "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", null, null, null, null, "MGunMGFFt 0" });
+    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
   }
 }

@@ -126,8 +126,7 @@ public class Sun
 
     double[] arrayOfDouble = new double[10];
     arrayOfDouble = MoonPhase.phase(missionDate);
-
-    this.moonPhase = (float)arrayOfDouble[0];
+    this.moonPhase = ((float)arrayOfDouble[2] / 29.530001F);
 
     f1 = (paramInt2 * 30 + paramInt3 - 80) * DEG2RAD;
     f5 = 6.283186F * (-this.moonPhase + paramFloat1 / 24.0F);

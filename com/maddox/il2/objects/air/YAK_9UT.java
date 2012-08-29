@@ -36,16 +36,6 @@ public class YAK_9UT extends YAK
     super.update(paramFloat);
   }
 
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-
-    if (this.thisWeaponsName.equals("NS-37"))
-    {
-      hierMesh().chunkVisible("Barrel_D0", true);
-    }
-  }
-
   static
   {
     Class localClass = YAK_9UT.class;
@@ -62,13 +52,11 @@ public class YAK_9UT extends YAK
     Property.set(localClass, "cockpitClass", CockpitYAK_9U.class);
     Property.set(localClass, "LOSElevation", 0.6432F);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02" });
+    weaponTriggersRegister(localClass, new int[] { 0, 0, 1 });
+    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunB20si 120", "MGunB20si 120", "MGunNS23si 60", null });
+    weaponsRegister(localClass, "default", new String[] { "MGunShVAKsi 120", "MGunShVAKsi 120", "MGunSh37ki 30" });
 
-    weaponsRegister(localClass, "NS-37", new String[] { "MGunB20si 120", "MGunB20si 120", null, "MGunNS37si 30" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
+    weaponsRegister(localClass, "none", new String[] { null, null, null });
   }
 }

@@ -1421,7 +1421,7 @@ public class AircraftState
     this.listenNDBeacon = false;
     this.listenRadioStation = false;
     this.aircraft.playBeaconCarrier(false, 0.0F);
-    CmdMusic.setCurrentVolume(0.001F);
+    CmdMusic.setCurrentVolume(0.0F);
   }
 
   public void startListeningNDBeacon() {
@@ -1430,7 +1430,7 @@ public class AircraftState
     this.listenNDBeacon = true;
     this.listenRadioStation = false;
     stopListeningHayrake();
-    CmdMusic.setCurrentVolume(0.001F);
+    CmdMusic.setCurrentVolume(0.0F);
   }
 
   public void startListeningRadioStation(String paramString) {
@@ -1482,7 +1482,7 @@ public class AircraftState
     this.listenRadioStation = false;
     stopListeningHayrake();
     this.aircraft.stopMorseSounds();
-    CmdMusic.setCurrentVolume(0.001F);
+    CmdMusic.setCurrentVolume(0.0F);
   }
 
   public void startListeningHayrake(Actor paramActor, String paramString) {
@@ -1493,7 +1493,7 @@ public class AircraftState
     this.listenNDBeacon = false;
     this.listenRadioStation = false;
     this.aircraft.stopMorseSounds();
-    CmdMusic.setCurrentVolume(0.001F);
+    CmdMusic.setCurrentVolume(0.0F);
   }
 
   public void stopListeningHayrake() {
@@ -1508,7 +1508,7 @@ public class AircraftState
     this.listenNDBeacon = false;
     this.listenRadioStation = false;
     this.aircraft.stopMorseSounds();
-    CmdMusic.setCurrentVolume(0.001F);
+    CmdMusic.setCurrentVolume(0.0F);
   }
 
   public void stopListeningLorenzBlindLanding() {
@@ -1663,10 +1663,12 @@ public class AircraftState
     setBleedingPilot(paramActor, paramInt1, paramInt2, true);
   }
 
-  public void setBleedingPilot(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean) {
+  public void setBleedingPilot(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean)
+  {
     if (!Actor.isValid(paramActor))
       return;
-    if (this.bIsMaster) {
+    if (this.bIsMaster)
+    {
       doSetBleedingPilot(paramInt1, paramInt2, paramActor);
       if (paramBoolean)
       {
@@ -1679,27 +1681,27 @@ public class AircraftState
     }
   }
 
-  private void doSetBleedingPilot(int paramInt1, int paramInt2, Actor paramActor) {
+  private void doSetBleedingPilot(int paramInt1, int paramInt2, Actor paramActor)
+  {
     if ((Mission.isSingle()) || ((this.aircraft.FM.isPlayers()) && (!Mission.isServer())) || ((Mission.isNet()) && (Mission.isServer()) && (!this.aircraft.isNetPlayer())))
     {
-      if (paramInt2 == 0) {
-        return;
-      }
       long l1 = 120000 / paramInt2;
       int i;
       if (this.astateBleedingNext[paramInt1] == 0L) {
         this.astateBleedingNext[paramInt1] = l1;
+
         if ((World.getPlayerAircraft() == this.actor) && (Config.isUSE_RENDER()) && ((!this.bIsAboutToBailout) || (this.astateBailoutStep <= 11)) && (this.astatePilotStates[paramInt1] < 100))
         {
           i = (paramInt1 == this.astatePlayerIndex) && (!World.isPlayerDead()) ? 1 : 0;
-          if (paramInt2 < 10)
+          if (paramInt2 > 10)
             HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "BLEED0");
           else
             HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "BLEED1");
         }
-      } else {
-        i = 120000 / (int)this.astateBleedingNext[paramInt1];
-        long l2 = 120000 / (i + paramInt2);
+      }
+      else {
+        i = 30000 / (int)this.astateBleedingNext[paramInt1];
+        long l2 = 30000 / (i + paramInt2);
         if (l2 < 100L) {
           l2 = 100L;
         }
@@ -1718,7 +1720,8 @@ public class AircraftState
     this.astateBleedingTimes[paramInt] = (Time.current() + this.astateBleedingNext[paramInt]);
   }
 
-  public void doSetWoundPilot(int paramInt) {
+  public void doSetWoundPilot(int paramInt)
+  {
     switch (paramInt)
     {
     case 1:
@@ -1738,10 +1741,12 @@ public class AircraftState
     setPilotWound(paramActor, paramInt2, true);
   }
 
-  public void setPilotWound(Actor paramActor, int paramInt, boolean paramBoolean) {
+  public void setPilotWound(Actor paramActor, int paramInt, boolean paramBoolean)
+  {
     if (!Actor.isValid(paramActor))
       return;
-    if (this.bIsMaster) {
+    if (this.bIsMaster)
+    {
       doSetWoundPilot(paramInt);
       if (paramBoolean)
       {
@@ -1756,13 +1761,16 @@ public class AircraftState
 
   public void woundedPilot(Actor paramActor, int paramInt1, int paramInt2)
   {
-    switch (paramInt1) {
+    switch (paramInt1)
+    {
     case 1:
-      if ((World.Rnd().nextFloat() >= 0.18F) || (paramInt2 <= 4) || (this.armsWounded)) break;
+      if ((World.Rnd().nextFloat() >= 0.18F) || (paramInt2 <= 4) || (this.armsWounded))
+        break;
       setPilotWound(paramActor, paramInt1, true);
       this.armsWounded = true; break;
     case 2:
-      if ((paramInt2 <= 4) || (this.legsWounded)) break;
+      if ((paramInt2 <= 4) || (this.legsWounded))
+        break;
       setPilotWound(paramActor, paramInt1, true);
       this.legsWounded = true; break;
     }
@@ -2834,9 +2842,6 @@ public class AircraftState
       j = paramNetMsgInput.readUnsignedByte();
       doSetSootState(i, j);
     }
-    if (paramNetMsgInput.available() == 0) {
-      return;
-    }
 
     if (this.bWantBeaconsNet)
     {
@@ -2885,15 +2890,12 @@ public class AircraftState
       if (this.aircraft.FM.CT.Weapons[paramInt2] != null)
       {
         int i;
-        if (paramInt2 == 2) {
+        if (paramInt2 == 2)
           for (i = 0; i < this.aircraft.FM.CT.Weapons[paramInt2].length; i++)
-            if ((this.aircraft.FM.CT.Weapons[paramInt2][i] instanceof RocketGun))
-              ((RocketGun)(RocketGun)this.aircraft.FM.CT.Weapons[paramInt2][i]).setConvDistance(f, paramFloat);
-        }
+            ((RocketGun)(RocketGun)this.aircraft.FM.CT.Weapons[paramInt2][i]).setConvDistance(f, paramFloat);
         else
           for (i = 0; i < this.aircraft.FM.CT.Weapons[paramInt2].length; i++)
-            if ((this.aircraft.FM.CT.Weapons[paramInt2][i] instanceof MGunAircraftGeneric))
-              ((MGunAircraftGeneric)(MGunAircraftGeneric)this.aircraft.FM.CT.Weapons[paramInt2][i]).setConvDistance(f, paramFloat); 
+            ((MGunAircraftGeneric)(MGunAircraftGeneric)this.aircraft.FM.CT.Weapons[paramInt2][i]).setConvDistance(f, paramFloat); 
       }
     } catch (Exception localException) {
       System.out.println(localException.getMessage());
@@ -2904,13 +2906,11 @@ public class AircraftState
   void setArmingSeeds(int paramInt)
   {
     this.aircraft.armingRnd = new RangeRandom(this.aircraft.armingSeed);
-    try
-    {
+    try {
       if (this.aircraft.FM.CT.Weapons[2] != null)
         for (int i = 0; i < this.aircraft.FM.CT.Weapons[2].length; i++)
         {
-          if ((this.aircraft.FM.CT.Weapons[2][i] instanceof RocketGun))
-            ((RocketGun)this.aircraft.FM.CT.Weapons[2][i]).setSpreadRnd(this.aircraft.armingRnd.nextInt());
+          ((RocketGun)this.aircraft.FM.CT.Weapons[2][i]).setSpreadRnd(this.aircraft.armingRnd.nextInt());
         }
     } catch (Exception localException) {
       System.out.println(localException.getMessage());

@@ -39,9 +39,9 @@ public class MC_200_7FB extends MC_200xyz
 
     weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", null, null });
 
-    weaponsRegister(localClass, "2x50", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", "BombGunIT_50_M 1", "BombGunIT_50_M 1" });
+    weaponsRegister(localClass, "2x50", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", "BombGun50kg 1", "BombGun50kg 1" });
 
-    weaponsRegister(localClass, "2x100", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", "BombGunIT_100_M 1", "BombGunIT_100_M 1" });
+    weaponsRegister(localClass, "2x100", new String[] { "MGunBredaSAFAT127siMC200 350", "MGunBredaSAFAT127siMC200 350", "BombGun100kg 1", "BombGun100kg 1" });
 
     weaponsRegister(localClass, "none", new String[] { null, null, null, null });
   }

@@ -289,9 +289,6 @@ public class RealFlightModel extends Pilot
   {
     if (World.getPlayerFM() != this) return;
     if (!Actor.isAlive(this.actor)) return;
-
-    Mission.initRadioSounds();
-
     switch (this.airborneState) {
     case 0:
       if (getAltitude() - Engine.land().HQ_Air(this.Loc.x, this.Loc.y) > 40.0D) {
@@ -348,7 +345,10 @@ public class RealFlightModel extends Pilot
         World.cur().scoreCounter.playerLanding(false);
         setNearAirdrome(true);
       }
+
     }
+
+    Mission.initRadioSounds();
   }
 
   private void initSound(Actor paramActor)

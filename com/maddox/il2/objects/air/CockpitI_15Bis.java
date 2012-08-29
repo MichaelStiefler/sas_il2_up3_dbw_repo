@@ -21,6 +21,7 @@ import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.Main3D;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.HotKeyEnv;
+import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
 public class CockpitI_15Bis extends CockpitPilot
@@ -298,7 +299,7 @@ public class CockpitI_15Bis extends CockpitPilot
 
   private void enterScope() {
     HookPilot localHookPilot = HookPilot.current;
-    localHookPilot.setAim(new Point3d(0.1840000003576279D, 0.0D, 0.8481000065803528D));
+    localHookPilot.setAim(new Point3d(0.1840000003576279D, -0.004399999976158142D, 0.8481000065803528D));
     localHookPilot.doAim(true);
     this.bEntered = true;
     this.saveFov = Main3D.FOVX;
@@ -367,6 +368,12 @@ public class CockpitI_15Bis extends CockpitPilot
     else
       this.isSlideRight = false;
     return this.isSlideRight;
+  }
+
+  static
+  {
+    Property.set(CockpitHS_129.class, "normZN", 0.95F);
+    Property.set(CockpitHS_129.class, "gsZN", 0.95F);
   }
 
   private class Variables

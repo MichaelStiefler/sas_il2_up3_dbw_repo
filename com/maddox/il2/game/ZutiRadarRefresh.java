@@ -7,7 +7,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.CameraOrtho2D;
-import com.maddox.il2.engine.Engine;
 import com.maddox.il2.gui.GUI;
 import com.maddox.il2.gui.GUIBriefing;
 import com.maddox.il2.gui.GUIBriefing.TargetPoint;
@@ -19,14 +18,12 @@ import com.maddox.il2.objects.buildings.HouseManager;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.rts.Time;
-import com.maddox.util.HashMapExt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class ZutiRadarRefresh
@@ -124,12 +121,12 @@ public class ZutiRadarRefresh
         if (localZutiRadarObject.isAlive())
         {
           this.mission.zutiRadar_PlayerSideHasRadars = true;
+          break;
         }
-        else
-        {
-          localArrayList.add(localZutiRadarObject);
-        }
+
+        localArrayList.add(localZutiRadarObject);
       }
+
       i = localArrayList.size();
       for (j = 0; j < i; j++) {
         this.radars.remove((ZutiRadarObject)localArrayList.get(j));
@@ -538,28 +535,33 @@ public class ZutiRadarRefresh
     if (!this.mission.zutiRadar_ScoutsAsRadar) {
       return;
     }
+    ArrayList localArrayList = this.mission.getAllActors();
+    if (localArrayList == null) {
+      return;
+    }
+    int i = localArrayList.size();
+    if (i <= 0) {
+      return;
+    }
+    Actor localActor = null;
+    ZutiRadarObject localZutiRadarObject = null;
+    float f = this.tanAlfa[(this.mission.zutiRadar_ScoutGroundObjects_Alpha - 1)];
 
-    Map.Entry localEntry = Engine.name2Actor().nextEntry(null);
-    while (localEntry != null)
+    for (int j = 0; j < i; j++)
     {
-      Actor localActor = (Actor)localEntry.getValue();
-      if ((localActor instanceof Aircraft))
-      {
-        if ((localActor.getArmy() == paramInt) || (localActor.isAlive()))
-        {
-          if (ZutiRadarObject.isPlayerArmyScout(localActor, paramInt))
-          {
-            ZutiRadarObject localZutiRadarObject = null;
-            float f = this.tanAlfa[(this.mission.zutiRadar_ScoutGroundObjects_Alpha - 1)];
-            localZutiRadarObject = new ZutiRadarObject(localActor, 3);
-            localZutiRadarObject.setRange(f);
-            localZutiRadarObject.setMinHeight(this.mission.zutiRadar_ScoutRadar_DeltaHeight);
-            localZutiRadarObject.setMaxHeight(localZutiRadarObject.getMinHeight());
-            this.radars.add(localZutiRadarObject);
-          }
-        }
+      localActor = (Actor)localArrayList.get(j);
+
+      if ((localActor == null) || (localActor.getArmy() != paramInt) || (localActor.getDiedFlag())) {
+        continue;
       }
-      localEntry = Engine.name2Actor().nextEntry(localEntry);
+      if ((!(localActor instanceof Aircraft)) || (!ZutiRadarObject.isPlayerArmyScout(localActor, paramInt)))
+        continue;
+      localZutiRadarObject = new ZutiRadarObject(localActor, 3);
+      localZutiRadarObject.setRange(f);
+      localZutiRadarObject.setMinHeight(this.mission.zutiRadar_ScoutRadar_DeltaHeight);
+      localZutiRadarObject.setMaxHeight(localZutiRadarObject.getMinHeight());
+
+      this.radars.add(localZutiRadarObject);
     }
   }
 

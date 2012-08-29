@@ -1,7 +1,6 @@
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.il2.engine.GunProperties;
-import com.maddox.rts.Property;
 
 public class MGunMG15120MGki extends MGunMG15120MGs
 {
@@ -17,8 +16,5 @@ public class MGunMG15120MGki extends MGunMG15120MGs
     localGunProperties.shotFreqDeviation = 0.02F;
 
     return localGunProperties;
-  }
-  static {
-    Property.set(MGunMG15120MGki.class, "dateOfUse_BF_109F2", 19410501);
   }
 }

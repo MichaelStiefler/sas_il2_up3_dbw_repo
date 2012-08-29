@@ -876,13 +876,12 @@ public class RocketryGeneric extends ActorMesh
       }
       else
       {
-        if (GUI.pad != null) { Main.cur().mission.getClass();
+        Main.cur().mission.getClass();
 
-          ZutiPadObject localZutiPadObject = new ZutiPadObject(localRocketryRocket, Main.cur().mission.zutiRadar_RefreshInterval > 0);
-          localZutiPadObject.type = 3;
+        ZutiPadObject localZutiPadObject = new ZutiPadObject(localRocketryRocket, Main.cur().mission.zutiRadar_RefreshInterval > 0);
+        localZutiPadObject.type = 3;
 
-          GUI.pad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-        }
+        GUI.pad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
 
         this.rs.add(localRocketryRocket);
       }

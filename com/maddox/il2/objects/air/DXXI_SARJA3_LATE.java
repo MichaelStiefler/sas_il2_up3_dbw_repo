@@ -11,7 +11,6 @@ import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.il2.objects.Wreckage;
 import com.maddox.rts.HomePath;
@@ -102,8 +101,6 @@ public class DXXI_SARJA3_LATE extends DXXI
 
   private void customization()
   {
-    if (!Mission.isSingle())
-      return;
     int i = hierMesh().chunkFindCheck("cf_D0");
     int j = hierMesh().materialFindInChunk("Gloss1D0o", i);
     Mat localMat = hierMesh().material(j);

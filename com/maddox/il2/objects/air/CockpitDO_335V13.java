@@ -147,18 +147,17 @@ public class CockpitDO_335V13 extends CockpitPilot
 
     if (useRealisticNavigationInstruments())
     {
-      this.mesh.chunkSetAngles("Z_Compass2", this.setNew.azimuth.getDeg(paramFloat) - this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
-      this.mesh.chunkSetAngles("Z_Compass4", 90.0F + this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
-
-      this.mesh.chunkSetAngles("Z_Compass1", -this.setNew.waypointAzimuth.getDeg(0.1F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_Compass2", -this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_Compass1", this.setNew.waypointAzimuth.getDeg(0.1F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_Compass4", -this.setNew.waypointAzimuth.getDeg(0.1F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_Compass3", 90.0F - this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     }
     else
     {
       this.mesh.chunkSetAngles("Z_Compass1", -this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
-      this.mesh.chunkSetAngles("Z_Compass4", 90.0F - this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
-
       this.mesh.chunkSetAngles("Z_Compass2", this.setNew.waypointAzimuth.getDeg(0.1F), 0.0F, 0.0F);
       this.mesh.chunkSetAngles("Z_Compass3", -this.setNew.waypointAzimuth.getDeg(0.1F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_Compass4", 90.0F - this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     }
 
     this.mesh.chunkSetAngles("Z_Hour1", cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F, 0.0F);
@@ -308,10 +307,10 @@ public class CockpitDO_335V13 extends CockpitPilot
         else if (CockpitDO_335V13.this.setNew.dimPosition < 1.0F) CockpitDO_335V13.this.setNew.dimPosition = (CockpitDO_335V13.this.setOld.dimPosition + 0.05F);
 
         World.cur(); World.land(); CockpitDO_335V13.this.setNew.radioalt = (0.9F * CockpitDO_335V13.this.setOld.radioalt + 0.1F * (CockpitDO_335V13.this.fm.getAltitude() - Landscape.HQ_Air((float)CockpitDO_335V13.this.fm.Loc.x, (float)CockpitDO_335V13.this.fm.Loc.y)));
-
-        CockpitDO_335V13.this.setNew.beaconDirection = ((10.0F * CockpitDO_335V13.this.setOld.beaconDirection + CockpitDO_335V13.this.getBeaconDirection()) / 11.0F);
-        CockpitDO_335V13.this.setNew.beaconRange = ((10.0F * CockpitDO_335V13.this.setOld.beaconRange + CockpitDO_335V13.this.getBeaconRange()) / 11.0F);
       }
+
+      CockpitDO_335V13.this.setNew.beaconDirection = ((10.0F * CockpitDO_335V13.this.setOld.beaconDirection + CockpitDO_335V13.this.getBeaconDirection()) / 11.0F);
+      CockpitDO_335V13.this.setNew.beaconRange = ((10.0F * CockpitDO_335V13.this.setOld.beaconRange + CockpitDO_335V13.this.getBeaconRange()) / 11.0F);
 
       return true;
     }

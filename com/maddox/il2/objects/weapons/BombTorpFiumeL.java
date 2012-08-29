@@ -20,7 +20,7 @@ public class BombTorpFiumeL extends Torpedo
 
     Property.set(localClass, "impactAngleMin", 24.0F);
     Property.set(localClass, "impactAngleMax", 31.5F);
-    Property.set(localClass, "impactSpeed", 107.0F);
+    Property.set(localClass, "impactSpeed", 115.0F);
     Property.set(localClass, "armingTime", 3.5F);
     Property.set(localClass, "dropAltitude", 100.0F);
     Property.set(localClass, "dropSpeed", 300.0F);

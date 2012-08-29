@@ -79,14 +79,10 @@ public class LorenzBlindLandingBeacon extends BeaconGeneric
   public void missionStarting()
   {
     super.missionStarting();
+    hierMesh().chunkVisible("GuideArrows", false);
     this.emittingPoint.x = this.pos.getAbsPoint().x;
     this.emittingPoint.y = this.pos.getAbsPoint().y;
     this.emittingPoint.z = (this.pos.getAbsPoint().z + 20.0D);
-  }
-
-  public void showGuideArrows()
-  {
-    hierMesh().chunkVisible("GuideArrows", true);
   }
 
   public void align()

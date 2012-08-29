@@ -257,7 +257,7 @@ public class Controls
       }
       this.StepControlArr[paramInt] = paramFloat;
 
-      if (!getStepControlAuto(paramInt))
+      if (!getStepControlAuto(paramInt - 1))
         HUD.log(AircraftHotKeys.hudLogPowerId, "PropPitch", new Object[] { new Integer(Math.round(getStepControl(paramInt) * 100.0F)) });
     }
   }
@@ -482,16 +482,10 @@ public class Controls
         {
           this.PowerControlArr[k] = clamp0115(this.PowerControlArr[k]);
           paramEnginesInterface.engines[k].setControlThrottle(this.PowerControlArr[k]);
-          if (this.PowerControlArr[k] > f5) {
+          if (this.PowerControlArr[k] > f5)
             f5 = this.PowerControlArr[k];
-          }
         }
-        if (paramBoolean1) {
-          this.Power = f5;
-        } else {
-          this.Power = filter(paramFloat1, f5, this.Power, 5.0F, 0.01F * paramFloat1);
-          paramEnginesInterface.setThrottle(this.Power);
-        }
+        this.Power = f5;
       }
       else
       {

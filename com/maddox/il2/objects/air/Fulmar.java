@@ -5,6 +5,7 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.World;
+import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
 import com.maddox.il2.engine.HierMesh;
@@ -23,7 +24,7 @@ public abstract class Fulmar extends Scheme1
   public boolean bPitUnfocused = true;
   public float airBrakePos = 0.0F;
   private float suspension = 0.0F;
-
+  private Maneuver maneuver = null;
   protected float arrestor = 0.0F;
 
   float obsLookoutTimeLeft = 2.0F;
@@ -57,6 +58,10 @@ public abstract class Fulmar extends Scheme1
   public void onAircraftLoaded()
   {
     super.onAircraftLoaded();
+
+    this.FM.Gears.computePlaneLandPose(this.FM);
+    mydebuggunnery("H = " + this.FM.Gears.H);
+    mydebuggunnery("Pitch = " + this.FM.Gears.Pitch);
 
     if (this.thisWeaponsName.startsWith("2x"))
     {
@@ -176,7 +181,7 @@ public abstract class Fulmar extends Scheme1
   }
 
   public void moveSteering(float paramFloat) {
-    hierMesh().chunkSetAngles("GearC2_D0", paramFloat, 0.0F, 0.0F);
+    hierMesh().chunkSetAngles("GearC2_D0", 0.0F, paramFloat, 0.0F);
   }
 
   public void moveWheelSink()

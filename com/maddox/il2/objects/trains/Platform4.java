@@ -70,6 +70,9 @@ public class Platform4 extends Wagon
     case 1:
       str = "winter";
       break;
+    case 2:
+      str = "desert";
+      break;
     default:
       str = "summer";
     }

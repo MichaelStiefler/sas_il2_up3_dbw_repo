@@ -62,7 +62,6 @@ import com.maddox.il2.engine.Sun;
 import com.maddox.il2.engine.VisibilityLong;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.ZutiStayPoint;
 import com.maddox.il2.game.ZutiSupportMethods;
@@ -72,6 +71,7 @@ import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.ActorAlign;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Aircraft;
+import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.il2.objects.weapons.CannonMidrangeGeneric;
@@ -111,8 +111,8 @@ public class BigshipGeneric extends ActorHMesh
   private final int REQUEST_LOC = 93;
 
   private ShipProperties prop = null;
-  private static final int NETSEND_MIN_DELAY_MS_PARTSSTATE = 650;
-  private static final int NETSEND_MAX_DELAY_MS_PARTSSTATE = 1100;
+  private static final int NETSEND_MIN_DELAY_MS_PARTSSTATE = 300;
+  private static final int NETSEND_MAX_DELAY_MS_PARTSSTATE = 500;
   private long netsendPartsState_lasttimeMS = 0L;
   private boolean netsendPartsState_needtosend = false;
 
@@ -143,7 +143,7 @@ public class BigshipGeneric extends ActorHMesh
   private static final int NETSEND_MIN_DELAY_MS_DMG = 65;
   private static final int NETSEND_MAX_DELAY_MS_DMG = 115;
   private static final int NETSEND_ABSLIMIT_NUMITEMS_DMG = 256;
-  private static final int NETSEND_MAX_NUMITEMS_DMG = 14;
+  private static final int NETSEND_MAX_NUMITEMS_DMG = 28;
   private long netsendDmg_lasttimeMS = 0L;
   private int netsendDmg_partindex = 0;
   private ArrayList path;
@@ -330,6 +330,7 @@ public class BigshipGeneric extends ActorHMesh
     if ((this.path == null) || (this.dying != 0) || (Mission.isDogfight())) {
       return;
     }
+    printPath("Before:");
 
     Object localObject1 = (Segment)this.path.get(this.cachedSeg);
 
@@ -428,10 +429,11 @@ public class BigshipGeneric extends ActorHMesh
       localObject1 = localObject2;
       i++;
     }
+
+    printPath("After:");
   }
 
-  public void msgShot(Shot paramShot)
-  {
+  public void msgShot(Shot paramShot) {
     paramShot.bodyMaterial = 2;
 
     if (this.dying != 0) {
@@ -1344,8 +1346,6 @@ public class BigshipGeneric extends ActorHMesh
 
     for (i = 0; i < hierMesh().chunks(); i++) {
       hierMesh().setCurChunk(i);
-      if (hierMesh().chunkName().equals("Red"))
-        continue;
       boolean bool = !hierMesh().chunkName().endsWith("_dmg");
       if (hierMesh().chunkName().startsWith("ShdwRcv")) {
         bool = false;
@@ -1382,11 +1382,6 @@ public class BigshipGeneric extends ActorHMesh
   {
     super(paramShipProperties.meshName);
     this.prop = paramShipProperties;
-
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      hideTransparentRunwayRed();
-    }
 
     this.CURRSPEED = this.prop.SPEED;
     initMeshBasedProperties();
@@ -1454,13 +1449,6 @@ public class BigshipGeneric extends ActorHMesh
       this.wakeupTmr = (-SecsToTicks(Rnd(2.0F, 7.0F)));
     }
 
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      if (Engine.land().isWater(this.pos.getAbs().getX(), this.pos.getAbs().getY())) {
-        hierMesh().chunkVisible("Hull1", false);
-      }
-    }
-
     createAirport();
 
     if (!interpEnd("move")) {
@@ -1471,11 +1459,6 @@ public class BigshipGeneric extends ActorHMesh
 
   public BigshipGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
   {
-    if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-    {
-      hideTransparentRunwayRed();
-    }
-
     this.zutiIsShipChief = true;
     try
     {
@@ -1577,7 +1560,7 @@ public class BigshipGeneric extends ActorHMesh
           k++;
         }
       }
-       tmp1062_1061 = (this.wake[0] =  = null); this.wake[1] = tmp1062_1061; this.wake[2] = tmp1062_1061;
+       tmp1037_1036 = (this.wake[0] =  = null); this.wake[1] = tmp1037_1036; this.wake[2] = tmp1037_1036;
       this.tail = null;
       this.noseW = null;
       this.nose = null;
@@ -1675,14 +1658,6 @@ public class BigshipGeneric extends ActorHMesh
       }
 
       createAirport();
-
-      if (((this instanceof Ship.RwyTransp)) || ((this instanceof Ship.RwyTranspWide)) || ((this instanceof Ship.RwyTranspSqr)))
-      {
-        if (Engine.land().isWater(this.pos.getAbs().getX(), this.pos.getAbs().getY())) {
-          hierMesh().chunkVisible("Hull1", false);
-        }
-
-      }
 
       if (!interpEnd("move")) {
         interpPut(new Move(), "move", Time.current(), null);
@@ -2594,7 +2569,7 @@ public class BigshipGeneric extends ActorHMesh
 
     long l1 = NetServerParams.getServerTime();
 
-    long l2 = Rnd(650, 1100);
+    long l2 = Rnd(300, 500);
     if (Math.abs(l1 - this.netsendPartsState_lasttimeMS) < l2)
     {
       return;
@@ -2780,7 +2755,7 @@ public class BigshipGeneric extends ActorHMesh
 
         i++;
 
-        if (i >= 14)
+        if (i >= 28)
         {
           break;
         }
@@ -2835,23 +2810,17 @@ public class BigshipGeneric extends ActorHMesh
     try
     {
       Class localClass = ObjIO.classForName(paramString);
-      Object localObject = localClass.newInstance();
-      Aircraft localAircraft = (Aircraft)localObject;
-
-      String str = Property.stringValue(localAircraft.getClass(), "FlightModel", null);
-      localAircraft.FM = new FlightModel(str);
-      localAircraft.FM.Gears.set(localAircraft.hierMesh());
-      Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), 1.0F);
-      localAircraft.FM.Gears.computePlaneLandPose(localAircraft.FM);
-      Aircraft.forceGear(localAircraft.getClass(), localAircraft.hierMesh(), 0.0F);
+      NetAircraft localNetAircraft = (NetAircraft)localClass.newInstance();
+      Aircraft localAircraft = (Aircraft)localNetAircraft;
+      if (localAircraft.FM == null);
+      localAircraft.setFM(1, false);
 
       if (this.airport != null)
       {
         Loc localLoc = this.airport.requestCell(localAircraft);
         postLocationToMirror(paramNetUser, localLoc);
       }
-      localAircraft.FM = null;
-      localAircraft.destroy();
+
       localAircraft = null;
     }
     catch (Exception localException)
@@ -2880,7 +2849,7 @@ public class BigshipGeneric extends ActorHMesh
       if (localNetChannel == null)
         return;
       NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(93);
+      localNetMsgGuaranted.write(93);
       localNetMsgGuaranted.writeDouble(paramLoc.getX());
       localNetMsgGuaranted.writeDouble(paramLoc.getY());
       localNetMsgGuaranted.writeDouble(paramLoc.getZ());
@@ -3532,12 +3501,8 @@ public class BigshipGeneric extends ActorHMesh
     return (this.path == null) || (this.path.size() <= 0);
   }
 
-  public void showTransparentRunwayRed()
+  public void hideTransparentRunwayRed()
   {
-    hierMesh().chunkVisible("Red", true);
-  }
-
-  public void hideTransparentRunwayRed() {
     hierMesh().chunkVisible("Red", false);
   }
 
@@ -4064,6 +4029,7 @@ public class BigshipGeneric extends ActorHMesh
       if (paramNetMsgInput.isGuaranted())
       {
         m = paramNetMsgInput.readUnsignedByte();
+        System.out.println("MIRROR NETINPUT: " + m);
         NetMsgGuaranted localNetMsgGuaranted1;
         switch (m)
         {
@@ -4372,7 +4338,7 @@ public class BigshipGeneric extends ActorHMesh
       if (paramNetMsgInput.isGuaranted())
       {
         i = paramNetMsgInput.readUnsignedByte();
-
+        System.out.println("MASTER NETINPUT: " + i);
         if (i == 93)
         {
           NetUser localNetUser = (NetUser)paramNetMsgInput.readNetObj();
@@ -4523,7 +4489,7 @@ public class BigshipGeneric extends ActorHMesh
       {
         BigshipGeneric.this.zutiRefreshBornPlace();
 
-        if ((BigshipGeneric.this.path != null) || (!Mission.isDeathmatch()))
+        if (BigshipGeneric.this.path != null)
         {
           BigshipGeneric.this.eraseGuns();
           return false;

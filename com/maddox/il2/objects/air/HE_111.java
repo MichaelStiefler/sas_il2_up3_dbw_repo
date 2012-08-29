@@ -565,88 +565,71 @@ public abstract class HE_111 extends Scheme2
   {
     switch (paramInt) {
     case 0:
-      break;
-    case 1:
-      this.FM.turret[0].setHealth(paramFloat);
-      break;
-    case 2:
-      this.FM.turret[1].setHealth(paramFloat);
-      if (this.FM.turret.length != 6) break;
-      this.FM.turret[5].setHealth(paramFloat); break;
-    case 3:
-      this.FM.turret[2].setHealth(paramFloat);
-      break;
-    case 4:
-      this.FM.turret[3].setHealth(paramFloat);
-      this.FM.turret[4].setHealth(paramFloat);
-    }
-  }
-
-  public void doMurderPilot(int paramInt)
-  {
-    switch (paramInt)
-    {
-    case 0:
       hierMesh().chunkVisible("Pilot1_D0", false);
       hierMesh().chunkVisible("Pilot1_D1", true);
       hierMesh().chunkVisible("Head1_D0", false);
       hierMesh().chunkVisible("HMask1_D0", false);
-      if ((this.bPitUnfocused) && (!this.FM.AS.bIsAboutToBailout))
-      {
+      if ((this.bPitUnfocused) && (!this.FM.AS.bIsAboutToBailout)) {
         hierMesh().chunkVisible("Pilot1_FAK", false);
         hierMesh().chunkVisible("Pilot1_FAL", true);
         hierMesh().chunkVisible("Head1_FAK", false);
       }
-      if (this.FM.AS.bIsAboutToBailout)
-      {
-        hierMesh().chunkVisible("Pilot1_FAK", false);
-        hierMesh().chunkVisible("Pilot1_FAL", false);
-        hierMesh().chunkVisible("Head1_FAK", false);
-      }
-
-      if ((!hierMesh().isChunkVisible("Nose_D0")) && (!hierMesh().isChunkVisible("Nose_D1")) && (!hierMesh().isChunkVisible("Nose_D2")) && (!hierMesh().isChunkVisible("Nose_D3")))
-      {
-        break;
-      }
-
-      hierMesh().chunkVisible("Gore1_D0", true); break;
+      if (!this.FM.AS.bIsAboutToBailout) break;
+      hierMesh().chunkVisible("Pilot1_FAK", false);
+      hierMesh().chunkVisible("Pilot1_FAL", false);
+      hierMesh().chunkVisible("Head1_FAK", false); break;
     case 1:
       hierMesh().chunkVisible("Pilot2_D0", false);
       hierMesh().chunkVisible("Pilot2_D1", true);
-      if ((this.bPitUnfocused) && (!this.FM.AS.bIsAboutToBailout))
-      {
+      if ((this.bPitUnfocused) && (!this.FM.AS.bIsAboutToBailout)) {
         hierMesh().chunkVisible("Pilot2_FAK", false);
         hierMesh().chunkVisible("Pilot2_FAL", true);
         hierMesh().chunkVisible("HMask2_D0", false);
       }
-      if (this.FM.AS.bIsAboutToBailout)
-      {
+      if (this.FM.AS.bIsAboutToBailout) {
         hierMesh().chunkVisible("Pilot2_FAK", false);
         hierMesh().chunkVisible("Pilot2_FAL", false);
         hierMesh().chunkVisible("HMask2_D0", false);
       }
-
-      if ((!hierMesh().isChunkVisible("Nose_D0")) && (!hierMesh().isChunkVisible("Nose_D1")) && (!hierMesh().isChunkVisible("Nose_D2")) && (!hierMesh().isChunkVisible("Nose_D3")))
-      {
-        break;
-      }
-
-      hierMesh().chunkVisible("Gore2_D0", true); break;
+      this.FM.turret[0].setHealth(paramFloat);
+      break;
     case 2:
       hierMesh().chunkVisible("Pilot3_D0", false);
       hierMesh().chunkVisible("Pilot3_D1", true);
       hierMesh().chunkVisible("HMask3_D0", false);
-      hierMesh().chunkVisible("Gore3_D0", true);
-      break;
+      this.FM.turret[1].setHealth(paramFloat);
+      if (this.FM.turret.length != 6) break; this.FM.turret[5].setHealth(paramFloat); break;
     case 3:
       hierMesh().chunkVisible("Pilot4_D0", false);
       hierMesh().chunkVisible("Pilot4_D1", true);
       hierMesh().chunkVisible("HMask4_D0", false);
+      this.FM.turret[2].setHealth(paramFloat);
       break;
     case 4:
       hierMesh().chunkVisible("Pilot5_D0", false);
       hierMesh().chunkVisible("Pilot5_D1", true);
       hierMesh().chunkVisible("HMask5_D0", false);
+      this.FM.turret[3].setHealth(paramFloat);
+      this.FM.turret[4].setHealth(paramFloat);
+    }
+  }
+
+  public void doMurderPilot(int paramInt) {
+    switch (paramInt) {
+    case 0:
+      if ((!hierMesh().isChunkVisible("Nose_D0")) && (!hierMesh().isChunkVisible("Nose_D1")) && (!hierMesh().isChunkVisible("Nose_D2")) && (!hierMesh().isChunkVisible("Nose_D3")))
+      {
+        break;
+      }
+      hierMesh().chunkVisible("Gore1_D0", true); break;
+    case 1:
+      if ((!hierMesh().isChunkVisible("Nose_D0")) && (!hierMesh().isChunkVisible("Nose_D1")) && (!hierMesh().isChunkVisible("Nose_D2")) && (!hierMesh().isChunkVisible("Nose_D3")))
+      {
+        break;
+      }
+      hierMesh().chunkVisible("Gore2_D0", true); break;
+    case 2:
+      hierMesh().chunkVisible("Gore3_D0", true);
     }
   }
 

@@ -76,7 +76,7 @@ public class CockpitJU_87D5 extends CockpitPilot
     this.light2.light.setEmit(0.0F, 0.0F);
     this.pos.base().draw.lightMap().put("LAMPHOOK2", this.light2);
 
-    this.cockpitNightMats = new String[] { "87DClocks1", "87DClocks2", "87DClocks3", "87DClocks4", "87DClocks5", "87DPlanks2", "Signs" };
+    this.cockpitNightMats = new String[] { "87DClocks1", "87DClocks2", "87DClocks3", "87DClocks4", "87DClocks5", "87DPlanks2" };
     setNightMats(false);
 
     interpPut(new Interpolater(), null, Time.current(), null);
@@ -143,14 +143,15 @@ public class CockpitJU_87D5 extends CockpitPilot
     {
       this.mesh.chunkSetAngles("zRepeater", this.setNew.azimuth.getDeg(paramFloat) - this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
       this.mesh.chunkSetAngles("zCompass", 0.0F, this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F);
+      this.mesh.chunkSetAngles("zCompassOil2", -this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
     }
     else
     {
       this.mesh.chunkSetAngles("zCompass", 0.0F, this.setNew.azimuth.getDeg(paramFloat), 0.0F);
       this.mesh.chunkSetAngles("zRepeater", this.setNew.waypointAzimuth.getDeg(paramFloat * 0.1F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("zCompassOil2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     }
 
-    this.mesh.chunkSetAngles("zCompassOil2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("zCompassOil1", this.fm.Or.getTangage(), 0.0F, 0.0F);
 
     this.mesh.chunkSetAngles("zCompassOil3", this.fm.Or.getKren(), 0.0F, 0.0F);

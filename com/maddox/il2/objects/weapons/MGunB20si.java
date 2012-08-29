@@ -10,7 +10,7 @@ public class MGunB20si extends MGunB20s
 
     localGunProperties.bUseHookAsRel = true;
     localGunProperties.shells = null;
-    localGunProperties.shotFreq = 10.0F;
+    localGunProperties.shotFreq = 13.333333F;
 
     localGunProperties.maxDeltaAngle = 0.12F;
 

@@ -628,60 +628,6 @@ public abstract class Plane
     new PlaneGeneric.SPAWN(R_5.class);
     new PlaneGeneric.SPAWN(RE_2002.class);
     new PlaneGeneric.SPAWN(SWORDFISH.class);
-
-    new PlaneGeneric.SPAWN(P_47D.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE5B12LBS.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE5B16LBS.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE5BM4616LBS.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE5C216LBS.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE925LBSCW.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE9CHF.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE9M63.class);
-
-    new PlaneGeneric.SPAWN(SPITFIRE9M61.class);
-  }
-
-  public static class SPITFIRE9M61 extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE9M63 extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE9CHF extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE925LBSCW extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE5C216LBS extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE5BM4616LBS extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE5B16LBS extends PlaneGeneric
-  {
-  }
-
-  public static class SPITFIRE5B12LBS extends PlaneGeneric
-  {
-  }
-
-  public static class P_47D extends PlaneGeneric
-  {
   }
 
   public static class SWORDFISH extends PlaneGeneric

@@ -120,6 +120,7 @@ public class HUD
   private Orient _oNull = new Orient(0.0F, 0.0F, 0.0F);
   private Mat spriteLeft;
   private Mat spriteRight;
+  private Mat spriteG;
   private Mesh meshNeedle1;
   private Mesh meshNeedle2;
   private Mesh meshNeedle3;
@@ -229,18 +230,17 @@ public class HUD
     }
 
     localTTFont.output(j, 5.0F, 5.0F, 0.0F, this.renderSpeedSubstrings[0][0] + " " + k + " " + this.renderSpeedSubstrings[0][1]);
-
-    if (i1 != 0)
-      localTTFont.output(j, 5.0F, 5 + i + i + i, 0.0F, this.renderSpeedSubstrings[3][0]);
     if (World.cur().diffCur.NoSpeedBar) {
       return;
     }
     localTTFont.output(j, 5.0F, 5 + i, 0.0F, this.renderSpeedSubstrings[1][0] + " " + m + " " + this.renderSpeedSubstrings[1][1]);
     localTTFont.output(j, 5.0F, 5 + i + i, 0.0F, this.renderSpeedSubstrings[2][0] + " " + n + " " + this.renderSpeedSubstrings[2][1]);
+
+    if (i1 != 0)
+      localTTFont.output(j, 5.0F, 5 + i + i + i, 0.0F, this.renderSpeedSubstrings[3][0]);
   }
 
-  public void clearSpeed()
-  {
+  public void clearSpeed() {
     this.iDrawSpeed = 1; } 
   private void initSpeed() { this.iDrawSpeed = 1;
   }
@@ -1121,6 +1121,8 @@ public class HUD
     this.spriteLeft.preRender();
     this.spriteRight.preRender();
 
+    this.spriteG.preRender();
+
     this.meshNeedle1.preRender();
     this.meshNeedle2.preRender();
     this.meshNeedle3.preRender();
@@ -1149,6 +1151,8 @@ public class HUD
     Render.drawTile(0.0F, 0.0F, 256.0F * f3, 256.0F * f4, 0.0F, this.spriteLeft, -1, 0.0F, 1.0F, 1.0F, -1.0F);
 
     Render.drawTile(768.0F * f3, 0.0F, 256.0F * f3, 256.0F * f4, 0.0F, this.spriteRight, -1, 0.0F, 1.0F, 1.0F, -1.0F);
+
+    Render.drawTile(200.0F * f3, 168.0F * f4, 64.0F * f3, 64.0F * f4, 0.0F, this.spriteG, -1, 0.0F, 1.0F, 1.0F, -1.0F);
 
     Point3d localPoint3d = World.getPlayerAircraft().pos.getAbsPoint();
     Orient localOrient1 = World.getPlayerAircraft().pos.getAbsOrient();
@@ -1234,11 +1238,11 @@ public class HUD
     String str2 = "" + f6;
     float f8 = this.fntLcd.width(str2);
     if (World.getPlayerFM().getLoadDiff() < World.getPlayerFM().getLimitLoad() * 0.25F)
-      this.fntLcd.output(-16776961, 215.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
+      this.fntLcd.output(-16776961, 249.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
     else if (i < 0)
-      this.fntLcd.output(-16777216, 215.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
+      this.fntLcd.output(-16777216, 249.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
     else
-      this.fntLcd.output(-1, 215.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
+      this.fntLcd.output(-1, 249.0F * f3 - f8, 182.0F * f4, 0.0F, str2);
   }
 
   private float cvt(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5)
@@ -1259,6 +1263,8 @@ public class HUD
     this.meshNeedle5 = new Mesh("gui/game/hud/needle5/mono.sim");
     this.meshNeedle6 = new Mesh("gui/game/hud/needle6/mono.sim");
     this.meshNeedleMask = new Mesh("gui/game/hud/needlemask/mono.sim");
+
+    this.spriteG = Mat.New("gui/game/hud/hudg.mat");
 
     this.fntLcd = TTFont.get("lcdnova");
     setScales();

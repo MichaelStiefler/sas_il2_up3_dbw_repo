@@ -62,8 +62,6 @@ public class Zuti_WManageAircrafts extends GWindowFramed
   private GWindowEditControl parentEditControl = null;
   public Zuti_WAircraftLoadout zutiCapturedAcLoadouts = null;
 
-  private static boolean showAI = false;
-
   public void windowShown()
   {
     super.windowShown();
@@ -72,7 +70,6 @@ public class Zuti_WManageAircrafts extends GWindowFramed
   public void windowHidden()
   {
     super.windowHidden();
-    setShowAIPlanes(false);
   }
 
   public void created()
@@ -188,7 +185,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           localObject = (Class)localArrayList.get(i);
-          if ((!Property.containsValue((Class)localObject, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
+          if (!Property.containsValue((Class)localObject, "cockpitClass"))
             continue;
           str1 = Property.stringValue((Class)localObject, "originCountry", null);
           if (str1 == null)
@@ -225,7 +222,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals(Property.stringValue(localClass, "originCountry", null))))
+          if ((!Property.containsValue(localClass, "cockpitClass")) || (!str1.equals(Property.stringValue(localClass, "originCountry", null))))
             continue;
           String str2 = Property.stringValue(localClass, "keyName");
           if (Zuti_WManageAircrafts.this.lstAvailable.lst.contains(str2)) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.add(str2);
@@ -245,7 +242,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals(Property.stringValue(localClass, "originCountry", null))))
+          if ((!Property.containsValue(localClass, "cockpitClass")) || (!str1.equals(Property.stringValue(localClass, "originCountry", null))))
             continue;
           String str2 = Property.stringValue(localClass, "keyName");
           int j = Zuti_WManageAircrafts.this.lstAvailable.lst.indexOf(str2);
@@ -269,7 +266,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           localObject = (Class)localArrayList.get(i);
-          if ((!Property.containsValue((Class)localObject, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
+          if (!Property.containsValue((Class)localObject, "cockpitClass"))
             continue;
           float f = Property.floatValue((Class)localObject, "yearService", 0.0F);
           if (f == 0.0F) continue; localTreeMap.put("" + (int)f, null);
@@ -295,7 +292,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals("" + (int)Property.floatValue(localClass, "yearService", 0.0F))))
+          if ((!Property.containsValue(localClass, "cockpitClass")) || (!str1.equals("" + (int)Property.floatValue(localClass, "yearService", 0.0F))))
             continue;
           String str2 = Property.stringValue(localClass, "keyName");
           if (Zuti_WManageAircrafts.this.lstAvailable.lst.contains(str2)) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.add(str2);
@@ -315,7 +312,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals("" + (int)Property.floatValue(localClass, "yearService", 0.0F))))
+          if ((!Property.containsValue(localClass, "cockpitClass")) || (!str1.equals("" + (int)Property.floatValue(localClass, "yearService", 0.0F))))
             continue;
           String str2 = Property.stringValue(localClass, "keyName");
           int j = Zuti_WManageAircrafts.this.lstAvailable.lst.indexOf(str2);
@@ -339,7 +336,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           localObject = (Class)localArrayList.get(i);
-          if ((!Property.containsValue((Class)localObject, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
+          if (!Property.containsValue((Class)localObject, "cockpitClass"))
             continue;
           if (TypeStormovik.class.isAssignableFrom((Class)localObject))
             localTreeMap.put(Plugin.i18n("bplace_sturm"), TypeStormovik.class);
@@ -382,7 +379,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           Class localClass2 = (Class)localArrayList.get(i);
-          if ((!Property.containsValue(localClass2, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
+          if (!Property.containsValue(localClass2, "cockpitClass"))
             continue;
           if (localClass1 == null ? 
             Scheme1.class.isAssignableFrom(localClass2) : 
@@ -405,7 +402,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
         for (int i = 0; i < localArrayList.size(); i++)
         {
           Class localClass2 = (Class)localArrayList.get(i);
-          if ((!Property.containsValue(localClass2, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
+          if (!Property.containsValue(localClass2, "cockpitClass"))
             continue;
           if (localClass1 == null ? 
             Scheme1.class.isAssignableFrom(localClass2) : 
@@ -432,7 +429,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
     for (int k = 0; k < localArrayList.size(); k++)
     {
       localClass = (Class)localArrayList.get(k);
-      if ((!Property.containsValue(localClass, "cockpitClass")) && (!showAI))
+      if (!Property.containsValue(localClass, "cockpitClass"))
         continue;
       str = Property.stringValue(localClass, "keyName");
       if (!this.lstAvailable.lst.contains(str)) {
@@ -445,7 +442,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
       for (k = 0; k < localArrayList.size(); k++)
       {
         localClass = (Class)localArrayList.get(k);
-        if ((!Property.containsValue(localClass, "cockpitClass")) && (!showAI))
+        if (!Property.containsValue(localClass, "cockpitClass"))
           continue;
         str = Property.stringValue(localClass, "keyName");
         if (this.lstInReserve.lst.contains(str)) continue; this.lstAvailable.lst.add(str);
@@ -482,7 +479,7 @@ public class Zuti_WManageAircrafts extends GWindowFramed
     for (int i = 0; i < localArrayList.size(); i++)
     {
       Class localClass = (Class)localArrayList.get(i);
-      if ((!Property.containsValue(localClass, "cockpitClass")) && (!showAI))
+      if (!Property.containsValue(localClass, "cockpitClass"))
         continue;
       String str = Property.stringValue(localClass, "keyName");
       if (!paramArrayList.contains(str))
@@ -596,13 +593,6 @@ public class Zuti_WManageAircrafts extends GWindowFramed
   {
     doNew(Plugin.builder.clientWindow, 2.0F, 2.0F, 40.0F, 40.0F, true);
     this.bSizable = true;
-  }
-
-  public void setShowAIPlanes(boolean paramBoolean)
-  {
-    showAI = paramBoolean;
-    this.bModifyPlane.bEnable = (!showAI);
-    this.bModifyPlane.bVisible = (!showAI);
   }
 
   public void setParentEditControl(GWindowEditControl paramGWindowEditControl)

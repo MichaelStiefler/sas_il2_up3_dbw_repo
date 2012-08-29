@@ -100,7 +100,7 @@ public class CockpitHS_129 extends CockpitPilot
   protected void reflectPlaneToModel()
   {
     HierMesh localHierMesh = aircraft().hierMesh();
-    if ((localHierMesh.isChunkVisible("engine1_d2")) || (localHierMesh.isChunkVisible("WingLIn_D2")) || (localHierMesh.isChunkVisible("WingLIn_D3")))
+    if ((localHierMesh.isChunkVisible("engine1_d2")) || (localHierMesh.isChunkVisible("WingLIn_D2")))
     {
       this.mesh.chunkVisible("gaugesEx_01", false);
       this.mesh.chunkVisible("D_gaugesEx_01", true);
@@ -112,7 +112,7 @@ public class CockpitHS_129 extends CockpitPilot
       this.mesh.chunkVisible("Z_need_oilpress_a_01", false);
       this.mesh.chunkVisible("Z_need_oilsystem", false);
     }
-    if ((localHierMesh.isChunkVisible("engine2_d2")) || (localHierMesh.isChunkVisible("WingRIn_D2")) || (localHierMesh.isChunkVisible("WingRIn_D3")))
+    if ((localHierMesh.isChunkVisible("engine2_d2")) || (localHierMesh.isChunkVisible("WingRIn_D2")))
     {
       this.mesh.chunkVisible("gaugesEx_02", false);
       this.mesh.chunkVisible("D_gaugesEx_02", true);
@@ -123,7 +123,7 @@ public class CockpitHS_129 extends CockpitPilot
       this.mesh.chunkVisible("Z_need_oilpress_b_02", false);
       this.mesh.chunkVisible("Z_need_oilpress_a_02", false);
     }
-    if ((!localHierMesh.isChunkVisible("WingLIn_D0")) && (!localHierMesh.isChunkVisible("WingLIn_D1")) && (!localHierMesh.isChunkVisible("WingLIn_D2")) && (!localHierMesh.isChunkVisible("WingLIn_D3")))
+    if ((!localHierMesh.isChunkVisible("WingLIn_D0")) && (!localHierMesh.isChunkVisible("WingLIn_D1")) && (!localHierMesh.isChunkVisible("WingLIn_D2")))
     {
       this.mesh.chunkVisible("gaugesEx_01", false);
       this.mesh.chunkVisible("D_gaugesEx_01", false);
@@ -135,7 +135,7 @@ public class CockpitHS_129 extends CockpitPilot
       this.mesh.chunkVisible("Z_need_oilpress_a_01", false);
       this.mesh.chunkVisible("Z_need_oilsystem", false);
     }
-    if ((!localHierMesh.isChunkVisible("WingRIn_D0")) && (!localHierMesh.isChunkVisible("WingRIn_D1")) && (!localHierMesh.isChunkVisible("WingRIn_D2")) && (!localHierMesh.isChunkVisible("WingRIn_D3")))
+    if ((!localHierMesh.isChunkVisible("WingRIn_D0")) && (!localHierMesh.isChunkVisible("WingRIn_D1")) && (!localHierMesh.isChunkVisible("WingRIn_D2")))
     {
       this.mesh.chunkVisible("gaugesEx_02", false);
       this.mesh.chunkVisible("D_gaugesEx_02", false);
@@ -403,7 +403,7 @@ public class CockpitHS_129 extends CockpitPilot
     }
     else
     {
-      this.mesh.chunkSetAngles("Z_need_kompass_02", this.setNew.azimuth.getDeg(paramFloat) + 90.0F, 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("Z_need_kompass_02", -this.setNew.azimuth.getDeg(paramFloat) + 90.0F, 0.0F, 0.0F);
       this.mesh.chunkSetAngles("Z_need_kompass_03", -this.setNew.waypointAzimuth.getDeg(paramFloat * 0.1F), 0.0F, 0.0F);
     }
 
@@ -631,7 +631,7 @@ public class CockpitHS_129 extends CockpitPilot
 
     this.mesh.chunkSetAngles("Z_need_oilsystem", -cvt((this.rpmGeneratedPressure1 + this.rpmGeneratedPressure2) / 2.0F, 0.0F, 2000.0F, 48.0F, 250.0F), 0.0F, 0.0F);
 
-    if (!this.ac.sideWindow)
+    if (this.ac.fullCanopyOpened)
     {
       Aircraft.xyz[0] = 0.0F;
       Aircraft.xyz[2] = 0.0F;

@@ -21,9 +21,8 @@ public abstract class HS_129 extends Scheme2
   implements TypeStormovikArmored
 {
   public float canopyF = 0.0F;
-  private boolean fullCanopyOpened = false;
+  public boolean fullCanopyOpened = false;
   private boolean sideWindowOpened = false;
-  public boolean sideWindow = false;
   float suspR = 0.0F;
   float suspL = 0.0F;
   public boolean bChangedPit = true;
@@ -86,14 +85,12 @@ public abstract class HS_129 extends Scheme2
     {
       if (((this.FM.Gears.onGround()) && (this.FM.getSpeed() < 5.0F)) || ((this.fullCanopyOpened) && ((this.FM.isPlayers()) || (isNetPlayer()))))
       {
-        this.sideWindow = false;
         this.fullCanopyOpened = true;
         Aircraft.xyz[1] = (paramFloat * 1.0F);
         hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
       }
       else
       {
-        this.sideWindow = true;
         if ((this.pit != null) && (this.canopyF == 0.0F))
           this.slideRWindow = this.pit.isViewRight();
         this.sideWindowOpened = true;
@@ -108,7 +105,6 @@ public abstract class HS_129 extends Scheme2
     }
     else if (((this.FM.Gears.onGround()) && (this.FM.getSpeed() < 5.0F) && (!this.sideWindowOpened)) || (this.fullCanopyOpened))
     {
-      this.sideWindow = false;
       Aircraft.xyz[1] = (paramFloat * 1.0F);
       hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
 
@@ -117,7 +113,6 @@ public abstract class HS_129 extends Scheme2
     }
     else
     {
-      this.sideWindow = true;
       Aircraft.xyz[1] = (paramFloat * 0.33F);
       if (this.slideRWindow)
         hierMesh().chunkSetLocate("Blister2R_D0", Aircraft.xyz, Aircraft.ypr);
@@ -914,11 +909,9 @@ public abstract class HS_129 extends Scheme2
       break;
     case 10:
       doWreck("GearR3_D0");
-      this.FM.Gears.hitRightGear();
       break;
     case 9:
       doWreck("GearL3_D0");
-      this.FM.Gears.hitLeftGear();
     }
 
     return super.cutFM(paramInt1, paramInt2, paramActor);

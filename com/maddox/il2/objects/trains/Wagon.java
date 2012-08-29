@@ -341,14 +341,8 @@ public abstract class Wagon extends ActorHMesh
   {
     new MsgAction(0.0D, this) {
       public void doAction(Object paramObject) { Wagon localWagon = (Wagon)paramObject;
-        try
-        {
-          Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/WagonFC.eff", 60.0F);
-        }
-        catch (ActorException localActorException)
-        {
-          Eff3DActor.New(localWagon, new HookNamed(localWagon, "Select1"), null, 1.0F, "Effects/Smokes/WagonFC.eff", 60.0F);
-        }
+
+        Eff3DActor.New(localWagon, new HookNamed(localWagon, "Damage"), null, 1.0F, "Effects/Smokes/WagonFC.eff", 60.0F);
       }
     };
     new MsgAction(2.5D) {

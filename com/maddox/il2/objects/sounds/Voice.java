@@ -263,8 +263,6 @@ public class Voice extends VoiceBase
     if (!Config.isUSE_RENDER()) return;
 
     int j = World.getPlayerArmy();
-    if (Main3D.cur3D().ordersTree.frequency() == null)
-      return;
     if (Main3D.cur3D().ordersTree.frequency().booleanValue()) {
       if (paramInt2 != j) return;
     }
@@ -887,7 +885,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakCheckYour6(Aircraft paramAircraft1, Aircraft paramAircraft2) {
-    if ((!Actor.isAlive(paramAircraft1)) || (paramAircraft1.getWing() == null)) return;
+    if (!Actor.isAlive(paramAircraft1)) return;
     int i = (int)(Time.current() / 60000L);
     int j = paramAircraft1.getArmy() - 1 & 0x1;
     int k = paramAircraft1.aircIndex();
@@ -907,15 +905,8 @@ public class Voice extends VoiceBase
     int i = (int)(Time.current() / 60000L);
     int j = paramAircraft.getArmy() - 1 & 0x1;
     int k = paramAircraft.aircIndex();
-    try
-    {
-      if (i < cur().SpeakToReturn[j][k]) return;
-      cur().SpeakToReturn[j][k] = (i + 5);
-    }
-    catch (ArrayIndexOutOfBoundsException localArrayIndexOutOfBoundsException)
-    {
-      return;
-    }
+    if (i < cur().SpeakToReturn[j][k]) return;
+    cur().SpeakToReturn[j][k] = (i + 5);
     if (paramAircraft.aircNumber() < 2) return;
     int m = paramAircraft.getWing().indexInSquadron() * 4 + paramAircraft.aircIndex();
     if (m > 15) return;
@@ -1011,7 +1002,7 @@ public class Voice extends VoiceBase
 
   public static void speakThisIs(Aircraft paramAircraft)
   {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = paramAircraft.aircNumber();
@@ -1025,7 +1016,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakIAm(Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = paramAircraft.aircNumber();
@@ -1051,7 +1042,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakNumber_same_str(int paramInt, Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = i * 4 + j;
@@ -1064,7 +1055,7 @@ public class Voice extends VoiceBase
   }
 
   public static void speakNumber(int paramInt, Aircraft paramAircraft) {
-    if ((paramAircraft == null) || (paramAircraft.getWing() == null)) return;
+    if (paramAircraft == null) return;
     int i = paramAircraft.getWing().indexInSquadron();
     int j = paramAircraft.aircIndex();
     int k = i * 4 + j;

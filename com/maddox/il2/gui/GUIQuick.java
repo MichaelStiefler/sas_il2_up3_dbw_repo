@@ -131,7 +131,8 @@ public class GUIQuick extends GameState
           this.wing[(i + 8)].regiment = this.r01;
         }
     }
-    catch (Exception localException) {
+    catch (Exception localException)
+    {
       System.out.println("WARNING: No quick missions in Missions folder.");
     }
   }
@@ -141,48 +142,22 @@ public class GUIQuick extends GameState
     if ((i >= 0) && (i < this._mapKey.length) && (!this.bNoAvailableMissions)) {
       ArrayList localArrayList = getAvailableMissionsS(getMapName(), getMapName() + getArmyString() + this._targetKey[this.wTarget.getSelected()] + (this.wTarget.getSelected() == 0 ? this.noneTargetSuffix[this.wLevel.getSelected()] : ""));
       Random localRandom = new Random();
-
-      if (localArrayList.size() < 1) {
-        return;
-      }
       int j = localRandom.nextInt(localArrayList.size());
       String str1 = "Missions/Quick/" + getMapName() + "/" + (String)localArrayList.get(j);
       this.currentMissionName = str1;
       SectFile localSectFile = new SectFile(this.currentMissionName, 0);
-      int k;
       if (localSectFile.sectionIndex("r0100") >= 0) {
         this.r01 = "r01";
-        this.r010 = "r010";
         this.g01 = "g01";
-        this.g010 = "g010";
-        for (k = 0; k < 16; k++)
-          if (k < 8) {
-            if (this.wing[k].regiment.equals("usa01"))
-              this.wing[k].regiment = "r01";
-          }
-          else if (this.wing[k].regiment.equals("ja01"))
-            this.wing[k].regiment = "g01";
       }
-      else
-      {
+      else {
         this.r01 = "usa01";
-        this.r010 = "usa010";
         this.g01 = "ja01";
-        this.g010 = "ja010";
-        for (k = 0; k < 16; k++) {
-          if (k < 8) {
-            if (this.wing[k].regiment.equals("r01"))
-              this.wing[k].regiment = "usa01";
-          }
-          else if (this.wing[k].regiment.equals("g01")) {
-            this.wing[k].regiment = "ja01";
-          }
-        }
-
       }
 
       String str2 = localSectFile.get("MAIN", "MAP", (String)null);
-      if (str2 != null) {
+      if (str2 != null)
+      {
         IniFile localIniFile = new IniFile("maps/" + str2, 0);
         String str3 = localIniFile.get("WORLDPOS", "CAMOUFLAGE", "SUMMER");
         if (World.cur() != null)
@@ -354,7 +329,7 @@ public class GUIQuick extends GameState
           localObject2 = this.r01 + "1" + Character.forDigit(j - 4, 10);
         }
         if (!localSectFile.exist("Wing", (String)localObject2)) {
-          throw new Exception("Section Red " + (String)localObject2 + " not found");
+          throw new Exception("Section " + (String)localObject2 + " not found");
         }
       }
       for (j = 0; j < 8; j++)
@@ -365,7 +340,7 @@ public class GUIQuick extends GameState
           localObject2 = this.g01 + "1" + Character.forDigit(j - 4, 10);
         }
         if (!localSectFile.exist("Wing", (String)localObject2)) {
-          throw new Exception("Section Blue " + (String)localObject2 + " not found");
+          throw new Exception("Section " + (String)localObject2 + " not found");
         }
       }
       localSectFile.set("MAIN", "CloudType", this.wWeather.getSelected());
@@ -492,7 +467,7 @@ public class GUIQuick extends GameState
       System.out.println(localException.getMessage());
       localException.printStackTrace();
       System.out.println(">> no file: " + str1 + "");
-      Object localObject1 = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, "Error", "Data file corrupt 1", 3, 0.0F);
+      Object localObject1 = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, "Error", "Data file corrupt", 3, 0.0F);
       return;
     }
   }
@@ -528,10 +503,7 @@ public class GUIQuick extends GameState
       if (this.ssect.get("states", "wing8", this.wing[8]) == null) {
         i = 4;
         j = 8;
-
-        this.ioState.getMap();
       }
-
       for (int k = 0; k < j; k++) {
         int m = 0;
         if ((i > 0) && (k > 3))
@@ -539,9 +511,9 @@ public class GUIQuick extends GameState
         this.ssect.get("states", "wing" + k, this.wing[(k + m)]);
       }
     }
-    catch (Exception localException)
-    {
-      GWindowMessageBox localGWindowMessageBox = new GWindowMessageBox(this.client, 20.0F, true, "Error", "Data file corrupt 2", 3, 0.0F);
+    catch (Exception localException) {
+      System.out.println("sorry, data corrupt");
+      GWindowMessageBox localGWindowMessageBox = new GWindowMessageBox(this.client, 20.0F, true, "Error", "Data file corrupt", 3, 0.0F);
     }
     onArmyChange();
     setShow((this.bFirst) && (this.noneTarget), this.wLevel);
@@ -677,21 +649,15 @@ public class GUIQuick extends GameState
     this.bScramble = false;
     this.noneTarget = true;
     pl = Config.cur.ini.get("QMB", "PlaneList", 0, 0, 3);
-    if (Config.cur.ini.get("QMB", "DumpPlaneList", 0, 0, 1) > 0) {
+    if (Config.cur.ini.get("QMB", "DumpPlaneList", 0, 0, 1) > 0)
       dumpFullPlaneList();
-    }
     File localFile = new File("Missions/Quick/QMBair_" + pl + ".ini");
-    if (pl > 1)
-    {
-      if (!localFile.exists()) {
-        pl = 0;
-      }
-      else if (!checkCustomAirIni("Missions/Quick/QMBair_" + pl + ".ini")) {
-        pl = 0;
-      }
-
+    if ((!localFile.exists()) && (pl > 1)) {
+      pl = 0;
     }
-
+    else if (!checkCustomAirIni("Missions/Quick/QMBair_" + pl + ".ini")) {
+      pl = 0;
+    }
     this.r01 = "r01";
     this.r010 = "r010";
     this.g01 = "g01";
@@ -896,6 +862,7 @@ public class GUIQuick extends GameState
 
     this.wMap.setEditable(false);
     mapChanged();
+    defaultRegiments();
 
     this.dialogClient.activateWindow();
     showHide();
@@ -1139,9 +1106,13 @@ public class GUIQuick extends GameState
     ObjIO.validate(ItemWing.class, "loaded");
   }
 
-  public static class DirFilter
+  public class DirFilter
     implements FilenameFilter
   {
+    public DirFilter()
+    {
+    }
+
     public boolean accept(File paramFile, String paramString)
     {
       File localFile = new File(paramFile, paramString);
@@ -1169,17 +1140,6 @@ public class GUIQuick extends GameState
     {
     }
 
-    public void getMap()
-    {
-      String[] arrayOfString = { "Okinawa", "CoralSeaOnline", "Net8Islands", "Smolensk", "Moscow", "Crimea", "Kuban", "Bessarabia", "MTO", "Slovakia_winter", "Slovakia_summer" };
-
-      int i = Integer.parseInt(this.map);
-      String str = arrayOfString[i];
-      this.map = str;
-      GUIQuick.this.wMap.setValue(I18N.map(str));
-      GUIQuick.this.mapChanged();
-    }
-
     public void save()
     {
       this.our = GUIQuick.this.OUR;
@@ -1200,31 +1160,27 @@ public class GUIQuick extends GameState
     public void loaded() {
       GUIQuick.this.OUR = this.our;
       GUIQuick.this.wMap.setValue(I18N.map(this.map));
-
-      GUIQuick.this.mapChanged();
-
       GUIQuick.this.wSituation.setSelected(this.situation, true, false);
       GUIQuick.this.wTarget.setSelected(this.target, true, false);
       GUIQuick.this.wDefence.setSelected(this.defence, true, false);
-
-      GUIQuick.this.bScramble = this.scramble;
-      GUIQuick.this.wPos.setValue(this.pos);
-      GUIQuick.this.validateEditableComboControl(GUIQuick.this.wPos);
-
-      GUIQuick.this.wAltitude.setValue(this.altitude);
-      int i = Integer.parseInt(GUIQuick.this.wAltitude.getValue());
-      if (i < 100) {
+      if (this.pos == null) {
         if (this.situation != 0)
           this.pos = "700";
         else {
           this.pos = "0";
         }
         this.cldheight = "2000";
+        int i = Integer.parseInt(this.altitude);
         this.altitude = GUIQuick.this.wAltitude.get(i);
-        GUIQuick.this.wAltitude.setValue(this.altitude);
         this.scramble = false;
       }
+      GUIQuick.this.bScramble = this.scramble;
+      GUIQuick.this.wPos.setValue(this.pos);
+      GUIQuick.this.validateEditableComboControl(GUIQuick.this.wPos);
+
+      GUIQuick.this.wAltitude.setValue(this.altitude);
       GUIQuick.this.validateEditableComboControl(GUIQuick.this.wAltitude);
+
       GUIQuick.this.wCldHeight.setValue(this.cldheight);
       GUIQuick.this.validateEditableComboControl(GUIQuick.this.wCldHeight);
 
@@ -1367,7 +1323,7 @@ public class GUIQuick extends GameState
         if (GUIQuick.this.wing[this.indx].planes == 0) {
           return true;
         }
-        GUIQuick.access$1902(GUIQuick.this, this.indx);
+        GUIQuick.access$2002(GUIQuick.this, this.indx);
         GUIQuick.this.wing[this.indx].toAirArming();
         GUIAirArming.stateId = 4;
         Main.stateStack().push(55);
@@ -1384,13 +1340,17 @@ public class GUIQuick extends GameState
     }
   }
 
-  static class ItemDlg
+  class ItemDlg
   {
     public GUIQuick.WComboNum wNum;
     public GUIQuick.WComboSkill wSkill;
     public GUIQuick.WComboPlane wPlane;
     public GUIQuick.WComboLoadout wLoadout;
     public GUIQuick.WButtonArming bArming;
+
+    ItemDlg()
+    {
+    }
   }
 
   public class ItemWing
@@ -1833,7 +1793,7 @@ public class GUIQuick extends GameState
       if (paramGWindow == GUIQuick.this.wMap) {
         GUIQuick.this.onArmyChange();
         GUIQuick.this.mapChanged();
-
+        GUIQuick.this.defaultRegiments();
         if (Main.cur() != null) {
           Main.cur();
           if (Main.stateStack() != null) {

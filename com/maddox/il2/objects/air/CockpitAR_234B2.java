@@ -113,7 +113,7 @@ public class CockpitAR_234B2 extends CockpitPilot
     this.mesh.chunkSetAngles("zMCompc", 0.0F, 0.0F, cvt(this.fm.Or.getTangage(), -22.200001F, 22.200001F, -22.200001F, 22.200001F));
     this.mesh.chunkSetAngles("zMCompa", cvt(this.fm.Or.getKren(), -22.200001F, 22.200001F, -22.200001F, 22.200001F), 0.0F, 0.0F);
 
-    this.mesh.chunkSetAngles("zMCompb", -90.0F - this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("zMCompb", -90.0F + this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
 
     this.mesh.chunkSetAngles("zSpeed1a", floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 900.0F, 0.0F, 9.0F), speedometerScale), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("zAlt1a", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 20000.0F, 0.0F, -7200.0F), 0.0F, 0.0F);

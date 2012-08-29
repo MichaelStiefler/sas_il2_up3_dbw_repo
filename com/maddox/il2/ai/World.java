@@ -67,7 +67,6 @@ public class World
 
   public boolean blockMorseChat = false;
   public boolean smallMapWPLabels = false;
-  public boolean showMorseAsText = false;
 
   public RangeRandom rnd = new RangeRandom();
 
@@ -607,7 +606,6 @@ public class World
 
     this.blockMorseChat = Config.cur.ini.get("game", "BlockMorseChat", this.blockMorseChat);
     this.smallMapWPLabels = Config.cur.ini.get("game", "SmallMapWPLabels", this.smallMapWPLabels);
-    this.showMorseAsText = Config.cur.ini.get("game", "ShowMorseAsText", this.showMorseAsText);
   }
 
   public static float getTimeofDay()

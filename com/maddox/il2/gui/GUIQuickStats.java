@@ -107,10 +107,12 @@ public class GUIQuickStats extends GameState
     loadQMBStat();
     fillTableElements();
     this.wScrollStats.resized();
+
     this.client.activateWindow();
   }
 
-  private void fillTableElements() {
+  private void fillTableElements()
+  {
     this.wScrollStats.tableElements[0][0] = ("  " + i18n("q.BFire"));
     this.wScrollStats.tableElements[1][0] = ("  " + i18n("q.AHit"));
     this.wScrollStats.tableElements[2][0] = ("  " + i18n("q.Air%"));
@@ -212,12 +214,14 @@ public class GUIQuickStats extends GameState
     this.wScrollStats.tableElements[23][3] = ("" + qmbTotalScore);
   }
 
-  public void _leave() {
+  public void _leave()
+  {
     saveStat();
     this.client.hideWindow();
   }
 
-  public static void saveStat() {
+  public static void saveStat()
+  {
     String str1 = "users/" + World.cur().userCfg.sId + "/QMB.ini";
     SectFile localSectFile = new SectFile(str1, 1, false, World.cur().userCfg.krypto());
 
@@ -261,9 +265,11 @@ public class GUIQuickStats extends GameState
     localSectFile.saveFile();
   }
 
-  public static void loadQMBStat() {
+  public static void loadQMBStat()
+  {
     String str = "users/" + World.cur().userCfg.sId + "/QMB.ini";
-    if (exestFile(str)) {
+    if (exestFile(str))
+    {
       SectFile localSectFile = new SectFile(str, 1, false, World.cur().userCfg.krypto());
       qmbTotalScore = localSectFile.get("MAIN", "qmbTotalScore", 0);
 
@@ -294,6 +300,7 @@ public class GUIQuickStats extends GameState
       qmbTotalBombsHit = localSectFile.get("MAIN", "qmbTotalBombsHit", 0);
 
       qmbTotalRocketsFired = localSectFile.get("MAIN", "qmbTotalRocketsFired", 0);
+
       qmbTotalRocketsHit = localSectFile.get("MAIN", "qmbTotalRocketsHit", 0);
 
       qmbTotalPctBomb = localSectFile.get("MAIN", "qmbTotalPctBomb", 0.0F);
@@ -302,11 +309,15 @@ public class GUIQuickStats extends GameState
     }
   }
 
-  private static boolean exestFile(String paramString) {
-    try {
+  private static boolean exestFile(String paramString)
+  {
+    try
+    {
       SFSInputStream localSFSInputStream = new SFSInputStream(paramString);
       localSFSInputStream.close();
-    } catch (Exception localException) {
+    }
+    catch (Exception localException)
+    {
       return false;
     }
     return true;
@@ -345,72 +356,90 @@ public class GUIQuickStats extends GameState
     qmbTotalBulletsHit += paramInt3;
     qmbTotalBulletsFiredHitGround += qmbBulletsFiredHitGround;
 
-    if (qmbBulletsFired > 0) {
+    if (qmbBulletsFired > 0)
+    {
       qmbPercentageAir = qmbBulletsHitAir * 100.0F / qmbBulletsFired;
       qmbPercentageGround = qmbBulletsFiredHitGround * 100.0F / qmbBulletsFired;
       qmbPercentageAir = (int)(qmbPercentageAir * 100.0F) / 100.0F;
       qmbPercentageGround = (int)(qmbPercentageGround * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbPercentageAir = GUIQuickStats.qmbPercentageGround = 0.0F;
     }
 
-    if (qmbSessionBulletsFired > 0) {
+    if (qmbSessionBulletsFired > 0)
+    {
       qmbSessionPctAir = qmbSessionBulletsHitAir * 100.0F / qmbSessionBulletsFired;
       qmbSessionPctGround = qmbSessionBulletsFiredHitGround * 100.0F / qmbSessionBulletsFired;
       qmbSessionPctAir = (int)(qmbSessionPctAir * 100.0F) / 100.0F;
       qmbSessionPctGround = (int)(qmbSessionPctGround * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbSessionPctAir = GUIQuickStats.qmbSessionPctGround = 0.0F;
     }
 
-    if (qmbTotalBulletsFired > 0) {
+    if (qmbTotalBulletsFired > 0)
+    {
       qmbTotalPctAir = qmbTotalBulletsHitAir * 100.0F / qmbTotalBulletsFired;
       qmbTotalPctGround = qmbTotalBulletsFiredHitGround * 100.0F / qmbTotalBulletsFired;
       qmbTotalPctAir = (int)(qmbTotalPctAir * 100.0F) / 100.0F;
       qmbTotalPctGround = (int)(qmbTotalPctGround * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbTotalPctAir = GUIQuickStats.qmbTotalPctGround = 0.0F;
     }
 
-    if (qmbMissionBombsFired > 0) {
+    if (qmbMissionBombsFired > 0)
+    {
       qmbMissionPctBomb = qmbMissionBombsHit * 100.0F / qmbMissionBombsFired;
       qmbMissionPctBomb = (int)(qmbMissionPctBomb * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbMissionPctBomb = 0.0F;
     }
 
-    if (qmbSessionBombsFired > 0.0F) {
+    if (qmbSessionBombsFired > 0.0F)
+    {
       qmbSessionPctBomb = qmbSessionBombsHit * 100.0F / qmbSessionBombsFired;
       qmbSessionPctBomb = (int)(qmbSessionPctBomb * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbSessionPctBomb = 0.0F;
     }
 
-    if (qmbTotalBombsFired > 0) {
+    if (qmbTotalBombsFired > 0)
+    {
       qmbTotalPctBomb = qmbTotalBombsHit * 100.0F / qmbTotalBombsFired;
       qmbTotalPctBomb = (int)(qmbTotalPctBomb * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbTotalPctBomb = 0.0F;
     }
 
-    if (qmbMissionRocketsFired > 0) {
+    if (qmbMissionRocketsFired > 0)
+    {
       qmbMissionPctRocket = qmbMissionRocketsHit * 100.0F / qmbMissionRocketsFired;
       qmbMissionPctRocket = (int)(qmbMissionPctRocket * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbMissionPctRocket = 0.0F;
     }
 
-    if (qmbSessionRocketsFired > 0) {
+    if (qmbSessionRocketsFired > 0)
+    {
       qmbSessionPctRocket = qmbSessionRocketsHit * 100.0F / qmbSessionRocketsFired;
       qmbSessionPctRocket = (int)(qmbSessionPctRocket * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbSessionPctRocket = 0.0F;
     }
 
-    if (qmbTotalRocketsFired > 0) {
+    if (qmbTotalRocketsFired > 0)
+    {
       qmbTotalPctRocket = qmbTotalRocketsHit * 100.0F / qmbTotalRocketsFired;
       qmbTotalPctRocket = (int)(qmbTotalPctRocket * 100.0F) / 100.0F;
-    } else {
+    }
+    else {
       qmbTotalPctRocket = 0.0F;
     }
 
@@ -422,9 +451,12 @@ public class GUIQuickStats extends GameState
     qmbSessionGroundKill += qmbMissionGroundKill;
     qmbTotalGroundKill += qmbMissionGroundKill;
 
-    if (paramArrayOfInt != null) {
-      for (int i = 0; i < paramArrayOfInt.length; i++) {
-        switch (paramArrayOfInt[i]) {
+    if (paramArrayOfInt != null)
+    {
+      for (int i = 0; i < paramArrayOfInt.length; i++)
+      {
+        switch (paramArrayOfInt[i])
+        {
         case 1:
           qmbMissionTankKill += 1;
           qmbSessionTankKill += 1;
@@ -445,17 +477,17 @@ public class GUIQuickStats extends GameState
           qmbSessionAAAKill += 1;
           qmbTotalAAAKill += 1;
           break;
-        case 6:
+        case 5:
           qmbMissionTrainKill += 1;
           qmbSessionTrainKill += 1;
           qmbTotalTrainKill += 1;
           break;
-        case 7:
+        case 6:
           qmbMissionShipKill += 1;
           qmbSessionShipKill += 1;
           qmbTotalShipKill += 1;
           break;
-        case 5:
+        case 7:
           qmbMissionBridgeKill += 1;
           qmbSessionBridgeKill += 1;
           qmbTotalBridgeKill += 1;
@@ -469,13 +501,15 @@ public class GUIQuickStats extends GameState
 
     }
 
-    if (paramBoolean2) {
+    if (paramBoolean2)
+    {
       qmbPara += 1;
       qmbSessionPara += 1;
       qmbTotalPara += 1;
     }
 
-    if (paramBoolean1) {
+    if (paramBoolean1)
+    {
       qmbDead += 1;
       qmbSessionDead += 1;
       qmbTotalDead += 1;
@@ -515,7 +549,8 @@ public class GUIQuickStats extends GameState
     qmbScore = 0;
   }
 
-  public static void resetSessionStat() {
+  public static void resetSessionStat()
+  {
     qmbSessionBulletsHit = 0;
     qmbSessionBulletsFired = 0;
     qmbSessionBulletsHitAir = 0;
@@ -543,7 +578,8 @@ public class GUIQuickStats extends GameState
     qmbSessionScore = 0;
   }
 
-  public static void resetQMBStat() {
+  public static void resetQMBStat()
+  {
     qmbBulletsHit = 0;
     qmbTotalBulletsFired = 0;
     qmbTotalBulletsHitAir = 0;
@@ -596,17 +632,19 @@ public class GUIQuickStats extends GameState
   public static class Table extends GWindowTable {
     public String[][] tableElements = new String[24][4];
 
-    public int countRows() { return 24; }
+    public int countRows() {
+      return 24;
+    }
 
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
+    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
       String str = this.tableElements[paramInt1][paramInt2];
       int i = 0;
       if (paramInt2 > 0) {
         i = 1;
       }
-      if (paramInt1 % 2 == 0)
+      if (paramInt1 % 2 == 0) {
         setCanvasColor(new GColor(93, 154, 173));
+      }
       else {
         setCanvasColor(new GColor(113, 174, 193));
       }
@@ -655,33 +693,36 @@ public class GUIQuickStats extends GameState
     {
       if (paramInt1 != 2)
         return super.notify(paramGWindow, paramInt1, paramInt2);
-      if (paramGWindow == GUIQuickStats.this.bPrev) {
+      if (paramGWindow == GUIQuickStats.this.bPrev)
+      {
         Main.stateStack().pop();
         return true;
       }
-      if (paramGWindow == GUIQuickStats.this.bRes) {
+      if (paramGWindow == GUIQuickStats.this.bRes)
+      {
         GUIQuickStats.resetQMBStat();
         GUIQuickStats.this.fillTableElements();
         return true;
       }
+
       return super.notify(paramGWindow, paramInt1, paramInt2);
     }
 
     public void render()
     {
       super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(48.0F), y1024(630.0F), x1024(924.0F), 2.5F);
+      GUISeparate.draw(this, GColor.Gray, x1024(48.0F), y1024(670.0F), x1024(924.0F), 2.0F);
       setCanvasColor(GColor.Gray);
       setCanvasFont(0);
-      draw(x1024(0.0F), y1024(633.0F), x1024(170.0F), M(2.0F), 1, GUIQuickStats.this.i18n("q.BAC"));
-      draw(x1024(285.0F), y1024(633.0F), x1024(170.0F), M(2.0F), 1, GUIQuickStats.this.i18n("q.RES"));
+      draw(x1024(90.0F), y1024(678.0F), x1024(170.0F), M(2.0F), 0, GUIQuickStats.this.i18n("q.BAC"));
+      draw(x1024(290.0F), y1024(678.0F), x1024(170.0F), M(2.0F), 0, GUIQuickStats.this.i18n("q.RES"));
     }
 
     public void setPosSize()
     {
       set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUIQuickStats.this.bPrev.setPosC(x1024(85.0F), y1024(689.0F));
-      GUIQuickStats.this.bRes.setPosC(x1024(370.0F), y1024(689.0F));
+      GUIQuickStats.this.bPrev.setPosC(x1024(55.0F), y1024(696.0F));
+      GUIQuickStats.this.bRes.setPosC(x1024(256.0F), y1024(696.0F));
 
       GUIQuickStats.this.wScrollStats.set1024PosSize(80.0F, 32.0F, 880.0F, 540.0F);
     }

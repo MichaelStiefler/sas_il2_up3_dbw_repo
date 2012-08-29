@@ -42,7 +42,6 @@ import com.maddox.il2.net.NetUserRegiment;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.TestRunway;
 import com.maddox.il2.objects.vehicles.artillery.RocketryRocket;
 import com.maddox.il2.objects.vehicles.radios.Beacon;
 import com.maddox.il2.objects.vehicles.radios.Beacon.LorenzBLBeacon;
@@ -748,7 +747,7 @@ public class GUIBriefing extends GUIBriefingGeneric
           break;
         }
       }
-      if ((k == 0) && (localArrayList.size() != 0)) {
+      if (k == 0) {
         localUserCfg.setWeapon(localUserCfg.netAirName, (String)localArrayList.get(0));
         GUIAirArming.stateId = 2;
         Main.stateStack().push(55);
@@ -832,9 +831,6 @@ public class GUIBriefing extends GUIBriefingGeneric
     Loc localLoc = new Loc(localBornPlace.place.x, localBornPlace.place.y, 0.0D, 0.0F, 0.0F, 0.0F);
     AirportCarrier localAirportCarrier = (AirportCarrier)Airport.nearest(localLoc.getPoint(), -1, 4);
 
-    if ((localAirportCarrier.ship() instanceof TestRunway)) {
-      return null;
-    }
     return localAirportCarrier;
   }
 

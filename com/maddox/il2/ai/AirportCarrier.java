@@ -318,8 +318,6 @@ public class AirportCarrier extends Airport
       }
       else
       {
-        if (localAircraft1.FM.AP.way.size() == 1)
-          continue;
         localAircraft1.net.destroy();
         localAircraft1.destroy();
         this.lastCarrierUsers.remove(localAircraft1);

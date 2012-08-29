@@ -74,7 +74,7 @@ public class Swordfish1 extends Swordfish
 
     weaponsRegister(localClass, "default", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1_1xTorpedo", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunTorpMk12", null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "1_1xTorpedo", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGunTorpMk13", null, null, null, null, null, null, null, null, null, null });
 
     weaponsRegister(localClass, "2_3x500lb", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", "BombGun500lbsE", "BombGun500lbsE", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "BombGun500lbsE", null, null, null, null, null, null, null, null });
 
@@ -84,7 +84,7 @@ public class Swordfish1 extends Swordfish
 
     weaponsRegister(localClass, "5_3x500lb+8xflare", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", "BombGun500lbsE", "BombGun500lbsE", null, null, null, null, "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", null, "BombGun500lbsE", null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "6_1xtorpedo+8xflare", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", null, null, null, null, null, null, "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunTorpMk12", null, null, null, null, null, null, null, null, null, null });
+    weaponsRegister(localClass, "6_1xtorpedo+8xflare", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", null, null, null, null, null, null, "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunTorpMk13", null, null, null, null, null, null, null, null, null, null });
 
     weaponsRegister(localClass, "7_1x500lb+4x250lb+8xflare", new String[] { "MGunVikkersKs 300", "MGunVikkersKt 600", null, null, "BombGun250lbsE", "BombGun250lbsE", "BombGun250lbsE", "BombGun250lbsE", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", "BombGunParaFlareUK", "BombGunNull", "BombGunNull", "BombGunParaFlareUK", null, "BombGun500lbsE", null, null, null, null, null, null, null, null, null });
 

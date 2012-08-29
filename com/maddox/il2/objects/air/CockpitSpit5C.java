@@ -17,7 +17,6 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.Pitot;
-import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
 public class CockpitSpit5C extends CockpitPilot
@@ -168,12 +167,6 @@ public class CockpitSpit5C extends CockpitPilot
       setNightMats(true);
       setNightMats(false);
     }
-  }
-
-  static
-  {
-    Property.set(CockpitSpit5C.class, "normZN", 0.75F);
-    Property.set(CockpitSpit5C.class, "gsZN", 0.8F);
   }
 
   class Interpolater extends InterpolateRef

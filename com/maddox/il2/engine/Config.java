@@ -28,15 +28,16 @@ import java.util.ArrayList;
 
 public class Config
 {
+  public static final boolean _DEBUG_ = false;
   public static final String JRE = "JRE";
   public static final boolean AEROMASH = false;
   public static final String PRODUCT = "FB_PF";
-  private static final String _VERSION = "4.10.1";
+  private static final String _VERSION = "4.10";
   private static final int _TRACK_SINGLE_VERSION = 30;
   public static final int TRACK_NET_VERSION = 103;
   public static final boolean TRACK_CHECK = false;
-  public static final String VERSION = "4.10.1m";
-  public static final String NET_VERSION = "FB_PF_v_4.10.1m";
+  public static final String VERSION = "4.10m";
+  public static final String NET_VERSION = "FB_PF_v_4.10m";
   public static final int TRACK_SINGLE_VERSION = 130;
   public static String LOCALE = "PE";
   public static final boolean bCHECK_LOCALE = true;

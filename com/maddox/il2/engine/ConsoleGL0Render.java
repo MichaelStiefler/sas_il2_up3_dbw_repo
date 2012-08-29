@@ -41,12 +41,12 @@ class ConsoleGL0Render extends Render
         if ("ru".equalsIgnoreCase(RTSConf.cur.locale.getLanguage())) {
           TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.12F, 0.0F, this.sstep);
 
-          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.12F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.10.1m");
+          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.083F, RendersMain.getViewPortHeight() * 0.12F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.10m");
         }
         else {
           TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F, 0.0F, this.sstep);
 
-          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.10.1m");
+          TTFont.font[2].output(i, RendersMain.getViewPortWidth() * 0.02F, RendersMain.getViewPortHeight() * 0.17F + TTFont.font[2].height() - TTFont.font[2].descender(), 0.0F, "V 4.10m");
         }
       }
 

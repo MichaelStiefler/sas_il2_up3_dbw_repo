@@ -283,7 +283,7 @@ public class JU_88A4torp extends JU_88NEW
     Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
     Property.set(localClass, "yearService", 1941.0F);
     Property.set(localClass, "yearExpired", 1945.5F);
-    Property.set(localClass, "FlightModel", "FlightModels/Ju-88A-4torp.fmd");
+    Property.set(localClass, "FlightModel", "FlightModels/Ju-88A-4.fmd");
     Property.set(localClass, "cockpitClass", new Class[] { CockpitJU_88A4torp.class, CockpitJU_88A4torp_Observer.class, CockpitJU_88A4torp_NGunner.class, CockpitJU_88A4torp_RGunner.class, CockpitJU_88A4torp_BGunner.class });
 
     Property.set(localClass, "LOSElevation", 1.0976F);
@@ -307,6 +307,6 @@ public class JU_88A4torp extends JU_88NEW
 
     weaponsRegister(localClass, "2xPractice_Torp_spread", new String[] { "MGunMG81t 375", "MGunMG81t 1200", "MGunMG81t 1200", "MGunMG81t 750", "MGunMG81t 750", "BombGunTorpLTF5PracticeL 1", "BombGunNull 1", "BombGunNull 1", "BombGunTorpLTF5PracticeR 1", "MGunMGFFt 180" });
 
-    weaponsRegister(localClass, "none", new String[] { "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", "MGunMG81t 0", null, null, null, null, "MGunMGFFt 0" });
+    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
   }
 }

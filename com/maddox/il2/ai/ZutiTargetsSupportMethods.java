@@ -150,7 +150,7 @@ public class ZutiTargetsSupportMethods
           continue;
         if ((localTInspect.nameTarget == null) || (localTInspect.nameTarget.trim().length() < 1))
         {
-          localPoint3d = localTInspect.point;
+          localPoint3d = localTInspect.pos.getAbsPoint();
 
           ZutiSupportMethods.removeTarget(localPoint3d.x, localPoint3d.y);
           localArrayList.add(localTarget);

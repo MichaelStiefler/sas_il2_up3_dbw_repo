@@ -97,8 +97,6 @@ public class B6N2 extends B6N
 
     weaponsRegister(localClass, "1x91", new String[] { "MGunVikkersKt 500", "MGunVikkersKt 500", "PylonB5NPLN0", "BombGunTorpType91 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
 
-    weaponsRegister(localClass, "1x91_late", new String[] { "MGunVikkersKt 500", "MGunVikkersKt 500", "PylonB5NPLN0", "BombGunTorpType91late 1", null, null, null, null, null, null, null, null, null, null, null, null, null });
-
     weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }
 }

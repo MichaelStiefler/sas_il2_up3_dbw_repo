@@ -23,7 +23,7 @@ public class OrderRequest_For_RunwayLights extends Order
     Airport localAirport = Airport.nearest(localAircraft.FM.Loc, -1, 1);
     if ((localAirport != null) && ((localAirport instanceof AirportGround)) && (localAirport.isAlive()) && (((AirportGround)localAirport).hasLights()) && (GUI.pad.getAirportArmy(localAirport) == localAircraft.getArmy()))
     {
-      if (localAirport.distance(localAircraft) < 10000.0D)
+      if (localAirport.distance(localAircraft) < 6000.0D)
       {
         Actor localActor = War.GetNearestEnemy(localAircraft, -1, 12000.0F, 16);
 

@@ -6,7 +6,6 @@ import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Mat;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.rts.HomePath;
 import com.maddox.rts.Property;
@@ -25,8 +24,6 @@ public class I_15BIS extends I_15xyz
 
   private void customization()
   {
-    if (!Mission.isSingle())
-      return;
     int i = hierMesh().chunkFindCheck("cf_D0");
     int j = hierMesh().materialFindInChunk("Gloss1D0o", i);
     Mat localMat = hierMesh().material(j);

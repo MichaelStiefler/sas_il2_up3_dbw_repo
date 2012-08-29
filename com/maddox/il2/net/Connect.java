@@ -30,7 +30,7 @@ public class Connect
   static final long TIME_OUT = 500L;
   static final long FULL_TIME_OUT = 30000L;
   public static final String PROMPT = "socket";
-  public static final String VERSION = "FB_PF_v_4.10.1m";
+  public static final String VERSION = "FB_PF_v_4.10m";
   static final String CONNECT = "connect";
   static final String CONNECTED = "connected";
   static final String REJECT = "reject";
@@ -61,7 +61,7 @@ public class Connect
   }
 
   private static String badVersionMessage() {
-    return "Server uses a different version of the game (4.10.1m).";
+    return "Server uses a different version of the game (4.10m).";
   }
 
   private void bindReceiveConnect(StringTokenizer paramStringTokenizer, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
@@ -74,7 +74,7 @@ public class Connect
     if (!paramStringTokenizer.hasMoreTokens()) return;
     String str3 = paramStringTokenizer.nextToken();
 
-    if ((!"FB_PF_v_4.10.1m".equals(str1)) && 
+    if ((!"FB_PF_v_4.10m".equals(str1)) && 
       (!"il2_r01_0f".equals(str1)))
     {
       String str4 = "reject " + str2 + " " + str3 + " " + badVersionMessage();
@@ -147,7 +147,7 @@ public class Connect
       ((NetChannel)localObject1).setInitStamp(j);
       setChannel((NetChannel)localObject1, i1, i, j);
       paramNetSocket.countChannels += 1;
-      if (!"FB_PF_v_4.10.1m".equals(str1)) {
+      if (!"FB_PF_v_4.10m".equals(str1)) {
         kickChannel(localObject1);
       }
     }
@@ -236,7 +236,7 @@ public class Connect
   }
 
   private void joinSend() {
-    String str = "connect FB_PF_v_4.10.1m " + this.joinId + " " + this.joinStamp;
+    String str = "connect FB_PF_v_4.10m " + this.joinId + " " + this.joinStamp;
 
     NetEnv.cur().postExtUTF(32, str, this.joinSocket, this.joinAddr, this.joinPort);
   }
@@ -250,7 +250,7 @@ public class Connect
 
     if (!paramStringTokenizer.hasMoreTokens()) return;
     String str1 = paramStringTokenizer.nextToken();
-    if (!"FB_PF_v_4.10.1m".equals(str1)) return;
+    if (!"FB_PF_v_4.10m".equals(str1)) return;
 
     if (!paramStringTokenizer.hasMoreTokens()) return;
     String str2 = paramStringTokenizer.nextToken();
@@ -448,7 +448,7 @@ public class Connect
     StringBuffer localStringBuffer = new StringBuffer();
     localStringBuffer.append("ainfo"); localStringBuffer.append(' ');
     localStringBuffer.append(str1); localStringBuffer.append(' ');
-    localStringBuffer.append("FB_PF_v_4.10.1m"); localStringBuffer.append(' ');
+    localStringBuffer.append("FB_PF_v_4.10m"); localStringBuffer.append(' ');
     localStringBuffer.append(Main.cur().netServerParams.isMaster() ? "1 " : "0 ");
     localStringBuffer.append("" + (Main.cur().netServerParams.getType() >> 4 & 0x7) + " ");
     localStringBuffer.append(Main.cur().netServerParams.isProtected() ? "1 " : "0 ");

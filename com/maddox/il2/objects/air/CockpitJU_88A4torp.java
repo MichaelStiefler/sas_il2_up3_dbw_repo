@@ -82,6 +82,7 @@ public class CockpitJU_88A4torp extends CockpitPilot
       aircraft().hierMesh().chunkVisible("DummyBlister_D0", false);
       super.doFocusLeave();
     }
+    doToggleAim(false);
   }
 
   public CockpitJU_88A4torp()

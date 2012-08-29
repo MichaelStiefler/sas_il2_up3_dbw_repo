@@ -39,8 +39,6 @@ import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.trains.Train;
 import com.maddox.il2.objects.vehicles.artillery.AAA;
-import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
-import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.rts.LDRres;
 import com.maddox.rts.NetAddress;
@@ -137,18 +135,16 @@ public class ZutiSupportMethods
 
     ZutiPadObject localZutiPadObject = null;
 
-    Actor localActor = null;
-
     HashMapExt localHashMapExt = Engine.name2Actor();
+    Actor localActor = null;
 
     for (Map.Entry localEntry = localHashMapExt.nextEntry(null); localEntry != null; localEntry = localHashMapExt.nextEntry(localEntry))
     {
       localActor = (Actor)localEntry.getValue();
-
       if (GUI.pad.zutiPadObjects.containsKey(new Integer(localActor.hashCode()))) {
         continue;
       }
-      if (!localActor.isAlive())
+      if ((!(localActor instanceof Chief)) || (localActor.getDiedFlag()))
         continue;
       if ((localActor instanceof TankGeneric))
       {
@@ -164,23 +160,7 @@ public class ZutiSupportMethods
 
         paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
       }
-      else if ((localActor instanceof RocketryGeneric))
-      {
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 3;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
       else if ((localActor instanceof AAA))
-      {
-        if (localActor.getDiedFlag())
-          continue;
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 2;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-      else if ((localActor instanceof ArtilleryGeneric))
       {
         if (localActor.getDiedFlag())
           continue;
@@ -1172,6 +1152,8 @@ public class ZutiSupportMethods
 
   public static boolean isStaticActor(Actor paramActor)
   {
+    if (paramActor.getArmy() == 0)
+      return false;
     if ((paramActor instanceof ShipGeneric))
       return ((ShipGeneric)paramActor).zutiIsStatic();
     if ((paramActor instanceof BigshipGeneric))

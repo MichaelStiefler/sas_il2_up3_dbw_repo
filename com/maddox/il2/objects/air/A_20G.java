@@ -11,7 +11,6 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.weapons.BombGunTorpMk13;
-import com.maddox.il2.objects.weapons.BombGunTorpMk13late;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
@@ -112,8 +111,8 @@ public class A_20G extends A_20
   public void onAircraftLoaded()
   {
     super.onAircraftLoaded();
-    if ((this.FM.CT.Weapons[3] != null) && (
-      ((this.FM.CT.Weapons[3][0] instanceof BombGunTorpMk13)) || ((this.FM.CT.Weapons[3][0] instanceof BombGunTorpMk13late)))) {
+    if ((this.FM.CT.Weapons[3] != null) && 
+      ((this.FM.CT.Weapons[3][0] instanceof BombGunTorpMk13))) {
       hierMesh().chunkVisible("Bay1_D0", false);
       hierMesh().chunkVisible("Bay2_D0", false);
     }
@@ -176,8 +175,6 @@ public class A_20G extends A_20
     weaponsRegister(localClass, "1x10002x500", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50t 400", "MGunBrowning50t 400", "MGunBrowning303t 400", "BombGun500lbs", "BombGun500lbs", null, null, null, null, "BombGun1000lbs" });
 
     weaponsRegister(localClass, "1xmk13", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50t 400", "MGunBrowning50t 400", "MGunBrowning303t 400", null, null, null, null, null, null, "BombGunTorpMk13" });
-
-    weaponsRegister(localClass, "1xmk13_late", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50t 400", "MGunBrowning50t 400", "MGunBrowning303t 400", null, null, null, null, null, null, "BombGunTorpMk13late" });
 
     weaponsRegister(localClass, "1x53mmCirc", new String[] { "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50k 350", "MGunBrowning50t 400", "MGunBrowning50t 400", "MGunBrowning303t 400", null, null, null, null, null, null, "BombGunTorp45_36AV_A" });
 

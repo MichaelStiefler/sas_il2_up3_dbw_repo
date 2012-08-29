@@ -20,7 +20,6 @@ import com.maddox.rts.Time;
 
 public class AIFlightModel extends FlightModel
 {
-  private long w;
   public float Density;
   public float Kq;
   protected boolean callSuperUpdate = true;
@@ -40,7 +39,6 @@ public class AIFlightModel extends FlightModel
   public AIFlightModel(String paramString)
   {
     super(paramString);
-    this.w = Time.current();
   }
 
   private void flutter()
@@ -96,11 +94,11 @@ public class AIFlightModel extends FlightModel
 
     }
 
-    if ((World.cur().diffCur.Wind_N_Turbulence) && (!this.Gears.onGround()) && (Time.current() > this.w + 50L))
-    {
+    if ((World.cur().diffCur.Wind_N_Turbulence) && (!this.Gears.onGround()))
       World.wind().getVectorAI(this.Loc, this.Vwind);
+    else {
+      this.Vwind.set(0.0D, 0.0D, 0.0D);
     }
-    else this.Vwind.set(0.0D, 0.0D, 0.0D);
 
     this.Vair.sub(this.Vwld, this.Vwind);
 

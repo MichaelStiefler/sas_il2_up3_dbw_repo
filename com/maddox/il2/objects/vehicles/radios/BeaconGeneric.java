@@ -12,14 +12,12 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.TableFunctions;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ground.Obstacle;
-import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.ActorSpawn;
 import com.maddox.il2.engine.ActorSpawnArg;
-import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Mesh;
@@ -48,7 +46,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 public abstract class BeaconGeneric extends ActorHMesh
-  implements MsgExplosionListener, MsgShotListener, Obstacle, Prey, ActorAlign
+  implements MsgExplosionListener, MsgShotListener, Obstacle, ActorAlign
 {
   private BeaconProperties prop = null;
   private float heightAboveLandSurface;
@@ -558,80 +556,6 @@ public abstract class BeaconGeneric extends ActorHMesh
   {
     paramFloat1 = Math.min(Math.max(paramFloat1, paramFloat2), paramFloat3);
     return paramFloat4 + (paramFloat5 - paramFloat4) * (paramFloat1 - paramFloat2) / (paramFloat3 - paramFloat2);
-  }
-
-  public int HitbyMask() {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 0)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
   }
 
   public static class BeaconProperties

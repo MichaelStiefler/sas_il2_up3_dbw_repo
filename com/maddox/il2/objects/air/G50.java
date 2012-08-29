@@ -381,7 +381,7 @@ public class G50 extends Scheme1
     Property.set(localClass, "meshName", "3DO/Plane/G-50(Multi1)/hier.him");
     Property.set(localClass, "PaintScheme", new PaintSchemeFMPar00());
     Property.set(localClass, "meshName_it", "3DO/Plane/G-50(it)/hier.him");
-    Property.set(localClass, "PaintScheme_it", new PaintSchemeBMPar09());
+    Property.set(localClass, "PaintScheme_it", new PaintSchemeFCSPar01());
     Property.set(localClass, "originCountry", PaintScheme.countryItaly);
 
     Property.set(localClass, "yearService", 1938.0F);

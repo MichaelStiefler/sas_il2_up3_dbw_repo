@@ -163,7 +163,7 @@ public class CockpitB25J extends CockpitPilot
     f = 2.5F * (float)Math.sqrt(Math.sqrt(Math.sqrt(Math.sqrt(f))));
     this.mesh.chunkSetAngles("zSuction", 0.0F, cvt(f, 0.0F, 10.0F, 0.0F, 297.0F), 0.0F);
 
-    this.mesh.chunkSetAngles("BL_Vert", cvt(this.setNew.ilsLoc, -3.5F, 3.5F, -40.0F, 40.0F), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("BL_Vert", cvt(this.setNew.ilsLoc, -9.1F, 9.1F, -26.0F, 26.0F), 0.0F, 0.0F);
 
     if (this.setNew.ilsGS >= 0.0F)
       this.mesh.chunkSetAngles("BL_Horiz", cvt(this.setNew.ilsGS, 0.0F, 0.5F, 0.0F, 40.0F), 0.0F, 0.0F);

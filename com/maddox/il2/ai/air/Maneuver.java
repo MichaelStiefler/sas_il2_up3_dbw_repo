@@ -3819,9 +3819,9 @@ public class Maneuver extends AIFlightModel
     if ((this.actor instanceof Swordfish))
     {
       setSpeedMode(9);
-      f4 = 20.0F;
+      f4 *= 0.75F;
     }
-    float f6 = 0.0F;
+
     this.minElevCoeff = 20.0F;
 
     Ve.set(paramActor.pos.getAbsPoint());
@@ -3848,37 +3848,31 @@ public class Maneuver extends AIFlightModel
       this.Vtarg.z = 80.0D;
       this.TargDevV.set(World.cur().rnd.nextFloat(-16.0F, 16.0F) * (3.5D - this.Skill), World.cur().rnd.nextFloat(-16.0F, 16.0F) * (3.5D - this.Skill), 0.0D);
     }
+    float f8;
     float f9;
-    float f10;
     if (this.submaneuver == 2) {
       this.Vtarg.set(paramActor.pos.getAbsPoint());
       paramActor.getSpeed(tmpV3d);
 
-      float f7 = 20.0F;
+      float f6 = 20.0F;
       if (localClass != null) {
-        f7 = Property.floatValue(localClass, "velocity", 1.0F);
+        f6 = Property.floatValue(localClass, "velocity", 1.0F);
       }
-      f9 = paramActor.collisionR();
-      if (f9 > 80.0F)
+      f8 = paramActor.collisionR();
+      if (f8 > 80.0F)
         f5 = 50.0F;
-      if (f9 > 130.0F)
+      if (f8 > 130.0F)
         f5 = 100.0F;
-      if (f9 < 25.0F) {
+      if (f8 < 25.0F) {
         f5 = -50.0F;
       }
-      f10 = 950.0F;
-
-      if (f4 > 110.0F)
-      {
-        f6 = f4;
-        f10 += f4 * 0.4F;
-      }
+      f9 = 950.0F;
 
       if ((this.actor instanceof JU_88NEW))
-        f10 += 90.0F;
+        f9 += 90.0F;
       double d2 = Math.sqrt(0.204D * this.Loc.z);
       double d3 = 1.0D * d2 * getSpeed();
-      double d4 = (f10 + f5 - d3) / f7;
+      double d4 = (f9 + f5 - d3) / f6;
       this.Vtarg.x += (float)(tmpV3d.x * d4);
       this.Vtarg.y += (float)(tmpV3d.y * d4);
       this.Vtarg.z = f4;
@@ -3943,13 +3937,13 @@ public class Maneuver extends AIFlightModel
       break;
     case 2:
       setSpeedMode(4);
-      if (f2 < 800.0F + f5 + f6)
+      if (f2 < 800.0F + f5)
       {
         if (((this.actor instanceof TypeHasToKG)) && (((TypeHasToKG)this.actor).isSalvo()))
         {
           int i = 0;
-          f9 = paramActor.collisionR() * 1.8F;
-          i = (int)Math.toDegrees(Math.atan(f9 / 800.0F));
+          f8 = paramActor.collisionR() * 1.8F;
+          i = (int)Math.toDegrees(Math.atan(f8 / 800.0F));
           i += World.Rnd().nextInt(-2, 2);
           if (i < 3)
             i = 3;
@@ -3964,10 +3958,10 @@ public class Maneuver extends AIFlightModel
       } else {
         if (!ZutiSupportMethods.isStaticActor(paramActor))
           break;
-        float f8 = Property.floatValue(localClass, "velocity", 20.0F);
-        f9 = Property.floatValue(localClass, "traveltime", 100.0F);
-        f10 = f8 * f9 - 150.0F;
-        if ((f2 < f10) && (World.land().isWater(this.actor.pos.getAbsPoint().x, this.actor.pos.getAbsPoint().y)))
+        float f7 = Property.floatValue(localClass, "velocity", 20.0F);
+        f8 = Property.floatValue(localClass, "traveltime", 100.0F);
+        f9 = f7 * f8 - 150.0F;
+        if ((f2 < f9) && (World.land().isWater(this.actor.pos.getAbsPoint().x, this.actor.pos.getAbsPoint().y)))
         {
           this.CT.WeaponControl[3] = true;
           setSpeedMode(6);

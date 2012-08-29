@@ -82,8 +82,6 @@ public class G4M1_11 extends G4M
 
     weaponsRegister(localClass, "1xtyp91", new String[] { "MGunBrowning303t 500", "MGunHo5t 250", "MGunBrowning303t 500", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGunTorpType91 1" });
 
-    weaponsRegister(localClass, "1xtyp91_late", new String[] { "MGunBrowning303t 500", "MGunHo5t 250", "MGunBrowning303t 500", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGunTorpType91late 1" });
-
     weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
   }
 }

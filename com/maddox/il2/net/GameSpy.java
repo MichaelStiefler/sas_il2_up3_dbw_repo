@@ -29,7 +29,7 @@ public class GameSpy
   public String gameType = "dogfight";
   public int maxClients = 16;
   private static final String gamename = "il2sturmovikfb";
-  private static final String gamever = "4.10.1m";
+  private static final String gamever = "4.10m";
   private static final String secret_key = "h53Ew8";
   public static int MASTER_PORT = 27900;
   public static String MASTER_ADDR = "master.gamespy.com";
@@ -103,7 +103,7 @@ public class GameSpy
   private void send_basic()
   {
     this.strBuf.append("\\gamename\\"); this.strBuf.append("il2sturmovikfb");
-    this.strBuf.append("\\gamever\\"); this.strBuf.append("4.10.1m");
+    this.strBuf.append("\\gamever\\"); this.strBuf.append("4.10m");
     this.strBuf.append("\\location\\"); this.strBuf.append(1);
     buffer_send(this.strBuf);
     this.strBuf.delete(0, this.strBuf.length());

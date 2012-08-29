@@ -36,7 +36,7 @@ public class CockpitTemp5 extends CockpitPilot
   private float pictManf = 1.0F;
   private boolean bNeedSetUp = true;
 
-  private static final float[] speedometerScale = { 0.0F, 20.0F, 68.0F, 132.0F, 206.0F, 274.0F, 335.0F, 398.0F, 455.0F, 521.0F, 597.0F, 658.0F };
+  private static final float[] speedometerScale = { 0.0F, 15.5F, 76.0F, 153.5F, 234.0F, 304.0F, 372.5F, 440.0F, 504.0F, 566.0F, 630.0F };
 
   private static final float[] radScale = { 0.0F, 3.0F, 7.0F, 13.5F, 30.5F, 40.5F, 51.5F, 68.0F, 89.0F, 114.0F, 145.5F, 181.0F, 222.0F, 270.5F, 331.5F };
 
@@ -122,7 +122,7 @@ public class CockpitTemp5 extends CockpitPilot
     this.mesh.chunkSetAngles("Z_Land1", this.pictLlit = 0.85F * this.pictLlit + 0.15F * f, 0.0F, 0.0F);
 
     this.mesh.chunkSetAngles("COMPASS_M", interp(this.setNew.azimuth, this.setOld.azimuth, paramFloat), 0.0F, 0.0F);
-    this.mesh.chunkSetAngles("STRELK_V_LONG", -floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH()), 0.0F, 885.13922F, 0.0F, 11.0F), speedometerScale), 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("STRELK_V_LONG", -floatindex(cvt(Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeed()), 0.0F, 257.22217F, 0.0F, 10.0F), speedometerScale), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("STREL_ALT_LONG", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 9144.0F, 0.0F, -10800.0F), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("STREL_ALT_SHORT", cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 9144.0F, 0.0F, -1080.0F), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("SHKALA_DIRECTOR", interp(this.setNew.azimuth, this.setOld.azimuth, paramFloat), 0.0F, 0.0F);

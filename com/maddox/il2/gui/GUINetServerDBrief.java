@@ -13,7 +13,6 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.net.BornPlace;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetUserRegiment;
 import com.maddox.il2.net.USGS;
@@ -25,7 +24,6 @@ import com.maddox.rts.NetEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.sound.AudioDevice;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class GUINetServerDBrief extends GUIBriefing
@@ -99,47 +97,9 @@ public class GUINetServerDBrief extends GUIBriefing
     return true;
   }
 
-  private boolean isValidAircraftForServer()
-  {
-    if (Main.cur().netServerParams == null)
-      return true;
-    if (!Main.cur().netServerParams.isMaster()) {
-      return true;
-    }
-    NetUser localNetUser = (NetUser)NetEnv.host();
-
-    if (localNetUser == null) {
-      return true;
-    }
-    try
-    {
-      UserCfg localUserCfg = World.cur().userCfg;
-      localNetUser.checkReplicateSkin(localUserCfg.netAirName);
-      String str = localUserCfg.netAirName;
-
-      BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(localNetUser.getBornPlace());
-      if (localBornPlace != null)
-      {
-        if ((!localBornPlace.zutiEnablePlaneLimits) || (localBornPlace.zutiIsAcAvailable(str)))
-          return true;
-      }
-    } catch (Exception localException) {
-      System.out.println("isValidAircraftForServer exception: " + localException.toString());
-    }return false;
-  }
-
-  protected void doNext()
-  {
-    if (!isValidBornPlace()) {
+  protected void doNext() {
+    if (!isValidBornPlace())
       return;
-    }
-    if (!isValidAircraftForServer())
-    {
-      GUIAirArming.stateId = 2;
-      Main.stateStack().push(55);
-      return;
-    }
-
     if (!isCarrierDeckFree((NetUser)NetEnv.host()))
     {
       new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.CarrierDeckFull"), i18n("brief.CarrierDeckFullWait"), 3, 0.0F);

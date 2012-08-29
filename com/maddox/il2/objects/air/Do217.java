@@ -690,7 +690,7 @@ public abstract class Do217 extends Scheme2
               this.FM.AS.hitTank(paramShot.initiator, i, 1);
             if ((this.FM.AS.astateTankStates[i] < 4) && (World.Rnd().nextFloat() < 0.12F))
               this.FM.AS.hitTank(paramShot.initiator, i, 1);
-            if ((paramShot.powerType == 3) && (this.FM.AS.astateTankStates[i] > 0) && (World.Rnd().nextFloat() < 0.04F))
+            if ((paramShot.powerType == 3) && (this.FM.AS.astateTankStates[i] > 1) && (World.Rnd().nextFloat() < 0.1F))
               this.FM.AS.hitTank(paramShot.initiator, i, 10);
           }
           else {

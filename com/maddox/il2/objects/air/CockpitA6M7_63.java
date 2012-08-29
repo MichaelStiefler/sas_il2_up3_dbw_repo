@@ -42,7 +42,7 @@ public class CockpitA6M7_63 extends CockpitPilot
 
   protected float waypointAzimuth()
   {
-    return super.waypointAzimuthInvertMinus(5.0F);
+    return super.waypointAzimuth(5.0F);
   }
 
   public CockpitA6M7_63()
@@ -113,7 +113,7 @@ public class CockpitA6M7_63 extends CockpitPilot
     this.mesh.chunkSetAngles("zCompassOil3", cvt(this.fm.Or.getKren(), -10.0F, 10.0F, -10.0F, 10.0F), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("zCompassOil2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("Z_Azimuth1a", 0.0F, -this.setNew.waypointDirection.getDeg(paramFloat * 0.1F), 0.0F);
-    this.mesh.chunkSetAngles("Z_Navigation", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -45.0F, 45.0F), 0.0F);
+    this.mesh.chunkSetAngles("Z_Navigation", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F) - 90.0F, -25.0F, 25.0F, -45.0F, 45.0F), 0.0F);
     this.mesh.chunkSetAngles("Z_Mixture", 0.0F, cvt(this.fm.EI.engines[0].getControlMix(), 0.0F, 1.0F, 0.0F, 90.0F), 0.0F);
     this.mesh.chunkSetAngles("Z_Clock1a", 0.0F, cvt(World.getTimeofDay() % 1.0F, 0.0F, 1.0F, 0.0F, 360.0F), 0.0F);
     this.mesh.chunkSetAngles("Z_Clock1b", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F);

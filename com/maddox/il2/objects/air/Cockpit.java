@@ -741,21 +741,13 @@ public abstract class Cockpit extends Actor
       int i = this.fm.AS.getBeacon();
       ArrayList localArrayList = Main.cur().mission.getBeacons(this.fm.actor.getArmy());
       Actor localActor = (Actor)localArrayList.get(i - 1);
-      double d1 = localActor.pos.getAbsPoint().z + 10.0D;
-      float f1 = (1.0F - this.blData.signalStrength) * 100.0F;
-      double d2 = Math.abs(localAircraft.pos.getAbsPoint().x - localActor.pos.getAbsPoint().x);
-      double d3 = Math.abs(localAircraft.pos.getAbsPoint().y - localActor.pos.getAbsPoint().y);
-      float f2 = 1700.0F + World.Rnd().nextFloat(-f1, f1);
-      double d4 = Math.sqrt(d2 * d2 + d3 * d3) - f2;
-      double d5 = localAircraft.pos.getAbsPoint().z - d1;
-      double d6 = Math.asin(d5 / d4);
-      double d7 = glideScopeInRads - d6;
-      float f3 = (float)Math.toDegrees(d7) * this.blData.signalStrength + World.Rnd().nextFloat(-atmosphereInterference * 2.0F, atmosphereInterference * 2.0F);
-      if (f3 > 1.0F)
-        f3 = 1.0F;
-      else if (f3 < -1.0F)
-        f3 = -1.0F;
-      return f3;
+      double d1 = localActor.pos.getAbsPoint().z;
+      float f1 = (1.0F - (this.blData.signalStrength + World.Rnd().nextFloat(-atmosphereInterference * 2.0F, atmosphereInterference * 2.0F))) * 35000.0F;
+      double d2 = (f1 - this.blData.runwayLength + 150.0F) * Math.sin(glideScopeInRads);
+      double d3 = localAircraft.pos.getAbsPoint().z - d1;
+      float f2 = (float)(d2 - d3);
+      float f3 = cvt(f1, 0.0F, 35000.0F, 10.0F, 500.0F);
+      return cvt(f2, -f3, f3, -1.0F, 1.0F);
     }
     return 0.0F;
   }
@@ -809,7 +801,7 @@ public abstract class Cockpit extends Actor
       this.ndBeaconRange = 1.0F;
       this.ndBeaconDirection = 0.0F;
       if (paramBoolean)
-        CmdMusic.setCurrentVolume(0.001F);
+        CmdMusic.setCurrentVolume(0.0F);
       else
         paramAircraft.playBeaconCarrier(false, 0.0F);
       return;

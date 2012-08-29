@@ -356,7 +356,7 @@ public class PlMisBorn extends Plugin
             addAllAircraft(localActorBorn.airNames);
           }
 
-          zutiLoadBornPlaceCountries(localActorBorn, paramSectFile, k);
+          zutiLoadBornPlaceCountries(localActorBorn, paramSectFile);
         }
       }
     }
@@ -1586,11 +1586,10 @@ public class PlMisBorn extends Plugin
     }
   }
 
-  private void zutiLoadBornPlaceCountries(ActorBorn paramActorBorn, SectFile paramSectFile, int paramInt)
+  private void zutiLoadBornPlaceCountries(ActorBorn paramActorBorn, SectFile paramSectFile)
   {
     ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-
-    int i = paramSectFile.sectionIndex("BornPlaceCountries" + paramInt);
+    int i = paramSectFile.sectionIndex("MDS_BornPlace_" + (int)paramActorBorn.pos.getAbsPoint().x + "_" + (int)paramActorBorn.pos.getAbsPoint().y + "_Countries");
     if (i >= 0)
     {
       if (paramActorBorn.zutiHomeBaseCountries == null) {
@@ -1610,7 +1609,6 @@ public class PlMisBorn extends Plugin
         }
         catch (Exception localException)
         {
-          System.out.println("LoadBornPlaceCountries exception: " + localException);
         }
       }
     }

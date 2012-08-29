@@ -55,9 +55,6 @@ import com.maddox.il2.net.NetSquadron;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetWing;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.rts.Message;
@@ -1666,12 +1663,12 @@ public abstract class NetAircraft extends SndAircraft
       NetWing localNetWing = null;
       int j = 0;
       NetAircraft localNetAircraft = null;
-      Object localObject4;
       try
       {
         int k = paramActorSpawnArg.name.length();
         int n;
         int i1;
+        String str2;
         if (this._netUser != null) {
           j = Integer.parseInt(paramActorSpawnArg.name.substring(k - 2, k));
           n = paramActorSpawnArg.name.charAt(k - 3) - '0';
@@ -1679,8 +1676,8 @@ public abstract class NetAircraft extends SndAircraft
           if (k == 4) {
             localObject1 = this._netUser.netUserRegiment;
           } else {
-            localObject4 = paramActorSpawnArg.name.substring(0, k - 4);
-            localObject1 = (Regiment)Actor.getByName((String)localObject4);
+            str2 = paramActorSpawnArg.name.substring(0, k - 4);
+            localObject1 = (Regiment)Actor.getByName(str2);
           }
           localNetSquadron = new NetSquadron((Regiment)localObject1, i1);
           localNetWing = new NetWing(localNetSquadron, n);
@@ -1689,8 +1686,8 @@ public abstract class NetAircraft extends SndAircraft
           n = paramActorSpawnArg.name.charAt(k - 2) - '0';
           i1 = paramActorSpawnArg.name.charAt(k - 3) - '0';
           j += i1 * 16 + n * 4;
-          localObject4 = paramActorSpawnArg.name.substring(0, k - 3);
-          localObject1 = (Regiment)Actor.getByName((String)localObject4);
+          str2 = paramActorSpawnArg.name.substring(0, k - 3);
+          localObject1 = (Regiment)Actor.getByName(str2);
           localNetSquadron = new NetSquadron((Regiment)localObject1, i1);
           localNetWing = new NetWing(localNetSquadron, n);
         }
@@ -1711,16 +1708,16 @@ public abstract class NetAircraft extends SndAircraft
       Object localObject2;
       if (this._netUser != null)
       {
-        if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()) && (!localNetAircraft.net.isMaster()))
+        if ((Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()))
         {
           try
           {
             if (this._netUser.masterChannel() != null)
             {
-              String str = ((NetUser)NetEnv.host()).uniqueName();
+              String str1 = ((NetUser)NetEnv.host()).uniqueName();
               localObject2 = this._netUser.masterChannel().remoteAddress().getHostAddress().toString();
 
-              if (ZutiSupportMethods.isPlayerBanned(str, (String)localObject2))
+              if (ZutiSupportMethods.isPlayerBanned(str1, (String)localObject2))
               {
                 ZutiNetSendMethods.playerBanned(this._netUser);
                 i = 1;
@@ -1800,16 +1797,7 @@ public abstract class NetAircraft extends SndAircraft
         } else {
           localNetAircraft.FM.CT.setLanded();
           ((Aircraft)localNetAircraft); Aircraft.forceGear(localNetAircraft.getClass(), localNetAircraft.hierMesh(), localNetAircraft.FM.CT.getGear());
-
-          localObject4 = (AirportCarrier)Airport.nearest(((Loc)localObject3).getPoint(), -1, 4);
-          if ((localObject4 != null) && (((AirportCarrier)localObject4).ship() != null) && (((((AirportCarrier)localObject4).ship() instanceof Ship.RwyTransp)) || ((((AirportCarrier)localObject4).ship() instanceof Ship.RwyTranspWide)) || ((((AirportCarrier)localObject4).ship() instanceof Ship.RwyTranspSqr))))
-          {
-            if (Engine.land().isWater(paramActorSpawnArg.point.x, paramActorSpawnArg.point.y)) {
-              localNetAircraft.FM.brakeShoe = false;
-            }
-          }
         }
-
         localNetAircraft.FM.AS.bIsEnableToBailout = ((BornPlace)localObject2).bParachute;
       }
       else if ((Mission.isDogfight()) && (World.cur().diffCur.Takeoff_N_Landing))
@@ -1859,7 +1847,7 @@ public abstract class NetAircraft extends SndAircraft
       if (i != 0) {
         localNetAircraft.destroy();
       }
-      return (Actor)(Actor)(Actor)(Actor)localNetAircraft;
+      return (Actor)(Actor)(Actor)localNetAircraft;
     }
 
     private void makeName(NetAircraft paramNetAircraft) {

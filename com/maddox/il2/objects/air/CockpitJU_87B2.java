@@ -124,14 +124,15 @@ public class CockpitJU_87B2 extends CockpitPilot
     {
       this.mesh.chunkSetAngles("zRepeater", this.setNew.azimuth.getDeg(paramFloat) - this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
       this.mesh.chunkSetAngles("zCompass", 0.0F, this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F);
+      this.mesh.chunkSetAngles("zCompassOil2", -this.setNew.waypointAzimuth.getDeg(paramFloat), 0.0F, 0.0F);
     }
     else
     {
       this.mesh.chunkSetAngles("zCompass", 0.0F, this.setNew.azimuth.getDeg(paramFloat), 0.0F);
       this.mesh.chunkSetAngles("zRepeater", this.setNew.waypointAzimuth.getDeg(paramFloat * 0.1F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("zCompassOil2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     }
 
-    this.mesh.chunkSetAngles("zCompassOil2", this.setNew.azimuth.getDeg(paramFloat), 0.0F, 0.0F);
     this.mesh.chunkSetAngles("zCompassOil1", this.fm.Or.getTangage(), 0.0F, 0.0F);
 
     this.mesh.chunkSetAngles("zCompassOil3", this.fm.Or.getKren(), 0.0F, 0.0F);

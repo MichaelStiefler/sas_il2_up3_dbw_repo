@@ -26,9 +26,6 @@ import com.maddox.il2.game.Mission;
 import com.maddox.il2.game.ZutiAircraft;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
-import com.maddox.il2.objects.ships.TestRunway;
 import com.maddox.rts.LDRres;
 import com.maddox.rts.Property;
 import com.maddox.rts.RTSConf;
@@ -115,21 +112,13 @@ public class BornPlace
           corn.z = Engine.cur.land.HQ(localLoc.getPoint().x, localLoc.getPoint().y);
           corn.z += 40.0D;
           Actor localActor = Engine.collideEnv().getLine(corn, corn1, false, clipFilter, pship);
-          if ((((AirportCarrier)localObject2).ship() != localActor) && (!(((AirportCarrier)localObject2).ship() instanceof Ship.RwyTranspWide)) && (!(((AirportCarrier)localObject2).ship() instanceof Ship.RwyTranspSqr)))
-          {
+          if (((AirportCarrier)localObject2).ship() != localActor) {
             localObject2 = null;
           }
         }
-
         if (localObject2 != null) {
           if (Mission.isDogfight())
           {
-            if ((((AirportCarrier)localObject2).ship() instanceof TestRunway))
-            {
-              ((AirportCarrier)localObject2).getTakeoff(paramAircraft, localLoc);
-              return localLoc;
-            }
-
             if ((paramAircraft == World.getPlayerAircraft()) && (!Main.cur().netServerParams.isMaster()))
             {
               return ((AirportCarrier)localObject2).setClientTakeOff(localLoc.getPoint(), paramAircraft);
@@ -415,7 +404,8 @@ public class BornPlace
     for (int i = 0; i < localArrayList.size(); i++)
     {
       Class localClass = (Class)localArrayList.get(i);
-
+      if (!Property.containsValue(localClass, "cockpitClass"))
+        continue;
       String str = Property.stringValue(localClass, "keyName");
       if (!this.airNames.contains(str))
         this.airNames.add(str);

@@ -489,7 +489,7 @@ public abstract class CantZ1007 extends Scheme6
               this.FM.AS.hitTank(paramShot.initiator, i, 1);
             if ((this.FM.AS.astateTankStates[i] < 4) && (World.Rnd().nextFloat() < 0.1F))
               this.FM.AS.hitTank(paramShot.initiator, i, 1);
-            if ((paramShot.powerType == 3) && (this.FM.AS.astateTankStates[i] > 0) && (World.Rnd().nextFloat() < 0.05F))
+            if ((paramShot.powerType == 3) && (this.FM.AS.astateTankStates[i] > 1) && (World.Rnd().nextFloat() < 0.06F))
               this.FM.AS.hitTank(paramShot.initiator, i, 10);
           }
           else {

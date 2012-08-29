@@ -53,7 +53,6 @@ public class NetUserStat
   public void read(NetMsgInput paramNetMsgInput)
     throws IOException
   {
-    int i = getNumOfScoreItems();
     this.nMissions = paramNetMsgInput.readInt();
     this.nSorties = paramNetMsgInput.readInt();
     this.nTakeoffs = paramNetMsgInput.readInt();
@@ -71,8 +70,8 @@ public class NetUserStat
     this.tCCountry = paramNetMsgInput.readFloat();
     this.rating = paramNetMsgInput.readFloat();
     this.score = paramNetMsgInput.readFloat();
-    for (int j = 0; j < i; j++) this.enemyKill[j] = paramNetMsgInput.readInt();
-    for (j = 0; j < i; j++) this.friendKill[j] = paramNetMsgInput.readInt();
+    for (int i = 0; i < 10; i++) this.enemyKill[i] = paramNetMsgInput.readInt();
+    for (i = 0; i < 10; i++) this.friendKill[i] = paramNetMsgInput.readInt();
     this.bulletsFire = paramNetMsgInput.readInt();
     this.bulletsHit = paramNetMsgInput.readInt();
     this.bulletsHitAir = paramNetMsgInput.readInt();
@@ -336,16 +335,6 @@ public class NetUserStat
     if (localScoreCounter.bPlayerStateUnknown) this.curPlayerState |= 32;
 
     if (paramBoolean)
-      localScoreCounter.resetGame(); 
-  }
-
-  private int getNumOfScoreItems() {
-    if (!NetMissionTrack.isPlaying()) {
-      return 10;
-    }
-    int i = NetMissionTrack.playingVersion();
-    if (i < 103)
-      return 9;
-    return 10;
+      localScoreCounter.resetGame();
   }
 }

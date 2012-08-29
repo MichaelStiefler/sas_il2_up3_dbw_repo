@@ -202,7 +202,7 @@ public class OrdersTree
 
   static Orders ToGroupSquad = ToParaZveno;
 
-  static Orders ToGroundControl = new Orders(new Order[] { new Order("GroundControl"), new OrderRequest_Assistance(), new OrderVector_To_Home_Base(), new OrderVector_To_Target(), new OrderRequest_For_Landing(), new OrderRequest_For_Takeoff(), new OrderRequest_For_RunwayLights(), null, new OrderBack() });
+  static Orders ToGroundControl = new Orders(new Order[] { new Order("GroundControl"), new OrderRequest_Assistance(), new OrderVector_To_Home_Base(), new OrderVector_To_Target(), new OrderRequest_For_Landing(), new OrderRequest_For_Takeoff(), new OrderRequest_For_RunwayLights(), new OrderBack() });
 
   static Orders Frequency = new Orders(new Order[] { new Order("Frequency"), new Order()
   {
@@ -322,16 +322,14 @@ public class OrdersTree
   protected boolean alone = false;
 
   public static final Boolean FREQ_FRIENDLY = new Boolean(true);
-  public static final Boolean FREQ_ENEMY = new Boolean(false);
+  public static final Boolean FREQ_ENEMY = new Boolean(true);
   public static final int shipIDListSize = 10;
   private String[] shipIDList = new String[10];
   protected static final int CONTEXT_LOCAL_SERVER = 0;
   protected static final int CONTEXT_LOCAL_CLIENT = 1;
   protected static final int CONTEXT_REMOTE_SERVER = 2;
   protected int context;
-  private static String[] hotKeyEnvNames = { "pilot", "aircraftView" };
-
-  private HashMapInt[] disabledHotKeys = { new HashMapInt(), new HashMapInt() };
+  private HashMapInt disabledHotKeys = new HashMapInt();
   private HotKeyCmdFire[] hotKeyCmd;
   static Orders ZutiDogfightOptions = new Orders(new Order[] { new Order("MainMenu"), new Order("deWingman", ToWingman)
   {
@@ -615,38 +613,34 @@ public class OrdersTree
 
   private void disableAircraftCmds()
   {
-    for (int i = 0; i < hotKeyEnvNames.length; i++) {
-      HashMapInt localHashMapInt1 = HotKeyEnv.env(hotKeyEnvNames[i]).all();
-      HashMapInt localHashMapInt2 = HotKeyEnv.env("orders").all();
-      HashMapIntEntry localHashMapIntEntry = localHashMapInt2.nextEntry(null);
-      int j;
-      while (localHashMapIntEntry != null) {
-        j = localHashMapIntEntry.getKey();
-        String str = (String)localHashMapInt1.get(j);
-        if (str != null)
-          this.disabledHotKeys[i].put(j, str);
-        localHashMapIntEntry = localHashMapInt2.nextEntry(localHashMapIntEntry);
-      }
-      localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        j = localHashMapIntEntry.getKey();
-        localHashMapInt1.remove(j);
-        localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(localHashMapIntEntry);
-      }
+    HashMapInt localHashMapInt1 = HotKeyEnv.env("pilot").all();
+    HashMapInt localHashMapInt2 = HotKeyEnv.env("orders").all();
+    HashMapIntEntry localHashMapIntEntry = localHashMapInt2.nextEntry(null);
+    int i;
+    while (localHashMapIntEntry != null) {
+      i = localHashMapIntEntry.getKey();
+      String str = (String)localHashMapInt1.get(i);
+      if (str != null)
+        this.disabledHotKeys.put(i, str);
+      localHashMapIntEntry = localHashMapInt2.nextEntry(localHashMapIntEntry);
+    }
+
+    localHashMapIntEntry = this.disabledHotKeys.nextEntry(null);
+    while (localHashMapIntEntry != null) {
+      i = localHashMapIntEntry.getKey();
+      localHashMapInt1.remove(i);
+      localHashMapIntEntry = this.disabledHotKeys.nextEntry(localHashMapIntEntry);
     }
   }
 
-  private void enableAircraftCmds()
-  {
-    for (int i = 0; i < hotKeyEnvNames.length; i++) {
-      HashMapInt localHashMapInt = HotKeyEnv.env(hotKeyEnvNames[i]).all();
-      HashMapIntEntry localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        localHashMapInt.put(localHashMapIntEntry.getKey(), localHashMapIntEntry.getValue());
-        localHashMapIntEntry = this.disabledHotKeys[i].nextEntry(localHashMapIntEntry);
-      }
-      this.disabledHotKeys[i].clear();
+  private void enableAircraftCmds() {
+    HashMapInt localHashMapInt = HotKeyEnv.env("pilot").all();
+    HashMapIntEntry localHashMapIntEntry = this.disabledHotKeys.nextEntry(null);
+    while (localHashMapIntEntry != null) {
+      localHashMapInt.put(localHashMapIntEntry.getKey(), localHashMapIntEntry.getValue());
+      localHashMapIntEntry = this.disabledHotKeys.nextEntry(localHashMapIntEntry);
     }
+    this.disabledHotKeys.clear();
   }
 
   public void execCmd(int paramInt) {

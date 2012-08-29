@@ -142,7 +142,6 @@ public class CockpitAR_234B2_Bombardier extends CockpitPilot
       localException2.printStackTrace();
     }
     interpPut(new Interpolater(), null, Time.current(), null);
-    AircraftLH.printCompassHeading = true;
   }
 
   public void reflectWorldToInstruments(float paramFloat)

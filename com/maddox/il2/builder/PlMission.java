@@ -1037,7 +1037,7 @@ public class PlMission extends Plugin
         str2 = str2.intern();
         Class localClass = (Class)Property.value(str2, "airClass", null);
 
-        if (localClass == null) {
+        if ((localClass == null) || (!Property.containsValue(localClass, "cockpitClass"))) {
           continue;
         }
         this.zutiRadar_ScoutRadarType_Red = (this.zutiRadar_ScoutRadarType_Red + str2 + " ");
@@ -1069,7 +1069,7 @@ public class PlMission extends Plugin
         str2 = str2.intern();
         Class localClass = (Class)Property.value(str2, "airClass", null);
 
-        if (localClass == null) {
+        if ((localClass == null) || (!Property.containsValue(localClass, "cockpitClass"))) {
           continue;
         }
         this.zutiRadar_ScoutRadarType_Blue = (this.zutiRadar_ScoutRadarType_Blue + str2 + " ");
@@ -1435,9 +1435,10 @@ public class PlMission extends Plugin
 
       for (int i = 0; i <= 10; i++) {
         int j = i * 1000;
-        if (j > f2)
+        if (j > f2) {
           f1 = f5 + (j - f2) * f1 / 18000.0F;
-        else if (j > f3)
+        }
+        if (j > f3)
           f1 = f4 + (j - f3) * f1 / 9000.0F;
         else if (j > 10.0F) {
           f1 += f1 * j / 3000.0F;
@@ -1997,8 +1998,6 @@ public class PlMission extends Plugin
             PlMission.access$4902(PlMission.this, new Zuti_WManageAircrafts());
           }
 
-          PlMission.this.zuti_manageAircrafts.setShowAIPlanes(true);
-
           if (PlMission.this.zuti_manageAircrafts.isVisible())
           {
             PlMission.this.zuti_manageAircrafts.hideWindow();
@@ -2045,8 +2044,6 @@ public class PlMission extends Plugin
           {
             PlMission.access$4902(PlMission.this, new Zuti_WManageAircrafts());
           }
-
-          PlMission.this.zuti_manageAircrafts.setShowAIPlanes(true);
 
           if (PlMission.this.zuti_manageAircrafts.isVisible())
           {

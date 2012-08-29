@@ -11,7 +11,6 @@ import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.net.NetFileServerSkin;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.HomePath;
@@ -127,8 +126,6 @@ public class I_16TYPE6_SKIS extends I_16FixedSkis
 
   private void customization()
   {
-    if (!Mission.isSingle())
-      return;
     int i = 0;
     int j = 0;
     int k = hierMesh().chunkFindCheck("CF_D0");

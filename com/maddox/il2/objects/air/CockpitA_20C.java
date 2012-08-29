@@ -5,12 +5,15 @@ import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.Way;
+import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Atmosphere;
+import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
@@ -36,16 +39,25 @@ public class CockpitA_20C extends CockpitPilot
   private Point3d tmpP = new Point3d();
   private Vector3d tmpV = new Vector3d();
 
-  protected float waypointAzimuth()
-  {
-    return super.waypointAzimuthInvertMinus(5.0F);
+  protected float waypointAzimuth() { WayPoint localWayPoint = this.fm.AP.way.curr();
+    if (localWayPoint == null) return 0.0F;
+    localWayPoint.getP(this.tmpP);
+    this.tmpV.sub(this.tmpP, this.fm.Loc);
+    float f = (float)(57.295779513082323D * Math.atan2(-this.tmpV.y, this.tmpV.x));
+    while (f <= -180.0F) {
+      f += 180.0F;
+    }
+    while (f > 180.0F) {
+      f -= 180.0F;
+    }
+    return f;
   }
 
   public CockpitA_20C()
   {
     super("3DO/Cockpit/A-20C/hier.him", "bf109");
 
-    this.cockpitNightMats = new String[] { "256-10_Gauges6", "256-16_Gauges7", "256-5_Gauges1", "256-6_Gauges2", "256-7_Gauges3_DMG", "256-7_Gauges3", "256-8_Gauges4", "256-9_Gauges5_DMG", "256-9_Gauges5", "256-18", "256-21", "256-22", "128_Gauge_DF", "128_Gauge_DF_DMG" };
+    this.cockpitNightMats = new String[] { "256-10_Gauges6", "256-16_Gauges7", "256-5_Gauges1", "256-6_Gauges2", "256-7_Gauges3_DMG", "256-7_Gauges3", "256-8_Gauges4", "256-9_Gauges5_DMG", "256-9_Gauges5", "256-18", "256-21", "256-22" };
 
     setNightMats(false);
 
@@ -134,8 +146,6 @@ public class CockpitA_20C extends CockpitPilot
     float f = 0.5F * this.fm.EI.engines[0].getRPM() + 0.5F * this.fm.EI.engines[1].getRPM();
     f = 2.5F * (float)Math.sqrt(Math.sqrt(Math.sqrt(Math.sqrt(f))));
     this.mesh.chunkSetAngles("zSuction", 0.0F, cvt(f, 0.0F, 10.0F, 0.0F, 297.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("Z_DF", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -30.0F, 30.0F), 0.0F);
   }
 
   public void reflectCockpitState()
@@ -156,12 +166,7 @@ public class CockpitA_20C extends CockpitPilot
       this.mesh.chunkVisible("Z_Oilpres1", false);
       this.mesh.chunkVisible("Z_FuelPres1", false);
       this.mesh.chunkVisible("Panel_D1", true);
-
-      this.mesh.chunkVisible("Z_DF", false);
-      this.mesh.chunkVisible("DF_gauge_D0", false);
-      this.mesh.chunkVisible("DF_gauge_D1", true);
     }
-
     if ((this.fm.AS.astateCockpitState & 0x4) != 0) {
       this.mesh.chunkVisible("XGlassDamage1", true);
     }
@@ -223,15 +228,6 @@ public class CockpitA_20C extends CockpitPilot
         CockpitA_20C.this.setNew.man2 = (0.92F * CockpitA_20C.this.setOld.man2 + 0.08F * CockpitA_20C.this.fm.EI.engines[1].getManifoldPressure());
         CockpitA_20C.this.setNew.altimeter = CockpitA_20C.this.fm.getAltitude();
 
-        if (CockpitA_20C.this.useRealisticNavigationInstruments())
-        {
-          CockpitA_20C.this.setNew.waypointAzimuth.setDeg(CockpitA_20C.this.setOld.waypointAzimuth.getDeg(1.0F), CockpitA_20C.this.getBeaconDirection());
-        }
-        else
-        {
-          CockpitA_20C.this.setNew.waypointAzimuth.setDeg(CockpitA_20C.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitA_20C.this.waypointAzimuth() - CockpitA_20C.this.fm.Or.azimut());
-        }
-
         CockpitA_20C.this.setNew.azimuth.setDeg(CockpitA_20C.this.setOld.azimuth.getDeg(1.0F), CockpitA_20C.this.fm.Or.azimut());
 
         CockpitA_20C.this.setNew.vspeed = ((199.0F * CockpitA_20C.this.setOld.vspeed + CockpitA_20C.this.fm.getVertSpeed()) / 200.0F);
@@ -253,7 +249,6 @@ public class CockpitA_20C extends CockpitPilot
     float man2;
     float altimeter;
     AnglesFork azimuth;
-    AnglesFork waypointAzimuth;
     float vspeed;
     private final CockpitA_20C this$0;
 
@@ -262,8 +257,6 @@ public class CockpitA_20C extends CockpitPilot
       this.this$0 = this$1;
 
       this.azimuth = new AnglesFork();
-
-      this.waypointAzimuth = new AnglesFork();
     }
 
     Variables(CockpitA_20C.1 arg2)

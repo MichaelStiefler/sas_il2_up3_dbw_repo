@@ -1287,14 +1287,11 @@ public abstract class TankGeneric extends ActorHMesh
     this.pos.getAbs(o);
     o.setYaw(f2);
 
-    if ((this.mov != null) && (this.mov.normal != null))
-    {
-      if (this.mov.normal.z < 0.0F) {
-        Engine.land().N(this.mov.srcPos.x, this.mov.srcPos.y, n);
-        o.orient(n);
-      } else {
-        o.orient(this.mov.normal);
-      }
+    if (this.mov.normal.z < 0.0F) {
+      Engine.land().N(this.mov.srcPos.x, this.mov.srcPos.y, n);
+      o.orient(n);
+    } else {
+      o.orient(this.mov.normal);
     }
     this.pos.setAbs(o);
 

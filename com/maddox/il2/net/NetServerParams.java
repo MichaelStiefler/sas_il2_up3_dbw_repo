@@ -131,8 +131,6 @@ public class NetServerParams extends NetObj
   public float reflyKIADelayMultiplier = 0.0F;
   public boolean reflyDisabled = false;
 
-  public boolean allowMorseAsText = true;
-
   public boolean filterUserNames = false;
 
   private static long previousTime = 0L;
@@ -872,7 +870,6 @@ public class NetServerParams extends NetObj
     this.maxAllowedKIA = Config.cur.ini.get("NET", "maxAllowedKIA", -1);
     this.reflyKIADelayMultiplier = Config.cur.ini.get("NET", "reflyKIADelayMultiplier", 0.0F);
     this.reflyDisabled = Config.cur.ini.get("NET", "reflyDisabled", false);
-    this.allowMorseAsText = Config.cur.ini.get("NET", "allowMorseAsText", true);
   }
 
   public NetServerParams(NetChannel paramNetChannel, int paramInt, NetHost paramNetHost) {
@@ -918,7 +915,6 @@ public class NetServerParams extends NetObj
     localNetMsgSpawn.writeInt(this.maxAllowedKIA);
     localNetMsgSpawn.writeFloat(this.reflyKIADelayMultiplier);
     localNetMsgSpawn.writeBoolean(this.reflyDisabled);
-    localNetMsgSpawn.writeBoolean(this.allowMorseAsText);
 
     if (((paramNetChannel instanceof NetChannelOutStream)) && (isCoop())) {
       if (NetMissionTrack.isPlaying()) {
@@ -1290,7 +1286,6 @@ public class NetServerParams extends NetObj
           localNetServerParams.maxAllowedKIA = paramNetMsgInput.readInt();
           localNetServerParams.reflyKIADelayMultiplier = paramNetMsgInput.readFloat();
           localNetServerParams.reflyDisabled = paramNetMsgInput.readBoolean();
-          localNetServerParams.allowMorseAsText = paramNetMsgInput.readBoolean();
         }
 
         if ((paramNetMsgInput.channel() instanceof NetChannelInStream)) {

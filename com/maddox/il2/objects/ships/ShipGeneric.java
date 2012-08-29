@@ -1933,7 +1933,7 @@ public class ShipGeneric extends ActorHMesh
 
       if (ShipGeneric.this.dying == 2)
       {
-        if ((ShipGeneric.this.path != null) || (!Mission.isDeathmatch()))
+        if (ShipGeneric.this.path != null)
         {
           ShipGeneric.this.eraseGuns();
           return false;

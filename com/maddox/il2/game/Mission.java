@@ -69,6 +69,9 @@ import com.maddox.il2.objects.effects.SunGlare;
 import com.maddox.il2.objects.effects.Zip;
 import com.maddox.il2.objects.humans.Soldier;
 import com.maddox.il2.objects.ships.BigshipGeneric;
+import com.maddox.il2.objects.ships.Ship.RwyTransp;
+import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
+import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import com.maddox.il2.objects.sounds.Voice;
 import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
 import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
@@ -461,8 +464,7 @@ public class Mission
     this.actors.clear();
     beaconsRed.clear();
     beaconsBlue.clear();
-    hasRadioStations = false;
-    radioStationsLoaded = false;
+
     meaconsRed.clear();
     meaconsBlue.clear();
     hayrakeMap.clear();
@@ -1224,8 +1226,8 @@ public class Mission
     prepareSkinInWing(this.sectFile, paramAircraft, str2, i);
   }
 
-  public void recordNetFiles()
-  {
+  public void recordNetFiles() {
+    if (isDogfight()) return;
     int i = this.sectFile.sectionIndex("Wing");
     if (i < 0)
       return;
@@ -1912,8 +1914,7 @@ public class Mission
             continue;
           str2 = str2.intern();
           Class localClass = (Class)Property.value(str2, "airClass", null);
-
-          if (localClass == null) {
+          if ((localClass == null) || (!Property.containsValue(localClass, "cockpitClass"))) {
             continue;
           }
           if (localBornPlace.zutiAircrafts == null) {
@@ -2077,9 +2078,14 @@ public class Mission
 
   public static void initRadioSounds()
   {
-    if (radioStationsLoaded)
-    {
+    if (radioStationsLoaded) {
       return;
+    }
+
+    if (hasRadioStations)
+    {
+      CmdMusic.setCurrentVolume(0.0F);
+      radioStationsLoaded = true;
     }
 
     Aircraft localAircraft = World.getPlayerAircraft();
@@ -2095,16 +2101,15 @@ public class Mission
             continue;
           hasRadioStations = true;
           localAircraft.FM.AS.preLoadRadioStation(localActor);
-          radioStationsLoaded = true;
-          CmdMusic.setCurrentVolume(0.001F);
-          return;
         }
       }
+
+      if (!hasRadioStations)
+        radioStationsLoaded = true;
     }
   }
 
-  public void doBegin()
-  {
+  public void doBegin() {
     if (this.bPlaying) return;
 
     if (Config.isUSE_RENDER()) {
@@ -2718,44 +2723,63 @@ public class Mission
 
     for (i = 0; i < this.actors.size(); i++)
     {
-      if (!(this.actors.get(i) instanceof SmokeGeneric))
-        continue;
-      ((SmokeGeneric)this.actors.get(i)).setArmy(0);
+      if ((this.actors.get(i) instanceof SmokeGeneric))
+      {
+        ((SmokeGeneric)this.actors.get(i)).setArmy(0);
+      } else {
+        if ((!(this.actors.get(i) instanceof Ship.RwyTransp)) && (!(this.actors.get(i) instanceof Ship.RwyTranspWide)) && (!(this.actors.get(i) instanceof Ship.RwyTranspSqr)))
+        {
+          continue;
+        }
+        ((BigshipGeneric)this.actors.get(i)).hideTransparentRunwayRed();
+      }
     }
   }
 
   private void populateBeacons()
   {
+    if (!World.cur().diffCur.RealisticNavigationInstruments)
+    {
+      for (int i = 0; i < this.actors.size(); i++)
+      {
+        if (!(this.actors.get(i) instanceof TypeHasLorenzBlindLanding))
+          continue;
+        ((Actor)this.actors.get(i)).missionStarting();
+      }
+
+      return;
+    }
+
     ArrayList localArrayList1 = new ArrayList();
     ArrayList localArrayList2 = new ArrayList();
     Object localObject1;
     Object localObject2;
-    for (int i = 0; i < this.actors.size(); i++)
+    for (int j = 0; j < this.actors.size(); j++)
     {
-      if ((this.actors.get(i) instanceof TypeHasBeacon))
+      if ((this.actors.get(j) instanceof TypeHasBeacon))
       {
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localArrayList1.add(new Object[] { this.actors.get(i), localObject1 });
-        if ((this.actors.get(i) instanceof TypeHasLorenzBlindLanding))
+        localObject1 = ((Actor)this.actors.get(j)).pos.getAbsPoint();
+        localArrayList1.add(new Object[] { this.actors.get(j), localObject1 });
+        if ((this.actors.get(j) instanceof TypeHasLorenzBlindLanding))
         {
-          ((Actor)this.actors.get(i)).missionStarting();
+          ((Actor)this.actors.get(j)).missionStarting();
         }
-        if ((this.actors.get(i) instanceof BigshipGeneric))
+        if ((this.actors.get(j) instanceof BigshipGeneric))
         {
-          hayrakeMap.put((Actor)this.actors.get(i), "NDB");
+          hayrakeMap.put((Actor)this.actors.get(j), "NDB");
         }
       }
-      else if ((this.actors.get(i) instanceof TypeHasMeacon))
+      else if ((this.actors.get(j) instanceof TypeHasMeacon))
       {
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
-        localArrayList2.add(new Object[] { this.actors.get(i), localObject1 });
+        localObject1 = ((Actor)this.actors.get(j)).pos.getAbsPoint();
+        localArrayList2.add(new Object[] { this.actors.get(j), localObject1 });
       } else {
-        if (!(this.actors.get(i) instanceof TypeHasHayRake))
+        if (!(this.actors.get(j) instanceof TypeHasHayRake))
           continue;
-        localObject1 = ((Actor)this.actors.get(i)).pos.getAbsPoint();
+        localObject1 = ((Actor)this.actors.get(j)).pos.getAbsPoint();
         localObject2 = generateHayrakeCode((Point3d)localObject1);
-        localArrayList1.add(new Object[] { this.actors.get(i), localObject1 });
-        hayrakeMap.put((Actor)this.actors.get(i), localObject2);
+        localArrayList1.add(new Object[] { this.actors.get(j), localObject1 });
+        hayrakeMap.put((Actor)this.actors.get(j), localObject2);
       }
     }
 
@@ -2765,9 +2789,9 @@ public class Mission
     }
     sortBeaconsList(localArrayList1);
 
-    for (i = 0; i < localArrayList1.size(); i++)
+    for (j = 0; j < localArrayList1.size(); j++)
     {
-      localObject1 = (Object[])(Object[])localArrayList1.get(i);
+      localObject1 = (Object[])(Object[])localArrayList1.get(j);
       localObject2 = (Actor)localObject1[0];
       if ((((localObject2 instanceof TypeHasRadioStation)) || (((Actor)localObject2).getArmy() == 1)) && (beaconsRed.size() < 32))
       {
@@ -2778,9 +2802,9 @@ public class Mission
       beaconsBlue.add(localObject1[0]);
     }
 
-    for (i = 0; i < localArrayList2.size(); i++)
+    for (j = 0; j < localArrayList2.size(); j++)
     {
-      localObject1 = (Object[])(Object[])localArrayList2.get(i);
+      localObject1 = (Object[])(Object[])localArrayList2.get(j);
       localObject2 = (Actor)localObject1[0];
       if ((((Actor)localObject2).getArmy() == 1) && (meaconsRed.size() < 32))
       {
@@ -2816,18 +2840,8 @@ public class Mission
       if (localActor.getArmy() != World.getPlayerArmy())
         continue;
       String str1 = (String)localEntry.getValue();
+
       String str2 = Property.stringValue(localActor.getClass(), "i18nName", "");
-      if (str2.equals(""))
-      {
-        try
-        {
-          String str3 = localActor.getClass().toString().substring(localActor.getClass().toString().indexOf("$") + 1);
-          str2 = I18N.technic(str3);
-        }
-        catch (Exception localException)
-        {
-        }
-      }
       int j = -1;
       if (beaconsRed.contains(localActor))
       {
@@ -2847,17 +2861,17 @@ public class Mission
         boolean bool = Aircraft.hasPlaneZBReceiver(World.getPlayerAircraft());
         if (!bool)
           continue;
-        String str4 = str1;
+        String str3 = str1;
         if (str1.length() == 12)
         {
-          str4 = str1.substring(0, 3) + " / " + str1.substring(3, 6) + " / " + str1.substring(6, 9) + " / " + str1.substring(9, 12);
+          str3 = str1.substring(0, 3) + " / " + str1.substring(3, 6) + " / " + str1.substring(6, 9) + " / " + str1.substring(9, 12);
         }
         else if (str1.length() == 24)
         {
-          str4 = str1.substring(0, 2) + "-" + str1.substring(2, 4) + "-" + str1.substring(4, 6) + " / " + str1.substring(6, 8) + "-" + str1.substring(8, 10) + "-" + str1.substring(10, 12) + " / " + str1.substring(12, 14) + "-" + str1.substring(14, 16) + "-" + str1.substring(16, 18) + " / " + str1.substring(18, 20) + "-" + str1.substring(20, 22) + "-" + str1.substring(22, 24);
+          str3 = str1.substring(0, 2) + "-" + str1.substring(2, 4) + "-" + str1.substring(4, 6) + " / " + str1.substring(6, 8) + "-" + str1.substring(8, 10) + "-" + str1.substring(10, 12) + " / " + str1.substring(12, 14) + "-" + str1.substring(14, 16) + "-" + str1.substring(16, 18) + " / " + str1.substring(18, 20) + "-" + str1.substring(20, 22) + "-" + str1.substring(22, 24);
         }
 
-        Main3D.cur3D().ordersTree.addShipIDs(i, j, localActor, str2, "( " + str4 + " )");
+        Main3D.cur3D().ordersTree.addShipIDs(i, j, localActor, str2, "( " + str3 + " )");
       }
       i++;
     }
@@ -3096,6 +3110,9 @@ public class Mission
         str2 = str2.intern();
         Class localClass = (Class)Property.value(str2, "airClass", null);
 
+        if ((localClass == null) || (!Property.containsValue(localClass, "cockpitClass"))) {
+          continue;
+        }
         Main.cur().mission.ScoutsRed.add(str2);
       }
     }
@@ -3127,6 +3144,9 @@ public class Mission
         str2 = str2.intern();
         Class localClass = (Class)Property.value(str2, "airClass", null);
 
+        if ((localClass == null) || (!Property.containsValue(localClass, "cockpitClass"))) {
+          continue;
+        }
         Main.cur().mission.ScoutsBlue.add(str2);
       }
     }

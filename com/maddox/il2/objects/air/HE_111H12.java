@@ -32,17 +32,43 @@ public class HE_111H12 extends HE_111
     }
   }
 
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
+  public void doWoundPilot(int paramInt, float paramFloat) {
     switch (paramInt) {
     case 0:
-      break;
+      hierMesh().chunkVisible("Pilot1_D0", false);
+      hierMesh().chunkVisible("Pilot1_D1", true);
+      hierMesh().chunkVisible("Head1_D0", false);
+      hierMesh().chunkVisible("HMask1_D0", false);
+      if ((this.bPitUnfocused) && (!this.FM.AS.bIsAboutToBailout)) {
+        hierMesh().chunkVisible("Pilot1_FAK", false);
+        hierMesh().chunkVisible("Pilot1_FAL", true);
+        hierMesh().chunkVisible("Head1_FAK", false);
+      }
+      if (!this.FM.AS.bIsAboutToBailout) break;
+      hierMesh().chunkVisible("Pilot1_FAK", false);
+      hierMesh().chunkVisible("Pilot1_FAL", false);
+      hierMesh().chunkVisible("Head1_FAK", false); break;
     case 1:
+      hierMesh().chunkVisible("Pilot2_D0", false);
+      hierMesh().chunkVisible("Pilot2_D1", true);
+      if ((this.bPitUnfocused) && (!this.FM.AS.bIsAboutToBailout)) {
+        hierMesh().chunkVisible("Pilot2_FAK", false);
+        hierMesh().chunkVisible("Pilot2_FAL", true);
+        hierMesh().chunkVisible("HMask2_D0", false);
+      }
+      if (this.FM.AS.bIsAboutToBailout) {
+        hierMesh().chunkVisible("Pilot2_FAK", false);
+        hierMesh().chunkVisible("Pilot2_FAL", false);
+        hierMesh().chunkVisible("HMask2_D0", false);
+      }
       this.FM.turret[0].setHealth(paramFloat);
       break;
     case 2:
+      hierMesh().chunkVisible("Pilot3_D0", false);
+      hierMesh().chunkVisible("Pilot3_D1", true);
+      hierMesh().chunkVisible("HMask3_D0", false);
       this.FM.turret[1].setHealth(paramFloat);
-      this.FM.turret[2].setHealth(paramFloat);
+      if (this.FM.turret.length != 6) break; this.FM.turret[5].setHealth(paramFloat);
     }
   }
 

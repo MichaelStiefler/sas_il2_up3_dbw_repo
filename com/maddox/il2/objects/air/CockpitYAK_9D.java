@@ -3,7 +3,9 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.Way;
+import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorDraw;
@@ -15,6 +17,7 @@ import com.maddox.il2.engine.LightPointActor;
 import com.maddox.il2.engine.Orient;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
@@ -46,7 +49,13 @@ public class CockpitYAK_9D extends CockpitPilot
 
   protected float waypointAzimuth()
   {
-    return super.waypointAzimuthInvertMinus(10.0F);
+    WayPoint localWayPoint = this.fm.AP.way.curr();
+    if (localWayPoint == null) return 0.0F;
+    localWayPoint.getP(this.tmpP);
+    this.tmpV.sub(this.tmpP, this.fm.Loc);
+    this.tmpOr.setAT0(this.tmpV);
+    this.tmpOr.wrap();
+    return this.tmpOr.azimut();
   }
 
   public CockpitYAK_9D()
@@ -83,17 +92,6 @@ public class CockpitYAK_9D extends CockpitPilot
     setNightMats(false);
 
     interpPut(new Interpolater(), null, Time.current(), null);
-
-    if (useRealisticNavigationInstruments())
-    {
-      this.mesh.materialReplace("prib_two", "prib_two_empty");
-      this.mesh.materialReplace("prib_two_dd", "prib_two_dd_empty");
-      this.mesh.materialReplace("prib_two_night", "prib_two_night_empty");
-      this.mesh.materialReplace("prib_two_dd_night", "prib_two_dd_night_empty");
-      this.mesh.chunkVisible("zRPK10", false);
-      setNightMats(true);
-      setNightMats(false);
-    }
   }
 
   public void reflectWorldToInstruments(float paramFloat)
@@ -161,7 +159,7 @@ public class CockpitYAK_9D extends CockpitPilot
 
     this.mesh.chunkSetAngles("zGasPrs1a", 0.0F, cvt(this.fm.M.fuel > 1.0F ? 0.26F : 0.0F, 0.0F, 8.0F, 0.0F, -180.0F), 0.0F);
 
-    this.mesh.chunkSetAngles("zRPK10", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -35.0F, 35.0F), 0.0F);
+    this.mesh.chunkSetAngles("zRPK10", 0.0F, cvt(interp(this.setNew.waypointAzimuth, this.setOld.waypointAzimuth, paramFloat), -25.0F, 25.0F, 35.0F, -35.0F), 0.0F);
 
     this.mesh.chunkVisible("Z_Red1", this.fm.M.fuel < 36.0F);
     this.mesh.chunkVisible("Z_Red2", this.fm.EI.engines[0].getControlMagnetos() < 3);
@@ -247,12 +245,7 @@ public class CockpitYAK_9D extends CockpitPilot
         if ((CockpitYAK_9D.this.setOld.azimuth > 270.0F) && (CockpitYAK_9D.this.setNew.azimuth < 90.0F)) CockpitYAK_9D.this.setOld.azimuth -= 360.0F;
         if ((CockpitYAK_9D.this.setOld.azimuth < 90.0F) && (CockpitYAK_9D.this.setNew.azimuth > 270.0F)) CockpitYAK_9D.this.setOld.azimuth += 360.0F;
         CockpitYAK_9D.this.setNew.vspeed = ((199.0F * CockpitYAK_9D.this.setOld.vspeed + CockpitYAK_9D.this.fm.getVertSpeed()) / 200.0F);
-
-        if (!CockpitYAK_9D.this.useRealisticNavigationInstruments())
-        {
-          CockpitYAK_9D.this.setNew.waypointAzimuth.setDeg(CockpitYAK_9D.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitYAK_9D.this.waypointAzimuth() - CockpitYAK_9D.this.fm.Or.azimut());
-        }
-
+        CockpitYAK_9D.this.setNew.waypointAzimuth = ((10.0F * CockpitYAK_9D.this.setOld.waypointAzimuth + (CockpitYAK_9D.this.waypointAzimuth() - CockpitYAK_9D.this.setOld.azimuth) + World.Rnd().nextFloat(-10.0F, 10.0F)) / 11.0F);
       }
 
       return true;
@@ -266,19 +259,13 @@ public class CockpitYAK_9D extends CockpitPilot
     float altimeter;
     float azimuth;
     float vspeed;
-    AnglesFork waypointAzimuth;
+    float waypointAzimuth;
     private final CockpitYAK_9D this$0;
 
     private Variables()
     {
-      this.this$0 = this$1;
-
-      this.waypointAzimuth = new AnglesFork();
-    }
-
-    Variables(CockpitYAK_9D.1 arg2)
-    {
-      this();
+      this.this$0 = this$1; } 
+    Variables(CockpitYAK_9D.1 arg2) { this();
     }
   }
 }

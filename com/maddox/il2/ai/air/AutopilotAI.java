@@ -20,8 +20,6 @@ import com.maddox.il2.fm.FMMath;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
 import com.maddox.il2.fm.Wind;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.sounds.Voice;
@@ -210,8 +208,7 @@ public class AutopilotAI extends Autopilotage
         if (this.way.isLanding()) {
           this.FM.getLoc(P);
           if ((this.way.Cur() > 3) && (P.z > this.WPoint.z + 500.0D)) this.way.setCur(1);
-          if ((this.way.Cur() == 5) && (
-            (!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))) {
+          if (this.way.Cur() == 5) {
             Voice.speakLanding((Aircraft)this.FM.actor);
           }
           if ((this.way.Cur() == 6) || (this.way.Cur() == 7)) {
@@ -219,31 +216,26 @@ public class AutopilotAI extends Autopilotage
             if (Actor.isAlive(this.way.landingAirport)) {
               i = this.way.landingAirport.landingFeedback(this.WPoint, (Aircraft)this.FM.actor);
             }
-            if ((i == 0) && (
-              (!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))) {
+            if (i == 0) {
               Voice.speakLandingPermited((Aircraft)this.FM.actor);
             }
             if (i == 1) {
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakLandingDenied((Aircraft)this.FM.actor);
+              Voice.speakLandingDenied((Aircraft)this.FM.actor);
               this.way.first();
               this.FM.push(2);
               this.FM.push(2);
               this.FM.push(2);
               this.FM.push(2);
               this.FM.pop();
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakGoAround((Aircraft)this.FM.actor);
+              Voice.speakGoAround((Aircraft)this.FM.actor);
               this.FM.CT.FlapsControl = 0.4F;
               this.FM.CT.GearControl = 0.0F;
               return;
             }
             if (i == 2) {
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakWaveOff((Aircraft)this.FM.actor);
+              Voice.speakWaveOff((Aircraft)this.FM.actor);
               if (this.FM.isReadyToReturn()) {
-                if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                  Voice.speakGoingIn((Aircraft)this.FM.actor);
+                Voice.speakGoingIn((Aircraft)this.FM.actor);
                 this.FM.AS.setCockpitDoor(this.FM.actor, 1);
                 this.FM.CT.GearControl = 1.0F;
                 return;
@@ -293,13 +285,13 @@ public class AutopilotAI extends Autopilotage
 
           this.courseV.scale(this.FM.getSpeed());
           this.courseV.add(this.windV);
-          this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.courseV.y, this.courseV.x))); break label1470;
+          this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.courseV.y, this.courseV.x))); break label1320;
         }
       }
       this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.WPoint.y - PlLoc.y, this.WPoint.x - PlLoc.x)));
     }
 
-    label1470: if ((this.bStabSpeed) || (this.bWayPoint)) {
+    label1320: if ((this.bStabSpeed) || (this.bWayPoint)) {
       this.Pw = (0.3F - 0.04F * (this.FM.getSpeed() - (float)this.StabSpeed));
       if (this.Pw > 1.0F) this.Pw = 1.0F; else if (this.Pw < 0.0F) this.Pw = 0.0F;
 

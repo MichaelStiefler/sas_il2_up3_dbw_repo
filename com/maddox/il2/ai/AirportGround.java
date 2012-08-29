@@ -83,7 +83,7 @@ public class AirportGround extends AirportStatic
       {
         if ((this.acThatRequestedLights.FM.Gears.onGround()) || (!this.acThatRequestedLights.isAlive()))
         {
-          this.randomDelay = (300 + World.Rnd().nextInt(800));
+          this.randomDelay = (300 + (int)(Math.random() * 800.0D));
           this.canTurnOffLights = true;
         }
         else if (Time.current() > this.timeOfLightsOn + 90000L)

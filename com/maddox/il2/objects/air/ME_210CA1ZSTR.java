@@ -26,7 +26,7 @@ public class ME_210CA1ZSTR extends ME_210
     weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 10, 10, 1 });
     weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_MGUN03", "_MGUN04", "_CANNON03" });
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "MGunBofors40 29" });
+    weaponsRegister(localClass, "default", new String[] { "MGunMG17ki 505", "MGunMG17ki 500", "MGunMG15120k 325", "MGunMG15120k 325", "MGunMG131tj 500", "MGunMG131tj 500", "MGunPaK40 42" });
 
     weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
   }

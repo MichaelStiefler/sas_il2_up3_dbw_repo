@@ -332,8 +332,6 @@ public abstract class R_5xyz extends Scheme1
       break;
     case 1:
       this.FM.turret[0].setHealth(paramFloat);
-      if (paramFloat > 0.0F) break;
-      this.gunnerDead = true;
     }
   }
 

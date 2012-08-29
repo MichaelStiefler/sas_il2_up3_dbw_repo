@@ -45,10 +45,7 @@ public abstract class N1K extends Scheme1
       if ((this == World.getPlayerAircraft()) && (!this.autoEng)) {
         HUD.log("FlapsAuto");
         this.autoEng = true;
-
-        this.curFlaps = this.FM.CT.getFlap();
       }
-
       float f = Pitot.Indicator((float)this.FM.Loc.z, this.FM.getSpeed());
 
       this.mBar = (f * f / (this.FM.getOverload() * 10.0F));

@@ -862,7 +862,7 @@ public class Main3D extends Main
       this._overLoad[j].setCamera(new CameraOrtho2D());
     }
 
-    this.darkerNight = new DarkerNight(0, 0.7F);
+    this.darkerNight = new DarkerNight(0, 0.5F);
     this.darkerNight.setSaveAspect(Config.cur.windowSaveAspect);
     this.darkerNight.setCamera(new CameraOrtho2D());
     this.darkerNight.setShow(true);

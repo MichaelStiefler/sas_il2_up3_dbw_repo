@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3f;
 import com.maddox.il2.ai.AnglesFork;
-import com.maddox.il2.ai.RangeRandom;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.InterpolateRef;
@@ -36,7 +35,6 @@ public class CockpitCW_21 extends CockpitPilot
   private float flaps = 0.0F;
   private float gearsLever = 0.0F;
   private float gears = 0.0F;
-  private boolean warningLightsOK = true;
 
   public CockpitCW_21()
   {
@@ -224,20 +222,8 @@ public class CockpitCW_21 extends CockpitPilot
       this.mesh.chunkSetAngles("Z_Switch7", 0.0F, 0.0F, 0.0F);
     }
 
-    this.mesh.chunkSetAngles("Z_LeverFlaps", -this.flapsLever, 0.0F, 0.0F);
+    this.mesh.chunkSetAngles("Z_LeverFlaps", this.flapsLever, 0.0F, 0.0F);
     this.mesh.chunkSetAngles("Z_LeverGear", this.gearsLever, 0.0F, 0.0F);
-
-    if (this.warningLightsOK)
-    {
-      this.mesh.chunkVisible("WarningLight1", this.rpmGeneratedPressure < 700.0F);
-      this.mesh.chunkVisible("WarningLight2", (f4 > 11.0F) || (f4 < 3.0F));
-      this.mesh.chunkVisible("WarningLight3", this.fm.M.fuel < 0.1F);
-      this.mesh.chunkVisible("WarningLight4", this.setNew.mix < 0.1D);
-      this.mesh.chunkVisible("WarningLight5", this.setNew.prop < 0.1F);
-      this.mesh.chunkVisible("WarningLight6", this.pictSupc > 0.1F);
-      this.mesh.chunkVisible("WarningLight7", this.fm.CT.getFlap() > 0.01F);
-      this.mesh.chunkVisible("WarningLight8", this.fm.CT.getGear() == 0.0F);
-    }
   }
 
   public void reflectCockpitState()
@@ -256,19 +242,6 @@ public class CockpitCW_21 extends CockpitPilot
       this.mesh.chunkVisible("Z_NeedSpeed", false);
       this.mesh.chunkVisible("Z_NeedBall", false);
       this.mesh.chunkVisible("Z_NeedTurn", false);
-      if (World.Rnd().nextFloat() < 0.15D)
-      {
-        this.warningLightsOK = false;
-        this.mesh.chunkVisible("WarningLights", false);
-        this.mesh.chunkVisible("WarningLight1", false);
-        this.mesh.chunkVisible("WarningLight2", false);
-        this.mesh.chunkVisible("WarningLight3", false);
-        this.mesh.chunkVisible("WarningLight4", false);
-        this.mesh.chunkVisible("WarningLight5", false);
-        this.mesh.chunkVisible("WarningLight6", false);
-        this.mesh.chunkVisible("WarningLight7", false);
-        this.mesh.chunkVisible("WarningLight8", false);
-      }
     }
     if (((this.fm.AS.astateCockpitState & 0x8) == 0) || 
       ((this.fm.AS.astateCockpitState & 0x80) != 0)) {
@@ -281,19 +254,6 @@ public class CockpitCW_21 extends CockpitPilot
       this.mesh.chunkVisible("Z_NeedVSpeed", false);
       this.mesh.chunkVisible("Z_NeedRPM", false);
       this.mesh.chunkVisible("Z_NeedAlt", false);
-      if (World.Rnd().nextFloat() < 0.15D)
-      {
-        this.warningLightsOK = false;
-        this.mesh.chunkVisible("WarningLights", false);
-        this.mesh.chunkVisible("WarningLight1", false);
-        this.mesh.chunkVisible("WarningLight2", false);
-        this.mesh.chunkVisible("WarningLight3", false);
-        this.mesh.chunkVisible("WarningLight4", false);
-        this.mesh.chunkVisible("WarningLight5", false);
-        this.mesh.chunkVisible("WarningLight6", false);
-        this.mesh.chunkVisible("WarningLight7", false);
-        this.mesh.chunkVisible("WarningLight8", false);
-      }
     }
   }
 
@@ -328,8 +288,8 @@ public class CockpitCW_21 extends CockpitPilot
 
   static
   {
-    Property.set(CockpitCW_21.class, "normZN", 0.8F);
-    Property.set(CockpitCW_21.class, "gsZN", 0.8F);
+    Property.set(CockpitHS_129.class, "normZN", 0.8F);
+    Property.set(CockpitHS_129.class, "gsZN", 0.8F);
   }
 
   private class Variables
@@ -399,8 +359,6 @@ public class CockpitCW_21 extends CockpitPilot
 
       CockpitCW_21.access$602(CockpitCW_21.this, 0.8F * CockpitCW_21.this.pictSupc + 0.2F * CockpitCW_21.this.fm.EI.engines[0].getControlCompressor());
 
-      float f = 12.0F;
-
       if ((CockpitCW_21.this.flapsLever != 0.0F) && (CockpitCW_21.this.flaps == CockpitCW_21.this.fm.CT.getFlap()))
       {
         CockpitCW_21.access$702(CockpitCW_21.this, CockpitCW_21.this.flapsLever * 0.8F);
@@ -411,15 +369,15 @@ public class CockpitCW_21 extends CockpitPilot
       {
         CockpitCW_21.access$802(CockpitCW_21.this, CockpitCW_21.this.fm.CT.getFlap());
         CockpitCW_21.access$702(CockpitCW_21.this, CockpitCW_21.this.flapsLever + 2.0F);
-        if (CockpitCW_21.this.flapsLever > f)
-          CockpitCW_21.access$702(CockpitCW_21.this, f);
+        if (CockpitCW_21.this.flapsLever > 20.0F)
+          CockpitCW_21.access$702(CockpitCW_21.this, 20.0F);
       }
       else if (CockpitCW_21.this.flaps > CockpitCW_21.this.fm.CT.getFlap())
       {
         CockpitCW_21.access$802(CockpitCW_21.this, CockpitCW_21.this.fm.CT.getFlap());
         CockpitCW_21.access$702(CockpitCW_21.this, CockpitCW_21.this.flapsLever - 2.0F);
-        if (CockpitCW_21.this.flapsLever < -f) {
-          CockpitCW_21.access$702(CockpitCW_21.this, -f);
+        if (CockpitCW_21.this.flapsLever < -20.0F) {
+          CockpitCW_21.access$702(CockpitCW_21.this, -20.0F);
         }
       }
       if ((CockpitCW_21.this.gearsLever != 0.0F) && (CockpitCW_21.this.gears == CockpitCW_21.this.fm.CT.getGear()))
@@ -432,15 +390,15 @@ public class CockpitCW_21 extends CockpitPilot
       {
         CockpitCW_21.access$1002(CockpitCW_21.this, CockpitCW_21.this.fm.CT.getGear());
         CockpitCW_21.access$902(CockpitCW_21.this, CockpitCW_21.this.gearsLever + 2.0F);
-        if (CockpitCW_21.this.gearsLever > f)
-          CockpitCW_21.access$902(CockpitCW_21.this, f);
+        if (CockpitCW_21.this.gearsLever > 20.0F)
+          CockpitCW_21.access$902(CockpitCW_21.this, 20.0F);
       }
       else if (CockpitCW_21.this.gears > CockpitCW_21.this.fm.CT.getGear())
       {
         CockpitCW_21.access$1002(CockpitCW_21.this, CockpitCW_21.this.fm.CT.getGear());
         CockpitCW_21.access$902(CockpitCW_21.this, CockpitCW_21.this.gearsLever - 2.0F);
-        if (CockpitCW_21.this.gearsLever < -f) {
-          CockpitCW_21.access$902(CockpitCW_21.this, -f);
+        if (CockpitCW_21.this.gearsLever < -20.0F) {
+          CockpitCW_21.access$902(CockpitCW_21.this, -20.0F);
         }
       }
 

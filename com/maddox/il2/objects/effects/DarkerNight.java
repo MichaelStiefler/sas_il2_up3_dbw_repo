@@ -14,21 +14,26 @@ public class DarkerNight extends Render
   implements MsgGLContextListener
 {
   int _indx = 0;
+
   private float alpha = 1.0F;
 
   public void msgGLContext(int paramInt)
   {
   }
 
-  protected void contextResize(int paramInt1, int paramInt2) {
+  protected void contextResize(int paramInt1, int paramInt2)
+  {
   }
 
-  public void preRender() {
-    if (World.Sun().ToSun.z < 0.0F) {
+  public void preRender()
+  {
+    if (World.Sun().ToSun.z < 0.0F)
+    {
       this.alpha = World.Sun().sunMultiplier;
       if (this.alpha < 0.35F)
         this.alpha = 0.35F;
-    } else {
+    }
+    else {
       this.alpha = 1.0F;
     }
   }
@@ -38,16 +43,17 @@ public class DarkerNight extends Render
     this._indx = paramInt;
     useClearDepth(false);
     useClearColor(false);
-    if (this._indx == 0) {
+    if (this._indx == 0)
       setName("DarkerNight");
-    }
     GLContext.getCurrent().msgAddListener(this, null);
     if (paramInt != 0)
       Main3D.cur3D()._getAspectViewPort(paramInt, this.viewPort);
   }
 
-  public void render() {
-    if (this.alpha < 1.0D) {
+  public void render()
+  {
+    if (this.alpha < 1.0D)
+    {
       Render.clearStates();
       gl.ShadeModel(7425);
       gl.Disable(2929);
@@ -66,15 +72,18 @@ public class DarkerNight extends Render
     }
   }
 
-  public void setShow(boolean paramBoolean) {
+  public void setShow(boolean paramBoolean)
+  {
     if (this._indx == 0)
+    {
       super.setShow(paramBoolean);
+    }
   }
 
-  public boolean isShow() {
-    if (this._indx == 0) {
+  public boolean isShow()
+  {
+    if (this._indx == 0)
       return super.isShow();
-    }
     return (Config.cur.isUse3Renders()) && (Main3D.cur3D().overLoad.isShow());
   }
 }

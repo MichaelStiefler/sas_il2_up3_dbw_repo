@@ -7,7 +7,7 @@ public class BombTorpMk13a extends Torpedo
   static
   {
     Class localClass = BombTorpMk13a.class;
-    Property.set(localClass, "mesh", "3DO/Arms/Mk13_new/mono_a.sim");
+    Property.set(localClass, "mesh", "3DO/Arms/Beau_torpedo/mono.sim");
 
     Property.set(localClass, "radius", 90.800003F);
     Property.set(localClass, "power", 181.89999F);

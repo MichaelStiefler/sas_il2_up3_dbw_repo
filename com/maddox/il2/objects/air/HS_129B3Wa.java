@@ -17,7 +17,6 @@ import com.maddox.il2.objects.Wreckage;
 import com.maddox.il2.objects.weapons.Gun;
 import com.maddox.il2.objects.weapons.GunEmpty;
 import com.maddox.il2.objects.weapons.MGunBK75;
-import com.maddox.il2.objects.weapons.Pylon;
 import com.maddox.il2.objects.weapons.PylonHS129BK75;
 import com.maddox.rts.Property;
 
@@ -63,7 +62,7 @@ public class HS_129B3Wa extends HS_129
       ((Gun)this.g1).destroy();
       this.FM.Sq.liftKeel /= this.BK75stabilizingMultiplier;
       if (World.getPlayerAircraft() == this) {
-        World.cur().scoreCounter.playerDroppedExternalStores(50);
+        World.cur().scoreCounter.playerDroppedExternalStores(100);
       }
       for (int i = 0; i < this.FM.CT.Weapons.length; i++)
       {
@@ -73,14 +72,8 @@ public class HS_129B3Wa extends HS_129
         for (int j = 0; j < localObject.length; j++)
         {
           GunEmpty localGunEmpty = localObject[j];
-          if ((localGunEmpty instanceof MGunBK75))
-          {
-            this.FM.CT.Weapons[i][j] = GunEmpty.get();
-            localGunEmpty = GunEmpty.get();
-          }
           if ((!(localGunEmpty instanceof MGunBK75)) && (!(localGunEmpty instanceof PylonHS129BK75)))
             continue;
-          ((Pylon)localGunEmpty).destroy();
           this.FM.CT.Weapons[i][j] = GunEmpty.get();
           localGunEmpty = GunEmpty.get();
         }

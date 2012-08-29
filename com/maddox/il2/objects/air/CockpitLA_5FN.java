@@ -3,7 +3,6 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.AnglesFork;
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
@@ -151,7 +150,7 @@ public class CockpitLA_5FN extends CockpitPilot
 
       this.mesh.chunkSetAngles("zClock1b", cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F, 0.0F);
 
-      this.mesh.chunkSetAngles("zRPK10", cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -35.0F, 35.0F), 0.0F, 0.0F);
+      this.mesh.chunkSetAngles("zRPK10", cvt(interp(this.setNew.waypointAzimuth, this.setOld.waypointAzimuth, paramFloat), -25.0F, 25.0F, -35.0F, 35.0F), 0.0F, 0.0F);
     }
 
     this.mesh.chunkVisible("XGearUP_L", (this.fm.CT.getGear() == 0.0F) && (this.fm.Gears.lgear));
@@ -274,9 +273,13 @@ public class CockpitLA_5FN extends CockpitPilot
         if ((CockpitLA_5FN.this.setOld.azimuth > 270.0F) && (CockpitLA_5FN.this.setNew.azimuth < 90.0F)) CockpitLA_5FN.this.setOld.azimuth -= 360.0F;
         if ((CockpitLA_5FN.this.setOld.azimuth < 90.0F) && (CockpitLA_5FN.this.setNew.azimuth > 270.0F)) CockpitLA_5FN.this.setOld.azimuth += 360.0F;
 
-        if (!CockpitLA_5FN.this.useRealisticNavigationInstruments())
+        if (CockpitLA_5FN.this.useRealisticNavigationInstruments())
         {
-          CockpitLA_5FN.this.setNew.waypointAzimuth.setDeg(CockpitLA_5FN.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitLA_5FN.this.waypointAzimuth() - CockpitLA_5FN.this.fm.Or.azimut());
+          CockpitLA_5FN.this.setNew.waypointAzimuth = 0.0F;
+        }
+        else
+        {
+          CockpitLA_5FN.this.setNew.waypointAzimuth = ((10.0F * CockpitLA_5FN.this.setOld.waypointAzimuth + (CockpitLA_5FN.this.waypointAzimuth() - CockpitLA_5FN.this.setOld.azimuth)) / 11.0F);
         }
 
         CockpitLA_5FN.this.setNew.vspeed = ((199.0F * CockpitLA_5FN.this.setOld.vspeed + CockpitLA_5FN.this.fm.getVertSpeed()) / 200.0F);
@@ -307,7 +310,7 @@ public class CockpitLA_5FN extends CockpitPilot
     float altimeter;
     float azimuth;
     float vspeed;
-    AnglesFork waypointAzimuth;
+    float waypointAzimuth;
     float[] xyz;
     float[] ypr;
     private final CockpitLA_5FN this$0;
@@ -315,8 +318,6 @@ public class CockpitLA_5FN extends CockpitPilot
     private Variables()
     {
       this.this$0 = this$1;
-
-      this.waypointAzimuth = new AnglesFork();
 
       this.xyz = new float[] { 0.0F, 0.0F, 0.0F };
       this.ypr = new float[] { 0.0F, 0.0F, 0.0F };

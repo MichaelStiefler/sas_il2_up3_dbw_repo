@@ -108,7 +108,7 @@ public class BF_109F4 extends BF_109
 
     Aircraft.weaponsRegister(localClass, "droptank", new String[] { "MGunMG17si 500", "MGunMG17si 500", null, "MGunMG15120MGki 200", null, null, null, null, "PylonETC900 1", "FuelTankGun_Type_D 1", null, null, null, null, null });
 
-    Aircraft.weaponsRegister(localClass, "2xMG151_pods", new String[] { "MGunMG17si 500", "MGunMG17si 500", null, "MGunMG15120MGki 200", "PylonMG15120 1", "PylonMG15120 1", "MGunMG151k 135", "MGunMG151k 135", null, null, null, null, null, null, null });
+    Aircraft.weaponsRegister(localClass, "2xMG151_pods", new String[] { "MGunMG17si 500", "MGunMG17si 500", null, "MGunMG15120MGki 200", "PylonMG15120 1", "PylonMG15120 1", "MGunMG151k 135", "MGunMG151k", null, null, null, null, null, null, null });
 
     Aircraft.weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
   }

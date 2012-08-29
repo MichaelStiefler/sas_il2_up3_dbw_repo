@@ -65,7 +65,7 @@ public class CockpitBF_110G_Gunner extends CockpitGunner
       localHierMesh.chunkVisible("Blister1_D0", false);
       localHierMesh.chunkVisible("Blister2_D0", false);
       localHierMesh.chunkVisible("Blister3_D0", false);
-      localHierMesh.chunkVisible("Turret1B_D0", false);
+
       return true;
     }
     return false;
@@ -79,7 +79,7 @@ public class CockpitBF_110G_Gunner extends CockpitGunner
     localHierMesh.chunkVisible("Blister1_D0", true);
     localHierMesh.chunkVisible("Blister2_D0", true);
     localHierMesh.chunkVisible("Blister3_D0", true);
-    localHierMesh.chunkVisible("Turret1B_D0", true);
+
     super.doFocusLeave();
     ((AircraftLH)aircraft()).bWantBeaconKeys = this.bBeaconKeysEnabled;
   }

@@ -3,12 +3,15 @@ package com.maddox.il2.objects.air;
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.JGP.Vector3f;
-import com.maddox.il2.ai.AnglesFork;
+import com.maddox.il2.ai.RangeRandom;
+import com.maddox.il2.ai.Way;
+import com.maddox.il2.ai.WayPoint;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.Autopilotage;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
@@ -32,9 +35,11 @@ public class CockpitLAGG_3RD extends CockpitPilot
   private Point3d tmpP = new Point3d();
   private Vector3d tmpV = new Vector3d();
 
-  protected float waypointAzimuth()
-  {
-    return super.waypointAzimuthInvertMinus(10.0F);
+  protected float waypointAzimuth() { WayPoint localWayPoint = this.fm.AP.way.curr();
+    if (localWayPoint == null) return 0.0F;
+    localWayPoint.getP(this.tmpP);
+    this.tmpV.sub(this.tmpP, this.fm.Loc);
+    return (float)(57.295779513082323D * Math.atan2(-this.tmpV.y, this.tmpV.x));
   }
 
   public CockpitLAGG_3RD()
@@ -108,7 +113,7 @@ public class CockpitLAGG_3RD extends CockpitPilot
 
     this.mesh.chunkSetAngles("zClock1b", 0.0F, cvt(World.getTimeofDay(), 0.0F, 24.0F, 0.0F, 720.0F), 0.0F);
 
-    this.mesh.chunkSetAngles("zRPK10", 0.0F, cvt(this.setNew.waypointAzimuth.getDeg(paramFloat * 0.2F), -25.0F, 25.0F, -35.0F, 35.0F), 0.0F);
+    this.mesh.chunkSetAngles("zRPK10", 0.0F, cvt(interp(this.setNew.waypointAzimuth, this.setOld.waypointAzimuth, paramFloat), -25.0F, 25.0F, 35.0F, -35.0F), 0.0F);
 
     this.mesh.chunkVisible("Z_GearLRed1", this.fm.CT.getGear() == 0.0F);
     this.mesh.chunkVisible("Z_GearRRed1", this.fm.CT.getGear() == 0.0F);
@@ -179,11 +184,7 @@ public class CockpitLAGG_3RD extends CockpitPilot
         }
         if ((CockpitLAGG_3RD.this.setOld.azimuth > 270.0F) && (CockpitLAGG_3RD.this.setNew.azimuth < 90.0F)) CockpitLAGG_3RD.this.setOld.azimuth -= 360.0F;
         if ((CockpitLAGG_3RD.this.setOld.azimuth < 90.0F) && (CockpitLAGG_3RD.this.setNew.azimuth > 270.0F)) CockpitLAGG_3RD.this.setOld.azimuth += 360.0F;
-
-        if (!CockpitLAGG_3RD.this.useRealisticNavigationInstruments())
-        {
-          CockpitLAGG_3RD.this.setNew.waypointAzimuth.setDeg(CockpitLAGG_3RD.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitLAGG_3RD.this.waypointAzimuth() - CockpitLAGG_3RD.this.fm.Or.azimut());
-        }
+        CockpitLAGG_3RD.this.setNew.waypointAzimuth = ((10.0F * CockpitLAGG_3RD.this.setOld.waypointAzimuth + (CockpitLAGG_3RD.this.waypointAzimuth() - CockpitLAGG_3RD.this.setOld.azimuth) + World.Rnd().nextFloat(-10.0F, 10.0F)) / 11.0F);
 
         CockpitLAGG_3RD.this.setNew.vspeed = ((199.0F * CockpitLAGG_3RD.this.setOld.vspeed + CockpitLAGG_3RD.this.fm.getVertSpeed()) / 200.0F);
       }
@@ -199,19 +200,13 @@ public class CockpitLAGG_3RD extends CockpitPilot
     float altimeter;
     float azimuth;
     float vspeed;
-    AnglesFork waypointAzimuth;
+    float waypointAzimuth;
     private final CockpitLAGG_3RD this$0;
 
     private Variables()
     {
-      this.this$0 = this$1;
-
-      this.waypointAzimuth = new AnglesFork();
-    }
-
-    Variables(CockpitLAGG_3RD.1 arg2)
-    {
-      this();
+      this.this$0 = this$1; } 
+    Variables(CockpitLAGG_3RD.1 arg2) { this();
     }
   }
 }

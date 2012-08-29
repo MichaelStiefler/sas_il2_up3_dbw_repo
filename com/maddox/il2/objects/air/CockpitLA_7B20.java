@@ -259,8 +259,11 @@ public class CockpitLA_7B20 extends CockpitPilot
         if (Math.abs(CockpitLA_7B20.this.fm.Or.getKren()) < 30.0F) {
           CockpitLA_7B20.this.setNew.azimuth = ((35.0F * CockpitLA_7B20.this.setOld.azimuth + -CockpitLA_7B20.this.fm.Or.getYaw()) / 36.0F);
         }
+        CockpitLA_7B20.this.setNew.trueAzimuth = ((35.0F * CockpitLA_7B20.this.setOld.trueAzimuth + -CockpitLA_7B20.this.fm.Or.getYaw()) / 36.0F);
         if ((CockpitLA_7B20.this.setOld.azimuth > 270.0F) && (CockpitLA_7B20.this.setNew.azimuth < 90.0F)) CockpitLA_7B20.this.setOld.azimuth -= 360.0F;
         if ((CockpitLA_7B20.this.setOld.azimuth < 90.0F) && (CockpitLA_7B20.this.setNew.azimuth > 270.0F)) CockpitLA_7B20.this.setOld.azimuth += 360.0F;
+        if ((CockpitLA_7B20.this.setOld.trueAzimuth > 270.0F) && (CockpitLA_7B20.this.setNew.trueAzimuth < 90.0F)) CockpitLA_7B20.this.setOld.trueAzimuth -= 360.0F;
+        if ((CockpitLA_7B20.this.setOld.trueAzimuth < 90.0F) && (CockpitLA_7B20.this.setNew.trueAzimuth > 270.0F)) CockpitLA_7B20.this.setOld.trueAzimuth += 360.0F;
 
         if (CockpitLA_7B20.this.useRealisticNavigationInstruments())
         {
@@ -268,7 +271,7 @@ public class CockpitLA_7B20 extends CockpitPilot
         }
         else
         {
-          CockpitLA_7B20.this.setNew.waypointAzimuth.setDeg(CockpitLA_7B20.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitLA_7B20.this.waypointAzimuth() - CockpitLA_7B20.this.fm.Or.azimut());
+          CockpitLA_7B20.this.setNew.waypointAzimuth.setDeg(CockpitLA_7B20.this.setOld.waypointAzimuth.getDeg(0.1F), CockpitLA_7B20.this.waypointAzimuth() - CockpitLA_7B20.this.setOld.trueAzimuth);
         }
 
         CockpitLA_7B20.this.setNew.vspeed = ((199.0F * CockpitLA_7B20.this.setOld.vspeed + CockpitLA_7B20.this.fm.getVertSpeed()) / 200.0F);
@@ -297,6 +300,7 @@ public class CockpitLA_7B20 extends CockpitPilot
     float throttle;
     float prop;
     float altimeter;
+    float trueAzimuth;
     float azimuth;
     float vspeed;
     AnglesFork waypointAzimuth;

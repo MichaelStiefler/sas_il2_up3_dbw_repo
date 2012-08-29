@@ -35,13 +35,9 @@ import com.maddox.il2.game.I18N;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.PaintScheme;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
-import com.maddox.il2.objects.vehicles.radios.LorenzBlindLandingBeacon;
 import com.maddox.il2.objects.vehicles.stationary.SirenGeneric;
 import com.maddox.il2.objects.vehicles.stationary.SmokeGeneric;
 import com.maddox.rts.LDRres;
@@ -365,16 +361,6 @@ public class PlMisStatic extends Plugin
         localActor.interpCancelAll();
       makeName(localActor, paramString1);
       this.allActors.add(localActor);
-
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        ((BigshipGeneric)localActor).showTransparentRunwayRed();
-      }
-      if ((localActor instanceof LorenzBlindLandingBeacon))
-      {
-        ((LorenzBlindLandingBeacon)localActor).showGuideArrows();
-      }
-
       if ((localActor instanceof ArtilleryGeneric)) {
         Property.set(localActor, "timeout", paramFloat2);
         Property.set(localActor, "radius_hide", (int)ArtilleryGeneric.new_RADIUS_HIDE);
@@ -401,16 +387,6 @@ public class PlMisStatic extends Plugin
     this.spawnArg.country = paramString;
     try {
       Actor localActor = paramActorSpawn.actorSpawn(this.spawnArg);
-
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        ((BigshipGeneric)localActor).showTransparentRunwayRed();
-      }
-      if ((localActor instanceof LorenzBlindLandingBeacon))
-      {
-        ((LorenzBlindLandingBeacon)localActor).showGuideArrows();
-      }
-
       if ((localActor instanceof SirenGeneric))
         localActor.setArmy(paramInt);
       builder.align(localActor);
